@@ -49,6 +49,8 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.dataChangetier)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreFileUpload)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

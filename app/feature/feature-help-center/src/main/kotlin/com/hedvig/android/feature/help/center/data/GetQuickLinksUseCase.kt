@@ -99,6 +99,15 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
+      if (memberActionOptions.isTierChangeEnabled) {
+        add(
+          QuickAction.StandaloneQuickLink(
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+            titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+          ),
+        )
+      }
     }
   }
 }
@@ -157,6 +166,8 @@ sealed interface QuickLinkDestination {
     data object QuickLinkChangeAddress : OuterDestination
 
     data object QuickLinkConnectPayment : OuterDestination
+
+    data object QuickLinkChangeTier : OuterDestination
   }
 
   sealed interface InnerHelpCenterDestination : QuickLinkDestination {
