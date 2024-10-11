@@ -1,0 +1,14 @@
+query ContractsEligibleForTierChange {
+  currentMember {
+    activeContracts {
+      id
+      supportsChangeTier
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          ...ProductVariantFragment
+        }
+      }
+    }
+  }
+}

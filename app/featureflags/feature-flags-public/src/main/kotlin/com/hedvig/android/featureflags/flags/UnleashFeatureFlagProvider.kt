@@ -21,7 +21,6 @@ internal class UnleashFeatureFlagProvider(
           Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
           Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
           Feature.TIER -> hedvigUnleashClient.client.isEnabled("enable_tiers", false)
-          // todo: tier default false for now, maybe change later?
         }
       }.distinctUntilChanged()
   }
