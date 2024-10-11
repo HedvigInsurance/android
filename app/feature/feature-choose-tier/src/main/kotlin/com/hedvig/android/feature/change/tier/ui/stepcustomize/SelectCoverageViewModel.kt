@@ -113,8 +113,8 @@ private class SelectCoveragePresenter(
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
-          val filtered = (currentPartialState as PartialUiState.Success).map.values.flatten()
-            .filter { it.deductible == chosenQuote?.deductible }
+          val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
+          val filtered = notFiltered.distinctBy { it.tier.tierName }
           quotesToCompare =
             filtered
         }
