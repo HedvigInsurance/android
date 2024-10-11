@@ -327,20 +327,16 @@ private fun CustomizationCard(
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
       ) { onDismissRequest ->
-        val listOfOptions = buildList {
-          tiers.forEachIndexed { index, pair ->
-            add(
-              ExpandedRadioOptionData(
-                chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-                title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
-                premium = pair.second,
-                info = pair.first.info,
-                onRadioOptionClick = {
-                  onChooseTierInDialogClick(pair.first)
-                },
-              ),
-            )
-          }
+        val listOfOptions = tiers.map { pair ->
+          ExpandedRadioOptionData(
+            chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
+            title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
+            premium = pair.second,
+            tierDescription = pair.first.tierDescription,
+            onRadioOptionClick = {
+              onChooseTierInDialogClick(pair.first)
+            },
+          )
         }
         DropdownContent(
           onContinueButtonClick = {
@@ -394,7 +390,7 @@ private fun CustomizationCard(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
                     premium = quote.premium.toString(),
-                    info = it.description,
+                    tierDescription = it.description,
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
@@ -482,7 +478,7 @@ private fun DropdownContent(
           ExpandedOptionContent(
             title = option.title,
             premium = option.premium,
-            comment = option.info,
+            comment = option.tierDescription,
           )
         },
       )
@@ -512,7 +508,7 @@ private data class ExpandedRadioOptionData(
   val chosenState: ChosenState,
   val title: String,
   val premium: String,
-  val info: String?,
+  val tierDescription: String?,
 )
 
 @Composable
@@ -573,7 +569,7 @@ private fun CustomizationCardPreview() {
       chosenTier = Tier(
         "BAS",
         tierLevel = 0,
-        info = "Vårt paket med grundläggande villkor.",
+        tierDescription = "Vårt paket med grundläggande villkor.",
         tierDisplayName = "Bas",
       ),
       onChooseTierClick = {},
@@ -587,20 +583,20 @@ private fun CustomizationCardPreview() {
         Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ) to "199",
         Tier(
           "STANDARD",
           tierLevel = 1,
-          info = "Vårt mellanpaket med hög ersättning.",
+          tierDescription = "Vårt mellanpaket med hög ersättning.",
           tierDisplayName = "Standard",
         ) to "155",
       ),
       chosenTierInDialog = Tier(
         "BAS",
         tierLevel = 0,
-        info = "Vårt paket med grundläggande villkor.",
+        tierDescription = "Vårt paket med grundläggande villkor.",
         tierDisplayName = "Bas",
       ),
       chosenQuoteInDialog = quotesForPreview[0],
@@ -623,13 +619,13 @@ private fun SelectTierScreenPreview() {
           Tier(
             "BAS",
             tierLevel = 0,
-            info = "Vårt paket med grundläggande villkor.",
+            tierDescription = "Vårt paket med grundläggande villkor.",
             tierDisplayName = "Bas",
           ) to "199",
           Tier(
             "STANDARD",
             tierLevel = 1,
-            info = "Vårt mellanpaket med hög ersättning.",
+            tierDescription = "Vårt mellanpaket med hög ersättning.",
             tierDisplayName = "Standard",
           ) to "155",
         ),
@@ -639,14 +635,14 @@ private fun SelectTierScreenPreview() {
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ),
         chosenQuote = quotesForPreview[0],
         chosenInDialogTier = Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ),
         chosenInDialogQuote = quotesForPreview[0],
@@ -681,7 +677,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(199.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -701,7 +702,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(255.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -721,7 +727,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(355.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -741,7 +752,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -761,7 +777,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
