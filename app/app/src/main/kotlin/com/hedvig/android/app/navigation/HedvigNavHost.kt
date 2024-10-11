@@ -50,7 +50,6 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
-import com.hedvig.android.feature.movingflow.MovingFlowGraphDestination
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -118,8 +117,8 @@ internal fun HedvigNavHost(
   val apolloClient = koinInject<ApolloClient>()
   NavHost(
     navController = hedvigAppState.navController,
-//    startDestination = HomeDestination.Graph::class,
-    startDestination = MovingFlowGraphDestination::class,
+    startDestination = HomeDestination.Graph::class,
+//    startDestination = MovingFlowDestination::class,
     route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },

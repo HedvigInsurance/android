@@ -2,56 +2,52 @@ mutation MoveIntentV2Request($intentId: ID!, $moveIntentRequestInput: MoveIntent
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
       ...MoveIntentFragment
-      ...MoveIntentQuotesFragment
+      homeQuotes {
+        id
+        premium {
+          ...MoneyFragment
+        }
+        startDate
+        defaultChoice
+        tierName
+        tierLevel
+        deductible {
+          amount {
+            ...MoneyFragment
+          }
+          percentage
+          displayText
+        }
+        displayItems {
+          ...MoveQuoteDisplayItemFragment
+        }
+        exposureName
+        productVariant {
+          ...ProductVariantFragment
+          # These are not in the fragment, why?
+          #          termsVersion
+          #          displayNameSubtype
+        }
+      }
+      mtaQuotes {
+        premium {
+          ...MoneyFragment
+        }
+        startDate
+        displayItems {
+          ...MoveQuoteDisplayItemFragment
+        }
+        exposureName
+        productVariant {
+          ...ProductVariantFragment
+          # These are not in the fragment, why?
+          #          termsVersion
+          #          displayNameSubtype
+        }
+      }
     }
     userError {
       message
-    }
-  }
-}
-
-fragment MoveIntentQuotesFragment on MoveIntent {
-  homeQuotes {
-    id
-    premium {
-      ...MoneyFragment
-    }
-    startDate
-    defaultChoice
-    tierName
-    tierLevel
-    deductible {
-      amount {
-        ...MoneyFragment
-      }
-      percentage
-      displayText
-    }
-    displayItems {
-      ...MoveQuoteDisplayItemFragment
-    }
-    exposureName
-    productVariant {
-      ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
-    }
-  }
-  mtaQuotes {
-    premium {
-      ...MoneyFragment
-    }
-    startDate
-    displayItems {
-      ...MoveQuoteDisplayItemFragment
-    }
-    exposureName
-    productVariant {
-      ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
     }
   }
 }
