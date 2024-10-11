@@ -10,6 +10,9 @@ import com.hedvig.authlib.ResendOtpResult.Error
 import com.hedvig.authlib.ResendOtpResult.Success
 import com.hedvig.authlib.SubmitOtpResult
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,7 +29,8 @@ class OtpInputViewModel(
   credential: String,
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
-) : ViewModel() {
+  coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()),
+) : ViewModel(coroutineScope) {
   private val _viewState = MutableStateFlow(ViewState.initial(credential = credential))
   val viewState = combine(
     _viewState,
@@ -44,30 +48,6 @@ class OtpInputViewModel(
   private val _events = Channel<Event>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
 
-  data class ViewState(
-    val input: String = "",
-    val credential: String,
-    val networkErrorMessage: String?,
-    val loadingResend: Boolean,
-    val loadingCode: Boolean,
-    val navigateToLoginScreen: Boolean,
-  ) {
-    companion object {
-      fun initial(credential: String): ViewState = ViewState(
-        credential = credential,
-        input = "",
-        networkErrorMessage = null,
-        loadingResend = false,
-        loadingCode = false,
-        navigateToLoginScreen = false,
-      )
-    }
-  }
-
-  sealed class Event {
-    object CodeResent : Event()
-  }
-
   fun setInput(value: String) {
     _viewState.update {
       it.copy(input = value, networkErrorMessage = null)
@@ -84,6 +64,34 @@ class OtpInputViewModel(
         is SubmitOtpResult.Error -> setErrorState(otpResult.message)
         is SubmitOtpResult.Success -> submitAuthCode(otpResult)
       }
+    }
+  }
+
+  fun resendCode() {
+    _viewState.update {
+      it.copy(networkErrorMessage = null, loadingResend = true)
+    }
+    viewModelScope.launch {
+      when (val result = authRepository.resendOtp(resendUrl)) {
+        is Error -> {
+          _viewState.update {
+            it.copy(networkErrorMessage = result.message, loadingResend = false)
+          }
+        }
+
+        Success -> {
+          _events.trySend(Event.CodeResent)
+          _viewState.update {
+            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
+          }
+        }
+      }
+    }
+  }
+
+  fun dismissError() {
+    _viewState.update {
+      it.copy(networkErrorMessage = null)
     }
   }
 
@@ -115,31 +123,27 @@ class OtpInputViewModel(
     }
   }
 
-  fun resendCode() {
-    _viewState.update {
-      it.copy(networkErrorMessage = null, loadingResend = true)
-    }
-    viewModelScope.launch {
-      when (val result = authRepository.resendOtp(resendUrl)) {
-        is Error -> {
-          _viewState.update {
-            it.copy(networkErrorMessage = result.message, loadingResend = false)
-          }
-        }
-
-        Success -> {
-          _events.trySend(Event.CodeResent)
-          _viewState.update {
-            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
-          }
-        }
-      }
+  data class ViewState(
+    val input: String = "",
+    val credential: String,
+    val networkErrorMessage: String?,
+    val loadingResend: Boolean,
+    val loadingCode: Boolean,
+    val navigateToLoginScreen: Boolean,
+  ) {
+    companion object {
+      fun initial(credential: String): ViewState = ViewState(
+        credential = credential,
+        input = "",
+        networkErrorMessage = null,
+        loadingResend = false,
+        loadingCode = false,
+        navigateToLoginScreen = false,
+      )
     }
   }
 
-  fun dismissError() {
-    _viewState.update {
-      it.copy(networkErrorMessage = null)
-    }
+  sealed class Event {
+    object CodeResent : Event()
   }
 }
