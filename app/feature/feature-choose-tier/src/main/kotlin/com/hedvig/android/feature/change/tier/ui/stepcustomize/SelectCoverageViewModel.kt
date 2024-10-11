@@ -29,6 +29,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -80,16 +81,19 @@ private class SelectCoveragePresenter(
           val state = currentPartialState
           if (state !is PartialUiState.Success) return@CollectEvents
           // set newly chosen tier
-          val locallyChosen = chosenTierInDialog
-          locallyChosen?.let { local ->
-            chosenTier = local
-            // try to pre-choose a quote with the same deductible and newly chosen coverage
-            // if there is no such quote, the deductible will not be per-chosen
-            val previouslyChosenDeductible = chosenQuote?.deductible
-            val quoteWithNewTierOldDeductible =
-              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
-            chosenQuote = quoteWithNewTierOldDeductible
-          }
+          chosenTier = chosenTierInDialog
+          chosenQuote = if (state.map[chosenTier]?.size==1) state.map[chosenTier]?.get(0) else  null
+          chosenQuoteInDialog = chosenQuote
+//          val locallyChosen = chosenTierInDialog
+//          locallyChosen?.let { local ->
+//            chosenTier = local
+//            // try to pre-choose a quote with the same deductible and newly chosen coverage
+//            // if there is no such quote, the deductible will not be per-chosen
+//            val previouslyChosenDeductible = chosenQuote?.deductible
+//            val quoteWithNewTierOldDeductible =
+//              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
+//            chosenQuote = quoteWithNewTierOldDeductible
+//          }
         }
 
         ClearNavigationStep -> {
@@ -192,7 +196,14 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
+        logcat { "Mariia:" +
+          "chosenTier: $chosenTier" +
+          "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
+          "chosenQuote: ${chosenQuote?.deductible}" +
+          "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}" }
 
+        val chosenQuoteIndex = (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it!=-1 }
+        val chosenTierIndex = (currentPartialState as PartialUiState.Success).map.keys.sortedBy{it.tierLevel}.indexOf(chosenTier).takeIf { it!=-1 }
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
@@ -211,6 +222,8 @@ private class SelectCoveragePresenter(
             quotesToCompare = quotesToCompare,
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
+            chosenTierIndex = chosenTierIndex,
+            chosenQuoteIndex = chosenQuoteIndex
           ),
         )
       }
@@ -314,7 +327,9 @@ internal enum class FailureReason {
 internal data class SelectCoverageSuccessUiState(
   val contractData: ContractData,
   val chosenTier: Tier?,
+  val chosenTierIndex: Int?,
   val chosenQuote: TierDeductibleQuote?,
+  val chosenQuoteIndex: Int?,
   val chosenInDialogTier: Tier?,
   val chosenInDialogQuote: TierDeductibleQuote?,
   val isCurrentChosen: Boolean,

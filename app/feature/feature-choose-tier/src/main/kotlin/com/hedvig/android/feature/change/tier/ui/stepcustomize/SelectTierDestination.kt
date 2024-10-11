@@ -247,6 +247,8 @@ private fun SelectTierScreen(
       chosenQuoteInDialog = uiState.chosenInDialogQuote,
       onChooseDeductibleInDialogClick = onChooseDeductibleInDialogClick,
       onChooseTierInDialogClick = onChooseTierInDialogClick,
+      chosenTierIndex = uiState.chosenTierIndex,
+      chosenQuoteIndex = uiState.chosenQuoteIndex
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -291,6 +293,8 @@ private fun CustomizationCard(
   onChooseDeductibleClick: () -> Unit,
   onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
+  chosenTierIndex: Int?,
+  chosenQuoteIndex: Int?,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -319,7 +323,7 @@ private fun CustomizationCard(
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
-        chosenItemIndex = tiers.indexOfFirst { it.first.tierLevel == chosenTier?.tierLevel },
+        chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
       ) { onDismissRequest ->
@@ -378,7 +382,7 @@ private fun CustomizationCard(
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           onItemChosen = { _ -> }, // not needed, as we not use the default dialog content,
-          chosenItemIndex = quotesForChosenTier.indexOfFirst { it == chosenQuote },
+          chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,
         ) { onDismissRequest ->
@@ -424,7 +428,7 @@ private fun CustomizationCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = newDisplayPremium.toString(),
+            text = newDisplayPremium?.toString() ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -602,6 +606,8 @@ private fun CustomizationCardPreview() {
       chosenQuoteInDialog = quotesForPreview[0],
       onChooseDeductibleInDialogClick = {},
       onChooseTierInDialogClick = {},
+      chosenTierIndex = null,
+      chosenQuoteIndex = null
     )
   }
 }
@@ -644,6 +650,8 @@ private fun SelectTierScreenPreview() {
           tierDisplayName = "Bas",
         ),
         chosenInDialogQuote = quotesForPreview[0],
+        chosenTierIndex = null,
+        chosenQuoteIndex = null
       ),
       {},
       {},
