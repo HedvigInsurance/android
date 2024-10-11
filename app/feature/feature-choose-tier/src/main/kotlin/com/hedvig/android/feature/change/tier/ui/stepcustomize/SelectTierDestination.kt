@@ -304,7 +304,7 @@ private fun CustomizationCard(
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
         contractGroup = data.contractGroup,
-        displayName = data.contractDisplayName,
+        displayName = chosenQuote?.productVariant?.displayName ?: data.contractDisplayName,
         displaySubtitle = data.contractDisplaySubtitle,
       )
       Spacer(Modifier.height(16.dp))

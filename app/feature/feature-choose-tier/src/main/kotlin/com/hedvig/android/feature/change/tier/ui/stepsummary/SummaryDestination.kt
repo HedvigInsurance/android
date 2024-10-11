@@ -206,7 +206,7 @@ private fun SummaryCard(
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
         contractGroup = uiState.currentContractData.contractGroup,
-        displayName = uiState.currentContractData.contractDisplayName,
+        displayName = uiState.quote.productVariant.displayName,
         displaySubtitle = uiState.currentContractData.contractDisplaySubtitle,
       )
       Spacer(Modifier.height(16.dp))

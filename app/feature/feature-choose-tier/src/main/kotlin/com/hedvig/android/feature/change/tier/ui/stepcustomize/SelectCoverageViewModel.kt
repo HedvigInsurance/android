@@ -39,13 +39,13 @@ internal class SelectCoverageViewModel(
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
-    initialState = Loading,
-    presenter = SelectCoveragePresenter(
-      params = params,
-      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-      tierRepository = tierRepository,
-    ),
-  )
+  initialState = Loading,
+  presenter = SelectCoveragePresenter(
+    params = params,
+    getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+    tierRepository = tierRepository,
+  ),
+)
 
 private class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,
@@ -82,18 +82,18 @@ private class SelectCoveragePresenter(
           if (state !is PartialUiState.Success) return@CollectEvents
           // set newly chosen tier
           chosenTier = chosenTierInDialog
-          chosenQuote = if (state.map[chosenTier]?.size==1) state.map[chosenTier]?.get(0) else  null
-          chosenQuoteInDialog = chosenQuote
-//          val locallyChosen = chosenTierInDialog
-//          locallyChosen?.let { local ->
-//            chosenTier = local
-//            // try to pre-choose a quote with the same deductible and newly chosen coverage
-//            // if there is no such quote, the deductible will not be per-chosen
-//            val previouslyChosenDeductible = chosenQuote?.deductible
-//            val quoteWithNewTierOldDeductible =
-//              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
-//            chosenQuote = quoteWithNewTierOldDeductible
-//          }
+          // try to pre-choose a quote with the same deductible and newly chosen coverage
+          // if there is no such quote, the deductible will not be per-chosen
+          val quoteWithNewTierOldDeductible = chosenTier?.let { t ->
+            val previouslyChosenDeductible = chosenQuote?.deductible
+            if (state.map[t]?.size == 1) {
+              state.map[t]?.get(0)
+            } else {
+              state.map[t]?.firstOrNull { it.deductible == previouslyChosenDeductible }
+            }
+          }
+          chosenQuote = quoteWithNewTierOldDeductible
+          chosenQuoteInDialog = quoteWithNewTierOldDeductible
         }
 
         ClearNavigationStep -> {
@@ -196,14 +196,19 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
-        logcat { "Mariia:" +
-          "chosenTier: $chosenTier" +
-          "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
-          "chosenQuote: ${chosenQuote?.deductible}" +
-          "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}" }
+        logcat {
+          "Mariia:" +
+            "chosenTier: $chosenTier" +
+            "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
+            "chosenQuote: ${chosenQuote?.deductible}" +
+            "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}"
+        }
 
-        val chosenQuoteIndex = (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it!=-1 }
-        val chosenTierIndex = (currentPartialState as PartialUiState.Success).map.keys.sortedBy{it.tierLevel}.indexOf(chosenTier).takeIf { it!=-1 }
+        val chosenQuoteIndex =
+          (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
+        val chosenTierIndex =
+          (currentPartialState as PartialUiState.Success).map.keys.sortedBy { it.tierLevel }.indexOf(chosenTier)
+            .takeIf { it != -1 }
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
@@ -223,7 +228,7 @@ private class SelectCoveragePresenter(
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
             chosenTierIndex = chosenTierIndex,
-            chosenQuoteIndex = chosenQuoteIndex
+            chosenQuoteIndex = chosenQuoteIndex,
           ),
         )
       }
@@ -241,7 +246,8 @@ private fun buildListOfTiersAndPremiums(
       // but if this doesn't work, the lowest for this coverage
       val premium = map[tier]!!.firstOrNull {
         it.deductible == currentDeductible
-      }?.premium?.toString() ?: "Fr. ${map[tier]!!.minBy { it.tier.tierLevel }.premium}" // todo: hardcoded string, but may be ok?
+      }?.premium?.toString()
+        ?: "Fr. ${map[tier]!!.minBy { it.tier.tierLevel }.premium}" // todo: hardcoded string, but may be ok?
       add(tier to premium)
     }
   }.sortedBy { pair ->
