@@ -10,6 +10,8 @@ plugins {
 dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
@@ -21,6 +23,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)

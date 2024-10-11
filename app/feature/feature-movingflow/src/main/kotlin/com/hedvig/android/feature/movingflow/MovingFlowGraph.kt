@@ -21,9 +21,22 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationDestination
+import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleDestination
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
+import com.hedvig.android.feature.movingflow.ui.comparecoverage.CompareCoverageDestination
+import com.hedvig.android.feature.movingflow.ui.comparecoverage.CompareCoverageViewModel
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressDestination
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
+import com.hedvig.android.feature.movingflow.ui.start.StartDestination
+import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
@@ -41,87 +54,130 @@ import octopus.type.MoveApiVersion
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
+import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-data object MovingFlowDestination : Destination
+data object MovingFlowGraphDestination : Destination
+
+internal sealed interface MovingFlowDestinations {
+  @Serializable
+  data object Start : MovingFlowDestinations, Destination
+
+  @Serializable
+  data object EnterNewAddress : MovingFlowDestinations, Destination
+
+  @Serializable
+  data object AddHouseInformation : MovingFlowDestinations, Destination
+
+  @Serializable
+  data object ChoseCoverageLevelAndDeductible : MovingFlowDestinations, Destination
+
+  @Serializable
+  data object CompareCoverage : MovingFlowDestinations, Destination
+
+  @Serializable
+  data object Summary : MovingFlowDestinations, Destination
+}
 
 fun NavGraphBuilder.movingFlowGraph(apolloClient: ApolloClient) {
-  navdestination<MovingFlowDestination> {
-    val coroutineScope = rememberCoroutineScope()
-    Surface(
-      modifier = Modifier.fillMaxSize(),
-      color = HedvigTheme.colorScheme.backgroundPrimary,
-    ) {
-      var moveIntent: MoveIntentFragment? by remember { mutableStateOf(null) }
-      var request: MoveIntentRequest? by remember { mutableStateOf(null) }
-      Column {
-        TopAppBar("Moving flow", TopAppBarActionType.BACK, {})
-        HedvigTextButton("Create") {
-          coroutineScope.launch {
-            apolloClient
-              .mutation(MoveIntentV2CreateMutation())
-              .safeExecute()
-              .getOrNull()!!
-              .moveIntentCreate
-              .moveIntent!!
-              .also {
-                logcat { it.toString() }
-                moveIntent = it
-              }
+  navgraph<MovingFlowGraphDestination>(
+    startDestination = MovingFlowDestinations.Start::class,
+  ) {
+    navdestination<MovingFlowDestinations.Start> {
+      StartDestination(koinViewModel<StartViewModel>())
+    }
+    navdestination<MovingFlowDestinations.EnterNewAddress> {
+      EnterNewAddressDestination(koinViewModel<EnterNewAddressViewModel>())
+    }
+    navdestination<MovingFlowDestinations.AddHouseInformation> {
+      AddHouseInformationDestination(koinViewModel<AddHouseInformationViewModel>())
+    }
+    navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> {
+      ChoseCoverageLevelAndDeductibleDestination(koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>())
+    }
+    navdestination<MovingFlowDestinations.CompareCoverage> {
+      CompareCoverageDestination(koinViewModel<CompareCoverageViewModel>())
+    }
+    navdestination<MovingFlowDestinations.Summary> {
+      SummaryDestination(koinViewModel<SummaryViewModel>())
+    }
+    navdestination<MovingFlowDestinations.Start> {
+      val coroutineScope = rememberCoroutineScope()
+      Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = HedvigTheme.colorScheme.backgroundPrimary,
+      ) {
+        var moveIntent: MoveIntentFragment? by remember { mutableStateOf(null) }
+        var request: MoveIntentRequest? by remember { mutableStateOf(null) }
+        Column {
+          TopAppBar("Moving flow", TopAppBarActionType.BACK, {})
+          HedvigTextButton("Create") {
+            coroutineScope.launch {
+              apolloClient
+                .mutation(MoveIntentV2CreateMutation())
+                .safeExecute()
+                .getOrNull()!!
+                .moveIntentCreate
+                .moveIntent!!
+                .also {
+                  logcat { it.toString() }
+                  moveIntent = it
+                }
+            }
           }
-        }
-        HedvigTextButton("Request") {
-          coroutineScope.launch {
-            @Suppress("NAME_SHADOWING")
-            val moveIntent = moveIntent!!
-            apolloClient
-              .mutation(
-                MoveIntentV2RequestMutation(
-                  moveIntent.id,
-                  MoveIntentRequestInput(
-                    apiVersion = Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
-                    moveToAddress = MoveToAddressInput(
-                      street = "St:street",
-                      postalCode = "14755",
-                      city = Optional.absent(),
-                    ),
-                    moveFromAddressId = moveIntent.currentHomeAddresses[0].id,
-                    movingDate = Clock.System.now()
-                      .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                      .plus(DatePeriod(days = 1)),
-                    numberCoInsured = 0,
-                    squareMeters = 52,
-                    apartment = Optional.present(
-                      MoveToApartmentInput(
-                        subType = MoveApartmentSubType.RENT,
-                        isStudent = false,
+          HedvigTextButton("Request") {
+            coroutineScope.launch {
+              @Suppress("NAME_SHADOWING")
+              val moveIntent = moveIntent!!
+              apolloClient
+                .mutation(
+                  MoveIntentV2RequestMutation(
+                    moveIntent.id,
+                    MoveIntentRequestInput(
+                      apiVersion = Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
+                      moveToAddress = MoveToAddressInput(
+                        street = "St:street",
+                        postalCode = "14755",
+                        city = Optional.absent(),
                       ),
+                      moveFromAddressId = moveIntent.currentHomeAddresses[0].id,
+                      movingDate = Clock.System.now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                        .plus(DatePeriod(days = 1)),
+                      numberCoInsured = 0,
+                      squareMeters = 52,
+                      apartment = Optional.present(
+                        MoveToApartmentInput(
+                          subType = MoveApartmentSubType.RENT,
+                          isStudent = false,
+                        ),
+                      ),
+                      house = Optional.absent(),
                     ),
-                    house = Optional.absent(),
                   ),
-                ),
-              )
-              .safeExecute()
-              .getOrNull()!!
-              .moveIntentRequest
-              .also { it: MoveIntentRequest ->
-                logcat { it.toString() }
-                request = it
-              }
+                )
+                .safeExecute()
+                .getOrNull()!!
+                .moveIntentRequest
+                .also { it: MoveIntentRequest ->
+                  logcat { it.toString() }
+                  request = it
+                }
+            }
           }
-        }
-        HedvigTextButton("Commit") {
-          val request = request!!
-          coroutineScope.launch {
-            apolloClient
-              .mutation(MoveIntentV2CommitMutation(request.moveIntent!!.id, request.moveIntent.homeQuotes!![0].id))
-              .safeExecute()
-              .getOrNull()!!
-              .moveIntentCommit
-              .moveIntent
+          HedvigTextButton("Commit") {
+            val request = request!!
+            coroutineScope.launch {
+              apolloClient
+                .mutation(MoveIntentV2CommitMutation(request.moveIntent!!.id, request.moveIntent.homeQuotes!![0].id))
+                .safeExecute()
+                .getOrNull()!!
+                .moveIntentCommit
+                .moveIntent
+            }
           }
+          Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
   }
