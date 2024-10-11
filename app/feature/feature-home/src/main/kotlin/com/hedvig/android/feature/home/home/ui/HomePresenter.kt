@@ -13,6 +13,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter

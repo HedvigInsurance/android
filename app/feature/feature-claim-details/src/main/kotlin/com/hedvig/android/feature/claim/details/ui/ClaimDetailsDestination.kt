@@ -63,7 +63,6 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
@@ -78,6 +77,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
@@ -301,7 +301,7 @@ private fun ClaimDetailTopAppBar(
       if (navigateToConversation != null) {
         IconButton(navigateToConversation, Modifier.size(40.dp)) {
           Icon(
-            imageVector = Icons.Hedvig.Chat,
+            imageVector = HedvigIcons.Chat,
             contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
             tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
             modifier = Modifier
@@ -325,7 +325,7 @@ private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromU
     Spacer(Modifier.height(8.dp))
     HedvigCard {
       Column {
-        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState)
+        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
         val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
         if (!claimIsInUndeterminedState) {
           HorizontalDivider()
@@ -588,8 +588,8 @@ private fun PreviewClaimDetailScreen() {
               insuranceDisplayName = null, // "Home Insurance Homeowner",
               submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               pillTypes = listOf(
-                ClaimPillType.Open,
-                ClaimPillType.Reopened,
+                ClaimPillType.Claim,
+                ClaimPillType.Closed.GenericClosed,
                 ClaimPillType.Closed.Paid,
                 ClaimPillType.PaymentAmount(UiMoney(399.0, UiCurrencyCode.SEK)),
                 ClaimPillType.Closed.NotCompensated,
@@ -598,15 +598,15 @@ private fun PreviewClaimDetailScreen() {
               claimProgressItemsUiState = listOf(
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Submitted,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.BeingHandled,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Closed,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
               ),
             ),
