@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -44,6 +49,9 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -136,29 +144,46 @@ internal fun SelectTierDestination(
 @Composable
 private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
-    val subTitle = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
+    when (reason) {
+      GENERAL -> {
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.fillMaxSize(),
+          subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
+          title = stringResource(R.string.GENERAL_ERROR_BODY),
+          buttonText = stringResource(R.string.GENERAL_ERROR_BODY),
+        )
+      }
+      QUOTES_ARE_EMPTY -> {
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Horizontal +
+                  WindowInsetsSides.Bottom,
+              ),
+            ),
+        ) {
+          Spacer(Modifier.weight(1f))
+          EmptyState(
+            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+            iconStyle = INFO,
+            buttonStyle = NoButton,
+            description = null,
+          )
+          Spacer(Modifier.weight(1f))
+          HedvigTextButton(
+            stringResource(R.string.general_close_button),
+            onClick = navigateUp,
+            buttonSize = Large,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(32.dp))
+        }
+      }
     }
-    val action = when (reason) {
-      GENERAL -> reload
-      QUOTES_ARE_EMPTY -> navigateUp
-    }
-    val title = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_TITLE)
-    }
-    val buttonText = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.general_back_button)
-    }
-    HedvigErrorSection(
-      onButtonClick = action,
-      modifier = Modifier.fillMaxSize(),
-      subTitle = subTitle,
-      title = title,
-      buttonText = buttonText,
-    )
   }
 }
 
@@ -222,6 +247,8 @@ private fun SelectTierScreen(
       chosenQuoteInDialog = uiState.chosenInDialogQuote,
       onChooseDeductibleInDialogClick = onChooseDeductibleInDialogClick,
       onChooseTierInDialogClick = onChooseTierInDialogClick,
+      chosenTierIndex = uiState.chosenTierIndex,
+      chosenQuoteIndex = uiState.chosenQuoteIndex
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -266,6 +293,8 @@ private fun CustomizationCard(
   onChooseDeductibleClick: () -> Unit,
   onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
+  chosenTierIndex: Int?,
+  chosenQuoteIndex: Int?,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -294,24 +323,20 @@ private fun CustomizationCard(
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
-        chosenItemIndex = tiers.indexOfFirst { it.first.tierLevel == chosenTier?.tierLevel },
+        chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
       ) { onDismissRequest ->
-        val listOfOptions = buildList {
-          tiers.forEachIndexed { index, pair ->
-            add(
-              ExpandedRadioOptionData(
-                chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-                title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
-                premium = pair.second,
-                info = pair.first.info,
-                onRadioOptionClick = {
-                  onChooseTierInDialogClick(pair.first)
-                },
-              ),
-            )
-          }
+        val listOfOptions = tiers.map { pair ->
+          ExpandedRadioOptionData(
+            chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
+            title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
+            premium = pair.second,
+            tierDescription = pair.first.tierDescription,
+            onRadioOptionClick = {
+              onChooseTierInDialogClick(pair.first)
+            },
+          )
         }
         DropdownContent(
           onContinueButtonClick = {
@@ -353,7 +378,7 @@ private fun CustomizationCard(
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           onItemChosen = { _ -> }, // not needed, as we not use the default dialog content,
-          chosenItemIndex = quotesForChosenTier.indexOfFirst { it == chosenQuote },
+          chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,
         ) { onDismissRequest ->
@@ -365,7 +390,7 @@ private fun CustomizationCard(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
                     premium = quote.premium.toString(),
-                    info = it.description,
+                    tierDescription = it.description,
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
@@ -399,7 +424,7 @@ private fun CustomizationCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = newDisplayPremium.toString(),
+            text = newDisplayPremium?.toString() ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -453,7 +478,7 @@ private fun DropdownContent(
           ExpandedOptionContent(
             title = option.title,
             premium = option.premium,
-            comment = option.info,
+            comment = option.tierDescription,
           )
         },
       )
@@ -483,11 +508,11 @@ private data class ExpandedRadioOptionData(
   val chosenState: ChosenState,
   val title: String,
   val premium: String,
-  val info: String?,
+  val tierDescription: String?,
 )
 
 @Composable
-private fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
+internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = contractGroup.toPillow()),
@@ -544,7 +569,7 @@ private fun CustomizationCardPreview() {
       chosenTier = Tier(
         "BAS",
         tierLevel = 0,
-        info = "Vårt paket med grundläggande villkor.",
+        tierDescription = "Vårt paket med grundläggande villkor.",
         tierDisplayName = "Bas",
       ),
       onChooseTierClick = {},
@@ -558,25 +583,27 @@ private fun CustomizationCardPreview() {
         Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ) to "199",
         Tier(
           "STANDARD",
           tierLevel = 1,
-          info = "Vårt mellanpaket med hög ersättning.",
+          tierDescription = "Vårt mellanpaket med hög ersättning.",
           tierDisplayName = "Standard",
         ) to "155",
       ),
       chosenTierInDialog = Tier(
         "BAS",
         tierLevel = 0,
-        info = "Vårt paket med grundläggande villkor.",
+        tierDescription = "Vårt paket med grundläggande villkor.",
         tierDisplayName = "Bas",
       ),
       chosenQuoteInDialog = quotesForPreview[0],
       onChooseDeductibleInDialogClick = {},
       onChooseTierInDialogClick = {},
+      chosenTierIndex = null,
+      chosenQuoteIndex = null
     )
   }
 }
@@ -592,13 +619,13 @@ private fun SelectTierScreenPreview() {
           Tier(
             "BAS",
             tierLevel = 0,
-            info = "Vårt paket med grundläggande villkor.",
+            tierDescription = "Vårt paket med grundläggande villkor.",
             tierDisplayName = "Bas",
           ) to "199",
           Tier(
             "STANDARD",
             tierLevel = 1,
-            info = "Vårt mellanpaket med hög ersättning.",
+            tierDescription = "Vårt mellanpaket med hög ersättning.",
             tierDisplayName = "Standard",
           ) to "155",
         ),
@@ -608,17 +635,19 @@ private fun SelectTierScreenPreview() {
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ),
         chosenQuote = quotesForPreview[0],
         chosenInDialogTier = Tier(
           "BAS",
           tierLevel = 0,
-          info = "Vårt paket med grundläggande villkor.",
+          tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
         ),
         chosenInDialogQuote = quotesForPreview[0],
+        chosenTierIndex = null,
+        chosenQuoteIndex = null
       ),
       {},
       {},
@@ -648,7 +677,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(199.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -668,7 +702,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(255.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -688,7 +727,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(355.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -708,7 +752,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -728,7 +777,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,

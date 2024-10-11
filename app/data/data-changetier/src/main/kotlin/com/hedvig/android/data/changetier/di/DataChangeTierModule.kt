@@ -25,6 +25,7 @@ val dataChangeTierModule = module {
       createChangeTierDeductibleIntentUseCase = get<CreateChangeTierDeductibleIntentUseCase>(),
       tierQuoteDao = get<TierQuoteDao>(),
       mapper = get<TierQuoteMapper>(),
+      apolloClient = get<ApolloClient>(),
     )
   }
 }
