@@ -202,6 +202,7 @@ dependencies {
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
+  implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)

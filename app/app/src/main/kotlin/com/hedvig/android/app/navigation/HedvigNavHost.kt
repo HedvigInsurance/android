@@ -10,6 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import coil.ImageLoader
+import com.apollographql.apollo.ApolloClient
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -42,6 +43,7 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
+import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -60,6 +62,7 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import org.koin.compose.koinInject
 
 @Composable
 internal fun HedvigNavHost(
@@ -100,9 +103,11 @@ internal fun HedvigNavHost(
     }
   }
 
+  val apolloClient = koinInject<ApolloClient>()
   NavHost(
     navController = hedvigAppState.navController,
     startDestination = HomeDestination.Graph::class,
+//    startDestination = MovingFlowDestination::class,
     route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
@@ -156,14 +161,6 @@ internal fun HedvigNavHost(
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
       navigator = navigator,
-    )
-    changeTierGraph(
-      openUrl = openUrl,
-      navigator = navigator,
-      navController = hedvigAppState.navController,
-      onNavigateToNewConversation = { backStackEntry ->
-        navigateToNewConversation(backStackEntry)
-      },
     )
     insuranceGraph(
       nestedGraphs = {
@@ -311,6 +308,15 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
     )
+    changeTierGraph(
+      openUrl = openUrl,
+      navigator = navigator,
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { backStackEntry ->
+        navigateToNewConversation(backStackEntry)
+      },
+    )
+    movingFlowGraph(apolloClient)
     connectPaymentGraph(
       navigator = navigator,
       market = market,
