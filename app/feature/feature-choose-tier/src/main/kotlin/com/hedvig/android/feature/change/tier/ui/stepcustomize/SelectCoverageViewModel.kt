@@ -29,7 +29,6 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -39,13 +38,13 @@ internal class SelectCoverageViewModel(
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
-  initialState = Loading,
-  presenter = SelectCoveragePresenter(
-    params = params,
-    getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-    tierRepository = tierRepository,
-  ),
-)
+    initialState = Loading,
+    presenter = SelectCoveragePresenter(
+      params = params,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      tierRepository = tierRepository,
+    ),
+  )
 
 private class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,
@@ -196,14 +195,6 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
-        logcat {
-          "Mariia:" +
-            "chosenTier: $chosenTier" +
-            "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
-            "chosenQuote: ${chosenQuote?.deductible}" +
-            "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}"
-        }
-
         val chosenQuoteIndex =
           (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
         val chosenTierIndex =

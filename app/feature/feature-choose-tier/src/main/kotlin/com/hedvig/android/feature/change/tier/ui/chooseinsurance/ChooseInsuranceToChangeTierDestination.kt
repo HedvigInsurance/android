@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -58,7 +59,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? ChooseInsuranceUiState.Success ?: return@LaunchedEffect
+    val uiStateValue = uiState as? ChooseInsuranceUiState.Loading ?: return@LaunchedEffect
     if (uiStateValue.paramsToNavigateToNextStep != null) {
       viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
       navigateToNextStep(uiStateValue.paramsToNavigateToNextStep)
@@ -112,7 +113,9 @@ private fun ChooseInsuranceScreen(
       }
     }
 
-    ChooseInsuranceUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    is ChooseInsuranceUiState.Loading -> {
+      LoadingScreen(uiState)
+    }
 
     is ChooseInsuranceUiState.Success -> {
       HedvigScaffold(
@@ -187,12 +190,22 @@ private fun ChooseInsuranceScreen(
               fetchTerminationStep(selectedInsurance)
             }
           },
-          isLoading = uiState.isChangeTierIntentLoading,
         )
 
         Spacer(Modifier.height(16.dp))
       }
     }
+  }
+}
+
+@Composable
+private fun LoadingScreen(uiState: ChooseInsuranceUiState.Loading) {
+  if (uiState.paramsToNavigateToNextStep == null) {
+    HedvigFullScreenCenterAlignedLinearProgress(
+      title = stringResource(R.string.TIER_FLOW_PROCESSING),
+    )
+  } else {
+    HedvigFullScreenCenterAlignedProgress()
   }
 }
 
@@ -235,7 +248,6 @@ private class ChooseInsuranceUiStateProvider :
   CollectionPreviewParameterProvider<ChooseInsuranceUiState>(
     listOf(
       ChooseInsuranceUiState.Success(
-        paramsToNavigateToNextStep = null,
         insuranceList = listOf(
           CustomisableInsurance(
             id = "1",
@@ -251,11 +263,9 @@ private class ChooseInsuranceUiStateProvider :
           ),
         ),
         selectedInsurance = null,
-        isChangeTierIntentLoading = false,
         changeTierIntentFailedToLoad = false,
       ),
       ChooseInsuranceUiState.Success(
-        paramsToNavigateToNextStep = null,
         insuranceList = listOf(
           CustomisableInsurance(
             id = "1",
@@ -276,11 +286,10 @@ private class ChooseInsuranceUiStateProvider :
           contractExposure = "Bullegatan 23",
           contractGroup = ContractGroup.HOUSE,
         ),
-        isChangeTierIntentLoading = true,
         changeTierIntentFailedToLoad = true,
       ),
       ChooseInsuranceUiState.Failure,
-      ChooseInsuranceUiState.Loading,
+      ChooseInsuranceUiState.Loading(),
       ChooseInsuranceUiState.NotAllowed,
     ),
   )

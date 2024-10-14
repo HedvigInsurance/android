@@ -248,7 +248,7 @@ private fun SelectTierScreen(
       onChooseDeductibleInDialogClick = onChooseDeductibleInDialogClick,
       onChooseTierInDialogClick = onChooseTierInDialogClick,
       chosenTierIndex = uiState.chosenTierIndex,
-      chosenQuoteIndex = uiState.chosenQuoteIndex
+      chosenQuoteIndex = uiState.chosenQuoteIndex,
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -394,7 +394,7 @@ private fun CustomizationCard(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
                     premium = quote.premium.toString(),
-                    info = it.description,
+                    info = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
@@ -607,7 +607,7 @@ private fun CustomizationCardPreview() {
       onChooseDeductibleInDialogClick = {},
       onChooseTierInDialogClick = {},
       chosenTierIndex = null,
-      chosenQuoteIndex = null
+      chosenQuoteIndex = null,
     )
   }
 }
@@ -651,7 +651,7 @@ private fun SelectTierScreenPreview() {
         ),
         chosenInDialogQuote = quotesForPreview[0],
         chosenTierIndex = null,
-        chosenQuoteIndex = null
+        chosenQuoteIndex = null,
       ),
       {},
       {},

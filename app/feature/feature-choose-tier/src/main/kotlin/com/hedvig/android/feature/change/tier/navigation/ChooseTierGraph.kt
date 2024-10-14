@@ -56,7 +56,7 @@ fun NavGraphBuilder.changeTierGraph(
       navigateUp = navigator::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
         navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
-          typedPopUpTo<StartTierFlowDestination> {
+          typedPopUpTo<StartTierFlowChooseInsuranceDestination> {
             inclusive = true
           }
         }
@@ -134,8 +134,6 @@ fun NavGraphBuilder.changeTierGraph(
       SubmitTierSuccessScreen(
         activationDate,
         navigateUp = {
-          // todo: we don't need to pop up anything more here, right?
-          //  we did it before in ChooseTierDestination.Summary
           navigator.navigateUp()
         },
       )
