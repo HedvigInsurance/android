@@ -562,7 +562,7 @@ private fun ExpandedOptionContent(title: String, premium: UiMoney, comment: Stri
       },
     )
     if (comment != null) {
-      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(4.dp))
       HedvigText(
         text = comment,
         modifier = Modifier.fillMaxWidth(),
