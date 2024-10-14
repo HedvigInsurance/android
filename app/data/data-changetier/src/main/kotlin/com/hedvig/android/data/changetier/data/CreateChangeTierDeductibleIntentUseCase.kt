@@ -54,6 +54,11 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         if (intent != null) {
           try {
             val quotes = intent.quotes.map {
+              logcat {
+                "Mariia: getting these quotes: ${intent.quotes.map {
+                  it.tierName to "amount ${it.deductible?.amount?.amount} percentage ${it.deductible?.percentage}"
+                }}"
+              }
               TierDeductibleQuote(
                 id = it.id,
                 deductible = it.deductible.toDeductible(),

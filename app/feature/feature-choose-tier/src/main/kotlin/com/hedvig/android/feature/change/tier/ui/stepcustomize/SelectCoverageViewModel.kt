@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
@@ -227,18 +228,19 @@ private class SelectCoveragePresenter(
   }
 }
 
+@Composable
 private fun buildListOfTiersAndPremiums(
   map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
   currentDeductible: Deductible?,
-): List<Pair<Tier, String>> {
+): List<Pair<Tier, UiMoney>> {
   return buildList {
     map.keys.forEach { tier ->
       // trying to show premium for same deductible in different tier-coverage,
       // but if this doesn't work, the lowest for this coverage
       val premium = map[tier]!!.firstOrNull {
         it.deductible == currentDeductible
-      }?.premium?.toString()
-        ?: "Fr. ${map[tier]!!.minBy { it.tier.tierLevel }.premium}" // todo: hardcoded string, but may be ok?
+      }?.premium
+        ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
       add(tier to premium)
     }
   }.sortedBy { pair ->
@@ -333,7 +335,7 @@ internal data class SelectCoverageSuccessUiState(
   val isTierChoiceEnabled: Boolean,
   val quoteToNavigateFurther: TierDeductibleQuote? = null,
   val quotesToCompare: List<TierDeductibleQuote>? = null,
-  val tiers: List<Pair<Tier, String>>, // sorted list of tiers with corresponding premiums (depending on selected deductible)
+  val tiers: List<Pair<Tier, UiMoney>>, // sorted list of tiers with corresponding premiums (depending on selected deductible)
   val quotesForChosenTier: List<TierDeductibleQuote>,
 )
 

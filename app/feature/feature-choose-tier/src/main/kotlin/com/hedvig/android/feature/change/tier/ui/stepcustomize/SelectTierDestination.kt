@@ -280,7 +280,7 @@ private fun SelectTierScreen(
 @Composable
 private fun CustomizationCard(
   data: ContractData,
-  tiers: List<Pair<Tier, String>>,
+  tiers: List<Pair<Tier, UiMoney>>,
   quotesForChosenTier: List<TierDeductibleQuote>,
   chosenTier: Tier?,
   chosenQuote: TierDeductibleQuote?,
@@ -363,7 +363,8 @@ private fun CustomizationCard(
           modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 4.dp),
         )
       }
-      if (quotesForChosenTier.isNotEmpty()) {
+      val onlyNullDeductibles = quotesForChosenTier.none { it.deductible != null }
+      if (quotesForChosenTier.isNotEmpty() && !onlyNullDeductibles) {
         Spacer(Modifier.height(4.dp))
         val deductibleSimpleItems = buildList {
           for (quote in quotesForChosenTier) {
@@ -393,7 +394,7 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = quote.premium.toString(),
+                    premium = quote.premium,
                     info = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
@@ -428,7 +429,9 @@ private fun CustomizationCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = newDisplayPremium?.toString() ?: "-",
+            text =
+              newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
+                ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -511,7 +514,7 @@ private data class ExpandedRadioOptionData(
   val onRadioOptionClick: () -> Unit,
   val chosenState: ChosenState,
   val title: String,
-  val premium: String,
+  val premium: UiMoney,
   val info: String?,
 )
 
@@ -539,7 +542,7 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
 }
 
 @Composable
-private fun ExpandedOptionContent(title: String, premium: String, comment: String?) {
+private fun ExpandedOptionContent(title: String, premium: UiMoney, comment: String?) {
   Column {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -548,7 +551,12 @@ private fun ExpandedOptionContent(title: String, premium: String, comment: Strin
       spaceBetween = 8.dp,
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
-          HighlightLabel(labelText = premium, size = HighLightSize.Small, color = HighlightColor.Grey(MEDIUM))
+          HighlightLabel(
+            labelText =
+              stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, premium.amount.toInt()),
+            size = HighLightSize.Small,
+            color = HighlightColor.Grey(MEDIUM),
+          )
         }
       },
     )
@@ -589,13 +597,13 @@ private fun CustomizationCardPreview() {
           tierLevel = 0,
           info = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
-        ) to "199",
+        ) to UiMoney(199.0, SEK),
         Tier(
           "STANDARD",
           tierLevel = 1,
           info = "Vårt mellanpaket med hög ersättning.",
           tierDisplayName = "Standard",
-        ) to "155",
+        ) to UiMoney(155.0, SEK),
       ),
       chosenTierInDialog = Tier(
         "BAS",
@@ -625,13 +633,13 @@ private fun SelectTierScreenPreview() {
             tierLevel = 0,
             info = "Vårt paket med grundläggande villkor.",
             tierDisplayName = "Bas",
-          ) to "199",
+          ) to UiMoney(199.0, SEK),
           Tier(
             "STANDARD",
             tierLevel = 1,
             info = "Vårt mellanpaket med hög ersättning.",
             tierDisplayName = "Standard",
-          ) to "155",
+          ) to UiMoney(155.0, SEK),
         ),
         quotesForChosenTier = quotesForPreview,
         isCurrentChosen = false,

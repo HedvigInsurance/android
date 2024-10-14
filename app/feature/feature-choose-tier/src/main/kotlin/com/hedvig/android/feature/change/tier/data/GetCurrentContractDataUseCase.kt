@@ -41,13 +41,13 @@ internal class GetCurrentContractDataUseCaseImpl(
             logcat(ERROR) { "Tried to start Change Tier flow but got null active contract" }
             raise(ErrorMessage())
           } else {
-            val deductible = Deductible(
-              deductibleAmount = dataResult.currentAgreement.deductible?.amount?.let {
-                UiMoney.fromMoneyFragment(it)
-              },
-              deductiblePercentage = dataResult.currentAgreement.deductible?.percentage,
-              description = dataResult.currentAgreement.deductible?.displayText ?: "",
-            )
+            val deductible = dataResult.currentAgreement.deductible?.let {
+              Deductible(
+                deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
+                deductiblePercentage = it.percentage,
+                description = it.displayText,
+              )
+            }
             CurrentContractData(
               currentExposureName = dataResult.exposureDisplayName,
               currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.currentAgreement.premium),
@@ -64,6 +64,6 @@ internal class GetCurrentContractDataUseCaseImpl(
 data class CurrentContractData(
   val currentExposureName: String,
   val currentDisplayPremium: UiMoney,
-  val deductible: Deductible,
+  val deductible: Deductible?,
   val productVariant: ProductVariant,
 )
