@@ -344,13 +344,15 @@ private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
         }
       },
       endSlot = {
-        IconButton(
-          modifier = Modifier.size(24.dp),
-          onClick = {
-            downloadFromUrl()
-          },
-        ) {
-          Icon(HedvigIcons.ArrowNorthEast, null)
+        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+          IconButton(
+            modifier = Modifier.size(24.dp),
+            onClick = {
+              downloadFromUrl()
+            },
+          ) {
+            Icon(HedvigIcons.ArrowNorthEast, null)
+          }
         }
       },
       spaceBetween = 8.dp,
