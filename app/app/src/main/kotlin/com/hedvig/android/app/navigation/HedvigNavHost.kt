@@ -169,13 +169,9 @@ internal fun HedvigNavHost(
       navigator = navigator,
     )
     changeTierGraph(
-      openUrl = openUrl,
       navigator = navigator,
       navController = hedvigAppState.navController,
       applicationId = hedvigBuildConstants.appId,
-      onNavigateToNewConversation = { backStackEntry ->
-        navigateToNewConversation(backStackEntry)
-      },
     )
     insuranceGraph(
       nestedGraphs = {

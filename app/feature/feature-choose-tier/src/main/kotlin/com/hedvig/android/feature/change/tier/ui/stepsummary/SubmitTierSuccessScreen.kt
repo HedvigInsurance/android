@@ -26,7 +26,7 @@ import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, navigateUp: () -> Unit) {
+internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, popBackStack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -52,7 +52,7 @@ internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, navigateUp: (
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(R.string.general_close_button),
-      onClick = dropUnlessResumed { navigateUp() },
+      onClick = dropUnlessResumed { popBackStack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

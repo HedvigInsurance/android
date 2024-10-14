@@ -25,7 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import hedvig.resources.R
 
 @Composable
-internal fun SubmitTierFailureScreen(navigateUp: () -> Unit) {
+internal fun SubmitTierFailureScreen(popBackStack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -46,13 +46,13 @@ internal fun SubmitTierFailureScreen(navigateUp: () -> Unit) {
       iconStyle = ERROR,
       buttonStyle = Button(
         buttonText = stringResource(R.string.GENERAL_RETRY),
-        onButtonClick = dropUnlessResumed { navigateUp() },
+        onButtonClick = dropUnlessResumed { popBackStack() },
       ),
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(R.string.general_close_button),
-      onClick = navigateUp,
+      onClick = popBackStack,
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

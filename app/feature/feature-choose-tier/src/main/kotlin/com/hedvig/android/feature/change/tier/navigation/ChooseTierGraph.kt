@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.change.tier.navigation
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
@@ -25,13 +24,7 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.changeTierGraph(
-  navigator: Navigator,
-  navController: NavController,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  openUrl: (String) -> Unit,
-  applicationId: String,
-) {
+fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavController, applicationId: String) {
   navdestination<StartTierFlowDestination> { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
       parametersOf(this.insuranceId)
@@ -133,15 +126,13 @@ fun NavGraphBuilder.changeTierGraph(
     navdestination<ChooseTierDestination.SubmitSuccess> { backStackEntry ->
       SubmitTierSuccessScreen(
         activationDate,
-        navigateUp = {
-          navigator.navigateUp()
-        },
+        popBackStack = navigator::popBackStack,
       )
     }
 
     navdestination<ChooseTierDestination.SubmitFailure> { _ ->
       SubmitTierFailureScreen(
-        navigateUp = navigator::navigateUp,
+        popBackStack = navigator::popBackStack,
       )
     }
   }
