@@ -247,7 +247,6 @@ private fun SelectTierScreen(
       onChooseDeductibleClick = onChooseDeductibleClick,
       newDisplayPremium = uiState.chosenQuote?.premium,
       isCurrentChosen = uiState.isCurrentChosen,
-      chosenTier = uiState.chosenTier,
       chosenQuote = uiState.chosenQuote,
       isTierChoiceEnabled = uiState.isTierChoiceEnabled,
       quotesForChosenTier = uiState.quotesForChosenTier,
@@ -293,7 +292,8 @@ private fun CustomizationCard(
   data: ContractData,
   tiers: List<Pair<Tier, UiMoney>>,
   quotesForChosenTier: List<TierDeductibleQuote>,
-  chosenTier: Tier?,
+  chosenTierIndex: Int?,
+  chosenQuoteIndex: Int?,
   chosenQuote: TierDeductibleQuote?,
   chosenTierInDialog: Tier?,
   chosenQuoteInDialog: TierDeductibleQuote?,
@@ -306,8 +306,6 @@ private fun CustomizationCard(
   onSetTierBackToPreviouslyChosen: () -> Unit,
   onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
-  chosenTierIndex: Int?,
-  chosenQuoteIndex: Int?,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -406,7 +404,7 @@ private fun CustomizationCard(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
                     premium = quote.premium,
-                    info = it.description.takeIf { description -> description.isNotEmpty() },
+                    tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
@@ -589,12 +587,6 @@ private fun CustomizationCardPreview() {
   HedvigTheme {
     CustomizationCard(
       data = dataForPreview,
-      chosenTier = Tier(
-        "BAS",
-        tierLevel = 0,
-        tierDescription = "Vårt paket med grundläggande villkor.",
-        tierDisplayName = "Bas",
-      ),
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
       newDisplayPremium = UiMoney(199.0, SEK),
@@ -672,7 +664,7 @@ private fun SelectTierScreenPreview() {
         ),
         chosenInDialogQuote = quotesForPreview[0],
         chosenTierIndex = null,
-        chosenQuoteIndex = null
+        chosenQuoteIndex = null,
       ),
       {},
       {},

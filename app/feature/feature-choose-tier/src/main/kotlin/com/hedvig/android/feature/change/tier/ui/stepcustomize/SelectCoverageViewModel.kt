@@ -32,6 +32,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -116,7 +117,9 @@ private class SelectCoveragePresenter(
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
           val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
+          logcat { "Mariia: notFiltered: ${notFiltered.map { it.tier.tierName }}" }
           val filtered = notFiltered.distinctBy { it.tier.tierName }
+          logcat { "Mariia: filtered: ${filtered.map { it.tier.tierName }}" }
           quotesToCompare =
             filtered
         }
@@ -157,13 +160,13 @@ private class SelectCoveragePresenter(
                     id = CURRENT_ID,
                     deductible = currentContractData.deductible,
                     tier = Tier(
-                      tierName = params.currentTierName,
+                      tierName = params.currentTierName, // todo: HERE edge case. If we have already changed
                       tierLevel = params.currentTierLevel,
                       tierDescription = currentContractData.productVariant.tierDescription,
                       tierDisplayName = currentContractData.productVariant.displayTierName,
                     ),
                     productVariant = currentContractData.productVariant,
-                    displayItems = listOf(),
+                    displayItems = listOf(), // todo: here too!
                     premium = currentContractData.currentDisplayPremium,
                   )
                 } else {
@@ -172,6 +175,7 @@ private class SelectCoveragePresenter(
               current?.let {
                 tierRepository.addQuotesToDb(listOf(it))
               }
+              logcat { "Mariia: current quote: $current" }
               val quotes = buildList {
                 addAll(quotesResult)
                 current?.let {
