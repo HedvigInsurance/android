@@ -165,7 +165,7 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) {
-        AnimatedVisibility(uiState.showEmptyQuotesDialog) {
+        if (uiState.showEmptyQuotesDialog) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
