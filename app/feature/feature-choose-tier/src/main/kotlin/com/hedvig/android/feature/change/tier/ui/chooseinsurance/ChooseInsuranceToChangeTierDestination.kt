@@ -93,6 +93,7 @@ private fun ChooseInsuranceScreen(
           iconStyle = INFO,
           buttonStyle = NoButton,
           description = null,
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.weight(1f))
         HedvigTextButton(

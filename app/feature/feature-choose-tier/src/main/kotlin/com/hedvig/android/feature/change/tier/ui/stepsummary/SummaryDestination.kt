@@ -171,7 +171,7 @@ private fun SummarySuccessScreen(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = uiState.quote.premium.toString(),
+            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -221,7 +221,7 @@ private fun SummaryCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = uiState.quote.premium.toString(),
+            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -323,7 +323,7 @@ private fun ExtendedCardContent(
 private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.clickable { downloadFromUrl() }
+    modifier = Modifier.clickable { downloadFromUrl() },
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -346,9 +346,10 @@ private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
         }
       },
       endSlot = {
-        Row(horizontalArrangement = Arrangement.End,
+        Row(
+          horizontalArrangement = Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
-          ) {
+        ) {
           IconButton(
             modifier = Modifier.size(24.dp),
             onClick = {

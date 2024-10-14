@@ -186,6 +186,7 @@ private fun TerminationSurveyScreen(
                 text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
                 iconStyle = INFO,
                 buttonStyle = NoButton,
+                modifier = Modifier.fillMaxWidth(),
                 description = null,
               )
               Spacer(Modifier.weight(1f))

@@ -172,6 +172,7 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
             iconStyle = INFO,
             buttonStyle = NoButton,
             description = null,
+            modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.weight(1f))
           HedvigTextButton(

@@ -40,6 +40,7 @@ internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, navigateUp: (
   ) {
     Spacer(Modifier.weight(1f))
     EmptyState(
+      modifier = Modifier.fillMaxWidth(),
       text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
       description = stringResource(
         R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
