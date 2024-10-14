@@ -10,7 +10,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import octopus.MemberActionsQuery
 
@@ -21,6 +24,7 @@ internal interface GetMemberActionsUseCase {
 internal class GetMemberActionsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
+  private val marketManager: MarketManager,
 ) : GetMemberActionsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, MemberAction> {
     return either {
@@ -29,6 +33,7 @@ internal class GetMemberActionsUseCaseImpl(
         { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() },
         { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first() },
         { featureManager.isFeatureEnabled(Feature.TIER).first() },
+        { marketManager.selectedMarket().filterNotNull().first() },
         {
           apolloClient
             .query(MemberActionsQuery())
@@ -36,10 +41,18 @@ internal class GetMemberActionsUseCaseImpl(
             .onLeft { logcat { "Cannot load memberActions: $it" } }
             .bind().currentMember.memberActions
         },
-      ) { isCoInsuredFeatureOn, isMovingFeatureOn, isConnectPaymentFeatureOn, isTierEnabled, memberActions ->
+      ) {
+          isCoInsuredFeatureOn,
+          isMovingFeatureOn,
+          isConnectPaymentFeatureOn,
+          isTierEnabled,
+          market,
+          memberActions,
+        ->
         MemberAction(
           isCancelInsuranceEnabled = memberActions?.isCancelInsuranceEnabled ?: false,
-          isConnectPaymentEnabled = isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false,
+          isConnectPaymentEnabled =
+            isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false && market == Market.SE,
           isEditCoInsuredEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoInsuredEnabled ?: false,
           isMovingEnabled = isMovingFeatureOn && memberActions?.isMovingEnabled ?: false,
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,

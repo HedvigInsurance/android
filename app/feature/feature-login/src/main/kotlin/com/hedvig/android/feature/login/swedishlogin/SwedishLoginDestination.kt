@@ -1,10 +1,6 @@
 package com.hedvig.android.feature.login.swedishlogin
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -18,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -34,7 +29,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,8 +51,6 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -171,7 +163,7 @@ private fun SwedishLoginScreen(
       }
 
       is BankIdUiState.HandlingBankId -> {
-        val bankIdState = rememberBankIdState(uiState.autoStartToken)
+        val bankIdState = rememberBankIdState(uiState.autoStartToken.bankIdUri)
         val allowOpeningBankId = uiState.allowOpeningBankId
         LaunchedEffect(allowOpeningBankId) {
           if (!allowOpeningBankId) return@LaunchedEffect
@@ -271,47 +263,6 @@ internal fun QRCode(
     null,
     modifier.onSizeChanged { intSize = it },
   )
-}
-
-@Composable
-private fun rememberBankIdState(autoStartToken: BankIdUiState.HandlingBankId.AutoStartToken): BankIdState {
-  val context = LocalContext.current
-  return remember(context, autoStartToken) {
-    BankIdStateImpl(autoStartToken, context).also {
-      it.initialize()
-    }
-  }
-}
-
-@Stable
-private interface BankIdState {
-  val canOpenBankId: Boolean
-
-  fun tryOpenBankId()
-}
-
-@Stable
-private class BankIdStateImpl(
-  val autoStartToken: BankIdUiState.HandlingBankId.AutoStartToken,
-  val context: Context,
-) : BankIdState {
-  override var canOpenBankId: Boolean by mutableStateOf(false)
-
-  override fun tryOpenBankId() {
-    if (!canOpenBankId) {
-      logcat(LogPriority.INFO) { "BankID not found, showing QR code instead" }
-      return
-    }
-    logcat(LogPriority.INFO) { "Opened BankID to handle login" }
-    context.startActivity(Intent(Intent.ACTION_VIEW, autoStartToken.bankIdUri))
-  }
-
-  fun initialize() {
-    canOpenBankId = context.canOpenUri(autoStartToken.bankIdUri)
-  }
-
-  @SuppressLint("QueryPermissionsNeeded")
-  private fun Context.canOpenUri(uri: Uri) = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
 }
 
 @HedvigPreview

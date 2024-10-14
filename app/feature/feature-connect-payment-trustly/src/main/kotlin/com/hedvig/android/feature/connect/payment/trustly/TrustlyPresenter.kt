@@ -11,20 +11,16 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
-import com.hedvig.android.market.Market
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class TrustlyPresenter(
   private val trustlyCallback: TrustlyCallback,
   private val startTrustlySessionUseCase: StartTrustlySessionUseCase,
-  private val market: Market,
   private val cacheManager: NetworkCacheManager,
 ) : MoleculePresenter<TrustlyEvent, TrustlyUiState> {
   @Composable
   override fun MoleculePresenterScope<TrustlyEvent>.present(lastState: TrustlyUiState): TrustlyUiState {
-    if (market != Market.SE) return TrustlyUiState.Loading
-
     var browsing: TrustlyUiState.Browsing? by remember {
       mutableStateOf(lastState.safeCast<TrustlyUiState.Browsing>())
     }
@@ -56,9 +52,11 @@ internal class TrustlyPresenter(
         TrustlyEvent.ConnectingCardFailed -> {
           connectingCardFailed = true
         }
+
         TrustlyEvent.ConnectingCardSucceeded -> {
           succeededInConnectingCard = true
         }
+
         TrustlyEvent.RetryConnectingCard -> {
           browsing = null
           startSessionError = null
