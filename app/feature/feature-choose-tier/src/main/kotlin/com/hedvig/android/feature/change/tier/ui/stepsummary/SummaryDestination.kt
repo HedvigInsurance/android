@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.change.tier.ui.stepsummary
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -322,6 +323,7 @@ private fun ExtendedCardContent(
 private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.clickable { downloadFromUrl() }
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -344,7 +346,9 @@ private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
         }
       },
       endSlot = {
-        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+        Row(horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+          ) {
           IconButton(
             modifier = Modifier.size(24.dp),
             onClick = {
