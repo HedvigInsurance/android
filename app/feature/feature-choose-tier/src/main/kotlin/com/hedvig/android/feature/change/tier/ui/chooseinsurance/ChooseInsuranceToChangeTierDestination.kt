@@ -58,19 +58,17 @@ internal fun ChooseInsuranceToChangeTierDestination(
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? ChooseInsuranceUiState.Loading ?: return@LaunchedEffect
-    if (uiStateValue.paramsToNavigateToNextStep != null) {
-      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
-      navigateToNextStep(uiStateValue.paramsToNavigateToNextStep)
-    }
-  }
+
   ChooseInsuranceScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = { viewModel.emit(ChooseInsuranceToCustomizeEvent.RetryLoadData) },
     fetchTerminationStep = { viewModel.emit(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToTerminate(it)) },
     selectInsurance = { id -> viewModel.emit(ChooseInsuranceToCustomizeEvent.SelectInsurance(id)) },
+    navigateToNextStep = { params ->
+      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
+      navigateToNextStep(params)
+    }
   )
 }
 
@@ -81,6 +79,7 @@ private fun ChooseInsuranceScreen(
   reload: () -> Unit,
   fetchTerminationStep: (insurance: CustomisableInsurance) -> Unit,
   selectInsurance: (insuranceId: String) -> Unit,
+  navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -115,6 +114,11 @@ private fun ChooseInsuranceScreen(
     }
 
     is ChooseInsuranceUiState.Loading -> {
+      LaunchedEffect(uiState.paramsToNavigateToNextStep) {
+        if (uiState.paramsToNavigateToNextStep != null) {
+          navigateToNextStep(uiState.paramsToNavigateToNextStep)
+        }
+      }
       LoadingScreen(uiState)
     }
 
@@ -240,6 +244,7 @@ private fun PreviewChooseInsuranceScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
