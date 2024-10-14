@@ -82,6 +82,7 @@ fun DropdownWithDialog(
   errorText: String? = null,
   containerColor: Color? = null,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
+  onDoAlongWithDismissRequest: (() -> Unit)? = null,
   dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -90,12 +91,14 @@ fun DropdownWithDialog(
       applyDefaultPadding = dialogContent == null,
       dialogProperties = dialogProperties,
       onDismissRequest = {
+        onDoAlongWithDismissRequest?.invoke()
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
       if (dialogContent != null) {
         dialogContent {
+          onDoAlongWithDismissRequest?.invoke()
           isDialogVisible = false
         }
       } else {

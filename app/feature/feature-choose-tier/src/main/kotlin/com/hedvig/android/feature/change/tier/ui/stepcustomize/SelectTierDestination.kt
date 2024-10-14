@@ -135,6 +135,12 @@ internal fun SelectTierDestination(
           onChooseTierInDialogClick = { tier ->
             viewModel.emit(SelectCoverageEvent.ChangeTierInDialog(tier))
           },
+          onSetTierBackToPreviouslyChosen = {
+            viewModel.emit(SelectCoverageEvent.SetTierToPreviouslyChosen)
+          },
+          onSetDeductibleBackToPreviouslyChosen = {
+            viewModel.emit(SelectCoverageEvent.SetDeductibleToPreviouslyChosen)
+          },
         )
       }
     }
@@ -198,6 +204,8 @@ private fun SelectTierScreen(
   onChooseTierClick: () -> Unit,
   onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
   onChooseTierInDialogClick: (tier: Tier) -> Unit,
+  onSetDeductibleBackToPreviouslyChosen: () -> Unit,
+  onSetTierBackToPreviouslyChosen: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -250,6 +258,8 @@ private fun SelectTierScreen(
       onChooseTierInDialogClick = onChooseTierInDialogClick,
       chosenTierIndex = uiState.chosenTierIndex,
       chosenQuoteIndex = uiState.chosenQuoteIndex,
+      onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
+      onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -292,6 +302,8 @@ private fun CustomizationCard(
   newDisplayPremium: UiMoney?,
   isTierChoiceEnabled: Boolean,
   onChooseDeductibleClick: () -> Unit,
+  onSetDeductibleBackToPreviouslyChosen: () -> Unit,
+  onSetTierBackToPreviouslyChosen: () -> Unit,
   onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
   chosenTierIndex: Int?,
@@ -327,6 +339,7 @@ private fun CustomizationCard(
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
+        onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = buildList {
           tiers.forEachIndexed { index, pair ->
@@ -387,6 +400,7 @@ private fun CustomizationCard(
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,
+          onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {
             quotesForChosenTier.forEach { quote ->
@@ -617,6 +631,8 @@ private fun CustomizationCardPreview() {
       onChooseTierInDialogClick = {},
       chosenTierIndex = null,
       chosenQuoteIndex = null,
+      onSetTierBackToPreviouslyChosen = {},
+      onSetDeductibleBackToPreviouslyChosen = {},
     )
   }
 }
@@ -662,6 +678,8 @@ private fun SelectTierScreenPreview() {
         chosenTierIndex = null,
         chosenQuoteIndex = null,
       ),
+      {},
+      {},
       {},
       {},
       {},

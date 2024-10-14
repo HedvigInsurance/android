@@ -26,6 +26,8 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.LaunchComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.Reload
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetDeductibleToPreviouslyChosen
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetTierToPreviouslyChosen
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SubmitChosenQuoteToContinue
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
@@ -125,6 +127,13 @@ private class SelectCoveragePresenter(
 
         is ChangeTierInDialog -> {
           chosenTierInDialog = event.tier
+        }
+
+        SetDeductibleToPreviouslyChosen -> {
+          chosenQuoteInDialog = chosenQuote
+        }
+        SetTierToPreviouslyChosen -> {
+          chosenTierInDialog = chosenTier
         }
       }
     }
@@ -268,6 +277,10 @@ internal sealed interface SelectCoverageEvent {
   data object SubmitChosenQuoteToContinue : SelectCoverageEvent
 
   data object ChangeDeductibleForChosenTier : SelectCoverageEvent
+
+  data object SetTierToPreviouslyChosen : SelectCoverageEvent
+
+  data object SetDeductibleToPreviouslyChosen : SelectCoverageEvent
 
   data object ChangeTier : SelectCoverageEvent
 
