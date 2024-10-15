@@ -202,6 +202,8 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage"
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -215,6 +217,7 @@ class TerminatedContractsPresenterTest {
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
+        tierName = "STANDARD"
       ),
       InsuranceContract(
         "contractId2",
@@ -234,6 +237,8 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage"
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -247,6 +252,7 @@ class TerminatedContractsPresenterTest {
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
+        tierName = "STANDARD"
       ),
     )
 
@@ -268,6 +274,8 @@ class TerminatedContractsPresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage"
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -281,6 +289,7 @@ class TerminatedContractsPresenterTest {
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
+      tierName = "STANDARD"
     )
 
     private val activeInsurances = listOf(
@@ -302,6 +311,8 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage"
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -315,6 +326,7 @@ class TerminatedContractsPresenterTest {
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
+        tierName = "STANDARD"
       ),
       InsuranceContract(
         "contractId4",
@@ -334,6 +346,8 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage"
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -347,6 +361,7 @@ class TerminatedContractsPresenterTest {
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
+        tierName = "STANDARD"
       ),
     )
   }

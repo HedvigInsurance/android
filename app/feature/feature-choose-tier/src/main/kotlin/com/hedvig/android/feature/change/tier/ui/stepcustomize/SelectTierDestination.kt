@@ -323,7 +323,7 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-")) // todo: what if they are null??
+          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
         }
       }
       DropdownWithDialog(
@@ -343,7 +343,7 @@ private fun CustomizationCard(
         val listOfOptions = tiers.map { pair ->
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-            title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
+            title = pair.first.tierDisplayName ?: "-",
             premium = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
