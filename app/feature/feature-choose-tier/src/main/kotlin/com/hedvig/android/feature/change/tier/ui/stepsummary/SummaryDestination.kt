@@ -21,15 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
@@ -372,18 +369,13 @@ private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
             color = HedvigTheme.colorScheme.textSecondary,
-            text = buildAnnotatedString {
-              append(name)
-              withStyle(
-                SpanStyle(
-                  baselineShift = BaselineShift(0.3f),
-                  fontSize = HedvigTheme.typography.label.fontSize,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                ),
-              ) {
-                append("PDF")
-              }
-            },
+            text = stringWithShiftedLabel(
+              text = name,
+              labelText = "PDF",
+              textColor = HedvigTheme.colorScheme.textSecondary,
+              textFontSize = HedvigTheme.typography.bodySmall.fontSize,
+              labelFontSize = HedvigTheme.typography.label.fontSize,
+            ),
           )
         }
       },
