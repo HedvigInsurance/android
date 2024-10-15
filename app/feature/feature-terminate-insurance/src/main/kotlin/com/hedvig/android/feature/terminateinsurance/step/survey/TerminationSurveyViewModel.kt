@@ -38,13 +38,13 @@ internal class TerminationSurveyViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
   changeTierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
-  initialState = TerminationSurveyState(),
-  presenter = TerminationSurveyPresenter(
-    options,
-    terminateInsuranceRepository,
-    changeTierRepository,
-  ),
-)
+    initialState = TerminationSurveyState(),
+    presenter = TerminationSurveyPresenter(
+      options,
+      terminateInsuranceRepository,
+      changeTierRepository,
+    ),
+  )
 
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
@@ -64,9 +64,9 @@ internal class TerminationSurveyPresenter(
             TerminationReason(option, null)
           }
         }
-        ).map {
-          it.surveyOption to it.feedBack
-        }
+      ).map {
+        it.surveyOption to it.feedBack
+      }
       mutableStateMapOf(*initialReasons.toTypedArray())
     }
 
@@ -173,7 +173,6 @@ internal class TerminationSurveyPresenter(
           }
         },
       )
-
     }
 
     LaunchedEffect(loadNextStep) {

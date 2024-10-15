@@ -354,7 +354,7 @@ private fun PreviewContractDetailScreen() {
                 insurableLimits = listOf(),
                 documents = listOf(),
                 displayTierName = "Standard",
-                tierDescription = "Our most standard coverage"
+                tierDescription = "Our most standard coverage",
               ),
               certificateUrl = null,
               coInsured = listOf(),

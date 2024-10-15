@@ -84,6 +84,7 @@ import hedvig.resources.R
 internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
   navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>) -> Unit,
 ) {
@@ -97,7 +98,7 @@ internal fun SelectTierDestination(
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
-        navigateUp = navigateUp,
+        popBackStack = popBackStack,
       )
 
       Loading -> HedvigFullScreenCenterAlignedProgress()
@@ -105,13 +106,13 @@ internal fun SelectTierDestination(
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
             viewModel.emit(ClearNavigationStep)
-            navigateToSummary(state.uiState.quoteToNavigateFurther) // todo: check here
+            navigateToSummary(state.uiState.quoteToNavigateFurther)
           }
         }
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
             viewModel.emit(ClearNavigationStep)
-            navigateToComparison(state.uiState.quotesToCompare) // todo: check here
+            navigateToComparison(state.uiState.quotesToCompare)
           }
         }
         SelectTierScreen(
@@ -148,7 +149,7 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
       GENERAL -> {
@@ -183,7 +184,7 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(R.string.general_close_button),
-            onClick = navigateUp,
+            onClick = popBackStack,
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )
@@ -711,7 +712,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -738,7 +739,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -765,7 +766,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -792,7 +793,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Standard",
-      tierDescription = "Our most standard coverage"
+      tierDescription = "Our most standard coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -819,7 +820,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Standard",
-      tierDescription = "Our most standard coverage"
+      tierDescription = "Our most standard coverage",
     ),
   ),
 )

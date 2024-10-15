@@ -33,7 +33,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               insurableLimits = listOf(),
               documents = listOf(),
               displayTierName = "Standard",
-              tierDescription = "Our most standard coverage"
+              tierDescription = "Our most standard coverage",
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
@@ -75,6 +75,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
           supportsTierChange = true,
+          tierName = "STANDARD",
         ),
       ).right(),
     )

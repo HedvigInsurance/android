@@ -50,7 +50,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           .safeExecute()
         val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
         if (intent != null) {
-
           val quotes = intent.quotes.map {
             logcat {
               "Mariia: getting these quotes: ${
@@ -58,7 +57,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                   it.tierName to "amount ${it.deductible?.amount?.amount} percentage ${it.deductible?.percentage}"
                 }
               }"
-            } //todo: remove logging later!
+            } // todo: remove logging later!
             ensureNotNull(it.tierLevel) {
               ErrorMessage("For insuranceId:$insuranceId and source:$source, tierLevel was null")
             }
@@ -101,10 +100,10 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
 
 private fun ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.Deductible.toDeductible(): Deductible {
   return Deductible(
-      deductibleAmount = UiMoney.fromMoneyFragment(this.amount),
-      deductiblePercentage = this.percentage,
-      description = this.displayText,
-    )
+    deductibleAmount = UiMoney.fromMoneyFragment(this.amount),
+    deductiblePercentage = this.percentage,
+    description = this.displayText,
+  )
 }
 
 private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.DisplayItem>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
@@ -143,7 +142,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -170,7 +169,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -197,7 +196,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Bas",
-      tierDescription = "Our most basic coverage"
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -224,7 +223,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Standard",
-      tierDescription = "Our most standard coverage"
+      tierDescription = "Our most standard coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -251,7 +250,7 @@ private val quotesForPreview = listOf(
       insurableLimits = listOf(),
       documents = listOf(),
       displayTierName = "Standard",
-      tierDescription = "Our most standard coverage"
+      tierDescription = "Our most standard coverage",
     ),
   ),
 )

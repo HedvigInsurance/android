@@ -205,29 +205,30 @@ private class SelectCoveragePresenter(
       }
     }
 
-    return when (currentPartialState) {
-      is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
+    val currentPartialStateValue = currentPartialState
+    return when (currentPartialStateValue) {
+      is PartialUiState.Failure -> Failure(currentPartialStateValue.reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
         val chosenQuoteIndex =
-          (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
+          currentPartialStateValue.map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
         val chosenTierIndex =
-          (currentPartialState as PartialUiState.Success).map.keys.sortedBy { it.tierLevel }.indexOf(chosenTier)
+          currentPartialStateValue.map.keys.sortedBy { it.tierLevel }.indexOf(chosenTier)
             .takeIf { it != -1 }
         Success(
-          map = (currentPartialState as PartialUiState.Success).map,
-          currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
+          map = currentPartialStateValue.map,
+          currentActiveQuote = currentPartialStateValue.currentActiveQuote,
           uiState = SelectCoverageSuccessUiState(
-            isCurrentChosen = chosenQuote == (currentPartialState as PartialUiState.Success).currentActiveQuote,
+            isCurrentChosen = chosenQuote == currentPartialStateValue.currentActiveQuote,
             chosenQuote = chosenQuote,
             chosenTier = chosenTier,
             tiers = buildListOfTiersAndPremiums(
-              map = (currentPartialState as PartialUiState.Success).map,
+              map = currentPartialStateValue.map,
               currentDeductible = chosenQuote?.deductible,
             ),
-            quotesForChosenTier = (currentPartialState as PartialUiState.Success).map[chosenTier]!!,
-            isTierChoiceEnabled = (currentPartialState as PartialUiState.Success).map.keys.size > 1,
-            contractData = (currentPartialState as PartialUiState.Success).contractData,
+            quotesForChosenTier = currentPartialStateValue.map[chosenTier]!!,
+            isTierChoiceEnabled = currentPartialStateValue.map.keys.size > 1,
+            contractData = currentPartialStateValue.contractData,
             quoteToNavigateFurther = quoteToNavigateFurther,
             quotesToCompare = quotesToCompare,
             chosenInDialogQuote = chosenQuoteInDialog,

@@ -464,7 +464,7 @@ private class ChooseInsuranceUiStateProvider :
             insurableLimits = listOf(),
             documents = listOf(),
             displayTierName = "Standard",
-            tierDescription = "Our most standard coverage"
+            tierDescription = "Our most standard coverage",
           ),
         ),
       ),
