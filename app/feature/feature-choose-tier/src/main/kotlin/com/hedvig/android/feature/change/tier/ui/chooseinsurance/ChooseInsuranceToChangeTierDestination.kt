@@ -68,7 +68,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
     navigateToNextStep = { params ->
       viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
       navigateToNextStep(params)
-    }
+    },
   )
 }
 
@@ -244,7 +244,7 @@ private fun PreviewChooseInsuranceScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }

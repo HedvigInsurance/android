@@ -14,7 +14,7 @@ interface TierQuoteDao {
   suspend fun clearAllQuotes()
 
   @Query("SELECT * FROM change_tier_quotes WHERE id=:id LIMIT 1")
-  suspend fun getOneQuoteById(id: String): ChangeTierQuoteEntity
+  suspend fun getOneQuoteById(id: String): ChangeTierQuoteEntity?
 
   @Query("SELECT * FROM change_tier_quotes WHERE id IN(:ids)")
   suspend fun getQuotesById(ids: List<String>): List<ChangeTierQuoteEntity>

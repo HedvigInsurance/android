@@ -17,7 +17,7 @@ interface ChangeTierRepository {
     source: ChangeTierCreateSource,
   ): Either<ErrorMessage, ChangeTierDeductibleIntent>
 
-  suspend fun getQuoteById(id: String): TierDeductibleQuote // TODO: I guess it better to be Either too?
+  suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote>
 
   suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote>
 
@@ -47,9 +47,15 @@ internal class ChangeTierRepositoryImpl(
     return result
   }
 
-  override suspend fun getQuoteById(id: String): TierDeductibleQuote {
+  override suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote> {
     val dbModel = tierQuoteDao.getOneQuoteById(id)
-    return mapper.dbModelToQuote(dbModel)
+    return either {
+      if (dbModel == null) {
+        raise(ErrorMessage())
+      } else {
+        mapper.dbModelToQuote(dbModel)
+      }
+    }
   }
 
   override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {

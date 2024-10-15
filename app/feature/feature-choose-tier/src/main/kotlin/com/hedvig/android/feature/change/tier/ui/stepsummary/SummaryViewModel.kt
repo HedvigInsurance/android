@@ -23,6 +23,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loadin
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
 import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -118,15 +119,25 @@ private class SummaryPresenter(
         },
         ifRight = { currentContractData ->
           val quote = tierRepository.getQuoteById(params.quoteIdToSubmit)
-          val currentContract = ContractData(
-            contractGroup = currentContractData.productVariant.contractGroup,
-            activeDisplayPremium = currentContractData.currentDisplayPremium.toString(),
-            contractDisplayName = currentContractData.productVariant.displayName,
-            contractDisplaySubtitle = currentContractData.currentExposureName,
-          )
-          currentState = Success(
-            quote = quote,
-            currentContractData = currentContract,
+          quote.fold(
+            ifLeft = {
+              logcat(ERROR) {
+                " Change tier flow SummaryViewModel: quoteIdToSubmit ${params.quoteIdToSubmit} not found in DB!"
+              }
+              currentState = Failure
+            },
+            ifRight = { rightQuote ->
+              val currentContract = ContractData(
+                contractGroup = currentContractData.productVariant.contractGroup,
+                activeDisplayPremium = currentContractData.currentDisplayPremium.toString(),
+                contractDisplayName = currentContractData.productVariant.displayName,
+                contractDisplaySubtitle = currentContractData.currentExposureName,
+              )
+              currentState = Success(
+                quote = rightQuote,
+                currentContractData = currentContract,
+              )
+            },
           )
         },
       )
