@@ -335,7 +335,6 @@ private fun CustomizationCard(
         ),
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
-        onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
@@ -392,7 +391,6 @@ private fun CustomizationCard(
           isEnabled = quotesForChosenTier.size > 1,
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
-          onItemChosen = { _ -> }, // not needed, as we not use the default dialog content,
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,

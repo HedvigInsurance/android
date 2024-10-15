@@ -83,12 +83,11 @@ fun DropdownWithDialog(
   containerColor: Color? = null,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
   onDoAlongWithDismissRequest: (() -> Unit)? = null,
-  dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      applyDefaultPadding = dialogContent == null,
+      applyDefaultPadding = true,
       dialogProperties = dialogProperties,
       onDismissRequest = {
         onDoAlongWithDismissRequest?.invoke()
@@ -96,31 +95,77 @@ fun DropdownWithDialog(
       },
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
-      if (dialogContent != null) {
-        dialogContent {
-          onDoAlongWithDismissRequest?.invoke()
-          isDialogVisible = false
+      Column(
+        modifier = Modifier.background(
+          color = dropdownColors.containerColor(false).value,
+          shape = size.shape,
+        ),
+      ) {
+        style.items.forEachIndexed { index, item ->
+          DropdownOption(
+            item = item,
+            size = size,
+            style = style,
+            onClick = {
+              onItemChosen(index)
+              isDialogVisible = false
+            },
+            isSelected = index == chosenItemIndex,
+          )
         }
-      } else {
-        Column(
-          modifier = Modifier.background(
-            color = dropdownColors.containerColor(false).value,
-            shape = size.shape,
-          ),
-        ) {
-          style.items.forEachIndexed { index, item ->
-            DropdownOption(
-              item = item,
-              size = size,
-              style = style,
-              onClick = {
-                onItemChosen(index)
-                isDialogVisible = false
-              },
-              isSelected = index == chosenItemIndex,
-            )
-          }
-        }
+      }
+    }
+  }
+  DropdownSelector(
+    text = if (chosenItemIndex == null) hintText else style.items[chosenItemIndex].text,
+    size = size,
+    isHint = chosenItemIndex == null,
+    isEnabled = isEnabled,
+    showError = hasError,
+    modifier = modifier,
+    style = style,
+    onClick = {
+      if (isEnabled) {
+        onSelectorClick()
+        isDialogVisible = true
+      }
+    },
+    errorText = errorText,
+    isDialogOpen = isDialogVisible,
+    containerColor = containerColor,
+  )
+}
+
+@Composable
+fun DropdownWithDialog(
+  style: DropdownStyle,
+  size: DropdownDefaults.DropdownSize,
+  hintText: String,
+  onSelectorClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  chosenItemIndex: Int? = null,
+  isEnabled: Boolean = true,
+  hasError: Boolean = false,
+  errorText: String? = null,
+  containerColor: Color? = null,
+  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
+  onDoAlongWithDismissRequest: (() -> Unit)? = null,
+  dialogContent: @Composable (onDismissRequest: () -> Unit) -> Unit,
+) {
+  var isDialogVisible by rememberSaveable { mutableStateOf(false) }
+  if (isDialogVisible) {
+    HedvigDialog(
+      applyDefaultPadding = false,
+      dialogProperties = dialogProperties,
+      onDismissRequest = {
+        onDoAlongWithDismissRequest?.invoke()
+        isDialogVisible = false
+      },
+      style = DialogDefaults.DialogStyle.NoButtons,
+    ) {
+      dialogContent {
+        onDoAlongWithDismissRequest?.invoke()
+        isDialogVisible = false
       }
     }
   }
