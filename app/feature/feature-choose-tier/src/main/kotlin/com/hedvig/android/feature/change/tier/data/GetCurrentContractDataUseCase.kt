@@ -29,17 +29,17 @@ internal class GetCurrentContractDataUseCaseImpl(
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       if (!isTierEnabled) {
         logcat(ERROR) { "Tried to start Change Tier flow when feature flag is disabled" }
-        raise(ErrorMessage())
+        raise(ErrorMessage("Tried to start Change Tier flow when feature flag is disabled"))
       }
       val result = apolloClient.query(CurrentContractsForTierChangeQuery()).safeExecute().getOrNull()
       if (result == null) {
         logcat(ERROR) { "Tried to start Change Tier flow but got error from CurrentContractsQuery" }
-        raise(ErrorMessage())
+        raise(ErrorMessage("Tried to start Change Tier flow but got error from CurrentContractsQuery"))
       }
       val dataResult = result.currentMember.activeContracts.firstOrNull { it.id == insuranceId }
       if (dataResult == null) {
         logcat(ERROR) { "Tried to start Change Tier flow but got null active contract" }
-        raise(ErrorMessage())
+        raise(ErrorMessage("Tried to start Change Tier flow but got null active contract"))
       } else {
         val deductible = dataResult.currentAgreement.deductible?.let {
           Deductible(
