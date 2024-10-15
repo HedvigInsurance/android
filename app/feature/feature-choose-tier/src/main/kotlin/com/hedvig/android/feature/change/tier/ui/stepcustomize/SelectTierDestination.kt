@@ -74,7 +74,8 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
@@ -105,13 +106,13 @@ internal fun SelectTierDestination(
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
-            viewModel.emit(ClearNavigationStep)
+            viewModel.emit(ClearNavigateFurtherStep)
             navigateToSummary(state.uiState.quoteToNavigateFurther)
           }
         }
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
-            viewModel.emit(ClearNavigationStep)
+            viewModel.emit(ClearNavigateToComparison)
             navigateToComparison(state.uiState.quotesToCompare)
           }
         }

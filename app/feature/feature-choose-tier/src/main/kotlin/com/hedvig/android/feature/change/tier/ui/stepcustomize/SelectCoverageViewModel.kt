@@ -23,7 +23,8 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeDeductibleInDialog
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTierInDialog
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.LaunchComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetDeductibleToPreviouslyChosen
@@ -99,9 +100,8 @@ private class SelectCoveragePresenter(
           chosenQuoteInDialog = quoteWithNewTierOldDeductible
         }
 
-        ClearNavigationStep -> {
+        ClearNavigateFurtherStep -> {
           quoteToNavigateFurther = null
-          quotesToCompare = null
         }
 
         SubmitChosenQuoteToContinue -> {
@@ -137,6 +137,10 @@ private class SelectCoveragePresenter(
         }
         SetTierToPreviouslyChosen -> {
           chosenTierInDialog = chosenTier
+        }
+
+        ClearNavigateToComparison -> {
+          quotesToCompare = null
         }
       }
     }
@@ -295,7 +299,9 @@ internal sealed interface SelectCoverageEvent {
 
   data object LaunchComparison : SelectCoverageEvent
 
-  data object ClearNavigationStep : SelectCoverageEvent
+  data object ClearNavigateFurtherStep : SelectCoverageEvent
+
+  data object ClearNavigateToComparison: SelectCoverageEvent
 
   data object Reload : SelectCoverageEvent
 }
