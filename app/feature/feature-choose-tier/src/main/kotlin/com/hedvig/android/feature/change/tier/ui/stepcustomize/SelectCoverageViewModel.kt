@@ -4,14 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
@@ -135,6 +132,7 @@ private class SelectCoveragePresenter(
         SetDeductibleToPreviouslyChosen -> {
           chosenQuoteInDialog = chosenQuote
         }
+
         SetTierToPreviouslyChosen -> {
           chosenTierInDialog = chosenTier
         }
@@ -228,7 +226,6 @@ private class SelectCoveragePresenter(
             chosenTier = chosenTier,
             tiers = buildListOfTiersAndPremiums(
               map = currentPartialStateValue.map,
-              currentDeductible = chosenQuote?.deductible,
             ),
             quotesForChosenTier = currentPartialStateValue.map[chosenTier]!!,
             isTierChoiceEnabled = currentPartialStateValue.map.keys.size > 1,
@@ -247,18 +244,11 @@ private class SelectCoveragePresenter(
 }
 
 @Composable
-private fun buildListOfTiersAndPremiums(
-  map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
-  currentDeductible: Deductible?,
-): List<Pair<Tier, UiMoney>> {
+private fun buildListOfTiersAndPremiums(map: Map<Tier, List<TierDeductibleQuote>>): List<Pair<Tier, UiMoney>> {
   return buildList {
     map.keys.forEach { tier ->
-      // trying to show premium for same deductible in different tier-coverage,
-      // but if this doesn't work, the lowest for this coverage
-      val premium = map[tier]!!.firstOrNull {
-        it.deductible == currentDeductible
-      }?.premium
-        ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
+      // show the lowest premium for this coverage (with From... added later)
+      val premium = map[tier]!!.minBy { it.tier.tierLevel }.premium
       add(tier to premium)
     }
   }.sortedBy { pair ->
@@ -266,9 +256,7 @@ private fun buildListOfTiersAndPremiums(
   }
 }
 
-private fun mapQuotesToTiersAndQuotes(
-  quotes: List<TierDeductibleQuote>,
-): SnapshotStateMap<Tier, List<TierDeductibleQuote>> {
+private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>): Map<Tier, List<TierDeductibleQuote>> {
   val grouped = quotes
     .groupBy {
       it.tier
@@ -278,7 +266,7 @@ private fun mapQuotesToTiersAndQuotes(
         it.deductible?.deductibleAmount?.amount ?: it.premium.amount
       }
     }
-  val result = mutableStateMapOf(*grouped.toTypedArray())
+  val result = mapOf(*grouped.toTypedArray())
   return result
 }
 
@@ -326,7 +314,7 @@ private sealed interface PartialUiState {
   data class Success(
     val contractData: ContractData,
     val currentActiveQuote: TierDeductibleQuote?,
-    val map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
+    val map: Map<Tier, List<TierDeductibleQuote>>,
   ) : PartialUiState
 }
 
@@ -336,7 +324,7 @@ internal sealed interface SelectCoverageState {
   data class Success(
     val uiState: SelectCoverageSuccessUiState,
     val currentActiveQuote: TierDeductibleQuote?,
-    val map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
+    val map: Map<Tier, List<TierDeductibleQuote>>,
   ) : SelectCoverageState
 
   data class Failure(val reason: FailureReason) : SelectCoverageState

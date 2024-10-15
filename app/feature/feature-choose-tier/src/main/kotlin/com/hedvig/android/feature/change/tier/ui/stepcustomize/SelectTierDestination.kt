@@ -345,7 +345,7 @@ private fun CustomizationCard(
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
             title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
-            premium = pair.second,
+            premium = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
               onChooseTierInDialogClick(pair.first)
@@ -405,7 +405,7 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = quote.premium,
+                    premium = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, quote.premium.amount.toInt()),
                     tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
@@ -525,7 +525,7 @@ private data class ExpandedRadioOptionData(
   val onRadioOptionClick: () -> Unit,
   val chosenState: ChosenState,
   val title: String,
-  val premium: UiMoney,
+  val premium: String,
   val tierDescription: String?,
 )
 
@@ -553,7 +553,7 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
 }
 
 @Composable
-private fun ExpandedOptionContent(title: String, premium: UiMoney, comment: String?) {
+private fun ExpandedOptionContent(title: String, premium: String, comment: String?) {
   Column {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -563,8 +563,7 @@ private fun ExpandedOptionContent(title: String, premium: UiMoney, comment: Stri
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HighlightLabel(
-            labelText =
-              stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, premium.amount.toInt()),
+            labelText = premium,
             size = HighLightSize.Small,
             color = HighlightColor.Grey(MEDIUM),
           )
