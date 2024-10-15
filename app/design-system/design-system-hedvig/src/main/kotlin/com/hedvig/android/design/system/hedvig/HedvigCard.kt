@@ -43,14 +43,14 @@ import com.hedvig.android.placeholder.shimmer
 fun HedvigCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
   Surface(
     modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .then(
-        if (onClick != null) {
-          Modifier.clickable(onClick = onClick)
-        } else {
-          Modifier
-        },
-      ),
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .then(
+            if (onClick != null) {
+                Modifier.clickable(onClick = onClick)
+            } else {
+                Modifier
+            },
+        ),
   ) {
     content()
   }
@@ -73,8 +73,8 @@ fun InsuranceCard(
       Image(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
-          .matchParentSize()
-          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+            .matchParentSize()
+            .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
         contentDescription = null,
       )
     } else {
@@ -89,43 +89,41 @@ fun InsuranceCard(
         modifier = Modifier.matchParentSize(),
       )
     }
-    HedvigTheme {
-      Column(Modifier.padding(16.dp)) {
-        Row(Modifier.heightIn(86.dp)) {
-          FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier.weight(1f),
-          ) {
-            if (!isLoading) {
-              for (chip in chips) {
-                Chip(chip, Modifier.padding(bottom = 8.dp))
-              }
+    Column(Modifier.padding(16.dp)) {
+      Row(Modifier.heightIn(86.dp)) {
+        FlowRow(
+          horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+          verticalArrangement = Arrangement.Top,
+          modifier = Modifier.weight(1f),
+        ) {
+          if (!isLoading) {
+            for (chip in chips) {
+              Chip(chip, Modifier.padding(bottom = 8.dp))
             }
           }
-          Spacer(Modifier.width(8.dp))
-          Icon(
-            imageVector = HedvigIcons.HelipadOutline,
-            contentDescription = null,
-            tint = HedvigTheme.colorScheme.fillWhite,
-            modifier = Modifier
-              .size(24.dp),
-          )
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.width(8.dp))
+        Icon(
+          imageVector = HedvigIcons.HelipadOutline,
+          contentDescription = null,
+          tint = HedvigTheme.colorScheme.fillWhite,
+          modifier = Modifier
+            .size(24.dp),
+        )
+      }
+      Spacer(Modifier.height(8.dp))
+      HedvigText(
+        topText,
+        color = HedvigTheme.colorScheme.textWhite,
+        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+      )
+      Spacer(Modifier.height(4.dp))
+      HedvigTheme(darkTheme = true) {
         HedvigText(
-          topText,
-          color = HedvigTheme.colorScheme.textWhite,
+          text = bottomText,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
-        Spacer(Modifier.height(4.dp))
-        HedvigTheme(darkTheme = true) {
-          HedvigText(
-            text = bottomText,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
-          )
-        }
       }
     }
   }

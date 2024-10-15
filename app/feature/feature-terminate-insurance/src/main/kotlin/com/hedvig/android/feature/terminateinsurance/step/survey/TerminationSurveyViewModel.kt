@@ -38,13 +38,13 @@ internal class TerminationSurveyViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
   changeTierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
-    initialState = TerminationSurveyState(),
-    presenter = TerminationSurveyPresenter(
-      options,
-      terminateInsuranceRepository,
-      changeTierRepository,
-    ),
-  )
+  initialState = TerminationSurveyState(),
+  presenter = TerminationSurveyPresenter(
+    options,
+    terminateInsuranceRepository,
+    changeTierRepository,
+  ),
+)
 
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
@@ -64,9 +64,9 @@ internal class TerminationSurveyPresenter(
             TerminationReason(option, null)
           }
         }
-      ).map {
-        it.surveyOption to it.feedBack
-      }
+        ).map {
+          it.surveyOption to it.feedBack
+        }
       mutableStateMapOf(*initialReasons.toTypedArray())
     }
 
@@ -127,54 +127,53 @@ internal class TerminationSurveyPresenter(
     }
 
     LaunchedEffect(loadBetterQuotesSource) {
-      val source = loadBetterQuotesSource
-      if (source != null) {
-        currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = false)
-        val insuranceId = terminateInsuranceRepository.getContractId()
-        val result =
-          changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
-        result.fold(
-          ifLeft = { errorMessage ->
-            logcat(LogPriority.ERROR) {
-              "Received error while creating changeTierDeductibleIntent from termination flow"
+      val source = loadBetterQuotesSource ?: return@LaunchedEffect
+      currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = false)
+      val insuranceId = terminateInsuranceRepository.getContractId()
+      val result =
+        changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
+      result.fold(
+        ifLeft = { errorMessage ->
+          logcat(LogPriority.ERROR) {
+            "Received error while creating changeTierDeductibleIntent from termination flow"
+          }
+          currentState = currentState.copy(
+            actionButtonLoading = false,
+            errorWhileLoadingNextStep = true,
+          )
+          loadBetterQuotesSource = null
+        },
+        ifRight = { changeTierIntent ->
+          if (changeTierIntent.quotes.isEmpty()) {
+            val optionsToDisable = currentReasonsWithFeedback.filter {
+              it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
+                it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+            }.keys
+            optionsToDisable.forEach {
+              if (currentReasonsWithFeedback.contains(it)) {
+                currentReasonsWithFeedback.remove(it)
+                val newOption = it.copy(isDisabled = true)
+                currentReasonsWithFeedback[newOption] = null
+              }
             }
             currentState = currentState.copy(
               actionButtonLoading = false,
-              errorWhileLoadingNextStep = true,
+              errorWhileLoadingNextStep = false,
+              showEmptyQuotesDialog = true,
+              selectedOption = null,
             )
             loadBetterQuotesSource = null
-          },
-          ifRight = { changeTierIntent ->
-            if (changeTierIntent.quotes.isEmpty()) {
-              val optionsToDisable = currentReasonsWithFeedback.filter {
-                it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                  it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-              }.keys
-              optionsToDisable.forEach {
-                if (currentReasonsWithFeedback.contains(it)) {
-                  currentReasonsWithFeedback.remove(it)
-                  val newOption = it.copy(isDisabled = true)
-                  currentReasonsWithFeedback[newOption] = null
-                }
-              }
-              currentState = currentState.copy(
-                actionButtonLoading = false,
-                errorWhileLoadingNextStep = false,
-                showEmptyQuotesDialog = true,
-                selectedOption = null,
-              )
-              loadBetterQuotesSource = null
-            } else {
-              currentState = currentState.copy(
-                errorWhileLoadingNextStep = false,
-                actionButtonLoading = false,
-                intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
-              )
-              loadBetterQuotesSource = null
-            }
-          },
-        )
-      }
+          } else {
+            currentState = currentState.copy(
+              errorWhileLoadingNextStep = false,
+              actionButtonLoading = false,
+              intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
+            )
+            loadBetterQuotesSource = null
+          }
+        },
+      )
+
     }
 
     LaunchedEffect(loadNextStep) {
