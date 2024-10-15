@@ -32,6 +32,8 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               perils = listOf(),
               insurableLimits = listOf(),
               documents = listOf(),
+              displayTierName = "Standard",
+              tierDescription = "Our most standard coverage"
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,

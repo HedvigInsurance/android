@@ -512,6 +512,8 @@ private val previewInsurance = InsuranceContract(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage"
     ),
     certificateUrl = null,
     coInsured = listOf(),

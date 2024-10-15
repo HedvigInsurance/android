@@ -2,9 +2,8 @@ package com.hedvig.android.data.changetier.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -48,41 +47,44 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
               source = source.toSource(),
             ),
           )
-          .fetchPolicy(FetchPolicy.NetworkOnly)
           .safeExecute()
         val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
         if (intent != null) {
-          try {
-            val quotes = intent.quotes.map {
-              logcat {
-                "Mariia: getting these quotes: ${intent.quotes.map {
+
+          val quotes = intent.quotes.map {
+            logcat {
+              "Mariia: getting these quotes: ${
+                intent.quotes.map {
                   it.tierName to "amount ${it.deductible?.amount?.amount} percentage ${it.deductible?.percentage}"
-                }}"
-              }
-              TierDeductibleQuote(
-                id = it.id,
-                deductible = it.deductible.toDeductible(),
-                displayItems = it.displayItems.toDisplayItems(),
-                premium = UiMoney.fromMoneyFragment(it.premium),
-                productVariant = it.productVariant.toProductVariant(),
-                tier = Tier(
-                  tierName = it.tierName!!,
-                  tierLevel = it.tierLevel!!,
-                  tierDescription = it.productVariant.tierDescription,
-                  tierDisplayName = it.productVariant.displayNameTier,
-                ),
-              )
+                }
+              }"
+            } //todo: remove logging later!
+            ensureNotNull(it.tierLevel) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierLevel was null")
             }
-            ChangeTierDeductibleIntent(
-              activationDate = intent.activationDate,
-              currentTierLevel = intent.currentTierLevel,
-              currentTierName = intent.currentTierName,
-              quotes = quotes,
+            ensureNotNull(it.tierName) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
+            }
+            TierDeductibleQuote(
+              id = it.id,
+              deductible = it.deductible?.toDeductible(),
+              displayItems = it.displayItems.toDisplayItems(),
+              premium = UiMoney.fromMoneyFragment(it.premium),
+              productVariant = it.productVariant.toProductVariant(),
+              tier = Tier(
+                tierName = it.tierName,
+                tierLevel = it.tierLevel,
+                tierDescription = it.productVariant.tierDescription,
+                tierDisplayName = it.productVariant.displayNameTier,
+              ),
             )
-          } catch (e: Exception) {
-            logcat(ERROR) { "Tried to get changeTierQuotes but quotes have tierLevel or tierName == null!" }
-            raise(ErrorMessage())
           }
+          ChangeTierDeductibleIntent(
+            activationDate = intent.activationDate,
+            currentTierLevel = intent.currentTierLevel,
+            currentTierName = intent.currentTierName,
+            quotes = quotes,
+          )
         } else {
           if (changeTierDeductibleResponse.isRight()) {
             logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
@@ -97,16 +99,12 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   }
 }
 
-private fun ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.Deductible?.toDeductible(): Deductible? {
-  return if (this != null) {
-    Deductible(
+private fun ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.Deductible.toDeductible(): Deductible {
+  return Deductible(
       deductibleAmount = UiMoney.fromMoneyFragment(this.amount),
       deductiblePercentage = this.percentage,
       description = this.displayText,
     )
-  } else {
-    null
-  }
 }
 
 private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.DisplayItem>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
@@ -144,6 +142,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -169,6 +169,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -194,6 +196,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -219,6 +223,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -244,6 +250,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage"
     ),
   ),
 )

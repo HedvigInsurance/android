@@ -710,6 +710,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -735,6 +737,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -760,6 +764,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -785,6 +791,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage"
     ),
   ),
   TierDeductibleQuote(
@@ -810,6 +818,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage"
     ),
   ),
 )

@@ -45,6 +45,8 @@ internal data class MoveQuote(
             ),
           ),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our most standard coverage for rental home"
         ),
         displayItems = listOf(),
       )

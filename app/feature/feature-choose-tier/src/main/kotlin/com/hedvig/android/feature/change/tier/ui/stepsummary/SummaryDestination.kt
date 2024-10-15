@@ -463,6 +463,8 @@ private class ChooseInsuranceUiStateProvider :
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our most standard coverage"
           ),
         ),
       ),
