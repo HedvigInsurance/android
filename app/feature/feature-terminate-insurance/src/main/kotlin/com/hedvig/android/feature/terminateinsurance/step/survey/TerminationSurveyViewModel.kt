@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
@@ -145,24 +146,26 @@ internal class TerminationSurveyPresenter(
         },
         ifRight = { changeTierIntent ->
           if (changeTierIntent.quotes.isEmpty()) {
-            val optionsToDisable = currentReasonsWithFeedback.filter {
-              it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-            }.keys
-            optionsToDisable.forEach {
-              if (currentReasonsWithFeedback.contains(it)) {
-                currentReasonsWithFeedback.remove(it)
-                val newOption = it.copy(isDisabled = true)
-                currentReasonsWithFeedback[newOption] = null
+            Snapshot.withMutableSnapshot {
+              val optionsToDisable = currentReasonsWithFeedback.filter {
+                it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
+                  it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+              }.keys
+              optionsToDisable.forEach {
+                if (currentReasonsWithFeedback.contains(it)) {
+                  currentReasonsWithFeedback.remove(it)
+                  val newOption = it.copy(isDisabled = true)
+                  currentReasonsWithFeedback[newOption] = null
+                }
               }
+              currentState = currentState.copy(
+                actionButtonLoading = false,
+                errorWhileLoadingNextStep = false,
+                showEmptyQuotesDialog = true,
+                selectedOption = null,
+              )
+              loadBetterQuotesSource = null
             }
-            currentState = currentState.copy(
-              actionButtonLoading = false,
-              errorWhileLoadingNextStep = false,
-              showEmptyQuotesDialog = true,
-              selectedOption = null,
-            )
-            loadBetterQuotesSource = null
           } else {
             currentState = currentState.copy(
               errorWhileLoadingNextStep = false,
