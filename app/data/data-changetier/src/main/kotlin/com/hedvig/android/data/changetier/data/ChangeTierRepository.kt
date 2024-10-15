@@ -73,15 +73,15 @@ internal class ChangeTierRepositoryImpl(
   }
 
   override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
-    val result = apolloClient.mutation(ChangeTierDeductibleCommitIntentMutation(quoteId)).safeExecute()
     return either {
-      result.fold(
-        ifRight = { },
-        ifLeft = { left ->
+      apolloClient
+        .mutation(ChangeTierDeductibleCommitIntentMutation(quoteId))
+        .safeExecute()
+        .mapLeft { ErrorMessage() }
+        .onLeft { left ->
           logcat(ERROR) { "Tried to submit change tier quoteId: $quoteId but got error: $left" }
-          raise(ErrorMessage())
-        },
-      )
+        }
+        .bind()
     }
   }
 }
