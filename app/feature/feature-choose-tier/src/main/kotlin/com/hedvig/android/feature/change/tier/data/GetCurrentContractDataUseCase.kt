@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -44,19 +45,49 @@ internal class GetCurrentContractDataUseCaseImpl(
         logcat(ERROR) { "Tried to start Change Tier flow but got null active contract" }
         raise(ErrorMessage("Tried to start Change Tier flow but got null active contract"))
       } else {
-        val deductible = dataResult.currentAgreement.deductible?.let {
-          Deductible(
-            deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
-            deductiblePercentage = it.percentage,
-            description = it.displayText,
+        if (dataResult.upcomingChangedAgreement!=null) {
+          val deductible = dataResult.upcomingChangedAgreement.deductible?.let {
+            Deductible(
+              deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
+              deductiblePercentage = it.percentage,
+              description = it.displayText,
+            )
+          }
+          CurrentContractData(
+            currentExposureName = dataResult.exposureDisplayName,
+            currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.upcomingChangedAgreement.premium),
+            deductible = deductible,
+            productVariant = dataResult.upcomingChangedAgreement.productVariant.toProductVariant(),
+            displayItems = dataResult.upcomingChangedAgreement.displayItems.map {
+              ChangeTierDeductibleDisplayItem(
+                displayTitle = it.displayTitle,
+                displaySubtitle = it.displaySubtitle,
+                displayValue = it.displayValue,
+              )
+            }
+          )
+        } else {
+          val deductible = dataResult.currentAgreement.deductible?.let {
+            Deductible(
+              deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
+              deductiblePercentage = it.percentage,
+              description = it.displayText,
+            )
+          }
+          CurrentContractData(
+            currentExposureName = dataResult.exposureDisplayName,
+            currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.currentAgreement.premium),
+            deductible = deductible,
+            productVariant = dataResult.currentAgreement.productVariant.toProductVariant(),
+            displayItems = dataResult.currentAgreement.displayItems.map {
+              ChangeTierDeductibleDisplayItem(
+                displayTitle = it.displayTitle,
+                displaySubtitle = it.displaySubtitle,
+                displayValue = it.displayValue,
+              )
+            }
           )
         }
-        CurrentContractData(
-          currentExposureName = dataResult.exposureDisplayName,
-          currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.currentAgreement.premium),
-          deductible = deductible,
-          productVariant = dataResult.currentAgreement.productVariant.toProductVariant(),
-        )
       }
     }
   }
@@ -67,4 +98,5 @@ data class CurrentContractData(
   val currentDisplayPremium: UiMoney,
   val deductible: Deductible?,
   val productVariant: ProductVariant,
+  val displayItems: List<ChangeTierDeductibleDisplayItem>
 )
