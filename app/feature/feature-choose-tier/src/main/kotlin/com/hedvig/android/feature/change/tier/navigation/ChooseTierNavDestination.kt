@@ -4,6 +4,7 @@ import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 /**
@@ -49,7 +50,13 @@ internal sealed interface ChooseTierDestination {
   }
 
   @Serializable
-  data class SubmitSuccess(val activationDate: Int) : ChooseTierDestination, Destination
+  data class SubmitSuccess(val activationDate: LocalDate) : ChooseTierDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<LocalDate>(),
+      )
+    }
+  }
 
   @Serializable
   data object SubmitFailure : ChooseTierDestination, Destination
@@ -59,13 +66,13 @@ internal sealed interface ChooseTierDestination {
 data class SummaryParameters(
   val quoteIdToSubmit: String,
   val insuranceId: String,
-  val activationDateEpochDays: Int,
+  val activationDate: LocalDate,
 )
 
 @Serializable
 data class InsuranceCustomizationParameters(
   val insuranceId: String,
-  val activationDateEpochDays: Int,
+  val activationDate: LocalDate,
   val currentTierLevel: Int?,
   val currentTierName: String?,
   val quoteIds: List<String>,

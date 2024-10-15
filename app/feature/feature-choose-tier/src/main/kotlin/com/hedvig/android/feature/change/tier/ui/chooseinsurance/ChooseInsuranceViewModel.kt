@@ -95,7 +95,7 @@ internal class ChooseInsurancePresenter(
           ifRight = { intent ->
             val params = InsuranceCustomizationParameters(
               insuranceId = customisableInsurance.id,
-              activationDateEpochDays = intent.activationDate.toEpochDays(),
+              activationDate = intent.activationDate,
               currentTierLevel = intent.currentTierLevel,
               currentTierName = intent.currentTierName,
               quoteIds = intent.quotes.map { it.id },

@@ -26,7 +26,7 @@ import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, popBackStack: () -> Unit) {
+internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -44,7 +44,7 @@ internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, popBackStack:
       text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
       description = stringResource(
         R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
-        LocalDate.fromEpochDays(activationDateEpochDays),
+        activationDate,
       ),
       iconStyle = SUCCESS,
       buttonStyle = NoButton,
@@ -63,5 +63,5 @@ internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, popBackStack:
 @HedvigPreview
 @Composable
 private fun SubmitTierSuccessScreenPreview() {
-  SubmitTierSuccessScreen(LocalDate(2024, 9, 23).toEpochDays(), {})
+  SubmitTierSuccessScreen(LocalDate(2024, 9, 23), {})
 }

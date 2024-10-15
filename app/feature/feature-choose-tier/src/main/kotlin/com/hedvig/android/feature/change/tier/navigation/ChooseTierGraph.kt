@@ -75,7 +75,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
             ChooseTierDestination.Summary(
               SummaryParameters(
                 quoteIdToSubmit = quote.id,
-                activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
+                activationDate = chooseTierGraphDestination.parameters.activationDate,
                 insuranceId = chooseTierGraphDestination.parameters.insuranceId,
               ),
             ),
@@ -117,7 +117,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
           context.sharePDF(it, applicationId)
         },
         onSuccess = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
+          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
               inclusive = true
             }
@@ -126,7 +126,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       )
     }
 
-    navdestination<ChooseTierDestination.SubmitSuccess> { backStackEntry ->
+    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) { backStackEntry ->
       SubmitTierSuccessScreen(
         activationDate,
         popBackStack = navigator::popBackStack,

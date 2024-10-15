@@ -216,7 +216,7 @@ internal fun HedvigNavHost(
                 destination = ChooseTierGraphDestination(
                   InsuranceCustomizationParameters(
                     insuranceId = idWithIntent.first,
-                    activationDateEpochDays = idWithIntent.second.activationDate.toEpochDays(),
+                    activationDate = idWithIntent.second.activationDate,
                     currentTierLevel = idWithIntent.second.currentTierLevel,
                     currentTierName = idWithIntent.second.currentTierName,
                     quoteIds = idWithIntent.second.quotes.map {

@@ -301,7 +301,7 @@ internal sealed interface SelectCoverageEvent {
 
   data object ClearNavigateFurtherStep : SelectCoverageEvent
 
-  data object ClearNavigateToComparison: SelectCoverageEvent
+  data object ClearNavigateToComparison : SelectCoverageEvent
 
   data object Reload : SelectCoverageEvent
 }
