@@ -61,13 +61,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -91,6 +94,9 @@ import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
+import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -160,7 +166,7 @@ private fun HelpCenterHomeScreen(
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
-    is QuickAction.MultiSelectQuickLink -> {
+    is MultiSelectQuickLink -> {
       var chosenIndex by remember { mutableStateOf<Int?>(null) }
       val entries = buildList {
         selectedQuickAction.links.forEachIndexed { index, quickLink ->
@@ -186,12 +192,77 @@ private fun HelpCenterHomeScreen(
       )
     }
 
-    is QuickAction.StandaloneQuickLink -> {
+    is StandaloneQuickLink -> {
       onDismissQuickActionDialog()
       onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
 
     null -> {}
+
+    is MultiSelectExpandedLink -> {
+      var chosenIndex by remember { mutableStateOf<Int?>(null) }
+      val entries = buildList {
+        selectedQuickAction.links.forEachIndexed { index, quickLink ->
+          add(
+            RadioOptionData(
+              id = quickLink.hashCode().toString(),
+              chosenState = if (index == chosenIndex) Chosen else NotChosen,
+              optionText = quickLink.displayName,
+            ),
+          )
+        }
+      }
+
+      HedvigDialog(
+        applyDefaultPadding = false,
+        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        onDismissRequest = {
+          onDismissQuickActionDialog()
+        },
+        style = DialogDefaults.DialogStyle.NoButtons,
+      ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          for (quickLink in selectedQuickAction.links) {
+            QuickLinkCard(
+              topText = {
+                HedvigText(
+                  text = stringResource(
+                    quickLink.titleRes,
+                  ),
+                  textAlign = TextAlign.Start,
+                )
+              },
+              bottomText = {
+                HedvigText(
+                  text = stringResource(
+                    quickLink.hintTextRes,
+                  ),
+                  textAlign = TextAlign.Start,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  style = HedvigTheme.typography.label,
+                )
+              },
+              onClick = {
+                onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
+
+              },
+            )
+          }
+        }
+      }
+
+      SingleSelectDialog(
+        onDismissRequest = onDismissQuickActionDialog,
+        title = stringResource(id = selectedQuickAction.titleRes),
+        optionsList = entries,
+        onSelected = { data ->
+          val chosen = entries.indexOf(data)
+          chosenIndex = chosen
+          onDismissQuickActionDialog()
+          onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
+        },
+      )
+    }
   }
   var searchQuery by remember {
     mutableStateOf<String?>(search?.searchQuery)
