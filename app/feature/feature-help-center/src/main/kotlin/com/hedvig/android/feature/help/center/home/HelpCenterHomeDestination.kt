@@ -56,7 +56,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -214,9 +213,11 @@ private fun HelpCenterHomeScreen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
           var selectedIndex by remember { mutableStateOf<Int?>(null) }
           Spacer(Modifier.height(24.dp))
-          HedvigText(stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+          HedvigText(
+            stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center,
+          )
           Spacer(Modifier.height(24.dp))
           selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
             RadioOptionRightAligned(
@@ -308,7 +309,7 @@ private fun HelpCenterHomeScreen(
               quickLinksForSearch = (
                 quickLinksUiState as?
                   HelpCenterUiState.QuickLinkUiState.QuickLinks
-                )?.quickLinks ?: listOf(),
+              )?.quickLinks ?: listOf(),
             )
             onUpdateSearchResults(it, results)
           }
@@ -380,7 +381,7 @@ private fun ContentWithoutSearch(
   Column {
     Column(
       modifier =
-      Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
+        Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       Spacer(Modifier.height(32.dp))
       Image(

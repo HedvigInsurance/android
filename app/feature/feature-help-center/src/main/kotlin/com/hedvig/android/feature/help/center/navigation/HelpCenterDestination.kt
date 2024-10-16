@@ -15,7 +15,7 @@ internal sealed interface HelpCenterDestinations {
   data object HelpCenter : HelpCenterDestinations, Destination
 
   @Serializable
-  data object Choose
+  data object ChooseInsuranceToEditCoInsured : HelpCenterDestinations, Destination
 
   @Serializable
   data class Topic(

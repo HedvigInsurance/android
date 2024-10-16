@@ -195,7 +195,7 @@ fun RadioOptionRightAligned(
           SelectIndicationCircle(chosenState, lockedState)
         }
       },
-      spaceBetween = 8.dp
+      spaceBetween = 8.dp,
     )
   }
 }

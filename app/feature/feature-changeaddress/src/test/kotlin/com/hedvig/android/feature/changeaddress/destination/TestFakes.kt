@@ -120,7 +120,7 @@ internal val fakeMoveQuote = MoveQuote(
     ),
     documents = listOf(),
     displayTierName = "Standard",
-    tierDescription = "Our standard coverage"
+    tierDescription = "Our standard coverage",
   ),
   displayItems = listOf(),
 )

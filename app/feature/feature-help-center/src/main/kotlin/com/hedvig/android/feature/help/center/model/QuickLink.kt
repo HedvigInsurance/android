@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.help.center.model
 
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect
 
 sealed interface QuickAction {
   val titleRes: Int
@@ -28,5 +27,5 @@ sealed interface QuickAction {
     override val titleRes: Int,
     override val hintTextRes: Int,
     val links: List<StandaloneQuickLink>,
-  ): QuickAction
+  ) : QuickAction
 }
