@@ -32,19 +32,19 @@ fun StepperShowcase() {
   HedvigTheme {
     Surface(color = Color.White) {
       var quantity by remember { mutableIntStateOf(0) }
-      var showError by remember { mutableStateOf(false) }
+      var errorText: String? by remember { mutableStateOf(null) }
       val onPlusClick: () -> Unit = {
-        showError = false
+        errorText = null
         if (quantity < 6) {
           quantity += 1
         } else {
-          showError = true
+          errorText = "That would be out of bounds"
         }
       }
       val onMinusClick: () -> Unit = {
-        showError = false
+        errorText = null
         if (quantity <= 0) {
-          showError = true
+          errorText = "That would be out of bounds"
         } else {
           quantity -= 1
         }
@@ -56,7 +56,7 @@ fun StepperShowcase() {
           stepperStyle = Default,
           size = Large,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           onPlusClick = onPlusClick,
           onMinusClick = onMinusClick,
           isPlusEnabled = quantity <= 5,
@@ -68,7 +68,7 @@ fun StepperShowcase() {
           stepperStyle = Default,
           size = Medium,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           onPlusClick = onPlusClick,
           onMinusClick = onMinusClick,
           isPlusEnabled = quantity <= 5,
@@ -80,7 +80,7 @@ fun StepperShowcase() {
           stepperStyle = Default,
           size = Small,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           onPlusClick = onPlusClick,
           onMinusClick = onMinusClick,
           isPlusEnabled = quantity <= 5,
@@ -92,7 +92,7 @@ fun StepperShowcase() {
           stepperStyle = Labeled("Label"),
           size = Large,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           onPlusClick = onPlusClick,
           isPlusEnabled = quantity <= 5,
           isMinusEnabled = quantity >= 1,
@@ -104,7 +104,7 @@ fun StepperShowcase() {
           stepperStyle = Labeled("Label"),
           size = Medium,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           isPlusEnabled = quantity <= 5,
           isMinusEnabled = quantity >= 1,
           onPlusClick = onPlusClick,
@@ -116,7 +116,7 @@ fun StepperShowcase() {
           stepperStyle = Labeled("Label"),
           size = Small,
           quantity = quantity,
-          showError = showError,
+          errorText = errorText,
           isPlusEnabled = quantity <= 5,
           isMinusEnabled = quantity >= 1,
           onPlusClick = onPlusClick,
@@ -136,12 +136,11 @@ private fun StepperPreviewWithParameters(
   quantity: Int,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
-  showError: Boolean,
+  errorText: String?,
   isPlusEnabled: Boolean,
   isMinusEnabled: Boolean,
 ) {
   HedvigStepper(
-    showError = showError,
     onPlusClick = onPlusClick,
     onMinusClick = onMinusClick,
     text = "$text, quantity: $quantity",
@@ -149,6 +148,6 @@ private fun StepperPreviewWithParameters(
     stepperSize = size,
     isPlusEnabled = isPlusEnabled,
     isMinusEnabled = isMinusEnabled,
-    errorText = "That would be out of bounds",
+    errorText = errorText,
   )
 }
