@@ -16,9 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
 import com.hedvig.android.design.system.hedvig.tokens.ScaffoldTokens
 
 @Composable
@@ -35,31 +32,21 @@ fun HedvigScaffold(
     color = scaffoldColors.background,
     modifier = modifier,
   ) {
-    val connection = remember {
-      object : NestedScrollConnection {}
-    }
     Column {
       TopAppBar(
         title = topAppBarText ?: "",
         actionType = topAppBarActionType,
         onActionClick = navigateUp,
         topAppBarActions = topAppBarActions,
-        windowInsets = WindowInsets.safeDrawing.only(
-          WindowInsetsSides.Horizontal +
-            WindowInsetsSides.Top,
-        ),
+        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,
         modifier = Modifier
           .fillMaxSize()
-          .nestedScroll(connection)
           .verticalScroll(rememberScrollState())
           .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal +
-                WindowInsetsSides.Bottom,
-            ),
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           ),
       ) {
         content()
