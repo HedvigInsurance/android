@@ -10,7 +10,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import coil.ImageLoader
-import com.apollographql.apollo.ApolloClient
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -73,7 +72,6 @@ import com.hedvig.android.navigation.core.AppDestination.CoInsuredAddOrRemove
 import com.hedvig.android.navigation.core.AppDestination.TravelCertificate
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import org.koin.compose.koinInject
 
 @Composable
 internal fun HedvigNavHost(
@@ -114,11 +112,9 @@ internal fun HedvigNavHost(
     }
   }
 
-  val apolloClient = koinInject<ApolloClient>()
   NavHost(
     navController = hedvigAppState.navController,
     startDestination = HomeDestination.Graph::class,
-//    startDestination = MovingFlowDestination::class,
     route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
@@ -328,7 +324,7 @@ internal fun HedvigNavHost(
         navigateToNewConversation(backStackEntry)
       },
     )
-    movingFlowGraph(apolloClient)
+    movingFlowGraph(navController = hedvigAppState.navController)
     connectPaymentGraph(
       navigator = navigator,
       market = market,
