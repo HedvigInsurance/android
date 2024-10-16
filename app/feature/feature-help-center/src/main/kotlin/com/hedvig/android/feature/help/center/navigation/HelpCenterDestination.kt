@@ -15,6 +15,9 @@ internal sealed interface HelpCenterDestinations {
   data object HelpCenter : HelpCenterDestinations, Destination
 
   @Serializable
+  data object Choose
+
+  @Serializable
   data class Topic(
     val displayName: String,
     val topic: com.hedvig.android.feature.help.center.model.Topic,

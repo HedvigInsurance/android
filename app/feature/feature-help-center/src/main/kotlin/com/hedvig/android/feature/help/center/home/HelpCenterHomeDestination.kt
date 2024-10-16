@@ -56,23 +56,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
@@ -80,6 +83,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
@@ -200,68 +204,72 @@ private fun HelpCenterHomeScreen(
     null -> {}
 
     is MultiSelectExpandedLink -> {
-      var chosenIndex by remember { mutableStateOf<Int?>(null) }
-      val entries = buildList {
-        selectedQuickAction.links.forEachIndexed { index, quickLink ->
-          add(
-            RadioOptionData(
-              id = quickLink.hashCode().toString(),
-              chosenState = if (index == chosenIndex) Chosen else NotChosen,
-              optionText = quickLink.displayName,
-            ),
-          )
-        }
-      }
-
       HedvigDialog(
         applyDefaultPadding = false,
-        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
           onDismissQuickActionDialog()
         },
         style = DialogDefaults.DialogStyle.NoButtons,
       ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          for (quickLink in selectedQuickAction.links) {
-            QuickLinkCard(
-              topText = {
-                HedvigText(
-                  text = stringResource(
-                    quickLink.titleRes,
-                  ),
-                  textAlign = TextAlign.Start,
-                )
-              },
-              bottomText = {
-                HedvigText(
-                  text = stringResource(
-                    quickLink.hintTextRes,
-                  ),
-                  textAlign = TextAlign.Start,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                  style = HedvigTheme.typography.label,
-                )
-              },
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+          var selectedIndex by remember { mutableStateOf<Int?>(null) }
+          Spacer(Modifier.height(24.dp))
+          HedvigText(stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center)
+          Spacer(Modifier.height(24.dp))
+          selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
+            RadioOptionRightAligned(
+              chosenState = if (index == selectedIndex) Chosen else NotChosen,
               onClick = {
-                onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
-
+                selectedIndex = index
+              },
+              optionContent = {
+                Column {
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.titleRes,
+                    ),
+                  )
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.hintTextRes,
+                    ),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                    style = HedvigTheme.typography.label,
+                  )
+                }
               },
             )
+            if (index != selectedQuickAction.links.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
           }
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(R.string.general_continue_button),
+            enabled = selectedIndex != null,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex?.let {
+                onDismissQuickActionDialog()
+                onNavigateToQuickLink(selectedQuickAction.links[it].quickLinkDestination)
+              }
+            },
+          )
+          Spacer(Modifier.height(4.dp))
+          HedvigTextButton(
+            buttonSize = Large,
+            text = stringResource(R.string.general_cancel_button),
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex = null
+              onDismissQuickActionDialog()
+            },
+          )
+          Spacer(Modifier.height(24.dp))
         }
       }
-
-      SingleSelectDialog(
-        onDismissRequest = onDismissQuickActionDialog,
-        title = stringResource(id = selectedQuickAction.titleRes),
-        optionsList = entries,
-        onSelected = { data ->
-          val chosen = entries.indexOf(data)
-          chosenIndex = chosen
-          onDismissQuickActionDialog()
-          onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
-        },
-      )
     }
   }
   var searchQuery by remember {
@@ -300,7 +308,7 @@ private fun HelpCenterHomeScreen(
               quickLinksForSearch = (
                 quickLinksUiState as?
                   HelpCenterUiState.QuickLinkUiState.QuickLinks
-              )?.quickLinks ?: listOf(),
+                )?.quickLinks ?: listOf(),
             )
             onUpdateSearchResults(it, results)
           }
@@ -372,7 +380,7 @@ private fun ContentWithoutSearch(
   Column {
     Column(
       modifier =
-        Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
+      Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       Spacer(Modifier.height(32.dp))
       Image(
@@ -720,7 +728,7 @@ private fun QuickLinkCard(
       .fillMaxWidth(),
   ) {
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
       modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
     ) {
       topText()
