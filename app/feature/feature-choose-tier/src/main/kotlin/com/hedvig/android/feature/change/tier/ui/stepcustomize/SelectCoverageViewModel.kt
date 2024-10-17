@@ -156,50 +156,24 @@ private class SelectCoveragePresenter(
             if (quotesResult.isEmpty()) {
               currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
             } else {
-              val current: TierDeductibleQuote? =
-                if (params.currentTierName != null && params.currentTierLevel != null) {
-                  TierDeductibleQuote(
-                    id = CURRENT_ID,
-                    deductible = currentContractData.deductible,
-                    tier = Tier(
-                      tierName = params.currentTierName,
-                      tierLevel = params.currentTierLevel,
-                      tierDescription = currentContractData.productVariant.tierDescription,
-                      tierDisplayName = currentContractData.productVariant.displayTierName,
-                    ),
-                    productVariant = currentContractData.productVariant,
-                    displayItems = currentContractData.displayItems,
-                    premium = currentContractData.currentDisplayPremium,
-                  )
-                } else {
-                  null
-                }
-              current?.let {
-                tierRepository.addQuotesToDb(listOf(it))
-              }
+              val current: TierDeductibleQuote = quotesResult.first { it.id == tierRepository.getCurrentQuoteId() }
               logcat { "Mariia: current quote: $current" }
-              val quotes = buildList {
-                addAll(quotesResult)
-                current?.let {
-                  add(it)
-                }
-              }
               // pre-choosing current quote
-              chosenTier = current?.tier
-              chosenTierInDialog = current?.tier
+              chosenTier = current.tier
+              chosenTierInDialog = current.tier
               chosenQuote = current
               chosenQuoteInDialog = current
               currentPartialState = PartialUiState.Success(
                 contractData = ContractData(
-                  activeDisplayPremium = current?.premium.toString(),
-                  contractGroup = current?.productVariant?.contractGroup ?: quotes[0].productVariant.contractGroup,
-                  contractDisplayName = current?.productVariant?.displayName ?: quotes[0].productVariant.displayName,
+                  activeDisplayPremium = current.premium.toString(),
+                  contractGroup = current.productVariant.contractGroup,
+                  contractDisplayName = current.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 ),
                 // setting current quote aside for comparison later
                 currentActiveQuote = current,
                 // adding current tierName and quote to the list, create map
-                map = mapQuotesToTiersAndQuotes(quotes),
+                map = mapQuotesToTiersAndQuotes(quotesResult),
               )
             }
           },
@@ -357,5 +331,3 @@ internal data class ContractData(
   val contractDisplaySubtitle: String,
   val activeDisplayPremium: String?,
 )
-
-private const val CURRENT_ID = "current"

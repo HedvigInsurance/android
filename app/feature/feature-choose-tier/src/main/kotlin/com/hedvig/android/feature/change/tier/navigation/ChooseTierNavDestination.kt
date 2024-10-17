@@ -73,7 +73,5 @@ data class SummaryParameters(
 data class InsuranceCustomizationParameters(
   val insuranceId: String,
   val activationDate: LocalDate,
-  val currentTierLevel: Int?,
-  val currentTierName: String?,
   val quoteIds: List<String>,
 )

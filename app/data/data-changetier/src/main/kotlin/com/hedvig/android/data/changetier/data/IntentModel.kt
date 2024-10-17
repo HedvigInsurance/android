@@ -10,8 +10,6 @@ import octopus.type.ChangeTierDeductibleSource
 
 data class ChangeTierDeductibleIntent(
   val activationDate: LocalDate,
-  val currentTierLevel: Int?,
-  val currentTierName: String?,
   val quotes: List<TierDeductibleQuote>,
 )
 
