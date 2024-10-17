@@ -105,7 +105,6 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -178,7 +177,6 @@ private fun HelpCenterHomeScreen(
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
-  logcat { "Mariia: selectedQuickAction is $selectedQuickAction" }
   when (selectedQuickAction) {
     is MultiSelectQuickLink -> {
       var chosenIndex by remember { mutableStateOf<Int?>(null) }

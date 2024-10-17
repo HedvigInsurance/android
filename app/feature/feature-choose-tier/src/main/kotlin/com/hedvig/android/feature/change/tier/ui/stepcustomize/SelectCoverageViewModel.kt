@@ -30,7 +30,6 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -114,9 +113,7 @@ private class SelectCoveragePresenter(
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
           val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
-          logcat { "Mariia: notFiltered: ${notFiltered.map { it.tier.tierName }}" }
           val filtered = notFiltered.distinctBy { it.tier.tierName }
-          logcat { "Mariia: filtered: ${filtered.map { it.tier.tierName }}" }
           quotesToCompare =
             filtered
         }
@@ -157,7 +154,6 @@ private class SelectCoveragePresenter(
               currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
             } else {
               val current: TierDeductibleQuote = quotesResult.first { it.id == tierRepository.getCurrentQuoteId() }
-              logcat { "Mariia: current quote: $current" }
               // pre-choosing current quote
               chosenTier = current.tier
               chosenTierInDialog = current.tier
