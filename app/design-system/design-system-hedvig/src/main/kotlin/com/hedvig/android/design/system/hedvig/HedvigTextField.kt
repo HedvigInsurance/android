@@ -100,7 +100,16 @@ fun HedvigTextField(
       }
 
       text.isNotEmpty() -> {
-        { IsNotEmptyTrailingIcon(trailingIconColor, { onValueChange("") }) }
+        {
+          IsNotEmptyTrailingIcon(
+            trailingIconColor,
+            {
+              if (enabled && !readOnly) {
+                onValueChange("")
+              }
+            },
+          )
+        }
       }
 
       else -> {
