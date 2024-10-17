@@ -3,6 +3,8 @@ package com.hedvig.android.feature.change.tier.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
+import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCaseImpl
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCaseImpl
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
@@ -31,6 +33,13 @@ val chooseTierModule = module {
     StartTierFlowViewModel(
       insuranceID = params.get<String>(),
       tierRepository = get<ChangeTierRepository>(),
+    )
+  }
+
+  single<GetCoverageComparisonUseCase> {
+    GetCoverageComparisonUseCaseImpl(
+      apolloClient = get<ApolloClient>(),
+      featureManager = get<FeatureManager>(),
     )
   }
 
@@ -66,8 +75,8 @@ val chooseTierModule = module {
 
   viewModel<ComparisonViewModel> { params ->
     ComparisonViewModel(
-      quoteIds = params.get<List<String>>(),
-      tierRepository = get<ChangeTierRepository>(),
+      termsIds = params.get<List<String>>(),
+      getCoverageComparisonUseCase = get<GetCoverageComparisonUseCase>(),
     )
   }
 }

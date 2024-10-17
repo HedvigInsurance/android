@@ -85,7 +85,13 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
           navigator.popBackStack()
         },
         navigateToComparison = { listOfQuotes ->
-          navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id }))
+          navigator.navigateUnsafe(
+            ChooseTierDestination.Comparison(
+              listOfQuotes.map {
+                it.productVariant.termsVersion
+              },
+            ),
+          )
         },
       )
     }

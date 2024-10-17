@@ -143,6 +143,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -170,6 +171,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -197,6 +199,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -224,6 +227,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -251,6 +255,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
 )

@@ -75,6 +75,7 @@ data class ProductVariantDbModel(
   val documents: List<InsuranceVariantDocumentDBM>,
   val tierName: String?,
   val tierDescription: String?,
+  val termsVersion: String,
 )
 
 @Serializable

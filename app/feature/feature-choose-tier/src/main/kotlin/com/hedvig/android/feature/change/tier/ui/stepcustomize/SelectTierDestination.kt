@@ -157,9 +157,6 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
         HedvigErrorSection(
           onButtonClick = reload,
           modifier = Modifier.fillMaxSize(),
-          subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
-          title = stringResource(R.string.GENERAL_ERROR_BODY),
-          buttonText = stringResource(R.string.GENERAL_ERROR_BODY),
         )
       }
       QUOTES_ARE_EMPTY -> {
@@ -262,17 +259,19 @@ private fun SelectTierScreen(
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
-    Spacer(Modifier.height(4.dp))
-    HedvigTextButton(
-      buttonSize = Large,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-      onClick = {
-        onCompareClick()
-      },
-    )
+    if (uiState.tiers.size > 1) {
+      Spacer(Modifier.height(4.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        onClick = {
+          onCompareClick()
+        },
+      )
+    }
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       buttonSize = Large,
@@ -711,6 +710,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -738,6 +738,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -765,6 +766,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -792,6 +794,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -819,6 +822,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
 )
