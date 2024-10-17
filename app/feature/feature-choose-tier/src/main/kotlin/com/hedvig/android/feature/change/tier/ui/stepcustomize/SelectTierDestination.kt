@@ -262,17 +262,19 @@ private fun SelectTierScreen(
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
-    Spacer(Modifier.height(4.dp))
-    HedvigTextButton(
-      buttonSize = Large,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-      onClick = {
-        onCompareClick()
-      },
-    )
+    if (uiState.tiers.size>1) {
+      Spacer(Modifier.height(4.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        onClick = {
+          onCompareClick()
+        },
+      )
+    }
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       buttonSize = Large,
