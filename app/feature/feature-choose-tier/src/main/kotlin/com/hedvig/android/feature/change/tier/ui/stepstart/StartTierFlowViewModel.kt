@@ -53,8 +53,6 @@ private class StartTierChangePresenter(
           val parameters = InsuranceCustomizationParameters(
             insuranceId = insuranceID,
             activationDate = result.activationDate,
-            currentTierLevel = result.currentTierLevel,
-            currentTierName = result.currentTierName,
             quoteIds = result.quotes.map { it.id },
           )
           currentState = Success(parameters)

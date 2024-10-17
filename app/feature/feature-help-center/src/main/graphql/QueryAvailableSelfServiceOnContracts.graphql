@@ -2,6 +2,7 @@ query AvailableSelfServiceOnContracts {
   currentMember {
     activeContracts {
       id
+      exposureDisplayName
       currentAgreement {
         productVariant {
           displayName

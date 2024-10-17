@@ -24,6 +24,8 @@ interface ChangeTierRepository {
   suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>)
 
   suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit>
+
+  suspend fun getCurrentQuoteId(): String
 }
 
 internal class ChangeTierRepositoryImpl(
@@ -83,5 +85,9 @@ internal class ChangeTierRepositoryImpl(
         }
         .bind()
     }
+  }
+
+  override suspend fun getCurrentQuoteId(): String {
+    return TierConstants.CURRENT_ID
   }
 }

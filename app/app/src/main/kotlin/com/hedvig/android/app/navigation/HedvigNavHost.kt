@@ -217,8 +217,6 @@ internal fun HedvigNavHost(
                   InsuranceCustomizationParameters(
                     insuranceId = idWithIntent.first,
                     activationDate = idWithIntent.second.activationDate,
-                    currentTierLevel = idWithIntent.second.currentTierLevel,
-                    currentTierName = idWithIntent.second.currentTierName,
                     quoteIds = idWithIntent.second.quotes.map {
                       it.id
                     },
