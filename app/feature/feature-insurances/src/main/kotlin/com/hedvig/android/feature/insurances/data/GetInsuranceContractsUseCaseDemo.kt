@@ -34,6 +34,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               documents = listOf(),
               displayTierName = "Standard",
               tierDescription = "Our most standard coverage",
+              termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,

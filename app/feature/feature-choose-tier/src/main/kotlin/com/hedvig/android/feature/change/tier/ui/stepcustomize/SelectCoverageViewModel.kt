@@ -114,9 +114,7 @@ private class SelectCoveragePresenter(
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
           val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
-          logcat { "Mariia: notFiltered: ${notFiltered.map { it.tier.tierName }}" }
           val filtered = notFiltered.distinctBy { it.tier.tierName }
-          logcat { "Mariia: filtered: ${filtered.map { it.tier.tierName }}" }
           quotesToCompare =
             filtered
         }

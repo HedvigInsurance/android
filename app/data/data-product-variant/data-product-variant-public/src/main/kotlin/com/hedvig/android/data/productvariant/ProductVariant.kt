@@ -13,6 +13,7 @@ data class ProductVariant(
   val documents: List<InsuranceVariantDocument>,
   val displayTierName: String?,
   val tierDescription: String?,
+  val termsVersion: String,
 )
 
 data class ProductVariantPeril(

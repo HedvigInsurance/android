@@ -119,6 +119,7 @@ internal class TierQuoteMapper {
       documents = variant.documents.map { insuranceVariantDocumentToDbModel(it) },
       tierName = variant.displayTierName,
       tierDescription = variant.tierDescription,
+      termsVersion = variant.termsVersion,
     )
   }
 
@@ -133,6 +134,7 @@ internal class TierQuoteMapper {
       documents = variantDbModel.documents.map { insuranceVariantDocumentFromDbModel(it) },
       displayTierName = variantDbModel.tierName,
       tierDescription = variantDbModel.tierDescription,
+      termsVersion = variantDbModel.termsVersion,
     )
   }
 

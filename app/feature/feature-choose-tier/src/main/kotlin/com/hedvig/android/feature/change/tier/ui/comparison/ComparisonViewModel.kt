@@ -3,11 +3,16 @@ package com.hedvig.android.feature.change.tier.ui.comparison
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import arrow.core.Either.Left
+import arrow.core.Either.Right
+import com.hedvig.android.feature.change.tier.data.ComparisonData
+import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
+import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonEvent.Reload
+import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Failure
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -15,28 +20,41 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class ComparisonViewModel(
-  quoteIds: List<String>,
-  tierRepository: ChangeTierRepository,
+  termsIds: List<String>,
+  getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
     initialState = Loading,
     presenter = ComparisonPresenter(
-      quoteIds = quoteIds,
-      tierRepository = tierRepository,
+      termsIds = termsIds,
+      getCoverageComparisonUseCase = getCoverageComparisonUseCase,
     ),
   )
 
 private class ComparisonPresenter(
-  private val quoteIds: List<String>,
-  private val tierRepository: ChangeTierRepository,
+  private val termsIds: List<String>,
+  private val getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculePresenter<ComparisonEvent, ComparisonState> {
   @Composable
   override fun MoleculePresenterScope<ComparisonEvent>.present(lastState: ComparisonState): ComparisonState {
     var currentState by remember { mutableStateOf(lastState) }
+    var loadIteration by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
-      // TODO: add error state!!! and either!
-      val result = tierRepository.getQuotesById(quoteIds).sortedBy { it.tier.tierLevel }
-      currentState = Success(result)
+    CollectEvents { event ->
+      when (event) {
+        Reload -> loadIteration++
+      }
+    }
+
+    LaunchedEffect(loadIteration) {
+      val result = getCoverageComparisonUseCase.invoke(termsIds)
+      currentState = when (result) {
+        is Left -> {
+          Failure
+        }
+        is Right -> {
+          Success(result.value)
+        }
+      }
     }
 
     return currentState
@@ -46,7 +64,11 @@ private class ComparisonPresenter(
 internal sealed interface ComparisonState {
   data object Loading : ComparisonState
 
-  data class Success(val quotes: List<TierDeductibleQuote>) : ComparisonState
+  data object Failure : ComparisonState
+
+  data class Success(val comparisonData: ComparisonData) : ComparisonState
 }
 
-internal sealed interface ComparisonEvent
+internal sealed interface ComparisonEvent {
+  data object Reload : ComparisonEvent
+}
