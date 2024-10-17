@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,6 +105,7 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -120,7 +122,13 @@ internal fun HelpCenterHomeDestination(
   onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+  LaunchedEffect(uiState.destinationToNavigate) {
+    val destination = uiState.destinationToNavigate
+    if (destination != null && uiState.selectedQuickAction == null) {
+      viewModel.emit(HelpCenterEvent.ClearNavigation)
+      onNavigateToQuickLink(destination)
+    }
+  }
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,
@@ -128,7 +136,9 @@ internal fun HelpCenterHomeDestination(
     selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
-    onNavigateToQuickLink = onNavigateToQuickLink,
+    onNavigateToQuickLink = {
+      viewModel.emit(HelpCenterEvent.NavigateToQuickAction(it))
+    },
     onQuickActionsSelected = {
       viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
     },
@@ -168,6 +178,7 @@ private fun HelpCenterHomeScreen(
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
+  logcat { "Mariia: selectedQuickAction is $selectedQuickAction" }
   when (selectedQuickAction) {
     is MultiSelectQuickLink -> {
       var chosenIndex by remember { mutableStateOf<Int?>(null) }
@@ -252,9 +263,8 @@ private fun HelpCenterHomeScreen(
             enabled = selectedIndex != null,
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-              selectedIndex?.let {
-                onDismissQuickActionDialog()
-                onNavigateToQuickLink(selectedQuickAction.links[it].quickLinkDestination)
+              selectedIndex?.let { index ->
+                onNavigateToQuickLink(selectedQuickAction.links[index].quickLinkDestination)
               }
             },
           )
@@ -840,7 +850,7 @@ private class QuickLinkUiStatePreviewProvider :
           addAll(
             List(3) {
               HelpCenterUiState.QuickLink(
-                QuickAction.StandaloneQuickLink(
+                StandaloneQuickLink(
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
                   QuickLinkDestination.OuterDestination.QuickLinkTermination,
@@ -850,7 +860,7 @@ private class QuickLinkUiStatePreviewProvider :
           )
           add(
             HelpCenterUiState.QuickLink(
-              QuickAction.MultiSelectQuickLink(
+              MultiSelectQuickLink(
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                 emptyList(),
