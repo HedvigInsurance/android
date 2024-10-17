@@ -259,7 +259,7 @@ class ContractDetailPresenterTest {
           insurableLimits = listOf(),
           documents = listOf(),
           displayTierName = "Standard",
-          tierDescription = "Our standard coverage"
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -273,7 +273,7 @@ class ContractDetailPresenterTest {
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
-      tierName = "STANDARD"
+      tierName = "STANDARD",
     )
 
     private val insuranceWithTerminationDate = InsuranceContract(
@@ -295,7 +295,7 @@ class ContractDetailPresenterTest {
           insurableLimits = listOf(),
           documents = listOf(),
           displayTierName = "Standard",
-          tierDescription = "Our standard coverage"
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -309,7 +309,7 @@ class ContractDetailPresenterTest {
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
-      tierName = "STANDARD"
+      tierName = "STANDARD",
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, InsuranceContract>>()

@@ -162,13 +162,13 @@ private class SelectCoveragePresenter(
                     id = CURRENT_ID,
                     deductible = currentContractData.deductible,
                     tier = Tier(
-                      tierName = params.currentTierName, // todo: HERE edge case. If we have already changed
+                      tierName = params.currentTierName,
                       tierLevel = params.currentTierLevel,
                       tierDescription = currentContractData.productVariant.tierDescription,
                       tierDisplayName = currentContractData.productVariant.displayTierName,
                     ),
                     productVariant = currentContractData.productVariant,
-                    displayItems = listOf(), // todo: here too!
+                    displayItems = currentContractData.displayItems,
                     premium = currentContractData.currentDisplayPremium,
                   )
                 } else {
