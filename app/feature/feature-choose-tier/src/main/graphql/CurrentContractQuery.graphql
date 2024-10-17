@@ -4,44 +4,10 @@ query CurrentContractsForTierChange {
       id
       exposureDisplayName
       upcomingChangedAgreement {
-        displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
-        }
-        premium {
-          ...MoneyFragment
-        }
-        deductible {
-          displayText
-          percentage
-          amount {
-            ...MoneyFragment
-          }
-        }
-        productVariant {
-          ...ProductVariantFragment
-        }
+        ...GeneralAgreementFragment
       }
       currentAgreement {
-        displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
-        }
-        premium {
-          ...MoneyFragment
-        }
-        deductible {
-          displayText
-          percentage
-          amount {
-            ...MoneyFragment
-          }
-        }
-        productVariant {
-          ...ProductVariantFragment
-        }
+        ...GeneralAgreementFragment
       }
     }
   }

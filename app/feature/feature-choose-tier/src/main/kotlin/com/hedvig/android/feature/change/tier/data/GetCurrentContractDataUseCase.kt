@@ -16,6 +16,7 @@ import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
 import octopus.CurrentContractsForTierChangeQuery
+import octopus.fragment.GeneralAgreementFragment
 
 internal interface GetCurrentContractDataUseCase {
   suspend fun invoke(insuranceId: String): Either<ErrorMessage, CurrentContractData>
@@ -45,52 +46,35 @@ internal class GetCurrentContractDataUseCaseImpl(
         logcat(ERROR) { "Tried to start Change Tier flow but got null active contract" }
         raise(ErrorMessage("Tried to start Change Tier flow but got null active contract"))
       } else {
-        if (dataResult.upcomingChangedAgreement != null) {
-          val deductible = dataResult.upcomingChangedAgreement.deductible?.let {
-            Deductible(
-              deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
-              deductiblePercentage = it.percentage,
-              description = it.displayText,
-            )
-          }
-          CurrentContractData(
-            currentExposureName = dataResult.exposureDisplayName,
-            currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.upcomingChangedAgreement.premium),
-            deductible = deductible,
-            productVariant = dataResult.upcomingChangedAgreement.productVariant.toProductVariant(),
-            displayItems = dataResult.upcomingChangedAgreement.displayItems.map {
-              ChangeTierDeductibleDisplayItem(
-                displayTitle = it.displayTitle,
-                displaySubtitle = it.displaySubtitle,
-                displayValue = it.displayValue,
-              )
-            },
-          )
-        } else {
-          val deductible = dataResult.currentAgreement.deductible?.let {
-            Deductible(
-              deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
-              deductiblePercentage = it.percentage,
-              description = it.displayText,
-            )
-          }
-          CurrentContractData(
-            currentExposureName = dataResult.exposureDisplayName,
-            currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.currentAgreement.premium),
-            deductible = deductible,
-            productVariant = dataResult.currentAgreement.productVariant.toProductVariant(),
-            displayItems = dataResult.currentAgreement.displayItems.map {
-              ChangeTierDeductibleDisplayItem(
-                displayTitle = it.displayTitle,
-                displaySubtitle = it.displaySubtitle,
-                displayValue = it.displayValue,
-              )
-            },
-          )
-        }
+        val agreement = dataResult.upcomingChangedAgreement?.toCurrentContractData(dataResult.exposureDisplayName)
+          ?: dataResult.currentAgreement.toCurrentContractData(dataResult.exposureDisplayName)
+        agreement
       }
     }
   }
+}
+
+private fun GeneralAgreementFragment.toCurrentContractData(exposureDisplayName: String): CurrentContractData {
+  val deductible = this.deductible?.let {
+    Deductible(
+      deductibleAmount = UiMoney.fromMoneyFragment(it.amount),
+      deductiblePercentage = it.percentage,
+      description = it.displayText,
+    )
+  }
+  return CurrentContractData(
+    currentExposureName = exposureDisplayName,
+    currentDisplayPremium = UiMoney.fromMoneyFragment(this.premium),
+    deductible = deductible,
+    productVariant = this.productVariant.toProductVariant(),
+    displayItems = this.displayItems.map {
+      ChangeTierDeductibleDisplayItem(
+        displayTitle = it.displayTitle,
+        displaySubtitle = it.displaySubtitle,
+        displayValue = it.displayValue,
+      )
+    },
+  )
 }
 
 data class CurrentContractData(
