@@ -9,6 +9,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -53,6 +54,9 @@ internal class DownloadPdfUseCaseImpl(
         }
         downloadedFile
       } catch (exception: Exception) {
+        if (exception is CancellationException) {
+          throw exception
+        }
         logcat(LogPriority.ERROR, exception) { "Could not download pdf with: $exception" }
         raise(ErrorMessage("Could not download pdf"))
       }

@@ -169,13 +169,9 @@ internal fun HedvigNavHost(
       navigator = navigator,
     )
     changeTierGraph(
-      openUrl = openUrl,
       navigator = navigator,
       navController = hedvigAppState.navController,
       applicationId = hedvigBuildConstants.appId,
-      onNavigateToNewConversation = { backStackEntry ->
-        navigateToNewConversation(backStackEntry)
-      },
     )
     insuranceGraph(
       nestedGraphs = {
@@ -220,7 +216,7 @@ internal fun HedvigNavHost(
                 destination = ChooseTierGraphDestination(
                   InsuranceCustomizationParameters(
                     insuranceId = idWithIntent.first,
-                    activationDateEpochDays = idWithIntent.second.activationDate.toEpochDays(),
+                    activationDate = idWithIntent.second.activationDate,
                     currentTierLevel = idWithIntent.second.currentTierLevel,
                     currentTierName = idWithIntent.second.currentTierName,
                     quoteIds = idWithIntent.second.quotes.map {

@@ -1,0 +1,20 @@
+fragment GeneralAgreementFragment on Agreement {
+  displayItems {
+    displaySubtitle
+    displayTitle
+    displayValue
+  }
+  premium {
+    ...MoneyFragment
+  }
+  deductible {
+    displayText
+    percentage
+    amount {
+      ...MoneyFragment
+    }
+  }
+  productVariant {
+    ...ProductVariantFragment
+  }
+}

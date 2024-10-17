@@ -42,7 +42,7 @@ data class Deductible(
   val deductiblePercentage: Int?,
   val description: String,
 ) {
-  val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
+  private val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
   val optionText = if (percentageNotZero && deductibleAmount != null) {
     "$deductibleAmount + $deductiblePercentage%"
   } else if (percentageNotZero) {

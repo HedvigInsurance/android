@@ -116,9 +116,9 @@ internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLock
 fun RadioOption(
   chosenState: ChosenState,
   onClick: () -> Unit,
-  optionContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   lockedState: LockedState = NotLocked,
+  optionContent: @Composable () -> Unit,
 ) {
   val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
   val interactionSource = remember { MutableInteractionSource() }

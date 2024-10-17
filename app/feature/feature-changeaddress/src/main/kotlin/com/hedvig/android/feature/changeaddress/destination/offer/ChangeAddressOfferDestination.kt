@@ -11,15 +11,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,14 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -328,43 +326,59 @@ private fun Documents(quote: MoveQuote, openUrl: (String) -> Unit) {
     if (index > 0) {
       Spacer(Modifier.height(8.dp))
     }
-    HedvigCard(
-      onClick = { openUrl(document.url) },
+    document.type.getStringRes()?.let { titleRes ->
+      DocumentCard(
+        onClick = { openUrl(document.url) },
+        title = stringResource(titleRes),
+        subtitle = document.displayName,
+      )
+    }
+  }
+}
+
+@Composable
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
+  HedvigCard(
+    onClick = onClick,
+    modifier = Modifier
+      .heightIn(min = 72.dp),
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      ) {
-        Column(Modifier.weight(1f, true)) {
-          val fontSize = MaterialTheme.typography.bodySmall.fontSize
-          Text(
-            text = buildAnnotatedString {
-              document.type.getStringRes()?.let {
-                append(stringResource(id = it))
-              }
-              withStyle(
-                SpanStyle(
-                  baselineShift = BaselineShift(0.3f),
-                  fontSize = fontSize,
-                ),
-              ) {
-                append(" PDF")
-              }
-            },
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = document.displayName,
-            style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-          )
-        }
-        Spacer(Modifier.width(8.dp))
-        Icon(
-          imageVector = Icons.Hedvig.ArrowNorthEast,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-        )
-      }
+      com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Column {
+            Text(
+              text = stringWithShiftedLabel(
+                text = title,
+                labelText = "PDF",
+                labelFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textColor = LocalContentColor.current,
+                textFontSize = MaterialTheme.typography.bodyLarge.fontSize,
+              ),
+            )
+            if (!subtitle.isNullOrBlank()) {
+              Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyLarge.copy
+                  (color = MaterialTheme.colorScheme.onSurfaceVariant),
+              )
+            }
+          }
+        },
+        endSlot = {
+          Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+              imageVector = Icons.Hedvig.ArrowNorthEast,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        },
+        spaceBetween = 8.dp,
+      )
     }
   }
 }

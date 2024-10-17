@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.change.tier.navigation
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
@@ -25,13 +24,7 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.changeTierGraph(
-  navigator: Navigator,
-  navController: NavController,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  openUrl: (String) -> Unit,
-  applicationId: String,
-) {
+fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavController, applicationId: String) {
   navdestination<StartTierFlowDestination> { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
       parametersOf(this.insuranceId)
@@ -56,7 +49,7 @@ fun NavGraphBuilder.changeTierGraph(
       navigateUp = navigator::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
         navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
-          typedPopUpTo<StartTierFlowDestination> {
+          typedPopUpTo<StartTierFlowChooseInsuranceDestination> {
             inclusive = true
           }
         }
@@ -82,11 +75,14 @@ fun NavGraphBuilder.changeTierGraph(
             ChooseTierDestination.Summary(
               SummaryParameters(
                 quoteIdToSubmit = quote.id,
-                activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
+                activationDate = chooseTierGraphDestination.parameters.activationDate,
                 insuranceId = chooseTierGraphDestination.parameters.insuranceId,
               ),
             ),
           )
+        },
+        popBackStack = {
+          navigator.popBackStack()
         },
         navigateToComparison = { listOfQuotes ->
           navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id }))
@@ -121,7 +117,7 @@ fun NavGraphBuilder.changeTierGraph(
           context.sharePDF(it, applicationId)
         },
         onSuccess = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
+          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
               inclusive = true
             }
@@ -130,20 +126,16 @@ fun NavGraphBuilder.changeTierGraph(
       )
     }
 
-    navdestination<ChooseTierDestination.SubmitSuccess> { backStackEntry ->
+    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) { backStackEntry ->
       SubmitTierSuccessScreen(
         activationDate,
-        navigateUp = {
-          // todo: we don't need to pop up anything more here, right?
-          //  we did it before in ChooseTierDestination.Summary
-          navigator.navigateUp()
-        },
+        popBackStack = navigator::popBackStack,
       )
     }
 
     navdestination<ChooseTierDestination.SubmitFailure> { _ ->
       SubmitTierFailureScreen(
-        navigateUp = navigator::navigateUp,
+        popBackStack = navigator::popBackStack,
       )
     }
   }

@@ -2,9 +2,8 @@ package com.hedvig.android.data.changetier.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -48,36 +47,43 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
               source = source.toSource(),
             ),
           )
-          .fetchPolicy(FetchPolicy.NetworkOnly)
           .safeExecute()
         val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
         if (intent != null) {
-          try {
-            val quotes = intent.quotes.map {
-              TierDeductibleQuote(
-                id = it.id,
-                deductible = it.deductible.toDeductible(),
-                displayItems = it.displayItems.toDisplayItems(),
-                premium = UiMoney.fromMoneyFragment(it.premium),
-                productVariant = it.productVariant.toProductVariant(),
-                tier = Tier(
-                  tierName = it.tierName!!,
-                  tierLevel = it.tierLevel!!,
-                  tierDescription = it.productVariant.tierDescription,
-                  tierDisplayName = it.productVariant.displayNameTier,
-                ),
-              )
+          val quotes = intent.quotes.map {
+            logcat {
+              "Mariia: getting these quotes: ${
+                intent.quotes.map {
+                  it.tierName to "amount ${it.deductible?.amount?.amount} percentage ${it.deductible?.percentage}"
+                }
+              }"
+            } // todo: remove logging later!
+            ensureNotNull(it.tierLevel) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierLevel was null")
             }
-            ChangeTierDeductibleIntent(
-              activationDate = intent.activationDate,
-              currentTierLevel = intent.currentTierLevel,
-              currentTierName = intent.currentTierName,
-              quotes = quotes,
+            ensureNotNull(it.tierName) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
+            }
+            TierDeductibleQuote(
+              id = it.id,
+              deductible = it.deductible?.toDeductible(),
+              displayItems = it.displayItems.toDisplayItems(),
+              premium = UiMoney.fromMoneyFragment(it.premium),
+              productVariant = it.productVariant.toProductVariant(),
+              tier = Tier(
+                tierName = it.tierName,
+                tierLevel = it.tierLevel,
+                tierDescription = it.productVariant.tierDescription,
+                tierDisplayName = it.productVariant.displayNameTier,
+              ),
             )
-          } catch (e: Exception) {
-            logcat(ERROR) { "Tried to get changeTierQuotes but quotes have tierLevel or tierName == null!" }
-            raise(ErrorMessage())
           }
+          ChangeTierDeductibleIntent(
+            activationDate = intent.activationDate,
+            currentTierLevel = intent.currentTierLevel,
+            currentTierName = intent.currentTierName,
+            quotes = quotes,
+          )
         } else {
           if (changeTierDeductibleResponse.isRight()) {
             logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
@@ -92,16 +98,12 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   }
 }
 
-private fun ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.Deductible?.toDeductible(): Deductible? {
-  return if (this != null) {
-    Deductible(
-      deductibleAmount = UiMoney.fromMoneyFragment(this.amount),
-      deductiblePercentage = this.percentage,
-      description = this.displayText,
-    )
-  } else {
-    null
-  }
+private fun ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.Deductible.toDeductible(): Deductible {
+  return Deductible(
+    deductibleAmount = UiMoney.fromMoneyFragment(this.amount),
+    deductiblePercentage = this.percentage,
+    description = this.displayText,
+  )
 }
 
 private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.DisplayItem>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
@@ -125,7 +127,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(199.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -134,6 +141,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -145,7 +154,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(255.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -154,6 +168,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -165,7 +181,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(355.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier(
+      "BAS",
+      tierLevel = 0,
+      tierDescription = "Vårt paket med grundläggande villkor.",
+      tierDisplayName = "Bas",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -174,6 +195,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -185,7 +208,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, tierDescription = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -194,6 +222,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -205,7 +235,12 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, tierDescription = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -214,6 +249,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
     ),
   ),
 )

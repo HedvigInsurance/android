@@ -54,13 +54,13 @@ fun TabsShowcase() {
         .verticalScroll(rememberScrollState()),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      HedvigText(text = "2 tabs")
+      HedvigText(text = "1 tab")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Small,
-        tabTitles = titles2,
+        tabTitles = listOf("One title"),
         selectedTabIndex = selectedIndex00,
         onTabChosen = {
           selectedIndex00 = it

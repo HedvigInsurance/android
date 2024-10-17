@@ -4,13 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
@@ -22,9 +20,12 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeDeductibleInDialog
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTierInDialog
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.LaunchComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.Reload
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetDeductibleToPreviouslyChosen
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetTierToPreviouslyChosen
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SubmitChosenQuoteToContinue
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
@@ -82,23 +83,22 @@ private class SelectCoveragePresenter(
           if (state !is PartialUiState.Success) return@CollectEvents
           // set newly chosen tier
           chosenTier = chosenTierInDialog
-          chosenQuote = if (state.map[chosenTier]?.size==1) state.map[chosenTier]?.get(0) else  null
-          chosenQuoteInDialog = chosenQuote
-//          val locallyChosen = chosenTierInDialog
-//          locallyChosen?.let { local ->
-//            chosenTier = local
-//            // try to pre-choose a quote with the same deductible and newly chosen coverage
-//            // if there is no such quote, the deductible will not be per-chosen
-//            val previouslyChosenDeductible = chosenQuote?.deductible
-//            val quoteWithNewTierOldDeductible =
-//              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
-//            chosenQuote = quoteWithNewTierOldDeductible
-//          }
+          // try to pre-choose a quote with the same deductible and newly chosen coverage
+          // if there is no such quote, the deductible will not be per-chosen
+          val quoteWithNewTierOldDeductible = chosenTier?.let { t ->
+            val previouslyChosenDeductible = chosenQuote?.deductible
+            if (state.map[t]?.size == 1) {
+              state.map[t]?.get(0)
+            } else {
+              state.map[t]?.firstOrNull { it.deductible == previouslyChosenDeductible }
+            }
+          }
+          chosenQuote = quoteWithNewTierOldDeductible
+          chosenQuoteInDialog = quoteWithNewTierOldDeductible
         }
 
-        ClearNavigationStep -> {
+        ClearNavigateFurtherStep -> {
           quoteToNavigateFurther = null
-          quotesToCompare = null
         }
 
         SubmitChosenQuoteToContinue -> {
@@ -113,8 +113,10 @@ private class SelectCoveragePresenter(
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
-          val filtered = (currentPartialState as PartialUiState.Success).map.values.flatten()
-            .filter { it.deductible == chosenQuote?.deductible }
+          val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
+          logcat { "Mariia: notFiltered: ${notFiltered.map { it.tier.tierName }}" }
+          val filtered = notFiltered.distinctBy { it.tier.tierName }
+          logcat { "Mariia: filtered: ${filtered.map { it.tier.tierName }}" }
           quotesToCompare =
             filtered
         }
@@ -125,6 +127,18 @@ private class SelectCoveragePresenter(
 
         is ChangeTierInDialog -> {
           chosenTierInDialog = event.tier
+        }
+
+        SetDeductibleToPreviouslyChosen -> {
+          chosenQuoteInDialog = chosenQuote
+        }
+
+        SetTierToPreviouslyChosen -> {
+          chosenTierInDialog = chosenTier
+        }
+
+        ClearNavigateToComparison -> {
+          quotesToCompare = null
         }
       }
     }
@@ -154,7 +168,7 @@ private class SelectCoveragePresenter(
                       tierDisplayName = currentContractData.productVariant.displayTierName,
                     ),
                     productVariant = currentContractData.productVariant,
-                    displayItems = listOf(),
+                    displayItems = currentContractData.displayItems,
                     premium = currentContractData.currentDisplayPremium,
                   )
                 } else {
@@ -163,6 +177,7 @@ private class SelectCoveragePresenter(
               current?.let {
                 tierRepository.addQuotesToDb(listOf(it))
               }
+              logcat { "Mariia: current quote: $current" }
               val quotes = buildList {
                 addAll(quotesResult)
                 current?.let {
@@ -192,38 +207,35 @@ private class SelectCoveragePresenter(
       }
     }
 
-    return when (currentPartialState) {
-      is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
+    val currentPartialStateValue = currentPartialState
+    return when (currentPartialStateValue) {
+      is PartialUiState.Failure -> Failure(currentPartialStateValue.reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
-        logcat { "Mariia:" +
-          "chosenTier: $chosenTier" +
-          "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
-          "chosenQuote: ${chosenQuote?.deductible}" +
-          "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}" }
-
-        val chosenQuoteIndex = (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it!=-1 }
-        val chosenTierIndex = (currentPartialState as PartialUiState.Success).map.keys.sortedBy{it.tierLevel}.indexOf(chosenTier).takeIf { it!=-1 }
+        val chosenQuoteIndex =
+          currentPartialStateValue.map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
+        val chosenTierIndex =
+          currentPartialStateValue.map.keys.sortedBy { it.tierLevel }.indexOf(chosenTier)
+            .takeIf { it != -1 }
         Success(
-          map = (currentPartialState as PartialUiState.Success).map,
-          currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
+          map = currentPartialStateValue.map,
+          currentActiveQuote = currentPartialStateValue.currentActiveQuote,
           uiState = SelectCoverageSuccessUiState(
-            isCurrentChosen = chosenQuote == (currentPartialState as PartialUiState.Success).currentActiveQuote,
+            isCurrentChosen = chosenQuote == currentPartialStateValue.currentActiveQuote,
             chosenQuote = chosenQuote,
             chosenTier = chosenTier,
             tiers = buildListOfTiersAndPremiums(
-              map = (currentPartialState as PartialUiState.Success).map,
-              currentDeductible = chosenQuote?.deductible,
+              map = currentPartialStateValue.map,
             ),
-            quotesForChosenTier = (currentPartialState as PartialUiState.Success).map[chosenTier]!!,
-            isTierChoiceEnabled = (currentPartialState as PartialUiState.Success).map.keys.size > 1,
-            contractData = (currentPartialState as PartialUiState.Success).contractData,
+            quotesForChosenTier = currentPartialStateValue.map[chosenTier]!!,
+            isTierChoiceEnabled = currentPartialStateValue.map.keys.size > 1,
+            contractData = currentPartialStateValue.contractData,
             quoteToNavigateFurther = quoteToNavigateFurther,
             quotesToCompare = quotesToCompare,
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
             chosenTierIndex = chosenTierIndex,
-            chosenQuoteIndex = chosenQuoteIndex
+            chosenQuoteIndex = chosenQuoteIndex,
           ),
         )
       }
@@ -231,17 +243,12 @@ private class SelectCoveragePresenter(
   }
 }
 
-private fun buildListOfTiersAndPremiums(
-  map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
-  currentDeductible: Deductible?,
-): List<Pair<Tier, String>> {
+@Composable
+private fun buildListOfTiersAndPremiums(map: Map<Tier, List<TierDeductibleQuote>>): List<Pair<Tier, UiMoney>> {
   return buildList {
     map.keys.forEach { tier ->
-      // trying to show premium for same deductible in different tier-coverage,
-      // but if this doesn't work, the lowest for this coverage
-      val premium = map[tier]!!.firstOrNull {
-        it.deductible == currentDeductible
-      }?.premium?.toString() ?: "Fr. ${map[tier]!!.minBy { it.tier.tierLevel }.premium}" // todo: hardcoded string, but may be ok?
+      // show the lowest premium for this coverage (with From... added later)
+      val premium = map[tier]!!.minBy { it.tier.tierLevel }.premium
       add(tier to premium)
     }
   }.sortedBy { pair ->
@@ -249,9 +256,7 @@ private fun buildListOfTiersAndPremiums(
   }
 }
 
-private fun mapQuotesToTiersAndQuotes(
-  quotes: List<TierDeductibleQuote>,
-): SnapshotStateMap<Tier, List<TierDeductibleQuote>> {
+private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>): Map<Tier, List<TierDeductibleQuote>> {
   val grouped = quotes
     .groupBy {
       it.tier
@@ -261,7 +266,7 @@ private fun mapQuotesToTiersAndQuotes(
         it.deductible?.deductibleAmount?.amount ?: it.premium.amount
       }
     }
-  val result = mutableStateMapOf(*grouped.toTypedArray())
+  val result = mapOf(*grouped.toTypedArray())
   return result
 }
 
@@ -269,6 +274,10 @@ internal sealed interface SelectCoverageEvent {
   data object SubmitChosenQuoteToContinue : SelectCoverageEvent
 
   data object ChangeDeductibleForChosenTier : SelectCoverageEvent
+
+  data object SetTierToPreviouslyChosen : SelectCoverageEvent
+
+  data object SetDeductibleToPreviouslyChosen : SelectCoverageEvent
 
   data object ChangeTier : SelectCoverageEvent
 
@@ -278,7 +287,9 @@ internal sealed interface SelectCoverageEvent {
 
   data object LaunchComparison : SelectCoverageEvent
 
-  data object ClearNavigationStep : SelectCoverageEvent
+  data object ClearNavigateFurtherStep : SelectCoverageEvent
+
+  data object ClearNavigateToComparison : SelectCoverageEvent
 
   data object Reload : SelectCoverageEvent
 }
@@ -303,7 +314,7 @@ private sealed interface PartialUiState {
   data class Success(
     val contractData: ContractData,
     val currentActiveQuote: TierDeductibleQuote?,
-    val map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
+    val map: Map<Tier, List<TierDeductibleQuote>>,
   ) : PartialUiState
 }
 
@@ -313,7 +324,7 @@ internal sealed interface SelectCoverageState {
   data class Success(
     val uiState: SelectCoverageSuccessUiState,
     val currentActiveQuote: TierDeductibleQuote?,
-    val map: SnapshotStateMap<Tier, List<TierDeductibleQuote>>,
+    val map: Map<Tier, List<TierDeductibleQuote>>,
   ) : SelectCoverageState
 
   data class Failure(val reason: FailureReason) : SelectCoverageState
@@ -336,7 +347,7 @@ internal data class SelectCoverageSuccessUiState(
   val isTierChoiceEnabled: Boolean,
   val quoteToNavigateFurther: TierDeductibleQuote? = null,
   val quotesToCompare: List<TierDeductibleQuote>? = null,
-  val tiers: List<Pair<Tier, String>>, // sorted list of tiers with corresponding premiums (depending on selected deductible)
+  val tiers: List<Pair<Tier, UiMoney>>, // sorted list of tiers with corresponding premiums (depending on selected deductible)
   val quotesForChosenTier: List<TierDeductibleQuote>,
 )
 
