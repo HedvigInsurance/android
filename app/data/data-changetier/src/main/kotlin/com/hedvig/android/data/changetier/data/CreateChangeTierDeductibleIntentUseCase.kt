@@ -48,14 +48,20 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
         if (intent != null) {
           val currentQuote = with(intent.agreementToChange) {
+            ensureNotNull(tierLevel) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierLevel was null")
+            }
+            ensureNotNull(tierName) {
+              ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierName was null")
+            }
             TierDeductibleQuote(
               id = TierConstants.CURRENT_ID,
               deductible = deductible?.toDeductible(),
               premium = UiMoney.fromMoneyFragment(premium),
               productVariant = productVariant.toProductVariant(),
               tier = Tier(
-                tierName = tierName ?: "", // todo: what do we do here?
-                tierLevel = tierLevel ?: 0, // todo: what do we do here?
+                tierName = tierName,
+                tierLevel = tierLevel,
                 tierDescription = productVariant.tierDescription,
                 tierDisplayName = productVariant.displayNameTier,
               ),
@@ -74,6 +80,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
             }
             ensureNotNull(it.tierName) {
               ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
+
             }
             TierDeductibleQuote(
               id = it.id,
