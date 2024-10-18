@@ -1,8 +1,13 @@
 package com.hedvig.android.feature.movingflow.data
 
+import com.hedvig.android.feature.movingflow.data.MovingFlowState.AddressInfo
+import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
+import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.ApartmentType
+import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.feature.movingflow.fragment.MoveIntentFragment
+import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
 import octopus.type.MoveExtraBuildingType
 import octopus.type.MoveExtraBuildingType.ATTEFALL
 import octopus.type.MoveExtraBuildingType.BARN
@@ -23,41 +28,38 @@ import octopus.type.MoveExtraBuildingType.UNKNOWN__
 @Serializable
 internal data class MovingFlowState(
   val id: String,
+  val moveFromAddressId: String,
   val housingType: HousingType,
+  val addressInfo: AddressInfo,
   val movingDateState: MovingDateState,
-  val houseState: HouseState,
-  val apartmentState: ApartmentState,
+  val propertyState: PropertyState,
+  val movingFlowQuotes: MovingFlowQuotes?,
 ) {
-  // todo do we need these two
-  private val isHouse = housingType == HousingType.Villa
-  private val isApartment = housingType == HousingType.ApartmentOwn || housingType == HousingType.ApartmentRent
+  @Serializable
+  data class AddressInfo(
+    val street: String?,
+    val postalCode: String?,
+  )
 
   @Serializable
   data class MovingDateState(
-    val allowedMovingDateMin: LocalDate,
-    val allowedMovingDateMax: LocalDate,
-    val selectedMovingDate: LocalDate = allowedMovingDateMin,
-  ) {
-    val allowedMovingDateRange: ClosedRange<LocalDate>
-      get() = allowedMovingDateMin..allowedMovingDateMax
-  }
+    @Serializable(with = ClosedRangeSerializer::class)
+    val allowedMovingDateRange: ClosedRange<LocalDate>,
+    val selectedMovingDate: LocalDate = allowedMovingDateRange.start,
+  )
 
   @Serializable
   data class NumberCoInsuredState private constructor(
-    val allowedNumberCoInsuredMin: Int,
-    val allowedNumberCoInsuredMax: Int,
+    @Serializable(with = ClosedRangeSerializer::class)
+    val allowedNumberCoInsuredRange: ClosedRange<Int>,
     val selectedNumberCoInsured: Int,
   ) {
-    val allowedNumberCoInsuredRange: ClosedRange<Int>
-      get() = allowedNumberCoInsuredMin..allowedNumberCoInsuredMax
-
     companion object {
       operator fun invoke(maxNumberCoInsured: Int?, suggestedNumberCoInsured: Int): NumberCoInsuredState {
         @Suppress("NAME_SHADOWING")
         val maxNumberCoInsured = maxNumberCoInsured ?: SaneMaxNumberCoInsured
         return NumberCoInsuredState(
-          allowedNumberCoInsuredMin = SaneMinNumberCoInsured,
-          allowedNumberCoInsuredMax = maxNumberCoInsured,
+          allowedNumberCoInsuredRange = SaneMinNumberCoInsured..maxNumberCoInsured,
           selectedNumberCoInsured = suggestedNumberCoInsured.coerceAtMost(maxNumberCoInsured),
         )
       }
@@ -66,90 +68,99 @@ internal data class MovingFlowState(
 
   @Serializable
   data class SquareMetersState(
-    val allowedSquareMetersMin: Int,
-    val allowedSquareMetersMax: Int,
+    @Serializable(with = ClosedRangeSerializer::class)
+    val allowedSquareMetersRange: ClosedRange<Int>,
     val selectedSquareMeters: Int?,
   ) {
-    val allowedSquareMetersRange: ClosedRange<Int>
-      get() = allowedSquareMetersMin..allowedSquareMetersMax
-
     companion object {
       operator fun invoke(maxSquareMeters: Int?) = SquareMetersState(
-        allowedSquareMetersMin = SaneMinSquareMeters,
-        allowedSquareMetersMax = maxSquareMeters ?: SaneMaxSquareMeters,
+        allowedSquareMetersRange = SaneMinSquareMeters..(maxSquareMeters ?: SaneMaxSquareMeters),
         selectedSquareMeters = null,
       )
     }
   }
 
   @Serializable
-  data class ApartmentState(
-    val numberCoInsuredState: NumberCoInsuredState,
-    val squareMetersState: SquareMetersState,
-    val isAvailableForStudentState: IsAvailableForStudentState,
-    //
-  ) {
-    @Serializable
-    sealed interface IsAvailableForStudentState {
-      object NotAvailable : IsAvailableForStudentState
-
-      data class Available(val selectedIsStudent: Boolean) : IsAvailableForStudentState
-    }
-  }
-
-  @Serializable
-  data class HouseState(
-    val numberCoInsuredState: NumberCoInsuredState,
-    val squareMetersState: SquareMetersState,
-    val extraBuildingTypesState: ExtraBuildingTypesState,
-    val ancillaryArea: Int?,
-    val yearOfConstruction: Int?,
-    val numberOfBathrooms: Int?,
-    val isSublet: Boolean,
-  ) {
-    @Serializable
-    enum class MoveExtraBuildingType {
-      Garage,
-      Carport,
-      Shed,
-      Storehouse,
-      Friggebod,
-      Attefall,
-      Outhouse,
-      Guesthouse,
-      Gazebo,
-      Greenhouse,
-      Sauna,
-      Barn,
-      Boathouse,
-      Other,
-      Unknown,
-    }
+  sealed interface PropertyState {
+    val numberCoInsuredState: NumberCoInsuredState
+    val squareMetersState: SquareMetersState
 
     @Serializable
-    data class ExtraBuildingTypesState(
-      val allowedExtraBuildingTypes: List<MoveExtraBuildingType>,
-      val selectedExtraBuildingTypes: List<ExtraBuildingInput>,
-    ) {
+    data class ApartmentState(
+      override val numberCoInsuredState: NumberCoInsuredState,
+      override val squareMetersState: SquareMetersState,
+      val apartmentType: ApartmentType,
+      val isAvailableForStudentState: IsAvailableForStudentState,
+    ) : PropertyState {
+      enum class ApartmentType {
+        RENT,
+        BRF,
+      }
+
       @Serializable
-      data class ExtraBuildingInput(
-        val area: Int,
-        val type: MoveExtraBuildingType,
-        val hasWaterConnected: Boolean,
-      )
+      sealed interface IsAvailableForStudentState {
+        @Serializable
+        object NotAvailable : IsAvailableForStudentState
+
+        @Serializable
+        data class Available(val selectedIsStudent: Boolean) : IsAvailableForStudentState
+      }
+    }
+
+    @Serializable
+    data class HouseState(
+      override val numberCoInsuredState: NumberCoInsuredState,
+      override val squareMetersState: SquareMetersState,
+      val extraBuildingTypesState: ExtraBuildingTypesState,
+      val ancillaryArea: Int?,
+      val yearOfConstruction: Int?,
+      val numberOfBathrooms: Int?,
+      val isSublet: Boolean,
+    ) : PropertyState {
+      @Serializable
+      enum class MoveExtraBuildingType {
+        Garage,
+        Carport,
+        Shed,
+        Storehouse,
+        Friggebod,
+        Attefall,
+        Outhouse,
+        Guesthouse,
+        Gazebo,
+        Greenhouse,
+        Sauna,
+        Barn,
+        Boathouse,
+        Other,
+        Unknown,
+      }
+
+      @Serializable
+      data class ExtraBuildingTypesState(
+        val allowedExtraBuildingTypes: List<MoveExtraBuildingType>,
+        val selectedExtraBuildingTypes: List<ExtraBuildingInput>,
+      ) {
+        @Serializable
+        data class ExtraBuildingInput(
+          val area: Int,
+          val type: MoveExtraBuildingType,
+          val hasWaterConnected: Boolean,
+        )
+      }
     }
   }
+
+  companion object
 }
 
-internal fun MoveIntentFragment.toMovingFlowState(housingType: HousingType): MovingFlowState {
-  return MovingFlowState(
-    id = id,
-    housingType = housingType,
-    movingDateState = MovingFlowState.MovingDateState(
-      allowedMovingDateMin = minMovingDate,
-      allowedMovingDateMax = maxMovingDate,
-    ),
-    houseState = MovingFlowState.HouseState(
+internal fun MovingFlowState.Companion.fromFragments(
+  moveIntentFragment: MoveIntentFragment,
+  moveIntentQuotesFragment: MoveIntentQuotesFragment?,
+  housingType: HousingType,
+): MovingFlowState {
+  val houseState = with(moveIntentFragment) {
+    MovingFlowState.PropertyState.HouseState(
       numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
         maxNumberCoInsured = maxHouseNumberCoInsured,
         suggestedNumberCoInsured = suggestedNumberCoInsured,
@@ -157,7 +168,7 @@ internal fun MoveIntentFragment.toMovingFlowState(housingType: HousingType): Mov
       squareMetersState = MovingFlowState.SquareMetersState(
         maxSquareMeters = maxHouseSquareMeters,
       ),
-      extraBuildingTypesState = MovingFlowState.HouseState.ExtraBuildingTypesState(
+      extraBuildingTypesState = MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState(
         allowedExtraBuildingTypes = extraBuildingTypes.map { it.toMoveExtraBuildingType() },
         selectedExtraBuildingTypes = emptyList(),
       ),
@@ -165,41 +176,62 @@ internal fun MoveIntentFragment.toMovingFlowState(housingType: HousingType): Mov
       yearOfConstruction = null,
       numberOfBathrooms = null,
       isSublet = false,
+    )
+  }
+  val apartmentState: (ApartmentType) -> MovingFlowState.PropertyState.ApartmentState = { apartmentType ->
+    with(moveIntentFragment) {
+      MovingFlowState.PropertyState.ApartmentState(
+        numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
+          maxNumberCoInsured = maxApartmentNumberCoInsured,
+          suggestedNumberCoInsured = suggestedNumberCoInsured,
+        ),
+        squareMetersState = MovingFlowState.SquareMetersState(
+          maxSquareMeters = maxApartmentSquareMeters,
+        ),
+        apartmentType = apartmentType,
+        isAvailableForStudentState = if (isApartmentAvailableforStudent == true) {
+          MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available(false)
+        } else {
+          MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
+        },
+      )
+    }
+  }
+  val propertyState = when (housingType) {
+    HousingType.ApartmentOwn -> apartmentState(ApartmentState.ApartmentType.BRF)
+    HousingType.ApartmentRent -> apartmentState(ApartmentState.ApartmentType.RENT)
+    HousingType.Villa -> houseState
+  }
+  return MovingFlowState(
+    id = moveIntentFragment.id,
+    moveFromAddressId = moveIntentFragment.currentHomeAddresses.first().id,
+    housingType = housingType,
+    addressInfo = AddressInfo(null, null),
+    movingDateState = MovingFlowState.MovingDateState(
+      allowedMovingDateRange = moveIntentFragment.minMovingDate..moveIntentFragment.maxMovingDate,
     ),
-    apartmentState = MovingFlowState.ApartmentState(
-      numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
-        maxNumberCoInsured = maxApartmentNumberCoInsured,
-        suggestedNumberCoInsured = suggestedNumberCoInsured,
-      ),
-      squareMetersState = MovingFlowState.SquareMetersState(
-        maxSquareMeters = maxApartmentSquareMeters,
-      ),
-      isAvailableForStudentState = if (isApartmentAvailableforStudent == true) {
-        MovingFlowState.ApartmentState.IsAvailableForStudentState.Available(false)
-      } else {
-        MovingFlowState.ApartmentState.IsAvailableForStudentState.NotAvailable
-      },
-    ),
+    propertyState = propertyState,
+    movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
   )
 }
 
-private fun MoveExtraBuildingType.toMoveExtraBuildingType(): MovingFlowState.HouseState.MoveExtraBuildingType {
+private fun MoveExtraBuildingType.toMoveExtraBuildingType(): HouseState.MoveExtraBuildingType {
   return when (this) {
-    GARAGE -> MovingFlowState.HouseState.MoveExtraBuildingType.Garage
-    CARPORT -> MovingFlowState.HouseState.MoveExtraBuildingType.Carport
-    SHED -> MovingFlowState.HouseState.MoveExtraBuildingType.Shed
-    STOREHOUSE -> MovingFlowState.HouseState.MoveExtraBuildingType.Storehouse
-    FRIGGEBOD -> MovingFlowState.HouseState.MoveExtraBuildingType.Friggebod
-    ATTEFALL -> MovingFlowState.HouseState.MoveExtraBuildingType.Attefall
-    OUTHOUSE -> MovingFlowState.HouseState.MoveExtraBuildingType.Outhouse
-    GUESTHOUSE -> MovingFlowState.HouseState.MoveExtraBuildingType.Guesthouse
-    GAZEBO -> MovingFlowState.HouseState.MoveExtraBuildingType.Gazebo
-    GREENHOUSE -> MovingFlowState.HouseState.MoveExtraBuildingType.Greenhouse
-    SAUNA -> MovingFlowState.HouseState.MoveExtraBuildingType.Sauna
-    BARN -> MovingFlowState.HouseState.MoveExtraBuildingType.Barn
-    BOATHOUSE -> MovingFlowState.HouseState.MoveExtraBuildingType.Boathouse
-    OTHER -> MovingFlowState.HouseState.MoveExtraBuildingType.Other
-    UNKNOWN__ -> MovingFlowState.HouseState.MoveExtraBuildingType.Unknown
+    GARAGE -> HouseState.MoveExtraBuildingType.Garage
+    CARPORT -> HouseState.MoveExtraBuildingType.Carport
+    SHED -> HouseState.MoveExtraBuildingType.Shed
+    STOREHOUSE -> HouseState.MoveExtraBuildingType.Storehouse
+    FRIGGEBOD -> HouseState.MoveExtraBuildingType.Friggebod
+    ATTEFALL -> HouseState.MoveExtraBuildingType.Attefall
+    OUTHOUSE -> HouseState.MoveExtraBuildingType.Outhouse
+    GUESTHOUSE -> HouseState.MoveExtraBuildingType.Guesthouse
+    GAZEBO -> HouseState.MoveExtraBuildingType.Gazebo
+    GREENHOUSE -> HouseState.MoveExtraBuildingType.Greenhouse
+    SAUNA -> HouseState.MoveExtraBuildingType.Sauna
+    BARN -> HouseState.MoveExtraBuildingType.Barn
+    BOATHOUSE -> HouseState.MoveExtraBuildingType.Boathouse
+    OTHER -> HouseState.MoveExtraBuildingType.Other
+    UNKNOWN__ -> HouseState.MoveExtraBuildingType.Unknown
   }
 }
 

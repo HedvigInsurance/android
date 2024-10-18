@@ -49,6 +49,7 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
+import com.hedvig.android.feature.movingflow.MovingFlowGraphDestination
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -100,6 +101,10 @@ internal fun HedvigNavHost(
     }
   }
 
+  fun navigateToNewConversation(builder: (NavOptionsBuilder.() -> Unit)? = null) {
+    hedvigAppState.navController.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
+  }
+
   fun navigateToNewConversation(backStackEntry: NavBackStackEntry, builder: (NavOptionsBuilder.() -> Unit)? = null) {
     with(navigator) {
       backStackEntry.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
@@ -114,7 +119,8 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = HomeDestination.Graph::class,
+//    startDestination = HomeDestination.Graph::class,
+    startDestination = MovingFlowGraphDestination::class,
     route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
@@ -324,7 +330,10 @@ internal fun HedvigNavHost(
         navigateToNewConversation(backStackEntry)
       },
     )
-    movingFlowGraph(navController = hedvigAppState.navController)
+    movingFlowGraph(
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { navigateToNewConversation() },
+    )
     connectPaymentGraph(
       navigator = navigator,
       market = market,

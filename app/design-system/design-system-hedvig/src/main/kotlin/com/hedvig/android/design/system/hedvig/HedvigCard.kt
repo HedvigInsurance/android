@@ -42,8 +42,8 @@ import com.hedvig.android.placeholder.shimmer
 @Composable
 fun HedvigCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
   Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
       .then(
         if (onClick != null) {
           Modifier.clickable(onClick = onClick)
