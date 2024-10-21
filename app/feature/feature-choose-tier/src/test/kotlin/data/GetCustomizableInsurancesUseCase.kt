@@ -1,8 +1,8 @@
 package data
 
+import arrow.core.Either
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
@@ -150,6 +150,7 @@ class GetCustomizableInsurancesUseCaseImplTest {
       featureManager = featureManager,
     )
     val result = useCase.invoke().first()
-    assertk.assertThat(result).isLeft().isNull()
+    assertk.assertThat(result).isEqualTo(Either.Right(null))
+    // todo: .assertThat(result).isRight().isNull() is not working with: expected to be instance of:<class arrow.core.Either$Right> but was instance of:<class arrow.core.Either$Left>
   }
 }

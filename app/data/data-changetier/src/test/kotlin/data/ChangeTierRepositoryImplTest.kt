@@ -139,7 +139,6 @@ class ChangeTierRepositoryImplTest {
 }
 
 internal class TierQuoteDaoFakeImpl : TierQuoteDao {
-
   var oneQuoteTurbine = Turbine<ChangeTierQuoteEntity?>()
 
   val allQuotesTurbine = Turbine<List<ChangeTierQuoteEntity>>()
@@ -167,11 +166,9 @@ internal class TierQuoteDaoFakeImpl : TierQuoteDao {
   override suspend fun getQuotesById(ids: List<String>): List<ChangeTierQuoteEntity> {
     return allQuotesTurbine.awaitItem().filter { ids.contains(it.id) }
   }
-
 }
 
 internal class CreateChangeTierDeductibleIntentUseCaseFake : CreateChangeTierDeductibleIntentUseCase {
-
   val intentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
 
   override suspend fun invoke(
@@ -180,5 +177,4 @@ internal class CreateChangeTierDeductibleIntentUseCaseFake : CreateChangeTierDed
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     return intentTurbine.awaitItem()
   }
-
 }

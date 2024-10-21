@@ -30,5 +30,4 @@ class TierQuoteMapperTest {
     assertk.assertThat(result)
       .isEqualTo(testQuote)
   }
-
 }

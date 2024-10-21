@@ -187,7 +187,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
                   tierDescription = "Our standard coverage"
                 }
               }
-              quotes = List(1){
+              quotes = List(1) {
                 buildChangeTierDeductibleQuote {
                   id = "id"
                   premium = buildMoney {
@@ -222,7 +222,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
         },
       )
     }
-
 
   @OptIn(ApolloExperimental::class)
   private val apolloClientWithGoodResponse: ApolloClient
@@ -370,32 +369,34 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   }
 
   @Test
-  fun `when response is otherwise good but the tierName in existing agreement is null the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponseButNullTierNameInExisting,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+  fun `when response is otherwise good but the tierName in existing agreement is null the result is ErrorMessage`() =
+    runTest {
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
+      val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+        apolloClient = apolloClientWithGoodResponseButNullTierNameInExisting,
+        featureManager = featureManager,
+      )
+      val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
-  }
+      assertk.assertThat(result)
+        .isNotNull()
+        .isLeft()
+    }
 
   @Test
-  fun `when response is otherwise good but the tierName in one of the quotes is null the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponseButNullTierNameInOneQuote,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+  fun `when response is otherwise good but the tierName in one of the quotes is null the result is ErrorMessage`() =
+    runTest {
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
+      val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+        apolloClient = apolloClientWithGoodResponseButNullTierNameInOneQuote,
+        featureManager = featureManager,
+      )
+      val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
-  }
+      assertk.assertThat(result)
+        .isNotNull()
+        .isLeft()
+    }
 
   @Test
   fun `in good response one of the quotes should have the current const id`() = runTest {

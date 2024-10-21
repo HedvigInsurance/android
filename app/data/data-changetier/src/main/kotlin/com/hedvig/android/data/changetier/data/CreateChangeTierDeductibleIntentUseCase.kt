@@ -80,7 +80,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
             }
             ensureNotNull(it.tierName) {
               ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
-
             }
             TierDeductibleQuote(
               id = it.id,
