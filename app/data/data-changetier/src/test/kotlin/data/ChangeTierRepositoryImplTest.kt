@@ -2,8 +2,10 @@ package data
 
 import app.cash.turbine.Turbine
 import arrow.core.Either
+import arrow.core.right
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
@@ -22,6 +24,7 @@ import com.hedvig.android.data.chat.database.ChangeTierQuoteEntity
 import com.hedvig.android.data.chat.database.TierQuoteDao
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCommitIntentMutation
 import oldTestQuoteDbModel
 import org.junit.Rule
@@ -60,22 +63,44 @@ class ChangeTierRepositoryImplTest {
     }
 
   @Test
-  fun `startChangeTierIntentAndGetQuotesId() clears old quotes from DB before proceed`() = runTest {
+  fun `if submitChangeTierQuote() get bad response return ErrorMessage`() = runTest {
     val mockDao = TierQuoteDaoFakeImpl()
     val mapper = TierQuoteMapper()
     val repository = ChangeTierRepositoryImpl(
       mapper = mapper,
       tierQuoteDao = mockDao,
-      apolloClient = apolloClientWithGoodResponseToSubmit,
-      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake()
+      apolloClient = apolloClientWithBadResponseToSubmit,
+      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
-    mockDao.insertAll(
-      listOf(oldTestQuoteDbModel)
-    )
-    repository.startChangeTierIntentAndGetQuotesId("insurance", SELF_SERVICE)
-    val result = repository.getQuotesById(listOf(oldTestQuoteDbModel.id))
+    val result = repository.submitChangeTierQuote(testId)
     assertk.assertThat(result)
-      .isEqualTo(emptyList())
+      .isLeft()
+  }
+
+  @Test
+  fun `startChangeTierIntentAndGetQuotesId() clears old quotes from DB before proceed`() = runTest {
+    val mockDao = TierQuoteDaoFakeImpl()
+    val mapper = TierQuoteMapper()
+    val useCase = CreateChangeTierDeductibleIntentUseCaseFake()
+    val repository = ChangeTierRepositoryImpl(
+      mapper = mapper,
+      tierQuoteDao = mockDao,
+      apolloClient = apolloClientWithGoodResponseToSubmit,
+      createChangeTierDeductibleIntentUseCase = useCase,
+    )
+    mockDao.insertAll(listOf(oldTestQuoteDbModel))
+    val previousState =
+      mockDao.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuoteDbModel.id } }
+    assertk.assertThat(previousState).isNotNull()
+    useCase.intentTurbine.add(
+      ChangeTierDeductibleIntent(
+        LocalDate(2024, 11, 11),
+        listOf(testQuote),
+      ).right(),
+    )
+    repository.startChangeTierIntentAndGetQuotesId(testId, SELF_SERVICE)
+    val result = mockDao.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuoteDbModel.id } }
+    assertk.assertThat(result).isNull()
   }
 
   @Test
@@ -86,7 +111,7 @@ class ChangeTierRepositoryImplTest {
       mapper = mapper,
       tierQuoteDao = mockDao,
       apolloClient = apolloClientWithGoodResponseToSubmit,
-      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake()
+      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
     mockDao.putFakeNull()
     val result = repository.getQuoteById(testId)
@@ -102,7 +127,7 @@ class ChangeTierRepositoryImplTest {
       mapper = mapper,
       tierQuoteDao = mockDao,
       apolloClient = apolloClientWithGoodResponseToSubmit,
-      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake()
+      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
     mockDao.putFakeQuoteDbModel()
     val result = repository.getQuoteById(testId)
@@ -115,13 +140,14 @@ class ChangeTierRepositoryImplTest {
 
 internal class TierQuoteDaoFakeImpl : TierQuoteDao {
 
-  private val oneQuoteTurbine = Turbine<ChangeTierQuoteEntity?>()
+  var oneQuoteTurbine = Turbine<ChangeTierQuoteEntity?>()
 
-  private val allQuotesTurbine = Turbine<List<ChangeTierQuoteEntity>>()
+  val allQuotesTurbine = Turbine<List<ChangeTierQuoteEntity>>()
 
   fun putFakeNull() {
     oneQuoteTurbine.add(null)
   }
+
   fun putFakeQuoteDbModel() {
     oneQuoteTurbine.add(testQuoteDbModel)
   }
@@ -139,12 +165,12 @@ internal class TierQuoteDaoFakeImpl : TierQuoteDao {
   }
 
   override suspend fun getQuotesById(ids: List<String>): List<ChangeTierQuoteEntity> {
-    return allQuotesTurbine.takeItem().filter { ids.contains(it.id) }
+    return allQuotesTurbine.awaitItem().filter { ids.contains(it.id) }
   }
 
 }
 
-internal class CreateChangeTierDeductibleIntentUseCaseFake: CreateChangeTierDeductibleIntentUseCase {
+internal class CreateChangeTierDeductibleIntentUseCaseFake : CreateChangeTierDeductibleIntentUseCase {
 
   val intentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
 
