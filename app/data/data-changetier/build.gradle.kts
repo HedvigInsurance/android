@@ -28,6 +28,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.dataChat)
+
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -40,7 +41,6 @@ dependencies {
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
-  testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
 }
