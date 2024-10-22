@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)

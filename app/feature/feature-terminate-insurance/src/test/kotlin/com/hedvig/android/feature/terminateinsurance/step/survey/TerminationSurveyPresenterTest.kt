@@ -6,13 +6,26 @@ import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isSameInstanceAs
+import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
@@ -29,6 +42,7 @@ import org.junit.Test
 class TerminationSurveyPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
+  private val downgradeSuggestion = SurveyOptionSuggestion.Action.DowngradePriceByChangingTier("description", "Button")
 
   private val listOfOptionsForHome = listOf(
     TerminationSurveyOption(
@@ -61,8 +75,8 @@ class TerminationSurveyPresenterTest {
     TerminationSurveyOption(
       id = "id4",
       title = "Other reason",
-      feedBackRequired = true,
-      suggestion = null,
+      feedBackRequired = false,
+      suggestion = downgradeSuggestion,
       listIndex = 3,
       subOptions = listOf(),
     ),
@@ -218,7 +232,114 @@ class TerminationSurveyPresenterTest {
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
     }
   }
+
+  @Test
+  fun `when option contain suggestion to change tier disable continue`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      skipItems(1)
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      val current = awaitItem()
+      val currentSuggestion = current.selectedOption?.suggestion
+      val currentContinueEnabled = current.continueAllowed
+      assertThat(currentSuggestion).isSameInstanceAs(downgradeSuggestion)
+      assertThat(currentContinueEnabled).isFalse()
+    }
+  }
+
+  @Test
+  fun `when repo has good intent but quotes are empty show ooops dialog and disable the option`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      skipItems(1)
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      val current0 = awaitItem()
+      val navig0 = current0.intentAndIdToRedirectToChangeTierFlow
+      assertThat(navig0).isNull()
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(LocalDate(2024,11,15), listOf()).right()
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val optionNowDisabled = current.reasons.first { it.surveyOption.suggestion == downgradeSuggestion}
+      val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      assertThat(currentEmptyQuotesDialog).isTrue()
+      assertThat(currentRedirectToChangeTierIntent).isNull()
+      assertThat(optionNowDisabled.surveyOption.isDisabled).isTrue()
+    }
+  }
+
+  @Test
+  fun `when repo has good intent with non-empty quotes redirect to changeTierFlow`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(LocalDate(2024,11,15), listOf(testQuote)).right()
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentRedirectToChangeTierIntent).isNotNull()
+    }
+  }
 }
+
+private val testQuote = TierDeductibleQuote(
+  id = "id0",
+  deductible = Deductible(
+    UiMoney(0.0, SEK),
+    deductiblePercentage = 25,
+    description = "Endast en rörlig del om 25% av skadekostnaden.",
+  ),
+  displayItems = listOf(
+    ChangeTierDeductibleDisplayItem(
+      displayValue = "hhh",
+      displaySubtitle = "mmm",
+      displayTitle = "ioi",
+    ),
+  ),
+  premium = UiMoney(199.0, SEK),
+  tier = Tier(
+    "BAS",
+    tierLevel = 0,
+    tierDescription = "Vårt paket med grundläggande villkor.",
+    tierDisplayName = "Bas",
+  ),
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = RENTAL,
+    contractType = SE_APARTMENT_RENT,
+    partner = "test",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Bas",
+    tierDescription = "Our most basic coverage",
+  ),
+)
 
 private class FakeChangeTierRepository() : ChangeTierRepository {
   val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()

@@ -150,7 +150,5 @@ class GetCustomizableInsurancesUseCaseImplTest {
       featureManager = featureManager,
     )
     val result = useCase.invoke().first()
-    assertk.assertThat(result).isEqualTo(Either.Right(null))
-    // todo: .assertThat(result).isRight().isNull() is not working with: expected to be instance of:<class arrow.core.Either$Right> but was instance of:<class arrow.core.Either$Left>
-  }
+    assertk.assertThat(result).isEqualTo(Either.Right(null)) }
 }
