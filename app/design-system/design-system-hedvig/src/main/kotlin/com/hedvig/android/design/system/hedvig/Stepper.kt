@@ -533,7 +533,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -549,7 +549,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -565,7 +565,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -582,7 +582,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -598,7 +598,7 @@ private data class StepperColors(
         .collectLatest { isError ->
           if (isError) {
             shouldPulsate = true
-            delay(AnimationTokens().errorPulsatingDuration.toLong())
+            delay(AnimationTokens.errorPulsatingDuration.toLong())
           }
           shouldPulsate = false
         }

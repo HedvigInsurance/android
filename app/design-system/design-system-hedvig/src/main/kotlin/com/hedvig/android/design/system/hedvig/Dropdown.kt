@@ -610,7 +610,7 @@ private data class DropdownColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -627,7 +627,7 @@ private data class DropdownColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -644,7 +644,7 @@ private data class DropdownColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -661,7 +661,7 @@ private data class DropdownColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -677,7 +677,7 @@ private data class DropdownColors(
         .collectLatest { latest ->
           if (latest) {
             shouldPulsate = true
-            delay(AnimationTokens().errorPulsatingDuration.toLong())
+            delay(AnimationTokens.errorPulsatingDuration.toLong())
             shouldPulsate = false
           }
         }

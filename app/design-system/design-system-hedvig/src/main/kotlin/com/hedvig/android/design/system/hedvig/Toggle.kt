@@ -392,7 +392,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -407,7 +407,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -422,7 +422,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -437,7 +437,7 @@ private data class ToggleColors(
         .collectLatest { latest ->
           if (latest) {
             shouldPulsate = true
-            delay(AnimationTokens().pulsatingAnimationDuration.toLong())
+            delay(AnimationTokens.pulsatingAnimationDuration.toLong())
             shouldPulsate = false
           }
         }
@@ -454,7 +454,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
