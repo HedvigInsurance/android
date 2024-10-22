@@ -14,7 +14,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
-import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
+import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ConfirmChanges
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
@@ -30,20 +30,20 @@ import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
 internal class SummaryViewModel(
   savedStateHandle: SavedStateHandle,
-  movingFlowStorage: MovingFlowStorage,
+  movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
       summaryRoute = savedStateHandle.toRoute<Summary>(),
-      movingFlowStorage = movingFlowStorage,
+      movingFlowRepository = movingFlowRepository,
       apolloClient = apolloClient,
     ),
   )
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,
-  private val movingFlowStorage: MovingFlowStorage,
+  private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
@@ -68,7 +68,7 @@ internal class SummaryPresenter(
     }
 
     LaunchedEffect(Unit) {
-      movingFlowStorage.movingFlowState().collect { movingFlowState ->
+      movingFlowRepository.movingFlowState().collect { movingFlowState ->
         val movingFlowQuotes = movingFlowState?.movingFlowQuotes
         if (movingFlowQuotes == null) {
           summaryInfo = SummaryInfoState.MissingOngoingMovingFlow

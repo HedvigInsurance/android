@@ -13,7 +13,7 @@ import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
-import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
+import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectCoverage
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectDeductible
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
@@ -25,14 +25,14 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
 
 internal class ChoseCoverageLevelAndDeductibleViewModel(
-  movingFlowStorage: MovingFlowStorage,
+  movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
     ChoseCoverageLevelAndDeductibleUiState.Loading,
-    ChoseCoverageLevelAndDeductiblePresenter(movingFlowStorage),
+    ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
   )
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
-  private val movingFlowStorage: MovingFlowStorage,
+  private val movingFlowRepository: MovingFlowRepository,
 ) : MoleculePresenter<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState> {
   @Composable
   override fun MoleculePresenterScope<ChoseCoverageLevelAndDeductibleEvent>.present(
@@ -67,7 +67,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
 
     LaunchedEffect(Unit) {
-      movingFlowStorage.movingFlowState().collectLatest { movingFlowState ->
+      movingFlowRepository.movingFlowState().collectLatest { movingFlowState ->
         if (movingFlowState?.movingFlowQuotes == null) {
           tiersInfo = null.some()
           return@collectLatest

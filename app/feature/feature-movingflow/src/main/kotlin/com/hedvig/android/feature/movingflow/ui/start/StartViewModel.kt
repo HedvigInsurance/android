@@ -13,7 +13,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.movingflow.data.HousingType
-import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
+import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.DismissStartError
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.NavigatedToNextStep
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.SelectHousingType
@@ -26,15 +26,15 @@ import octopus.feature.movingflow.MoveIntentV2CreateMutation
 
 internal class StartViewModel(
   apolloClient: ApolloClient,
-  movingFlowStorage: MovingFlowStorage,
+  movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<StartEvent, StartUiState>(
     StartUiState.Content(HousingType.entries, HousingType.entries.first(), null, null),
-    StartPresenter(apolloClient, movingFlowStorage),
+    StartPresenter(apolloClient, movingFlowRepository),
   )
 
 private class StartPresenter(
   private val apolloClient: ApolloClient,
-  private val movingFlowStorage: MovingFlowStorage,
+  private val movingFlowRepository: MovingFlowRepository,
 ) : MoleculePresenter<StartEvent, StartUiState> {
   @Suppress("NAME_SHADOWING")
   @Composable
@@ -74,7 +74,7 @@ private class StartPresenter(
               StartUiState.StartError.UserPresentable(userError)
             }
           }
-          movingFlowStorage.initiateNewMovingFlow(moveIntent, submittingHousingTypeValue)
+          movingFlowRepository.initiateNewMovingFlow(moveIntent, submittingHousingTypeValue)
           moveIntent.id
         }.fold(
           ifLeft = {
