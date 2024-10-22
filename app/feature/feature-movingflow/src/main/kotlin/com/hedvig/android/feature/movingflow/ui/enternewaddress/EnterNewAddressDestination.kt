@@ -233,12 +233,13 @@ private fun EnterNewAddressScreen(
           isMinusEnabled = !uiState.isLoadingNextStep,
           errorText = uiState.numberCoInsured.validationError?.string(),
         )
-        DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange)
+        DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
           HedvigToggle(
             labelText = stringResource(R.string.CHANGE_ADDRESS_STUDENT_LABEL),
             turnedOn = uiState.propertyType.isStudentSelected,
             onClick = { uiState.propertyType.selectedIsStudent.updateValue(it) },
+            enabled = !uiState.shouldDisableInput,
             toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
           )
         }
@@ -262,6 +263,7 @@ private fun EnterNewAddressScreen(
 private fun DatePickerField(
   input: ValidatedInput<LocalDate?, LocalDate, EnterNewAddressValidationError>,
   allowedMovingDateRange: ClosedRange<LocalDate>,
+  shouldDisableInput: Boolean,
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -303,6 +305,7 @@ private fun DatePickerField(
       text = text ?: "",
       onValueChange = {},
       readOnly = true,
+      enabled = !shouldDisableInput,
       labelText = stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
@@ -311,7 +314,7 @@ private fun DatePickerField(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
-        .clickable {
+        .clickable(enabled = !shouldDisableInput) {
           showDatePicker = true
         },
     )

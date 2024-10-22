@@ -76,11 +76,12 @@ fun HedvigToggle(
   labelText: String,
   turnedOn: Boolean,
   onClick: (Boolean) -> Unit,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
   val containerColor by toggleColors.containerColor(turnedOn)
-  val labelColor by toggleColors.labelColor(turnedOn)
+  val labelColor by toggleColors.labelColor(turnedOn, enabled)
   val descriptionColor by toggleColors.descriptionColor(turnedOn)
 
   val density = LocalDensity.current
@@ -120,6 +121,7 @@ fun HedvigToggle(
     },
     shape = toggleStyle.shape,
     color = containerColor,
+    enabled = enabled,
     modifier = modifier,
   ) {
     when (toggleStyle) {
@@ -129,6 +131,7 @@ fun HedvigToggle(
           size = toggleStyle.size,
           labelText = labelText,
           turnedOn = turnedOn,
+          enabled = enabled,
           labelColor = labelColor,
         )
       }
@@ -139,6 +142,7 @@ fun HedvigToggle(
           size = toggleStyle.size,
           labelText = labelText,
           turnedOn = turnedOn,
+          enabled = enabled,
           descriptionText = toggleStyle.descriptionText,
           descriptionColor = descriptionColor,
           labelColor = labelColor,
@@ -155,6 +159,7 @@ private fun DefaultToggle(
   labelText: String,
   labelColor: Color,
   turnedOn: Boolean,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
@@ -177,6 +182,7 @@ private fun DefaultToggle(
         Toggle(
           state = state,
           turnedOn = turnedOn,
+          enabled = enabled,
           modifier = Modifier
             .padding(
               size.size.togglePadding,
@@ -198,6 +204,7 @@ private fun DetailedToggle(
   descriptionColor: Color,
   labelColor: Color,
   turnedOn: Boolean,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.padding(size.size.contentPadding)) {
@@ -221,6 +228,7 @@ private fun DetailedToggle(
           Toggle(
             state = state,
             turnedOn = turnedOn,
+            enabled = enabled,
             modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
           )
         }
@@ -237,7 +245,12 @@ private fun DetailedToggle(
 }
 
 @Composable
-private fun Toggle(state: AnchoredDraggableState<Boolean>, turnedOn: Boolean, modifier: Modifier = Modifier) {
+private fun Toggle(
+  state: AnchoredDraggableState<Boolean>,
+  turnedOn: Boolean,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+) {
   val density = LocalDensity.current
   val contentSize = toggleIconSize.height
   val contentSizePx = with(density) { contentSize.toPx() }
@@ -263,6 +276,7 @@ private fun Toggle(state: AnchoredDraggableState<Boolean>, turnedOn: Boolean, mo
       interactionSource = interactionSource,
       contentSize = contentSize,
       draggableState = state,
+      enabled = enabled,
       content = {
         ToggleTop(
           backgroundColor = backgroundColor.value,
@@ -278,6 +292,7 @@ private fun ToggleBackground(
   interactionSource: MutableInteractionSource,
   contentSize: Dp,
   draggableState: AnchoredDraggableState<Boolean>,
+  enabled: Boolean,
   content: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -299,8 +314,9 @@ private fun ToggleBackground(
           )
         }
         .anchoredDraggable(
-          draggableState,
-          Orientation.Horizontal,
+          state = draggableState,
+          orientation = Orientation.Horizontal,
+          enabled = enabled,
           interactionSource = interactionSource,
         ),
     ) {
@@ -374,6 +390,7 @@ private val ToggleDefaults.ToggleDetailedStyleSize.size: ToggleDetailedStyleSize
 private data class ToggleColors(
   val containerColor: Color,
   val labelColor: Color,
+  val disabledLabelColor: Color,
   private val descriptionColor: Color,
   val pulsatingContainerColor: Color,
   val pulsatingLabelColor: Color,
@@ -383,10 +400,11 @@ private data class ToggleColors(
   private val toggleBackgroundOffColor: Color,
 ) {
   @Composable
-  fun labelColor(isTurnedOn: Boolean): State<Color> {
+  fun labelColor(isTurnedOn: Boolean, enabled: Boolean): State<Color> {
     val shouldPulsate = shouldPulsate(isTurnedOn)
     val targetValue = when {
       shouldPulsate -> pulsatingLabelColor
+      !enabled -> disabledLabelColor
       else -> labelColor
     }
     return animateColorAsState(
@@ -617,6 +635,7 @@ private val toggleColors: ToggleColors
       ToggleColors(
         containerColor = fromToken(ToggleColorTokens.ContainerColor),
         labelColor = fromToken(ToggleColorTokens.LabelColor),
+        disabledLabelColor = fromToken(ToggleColorTokens.DisabledLabelColor),
         descriptionColor = fromToken(ToggleColorTokens.DescriptionColor),
         pulsatingContainerColor = fromToken(ToggleColorTokens.PulsatingContainerColor),
         pulsatingLabelColor = fromToken(ToggleColorTokens.PulsatingLabelColor),
@@ -655,6 +674,7 @@ private fun TogglePreview() {
           onClick = { enabled = !enabled },
           labelText = "LargeLarge onLarge optionLarge optionLarge optionLarge " +
             "optionLarge optionLarge optionLarge option",
+          enabled = true,
           toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Large),
         )
         Spacer(Modifier.height(8.dp))
@@ -664,6 +684,7 @@ private fun TogglePreview() {
             onClick = { enabled3 = !enabled3 },
             labelText = "Medium",
             toggleStyle = Default(Medium),
+            enabled = true,
             modifier = Modifier.weight(1f),
           )
           Spacer(Modifier.width(8.dp))
@@ -672,6 +693,7 @@ private fun TogglePreview() {
             onClick = { enabled4 = !enabled4 },
             labelText = "Small",
             toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Small),
+            enabled = true,
             modifier = Modifier.weight(1f),
           )
         }
@@ -681,6 +703,7 @@ private fun TogglePreview() {
             turnedOn = enabled2,
             onClick = { enabled2 = !enabled2 },
             labelText = "Large",
+            enabled = true,
             modifier = Modifier.weight(1f),
             toggleStyle = Detailed(
               size = Large,
@@ -692,6 +715,7 @@ private fun TogglePreview() {
             turnedOn = enabled5,
             onClick = { enabled5 = !enabled5 },
             labelText = "Small",
+            enabled = true,
             modifier = Modifier.weight(1f),
             toggleStyle = Detailed(
               size = Small,
