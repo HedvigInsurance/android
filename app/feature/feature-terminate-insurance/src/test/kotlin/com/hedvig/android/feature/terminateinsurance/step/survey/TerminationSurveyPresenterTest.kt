@@ -22,9 +22,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
-import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
-import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
@@ -270,11 +268,11 @@ class TerminationSurveyPresenterTest {
       val navig0 = current0.intentAndIdToRedirectToChangeTierFlow
       assertThat(navig0).isNull()
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024,11,15), listOf()).right()
+        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf()).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
-      val optionNowDisabled = current.reasons.first { it.surveyOption.suggestion == downgradeSuggestion}
+      val optionNowDisabled = current.reasons.first { it.surveyOption.suggestion == downgradeSuggestion }
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
       assertThat(currentEmptyQuotesDialog).isTrue()
@@ -296,7 +294,7 @@ class TerminationSurveyPresenterTest {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024,11,15), listOf(testQuote)).right()
+        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf(testQuote)).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()

@@ -150,5 +150,6 @@ class GetCustomizableInsurancesUseCaseImplTest {
       featureManager = featureManager,
     )
     val result = useCase.invoke().first()
-    assertk.assertThat(result).isEqualTo(Either.Right(null)) }
+    assertk.assertThat(result).isEqualTo(Either.Right(null))
+  }
 }
