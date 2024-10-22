@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
@@ -13,6 +14,11 @@ import androidx.navigation.toRoute
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
+import arrow.core.identity
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.raise.ensureNotNull
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations
@@ -26,13 +32,15 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
-import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
+import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment.WithStudentOption
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment.WithoutStudentOption
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.House
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.SubmittingInfoFailure
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Loading
@@ -48,9 +56,11 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveApartmentSubType
+import octopus.type.MoveApartmentSubType.OWN
 import octopus.type.MoveApiVersion
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
@@ -58,20 +68,20 @@ import octopus.type.MoveToApartmentInput
 
 internal class EnterNewAddressViewModel(
   savedStateHandle: SavedStateHandle,
-  movingFlowStorage: MovingFlowStorage,
+  movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
     EnterNewAddressUiState.Loading,
     EnterNewAddressPresenter(
       savedStateHandle.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId,
-      movingFlowStorage,
+      movingFlowRepository,
       apolloClient,
     ),
   )
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,
-  private val movingFlowStorage: MovingFlowStorage,
+  private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
 ) : MoleculePresenter<EnterNewAddressEvent, EnterNewAddressUiState> {
   @Composable
@@ -93,13 +103,14 @@ private class EnterNewAddressPresenter(
     var inputForSubmission: InputForSubmission? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
-      movingFlowStorage
+      movingFlowRepository
         .movingFlowState()
         .collectLatest {
           content = Option(it?.toContent())
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
     CollectEvents { event ->
       when (event) {
         NavigatedToChoseCoverage -> {
@@ -113,26 +124,25 @@ private class EnterNewAddressPresenter(
         Submit -> {
           @Suppress("NAME_SHADOWING")
           val content = content.getOrNull() ?: return@CollectEvents
-          val allAreValid = listOf(
-            content.movingDate,
-            content.address,
-            content.postalCode,
-            content.squareMeters,
-            content.numberCoInsured,
-          ).onEach { validatedInput ->
-            validatedInput.validate()
-          }.all { validatedInput ->
-            validatedInput.isValid
-          }
-          if (!allAreValid) return@CollectEvents
-          // todo 1. store ephemeral data into the DataStore here for both apartment and house
-          when (content.propertyType) {
-            House -> {
-              navigateToAddHouseInformation = true
-            }
+          val validContent = content.validate()
+          if (validContent == null) return@CollectEvents
+          coroutineScope.launch {
+            movingFlowRepository.updateWithPropertyInput(
+              movingDate = validContent.movingDate,
+              address = validContent.address,
+              postalCode = validContent.postalCode,
+              squareMeters = validContent.squareMeters,
+              numberCoInsured = validContent.numberCoInsured,
+              isStudent = validContent.propertyType.isStudent,
+            )
+            when (content.propertyType) {
+              House -> {
+                navigateToAddHouseInformation = true
+              }
 
-            is Apartment -> {
-              inputForSubmission = content.toInputForSubmission(content.propertyType.apartmentType)
+              is Apartment -> {
+                inputForSubmission = validContent.toInputForSubmission(content.propertyType.apartmentType)
+              }
             }
           }
         }
@@ -144,7 +154,9 @@ private class EnterNewAddressPresenter(
         @Suppress("NAME_SHADOWING")
         val inputForSubmission = inputForSubmission ?: return@LaunchedEffect
         apolloClient
-          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmission.moveIntentRequestInput))
+          .mutation(
+            MoveIntentV2RequestMutation(inputForSubmission.moveIntentId, inputForSubmission.moveIntentRequestInput),
+          )
           .safeExecute()
           .map { it.moveIntentRequest }
           .fold(
@@ -159,8 +171,7 @@ private class EnterNewAddressPresenter(
                 }
 
                 else -> {
-                  // todo 2. otherwise pehraps store them here instead.
-                  movingFlowStorage.updateMoveIntentAfterRequest(
+                  movingFlowRepository.updateMoveIntentAfterRequest(
                     moveIntent,
                     moveIntent,
                     when (inputForSubmission.apartmentType) {
@@ -193,34 +204,34 @@ private class EnterNewAddressPresenter(
   }
 }
 
-// TODO consider validate() and convert to a null-safe new object instead of `!!`
-private fun Content.toInputForSubmission(apartmentType: ApartmentType): InputForSubmission {
+private fun ValidContent.toInputForSubmission(apartmentType: ApartmentType): InputForSubmission {
   return InputForSubmission(
+    moveIntentId = moveIntentId,
     apartmentType = apartmentType,
     moveIntentRequestInput = MoveIntentRequestInput(
       apiVersion = com.apollographql.apollo.api.Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
       moveToAddress = MoveToAddressInput(
-        street = address.value!!,
-        postalCode = postalCode.value!!,
+        street = address,
+        postalCode = postalCode,
         city = com.apollographql.apollo.api.Optional.absent(),
       ),
       moveFromAddressId = moveFromAddressId,
-      movingDate = movingDate.value,
-      numberCoInsured = numberCoInsured.value,
-      squareMeters = squareMeters.value!!,
+      movingDate = movingDate,
+      numberCoInsured = numberCoInsured,
+      squareMeters = squareMeters,
       apartment = com.apollographql.apollo.api.Optional.present(
         when (propertyType) {
-          House -> error("Should have navigated to house input instead of submitting here")
-          is Apartment -> {
+          ValidContent.PropertyType.House -> error("Should have navigated to house input instead of submitting here")
+          is ValidContent.PropertyType.Apartment -> {
             when (propertyType.apartmentType) {
               RENT -> MoveToApartmentInput(
                 subType = MoveApartmentSubType.RENT,
-                isStudent = propertyType.isStudentSelected,
+                isStudent = propertyType.isStudent,
               )
 
               BRF -> MoveToApartmentInput(
-                subType = MoveApartmentSubType.OWN,
-                isStudent = propertyType.isStudentSelected,
+                subType = OWN,
+                isStudent = propertyType.isStudent,
               )
             }
           }
@@ -232,6 +243,7 @@ private fun Content.toInputForSubmission(apartmentType: ApartmentType): InputFor
 }
 
 private data class InputForSubmission(
+  val moveIntentId: String,
   val apartmentType: ApartmentType,
   val moveIntentRequestInput: MoveIntentRequestInput,
 )
@@ -253,11 +265,11 @@ internal sealed interface EnterNewAddressUiState {
   data class Content(
     val moveIntentId: String,
     val moveFromAddressId: String,
-    val movingDate: ValidatedInput<LocalDate, EnterNewAddressValidationError>,
-    val address: ValidatedInput<String?, EnterNewAddressValidationError>,
-    val postalCode: ValidatedInput<String?, EnterNewAddressValidationError>,
-    val squareMeters: ValidatedInput<Int?, EnterNewAddressValidationError>,
-    val numberCoInsured: ValidatedInput<Int, EnterNewAddressValidationError>,
+    val movingDate: ValidatedInput<LocalDate, LocalDate, EnterNewAddressValidationError>,
+    val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
+    val postalCode: ValidatedInput<String?, String, EnterNewAddressValidationError>,
+    val squareMeters: ValidatedInput<Int?, Int, EnterNewAddressValidationError>,
+    val numberCoInsured: ValidatedInput<Int, Int, EnterNewAddressValidationError>,
     val propertyType: PropertyType,
     val submittingInfoFailure: SubmittingInfoFailure?,
     val isLoadingNextStep: Boolean,
@@ -282,7 +294,7 @@ internal sealed interface EnterNewAddressUiState {
 
         data class WithStudentOption(
           override val apartmentType: ApartmentType,
-          val selectedIsStudent: ValidatedInput<Boolean, EnterNewAddressValidationError>,
+          val selectedIsStudent: ValidatedInput<Boolean, Boolean, EnterNewAddressValidationError>,
         ) : Apartment {
           override val isStudentSelected: Boolean
             get() = selectedIsStudent.value
@@ -298,61 +310,118 @@ internal sealed interface EnterNewAddressUiState {
   }
 }
 
+private class ValidContent(
+  val moveIntentId: String,
+  val moveFromAddressId: String,
+  val movingDate: LocalDate,
+  val address: String,
+  val postalCode: String,
+  val squareMeters: Int,
+  val numberCoInsured: Int,
+  val propertyType: PropertyType,
+) {
+  sealed interface PropertyType {
+    val isStudent: Boolean
+
+    data object House : PropertyType {
+      override val isStudent: Boolean = false
+    }
+
+    data class Apartment(override val isStudent: Boolean, val apartmentType: ApartmentType) : PropertyType
+  }
+}
+
+private fun Content.validate(): ValidContent? {
+  val movingDate = this.movingDate.validate()
+  val address = this.address.validate()
+  val postalCode = this.postalCode.validate()
+  val squareMeters = this.squareMeters.validate()
+  val numberCoInsured = this.numberCoInsured.validate()
+  return either {
+    ValidContent(
+      moveIntentId = moveIntentId,
+      moveFromAddressId = moveFromAddressId,
+      movingDate = movingDate.bind(),
+      address = address.bind(),
+      postalCode = postalCode.bind(),
+      squareMeters = squareMeters.bind(),
+      numberCoInsured = numberCoInsured.bind(),
+      propertyType = when (propertyType) {
+        House -> ValidContent.PropertyType.House
+        is WithStudentOption -> ValidContent.PropertyType.Apartment(
+          isStudent = propertyType.isStudentSelected,
+          apartmentType = propertyType.apartmentType,
+        )
+
+        is WithoutStudentOption -> ValidContent.PropertyType.Apartment(
+          isStudent = propertyType.isStudentSelected,
+          apartmentType = propertyType.apartmentType,
+        )
+      },
+    )
+  }.fold({ null }, ::identity)
+}
+
 private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
   return EnterNewAddressUiState.Content(
     moveIntentId = id,
     moveFromAddressId = moveFromAddressId,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
-      validators = listOf(
-        { movingDate ->
-          InvalidMovingDate(movingDateState.allowedMovingDateRange).takeIf {
-            movingDate !in movingDateState.allowedMovingDateRange
+      validator = { movingDate ->
+        either {
+          ensure(movingDate in movingDateState.allowedMovingDateRange) {
+            InvalidMovingDate(movingDateState.allowedMovingDateRange)
           }
-        },
-      ),
+          movingDate
+        }
+      },
     ),
     address = ValidatedInput(
       initialValue = addressInfo.street,
-      validators = listOf(
-        { address ->
-          EmptyAddress.takeIf { address.isNullOrBlank() }
-        },
-      ),
+      validator = { address ->
+        either {
+          ensure(address != null && address.isNotBlank()) {
+            EmptyAddress
+          }
+          address
+        }
+      },
     ),
     postalCode = ValidatedInput(
       initialValue = addressInfo.postalCode,
-      validators = listOf(
-        { postalCode ->
-          when {
-            postalCode == null -> Missing
-            postalCode.length != 5 -> InvalidLength
-            !postalCode.isDigitsOnly() -> MustBeOnlyDigits
-            else -> null
-          }
-        },
-      ),
+      validator = { postalCode ->
+        either {
+          ensureNotNull(postalCode) { Missing }
+          ensure(postalCode.length != 5) { InvalidLength }
+          ensure(postalCode.isDigitsOnly()) { MustBeOnlyDigits }
+          postalCode
+        }
+      },
     ),
     squareMeters = ValidatedInput(
-      propertyState.squareMetersState.selectedSquareMeters,
-      listOf(
-        { squareMeters ->
-          InvalidSquareMeters(propertyState.squareMetersState.allowedSquareMetersRange).takeIf {
-            squareMeters == null || squareMeters !in propertyState.squareMetersState.allowedSquareMetersRange
+      initialValue = propertyState.squareMetersState.selectedSquareMeters,
+      validator = { squareMeters ->
+        either {
+          val invalidSquareMetersError = InvalidSquareMeters(propertyState.squareMetersState.allowedSquareMetersRange)
+          ensureNotNull(squareMeters) { invalidSquareMetersError }
+          ensure(squareMeters in propertyState.squareMetersState.allowedSquareMetersRange) {
+            invalidSquareMetersError
           }
-        },
-      ),
+          squareMeters
+        }
+      },
     ),
     numberCoInsured = ValidatedInput(
-      propertyState.numberCoInsuredState.selectedNumberCoInsured,
-      listOf(
-        { numberCoInsured ->
-          InvalidNumberCoInsured(propertyState.numberCoInsuredState.allowedNumberCoInsuredRange)
-            .takeIf {
-              numberCoInsured !in propertyState.numberCoInsuredState.allowedNumberCoInsuredRange
-            }
-        },
-      ),
+      initialValue = propertyState.numberCoInsuredState.selectedNumberCoInsured,
+      validator = { numberCoInsured ->
+        either {
+          ensure(numberCoInsured in propertyState.numberCoInsuredState.allowedNumberCoInsuredRange) {
+            InvalidNumberCoInsured(propertyState.numberCoInsuredState.allowedNumberCoInsuredRange)
+          }
+          numberCoInsured
+        }
+      },
     ),
     propertyType = when (propertyState) {
       is HouseState -> PropertyType.House
@@ -364,9 +433,9 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
 
           is Available -> PropertyType.Apartment.WithStudentOption(
             propertyState.apartmentType,
-            ValidatedInput<Boolean, EnterNewAddressValidationError>(
+            ValidatedInput<Boolean, Boolean, EnterNewAddressValidationError>(
               propertyState.isAvailableForStudentState.selectedIsStudent,
-              emptyList(),
+              { isStudent -> isStudent.right() },
             ),
           )
         }
