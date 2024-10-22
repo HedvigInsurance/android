@@ -41,7 +41,10 @@ import org.junit.Test
 class TerminationSurveyPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
-  private val downgradeSuggestion = SurveyOptionSuggestion.Action.DowngradePriceByChangingTier("description", "Button")
+  private val downgradeSuggestion = SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
+    "description",
+    "Button",
+  )
 
   private val listOfOptionsForHome = listOf(
     TerminationSurveyOption(

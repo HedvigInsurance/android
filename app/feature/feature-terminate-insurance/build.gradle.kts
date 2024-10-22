@@ -51,6 +51,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.dataChangetier)
+  implementation(libs.androidx.test)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
