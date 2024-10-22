@@ -43,9 +43,9 @@ internal data class MovingFlowState(
 
   @Serializable
   data class MovingDateState(
+    val selectedMovingDate: LocalDate?,
     @Serializable(with = ClosedRangeSerializer::class)
     val allowedMovingDateRange: ClosedRange<LocalDate>,
-    val selectedMovingDate: LocalDate = allowedMovingDateRange.start,
   )
 
   @Serializable
@@ -208,6 +208,7 @@ internal fun MovingFlowState.Companion.fromFragments(
     housingType = housingType,
     addressInfo = AddressInfo(null, null),
     movingDateState = MovingFlowState.MovingDateState(
+      selectedMovingDate = null,
       allowedMovingDateRange = moveIntentFragment.minMovingDate..moveIntentFragment.maxMovingDate,
     ),
     propertyState = propertyState,
