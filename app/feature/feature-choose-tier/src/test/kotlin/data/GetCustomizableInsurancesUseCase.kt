@@ -1,8 +1,8 @@
 package data
 
-import arrow.core.Either
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isLeft
+import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCaseImpl
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
@@ -150,6 +151,6 @@ class GetCustomizableInsurancesUseCaseImplTest {
       featureManager = featureManager,
     )
     val result = useCase.invoke().first()
-    assertk.assertThat(result).isEqualTo(Either.Right(null))
+    assertk.assertThat(result).isRight().isNull()
   }
 }
