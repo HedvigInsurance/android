@@ -7,6 +7,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
 import com.hedvig.android.feature.movingflow.data.fromFragments
+import com.hedvig.android.feature.movingflow.data.toMovingFlowQuotes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
@@ -25,16 +26,6 @@ internal class MovingFlowRepository(
     movingFlowStorage.setMovingFlowState(MovingFlowState.fromFragments(moveIntent, null, housingType))
   }
 
-  suspend fun updateMoveIntentAfterRequest(
-    moveIntentFragment: MoveIntentFragment,
-    moveIntentQuotesFragment: MoveIntentQuotesFragment,
-    housingType: HousingType,
-  ) {
-    movingFlowStorage.setMovingFlowState(
-      MovingFlowState.fromFragments(moveIntentFragment, moveIntentQuotesFragment, housingType),
-    )
-  }
-
   suspend fun updateWithPropertyInput(
     movingDate: LocalDate,
     address: String,
@@ -45,7 +36,7 @@ internal class MovingFlowRepository(
   ) {
     movingFlowStorage.editMovingFlowState { existingState ->
       if (existingState == null) {
-        logcat(LogPriority.ERROR) { "Trying to edit a non-existing moving flow state" }
+        logcat(LogPriority.ERROR) { "Trying to `updateWithPropertyInput` a non-existing moving flow state" }
         return@editMovingFlowState null
       }
       val updatedState = existingState.copy(
@@ -87,6 +78,16 @@ internal class MovingFlowRepository(
         },
       )
       updatedState
+    }
+  }
+
+  suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment) {
+    movingFlowStorage.editMovingFlowState { existingState ->
+      if (existingState == null) {
+        logcat(LogPriority.ERROR) { "Trying to `updateWithPropertyInput` a non-existing moving flow state" }
+        return@editMovingFlowState null
+      }
+      existingState.copy(movingFlowQuotes = moveIntentQuotesFragment.toMovingFlowQuotes())
     }
   }
 }

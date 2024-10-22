@@ -23,7 +23,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
-import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.ApartmentType
@@ -52,6 +51,7 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -141,7 +141,7 @@ private class EnterNewAddressPresenter(
               }
 
               is Apartment -> {
-                inputForSubmission = validContent.toInputForSubmission(content.propertyType.apartmentType)
+                inputForSubmission = validContent.toInputForSubmission()
               }
             }
           }
@@ -154,9 +154,7 @@ private class EnterNewAddressPresenter(
         @Suppress("NAME_SHADOWING")
         val inputForSubmission = inputForSubmission ?: return@LaunchedEffect
         apolloClient
-          .mutation(
-            MoveIntentV2RequestMutation(inputForSubmission.moveIntentId, inputForSubmission.moveIntentRequestInput),
-          )
+          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmission.moveIntentRequestInput))
           .safeExecute()
           .map { it.moveIntentRequest }
           .fold(
@@ -164,21 +162,14 @@ private class EnterNewAddressPresenter(
               submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
             },
             ifRight = { request ->
-              when (val moveIntent = request.moveIntent) {
+              when (val moveIntentQuotesFragment = request.moveIntent) {
                 null -> submittingInfoFailure = when (val errorMessage = request.userError?.message) {
                   null -> SubmittingInfoFailure.NetworkFailure
                   else -> SubmittingInfoFailure.UserError(errorMessage)
                 }
 
                 else -> {
-                  movingFlowRepository.updateMoveIntentAfterRequest(
-                    moveIntent,
-                    moveIntent,
-                    when (inputForSubmission.apartmentType) {
-                      RENT -> HousingType.ApartmentRent
-                      BRF -> HousingType.ApartmentOwn
-                    },
-                  )
+                  movingFlowRepository.updateWithMoveIntentQuotes(moveIntentQuotesFragment)
                   navigateToChoseCoverage = true
                 }
               }
@@ -204,10 +195,8 @@ private class EnterNewAddressPresenter(
   }
 }
 
-private fun ValidContent.toInputForSubmission(apartmentType: ApartmentType): InputForSubmission {
+private fun ValidContent.toInputForSubmission(): InputForSubmission {
   return InputForSubmission(
-    moveIntentId = moveIntentId,
-    apartmentType = apartmentType,
     moveIntentRequestInput = MoveIntentRequestInput(
       apiVersion = com.apollographql.apollo.api.Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
       moveToAddress = MoveToAddressInput(
@@ -243,8 +232,6 @@ private fun ValidContent.toInputForSubmission(apartmentType: ApartmentType): Inp
 }
 
 private data class InputForSubmission(
-  val moveIntentId: String,
-  val apartmentType: ApartmentType,
   val moveIntentRequestInput: MoveIntentRequestInput,
 )
 
@@ -263,7 +250,6 @@ internal sealed interface EnterNewAddressUiState {
   data object Loading : EnterNewAddressUiState
 
   data class Content(
-    val moveIntentId: String,
     val moveFromAddressId: String,
     val movingDate: ValidatedInput<LocalDate, LocalDate, EnterNewAddressValidationError>,
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
@@ -311,7 +297,6 @@ internal sealed interface EnterNewAddressUiState {
 }
 
 private class ValidContent(
-  val moveIntentId: String,
   val moveFromAddressId: String,
   val movingDate: LocalDate,
   val address: String,
@@ -339,7 +324,6 @@ private fun Content.validate(): ValidContent? {
   val numberCoInsured = this.numberCoInsured.validate()
   return either {
     ValidContent(
-      moveIntentId = moveIntentId,
       moveFromAddressId = moveFromAddressId,
       movingDate = movingDate.bind(),
       address = address.bind(),
@@ -364,7 +348,6 @@ private fun Content.validate(): ValidContent? {
 
 private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
   return EnterNewAddressUiState.Content(
-    moveIntentId = id,
     moveFromAddressId = moveFromAddressId,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
@@ -378,7 +361,9 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       },
     ),
     address = ValidatedInput(
-      initialValue = addressInfo.street,
+      initialValue = addressInfo.street.also {
+        logcat { "Stelios addressInfo.street:$it" }
+      },
       validator = { address ->
         either {
           ensure(address != null && address.isNotBlank()) {
@@ -393,7 +378,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       validator = { postalCode ->
         either {
           ensureNotNull(postalCode) { Missing }
-          ensure(postalCode.length != 5) { InvalidLength }
+          ensure(postalCode.length == 5) { InvalidLength }
           ensure(postalCode.isDigitsOnly()) { MustBeOnlyDigits }
           postalCode
         }

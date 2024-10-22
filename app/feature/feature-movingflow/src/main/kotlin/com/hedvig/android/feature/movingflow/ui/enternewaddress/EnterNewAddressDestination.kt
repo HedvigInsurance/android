@@ -216,7 +216,6 @@ private fun EnterNewAddressValidationError.string(): String {
 fun PreviewEnterNewAddressScreen() {
   EnterNewAddressScreen(
     uiState = EnterNewAddressUiState.Content(
-      moveIntentId = "id",
       moveFromAddressId = "moveFromAddressId",
       movingDate =
         ValidatedInput(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date, NoopValidator()),

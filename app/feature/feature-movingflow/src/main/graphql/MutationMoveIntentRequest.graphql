@@ -1,7 +1,6 @@
 mutation MoveIntentV2Request($intentId: ID!, $moveIntentRequestInput: MoveIntentRequestInput!) {
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
-      ...MoveIntentFragment
       ...MoveIntentQuotesFragment
     }
     userError {
