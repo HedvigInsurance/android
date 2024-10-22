@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.flow.drop
 
 @Composable
 fun HedvigDatePickerInternal(
@@ -72,8 +74,12 @@ fun HedvigDatePickerInternal(
       yearRange = yearRange,
     ),
   )
-  LaunchedEffect(state.selectedDateMillis) {
-    onSelectedDateChanged(state.selectedDateMillis)
+  LaunchedEffect(state) {
+    snapshotFlow { state.selectedDateMillis }
+      .drop(1)
+      .collect {
+        onSelectedDateChanged(it)
+      }
   }
   DatePickerDialog(
     onDismissRequest = onDismissRequest,
