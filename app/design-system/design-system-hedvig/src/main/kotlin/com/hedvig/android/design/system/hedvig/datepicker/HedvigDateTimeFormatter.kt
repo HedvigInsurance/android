@@ -72,6 +72,10 @@ object HedvigDateTimeFormatterDefaults {
     return monthDateAndTime.toFormatter(locale)
   }
 
+  fun dateMonthAndYear(locale: Locale): DateTimeFormatter {
+    return dateMonthAndYear.toFormatter(locale)
+  }
+
   fun monthDateAndYear(locale: Locale): DateTimeFormatter {
     return monthDateAndYear.toFormatter(locale)
   }
@@ -124,6 +128,17 @@ private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilde
   .appendValue(ChronoField.HOUR_OF_DAY, 2)
   .appendLiteral(':')
   .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+
+/**
+ * Example output: "Nov 11 2024"
+ */
+@SuppressLint("NewApi")
+private val dateMonthAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilder() // .appendPattern("MMM dd HH:mm")
+  .appendValue(ChronoField.DAY_OF_MONTH, 2)
+  .appendLiteral(' ')
+  .appendPattern("MMM")
+  .appendLiteral(' ')
+  .appendValue(ChronoField.YEAR, 4)
 
 /**
  * Example output: "Nov 11 2024"
