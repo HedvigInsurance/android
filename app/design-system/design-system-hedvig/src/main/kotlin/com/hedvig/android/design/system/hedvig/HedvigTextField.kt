@@ -56,6 +56,7 @@ fun HedvigTextField(
   modifier: Modifier = Modifier,
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
@@ -91,6 +92,9 @@ fun HedvigTextField(
     suffix = suffix,
     leadingContent = leadingContent,
     trailingContent = when {
+      trailingContent != null -> {
+        trailingContent
+      }
       errorState.isError -> {
         { ErrorTrailingIcon(trailingIconColor) }
       }
@@ -133,6 +137,9 @@ fun HedvigTextField(
   )
 }
 
+/**
+ * Similar to above, without an `ErrorState` parameter, and it allows a custom supportingText slot,
+ */
 @Composable
 fun HedvigTextField(
   text: String,
