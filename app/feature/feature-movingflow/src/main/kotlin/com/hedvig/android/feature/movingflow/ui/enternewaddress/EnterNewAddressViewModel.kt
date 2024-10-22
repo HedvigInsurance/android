@@ -152,9 +152,9 @@ private class EnterNewAddressPresenter(
     if (inputForSubmission != null) {
       LaunchedEffect(inputForSubmission) {
         @Suppress("NAME_SHADOWING")
-        val inputForSubmission = inputForSubmission ?: return@LaunchedEffect
+        val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
         apolloClient
-          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmission.moveIntentRequestInput))
+          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmissionValue.moveIntentRequestInput))
           .safeExecute()
           .map { it.moveIntentRequest }
           .fold(
@@ -175,6 +175,7 @@ private class EnterNewAddressPresenter(
               }
             },
           )
+        inputForSubmission = null
       }
     }
 
