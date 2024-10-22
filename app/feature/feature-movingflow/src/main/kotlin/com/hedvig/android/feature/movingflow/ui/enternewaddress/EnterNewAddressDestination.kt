@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
+import com.hedvig.android.feature.movingflow.compose.NoopValidator
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType
@@ -40,7 +41,7 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
 import hedvig.resources.R
-import kotlinx.datetime.Clock.System
+import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -217,14 +218,12 @@ fun PreviewEnterNewAddressScreen() {
     uiState = EnterNewAddressUiState.Content(
       moveIntentId = "id",
       moveFromAddressId = "moveFromAddressId",
-      movingDate = ValidatedInput(
-        System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-        emptyList(),
-      ),
-      address = ValidatedInput("address", emptyList()),
-      postalCode = ValidatedInput("postalCode", emptyList()),
-      squareMeters = ValidatedInput(null, emptyList()),
-      numberCoInsured = ValidatedInput(0, emptyList()),
+      movingDate =
+        ValidatedInput(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date, NoopValidator()),
+      address = ValidatedInput<String?, String, EnterNewAddressValidationError>("address", NoopValidator()),
+      postalCode = ValidatedInput("postalCode", NoopValidator()),
+      squareMeters = ValidatedInput(0, NoopValidator()),
+      numberCoInsured = ValidatedInput(0, NoopValidator()),
       propertyType = PropertyType.House,
       submittingInfoFailure = null,
       isLoadingNextStep = false,

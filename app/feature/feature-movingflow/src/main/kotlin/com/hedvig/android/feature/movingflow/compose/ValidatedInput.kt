@@ -5,35 +5,52 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import arrow.core.Either
+import arrow.core.right
 
 @Stable
-internal class ValidatedInput<Input, ValidationError>(
+internal interface ValidatedInput<Input, Output, ValidationError> {
+  val value: Input
+
+  fun updateValue(newValue: Input)
+
+  val validationError: ValidationError?
+
+  fun validate(): Either<ValidationError, Output>
+}
+
+internal fun <Input, Output, ValidationError> ValidatedInput(
   initialValue: Input,
-  private val validators: List<(Input) -> ValidationError?>,
-) {
+  validator: (Input) -> Either<ValidationError, Output>,
+): ValidatedInput<Input, Output, ValidationError> = ValidatedInputImpl(initialValue, validator)
+
+class ValidatedInputImpl<Input, Output, ValidationError>(
+  initialValue: Input,
+  private val validator: (Input) -> Either<ValidationError, Output>,
+) : ValidatedInput<Input, Output, ValidationError> {
   private var showErrorMessage: Boolean by mutableStateOf(false)
-  private val _validationError: ValidationError? by derivedStateOf {
-    validators.firstNotNullOfOrNull { validate ->
-      validate(value)
-    }
+  private val validationResult: Either<ValidationError, Output> by derivedStateOf {
+    validator(value)
   }
 
-  var value: Input by mutableStateOf(initialValue)
+  override var value: Input by mutableStateOf(initialValue)
     private set
 
-  fun updateValue(newValue: Input) {
+  override fun updateValue(newValue: Input) {
     showErrorMessage = false
     value = newValue
   }
 
-  val isValid: Boolean by derivedStateOf { _validationError == null }
-  val validationError: ValidationError? by derivedStateOf {
-    _validationError.takeIf { showErrorMessage }
+  override val validationError: ValidationError? by derivedStateOf {
+    validationResult.leftOrNull().takeIf { showErrorMessage }
   }
 
-  fun validate() {
-    if (!isValid) {
+  override fun validate(): Either<ValidationError, Output> {
+    return validationResult.onLeft {
       showErrorMessage = true
     }
   }
 }
+
+@Suppress("ktlint:standard:function-naming")
+internal fun <I> NoopValidator(): (I) -> Either<Nothing, I & Any> = { it!!.right() }
