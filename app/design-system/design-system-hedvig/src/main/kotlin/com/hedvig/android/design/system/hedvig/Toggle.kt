@@ -113,7 +113,9 @@ fun HedvigToggle(
   Surface(
     onClick = {
       coroutineScope.launch {
-        state.animateTo(!state.targetValue)
+        val newValue = !state.targetValue
+        onClick(newValue)
+        state.animateTo(newValue)
       }
     },
     shape = toggleStyle.shape,
