@@ -51,7 +51,6 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -252,7 +251,8 @@ internal sealed interface EnterNewAddressUiState {
 
   data class Content(
     val moveFromAddressId: String,
-    val movingDate: ValidatedInput<LocalDate, LocalDate, EnterNewAddressValidationError>,
+    val movingDate: ValidatedInput<LocalDate?, LocalDate, EnterNewAddressValidationError>,
+    val allowedMovingDateRange: ClosedRange<LocalDate>,
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
     val postalCode: ValidatedInput<String?, String, EnterNewAddressValidationError>,
     val squareMeters: ValidatedInput<Int?, Int, EnterNewAddressValidationError>,
@@ -354,17 +354,19 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       initialValue = movingDateState.selectedMovingDate,
       validator = { movingDate ->
         either {
+          ensureNotNull(movingDate) {
+            InvalidMovingDate.MustSelectDate
+          }
           ensure(movingDate in movingDateState.allowedMovingDateRange) {
-            InvalidMovingDate(movingDateState.allowedMovingDateRange)
+            InvalidMovingDate.InvalidChoise(movingDateState.allowedMovingDateRange)
           }
           movingDate
         }
       },
     ),
+    allowedMovingDateRange = movingDateState.allowedMovingDateRange,
     address = ValidatedInput(
-      initialValue = addressInfo.street.also {
-        logcat { "Stelios addressInfo.street:$it" }
-      },
+      initialValue = addressInfo.street,
       validator = { address ->
         either {
           ensure(address != null && address.isNotBlank()) {
@@ -435,9 +437,11 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
 }
 
 internal sealed interface EnterNewAddressValidationError {
-  data class InvalidMovingDate(
-    val allowedMovingDateRange: ClosedRange<LocalDate>,
-  ) : EnterNewAddressValidationError
+  sealed interface InvalidMovingDate : EnterNewAddressValidationError {
+    data object MustSelectDate : InvalidMovingDate
+
+    data class InvalidChoise(val allowedMovingDateRange: ClosedRange<LocalDate>) : InvalidMovingDate
+  }
 
   data class InvalidSquareMeters(
     val allowedSquareMetersRange: ClosedRange<Int>,
