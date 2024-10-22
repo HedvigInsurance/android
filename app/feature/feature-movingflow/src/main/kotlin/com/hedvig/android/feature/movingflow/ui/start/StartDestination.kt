@@ -1,19 +1,28 @@
 package com.hedvig.android.feature.movingflow.ui.start
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.design.system.hedvig.ChosenState
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
 import com.hedvig.android.feature.movingflow.data.HousingType
@@ -67,32 +76,58 @@ private fun StartScreen(
       }
 
       is Content -> {
-        HedvigText("START Select a housing type")
-        Spacer(Modifier.weight(1f))
-        RadioGroup(
-          radioGroupStyle = RadioGroupStyle.Vertical.Default(
-            uiState.possibleHousingTypes.map {
-              RadioOptionGroupDataSimple(
-                RadioOptionData(
-                  id = it.name,
-                  optionText = stringResource(it.stringResource()),
-                  chosenState = if (it == uiState.selectedHousingType) ChosenState.Chosen else ChosenState.NotChosen,
-                  lockedState = NotLocked,
-                ),
-              )
-            },
-          ),
-          onOptionClick = {
-            onSelectHousingType(HousingType.valueOf(it))
-          },
-        )
-        HedvigButton(
-          "SubmiT",
-          onSubmitHousingType,
-          enabled = uiState.submittingHousingType == null,
-        )
+        StartScreen(uiState, onSelectHousingType, onSubmitHousingType, Modifier.weight(1f))
       }
     }
+  }
+}
+
+@Composable
+private fun StartScreen(
+  uiState: Content,
+  onSelectHousingType: (HousingType) -> Unit,
+  onSubmitHousingType: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier.padding(horizontal = 16.dp)) {
+    HedvigText(
+      text = stringResource(R.string.insurance_details_change_address_button),
+      style = HedvigTheme.typography.bodyMedium,
+    )
+    HedvigText(
+      text = stringResource(R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
+      style = HedvigTheme.typography.bodyMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
+    RadioGroup(
+      radioGroupStyle = Default(
+        uiState.possibleHousingTypes.map {
+          RadioOptionGroupDataSimple(
+            RadioOptionData(
+              id = it.name,
+              optionText = stringResource(it.stringResource()),
+              chosenState = if (it == uiState.selectedHousingType) Chosen else NotChosen,
+              lockedState = NotLocked,
+            ),
+          )
+        },
+      ),
+      onOptionClick = {
+        onSelectHousingType(HousingType.valueOf(it))
+      },
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT), Info)
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(R.string.general_continue_button),
+      onClick = onSubmitHousingType,
+      enabled = uiState.submittingHousingType == null,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
