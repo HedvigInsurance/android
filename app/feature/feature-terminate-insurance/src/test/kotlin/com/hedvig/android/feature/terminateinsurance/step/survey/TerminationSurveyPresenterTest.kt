@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import app.cash.turbine.Turbine
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
@@ -234,7 +235,7 @@ class TerminationSurveyPresenterTest {
   }
 
   @Test
-  fun `when option contain suggestion to change tier disable continue`() = runTest {
+  fun `when chosen option contain suggestion to change tier disable continue`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
@@ -303,6 +304,30 @@ class TerminationSurveyPresenterTest {
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
       assertThat(currentEmptyQuotesDialog).isFalse()
       assertThat(currentRedirectToChangeTierIntent).isNotNull()
+    }
+  }
+
+  @Test
+  fun `when repo gives bad response show error`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(ErrorMessage().left())
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val error = current.errorWhileLoadingNextStep
+      val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentRedirectToChangeTierIntent).isNull()
+      assertThat(error).isTrue()
     }
   }
 }
