@@ -49,9 +49,10 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingFlowEnabled,
-            isTierEnabled = isTierEnabled,
+            isTierFlagEnabled = isTierEnabled,
           )
         }
+
         val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
           it.toContract(
             isTerminated = false,
@@ -59,7 +60,7 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingFlowEnabled,
-            isTierEnabled = isTierEnabled,
+            isTierFlagEnabled = isTierEnabled,
           )
         }
         terminatedContracts + activeContracts
@@ -79,11 +80,11 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
-  isTierEnabled: Boolean,
+  isTierFlagEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
-    tierName = if (isTierEnabled) currentAgreement.productVariant.displayNameTier else null,
+    tierName = if (isTierFlagEnabled) currentAgreement.productVariant.displayNameTier else null,
     displayName = currentAgreement.productVariant.displayName,
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
@@ -124,7 +125,7 @@ private fun ContractFragment.toContract(
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
-    supportsTierChange = supportsChangeTier && isTierEnabled,
+    supportsTierChange = supportsChangeTier && isTierFlagEnabled,
   )
 }
 
