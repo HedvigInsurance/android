@@ -17,19 +17,27 @@ internal data class MovingFlowQuotes(
   val homeQuotes: List<MoveHomeQuote>,
   val mtaQuotes: List<MoveMtaQuote>,
 ) {
+  interface Quote {
+    val premium: UiMoney
+    val exposureName: String
+    val productVariant: ProductVariant
+    val startDate: LocalDate
+    val displayItems: List<DisplayItem>
+  }
+
   @Serializable
   data class MoveHomeQuote(
     val id: String,
-    val premium: UiMoney,
-    val startDate: LocalDate,
+    override val premium: UiMoney,
+    override val startDate: LocalDate,
+    override val displayItems: List<DisplayItem>,
+    override val exposureName: String,
+    override val productVariant: ProductVariant,
     val tierName: String,
     val tierLevel: Int,
     val deductible: Deductible?,
-    val displayItems: List<DisplayItem>,
-    val exposureName: String,
-    val productVariant: ProductVariant,
     val defaultChoice: Boolean,
-  ) {
+  ) : Quote {
     @Serializable
     data class Deductible(
       val amount: UiMoney,
@@ -40,12 +48,12 @@ internal data class MovingFlowQuotes(
 
   @Serializable
   data class MoveMtaQuote(
-    val premium: UiMoney,
-    val exposureName: String,
-    val productVariant: ProductVariant,
-    val startDate: LocalDate,
-    val displayItems: List<DisplayItem>,
-  )
+    override val premium: UiMoney,
+    override val exposureName: String,
+    override val productVariant: ProductVariant,
+    override val startDate: LocalDate,
+    override val displayItems: List<DisplayItem>,
+  ) : Quote
 
   @Serializable
   data class DisplayItem(
@@ -62,6 +70,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         id = houseQuote.id,
         premium = UiMoney.fromMoneyFragment(houseQuote.premium),
         startDate = houseQuote.startDate,
+        displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
+        exposureName = houseQuote.exposureName,
+        productVariant = houseQuote.productVariant.toProductVariant(),
         tierName = houseQuote.tierName,
         tierLevel = houseQuote.tierLevel,
         deductible = houseQuote.deductible?.let { deductible ->
@@ -71,9 +82,6 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             displayText = deductible.displayText,
           )
         },
-        displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
-        exposureName = houseQuote.exposureName,
-        productVariant = houseQuote.productVariant.toProductVariant(),
         defaultChoice = houseQuote.defaultChoice,
       )
     },
