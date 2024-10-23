@@ -42,7 +42,7 @@ class FakeFeatureManager2(
    */
   constructor(fixedReturnForAll: Boolean) : this(Feature.entries.associateWith { fixedReturnForAll })
 
-  val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureTurbine")
+  val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureManagerTurbine")
 
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return flow {

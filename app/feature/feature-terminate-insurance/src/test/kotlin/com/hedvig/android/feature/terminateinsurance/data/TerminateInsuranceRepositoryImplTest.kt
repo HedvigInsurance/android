@@ -42,6 +42,9 @@ class TerminateInsuranceRepositoryImplTest {
   @get:Rule
   val tmpFolder: TemporaryFolder = TemporaryFolder.builder().assureDeletion().build()
 
+  @get:Rule
+  val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
+
   private val testCoroutineDispatcher = UnconfinedTestDispatcher()
   private val testCoroutineScope = TestScope(testCoroutineDispatcher + Job())
   private val testDataStore: DataStore<Preferences> =
@@ -49,9 +52,6 @@ class TerminateInsuranceRepositoryImplTest {
       scope = testCoroutineScope,
       produceFile = { tmpFolder.newFile(TEST_DATASTORE_NAME) },
     )
-
-  @get:Rule
-  val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
   private val testId = "testId"
   private val TEST_DATASTORE_NAME: String = "user.preferences_pb"
 
