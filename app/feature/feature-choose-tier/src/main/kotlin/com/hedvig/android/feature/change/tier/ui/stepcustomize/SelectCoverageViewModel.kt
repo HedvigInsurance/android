@@ -30,6 +30,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -47,7 +48,7 @@ internal class SelectCoverageViewModel(
     ),
   )
 
-private class SelectCoveragePresenter(
+internal class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,
   private val tierRepository: ChangeTierRepository,
   val getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
@@ -149,30 +150,36 @@ private class SelectCoveragePresenter(
             currentPartialState = PartialUiState.Failure(GENERAL)
           },
           ifRight = { currentContractData ->
-            val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
+            val quotesResult = tierRepository.getQuotesById(params.quoteIds)
             if (quotesResult.isEmpty()) {
               currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
             } else {
-              val current: TierDeductibleQuote = quotesResult.first { it.id == tierRepository.getCurrentQuoteId() }
-              // pre-choosing current quote
-              chosenTier = current.tier
-              chosenTierInDialog = current.tier
-              chosenQuote = current
-              chosenQuoteInDialog = current
-              currentPartialState = PartialUiState.Success(
-                contractData = ContractData(
-                  activeDisplayPremium = current.premium.toString(),
-                  contractGroup = current.productVariant.contractGroup,
-                  contractDisplayName = current.productVariant.displayName,
-                  contractDisplaySubtitle = currentContractData.currentExposureName,
-                ),
-                // setting current quote aside for comparison later
-                currentActiveQuote = current,
-                // adding current tierName and quote to the list, create map
-                map = mapQuotesToTiersAndQuotes(quotesResult),
-              )
+              val currentFromDb = quotesResult.firstOrNull { it.id == tierRepository.getCurrentQuoteId() }
+              if (currentFromDb == null) {
+                logcat { "Select coveragePresenter: tried to get current quoteToChange from DB but found none" }
+                currentPartialState = PartialUiState.Failure(GENERAL)
+              } else {
+                val current: TierDeductibleQuote = currentFromDb
+                // pre-choosing current quote
+                chosenTier = current.tier
+                chosenTierInDialog = current.tier
+                chosenQuote = current
+                chosenQuoteInDialog = current
+                currentPartialState = PartialUiState.Success(
+                  contractData = ContractData(
+                    activeDisplayPremium = current.premium.toString(),
+                    contractGroup = current.productVariant.contractGroup,
+                    contractDisplayName = current.productVariant.displayName,
+                    contractDisplaySubtitle = currentContractData.currentExposureName,
+                  ),
+                  // setting current quote aside for comparison later
+                  currentActiveQuote = current,
+                  // adding current tierName and quote to the list, create map
+                  map = mapQuotesToTiersAndQuotes(quotesResult),
+                )
+              }
             }
-          },
+          }
         )
       }
     }
