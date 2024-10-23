@@ -92,7 +92,7 @@ class GetQuickLinksUseCaseTest {
   }
 
   @Test
-  fun `when response is fine and tier feature flag is off should not contain ChangeTier quickAction`() = runTest {
+  fun `when response is fine but tier feature flag is off should not contain ChangeTier quickAction`() = runTest {
     val featureManager = FakeFeatureManager2(fixedReturnForAll = false)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
@@ -123,7 +123,7 @@ class GetQuickLinksUseCaseTest {
   }
 
   @Test
-  fun `when response says cannot change tier and tier feature flag is on should not contain ChangeTier quickAction`() =
+  fun `when tier feature flag is on but response says cannot change tier should not contain ChangeTier quickAction`() =
     runTest {
       val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
       val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
