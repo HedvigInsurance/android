@@ -11,20 +11,17 @@ import com.hedvig.android.data.chat.database.converter.TierQuoteTypeConverter
 import com.hedvig.android.data.chat.database.converter.UuidConverter
 
 @Database(
-  entities = [ChatMessageEntity::class, RemoteKeyEntity::class, ChangeTierQuoteEntity::class],
-  version = 3,
+  entities = [ChatMessageEntity::class, RemoteKeyEntity::class],
+  version = 2,
   autoMigrations = [
     AutoMigration(from = 1, to = 2, spec = Migration1To2::class),
-    AutoMigration(from = 2, to = 3),
   ],
 )
-@TypeConverters(InstantConverter::class, UuidConverter::class, TierQuoteTypeConverter::class)
+@TypeConverters(InstantConverter::class, UuidConverter::class)
 abstract class AppDatabase : RoomDatabase() {
   abstract fun chatDao(): ChatDao
 
   abstract fun remoteKeyDao(): RemoteKeyDao
-
-  abstract fun tierQuoteDao(): TierQuoteDao
 }
 
 @DeleteTable(tableName = "conversations")
