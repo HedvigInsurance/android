@@ -88,6 +88,12 @@ internal fun EnterNewAddressDestination(
       onNavigateToChoseCoverageLevelAndDeductible()
     }
   }
+  if (uiState is Content && uiState.navigateToAddHouseInformation) {
+    LaunchedEffect(uiState.navigateToAddHouseInformation) {
+      viewModel.emit(EnterNewAddressEvent.NavigatedToAddHouseInformation)
+      onNavigateToAddHouseInformation()
+    }
+  }
   EnterNewAddressScreen(
     uiState = uiState,
     navigateUp = navigateUp,

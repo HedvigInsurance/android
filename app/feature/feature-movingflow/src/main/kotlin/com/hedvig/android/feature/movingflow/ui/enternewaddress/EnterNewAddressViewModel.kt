@@ -33,6 +33,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToAddHouseInformation
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
@@ -114,6 +115,10 @@ private class EnterNewAddressPresenter(
       when (event) {
         NavigatedToChoseCoverage -> {
           navigateToChoseCoverage = false
+        }
+
+        NavigatedToAddHouseInformation -> {
+          navigateToAddHouseInformation = false
         }
 
         DismissSubmissionError -> {
@@ -239,6 +244,7 @@ internal sealed interface EnterNewAddressEvent {
   data object Submit : EnterNewAddressEvent
 
   data object NavigatedToChoseCoverage : EnterNewAddressEvent
+  data object NavigatedToAddHouseInformation : EnterNewAddressEvent
 
   data object DismissSubmissionError : EnterNewAddressEvent
 }
