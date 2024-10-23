@@ -62,7 +62,7 @@ internal class SummaryPresenter(
         }
 
         DismissSubmissionError -> {
-          submittingChangesForDate = null
+          submitChangesError = null
         }
       }
     }
@@ -104,16 +104,11 @@ internal class SummaryPresenter(
               }
             },
             ifRight = { moveIntentCommit ->
-              val didSucceed = moveIntentCommit.moveIntent?.id != null
-              if (!didSucceed) {
-                val message = moveIntentCommit.userError?.message
+              val userErrorMessage = moveIntentCommit.userError?.message
+              if (userErrorMessage != null) {
                 Snapshot.withMutableSnapshot {
                   submittingChangesForDate = null
-                  submitChangesError = if (message != null) {
-                    SubmitError.WithMessage(message)
-                  } else {
-                    SubmitError.Generic
-                  }
+                  submitChangesError = SubmitError.WithMessage(userErrorMessage)
                 }
               } else {
                 Snapshot.withMutableSnapshot {
