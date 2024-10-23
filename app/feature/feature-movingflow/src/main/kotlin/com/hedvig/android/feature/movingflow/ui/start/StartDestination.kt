@@ -72,6 +72,10 @@ private fun StartScreen(
             is GenericError -> stringResource(R.string.something_went_wrong)
             is UserPresentable -> uiState.message
           },
+          subTitle = when (uiState) {
+            is GenericError -> stringResource(R.string.GENERAL_ERROR_BODY)
+            is UserPresentable -> null
+          },
         )
       }
 
