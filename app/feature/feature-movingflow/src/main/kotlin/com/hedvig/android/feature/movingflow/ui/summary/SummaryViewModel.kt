@@ -11,6 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
@@ -175,4 +176,10 @@ internal sealed interface SummaryEvent {
 internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
   val moveMtaQuotes: List<MoveMtaQuote>,
-)
+) {
+  val totalPremium: UiMoney = moveMtaQuotes.map { it.premium }.plus(moveHomeQuote.premium)
+    .sumOf { it.amount }
+    .let { sum ->
+      UiMoney(sum, moveHomeQuote.premium.currencyCode)
+    }
+}
