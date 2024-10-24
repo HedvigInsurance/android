@@ -140,6 +140,38 @@ class SelectCoveragePresenterTest {
   }
 
   @Test
+  fun `if it is not current quote that is select continue button should be enabled`() = runTest {
+    val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
+      skipItems(1)
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isCurrentChosen)
+        .isEqualTo(true)
+      sendEvent(
+        SelectCoverageEvent.ChangeTierInDialog(standardTier),
+      )
+      skipItems(1)
+      sendEvent(SelectCoverageEvent.ChangeTier)
+      val state2 = awaitItem()
+      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isCurrentChosen)
+        .isEqualTo(false)
+    }
+  }
+
+  @Test
   fun `when confirming tier change in dialog show correct selection of quotes in the deductible dropdown`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
