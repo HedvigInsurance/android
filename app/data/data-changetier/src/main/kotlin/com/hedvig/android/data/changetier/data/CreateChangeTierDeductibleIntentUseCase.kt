@@ -95,10 +95,12 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
               ),
             )
           }
-          ChangeTierDeductibleIntent(
+          val intentResult =  ChangeTierDeductibleIntent(
             activationDate = intent.activationDate,
             quotes = listOf(currentQuote) + quotesToOffer,
           )
+          logcat { "Mariia: createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+          intentResult
         } else {
           if (changeTierDeductibleResponse.isRight()) {
             logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }

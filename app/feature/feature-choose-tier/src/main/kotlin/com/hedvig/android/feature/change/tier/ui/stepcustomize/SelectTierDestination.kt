@@ -49,9 +49,6 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
-import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -72,8 +69,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
@@ -95,7 +90,6 @@ internal fun SelectTierDestination(
   ) {
     when (val state = uiState) {
       is Failure -> FailureScreen(
-        reason = state.reason,
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
@@ -150,51 +144,36 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
-    when (reason) {
-      GENERAL -> {
-        HedvigErrorSection(
-          onButtonClick = reload,
-          modifier = Modifier.fillMaxSize(),
-          subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
-          title = stringResource(R.string.GENERAL_ERROR_BODY),
-          buttonText = stringResource(R.string.GENERAL_ERROR_BODY),
-        )
-      }
-      QUOTES_ARE_EMPTY -> {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(
+    Column(
+      modifier = Modifier
+          .fillMaxSize()
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(
               WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Horizontal +
-                  WindowInsetsSides.Bottom,
+                  WindowInsetsSides.Horizontal +
+                          WindowInsetsSides.Bottom,
               ),
-            ),
-        ) {
-          Spacer(Modifier.weight(1f))
-          EmptyState(
-            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
-            iconStyle = INFO,
-            buttonStyle = NoButton,
-            description = null,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.weight(1f))
-          HedvigTextButton(
-            stringResource(R.string.general_close_button),
-            onClick = popBackStack,
-            buttonSize = Large,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(32.dp))
-        }
-      }
+          ),
+    ) {
+      Spacer(Modifier.weight(1f))
+      HedvigErrorSection(
+        onButtonClick = reload,
+        modifier = Modifier.fillMaxSize(),
+      )
+      Spacer(Modifier.weight(1f))
+      HedvigTextButton(
+        stringResource(R.string.general_close_button),
+        onClick = popBackStack,
+        buttonSize = Large,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(32.dp))
     }
   }
 }
+
 
 @Composable
 private fun SelectTierScreen(
@@ -266,8 +245,8 @@ private fun SelectTierScreen(
     HedvigTextButton(
       buttonSize = Large,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       onClick = {
         onCompareClick()
@@ -282,8 +261,8 @@ private fun SelectTierScreen(
         onContinueClick()
       },
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -439,8 +418,8 @@ private fun CustomizationCard(
         endSlot = {
           HedvigText(
             text =
-              newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
-                ?: "-",
+            newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
+              ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -469,9 +448,9 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier
-      .padding(16.dp)
-      .verticalScroll(rememberScrollState()),
+      modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(

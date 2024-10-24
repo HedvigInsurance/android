@@ -31,7 +31,9 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
     }
     StartChangeTierFlowDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+     popBackStack = {
+       navigator.popBackStack()
+     },
       launchFlow = { params: InsuranceCustomizationParameters ->
         navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowDestination> {

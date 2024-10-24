@@ -14,6 +14,7 @@ import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseC
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Failure
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Loading
+import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.NotAllowed
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -93,13 +94,17 @@ internal class ChooseInsurancePresenter(
             Failure
           },
           ifRight = { intent ->
-            val params = InsuranceCustomizationParameters(
-              insuranceId = customisableInsurance.id,
-              activationDate = intent.activationDate,
-              quoteIds = intent.quotes.map { it.id },
-            )
-            insuranceToFetchIntentFor = null
-            Loading(params)
+            if (intent.quotes.isEmpty()) {
+              NotAllowed
+            } else {
+              val params = InsuranceCustomizationParameters(
+                insuranceId = customisableInsurance.id,
+                activationDate = intent.activationDate,
+                quoteIds = intent.quotes.map { it.id },
+              )
+              insuranceToFetchIntentFor = null
+              Loading(params)
+            }
           },
         )
     }
@@ -117,7 +122,7 @@ internal class ChooseInsurancePresenter(
           ifRight = { eligibleInsurances ->
             logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for changing tier-deductible" }
             if (eligibleInsurances == null) {
-              currentState = ChooseInsuranceUiState.NotAllowed
+              currentState = ChooseInsuranceUiState.Failure
             } else if (eligibleInsurances.size == 1) {
               insuranceToFetchIntentFor = eligibleInsurances[0]
             } else {
@@ -158,7 +163,7 @@ internal sealed interface ChooseInsuranceToCustomizeEvent {
 
   data object RetryLoadData : ChooseInsuranceToCustomizeEvent
 
-  data class SubmitSelectedInsuranceToTerminate(val insurance: CustomisableInsurance) :
+  data class SubmitSelectedInsuranceToTerminate(val insurance: CustomisableInsurance):
     ChooseInsuranceToCustomizeEvent
 
   data object ClearTerminationStep : ChooseInsuranceToCustomizeEvent

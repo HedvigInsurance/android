@@ -1,11 +1,10 @@
 package ui.stepcustomize
 
+import CURRENT_ID
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.right
 import assertk.assertThat
-import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
@@ -19,40 +18,49 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoveragePre
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
+import currentQuote
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import testQuote
+import testQuote2
 
 class SelectCoveragePresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
-  fun `when repo has quotes correctly show them`() = runTest {
+  fun `when sending quoteIds that are not stored show Failure`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
     val presenter = SelectCoveragePresenter(
-      params = fakeParams,
+      params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase
     )
     presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf())
       skipItems(1)
       assertThat(awaitItem()).isInstanceOf<SelectCoverageState.Failure>()
     }
-  //    val repository = FakeTerminateInsuranceRepository()
-//    val changeTierRepository = FakeChangeTierRepository()
-//    val presenter = TerminationSurveyPresenter(
-//      listOfOptionsForHome,
-//      repository,
-//      changeTierRepository,
-//    )
-//    presenter.test(initialState = TerminationSurveyState()) {
-//      skipItems(1)
-//      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-//    }
+  }
+
+
+  @Test
+  fun `when sending quoteIds that are stored show Success`() = runTest {
+    val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
+      skipItems(1)
+      assertThat(awaitItem()).isInstanceOf<SelectCoverageState.Success>()
+    }
   }
 }
 
@@ -62,10 +70,10 @@ private class FakeGetCurrentContractDataUseCase(): GetCurrentContractDataUseCase
   }
 }
 
-private val fakeParams = InsuranceCustomizationParameters(
+private val params = InsuranceCustomizationParameters(
   activationDate = LocalDate(2025,9,11),
   insuranceId = "testId",
-  quoteIds = listOf("id1", "id2")
+  quoteIds = listOf("id0", "id1", CURRENT_ID)
 )
 
 private class FakeChangeTierRepository() : ChangeTierRepository {
@@ -85,7 +93,7 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
   }
 
   override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {
-    return listOf(testQuote)
+    return quoteListTurbine.awaitItem()
   }
 
   override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
@@ -96,6 +104,6 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
   }
 
   override suspend fun getCurrentQuoteId(): String {
-    return "string"
+    return CURRENT_ID
   }
 }

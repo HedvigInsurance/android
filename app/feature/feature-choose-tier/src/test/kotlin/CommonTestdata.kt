@@ -7,9 +7,77 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-
+internal const val CURRENT_ID = "current"
 internal val testQuote = TierDeductibleQuote(
   id = "id0",
+  deductible = Deductible(
+    UiMoney(0.0, SEK),
+    deductiblePercentage = 25,
+    description = "Endast en rörlig del om 25% av skadekostnaden.",
+  ),
+  displayItems = listOf(
+    ChangeTierDeductibleDisplayItem(
+      displayValue = "hhh",
+      displaySubtitle = "mmm",
+      displayTitle = "ioi",
+    ),
+  ),
+  premium = UiMoney(199.0, SEK),
+  tier = Tier(
+    "BAS",
+    tierLevel = 0,
+    tierDescription = "Vårt paket med grundläggande villkor.",
+    tierDisplayName = "Bas",
+  ),
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = "test",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Bas",
+    tierDescription = "Our most basic coverage",
+  ),
+)
+
+internal val testQuote2 = TierDeductibleQuote(
+  id = "id1",
+  deductible = Deductible(
+    UiMoney(0.0, SEK),
+    deductiblePercentage = 25,
+    description = "Endast en rörlig del om 25% av skadekostnaden.",
+  ),
+  displayItems = listOf(
+    ChangeTierDeductibleDisplayItem(
+      displayValue = "hhh",
+      displaySubtitle = "mmm",
+      displayTitle = "ioi",
+    ),
+  ),
+  premium = UiMoney(199.0, SEK),
+  tier = Tier(
+    "BAS",
+    tierLevel = 0,
+    tierDescription = "Vårt paket med grundläggande villkor.",
+    tierDisplayName = "Bas",
+  ),
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = "test",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Bas",
+    tierDescription = "Our most basic coverage",
+  ),
+)
+
+internal val currentQuote = TierDeductibleQuote(
+  id = CURRENT_ID,
   deductible = Deductible(
     UiMoney(0.0, SEK),
     deductiblePercentage = 25,
