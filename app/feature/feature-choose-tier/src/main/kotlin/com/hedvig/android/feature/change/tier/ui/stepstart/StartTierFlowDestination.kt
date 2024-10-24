@@ -25,7 +25,6 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
@@ -43,12 +42,14 @@ internal fun StartChangeTierFlowDestination(
 ) {
   val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
   when (uiState) {
-    is Failure ->{
-      FailureScreen(reload = {
-        viewModel.emit(StartTierChangeEvent.Reload)
-      },
+    is Failure -> {
+      FailureScreen(
+        reload = {
+          viewModel.emit(StartTierChangeEvent.Reload)
+        },
         popBackStack = popBackStack,
-        reason = (uiState as Failure).reason)
+        reason = (uiState as Failure).reason,
+      )
     }
 
     Loading -> HedvigFullScreenCenterAlignedLinearProgress(

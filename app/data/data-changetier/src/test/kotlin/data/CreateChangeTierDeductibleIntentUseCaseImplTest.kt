@@ -1,5 +1,6 @@
 package data
 
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
@@ -224,6 +225,52 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
     }
 
   @OptIn(ApolloExperimental::class)
+  private val apolloClientWithGoodResponseButEmptyQuotes: ApolloClient
+    get() = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = ChangeTierDeductibleCreateIntentMutation(
+          contractId = testId,
+          source = testSource,
+        ),
+        data = ChangeTierDeductibleCreateIntentMutation.Data(OctopusFakeResolver) {
+          changeTierDeductibleCreateIntent = buildChangeTierDeductibleCreateIntentOutput {
+            intent = buildChangeTierDeductibleIntent {
+              activationDate = activationDateNovember
+              agreementToChange = buildChangeTierDeductibleFromAgreement {
+                premium = buildMoney {
+                  amount = 169.0
+                  currencyCode = SEK
+                }
+                deductible = buildDeductible {
+                  displayText = "A very good deductible"
+                  percentage = 0
+                  amount = buildMoney {
+                    amount = 3000.0
+                    currencyCode = SEK
+                  }
+                }
+                displayItems = listOf()
+                tierLevel = 1
+                tierName = "STANDARD"
+                productVariant = buildProductVariant {
+                  displayName = "Variant"
+                  typeOfContract = "SE_APARTMENT_RENT"
+                  partner = null
+                  perils = listOf()
+                  insurableLimits = listOf()
+                  documents = listOf()
+                  displayNameTier = "Standard"
+                  tierDescription = "Our standard coverage"
+                }
+              }
+              quotes = listOf()
+            }
+          }
+        },
+      )
+    }
+
+  @OptIn(ApolloExperimental::class)
   private val apolloClientWithGoodResponse: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
@@ -297,6 +344,21 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
         },
       )
     }
+
+  @Test
+  fun `when BE response has empty quotes return intent with empty quotes`() = runTest {
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
+    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+      apolloClient = apolloClientWithGoodResponseButEmptyQuotes,
+      featureManager = featureManager,
+    )
+    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+    assertk.assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(ChangeTierDeductibleIntent::quotes)
+      .isEmpty()
+  }
 
   @Test
   fun `when response is fine and tier feature flag is on get a good result`() = runTest {

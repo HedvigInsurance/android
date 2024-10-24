@@ -37,7 +37,7 @@ class SelectCoveragePresenterTest {
     val presenter = SelectCoveragePresenter(
       params = params,
       tierRepository = tierRepo,
-      getCurrentContractDataUseCase = getCurrentContractDataUseCase
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf())
@@ -46,7 +46,6 @@ class SelectCoveragePresenterTest {
     }
   }
 
-
   @Test
   fun `when sending quoteIds that are stored show Success`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
@@ -54,7 +53,7 @@ class SelectCoveragePresenterTest {
     val presenter = SelectCoveragePresenter(
       params = params,
       tierRepository = tierRepo,
-      getCurrentContractDataUseCase = getCurrentContractDataUseCase
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
@@ -64,16 +63,16 @@ class SelectCoveragePresenterTest {
   }
 }
 
-private class FakeGetCurrentContractDataUseCase(): GetCurrentContractDataUseCase {
+private class FakeGetCurrentContractDataUseCase() : GetCurrentContractDataUseCase {
   override suspend fun invoke(insuranceId: String): Either<ErrorMessage, CurrentContractData> {
-    return either {CurrentContractData("exposure name")}
+    return either { CurrentContractData("exposure name") }
   }
 }
 
 private val params = InsuranceCustomizationParameters(
-  activationDate = LocalDate(2025,9,11),
+  activationDate = LocalDate(2025, 9, 11),
   insuranceId = "testId",
-  quoteIds = listOf("id0", "id1", CURRENT_ID)
+  quoteIds = listOf("id0", "id1", CURRENT_ID),
 )
 
 private class FakeChangeTierRepository() : ChangeTierRepository {

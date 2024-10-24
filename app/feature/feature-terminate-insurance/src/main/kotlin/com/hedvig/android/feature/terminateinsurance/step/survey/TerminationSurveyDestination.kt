@@ -219,8 +219,8 @@ private fun TerminationSurveyScreen(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
           ) {
-            val subTitle = stringResource(R. string. GENERAL_ERROR_BODY)
-            val title =  stringResource(R. string. something_went_wrong)
+            val subTitle = stringResource(R.string.GENERAL_ERROR_BODY)
+            val title = stringResource(R.string.something_went_wrong)
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)

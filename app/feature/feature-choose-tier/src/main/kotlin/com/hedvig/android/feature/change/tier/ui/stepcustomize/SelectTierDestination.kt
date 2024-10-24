@@ -148,14 +148,14 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
-          .fillMaxSize()
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(
-                  WindowInsetsSides.Horizontal +
-                          WindowInsetsSides.Bottom,
-              ),
+        .fillMaxSize()
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(
+          WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal +
+              WindowInsetsSides.Bottom,
           ),
+        ),
     ) {
       Spacer(Modifier.weight(1f))
       HedvigErrorSection(
@@ -173,7 +173,6 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
     }
   }
 }
-
 
 @Composable
 private fun SelectTierScreen(
@@ -245,8 +244,8 @@ private fun SelectTierScreen(
     HedvigTextButton(
       buttonSize = Large,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
       text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       onClick = {
         onCompareClick()
@@ -261,8 +260,8 @@ private fun SelectTierScreen(
         onContinueClick()
       },
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -418,8 +417,8 @@ private fun CustomizationCard(
         endSlot = {
           HedvigText(
             text =
-            newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
-              ?: "-",
+              newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
+                ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -448,9 +447,9 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-      modifier
-          .padding(16.dp)
-          .verticalScroll(rememberScrollState()),
+    modifier
+      .padding(16.dp)
+      .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(

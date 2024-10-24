@@ -38,13 +38,13 @@ internal class SelectCoverageViewModel(
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
-  initialState = Loading,
-  presenter = SelectCoveragePresenter(
-    params = params,
-    getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-    tierRepository = tierRepository,
-  ),
-)
+    initialState = Loading,
+    presenter = SelectCoveragePresenter(
+      params = params,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      tierRepository = tierRepository,
+    ),
+  )
 
 internal class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,
@@ -142,40 +142,40 @@ internal class SelectCoveragePresenter(
     LaunchedEffect(currentContractLoadIteration) {
       if (lastState !is Success) {
         getCurrentContractDataUseCase.invoke(params.insuranceId).fold(
-            ifLeft = {
+          ifLeft = {
+            currentPartialState = PartialUiState.Failure
+          },
+          ifRight = { currentContractData ->
+            val quotesResult = tierRepository.getQuotesById(params.quoteIds)
+            if (quotesResult.isEmpty()) {
+              currentPartialState = PartialUiState.Failure
+            } else {
+              val currentFromDb = quotesResult.firstOrNull { it.id == tierRepository.getCurrentQuoteId() }
+              if (currentFromDb == null) {
+                logcat { "Select coveragePresenter: tried to get current quoteToChange from DB but found none" }
                 currentPartialState = PartialUiState.Failure
-            },
-            ifRight = { currentContractData ->
-                val quotesResult = tierRepository.getQuotesById(params.quoteIds)
-                if (quotesResult.isEmpty()) {
-                    currentPartialState = PartialUiState.Failure
-                } else {
-                    val currentFromDb = quotesResult.firstOrNull { it.id == tierRepository.getCurrentQuoteId() }
-                    if (currentFromDb == null) {
-                        logcat { "Select coveragePresenter: tried to get current quoteToChange from DB but found none" }
-                        currentPartialState = PartialUiState.Failure
-                    } else {
-                        val current: TierDeductibleQuote = currentFromDb
-                        // pre-choosing current quote
-                        chosenTier = current.tier
-                        chosenTierInDialog = current.tier
-                        chosenQuote = current
-                        chosenQuoteInDialog = current
-                        currentPartialState = PartialUiState.Success(
-                            contractData = ContractData(
-                                activeDisplayPremium = current.premium.toString(),
-                                contractGroup = current.productVariant.contractGroup,
-                                contractDisplayName = current.productVariant.displayName,
-                                contractDisplaySubtitle = currentContractData.currentExposureName,
-                            ),
-                            // setting current quote aside for comparison later
-                            currentActiveQuote = current,
-                            // adding current tierName and quote to the list, create map
-                            map = mapQuotesToTiersAndQuotes(quotesResult),
-                        )
-                    }
-                }
-            },
+              } else {
+                val current: TierDeductibleQuote = currentFromDb
+                // pre-choosing current quote
+                chosenTier = current.tier
+                chosenTierInDialog = current.tier
+                chosenQuote = current
+                chosenQuoteInDialog = current
+                currentPartialState = PartialUiState.Success(
+                  contractData = ContractData(
+                    activeDisplayPremium = current.premium.toString(),
+                    contractGroup = current.productVariant.contractGroup,
+                    contractDisplayName = current.productVariant.displayName,
+                    contractDisplaySubtitle = currentContractData.currentExposureName,
+                  ),
+                  // setting current quote aside for comparison later
+                  currentActiveQuote = current,
+                  // adding current tierName and quote to the list, create map
+                  map = mapQuotesToTiersAndQuotes(quotesResult),
+                )
+              }
+            }
+          },
         )
       }
     }
@@ -302,7 +302,6 @@ internal sealed interface SelectCoverageState {
 
   data object Failure : SelectCoverageState
 }
-
 
 internal data class SelectCoverageSuccessUiState(
   val contractData: ContractData,

@@ -7,6 +7,7 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+
 internal const val CURRENT_ID = "current"
 internal val testQuote = TierDeductibleQuote(
   id = "id0",

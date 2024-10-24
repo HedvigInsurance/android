@@ -163,7 +163,7 @@ internal sealed interface ChooseInsuranceToCustomizeEvent {
 
   data object RetryLoadData : ChooseInsuranceToCustomizeEvent
 
-  data class SubmitSelectedInsuranceToTerminate(val insurance: CustomisableInsurance):
+  data class SubmitSelectedInsuranceToTerminate(val insurance: CustomisableInsurance) :
     ChooseInsuranceToCustomizeEvent
 
   data object ClearTerminationStep : ChooseInsuranceToCustomizeEvent
