@@ -82,6 +82,8 @@ fun HedvigStepper(
       text = text,
       onMinusClick = onMinusClick,
       onPlusClick = onPlusClick,
+      isPlusEnabled = isPlusEnabled,
+      isMinusEnabled = isMinusEnabled,
       containerColor = containerColor.value,
       textColor = textColor.value,
       plusColor = plusColor.value,
@@ -96,6 +98,8 @@ fun HedvigStepper(
       labelText = stepperStyle.labelText,
       onMinusClick = onMinusClick,
       onPlusClick = onPlusClick,
+      isPlusEnabled = isPlusEnabled,
+      isMinusEnabled = isMinusEnabled,
       containerColor = containerColor.value,
       textColor = textColor.value,
       labelColor = labelColor.value,
@@ -113,6 +117,8 @@ private fun DefaultStepper(
   text: String,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   containerColor: Color,
   textColor: Color,
   plusColor: Color,
@@ -143,6 +149,8 @@ private fun DefaultStepper(
             StepperSymbols(
               onMinusClick,
               onPlusClick,
+              isPlusEnabled,
+              isMinusEnabled,
               plusColor,
               minusColor,
               modifier = Modifier.padding(stepperSize.size.symbolsPadding),
@@ -168,16 +176,6 @@ private fun DefaultStepper(
         )
       }
     }
-//    AnimatedVisibility(errorText != null) {
-//      if (errorText != null) {
-//        HedvigText(
-//          text = errorText,
-//          color = stepperColors.errorTextColor,
-//          style = stepperSize.size.labelTextStyle,
-//          modifier = Modifier.padding(stepperSize.size.errorTextPadding(Default)),
-//        )
-//      }
-//    }
   }
 }
 
@@ -185,6 +183,8 @@ private fun DefaultStepper(
 private fun StepperSymbols(
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   plusColor: Color,
   minusColor: Color,
   modifier: Modifier = Modifier,
@@ -192,6 +192,7 @@ private fun StepperSymbols(
   Row(modifier) {
     IconButton(
       onClick = onMinusClick,
+      enabled = isMinusEnabled,
       modifier = Modifier.size(24.dp),
     ) {
       Icon(
@@ -203,6 +204,7 @@ private fun StepperSymbols(
     Spacer(Modifier.width(16.dp))
     IconButton(
       onClick = onPlusClick,
+      enabled = isPlusEnabled,
       modifier = Modifier.size(24.dp),
     ) {
       Icon(
@@ -221,6 +223,8 @@ private fun LabeledStepper(
   labelText: String,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   containerColor: Color,
   textColor: Color,
   labelColor: Color,
@@ -261,6 +265,8 @@ private fun LabeledStepper(
             StepperSymbols(
               onMinusClick,
               onPlusClick,
+              isPlusEnabled,
+              isMinusEnabled,
               plusColor,
               minusColor,
               modifier = Modifier.padding(stepperSize.size.symbolsPadding),
