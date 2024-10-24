@@ -3,12 +3,6 @@ query CurrentContractsForTierChange {
     activeContracts {
       id
       exposureDisplayName
-      upcomingChangedAgreement {
-        ...GeneralAgreementFragment
-      }
-      currentAgreement {
-        ...GeneralAgreementFragment
-      }
     }
   }
 }

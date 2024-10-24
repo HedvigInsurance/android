@@ -96,8 +96,6 @@ internal class ChooseInsurancePresenter(
             val params = InsuranceCustomizationParameters(
               insuranceId = customisableInsurance.id,
               activationDate = intent.activationDate,
-              currentTierLevel = intent.currentTierLevel,
-              currentTierName = intent.currentTierName,
               quoteIds = intent.quotes.map { it.id },
             )
             insuranceToFetchIntentFor = null

@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,11 +66,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.DialogDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
@@ -77,6 +83,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
@@ -91,6 +98,9 @@ import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
+import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -111,7 +121,13 @@ internal fun HelpCenterHomeDestination(
   onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+  LaunchedEffect(uiState.destinationToNavigate) {
+    val destination = uiState.destinationToNavigate
+    if (destination != null && uiState.selectedQuickAction == null) {
+      viewModel.emit(HelpCenterEvent.ClearNavigation)
+      onNavigateToQuickLink(destination)
+    }
+  }
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,
@@ -119,7 +135,9 @@ internal fun HelpCenterHomeDestination(
     selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
-    onNavigateToQuickLink = onNavigateToQuickLink,
+    onNavigateToQuickLink = {
+      viewModel.emit(HelpCenterEvent.NavigateToQuickAction(it))
+    },
     onQuickActionsSelected = {
       viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
     },
@@ -160,7 +178,7 @@ private fun HelpCenterHomeScreen(
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
-    is QuickAction.MultiSelectQuickLink -> {
+    is MultiSelectQuickLink -> {
       var chosenIndex by remember { mutableStateOf<Int?>(null) }
       val entries = buildList {
         selectedQuickAction.links.forEachIndexed { index, quickLink ->
@@ -186,12 +204,82 @@ private fun HelpCenterHomeScreen(
       )
     }
 
-    is QuickAction.StandaloneQuickLink -> {
+    is StandaloneQuickLink -> {
       onDismissQuickActionDialog()
       onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
 
     null -> {}
+
+    is MultiSelectExpandedLink -> {
+      HedvigDialog(
+        applyDefaultPadding = false,
+        onDismissRequest = {
+          onDismissQuickActionDialog()
+        },
+        style = DialogDefaults.DialogStyle.NoButtons,
+      ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+          var selectedIndex by remember { mutableStateOf<Int?>(null) }
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+          )
+          Spacer(Modifier.height(24.dp))
+          selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
+            RadioOptionRightAligned(
+              chosenState = if (index == selectedIndex) Chosen else NotChosen,
+              onClick = {
+                selectedIndex = index
+              },
+              optionContent = {
+                Column {
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.titleRes,
+                    ),
+                  )
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.hintTextRes,
+                    ),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                    style = HedvigTheme.typography.label,
+                  )
+                }
+              },
+            )
+            if (index != selectedQuickAction.links.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
+          }
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(R.string.general_continue_button),
+            enabled = selectedIndex != null,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex?.let { index ->
+                onNavigateToQuickLink(selectedQuickAction.links[index].quickLinkDestination)
+              }
+            },
+          )
+          Spacer(Modifier.height(4.dp))
+          HedvigTextButton(
+            buttonSize = Large,
+            text = stringResource(R.string.general_cancel_button),
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex = null
+              onDismissQuickActionDialog()
+            },
+          )
+          Spacer(Modifier.height(24.dp))
+        }
+      }
+    }
   }
   var searchQuery by remember {
     mutableStateOf<String?>(search?.searchQuery)
@@ -649,7 +737,7 @@ private fun QuickLinkCard(
       .fillMaxWidth(),
   ) {
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
       modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
     ) {
       topText()
@@ -760,7 +848,7 @@ private class QuickLinkUiStatePreviewProvider :
           addAll(
             List(3) {
               HelpCenterUiState.QuickLink(
-                QuickAction.StandaloneQuickLink(
+                StandaloneQuickLink(
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
                   QuickLinkDestination.OuterDestination.QuickLinkTermination,
@@ -770,7 +858,7 @@ private class QuickLinkUiStatePreviewProvider :
           )
           add(
             HelpCenterUiState.QuickLink(
-              QuickAction.MultiSelectQuickLink(
+              MultiSelectQuickLink(
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                 emptyList(),

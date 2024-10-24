@@ -246,6 +246,10 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
   override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
     return either {}
   }
+
+  override suspend fun getCurrentQuoteId(): String {
+    return "string"
+  }
 }
 
 private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {

@@ -2,15 +2,27 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
     intent {
       activationDate
-      currentTierLevel
-      currentTierName
+      agreementToChange {
+        deductible {
+          ...DeductibleFragment
+        }
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
+        premium {
+          ...MoneyFragment
+        }
+        productVariant {
+          ...ProductVariantFragment
+        }
+        tierLevel
+        tierName
+      }
       quotes {
         deductible {
-          amount {
-            ...MoneyFragment
-          }
-          displayText
-          percentage
+          ...DeductibleFragment
         }
         displayItems {
           displaySubtitle
