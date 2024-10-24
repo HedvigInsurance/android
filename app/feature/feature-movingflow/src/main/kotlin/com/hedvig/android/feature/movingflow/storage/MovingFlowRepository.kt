@@ -6,6 +6,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
+import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState.ExtraBuildingInfo
 import com.hedvig.android.feature.movingflow.data.fromFragments
 import com.hedvig.android.feature.movingflow.data.toMovingFlowQuotes
 import com.hedvig.android.logger.LogPriority
@@ -35,10 +36,6 @@ internal class MovingFlowRepository(
     isStudent: Boolean,
   ) {
     movingFlowStorage.editMovingFlowState { existingState ->
-      if (existingState == null) {
-        logcat(LogPriority.ERROR) { "Trying to `updateWithPropertyInput` a non-existing moving flow state" }
-        return@editMovingFlowState null
-      }
       val updatedState = existingState.copy(
         addressInfo = existingState.addressInfo.copy(
           street = address,
@@ -81,12 +78,36 @@ internal class MovingFlowRepository(
     }
   }
 
+  suspend fun updateWithHouseInput(
+    yearOfConstruction: Int,
+    ancillaryArea: Int,
+    numberOfBathrooms: Int,
+    isSublet: Boolean,
+    extraBuildings: List<ExtraBuildingInfo>,
+  ): MovingFlowState? {
+    return movingFlowStorage.editMovingFlowState { existingState ->
+      val previousHouseState = existingState.propertyState as? HouseState
+      if (previousHouseState == null) {
+        logcat(LogPriority.ERROR) { "Trying to `updateWithHouseInput` on a non-house state" }
+        return@editMovingFlowState existingState
+      }
+      val updatedState = existingState.copy(
+        propertyState = previousHouseState.copy(
+          extraBuildingTypesState = previousHouseState.extraBuildingTypesState.copy(
+            selectedExtraBuildingTypes = extraBuildings,
+          ),
+          ancillaryArea = ancillaryArea,
+          yearOfConstruction = yearOfConstruction,
+          numberOfBathrooms = numberOfBathrooms,
+          isSublet = isSublet,
+        ),
+      )
+      updatedState
+    }
+  }
+
   suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment) {
     movingFlowStorage.editMovingFlowState { existingState ->
-      if (existingState == null) {
-        logcat(LogPriority.ERROR) { "Trying to `updateWithPropertyInput` a non-existing moving flow state" }
-        return@editMovingFlowState null
-      }
       existingState.copy(movingFlowQuotes = moveIntentQuotesFragment.toMovingFlowQuotes())
     }
   }

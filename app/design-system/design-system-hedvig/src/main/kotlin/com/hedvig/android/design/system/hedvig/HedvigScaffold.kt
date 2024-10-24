@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.tokens.ScaffoldTokens
 
 @Composable
@@ -36,7 +37,7 @@ fun HedvigScaffold(
       TopAppBar(
         title = topAppBarText ?: "",
         actionType = topAppBarActionType,
-        onActionClick = navigateUp,
+        onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = topAppBarActions,
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
       )

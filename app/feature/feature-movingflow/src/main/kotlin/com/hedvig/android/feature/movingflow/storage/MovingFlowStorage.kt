@@ -5,7 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,16 +29,20 @@ internal class MovingFlowStorage(
   }
 
   /**
-   * Does nothing if there was no moving flow state to edit
+   * Does nothing if there was no moving flow state to edit.
+   * Returns the edited [MovingFlowState]
    */
-  suspend inline fun editMovingFlowState(crossinline block: (MovingFlowState?) -> MovingFlowState?) {
+  suspend inline fun editMovingFlowState(crossinline block: (MovingFlowState) -> MovingFlowState): MovingFlowState? {
     dataStore.edit { preferences ->
       val oldState = preferences[movingFlowStateKey]?.let { Json.decodeFromString<MovingFlowState>(it) }
-      val newState = block(oldState)
-      if (newState != null) {
+      if (oldState != null) {
+        val newState = block(oldState)
         preferences[movingFlowStateKey] = Json.encodeToString(newState)
+      } else {
+        logcat(LogPriority.ERROR) { "Trying to `editMovingFlowState` a non-existing moving flow state" }
       }
     }
+    return getMovingFlowState().first()
   }
 
   companion object {

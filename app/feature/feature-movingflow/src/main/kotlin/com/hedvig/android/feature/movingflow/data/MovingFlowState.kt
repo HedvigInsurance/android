@@ -4,6 +4,8 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.AddressInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.ApartmentType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
+import com.hedvig.android.logger.LogPriority.ERROR
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.feature.movingflow.fragment.MoveIntentFragment
@@ -133,16 +135,15 @@ internal data class MovingFlowState(
         Barn,
         Boathouse,
         Other,
-        Unknown,
       }
 
       @Serializable
       data class ExtraBuildingTypesState(
         val allowedExtraBuildingTypes: List<MoveExtraBuildingType>,
-        val selectedExtraBuildingTypes: List<ExtraBuildingInput>,
+        val selectedExtraBuildingTypes: List<ExtraBuildingInfo>,
       ) {
         @Serializable
-        data class ExtraBuildingInput(
+        data class ExtraBuildingInfo(
           val area: Int,
           val type: MoveExtraBuildingType,
           val hasWaterConnected: Boolean,
@@ -169,7 +170,7 @@ internal fun MovingFlowState.Companion.fromFragments(
         maxSquareMeters = maxHouseSquareMeters,
       ),
       extraBuildingTypesState = MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState(
-        allowedExtraBuildingTypes = extraBuildingTypes.map { it.toMoveExtraBuildingType() },
+        allowedExtraBuildingTypes = extraBuildingTypes.map { it.toMoveExtraBuildingType() }.filterNotNull(),
         selectedExtraBuildingTypes = emptyList(),
       ),
       ancillaryArea = null,
@@ -216,7 +217,7 @@ internal fun MovingFlowState.Companion.fromFragments(
   )
 }
 
-private fun MoveExtraBuildingType.toMoveExtraBuildingType(): HouseState.MoveExtraBuildingType {
+private fun MoveExtraBuildingType.toMoveExtraBuildingType(): HouseState.MoveExtraBuildingType? {
   return when (this) {
     GARAGE -> HouseState.MoveExtraBuildingType.Garage
     CARPORT -> HouseState.MoveExtraBuildingType.Carport
@@ -232,7 +233,10 @@ private fun MoveExtraBuildingType.toMoveExtraBuildingType(): HouseState.MoveExtr
     BARN -> HouseState.MoveExtraBuildingType.Barn
     BOATHOUSE -> HouseState.MoveExtraBuildingType.Boathouse
     OTHER -> HouseState.MoveExtraBuildingType.Other
-    UNKNOWN__ -> HouseState.MoveExtraBuildingType.Unknown
+    UNKNOWN__ -> {
+      logcat(ERROR) { "Mapping unknown MoveExtraBuildingType:{$this} to MoveExtraBuildingType.Unknown" }
+      null
+    }
   }
 }
 

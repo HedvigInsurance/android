@@ -14,7 +14,7 @@ import androidx.navigation.toRoute
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import arrow.core.identity
+import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
@@ -244,6 +244,7 @@ internal sealed interface EnterNewAddressEvent {
   data object Submit : EnterNewAddressEvent
 
   data object NavigatedToChoseCoverage : EnterNewAddressEvent
+
   data object NavigatedToAddHouseInformation : EnterNewAddressEvent
 
   data object DismissSubmissionError : EnterNewAddressEvent
@@ -350,7 +351,7 @@ private fun Content.validate(): ValidContent? {
         )
       },
     )
-  }.fold({ null }, ::identity)
+  }.mapLeft { null }.merge()
 }
 
 private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
@@ -427,7 +428,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
 
           is Available -> PropertyType.Apartment.WithStudentOption(
             propertyState.apartmentType,
-            ValidatedInput<Boolean, Boolean, EnterNewAddressValidationError>(
+            ValidatedInput<_, _, EnterNewAddressValidationError>(
               propertyState.isAvailableForStudentState.selectedIsStudent,
               { isStudent -> isStudent.right() },
             ),

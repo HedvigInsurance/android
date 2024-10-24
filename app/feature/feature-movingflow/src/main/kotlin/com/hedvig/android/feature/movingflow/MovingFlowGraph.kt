@@ -33,7 +33,9 @@ internal sealed interface MovingFlowDestinations {
   data class EnterNewAddress(val moveIntentId: String) : MovingFlowDestinations, Destination
 
   @Serializable
-  data object AddHouseInformation : MovingFlowDestinations, Destination
+  data class AddHouseInformation(
+    val moveIntentId: String,
+  ) : MovingFlowDestinations, Destination
 
   @Serializable
   data class ChoseCoverageLevelAndDeductible(
@@ -70,7 +72,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         onNavigateToAddHouseInformation = {
-          navController.navigate(MovingFlowDestinations.AddHouseInformation)
+          navController.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
         },
         onNavigateToChoseCoverageLevelAndDeductible = {
           navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
@@ -78,12 +80,19 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
       )
     }
     navdestination<MovingFlowDestinations.AddHouseInformation> {
-      AddHouseInformationDestination(koinViewModel<AddHouseInformationViewModel>())
+      AddHouseInformationDestination(
+        viewModel = koinViewModel<AddHouseInformationViewModel>(),
+        navigateUp = navController::navigateUp,
+        popBackStack = navController::popBackStack,
+        onNavigateToChoseCoverageLevelAndDeductible = {
+          navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
+        },
+      )
     }
     navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> { backStackEntry ->
       val moveIntentId = backStackEntry.toRoute<MovingFlowDestinations.ChoseCoverageLevelAndDeductible>().moveIntentId
       ChoseCoverageLevelAndDeductibleDestination(
-        koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>(),
+        viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>(),
         navigateUp = navController::navigateUp,
         onNavigateToSummaryScreen = { homeQuoteId ->
           navController.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))

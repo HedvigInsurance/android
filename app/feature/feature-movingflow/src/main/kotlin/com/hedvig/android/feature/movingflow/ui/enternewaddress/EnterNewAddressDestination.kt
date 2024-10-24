@@ -117,7 +117,7 @@ private fun EnterNewAddressScreen(
       MissingOngoingMovingFlow -> HedvigErrorSection(
         onButtonClick = popBackStack,
         subTitle = null,
-        buttonText = "Go back",
+        buttonText = stringResource(R.string.app_info_submit_bug_go_back),
       )
 
       is Content -> EnterNewAddressScreen(

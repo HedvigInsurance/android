@@ -24,7 +24,7 @@ internal fun <Input, Output, ValidationError> ValidatedInput(
   validator: (Input) -> Either<ValidationError, Output>,
 ): ValidatedInput<Input, Output, ValidationError> = ValidatedInputImpl(initialValue, validator)
 
-class ValidatedInputImpl<Input, Output, ValidationError>(
+private class ValidatedInputImpl<Input, Output, ValidationError>(
   initialValue: Input,
   private val validator: (Input) -> Either<ValidationError, Output>,
 ) : ValidatedInput<Input, Output, ValidationError> {
