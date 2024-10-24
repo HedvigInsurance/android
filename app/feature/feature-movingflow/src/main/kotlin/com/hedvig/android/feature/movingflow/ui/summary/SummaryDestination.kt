@@ -217,13 +217,10 @@ private fun SummaryScreen(
 private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   HedvigCard(
-    modifier = modifier.clickable(
-      interactionSource = null,
-      indication = ripple(bounded = true, radius = 1000.dp),
-      onClick = {
-        showDetails = !showDetails
-      }
-    ),
+    modifier = modifier,
+    onClick = { showDetails = !showDetails },
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
       Row {
