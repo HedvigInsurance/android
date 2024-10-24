@@ -193,7 +193,7 @@ private fun AddHouseInformationScreen(
       HedvigButton(
         text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         onClick = onSubmit,
-        isLoading = !content.shouldDisableInput,
+        isLoading = content.shouldDisableInput,
         enabled = !content.shouldDisableInput,
         modifier = Modifier.fillMaxWidth(),
       )
