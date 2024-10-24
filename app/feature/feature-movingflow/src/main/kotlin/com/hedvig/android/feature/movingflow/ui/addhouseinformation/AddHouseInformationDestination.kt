@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialogError
@@ -137,10 +136,7 @@ private fun AddHouseInformationScreen(
         HedvigTextField(
           text = content.addressInput.yearOfConstruction.value?.toString() ?: "",
           onValueChange = {
-            val number = it.toIntOrNull()
-            if (it.isDigitsOnly() && number != null) {
-              content.addressInput.yearOfConstruction.updateValue(it.toIntOrNull())
-            }
+            content.addressInput.yearOfConstruction.updateValue(null)
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL),
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -154,10 +150,7 @@ private fun AddHouseInformationScreen(
         HedvigTextField(
           text = content.addressInput.ancillaryArea.value?.toString() ?: "",
           onValueChange = {
-            val number = it.toIntOrNull()
-            if (it.isDigitsOnly() && number != null) {
-              content.addressInput.ancillaryArea.updateValue(it.toIntOrNull())
-            }
+            content.addressInput.ancillaryArea.updateValue(it.toIntOrNull())
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_ANCILLARY_AREA_LABEL),
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
