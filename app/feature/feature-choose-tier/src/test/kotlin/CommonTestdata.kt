@@ -9,6 +9,20 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 
 internal const val CURRENT_ID = "current"
+internal val basTier = Tier(
+  "BAS",
+  tierLevel = 0,
+  tierDescription = "Vårt paket med grundläggande villkor.",
+  tierDisplayName = "Bas",
+)
+
+internal val standardTier = Tier(
+  "STANDARD",
+  tierLevel = 1,
+  tierDescription = "Vårt standard paket.",
+  tierDisplayName = "Standard",
+)
+
 internal val testQuote = TierDeductibleQuote(
   id = "id0",
   deductible = Deductible(
@@ -24,12 +38,7 @@ internal val testQuote = TierDeductibleQuote(
     ),
   ),
   premium = UiMoney(299.0, SEK),
-  tier = Tier(
-    "STANDARD",
-    tierLevel = 1,
-    tierDescription = "Vårt standard paket.",
-    tierDisplayName = "Standard",
-  ),
+  tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,
@@ -58,12 +67,7 @@ internal val testQuote2 = TierDeductibleQuote(
     ),
   ),
   premium = UiMoney(259.0, SEK),
-  tier = Tier(
-    "STANDARD",
-    tierLevel = 1,
-    tierDescription = "Vårt standard paket.",
-    tierDisplayName = "Standard",
-  ),
+  tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,
@@ -92,12 +96,7 @@ internal val testQuote3 = TierDeductibleQuote(
     ),
   ),
   premium = UiMoney(205.0, SEK),
-  tier = Tier(
-    "STANDARD",
-    tierLevel = 1,
-    tierDescription = "Vårt standard paket.",
-    tierDisplayName = "Standard",
-  ),
+  tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,
@@ -127,12 +126,7 @@ internal val currentQuote = TierDeductibleQuote(
     ),
   ),
   premium = UiMoney(199.0, SEK),
-  tier = Tier(
-    "BAS",
-    tierLevel = 0,
-    tierDescription = "Vårt paket med grundläggande villkor.",
-    tierDisplayName = "Bas",
-  ),
+  tier = basTier,
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,
@@ -145,3 +139,4 @@ internal val currentQuote = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
   ),
 )
+

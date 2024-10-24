@@ -9,11 +9,11 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.prop
+import basTier
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.data.CurrentContractData
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
+import standardTier
 import testQuote
 import testQuote2
 import testQuote3
@@ -96,6 +97,49 @@ class SelectCoveragePresenterTest {
   }
 
   @Test
+  fun `if it is current quote that is select continue button should be disabled`() = runTest {
+    val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
+      skipItems(1)
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isCurrentChosen)
+        .isEqualTo(true)
+      sendEvent(
+        SelectCoverageEvent.ChangeTierInDialog(
+          standardTier,
+        ),
+      )
+      sendEvent(SelectCoverageEvent.ChangeTier)
+      sendEvent(
+        SelectCoverageEvent.ChangeTierInDialog(basTier),
+      )
+      sendEvent(SelectCoverageEvent.ChangeTier)
+      skipItems(3)
+      val state2 = awaitItem()
+      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isCurrentChosen)
+        .isEqualTo(true)
+      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::chosenQuote)
+        .isEqualTo(currentQuote)
+    }
+  }
+
+  @Test
   fun `when confirming tier change in dialog show correct selection of quotes in the deductible dropdown`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
@@ -112,12 +156,7 @@ class SelectCoveragePresenterTest {
       // quotes for deductible dropdown don't change:
       sendEvent(
         SelectCoverageEvent.ChangeTierInDialog(
-          Tier(
-            "STANDARD",
-            tierLevel = 1,
-            tierDescription = "Vårt standard paket.",
-            tierDisplayName = "Standard",
-          ),
+          standardTier,
         ),
       )
       val state = awaitItem()
@@ -152,12 +191,7 @@ class SelectCoveragePresenterTest {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
       sendEvent(
         SelectCoverageEvent.ChangeTierInDialog(
-          Tier(
-            "STANDARD",
-            tierLevel = 1,
-            tierDescription = "Vårt standard paket.",
-            tierDisplayName = "Standard",
-          ),
+          standardTier,
         ),
       )
       skipItems(3)
@@ -183,14 +217,7 @@ class SelectCoveragePresenterTest {
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
       sendEvent(
-        SelectCoverageEvent.ChangeTierInDialog(
-          Tier(
-            "STANDARD",
-            tierLevel = 1,
-            tierDescription = "Vårt standard paket.",
-            tierDisplayName = "Standard",
-          ),
-        ),
+        SelectCoverageEvent.ChangeTierInDialog(standardTier),
       )
       skipItems(3)
       sendEvent(SelectCoverageEvent.ChangeTier)
