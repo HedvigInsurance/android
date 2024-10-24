@@ -222,7 +222,7 @@ class TerminationSurveyPresenterTest {
 
 private class FakeChangeTierRepository() : ChangeTierRepository {
   val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
-  val quoteTurbine = Turbine<TierDeductibleQuote>()
+  val quoteTurbine = Turbine<Either<ErrorMessage, TierDeductibleQuote>>()
   val quoteListTurbine = Turbine<List<TierDeductibleQuote>>()
 
   override suspend fun startChangeTierIntentAndGetQuotesId(
@@ -232,7 +232,7 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
     return changeTierIntentTurbine.awaitItem()
   }
 
-  override suspend fun getQuoteById(id: String): TierDeductibleQuote {
+  override suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote> {
     return quoteTurbine.awaitItem()
   }
 
@@ -240,11 +240,15 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
     return quoteListTurbine.awaitItem()
   }
 
-  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
+  override suspend fun addQuotesToStorage(quotes: List<TierDeductibleQuote>) {
   }
 
   override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
     return either {}
+  }
+
+  override suspend fun getCurrentQuoteId(): String {
+    return "string"
   }
 }
 

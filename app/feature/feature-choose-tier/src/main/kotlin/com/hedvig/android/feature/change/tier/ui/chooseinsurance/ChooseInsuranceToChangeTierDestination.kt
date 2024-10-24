@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -57,19 +58,17 @@ internal fun ChooseInsuranceToChangeTierDestination(
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? ChooseInsuranceUiState.Success ?: return@LaunchedEffect
-    if (uiStateValue.paramsToNavigateToNextStep != null) {
-      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
-      navigateToNextStep(uiStateValue.paramsToNavigateToNextStep)
-    }
-  }
+
   ChooseInsuranceScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = { viewModel.emit(ChooseInsuranceToCustomizeEvent.RetryLoadData) },
     fetchTerminationStep = { viewModel.emit(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToTerminate(it)) },
     selectInsurance = { id -> viewModel.emit(ChooseInsuranceToCustomizeEvent.SelectInsurance(id)) },
+    navigateToNextStep = { params ->
+      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
+      navigateToNextStep(params)
+    },
   )
 }
 
@@ -80,6 +79,7 @@ private fun ChooseInsuranceScreen(
   reload: () -> Unit,
   fetchTerminationStep: (insurance: CustomisableInsurance) -> Unit,
   selectInsurance: (insuranceId: String) -> Unit,
+  navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -92,6 +92,7 @@ private fun ChooseInsuranceScreen(
           iconStyle = INFO,
           buttonStyle = NoButton,
           description = null,
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.weight(1f))
         HedvigTextButton(
@@ -112,7 +113,14 @@ private fun ChooseInsuranceScreen(
       }
     }
 
-    ChooseInsuranceUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    is ChooseInsuranceUiState.Loading -> {
+      LaunchedEffect(uiState.paramsToNavigateToNextStep) {
+        if (uiState.paramsToNavigateToNextStep != null) {
+          navigateToNextStep(uiState.paramsToNavigateToNextStep)
+        }
+      }
+      LoadingScreen(uiState)
+    }
 
     is ChooseInsuranceUiState.Success -> {
       HedvigScaffold(
@@ -187,12 +195,22 @@ private fun ChooseInsuranceScreen(
               fetchTerminationStep(selectedInsurance)
             }
           },
-          isLoading = uiState.isChangeTierIntentLoading,
         )
 
         Spacer(Modifier.height(16.dp))
       }
     }
+  }
+}
+
+@Composable
+private fun LoadingScreen(uiState: ChooseInsuranceUiState.Loading) {
+  if (uiState.paramsToNavigateToNextStep == null) {
+    HedvigFullScreenCenterAlignedLinearProgress(
+      title = stringResource(R.string.TIER_FLOW_PROCESSING),
+    )
+  } else {
+    HedvigFullScreenCenterAlignedProgress()
   }
 }
 
@@ -226,6 +244,7 @@ private fun PreviewChooseInsuranceScreen(
         {},
         {},
         {},
+        {},
       )
     }
   }
@@ -235,7 +254,6 @@ private class ChooseInsuranceUiStateProvider :
   CollectionPreviewParameterProvider<ChooseInsuranceUiState>(
     listOf(
       ChooseInsuranceUiState.Success(
-        paramsToNavigateToNextStep = null,
         insuranceList = listOf(
           CustomisableInsurance(
             id = "1",
@@ -251,11 +269,9 @@ private class ChooseInsuranceUiStateProvider :
           ),
         ),
         selectedInsurance = null,
-        isChangeTierIntentLoading = false,
         changeTierIntentFailedToLoad = false,
       ),
       ChooseInsuranceUiState.Success(
-        paramsToNavigateToNextStep = null,
         insuranceList = listOf(
           CustomisableInsurance(
             id = "1",
@@ -276,11 +292,10 @@ private class ChooseInsuranceUiStateProvider :
           contractExposure = "Bullegatan 23",
           contractGroup = ContractGroup.HOUSE,
         ),
-        isChangeTierIntentLoading = true,
         changeTierIntentFailedToLoad = true,
       ),
       ChooseInsuranceUiState.Failure,
-      ChooseInsuranceUiState.Loading,
+      ChooseInsuranceUiState.Loading(),
       ChooseInsuranceUiState.NotAllowed,
     ),
   )

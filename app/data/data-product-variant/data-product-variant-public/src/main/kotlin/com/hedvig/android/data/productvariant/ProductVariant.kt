@@ -2,7 +2,9 @@ package com.hedvig.android.data.productvariant
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ProductVariant(
   val displayName: String,
   val contractGroup: ContractGroup,
@@ -11,10 +13,11 @@ data class ProductVariant(
   val perils: List<ProductVariantPeril>,
   val insurableLimits: List<InsurableLimit>,
   val documents: List<InsuranceVariantDocument>,
-  val displayTierName: String? = null,
-  val tierDescription: String? = null,
+  val displayTierName: String?,
+  val tierDescription: String?,
 )
 
+@Serializable
 data class ProductVariantPeril(
   val id: String,
   val title: String,
@@ -24,6 +27,7 @@ data class ProductVariantPeril(
   val colorCode: String?,
 )
 
+@Serializable
 data class InsurableLimit(
   val label: String,
   val limit: String,
@@ -52,6 +56,7 @@ data class InsurableLimit(
   }
 }
 
+@Serializable
 data class InsuranceVariantDocument(
   val displayName: String,
   val url: String,

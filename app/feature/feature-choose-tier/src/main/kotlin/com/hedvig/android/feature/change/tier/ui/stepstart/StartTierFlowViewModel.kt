@@ -52,9 +52,7 @@ private class StartTierChangePresenter(
         ifRight = { result ->
           val parameters = InsuranceCustomizationParameters(
             insuranceId = insuranceID,
-            activationDateEpochDays = result.activationDate.toEpochDays(),
-            currentTierLevel = result.currentTierLevel,
-            currentTierName = result.currentTierName,
+            activationDate = result.activationDate,
             quoteIds = result.quotes.map { it.id },
           )
           currentState = Success(parameters)

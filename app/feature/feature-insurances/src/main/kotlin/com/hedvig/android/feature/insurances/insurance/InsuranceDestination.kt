@@ -346,7 +346,7 @@ private fun PreviewInsuranceScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
 ) {
   com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface {
       InsuranceScreen(
         InsuranceUiState(
           contracts = if (withContracts) {
@@ -512,6 +512,8 @@ private val previewInsurance = InsuranceContract(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
     ),
     certificateUrl = null,
     coInsured = listOf(),

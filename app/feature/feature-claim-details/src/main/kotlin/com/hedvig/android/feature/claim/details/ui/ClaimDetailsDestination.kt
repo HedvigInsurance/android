@@ -26,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,11 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,6 +52,7 @@ import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -455,24 +453,55 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
           CircularProgressIndicator()
         }
       } else {
-        Column {
-          val fontSize = MaterialTheme.typography.bodySmall.fontSize
-          Text(
-            text = buildAnnotatedString {
-              append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-              withStyle(SpanStyle(baselineShift = BaselineShift(0.3f), fontSize = fontSize)) {
-                append("PDF")
-              }
-            },
-          )
-          Text(
-            text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
+        DocumentCard(
+          onClick = onClick,
+          title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+          subtitle = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
+  HedvigCard(
+    onClick = onClick,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Column {
+            Text(
+              text = stringWithShiftedLabel(
+                text = title,
+                labelText = "PDF",
+                labelFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textColor = LocalContentColor.current,
+                textFontSize = LocalTextStyle.current.fontSize,
+              ),
+            )
+            if (!subtitle.isNullOrBlank()) {
+              Text(
+                text = subtitle,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        },
+        endSlot = {
+          Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+              imageVector = Icons.Hedvig.ArrowNorthEast,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        },
+        spaceBetween = 8.dp,
+      )
     }
   }
 }

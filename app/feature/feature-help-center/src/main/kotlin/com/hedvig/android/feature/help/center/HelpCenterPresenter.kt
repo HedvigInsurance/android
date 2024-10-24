@@ -11,7 +11,17 @@ import arrow.core.NonEmptyList
 import arrow.core.merge
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.feature.help.center.HelpCenterEvent.ClearNavigation
+import com.hedvig.android.feature.help.center.HelpCenterEvent.ClearSearchQuery
+import com.hedvig.android.feature.help.center.HelpCenterEvent.NavigateToQuickAction
+import com.hedvig.android.feature.help.center.HelpCenterEvent.OnDismissQuickActionDialog
+import com.hedvig.android.feature.help.center.HelpCenterEvent.OnQuickActionSelected
+import com.hedvig.android.feature.help.center.HelpCenterEvent.UpdateSearchResults
+import com.hedvig.android.feature.help.center.HelpCenterUiState.ActiveSearchState.Empty
+import com.hedvig.android.feature.help.center.HelpCenterUiState.ActiveSearchState.Success
+import com.hedvig.android.feature.help.center.HelpCenterUiState.Search
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
@@ -30,6 +40,10 @@ internal sealed interface HelpCenterEvent {
   ) : HelpCenterEvent
 
   data object ClearSearchQuery : HelpCenterEvent
+
+  data class NavigateToQuickAction(val destination: QuickLinkDestination) : HelpCenterEvent
+
+  data object ClearNavigation : HelpCenterEvent
 }
 
 internal data class HelpCenterUiState(
@@ -39,6 +53,7 @@ internal data class HelpCenterUiState(
   val selectedQuickAction: QuickAction?,
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
+  val destinationToNavigate: QuickLinkDestination? = null,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -84,28 +99,37 @@ internal class HelpCenterPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is HelpCenterEvent.OnQuickActionSelected -> selectedQuickAction = event.quickAction
-        is HelpCenterEvent.OnDismissQuickActionDialog -> selectedQuickAction = null
-        HelpCenterEvent.ClearSearchQuery -> {
+        is OnQuickActionSelected -> selectedQuickAction = event.quickAction
+        is OnDismissQuickActionDialog -> selectedQuickAction = null
+        ClearSearchQuery -> {
           currentState = currentState.copy(search = null)
         }
 
-        is HelpCenterEvent.UpdateSearchResults -> {
+        is UpdateSearchResults -> {
           currentState = if (event.results == null) {
             currentState.copy(
-              search = HelpCenterUiState.Search(
+              search = Search(
                 event.searchQuery,
-                HelpCenterUiState.ActiveSearchState.Empty,
+                Empty,
               ),
             )
           } else {
             currentState.copy(
-              search = HelpCenterUiState.Search(
+              search = Search(
                 event.searchQuery,
-                HelpCenterUiState.ActiveSearchState.Success(event.results),
+                Success(event.results),
               ),
             )
           }
+        }
+
+        ClearNavigation -> {
+          selectedQuickAction = null
+          currentState = currentState.copy(destinationToNavigate = null)
+        }
+        is NavigateToQuickAction -> {
+          selectedQuickAction = null
+          currentState = currentState.copy(destinationToNavigate = event.destination)
         }
       }
     }
@@ -130,7 +154,6 @@ internal class HelpCenterPresenter(
         },
       )
     }
-
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,
       selectedQuickAction = selectedQuickAction,
