@@ -18,10 +18,11 @@ import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
-import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations
+import com.hedvig.android.feature.movingflow.compose.BooleanInput
+import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
@@ -47,7 +48,6 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressU
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.MissingOngoingMovingFlow
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.EmptyAddress
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidMovingDate
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidNumberCoInsured
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.InvalidLength
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
@@ -263,7 +263,7 @@ internal sealed interface EnterNewAddressUiState {
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
     val postalCode: ValidatedInput<String?, String, EnterNewAddressValidationError>,
     val squareMeters: ValidatedInput<Int?, Int, EnterNewAddressValidationError>,
-    val numberCoInsured: ValidatedInput<Int, Int, EnterNewAddressValidationError>,
+    val numberCoInsured: ConstrainedNumberInput,
     val propertyType: PropertyType,
     val submittingInfoFailure: SubmittingInfoFailure?,
     val isLoadingNextStep: Boolean,
@@ -288,7 +288,7 @@ internal sealed interface EnterNewAddressUiState {
 
         data class WithStudentOption(
           override val apartmentType: ApartmentType,
-          val selectedIsStudent: ValidatedInput<Boolean, Boolean, EnterNewAddressValidationError>,
+          val selectedIsStudent: BooleanInput,
         ) : Apartment {
           override val isStudentSelected: Boolean
             get() = selectedIsStudent.value
@@ -329,7 +329,6 @@ private fun Content.validate(): ValidContent? {
   val address = this.address.validate()
   val postalCode = this.postalCode.validate()
   val squareMeters = this.squareMeters.validate()
-  val numberCoInsured = this.numberCoInsured.validate()
   return either {
     ValidContent(
       moveFromAddressId = moveFromAddressId,
@@ -337,7 +336,7 @@ private fun Content.validate(): ValidContent? {
       address = address.bind(),
       postalCode = postalCode.bind(),
       squareMeters = squareMeters.bind(),
-      numberCoInsured = numberCoInsured.bind(),
+      numberCoInsured = numberCoInsured.value,
       propertyType = when (propertyType) {
         House -> ValidContent.PropertyType.House
         is WithStudentOption -> ValidContent.PropertyType.Apartment(
@@ -407,16 +406,9 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
         }
       },
     ),
-    numberCoInsured = ValidatedInput(
+    numberCoInsured = ConstrainedNumberInput(
       initialValue = propertyState.numberCoInsuredState.selectedNumberCoInsured,
-      validator = { numberCoInsured ->
-        either {
-          ensure(numberCoInsured in propertyState.numberCoInsuredState.allowedNumberCoInsuredRange) {
-            InvalidNumberCoInsured(propertyState.numberCoInsuredState.allowedNumberCoInsuredRange)
-          }
-          numberCoInsured
-        }
-      },
+      validRange = propertyState.numberCoInsuredState.allowedNumberCoInsuredRange,
     ),
     propertyType = when (propertyState) {
       is HouseState -> PropertyType.House
@@ -428,10 +420,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
 
           is Available -> PropertyType.Apartment.WithStudentOption(
             propertyState.apartmentType,
-            ValidatedInput<_, _, EnterNewAddressValidationError>(
-              propertyState.isAvailableForStudentState.selectedIsStudent,
-              { isStudent -> isStudent.right() },
-            ),
+            BooleanInput(propertyState.isAvailableForStudentState.selectedIsStudent),
           )
         }
       }
@@ -452,10 +441,6 @@ internal sealed interface EnterNewAddressValidationError {
 
   data class InvalidSquareMeters(
     val allowedSquareMetersRange: ClosedRange<Int>,
-  ) : EnterNewAddressValidationError
-
-  data class InvalidNumberCoInsured(
-    val allowedNumberCoInsuredRange: ClosedRange<Int>,
   ) : EnterNewAddressValidationError
 
   sealed interface InvalidPostalCode : EnterNewAddressValidationError {

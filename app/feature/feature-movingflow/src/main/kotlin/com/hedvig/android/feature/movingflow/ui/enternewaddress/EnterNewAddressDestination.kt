@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.NoopValidator
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
@@ -59,7 +60,6 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressU
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.MissingOngoingMovingFlow
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.EmptyAddress
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidMovingDate
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidNumberCoInsured
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.InvalidLength
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
@@ -235,9 +235,8 @@ private fun EnterNewAddressScreen(
           stepperStyle = Labeled(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)),
           onMinusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value - 1) },
           onPlusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1) },
-          isPlusEnabled = !uiState.isLoadingNextStep,
-          isMinusEnabled = !uiState.isLoadingNextStep,
-          errorText = uiState.numberCoInsured.validationError?.string(),
+          isPlusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canIncrement,
+          isMinusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canDecrement,
         )
         DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
@@ -335,7 +334,6 @@ private fun EnterNewAddressValidationError.string(): String {
   return when (this) {
     EmptyAddress -> "EmptyAddress:$this"
     is InvalidMovingDate -> "is InvalidMovingDate:$this"
-    is InvalidNumberCoInsured -> "is InvalidNumberCoInsured:$this"
     InvalidLength -> "InvalidLength:$this"
     Missing -> "Missing:$this"
     MustBeOnlyDigits -> "MustBeOnlyDigits:$this"
@@ -357,7 +355,7 @@ fun PreviewEnterNewAddressScreen() {
       address = ValidatedInput<String?, String, EnterNewAddressValidationError>("address", NoopValidator()),
       postalCode = ValidatedInput("postalCode", NoopValidator()),
       squareMeters = ValidatedInput(0, NoopValidator()),
-      numberCoInsured = ValidatedInput(0, NoopValidator()),
+      numberCoInsured = ConstrainedNumberInput(1, 0..5),
       propertyType = PropertyType.House,
       submittingInfoFailure = null,
       isLoadingNextStep = false,

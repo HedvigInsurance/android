@@ -296,7 +296,7 @@ private data class InputForSubmission(
 internal data class AddressInput(
   val yearOfConstruction: ValidatedInput<Int?, Int, AddHouseInformationValidationError>,
   val ancillaryArea: ValidatedInput<Int?, Int, AddHouseInformationValidationError>,
-  val numberOfBathrooms: ConstrainedNumberInput, // todo do this for enter new address to, so we can't go minus
+  val numberOfBathrooms: ConstrainedNumberInput,
   val isSublet: BooleanInput,
   val possibleExtraBuildingTypes: List<MoveExtraBuildingType>,
   val extraBuildings: ListInput<ExtraBuildingInfo>,
