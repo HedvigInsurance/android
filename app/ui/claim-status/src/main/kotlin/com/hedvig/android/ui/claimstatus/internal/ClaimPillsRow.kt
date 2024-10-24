@@ -4,23 +4,27 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.information.HedvigPill
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.warningContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.GenericClosed
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCompensated
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCovered
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.Paid
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.PaymentAmount
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Unknown
 import hedvig.resources.R
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -42,41 +46,48 @@ private fun ClaimPill(type: ClaimPillType) {
   val text = when (type) {
     is ClaimPillType.Closed -> {
       when (type) {
+        ClaimPillType.Closed.GenericClosed -> stringResource(R.string.home_claim_card_pill_claim)
         ClaimPillType.Closed.NotCompensated -> stringResource(R.string.claim_decision_not_compensated)
         ClaimPillType.Closed.NotCovered -> stringResource(R.string.claim_decision_not_covered)
         ClaimPillType.Closed.Paid -> stringResource(R.string.claim_decision_paid)
       }
     }
-    ClaimPillType.Open -> stringResource(R.string.home_claim_card_pill_claim)
+
+    ClaimPillType.Claim -> stringResource(R.string.home_claim_card_pill_claim)
     is ClaimPillType.PaymentAmount -> type.uiMoney.toString()
-    ClaimPillType.Reopened -> stringResource(R.string.home_claim_card_pill_reopened)
     ClaimPillType.Unknown -> stringResource(R.string.home_claim_card_pill_claim)
   }
-  val (color, contentColor) = when (type) {
-    is ClaimPillType.Closed -> MaterialTheme.colorScheme.onSurface to MaterialTheme.colorScheme.surface
-    ClaimPillType.Open -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
-    is ClaimPillType.PaymentAmount ->
-      MaterialTheme.colorScheme.infoContainer to MaterialTheme.colorScheme.onInfoContainer
-    ClaimPillType.Reopened -> MaterialTheme.colorScheme.warningContainer to MaterialTheme.colorScheme.onWarningContainer
-    ClaimPillType.Unknown -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
+  val color: HighlightLabelDefaults.HighlightColor = when (type) {
+    ClaimPillType.Claim -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+    is ClaimPillType.Closed -> {
+      when (type) {
+        ClaimPillType.Closed.GenericClosed -> HighlightLabelDefaults.HighlightColor.Grey(DARK)
+        ClaimPillType.Closed.NotCompensated -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+        ClaimPillType.Closed.NotCovered -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+        ClaimPillType.Closed.Paid -> HighlightLabelDefaults.HighlightColor.Grey(DARK)
+      }
+    }
+
+    is ClaimPillType.PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
+    ClaimPillType.Unknown -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
   }
-  HedvigPill(text, color, contentColor = contentColor)
+  HighlightLabel(text, HighlightLabelDefaults.HighLightSize.Small, color)
 }
 
 @HedvigPreview
 @Composable
 private fun PreviewClaimPillsRow() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimPillsRow(
         listOf(
-          ClaimPillType.Open,
-          ClaimPillType.Reopened,
-          ClaimPillType.PaymentAmount(UiMoney(990.0, UiCurrencyCode.SEK)),
-          ClaimPillType.Unknown,
-          ClaimPillType.Closed.NotCovered,
-          ClaimPillType.Closed.NotCompensated,
-          ClaimPillType.Closed.Paid,
+          Claim,
+          PaymentAmount(UiMoney(990.0, SEK)),
+          Unknown,
+          NotCovered,
+          NotCompensated,
+          Paid,
+          GenericClosed,
         ),
       )
     }

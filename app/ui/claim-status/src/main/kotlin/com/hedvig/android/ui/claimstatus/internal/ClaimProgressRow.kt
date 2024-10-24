@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,12 +16,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.DisabledAlpha
-import com.hedvig.android.core.designsystem.material3.infoElement
-import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.BeingHandled
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Submitted
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.ACTIVE
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.UNKNOWN
 import hedvig.resources.R
 
 @Composable
@@ -51,23 +53,14 @@ private fun ClaimProgress(
   modifier: Modifier = Modifier,
 ) {
   val color = when (type) {
-    ClaimProgressSegment.SegmentType.PAID -> MaterialTheme.colorScheme.infoElement
-    ClaimProgressSegment.SegmentType.REOPENED -> MaterialTheme.colorScheme.warningElement
-    ClaimProgressSegment.SegmentType.CLOSED,
-    ClaimProgressSegment.SegmentType.PAST_INACTIVE,
-    ClaimProgressSegment.SegmentType.CURRENTLY_ACTIVE,
-    ClaimProgressSegment.SegmentType.FUTURE_INACTIVE,
-    ClaimProgressSegment.SegmentType.UNKNOWN,
-    -> MaterialTheme.colorScheme.primary
+    ClaimProgressSegment.SegmentType.ACTIVE -> HedvigTheme.colorScheme.signalGreenElement
+    ClaimProgressSegment.SegmentType.INACTIVE -> HedvigTheme.colorScheme.fillDisabled
+    ClaimProgressSegment.SegmentType.UNKNOWN -> HedvigTheme.colorScheme.signalGreenElement
   }
-  val contentAlpha = when (type) {
-    ClaimProgressSegment.SegmentType.PAID -> ContentAlpha.HIGH
-    ClaimProgressSegment.SegmentType.REOPENED -> ContentAlpha.HIGH
-    ClaimProgressSegment.SegmentType.CLOSED -> ContentAlpha.HIGH
-    ClaimProgressSegment.SegmentType.PAST_INACTIVE -> ContentAlpha.MEDIUM
-    ClaimProgressSegment.SegmentType.CURRENTLY_ACTIVE -> ContentAlpha.HIGH
-    ClaimProgressSegment.SegmentType.FUTURE_INACTIVE -> ContentAlpha.DISABLED
-    ClaimProgressSegment.SegmentType.UNKNOWN -> ContentAlpha.HIGH
+  val textColor = when (type) {
+    ACTIVE -> HedvigTheme.colorScheme.textPrimary
+    INACTIVE -> HedvigTheme.colorScheme.textPrimary
+    UNKNOWN -> HedvigTheme.colorScheme.textTertiary
   }
   val text = when (segmentText) {
     ClaimProgressSegment.SegmentText.Submitted -> stringResource(R.string.claim_status_detail_submitted)
@@ -77,66 +70,50 @@ private fun ClaimProgress(
   ClaimProgress(
     text = text,
     color = color,
-    contentAlpha = contentAlpha,
+    textColor = textColor,
     modifier = modifier,
   )
 }
 
 @Composable
-private fun ClaimProgress(text: String, color: Color, contentAlpha: ContentAlpha, modifier: Modifier = Modifier) {
+private fun ClaimProgress(text: String, color: Color, textColor: Color, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
-    val progressColor = color.copy(alpha = contentAlpha.value)
     Box(
       modifier = Modifier
         .fillMaxWidth()
         .height(4.dp)
         .clip(CircleShape)
-        .background(progressColor),
+        .background(color),
     )
     Spacer(modifier = Modifier.height(6.dp))
-    Text(
+    HedvigText(
       text = text,
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodyMedium,
-      color = LocalContentColor.current.copy(alpha = contentAlpha.value),
+      style = HedvigTheme.typography.label,
+      color = textColor,
       modifier = Modifier.fillMaxWidth(),
     )
   }
-}
-
-private enum class ContentAlpha {
-  HIGH,
-  MEDIUM,
-  DISABLED,
-  ;
-
-  val value: Float
-    @Composable
-    get() = when (this) {
-      HIGH -> 1f
-      MEDIUM -> 0.74f
-      DISABLED -> DisabledAlpha
-    }
 }
 
 @HedvigPreview
 @Composable
 private fun PreviewClaimProgressRow() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimProgressRow(
         listOf(
           ClaimProgressSegment(
-            ClaimProgressSegment.SegmentText.Submitted,
-            ClaimProgressSegment.SegmentType.PAST_INACTIVE,
+            Submitted,
+            UNKNOWN,
           ),
           ClaimProgressSegment(
-            ClaimProgressSegment.SegmentText.BeingHandled,
-            ClaimProgressSegment.SegmentType.REOPENED,
+            BeingHandled,
+            ACTIVE,
           ),
           ClaimProgressSegment(
-            ClaimProgressSegment.SegmentText.Closed,
-            ClaimProgressSegment.SegmentType.FUTURE_INACTIVE,
+            Closed,
+            INACTIVE,
           ),
         ),
       )
@@ -148,10 +125,10 @@ private fun PreviewClaimProgressRow() {
 @Composable
 private fun PreviewClaimProgress() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      for (segmentType in ClaimProgressSegment.SegmentType.entries) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      for (segmentType in SegmentType.entries) {
         ClaimProgress(
-          segmentText = ClaimProgressSegment.SegmentText.Closed,
+          segmentText = Closed,
           type = segmentType,
         )
       }

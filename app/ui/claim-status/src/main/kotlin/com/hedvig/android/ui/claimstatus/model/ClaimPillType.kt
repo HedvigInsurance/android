@@ -6,15 +6,15 @@ import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 
 sealed interface ClaimPillType {
-  data object Open : ClaimPillType
-
-  data object Reopened : ClaimPillType
+  data object Claim : ClaimPillType
 
   data class PaymentAmount(val uiMoney: UiMoney) : ClaimPillType
 
   data object Unknown : ClaimPillType
 
   sealed interface Closed : ClaimPillType {
+    data object GenericClosed : Closed
+
     data object NotCompensated : Closed
 
     data object NotCovered : Closed
@@ -24,8 +24,8 @@ sealed interface ClaimPillType {
 
   companion object {
     fun fromClaimFragment(claim: ClaimFragment): List<ClaimPillType> = when (claim.status) {
-      ClaimStatus.CREATED -> listOf(Open)
-      ClaimStatus.IN_PROGRESS -> listOf(Open)
+      ClaimStatus.CREATED -> listOf(Claim)
+      ClaimStatus.IN_PROGRESS -> listOf(Claim)
       ClaimStatus.CLOSED -> {
         when (claim.outcome) {
           ClaimOutcome.PAID -> {
@@ -37,14 +37,14 @@ sealed interface ClaimPillType {
               }
             }
           }
-          ClaimOutcome.NOT_COMPENSATED -> listOf(Closed.NotCompensated)
-          ClaimOutcome.NOT_COVERED -> listOf(Closed.NotCovered)
+          ClaimOutcome.NOT_COMPENSATED -> listOf(Closed.GenericClosed, Closed.NotCompensated)
+          ClaimOutcome.NOT_COVERED -> listOf(Closed.GenericClosed, Closed.NotCovered)
           ClaimOutcome.UNKNOWN__,
           null,
           -> emptyList()
         }
       }
-      ClaimStatus.REOPENED -> listOf(Reopened, Open)
+      ClaimStatus.REOPENED -> listOf(Claim)
       ClaimStatus.UNKNOWN__,
       null,
       -> emptyList()
