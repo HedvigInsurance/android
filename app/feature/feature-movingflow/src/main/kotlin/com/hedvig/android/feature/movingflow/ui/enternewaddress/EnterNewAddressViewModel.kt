@@ -364,7 +364,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
             InvalidMovingDate.MustSelectDate
           }
           ensure(movingDate in movingDateState.allowedMovingDateRange) {
-            InvalidMovingDate.InvalidChoise(movingDateState.allowedMovingDateRange)
+            InvalidMovingDate.InvalidChoice(movingDateState.allowedMovingDateRange)
           }
           movingDate
         }
@@ -436,7 +436,7 @@ internal sealed interface EnterNewAddressValidationError {
   sealed interface InvalidMovingDate : EnterNewAddressValidationError {
     data object MustSelectDate : InvalidMovingDate
 
-    data class InvalidChoise(val allowedMovingDateRange: ClosedRange<LocalDate>) : InvalidMovingDate
+    data class InvalidChoice(val allowedMovingDateRange: ClosedRange<LocalDate>) : InvalidMovingDate
   }
 
   data class InvalidSquareMeters(

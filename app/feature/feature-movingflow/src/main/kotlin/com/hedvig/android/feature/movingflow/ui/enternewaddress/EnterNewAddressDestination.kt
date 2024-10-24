@@ -60,10 +60,10 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressU
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.MissingOngoingMovingFlow
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.EmptyAddress
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidMovingDate
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.InvalidLength
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -326,17 +326,41 @@ private fun DatePickerField(
   }
 }
 
-// todo string resources
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
   return this.toString()
   @Suppress("UNREACHABLE_CODE")
   return when (this) {
-    EmptyAddress -> "EmptyAddress:$this"
-    is InvalidMovingDate -> "is InvalidMovingDate:$this"
-    InvalidLength -> "InvalidLength:$this"
-    Missing -> "Missing:$this"
-    MustBeOnlyDigits -> "MustBeOnlyDigits:$this"
+    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+    is InvalidMovingDate -> {
+      when (this) {
+        is InvalidMovingDate.InvalidChoice -> {
+          LaunchedEffect(Unit) {
+            logcat(LogPriority.ERROR) {
+              "Tried to submit with invalid moving date, allowed range:$allowedMovingDateRange"
+            }
+          }
+          stringResource(R.string.GENERAL_INVALID_INPUT)
+        }
+
+        is InvalidMovingDate.MustSelectDate -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+      }
+    }
+
+    is InvalidPostalCode -> {
+      when (this) {
+        InvalidPostalCode.InvalidLength -> {
+          stringResource(R.string.GENERAL_INVALID_INPUT)
+        }
+
+        InvalidPostalCode.MustBeOnlyDigits -> {
+          stringResource(R.string.GENERAL_INVALID_INPUT)
+        }
+
+        InvalidPostalCode.Missing -> stringResource(R.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR)
+      }
+    }
+
     is InvalidSquareMeters -> "is InvalidSquareMeters:$this"
   }
 }

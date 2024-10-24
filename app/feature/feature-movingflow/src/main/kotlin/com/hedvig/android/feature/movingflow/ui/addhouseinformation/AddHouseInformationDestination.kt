@@ -211,12 +211,10 @@ private fun AddHouseInformationScreen(
 
 @Composable
 private fun AddHouseInformationValidationError.string(): String {
-  return this.toString()
-  @Suppress("UNREACHABLE_CODE")
   return when (this) {
-    InvalidYearOfConstruction.Missing -> TODO()
-    InvalidYearOfConstruction.TooEarly -> TODO()
-    MissingAncillaryArea -> TODO()
+    InvalidYearOfConstruction.Missing -> stringResource(R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR)
+    InvalidYearOfConstruction.TooEarly -> stringResource(R.string.GENERAL_INVALID_INPUT)
+    MissingAncillaryArea -> stringResource(R.string.CHANGE_ADDRESS_ANCILLARY_AREA_ERROR)
   }
 }
 
