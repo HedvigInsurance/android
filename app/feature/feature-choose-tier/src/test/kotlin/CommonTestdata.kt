@@ -110,7 +110,6 @@ internal val testQuote3 = TierDeductibleQuote(
   ),
 )
 
-
 internal val currentQuote = TierDeductibleQuote(
   id = CURRENT_ID,
   deductible = Deductible(
@@ -139,4 +138,3 @@ internal val currentQuote = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
   ),
 )
-
