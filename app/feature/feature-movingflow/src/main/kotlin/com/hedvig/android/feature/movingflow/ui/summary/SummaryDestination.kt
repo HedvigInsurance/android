@@ -451,6 +451,7 @@ private fun PreviewSummaryScreen() {
               productVariant = productVariant,
               tierName = "tierName",
               tierLevel = 1,
+              tierDescription = "tierDescription",
               deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
               defaultChoice = false,
             ),

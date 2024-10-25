@@ -35,6 +35,7 @@ internal data class MovingFlowQuotes(
     override val productVariant: ProductVariant,
     val tierName: String,
     val tierLevel: Int,
+    val tierDescription: String?,
     val deductible: Deductible?,
     val defaultChoice: Boolean,
   ) : Quote {
@@ -75,6 +76,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         productVariant = houseQuote.productVariant.toProductVariant(),
         tierName = houseQuote.tierName,
         tierLevel = houseQuote.tierLevel,
+        tierDescription = houseQuote.productVariant.tierDescription,
         deductible = houseQuote.deductible?.let { deductible ->
           Deductible(
             amount = UiMoney.fromMoneyFragment(deductible.amount),

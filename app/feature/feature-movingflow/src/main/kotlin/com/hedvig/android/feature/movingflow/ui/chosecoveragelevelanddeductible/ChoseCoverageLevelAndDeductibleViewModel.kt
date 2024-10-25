@@ -87,7 +87,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           }
           .filterNotNull()
           .map { moveHomeQuote ->
-            CoverageInfo(moveHomeQuote.id, moveHomeQuote.tierName, moveHomeQuote.exposureName, moveHomeQuote.premium)
+            CoverageInfo(moveHomeQuote.id, moveHomeQuote.tierName, moveHomeQuote.tierDescription, moveHomeQuote.premium)
           }
         val selectedCoverage = initiallySelectedHomeQuote ?: homeQuotes.first()
         tiersInfo = TiersInfo(
@@ -132,7 +132,7 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
 data class CoverageInfo(
   val moveHomeQuoteId: String,
   val tierName: String,
-  val tierDescription: String,
+  val tierDescription: String?,
   val premium: UiMoney,
 )
 
