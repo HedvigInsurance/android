@@ -26,10 +26,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -46,6 +48,7 @@ import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -201,12 +204,17 @@ private fun SummaryScreen(
     QuestionsAndAnswers()
     Spacer(Modifier.height(40.dp))
     Column {
-      HedvigText(stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE))
-      Spacer(Modifier.height(24.dp))
+      HedvigText(
+        text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+      )
+      Spacer(Modifier.height(12.dp))
       HedvigButton(
         text = stringResource(R.string.open_chat),
         enabled = true,
         onClick = onNavigateToNewConversation,
+        buttonSize = Small,
+        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -296,6 +304,7 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
                   Row(
                     modifier = Modifier
                       .fillMaxWidth()
+                      .clip(HedvigTheme.shapes.cornerExtraSmall)
                       .clickable {
                         uriHandler.openUri(document.url)
                       },
@@ -381,6 +390,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 }
 
 @HedvigPreview
+@Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
 private fun PreviewSummaryScreen() {
   HedvigTheme {
