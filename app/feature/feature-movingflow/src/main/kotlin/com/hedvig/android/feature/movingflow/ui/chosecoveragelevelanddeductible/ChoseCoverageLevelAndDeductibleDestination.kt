@@ -309,7 +309,9 @@ private fun DeductibleChoiceDialogContent(
   CommonChoiceDialogContent(
     firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
     secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
-    radioOptions = deductibleOptions.map { Triple(it.deductible.amount.toString(), it.deductible.displayText, null) },
+    radioOptions = deductibleOptions.map {
+      Triple(it.deductible.amount.toString(), it.homeQuotePremium.toString(), null)
+    },
     initiallyChosenItemIndex = initiallyChosenItemIndex,
     onItemSelected = onItemSelected,
     onDismissRequest = onDismissRequest,
@@ -433,6 +435,7 @@ fun PreviewDeductibleChoiceDialogContent() {
     deductibleOptions = List(3) {
       DeductibleOption(
         homeQuoteId = it.toString(),
+        homeQuotePremium = UiMoney(it.toDouble(), SEK),
         deductible = Deductible(UiMoney(it.toDouble(), SEK), null, "Display text#$it"),
       )
     },

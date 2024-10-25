@@ -150,7 +150,7 @@ internal data class TiersInfo(
       if (deductible == null) {
         DeductibleOptions.NoOptions
       } else {
-        DeductibleOptions.OneOption(DeductibleOption(selectedCoverage.id, deductible))
+        DeductibleOptions.OneOption(DeductibleOption(selectedCoverage.id, selectedCoverage.premium, deductible))
       }
     } else {
       val allOptionsWithDeductible = moveHomeQuotes.filter { it.deductible != null }
@@ -158,12 +158,12 @@ internal data class TiersInfo(
         0 -> DeductibleOptions.NoOptions
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
-          DeductibleOptions.OneOption(DeductibleOption(onlyOption.id, onlyOption.deductible!!))
+          DeductibleOptions.OneOption(DeductibleOption(onlyOption.id, onlyOption.premium, onlyOption.deductible!!))
         }
 
         else -> DeductibleOptions.MutlipleOptions(
           allOptionsWithDeductible.map { moveHomeQuote ->
-            DeductibleOption(moveHomeQuote.id, moveHomeQuote.deductible!!)
+            DeductibleOption(moveHomeQuote.id, moveHomeQuote.premium, moveHomeQuote.deductible!!)
           },
         )
       }
@@ -189,5 +189,6 @@ internal sealed interface DeductibleOptions {
 
 internal data class DeductibleOption(
   val homeQuoteId: String,
+  val homeQuotePremium: UiMoney,
   val deductible: Deductible,
 )
