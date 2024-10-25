@@ -295,7 +295,7 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
                 for (insurableLimit in quote.productVariant.insurableLimits) {
                   InfoRow(
                     insurableLimit.label,
-                    insurableLimit.description,
+                    insurableLimit.limit,
                   )
                 }
               }
