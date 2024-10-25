@@ -292,7 +292,13 @@ private fun CoverageChoiceDialogContent(
   CommonChoiceDialogContent(
     firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
     secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
-    radioOptions = coverageOptions.map { Triple(it.tierName, it.premium.toString(), it.tierDescription) },
+    radioOptions = coverageOptions.map {
+      RadioOptionCoverageInfo(
+        it.tierName,
+        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.premium.toString()),
+        it.tierDescription,
+      )
+    },
     initiallyChosenItemIndex = initiallyChosenItemIndex,
     onItemSelected = onItemSelected,
     onDismissRequest = onDismissRequest,
@@ -310,7 +316,11 @@ private fun DeductibleChoiceDialogContent(
     firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
     secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
     radioOptions = deductibleOptions.map {
-      Triple(it.deductible.amount.toString(), it.homeQuotePremium.toString(), null)
+      RadioOptionCoverageInfo(
+        it.deductible.amount.toString(),
+        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.homeQuotePremium.toString()),
+        null,
+      )
     },
     initiallyChosenItemIndex = initiallyChosenItemIndex,
     onItemSelected = onItemSelected,
@@ -318,11 +328,17 @@ private fun DeductibleChoiceDialogContent(
   )
 }
 
+private data class RadioOptionCoverageInfo(
+  val title: String,
+  val premiumLabel: String,
+  val description: String?,
+)
+
 @Composable
 private fun CommonChoiceDialogContent(
   firstText: String,
   secondText: String,
-  radioOptions: List<Triple<String, String, String?>>,
+  radioOptions: List<RadioOptionCoverageInfo>,
   initiallyChosenItemIndex: Int?,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
@@ -356,13 +372,13 @@ private fun CommonChoiceDialogContent(
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
                   HedvigText(
-                    text = option.first,
+                    text = option.title,
                     modifier = Modifier.wrapContentSize(Alignment.CenterStart),
                   )
                 },
                 endSlot = {
                   HighlightLabel(
-                    labelText = option.second,
+                    labelText = option.premiumLabel,
                     size = HighLightSize.Small,
                     color = HighlightColor.Grey(MEDIUM),
                     modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -371,9 +387,9 @@ private fun CommonChoiceDialogContent(
                 modifier = Modifier.fillMaxWidth(),
                 spaceBetween = 8.dp,
               )
-              if (option.third != null) {
+              if (option.description != null) {
                 HedvigText(
-                  text = option.third!!,
+                  text = option.description,
                   color = HedvigTheme.colorScheme.textSecondary,
                   style = HedvigTheme.typography.label,
                 )
@@ -415,7 +431,7 @@ fun PreviewCoverageChoiceDialogContent() {
       CoverageInfo(
         tierName = "tierName#$it",
         moveHomeQuoteId = "moveHomeQuoteId#$it",
-        tierDescription = "tierDescription#$it",
+        tierDescription = "tierDescription#$it".repeat(5),
         premium = UiMoney(
           amount = it.toDouble(),
           currencyCode = SEK,
@@ -477,6 +493,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       ),
       tierName = "Pat Vance",
       tierLevel = 1299,
+      tierDescription = "tierDescription#$it",
       deductible = null,
       defaultChoice = false,
     )
