@@ -12,6 +12,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Failure
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Loading
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -23,7 +24,7 @@ internal class ChooseInsuranceViewModel(
   getCustomizableInsurancesUseCase: GetCustomizableInsurancesUseCase,
   tierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<ChooseInsuranceToCustomizeEvent, ChooseInsuranceUiState>(
-    initialState = Loading,
+    initialState = Loading(),
     presenter = ChooseInsurancePresenter(
       getCustomizableInsurancesUseCase = getCustomizableInsurancesUseCase,
       tierRepository = tierRepository,
@@ -72,10 +73,9 @@ internal class ChooseInsurancePresenter(
 
         ChooseInsuranceToCustomizeEvent.ClearTerminationStep -> {
           val currentStateValue = currentState
-          if (currentStateValue is ChooseInsuranceUiState.Success) {
+          if (currentStateValue is Loading) {
             currentState = currentStateValue.copy(
               paramsToNavigateToNextStep = null,
-              isChangeTierIntentLoading = false,
             )
           }
         }
@@ -83,65 +83,49 @@ internal class ChooseInsurancePresenter(
     }
 
     LaunchedEffect(insuranceToFetchIntentFor) {
-      val currentStateValue = currentState as? ChooseInsuranceUiState.Success ?: return@LaunchedEffect
-      currentState = currentStateValue.copy(
-        changeTierIntentFailedToLoad = false,
-      )
       val customisableInsurance = insuranceToFetchIntentFor ?: return@LaunchedEffect
-      currentState = currentStateValue.copy(isChangeTierIntentLoading = true)
+      currentState = Loading()
       currentState = tierRepository
         .startChangeTierIntentAndGetQuotesId(customisableInsurance.id, SELF_SERVICE)
         .fold(
           ifLeft = {
-            currentStateValue.copy(
-              changeTierIntentFailedToLoad = true,
-              isChangeTierIntentLoading = false,
-            )
+            insuranceToFetchIntentFor = null
+            Failure
           },
           ifRight = { intent ->
             val params = InsuranceCustomizationParameters(
               insuranceId = customisableInsurance.id,
-              activationDateEpochDays = intent.activationDate.toEpochDays(),
-              currentTierLevel = intent.currentTierLevel,
-              currentTierName = intent.currentTierName,
+              activationDate = intent.activationDate,
               quoteIds = intent.quotes.map { it.id },
             )
-            currentStateValue.copy(
-              paramsToNavigateToNextStep = params,
-              changeTierIntentFailedToLoad = false,
-              isChangeTierIntentLoading = true,
-            )
+            insuranceToFetchIntentFor = null
+            Loading(params)
           },
         )
-      insuranceToFetchIntentFor = null
     }
 
     LaunchedEffect(loadIteration) {
       if (lastState !is ChooseInsuranceUiState.Success) {
-        currentState = ChooseInsuranceUiState.Loading
+        currentState = ChooseInsuranceUiState.Loading()
       }
       getCustomizableInsurancesUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
           ifLeft = {
-            logcat(priority = LogPriority.INFO) { "Cannot load contracts for cancellation" }
+            logcat(priority = LogPriority.INFO) { "Cannot load contracts for changing tier-deductible" }
             currentState = ChooseInsuranceUiState.Failure
           },
           ifRight = { eligibleInsurances ->
-            logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
-            currentState = if (eligibleInsurances == null) {
-              ChooseInsuranceUiState.NotAllowed
+            logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for changing tier-deductible" }
+            if (eligibleInsurances == null) {
+              currentState = ChooseInsuranceUiState.NotAllowed
+            } else if (eligibleInsurances.size == 1) {
+              insuranceToFetchIntentFor = eligibleInsurances[0]
             } else {
-              val selectedInsurance = if (eligibleInsurances.size == 1) {
-                eligibleInsurances[0]
-              } else {
-                eligibleInsurances.firstOrNull { it.id == initialSelected }
-              }
-              ChooseInsuranceUiState.Success(
-                eligibleInsurances,
-                selectedInsurance,
-                null,
-                false,
-                false,
+              val selectedInsurance = eligibleInsurances.firstOrNull { it.id == initialSelected }
+              currentState = ChooseInsuranceUiState.Success(
+                insuranceList = eligibleInsurances,
+                selectedInsurance = selectedInsurance,
+                changeTierIntentFailedToLoad = false,
               )
             }
           },
@@ -153,13 +137,13 @@ internal class ChooseInsurancePresenter(
 }
 
 internal sealed interface ChooseInsuranceUiState {
-  data object Loading : ChooseInsuranceUiState
+  data class Loading(
+    val paramsToNavigateToNextStep: InsuranceCustomizationParameters? = null,
+  ) : ChooseInsuranceUiState
 
   data class Success(
     val insuranceList: List<CustomisableInsurance>,
     val selectedInsurance: CustomisableInsurance?,
-    val paramsToNavigateToNextStep: InsuranceCustomizationParameters? = null,
-    val isChangeTierIntentLoading: Boolean = false,
     val changeTierIntentFailedToLoad: Boolean = false,
   ) : ChooseInsuranceUiState
 

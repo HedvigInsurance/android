@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail.documents
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,27 +12,26 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 
 @Composable
 internal fun DocumentsTab(
@@ -57,7 +57,7 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?) {
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
   HedvigCard(
     onClick = onClick,
     modifier = Modifier
@@ -68,35 +68,36 @@ private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?)
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-      Column(Modifier.weight(1f)) {
-        val fontSize = MaterialTheme.typography.bodySmall.fontSize
-        Text(
-          text = buildAnnotatedString {
-            val text = title ?: return@buildAnnotatedString
-            append(text)
-            append(" ")
-            withStyle(
-              SpanStyle(
-                baselineShift = BaselineShift(0.3f),
-                fontSize = fontSize,
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Column {
+            Text(
+              text = stringWithShiftedLabel(
+                text = title,
+                labelText = "PDF",
+                labelFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textColor = LocalContentColor.current,
+                textFontSize = LocalTextStyle.current.fontSize,
               ),
-            ) {
-              append("PDF")
+            )
+            if (!subtitle.isNullOrBlank()) {
+              Text(
+                text = subtitle,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
             }
-          },
-        )
-        if (!subtitle.isNullOrBlank()) {
-          Text(
-            text = subtitle,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-      Spacer(Modifier.width(8.dp))
-      Icon(
-        imageVector = Icons.Hedvig.ArrowNorthEast,
-        contentDescription = null,
-        modifier = Modifier.size(16.dp),
+          }
+        },
+        endSlot = {
+          Row(horizontalArrangement = Arrangement.End) {
+            Icon(
+              imageVector = Icons.Hedvig.ArrowNorthEast,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        },
+        spaceBetween = 8.dp,
       )
     }
   }

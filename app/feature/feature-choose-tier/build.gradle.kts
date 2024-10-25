@@ -51,6 +51,7 @@ dependencies {
   implementation(projects.featureFlagsPublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreFileUpload)
+  implementation(projects.composeUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

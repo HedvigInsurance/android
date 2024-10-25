@@ -1,10 +1,12 @@
 package com.hedvig.android.feature.change.tier.ui.stepsummary
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,14 +21,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
@@ -36,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -47,6 +56,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.PillAndBasicInfo
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
@@ -64,23 +74,60 @@ internal fun ChangeTierSummaryDestination(
   sharePdf: (File) -> Unit,
 ) {
   val uiState: SummaryState by viewModel.uiState.collectAsStateWithLifecycle()
+  SummaryScreen(
+    uiState = uiState,
+    onReload = {
+      viewModel.emit(SummaryEvent.Reload)
+    },
+    onSuccess = {
+      viewModel.emit(SummaryEvent.ClearNavigation)
+      onSuccess()
+    },
+    onFailure = {
+      viewModel.emit(SummaryEvent.ClearNavigation)
+      onFailure()
+    },
+    sharePdf = { file ->
+      viewModel.emit(SummaryEvent.HandledSharingPdfFile)
+      sharePdf(file)
+    },
+    navigateUp = navigateUp,
+    onSubmitQuoteClick = {
+      viewModel.emit(SummaryEvent.SubmitQuote)
+    },
+    downloadFromUrl = { url ->
+      viewModel.emit(SummaryEvent.DownLoadFromUrl(url))
+    },
+  )
+}
+
+@Composable
+private fun SummaryScreen(
+  uiState: SummaryState,
+  onReload: () -> Unit,
+  onSuccess: () -> Unit,
+  navigateUp: () -> Unit,
+  onFailure: () -> Unit,
+  sharePdf: (File) -> Unit,
+  onSubmitQuoteClick: () -> Unit,
+  downloadFromUrl: (url: String) -> Unit,
+) {
   when (uiState) {
     Failure -> HedvigScaffold(navigateUp) {
+      Spacer(Modifier.weight(1f))
       HedvigErrorSection(
-        onButtonClick = {
-          viewModel.emit(SummaryEvent.Reload)
-        },
+        modifier = Modifier.fillMaxSize(),
+        onButtonClick = onReload,
       )
+      Spacer(Modifier.weight(1f))
     }
 
     Loading -> HedvigFullScreenCenterAlignedProgress()
 
     is MakingChanges -> {
-      val state = uiState as MakingChanges
-      LaunchedEffect(state.navigateToSuccess) {
-        val success = state.navigateToSuccess
+      LaunchedEffect(uiState.navigateToSuccess) {
+        val success = uiState.navigateToSuccess
         if (success) {
-          viewModel.emit(SummaryEvent.ClearNavigation)
           onSuccess()
         }
       }
@@ -88,22 +135,19 @@ internal fun ChangeTierSummaryDestination(
     }
 
     is Success -> {
-      val state = uiState as Success
-      LaunchedEffect(state.navigateToFail) {
-        val fail = state.navigateToFail
+      LaunchedEffect(uiState.navigateToFail) {
+        val fail = uiState.navigateToFail
         if (fail) {
-          viewModel.emit(SummaryEvent.ClearNavigation)
           onFailure()
         }
       }
 
       SummarySuccessScreen(
-        uiState = state,
+        uiState = uiState,
         navigateUp = navigateUp,
-        onConfirmClick = { viewModel.emit(SummaryEvent.SubmitQuote) },
-        downloadFromUrl = { url -> viewModel.emit(SummaryEvent.DownLoadFromUrl(url)) },
+        onConfirmClick = onSubmitQuoteClick,
+        downloadFromUrl = downloadFromUrl,
         sharePdf = { file ->
-          viewModel.emit(SummaryEvent.HandledSharingPdfFile)
           sharePdf(file)
         },
       )
@@ -121,7 +165,7 @@ private fun MakingChangesScreen() {
 
 @Composable
 private fun SummarySuccessScreen(
-  uiState: SummaryState.Success,
+  uiState: Success,
   onConfirmClick: () -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
@@ -170,7 +214,7 @@ private fun SummarySuccessScreen(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = uiState.quote.premium.toString(),
+            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -193,11 +237,7 @@ private fun SummarySuccessScreen(
 }
 
 @Composable
-private fun SummaryCard(
-  uiState: SummaryState.Success,
-  downloadFromUrl: (url: String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun SummaryCard(uiState: Success, downloadFromUrl: (url: String) -> Unit, modifier: Modifier = Modifier) {
   var showExpanded by remember { mutableStateOf(false) }
   Surface(
     modifier = modifier,
@@ -206,7 +246,7 @@ private fun SummaryCard(
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
         contractGroup = uiState.currentContractData.contractGroup,
-        displayName = uiState.currentContractData.contractDisplayName,
+        displayName = uiState.quote.productVariant.displayName,
         displaySubtitle = uiState.currentContractData.contractDisplaySubtitle,
       )
       Spacer(Modifier.height(16.dp))
@@ -220,7 +260,7 @@ private fun SummaryCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = uiState.quote.premium.toString(),
+            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -322,38 +362,106 @@ private fun ExtendedCardContent(
 private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.clickable { downloadFromUrl() },
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
             color = HedvigTheme.colorScheme.textSecondary,
-            text = buildAnnotatedString {
-              append(name)
-              withStyle(
-                SpanStyle(
-                  baselineShift = BaselineShift(0.3f),
-                  fontSize = HedvigTheme.typography.label.fontSize,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                ),
-              ) {
-                append("PDF")
-              }
-            },
+            text = stringWithShiftedLabel(
+              text = name,
+              labelText = "PDF",
+              textColor = HedvigTheme.colorScheme.textSecondary,
+              textFontSize = HedvigTheme.typography.bodySmall.fontSize,
+              labelFontSize = HedvigTheme.typography.label.fontSize,
+            ),
           )
         }
       },
       endSlot = {
-        IconButton(
-          modifier = Modifier.size(24.dp),
-          onClick = {
-            downloadFromUrl()
-          },
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
-          Icon(HedvigIcons.ArrowNorthEast, null)
+          IconButton(
+            modifier = Modifier.size(24.dp),
+            onClick = {
+              downloadFromUrl()
+            },
+          ) {
+            Icon(HedvigIcons.ArrowNorthEast, null)
+          }
         }
       },
       spaceBetween = 8.dp,
     )
   }
 }
+
+@HedvigMultiScreenPreview
+@Composable
+private fun PreviewChooseInsuranceScreen(
+  @PreviewParameter(
+    ChooseInsuranceUiStateProvider::class,
+  ) uiState: SummaryState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SummaryScreen(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class ChooseInsuranceUiStateProvider :
+  CollectionPreviewParameterProvider<SummaryState>(
+    listOf(
+      Success(
+        currentContractData = ContractData(
+          contractGroup = ContractGroup.HOMEOWNER,
+          contractDisplayName = "Home Homeowner",
+          contractDisplaySubtitle = "Addressvägen 777",
+          activeDisplayPremium = "449 kr",
+        ),
+        quote = TierDeductibleQuote(
+          id = "id4",
+          deductible = Deductible(
+            UiMoney(3500.0, SEK),
+            deductiblePercentage = 25,
+            description = "En fast del och en rörlig del om 25% av skadekostnaden",
+          ),
+          displayItems = listOf(),
+          premium = UiMoney(655.0, SEK),
+          tier = Tier(
+            "STANDARD",
+            tierLevel = 1,
+            tierDescription = "Vårt mellanpaket med hög ersättning.",
+            tierDisplayName = "Standard",
+          ),
+          productVariant = ProductVariant(
+            displayName = "Test",
+            contractGroup = ContractGroup.RENTAL,
+            contractType = ContractType.SE_APARTMENT_RENT,
+            partner = "test",
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our most standard coverage",
+          ),
+        ),
+      ),
+      Failure,
+      Loading,
+      MakingChanges(false),
+    ),
+  )

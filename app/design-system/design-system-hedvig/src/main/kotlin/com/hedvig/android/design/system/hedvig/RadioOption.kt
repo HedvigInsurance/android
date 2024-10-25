@@ -11,6 +11,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -116,9 +117,9 @@ internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLock
 fun RadioOption(
   chosenState: ChosenState,
   onClick: () -> Unit,
-  optionContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   lockedState: LockedState = NotLocked,
+  optionContent: @Composable () -> Unit,
 ) {
   val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
   val interactionSource = remember { MutableInteractionSource() }
@@ -151,6 +152,51 @@ fun RadioOption(
         optionContent()
       }
     }
+  }
+}
+
+@Composable
+fun RadioOptionRightAligned(
+  chosenState: ChosenState,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  lockedState: LockedState = NotLocked,
+  optionContent: @Composable () -> Unit,
+) {
+  val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
+  val interactionSource = remember { MutableInteractionSource() }
+  val clickableModifier =
+    modifier
+      .clip(fixedSize.shape)
+      .semantics { role = Role.RadioButton }
+      .clickable(
+        enabled = when (lockedState) {
+          Locked -> false
+          NotLocked -> true
+        },
+        interactionSource = interactionSource,
+        indication = LocalIndication.current,
+      ) {
+        onClick()
+      }
+
+  Surface(
+    modifier = clickableModifier,
+    shape = fixedSize.shape,
+    color = radioOptionColors.containerColor,
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      modifier = Modifier.padding(fixedSize.contentPadding),
+      startSlot = {
+        optionContent()
+      },
+      endSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+          SelectIndicationCircle(chosenState, lockedState)
+        }
+      },
+      spaceBetween = 8.dp,
+    )
   }
 }
 

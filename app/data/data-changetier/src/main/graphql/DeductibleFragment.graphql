@@ -1,0 +1,7 @@
+fragment DeductibleFragment on Deductible {
+  amount {
+    ...MoneyFragment
+  }
+  displayText
+  percentage
+}

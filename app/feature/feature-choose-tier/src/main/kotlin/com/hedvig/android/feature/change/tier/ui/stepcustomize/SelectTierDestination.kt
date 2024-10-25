@@ -74,7 +74,8 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
@@ -84,6 +85,7 @@ import hedvig.resources.R
 internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
   navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>) -> Unit,
 ) {
@@ -97,21 +99,21 @@ internal fun SelectTierDestination(
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
-        navigateUp = navigateUp,
+        popBackStack = popBackStack,
       )
 
       Loading -> HedvigFullScreenCenterAlignedProgress()
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
-            viewModel.emit(ClearNavigationStep)
-            navigateToSummary(state.uiState.quoteToNavigateFurther) // todo: check here
+            viewModel.emit(ClearNavigateFurtherStep)
+            navigateToSummary(state.uiState.quoteToNavigateFurther)
           }
         }
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
-            viewModel.emit(ClearNavigationStep)
-            navigateToComparison(state.uiState.quotesToCompare) // todo: check here
+            viewModel.emit(ClearNavigateToComparison)
+            navigateToComparison(state.uiState.quotesToCompare)
           }
         }
         SelectTierScreen(
@@ -135,6 +137,12 @@ internal fun SelectTierDestination(
           onChooseTierInDialogClick = { tier ->
             viewModel.emit(SelectCoverageEvent.ChangeTierInDialog(tier))
           },
+          onSetTierBackToPreviouslyChosen = {
+            viewModel.emit(SelectCoverageEvent.SetTierToPreviouslyChosen)
+          },
+          onSetDeductibleBackToPreviouslyChosen = {
+            viewModel.emit(SelectCoverageEvent.SetDeductibleToPreviouslyChosen)
+          },
         )
       }
     }
@@ -142,7 +150,7 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
       GENERAL -> {
@@ -172,11 +180,12 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
             iconStyle = INFO,
             buttonStyle = NoButton,
             description = null,
+            modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(R.string.general_close_button),
-            onClick = navigateUp,
+            onClick = popBackStack,
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )
@@ -197,6 +206,8 @@ private fun SelectTierScreen(
   onChooseTierClick: () -> Unit,
   onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
   onChooseTierInDialogClick: (tier: Tier) -> Unit,
+  onSetDeductibleBackToPreviouslyChosen: () -> Unit,
+  onSetTierBackToPreviouslyChosen: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -238,7 +249,6 @@ private fun SelectTierScreen(
       onChooseDeductibleClick = onChooseDeductibleClick,
       newDisplayPremium = uiState.chosenQuote?.premium,
       isCurrentChosen = uiState.isCurrentChosen,
-      chosenTier = uiState.chosenTier,
       chosenQuote = uiState.chosenQuote,
       isTierChoiceEnabled = uiState.isTierChoiceEnabled,
       quotesForChosenTier = uiState.quotesForChosenTier,
@@ -248,7 +258,9 @@ private fun SelectTierScreen(
       onChooseDeductibleInDialogClick = onChooseDeductibleInDialogClick,
       onChooseTierInDialogClick = onChooseTierInDialogClick,
       chosenTierIndex = uiState.chosenTierIndex,
-      chosenQuoteIndex = uiState.chosenQuoteIndex
+      chosenQuoteIndex = uiState.chosenQuoteIndex,
+      onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
+      onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -280,9 +292,10 @@ private fun SelectTierScreen(
 @Composable
 private fun CustomizationCard(
   data: ContractData,
-  tiers: List<Pair<Tier, String>>,
+  tiers: List<Pair<Tier, UiMoney>>,
   quotesForChosenTier: List<TierDeductibleQuote>,
-  chosenTier: Tier?,
+  chosenTierIndex: Int?,
+  chosenQuoteIndex: Int?,
   chosenQuote: TierDeductibleQuote?,
   chosenTierInDialog: Tier?,
   chosenQuoteInDialog: TierDeductibleQuote?,
@@ -291,10 +304,10 @@ private fun CustomizationCard(
   newDisplayPremium: UiMoney?,
   isTierChoiceEnabled: Boolean,
   onChooseDeductibleClick: () -> Unit,
+  onSetDeductibleBackToPreviouslyChosen: () -> Unit,
+  onSetTierBackToPreviouslyChosen: () -> Unit,
   onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
-  chosenTierIndex: Int?,
-  chosenQuoteIndex: Int?,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -304,13 +317,13 @@ private fun CustomizationCard(
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
         contractGroup = data.contractGroup,
-        displayName = data.contractDisplayName,
+        displayName = chosenQuote?.productVariant?.displayName ?: data.contractDisplayName,
         displaySubtitle = data.contractDisplaySubtitle,
       )
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-")) // todo: what if they are null??
+          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
         }
       }
       DropdownWithDialog(
@@ -322,16 +335,16 @@ private fun CustomizationCard(
         ),
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
-        onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
+        onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-            title = pair.first.tierDisplayName ?: "-", // todo: what if they are null??
-            premium = pair.second,
+            title = pair.first.tierDisplayName ?: "-",
+            premium = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
               onChooseTierInDialogClick(pair.first)
@@ -359,7 +372,8 @@ private fun CustomizationCard(
           modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 4.dp),
         )
       }
-      if (quotesForChosenTier.isNotEmpty()) {
+      val onlyNullDeductibles = quotesForChosenTier.none { it.deductible != null }
+      if (quotesForChosenTier.isNotEmpty() && !onlyNullDeductibles) {
         Spacer(Modifier.height(4.dp))
         val deductibleSimpleItems = buildList {
           for (quote in quotesForChosenTier) {
@@ -377,10 +391,10 @@ private fun CustomizationCard(
           isEnabled = quotesForChosenTier.size > 1,
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
-          onItemChosen = { _ -> }, // not needed, as we not use the default dialog content,
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,
+          onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {
             quotesForChosenTier.forEach { quote ->
@@ -389,8 +403,8 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = quote.premium.toString(),
-                    tierDescription = it.description,
+                    premium = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, quote.premium.amount.toInt()),
+                    tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
@@ -424,7 +438,9 @@ private fun CustomizationCard(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = newDisplayPremium?.toString() ?: "-",
+            text =
+              newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
+                ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -544,12 +560,16 @@ private fun ExpandedOptionContent(title: String, premium: String, comment: Strin
       spaceBetween = 8.dp,
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
-          HighlightLabel(labelText = premium, size = HighLightSize.Small, color = HighlightColor.Grey(MEDIUM))
+          HighlightLabel(
+            labelText = premium,
+            size = HighLightSize.Small,
+            color = HighlightColor.Grey(MEDIUM),
+          )
         }
       },
     )
     if (comment != null) {
-      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(4.dp))
       HedvigText(
         text = comment,
         modifier = Modifier.fillMaxWidth(),
@@ -566,12 +586,6 @@ private fun CustomizationCardPreview() {
   HedvigTheme {
     CustomizationCard(
       data = dataForPreview,
-      chosenTier = Tier(
-        "BAS",
-        tierLevel = 0,
-        tierDescription = "Vårt paket med grundläggande villkor.",
-        tierDisplayName = "Bas",
-      ),
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
       newDisplayPremium = UiMoney(199.0, SEK),
@@ -585,13 +599,13 @@ private fun CustomizationCardPreview() {
           tierLevel = 0,
           tierDescription = "Vårt paket med grundläggande villkor.",
           tierDisplayName = "Bas",
-        ) to "199",
+        ) to UiMoney(199.0, SEK),
         Tier(
           "STANDARD",
           tierLevel = 1,
           tierDescription = "Vårt mellanpaket med hög ersättning.",
           tierDisplayName = "Standard",
-        ) to "155",
+        ) to UiMoney(155.0, SEK),
       ),
       chosenTierInDialog = Tier(
         "BAS",
@@ -603,7 +617,9 @@ private fun CustomizationCardPreview() {
       onChooseDeductibleInDialogClick = {},
       onChooseTierInDialogClick = {},
       chosenTierIndex = null,
-      chosenQuoteIndex = null
+      chosenQuoteIndex = null,
+      onSetTierBackToPreviouslyChosen = {},
+      onSetDeductibleBackToPreviouslyChosen = {},
     )
   }
 }
@@ -621,13 +637,13 @@ private fun SelectTierScreenPreview() {
             tierLevel = 0,
             tierDescription = "Vårt paket med grundläggande villkor.",
             tierDisplayName = "Bas",
-          ) to "199",
+          ) to UiMoney(199.0, SEK),
           Tier(
             "STANDARD",
             tierLevel = 1,
             tierDescription = "Vårt mellanpaket med hög ersättning.",
             tierDisplayName = "Standard",
-          ) to "155",
+          ) to UiMoney(155.0, SEK),
         ),
         quotesForChosenTier = quotesForPreview,
         isCurrentChosen = false,
@@ -647,8 +663,10 @@ private fun SelectTierScreenPreview() {
         ),
         chosenInDialogQuote = quotesForPreview[0],
         chosenTierIndex = null,
-        chosenQuoteIndex = null
+        chosenQuoteIndex = null,
       ),
+      {},
+      {},
       {},
       {},
       {},
@@ -691,6 +709,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -716,6 +736,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -741,6 +763,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Bas",
+      tierDescription = "Our most basic coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -766,6 +790,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
     ),
   ),
   TierDeductibleQuote(
@@ -791,6 +817,8 @@ private val quotesForPreview = listOf(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
     ),
   ),
 )

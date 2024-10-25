@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
@@ -127,25 +128,25 @@ internal class TerminationSurveyPresenter(
     }
 
     LaunchedEffect(loadBetterQuotesSource) {
-      val source = loadBetterQuotesSource
-      if (source != null) {
-        currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = false)
-        val insuranceId = terminateInsuranceRepository.getContractId()
-        val result =
-          changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
-        result.fold(
-          ifLeft = { errorMessage ->
-            logcat(LogPriority.ERROR) {
-              "Received error while creating changeTierDeductibleIntent from termination flow"
-            }
-            currentState = currentState.copy(
-              actionButtonLoading = false,
-              errorWhileLoadingNextStep = true,
-            )
-            loadBetterQuotesSource = null
-          },
-          ifRight = { changeTierIntent ->
-            if (changeTierIntent.quotes.isEmpty()) {
+      val source = loadBetterQuotesSource ?: return@LaunchedEffect
+      currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = false)
+      val insuranceId = terminateInsuranceRepository.getContractId()
+      val result =
+        changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
+      result.fold(
+        ifLeft = { errorMessage ->
+          logcat(LogPriority.ERROR) {
+            "Received error while creating changeTierDeductibleIntent from termination flow"
+          }
+          currentState = currentState.copy(
+            actionButtonLoading = false,
+            errorWhileLoadingNextStep = true,
+          )
+          loadBetterQuotesSource = null
+        },
+        ifRight = { changeTierIntent ->
+          if (changeTierIntent.quotes.isEmpty()) {
+            Snapshot.withMutableSnapshot {
               val optionsToDisable = currentReasonsWithFeedback.filter {
                 it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
                   it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
@@ -164,17 +165,17 @@ internal class TerminationSurveyPresenter(
                 selectedOption = null,
               )
               loadBetterQuotesSource = null
-            } else {
-              currentState = currentState.copy(
-                errorWhileLoadingNextStep = false,
-                actionButtonLoading = false,
-                intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
-              )
-              loadBetterQuotesSource = null
             }
-          },
-        )
-      }
+          } else {
+            currentState = currentState.copy(
+              errorWhileLoadingNextStep = false,
+              actionButtonLoading = false,
+              intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
+            )
+            loadBetterQuotesSource = null
+          }
+        },
+      )
     }
 
     LaunchedEffect(loadNextStep) {

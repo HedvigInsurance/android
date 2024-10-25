@@ -6,15 +6,15 @@ import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATIO
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
 import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 import octopus.type.ChangeTierDeductibleSource
 
 data class ChangeTierDeductibleIntent(
   val activationDate: LocalDate,
-  val currentTierLevel: Int?,
-  val currentTierName: String?,
   val quotes: List<TierDeductibleQuote>,
 )
 
+@Serializable
 data class TierDeductibleQuote(
   val id: String,
   val tier: Tier,
@@ -24,12 +24,14 @@ data class TierDeductibleQuote(
   val productVariant: ProductVariant,
 )
 
+@Serializable
 data class ChangeTierDeductibleDisplayItem(
   val displayTitle: String,
   val displaySubtitle: String?,
   val displayValue: String,
 )
 
+@Serializable
 data class Tier(
   val tierName: String,
   val tierLevel: Int,
@@ -37,12 +39,13 @@ data class Tier(
   val tierDescription: String?,
 )
 
+@Serializable
 data class Deductible(
   val deductibleAmount: UiMoney?,
   val deductiblePercentage: Int?,
   val description: String,
 ) {
-  val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
+  private val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
   val optionText = if (percentageNotZero && deductibleAmount != null) {
     "$deductibleAmount + $deductiblePercentage%"
   } else if (percentageNotZero) {
