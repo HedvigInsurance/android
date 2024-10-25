@@ -147,7 +147,7 @@ fun RadioOption(
     ) {
       SelectIndicationCircle(chosenState, lockedState)
       Spacer(Modifier.width(8.dp))
-      Row(Modifier.weight(1f)) {
+      Box(Modifier.weight(1f), propagateMinConstraints = true) {
         optionContent()
       }
     }
