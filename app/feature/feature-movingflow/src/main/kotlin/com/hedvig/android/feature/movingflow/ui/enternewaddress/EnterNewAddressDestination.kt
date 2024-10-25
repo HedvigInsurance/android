@@ -328,8 +328,6 @@ private fun DatePickerField(
 
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
-  return this.toString()
-  @Suppress("UNREACHABLE_CODE")
   return when (this) {
     EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
     is InvalidMovingDate -> {
