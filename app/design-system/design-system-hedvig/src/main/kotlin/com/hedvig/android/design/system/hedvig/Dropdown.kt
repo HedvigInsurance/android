@@ -8,7 +8,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -94,28 +93,28 @@ fun DropdownWithDialog(
       },
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
-      if (dialogContent != null) {
-        dialogContent {
-          isDialogVisible = false
-        }
-      } else {
-        Column(
-          modifier = Modifier.background(
-            color = dropdownColors.containerColor(false).value,
-            shape = size.shape,
-          ),
-        ) {
-          style.items.forEachIndexed { index, item ->
-            DropdownOption(
-              item = item,
-              size = size,
-              style = style,
-              onClick = {
-                onItemChosen(index)
-                isDialogVisible = false
-              },
-              isSelected = index == chosenItemIndex,
-            )
+      Surface(
+        color = dropdownColors.containerColor(false).value,
+        shape = size.shape,
+      ) {
+        if (dialogContent != null) {
+          dialogContent {
+            isDialogVisible = false
+          }
+        } else {
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            style.items.forEachIndexed { index, item ->
+              DropdownOption(
+                item = item,
+                size = size,
+                style = style,
+                onClick = {
+                  onItemChosen(index)
+                  isDialogVisible = false
+                },
+                isSelected = index == chosenItemIndex,
+              )
+            }
           }
         }
       }
@@ -132,6 +131,55 @@ fun DropdownWithDialog(
     onClick = {
       if (isEnabled) {
         onSelectorClick()
+        isDialogVisible = true
+      }
+    },
+    errorText = errorText,
+    isDialogOpen = isDialogVisible,
+    containerColor = containerColor,
+  )
+}
+
+@Composable
+fun DropdownWithDialog(
+  style: DropdownStyle,
+  size: DropdownDefaults.DropdownSize,
+  hintText: String,
+  modifier: Modifier = Modifier,
+  chosenItemIndex: Int? = null,
+  isEnabled: Boolean = true,
+  hasError: Boolean = false,
+  errorText: String? = null,
+  containerColor: Color? = null,
+  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
+  applyDefaultDialogPadding: Boolean = false,
+  dialogContent: @Composable (onDismissRequest: () -> Unit) -> Unit,
+) {
+  var isDialogVisible by rememberSaveable { mutableStateOf(false) }
+  if (isDialogVisible) {
+    HedvigDialog(
+      applyDefaultPadding = applyDefaultDialogPadding,
+      dialogProperties = dialogProperties,
+      onDismissRequest = {
+        isDialogVisible = false
+      },
+      style = DialogDefaults.DialogStyle.NoButtons,
+    ) {
+      dialogContent {
+        isDialogVisible = false
+      }
+    }
+  }
+  DropdownSelector(
+    text = if (chosenItemIndex == null) hintText else style.items[chosenItemIndex].text,
+    size = size,
+    isHint = chosenItemIndex == null,
+    isEnabled = isEnabled,
+    showError = hasError,
+    modifier = modifier,
+    style = style,
+    onClick = {
+      if (isEnabled) {
         isDialogVisible = true
       }
     },
@@ -162,15 +210,15 @@ private fun DropdownSelector(
       shape = size.shape,
       color = containerColor ?: dropdownColors.containerColor(showError).value,
       modifier = Modifier
-        .clip(size.shape)
-        .clickable(
-          interactionSource = remember { MutableInteractionSource() },
-          indication = ripple(
-            bounded = true,
-            radius = 1000.dp,
+          .clip(size.shape)
+          .clickable(
+              interactionSource = remember { MutableInteractionSource() },
+              indication = ripple(
+                  bounded = true,
+                  radius = 1000.dp,
+              ),
+              onClick = onClick,
           ),
-          onClick = onClick,
-        ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -228,10 +276,10 @@ private fun DropdownSelector(
               onClick = onClick,
               enabled = isEnabled,
               modifier = Modifier
-                .size(DropdownTokens.ChevronSize)
-                .graphicsLayer {
-                  rotationZ = fullRotation
-                },
+                  .size(DropdownTokens.ChevronSize)
+                  .graphicsLayer {
+                      rotationZ = fullRotation
+                  },
             ) {
               val icon = when (isEnabled) {
                 false -> HedvigIcons.Lock
@@ -339,66 +387,59 @@ private fun DropdownOption(
 ) {
   val containerColor = dropdownColors.containerColor(showError = false).value
   val checkSymbolColor = dropdownColors.chevronColor(isEnabled = true)
-  Column(
+  Surface(
+    shape = size.shape,
+    color = containerColor,
+    onClick = onClick,
+    interactionSource = remember { MutableInteractionSource() },
+    indication = ripple(
+      bounded = true,
+      radius = 1000.dp,
+    ),
     modifier = modifier,
   ) {
-    Surface(
-      shape = size.shape,
-      color = containerColor,
-      modifier = Modifier
-        .clip(size.shape)
-        .clickable(
-          interactionSource = remember { MutableInteractionSource() },
-          indication = ripple(
-            bounded = true,
-            radius = 1000.dp,
-          ),
-          onClick = onClick,
-        ),
-    ) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        modifier = Modifier.padding(size.optionContentPadding(style)),
-        startSlot = {
-          val textColor = dropdownColors.textColor(
-            showError = false,
-            isEnabled = true,
-          ).value
-          when (style) {
-            is DropdownStyle.Default, is DropdownStyle.Label ->
-              DefaultStyleStartSlot(
-                textColor = textColor,
-                text = item.text,
-                textStyle = size.textStyle,
-              )
-
-            is DropdownStyle.Icon -> IconStyleStartSlot(
+    HorizontalItemsWithMaximumSpaceTaken(
+      modifier = Modifier.padding(size.optionContentPadding(style)),
+      startSlot = {
+        val textColor = dropdownColors.textColor(
+          showError = false,
+          isEnabled = true,
+        ).value
+        when (style) {
+          is DropdownStyle.Default, is DropdownStyle.Label ->
+            DefaultStyleStartSlot(
               textColor = textColor,
               text = item.text,
               textStyle = size.textStyle,
-              icon = (item as DropdownItemWithIcon).painter,
             )
-          }
-        },
-        endSlot = {
-          Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            AnimatedVisibility(isSelected) {
-              if (isSelected) {
-                Icon(
-                  HedvigIcons.Checkmark,
-                  "",
-                  tint = checkSymbolColor,
-                  modifier = Modifier.size(DropdownTokens.IconSize),
-                )
-              }
+
+          is DropdownStyle.Icon -> IconStyleStartSlot(
+            textColor = textColor,
+            text = item.text,
+            textStyle = size.textStyle,
+            icon = (item as DropdownItemWithIcon).painter,
+          )
+        }
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          AnimatedVisibility(isSelected) {
+            if (isSelected) {
+              Icon(
+                HedvigIcons.Checkmark,
+                "",
+                tint = checkSymbolColor,
+                modifier = Modifier.size(DropdownTokens.IconSize),
+              )
             }
           }
-        },
-        spaceBetween = 8.dp,
-      )
-    }
+        }
+      },
+      spaceBetween = 8.dp,
+    )
   }
 }
 
