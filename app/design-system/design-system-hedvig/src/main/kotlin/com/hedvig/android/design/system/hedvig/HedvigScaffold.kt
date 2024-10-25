@@ -47,6 +47,8 @@ fun HedvigScaffold(
           .fillMaxSize()
           .verticalScroll(rememberScrollState())
           .windowInsetsPadding(
+            // todo remove this bottom insets padding from Scaffold, as it forces the callers to clip the bottom bar
+            //  insets if they happen to want to have their own scrollable state
             WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           ),
       ) {
