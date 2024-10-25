@@ -39,7 +39,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
-  navigateToMovingFlow: (NavBackStackEntry) -> Unit,
+  navigateToMovingFlow: () -> Unit,
   openPlayStore: () -> Unit,
   navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
   closeTerminationFlow: () -> Unit,
@@ -130,7 +130,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
-        navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
+        navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
           redirectToChangeTierFlow(backStackEntry, intent)
@@ -154,7 +154,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
-        navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
+        navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
           redirectToChangeTierFlow(backStackEntry, intent)
