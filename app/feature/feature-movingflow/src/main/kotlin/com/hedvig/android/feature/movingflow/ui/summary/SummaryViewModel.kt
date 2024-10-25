@@ -159,6 +159,10 @@ internal sealed interface SummaryUiState {
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
   ) : SummaryUiState {
+    val shouldDisableInput: Boolean = isSubmitting ||
+      submitError != null ||
+      navigateToFinishedScreenWithDate != null
+
     sealed interface SubmitError {
       data object Generic : SubmitError
 

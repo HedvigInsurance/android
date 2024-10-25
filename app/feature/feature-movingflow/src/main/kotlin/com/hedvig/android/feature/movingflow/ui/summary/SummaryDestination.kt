@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,8 +92,14 @@ internal fun SummaryDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+  if (uiState is Content && uiState.navigateToFinishedScreenWithDate != null) {
+    LaunchedEffect(uiState.navigateToFinishedScreenWithDate) {
+      onNavigateToFinishedScreen(uiState.navigateToFinishedScreenWithDate)
+    }
+  }
   SummaryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -196,8 +203,9 @@ private fun SummaryScreen(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
-      enabled = true,
+      enabled = !content.shouldDisableInput,
       onClick = onConfirmChanges,
+      isLoading = content.isSubmitting,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(40.dp))
