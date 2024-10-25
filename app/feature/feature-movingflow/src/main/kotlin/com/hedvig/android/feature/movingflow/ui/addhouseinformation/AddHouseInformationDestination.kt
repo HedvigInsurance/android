@@ -136,7 +136,7 @@ private fun AddHouseInformationScreen(
         HedvigTextField(
           text = content.addressInput.yearOfConstruction.value?.toString() ?: "",
           onValueChange = {
-            content.addressInput.yearOfConstruction.updateValue(null)
+            content.addressInput.yearOfConstruction.updateValue(it.toIntOrNull())
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL),
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
