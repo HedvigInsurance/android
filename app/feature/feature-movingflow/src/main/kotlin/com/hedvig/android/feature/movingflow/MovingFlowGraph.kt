@@ -14,11 +14,14 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressD
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
 import com.hedvig.android.feature.movingflow.ui.start.StartDestination
 import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
+import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -49,6 +52,11 @@ internal sealed interface MovingFlowDestinations {
   data class Summary(
     val moveIntentId: String,
     val homeQuoteId: String,
+  ) : MovingFlowDestinations, Destination
+
+  @Serializable
+  data class SuccessfulMove(
+    val moveDate: LocalDate,
   ) : MovingFlowDestinations, Destination
 }
 
@@ -100,6 +108,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
       )
     }
     navdestination<MovingFlowDestinations.CompareCoverage> {
+      // todo moving flow, add shared compare coverage screen
       CompareCoverageDestination(koinViewModel<CompareCoverageViewModel>())
     }
     navdestination<MovingFlowDestinations.Summary> {
@@ -108,7 +117,21 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
         onNavigateToNewConversation = onNavigateToNewConversation,
+        onNavigateToFinishedScreen = { moveDate ->
+          navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
+            typedPopUpTo<MovingFlowGraphDestination> {
+              inclusive = true
+            }
+          }
+        },
       )
     }
+  }
+  navdestination<MovingFlowDestinations.SuccessfulMove> { backStackEntry ->
+    SuccessfulMoveDestination(
+      moveDate = backStackEntry.toRoute<MovingFlowDestinations.SuccessfulMove>().moveDate,
+      navigateUp = navController::navigateUp,
+      popBackStack = navController::popBackStack,
+    )
   }
 }
