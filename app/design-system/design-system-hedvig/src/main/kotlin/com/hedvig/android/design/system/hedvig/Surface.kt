@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,6 +60,7 @@ fun Surface(
   color: Color = HedvigTheme.colorScheme.surfacePrimary,
   contentColor: Color = contentColorFor(color),
   border: BorderStroke? = null,
+  indication: Indication? = null,
   interactionSource: MutableInteractionSource? = null,
   content: @Composable () -> Unit,
 ) {
@@ -72,7 +74,7 @@ fun Surface(
         )
         .clickable(
           interactionSource = interactionSource,
-          indication = LocalIndication.current,
+          indication = indication ?: LocalIndication.current,
           enabled = enabled,
           onClick = onClick,
         ),
