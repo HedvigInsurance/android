@@ -206,7 +206,9 @@ private fun SummaryScreen(
     Column {
       HedvigText(
         text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
-        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+        modifier = Modifier
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(12.dp))
       HedvigButton(
@@ -214,7 +216,9 @@ private fun SummaryScreen(
         enabled = true,
         onClick = onNavigateToNewConversation,
         buttonSize = Small,
-        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+        modifier = Modifier
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -425,6 +429,8 @@ private fun PreviewSummaryScreen() {
             type = CERTIFICATE,
           ),
         ),
+        displayTierName = "tierDescription",
+        tierDescription = "displayNameTier",
       )
       val startDate = LocalDate.parse("2025-01-01")
       SummaryScreen(
