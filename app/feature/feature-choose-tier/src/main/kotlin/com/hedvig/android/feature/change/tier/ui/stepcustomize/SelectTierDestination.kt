@@ -255,7 +255,7 @@ private fun SelectTierScreen(
     HedvigButton(
       buttonSize = Large,
       text = stringResource(R.string.general_continue_button),
-      enabled = !uiState.isCurrentChosen,
+      enabled = (uiState.chosenQuote != null && !uiState.isCurrentChosen),
       onClick = {
         onContinueClick()
       },

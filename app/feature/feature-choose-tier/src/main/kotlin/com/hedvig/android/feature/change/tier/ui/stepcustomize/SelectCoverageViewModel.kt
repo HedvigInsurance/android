@@ -79,20 +79,9 @@ internal class SelectCoveragePresenter(
         is ChangeTier -> {
           val state = currentPartialState
           if (state !is PartialUiState.Success) return@CollectEvents
-          // set newly chosen tier
           chosenTier = chosenTierInDialog
-          // try to pre-choose a quote with the same deductible and newly chosen coverage
-          // if there is no such quote, the deductible will not be per-chosen
-          val quoteWithNewTierOldDeductible = chosenTier?.let { t ->
-            val previouslyChosenDeductible = chosenQuote?.deductible
-            if (state.map[t]?.size == 1) {
-              state.map[t]?.get(0)
-            } else {
-              state.map[t]?.firstOrNull { it.deductible == previouslyChosenDeductible }
-            }
-          }
-          chosenQuote = quoteWithNewTierOldDeductible
-          chosenQuoteInDialog = quoteWithNewTierOldDeductible
+          chosenQuote = null
+          chosenQuoteInDialog = null
         }
 
         ClearNavigateFurtherStep -> {

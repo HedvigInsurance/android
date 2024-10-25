@@ -97,7 +97,7 @@ class SelectCoveragePresenterTest {
   }
 
   @Test
-  fun `if it is current quote that is select continue button should be disabled`() = runTest {
+  fun `if it is current quote that is selected continue button should be disabled`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
     val presenter = SelectCoveragePresenter(
@@ -126,21 +126,14 @@ class SelectCoveragePresenterTest {
       sendEvent(SelectCoverageEvent.ChangeTier)
       skipItems(3)
       val state2 = awaitItem()
-      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
-        .prop(SelectCoverageState.Success::uiState)
-        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
-        .prop(SelectCoverageSuccessUiState::isCurrentChosen)
-        .isEqualTo(true)
-      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
-        .prop(SelectCoverageState.Success::uiState)
-        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
-        .prop(SelectCoverageSuccessUiState::chosenQuote)
-        .isEqualTo(currentQuote)
+      val isCurrentChosen = (state2 as SelectCoverageState.Success).uiState.isCurrentChosen
+      val chosenQuoteIsNotNull = state2.uiState.chosenQuote != null
+      assertThat(chosenQuoteIsNotNull && !isCurrentChosen).isEqualTo(false)
     }
   }
 
   @Test
-  fun `if it is not current quote that is select continue button should be enabled`() = runTest {
+  fun `if the selected quote is not null and not current continue button should be enabled`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
     val presenter = SelectCoveragePresenter(
@@ -258,7 +251,7 @@ class SelectCoveragePresenterTest {
         .prop(SelectCoverageState.Success::uiState)
         .isInstanceOf(SelectCoverageSuccessUiState::class.java)
         .prop(SelectCoverageSuccessUiState::chosenQuote)
-        .isEqualTo(testQuote3)
+        .isEqualTo(null)
     }
   }
 }
