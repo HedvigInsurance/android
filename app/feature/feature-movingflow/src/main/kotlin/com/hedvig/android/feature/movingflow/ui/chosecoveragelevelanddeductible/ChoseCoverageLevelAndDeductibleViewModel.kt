@@ -83,7 +83,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
         val uniqueCoverageOptions = homeQuotes
           .groupBy { it.tierLevel }
           .map { (_, moveHomeQuotes) ->
-            moveHomeQuotes.firstOrNull()
+            moveHomeQuotes.minByOrNull { it.premium.amount }
           }
           .filterNotNull()
           .map { moveHomeQuote ->
