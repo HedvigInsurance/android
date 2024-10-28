@@ -17,20 +17,18 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.ChangeTierQuoteStorage
 import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
-import com.hedvig.android.data.changetier.database.TierQuoteMapper
-import com.hedvig.android.data.chat.database.ChangeTierQuoteEntity
-import com.hedvig.android.data.chat.database.TierQuoteDao
+import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCommitIntentMutation
-import oldTestQuoteDbModel
+import oldTestQuote
 import org.junit.Rule
 import org.junit.Test
 import testQuote
-import testQuoteDbModel
 
 class ChangeTierRepositoryImplTest {
   @get:Rule
@@ -64,13 +62,11 @@ class ChangeTierRepositoryImplTest {
 
   @Test
   fun `if submitChangeTierQuote() get bad response return ErrorMessage`() = runTest {
-    val mockDao = TierQuoteDaoFakeImpl()
-    val mapper = TierQuoteMapper()
+    val storage = ChangeTierQuoteStorageImpl()
     val repository = ChangeTierRepositoryImpl(
-      mapper = mapper,
-      tierQuoteDao = mockDao,
       apolloClient = apolloClientWithBadResponseToSubmit,
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
+      changeTierQuoteStorage = storage,
     )
     val result = repository.submitChangeTierQuote(testId)
     assertk.assertThat(result)
@@ -79,18 +75,16 @@ class ChangeTierRepositoryImplTest {
 
   @Test
   fun `startChangeTierIntentAndGetQuotesId() clears old quotes from DB before proceed`() = runTest {
-    val mockDao = TierQuoteDaoFakeImpl()
-    val mapper = TierQuoteMapper()
     val useCase = CreateChangeTierDeductibleIntentUseCaseFake()
+    val storage = ChangeTierQuoteStorageImpl()
     val repository = ChangeTierRepositoryImpl(
-      mapper = mapper,
-      tierQuoteDao = mockDao,
       apolloClient = apolloClientWithGoodResponseToSubmit,
       createChangeTierDeductibleIntentUseCase = useCase,
+      changeTierQuoteStorage = storage,
     )
-    mockDao.insertAll(listOf(oldTestQuoteDbModel))
+    storage.insertAll(listOf(oldTestQuote))
     val previousState =
-      mockDao.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuoteDbModel.id } }
+      storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }
     assertk.assertThat(previousState).isNotNull()
     useCase.intentTurbine.add(
       ChangeTierDeductibleIntent(
@@ -99,21 +93,19 @@ class ChangeTierRepositoryImplTest {
       ).right(),
     )
     repository.startChangeTierIntentAndGetQuotesId(testId, SELF_SERVICE)
-    val result = mockDao.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuoteDbModel.id } }
+    val result = storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }
     assertk.assertThat(result).isNull()
   }
 
   @Test
   fun `getQuoteById() if got null quote from db returns error`() = runTest {
-    val mockDao = TierQuoteDaoFakeImpl()
-    val mapper = TierQuoteMapper()
+    val storage = ChangeTierQuoteStorageImpl()
     val repository = ChangeTierRepositoryImpl(
-      mapper = mapper,
-      tierQuoteDao = mockDao,
       apolloClient = apolloClientWithGoodResponseToSubmit,
+      changeTierQuoteStorage = storage,
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
-    mockDao.putFakeNull()
+    storage.putFakeNull()
     val result = repository.getQuoteById(testId)
     assertk.assertThat(result)
       .isLeft()
@@ -121,15 +113,13 @@ class ChangeTierRepositoryImplTest {
 
   @Test
   fun `getQuoteById() if got good quoteDbModel from db returns rightly mapped quote`() = runTest {
-    val mockDao = TierQuoteDaoFakeImpl()
-    val mapper = TierQuoteMapper()
+    val storage = ChangeTierQuoteStorageImpl()
     val repository = ChangeTierRepositoryImpl(
-      mapper = mapper,
-      tierQuoteDao = mockDao,
       apolloClient = apolloClientWithGoodResponseToSubmit,
+      changeTierQuoteStorage = storage,
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
-    mockDao.putFakeQuoteDbModel()
+    storage.putFakeQuoteDbModel()
     val result = repository.getQuoteById(testId)
     assertk.assertThat(result)
       .isRight()
@@ -138,20 +128,20 @@ class ChangeTierRepositoryImplTest {
   }
 }
 
-internal class TierQuoteDaoFakeImpl : TierQuoteDao {
-  var oneQuoteTurbine = Turbine<ChangeTierQuoteEntity?>()
+internal class ChangeTierQuoteStorageImpl : ChangeTierQuoteStorage {
+  var oneQuoteTurbine = Turbine<TierDeductibleQuote?>()
 
-  val allQuotesTurbine = Turbine<List<ChangeTierQuoteEntity>>()
+  val allQuotesTurbine = Turbine<List<TierDeductibleQuote>>()
 
   fun putFakeNull() {
     oneQuoteTurbine.add(null)
   }
 
   fun putFakeQuoteDbModel() {
-    oneQuoteTurbine.add(testQuoteDbModel)
+    oneQuoteTurbine.add(testQuote)
   }
 
-  override suspend fun insertAll(quotes: List<ChangeTierQuoteEntity>) {
+  override suspend fun insertAll(quotes: List<TierDeductibleQuote>) {
     allQuotesTurbine.add(quotes)
   }
 
@@ -159,11 +149,11 @@ internal class TierQuoteDaoFakeImpl : TierQuoteDao {
     allQuotesTurbine.add(emptyList())
   }
 
-  override suspend fun getOneQuoteById(id: String): ChangeTierQuoteEntity? {
+  override suspend fun getOneQuoteById(id: String): TierDeductibleQuote? {
     return oneQuoteTurbine.awaitItem()
   }
 
-  override suspend fun getQuotesById(ids: List<String>): List<ChangeTierQuoteEntity> {
+  override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {
     return allQuotesTurbine.awaitItem().filter { ids.contains(it.id) }
   }
 }

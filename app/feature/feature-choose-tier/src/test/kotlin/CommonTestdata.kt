@@ -35,7 +35,7 @@ internal class FakeChangeTierRepository() : ChangeTierRepository {
     return quoteListTurbine.awaitItem()
   }
 
-  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
+  override suspend fun addQuotesToStorage(quotes: List<TierDeductibleQuote>) {
   }
 
   override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
