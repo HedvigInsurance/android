@@ -18,9 +18,12 @@ import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDes
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -57,7 +60,11 @@ internal sealed interface MovingFlowDestinations {
   @Serializable
   data class SuccessfulMove(
     val moveDate: LocalDate,
-  ) : MovingFlowDestinations, Destination
+  ) : MovingFlowDestinations, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<LocalDate>())
+    }
+  }
 }
 
 fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNewConversation: () -> Unit) {
@@ -127,7 +134,9 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
       )
     }
   }
-  navdestination<MovingFlowDestinations.SuccessfulMove> { backStackEntry ->
+  navdestination<MovingFlowDestinations.SuccessfulMove>(
+    MovingFlowDestinations.SuccessfulMove,
+  ) { backStackEntry ->
     SuccessfulMoveDestination(
       moveDate = backStackEntry.toRoute<MovingFlowDestinations.SuccessfulMove>().moveDate,
       navigateUp = navController::navigateUp,
