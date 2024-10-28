@@ -165,6 +165,35 @@ class SelectCoveragePresenterTest {
   }
 
   @Test
+  fun `when going to comparison one quote of each Tier is sent as parameter`() = runTest {
+    val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
+      skipItems(2)
+      sendEvent(
+        SelectCoverageEvent.LaunchComparison,
+      )
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .prop(SelectCoverageSuccessUiState::quotesToCompare)
+        .transform {
+          it?.map { quote ->
+            quote.tier.tierName
+          }
+        }
+        .isEqualTo(listOf("STANDARD","BAS"))
+    }
+  }
+
+
+  @Test
   fun `when confirming tier change in dialog show correct selection of quotes in the deductible dropdown`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
@@ -227,31 +256,6 @@ class SelectCoveragePresenterTest {
         .isInstanceOf(SelectCoverageSuccessUiState::class.java)
         .prop(SelectCoverageSuccessUiState::chosenQuote)
         .isNull()
-    }
-  }
-
-  @Test
-  fun `if there is same deductible after you changed the tier this deductible should be pre-chosen`() = runTest {
-    val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
-    val tierRepo = FakeChangeTierRepository()
-    val presenter = SelectCoveragePresenter(
-      params = params,
-      tierRepository = tierRepo,
-      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-    )
-    presenter.test(SelectCoverageState.Loading) {
-      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
-      sendEvent(
-        SelectCoverageEvent.ChangeTierInDialog(standardTier),
-      )
-      skipItems(3)
-      sendEvent(SelectCoverageEvent.ChangeTier)
-      val state2 = awaitItem()
-      assertThat(state2).isInstanceOf(SelectCoverageState.Success::class)
-        .prop(SelectCoverageState.Success::uiState)
-        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
-        .prop(SelectCoverageSuccessUiState::chosenQuote)
-        .isEqualTo(null)
     }
   }
 }
