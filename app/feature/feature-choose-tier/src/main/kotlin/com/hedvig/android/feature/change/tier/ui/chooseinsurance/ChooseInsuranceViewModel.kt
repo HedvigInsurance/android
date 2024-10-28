@@ -57,7 +57,7 @@ internal class ChooseInsurancePresenter(
           loadIteration++
         }
 
-        is ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToTerminate -> {
+        is ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize -> {
           insuranceToFetchIntentFor = event.insurance
         }
 
@@ -72,7 +72,7 @@ internal class ChooseInsurancePresenter(
           }
         }
 
-        ChooseInsuranceToCustomizeEvent.ClearTerminationStep -> {
+        ChooseInsuranceToCustomizeEvent.ClearNavigationStep -> {
           val currentStateValue = currentState
           if (currentStateValue is Loading) {
             currentState = currentStateValue.copy(
@@ -111,18 +111,18 @@ internal class ChooseInsurancePresenter(
 
     LaunchedEffect(loadIteration) {
       if (lastState !is ChooseInsuranceUiState.Success) {
-        currentState = ChooseInsuranceUiState.Loading()
+        currentState = Loading()
       }
       getCustomizableInsurancesUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
           ifLeft = {
             logcat(priority = LogPriority.INFO) { "Cannot load contracts for changing tier-deductible" }
-            currentState = ChooseInsuranceUiState.Failure
+            currentState = Failure
           },
           ifRight = { eligibleInsurances ->
             logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for changing tier-deductible" }
             if (eligibleInsurances == null) {
-              currentState = ChooseInsuranceUiState.Failure
+              currentState = Failure
             } else if (eligibleInsurances.size == 1) {
               insuranceToFetchIntentFor = eligibleInsurances[0]
             } else {
@@ -163,8 +163,8 @@ internal sealed interface ChooseInsuranceToCustomizeEvent {
 
   data object RetryLoadData : ChooseInsuranceToCustomizeEvent
 
-  data class SubmitSelectedInsuranceToTerminate(val insurance: CustomisableInsurance) :
+  data class SubmitSelectedInsuranceToCustomize(val insurance: CustomisableInsurance) :
     ChooseInsuranceToCustomizeEvent
 
-  data object ClearTerminationStep : ChooseInsuranceToCustomizeEvent
+  data object ClearNavigationStep : ChooseInsuranceToCustomizeEvent
 }
