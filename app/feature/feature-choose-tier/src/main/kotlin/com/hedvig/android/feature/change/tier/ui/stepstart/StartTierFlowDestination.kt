@@ -17,6 +17,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -25,7 +27,10 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
@@ -33,6 +38,7 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun StartChangeTierFlowDestination(
@@ -41,26 +47,40 @@ internal fun StartChangeTierFlowDestination(
   launchFlow: (InsuranceCustomizationParameters) -> Unit,
 ) {
   val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
+  StartChangeTierFlowScreen(
+    uiState = uiState,
+    popBackStack = popBackStack,
+    reload = {
+      viewModel.emit(StartTierChangeEvent.Reload)
+    },
+    launchFlow = launchFlow,
+  )
+}
+
+@Composable
+private fun StartChangeTierFlowScreen(
+  uiState: StartTierChangeState,
+  popBackStack: () -> Unit,
+  reload: () -> Unit,
+  launchFlow: (InsuranceCustomizationParameters) -> Unit,
+) {
   when (uiState) {
     is Failure -> {
       FailureScreen(
-        reload = {
-          viewModel.emit(StartTierChangeEvent.Reload)
-        },
+        reload = reload,
         popBackStack = popBackStack,
-        reason = (uiState as Failure).reason,
+        reason = uiState.reason,
       )
     }
 
     Loading -> HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(R.string.TIER_FLOW_PROCESSING),
     )
+
     is Success -> {
-      LaunchedEffect((uiState as Success).paramsToNavigate) {
-        val params = (uiState as Success).paramsToNavigate
-        if (params != null) {
-          launchFlow(params)
-        }
+      LaunchedEffect(uiState.paramsToNavigate) {
+        val params = uiState.paramsToNavigate
+        launchFlow(params)
       }
     }
   }
@@ -76,6 +96,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
           modifier = Modifier.fillMaxSize(),
         )
       }
+
       QUOTES_ARE_EMPTY -> {
         Column(
           modifier = Modifier
@@ -109,3 +130,36 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
     }
   }
 }
+
+@HedvigMultiScreenPreview
+@Composable
+private fun StartTierFlowScreenPreview(
+  @PreviewParameter(StartTierChangeStateProvider::class) state: StartTierChangeState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      StartChangeTierFlowScreen(
+        uiState = state,
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+internal class StartTierChangeStateProvider :
+  CollectionPreviewParameterProvider<StartTierChangeState>(
+    listOf(
+      Loading,
+      Success(
+        InsuranceCustomizationParameters(
+          "",
+          LocalDate(2024, 11, 11),
+          listOf("id", "id2"),
+        ),
+      ),
+      Failure(GENERAL),
+      Failure(QUOTES_ARE_EMPTY),
+    ),
+  )

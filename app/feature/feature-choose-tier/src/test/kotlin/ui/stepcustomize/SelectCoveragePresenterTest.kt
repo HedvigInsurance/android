@@ -1,7 +1,7 @@
 package ui.stepcustomize
 
 import CURRENT_ID
-import app.cash.turbine.Turbine
+import FakeChangeTierRepository
 import arrow.core.Either
 import arrow.core.raise.either
 import assertk.assertThat
@@ -11,10 +11,6 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import basTier
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
-import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.data.CurrentContractData
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
@@ -39,7 +35,7 @@ class SelectCoveragePresenterTest {
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
-  fun `when sending quoteIds that are not stored show Failure`() = runTest {
+  fun `when sending ids for quotes that are not stored show Failure`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
     val presenter = SelectCoveragePresenter(
@@ -188,10 +184,9 @@ class SelectCoveragePresenterTest {
             quote.tier.tierName
           }
         }
-        .isEqualTo(listOf("STANDARD","BAS"))
+        .isEqualTo(listOf("STANDARD", "BAS"))
     }
   }
-
 
   @Test
   fun `when confirming tier change in dialog show correct selection of quotes in the deductible dropdown`() = runTest {
@@ -271,35 +266,3 @@ private val params = InsuranceCustomizationParameters(
   insuranceId = "testId",
   quoteIds = listOf("id0", "id1", CURRENT_ID),
 )
-
-private class FakeChangeTierRepository() : ChangeTierRepository {
-  val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
-  val quoteTurbine = Turbine<Either<ErrorMessage, TierDeductibleQuote>>()
-  val quoteListTurbine = Turbine<List<TierDeductibleQuote>>()
-
-  override suspend fun startChangeTierIntentAndGetQuotesId(
-    insuranceId: String,
-    source: ChangeTierCreateSource,
-  ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
-    return changeTierIntentTurbine.awaitItem()
-  }
-
-  override suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote> {
-    return quoteTurbine.awaitItem()
-  }
-
-  override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {
-    return quoteListTurbine.awaitItem()
-  }
-
-  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
-  }
-
-  override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
-    return either {}
-  }
-
-  override suspend fun getCurrentQuoteId(): String {
-    return CURRENT_ID
-  }
-}

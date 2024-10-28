@@ -1,12 +1,51 @@
+import app.cash.turbine.Turbine
+import arrow.core.Either
+import arrow.core.raise.either
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+
+internal class FakeChangeTierRepository() : ChangeTierRepository {
+  val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
+  val quoteTurbine = Turbine<Either<ErrorMessage, TierDeductibleQuote>>()
+  val quoteListTurbine = Turbine<List<TierDeductibleQuote>>()
+
+  override suspend fun startChangeTierIntentAndGetQuotesId(
+    insuranceId: String,
+    source: ChangeTierCreateSource,
+  ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
+    return changeTierIntentTurbine.awaitItem()
+  }
+
+  override suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote> {
+    return quoteTurbine.awaitItem()
+  }
+
+  override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {
+    return quoteListTurbine.awaitItem()
+  }
+
+  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
+  }
+
+  override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
+    return either {}
+  }
+
+  override suspend fun getCurrentQuoteId(): String {
+    return CURRENT_ID
+  }
+}
 
 internal const val CURRENT_ID = "current"
 internal val basTier = Tier(

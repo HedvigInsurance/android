@@ -34,7 +34,7 @@ internal class StartTierFlowViewModel(
     ),
   )
 
-private class StartTierChangePresenter(
+internal class StartTierChangePresenter(
   private val insuranceID: String,
   private val tierRepository: ChangeTierRepository,
 ) : MoleculePresenter<StartTierChangeEvent, StartTierChangeState> {
@@ -79,7 +79,7 @@ internal sealed interface StartTierChangeState {
   data object Loading : StartTierChangeState
 
   data class Success(
-    val paramsToNavigate: InsuranceCustomizationParameters?,
+    val paramsToNavigate: InsuranceCustomizationParameters,
   ) : StartTierChangeState
 
   data class Failure(val reason: FailureReason) : StartTierChangeState
