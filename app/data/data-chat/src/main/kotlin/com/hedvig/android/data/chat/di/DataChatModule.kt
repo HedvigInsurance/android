@@ -8,7 +8,6 @@ import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
-import com.hedvig.android.data.chat.database.TierQuoteDao
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 import org.koin.dsl.module
@@ -26,9 +25,6 @@ val dataChatModule = module {
   }
   single<ChatDao> {
     get<AppDatabase>().chatDao()
-  }
-  single<TierQuoteDao> {
-    get<AppDatabase>().tierQuoteDao()
   }
   single<RemoteKeyDao> {
     get<AppDatabase>().remoteKeyDao()

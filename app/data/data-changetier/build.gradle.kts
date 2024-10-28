@@ -11,20 +11,24 @@ android {
 }
 
 dependencies {
-
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreUiData)
+  implementation(projects.dataChat)
   implementation(projects.dataContractPublic)
-  implementation(projects.featureFlagsPublic)
-  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataProductVariantAndroid)
+  implementation(projects.dataProductVariantPublic)
+  implementation(projects.featureFlagsPublic)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.dataChat)
