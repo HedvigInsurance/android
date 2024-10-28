@@ -359,7 +359,7 @@ private fun EnterNewAddressValidationError.string(): String {
       }
     }
 
-    is InvalidSquareMeters -> "is InvalidSquareMeters:$this"
+    is InvalidSquareMeters -> stringResource(R.string.GENERAL_INVALID_INPUT)
   }
 }
 
