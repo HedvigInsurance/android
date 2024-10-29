@@ -81,8 +81,6 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.MissingOngoingMovingFlow
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.NoMatchingQuoteFound
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -127,13 +125,7 @@ private fun SummaryScreen(
   ) {
     when (uiState) {
       Loading -> HedvigFullScreenCenterAlignedProgress()
-      MissingOngoingMovingFlow -> HedvigErrorSection(
-        onButtonClick = navigateBack,
-        subTitle = null,
-        buttonText = stringResource(R.string.general_back_button),
-      )
-
-      NoMatchingQuoteFound -> HedvigErrorSection(
+      SummaryUiState.Error -> HedvigErrorSection(
         onButtonClick = navigateBack,
         subTitle = null,
         buttonText = stringResource(R.string.general_back_button),

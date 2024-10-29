@@ -21,8 +21,8 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubm
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.MissingOngoingMovingFlow
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.NoMatchingQuoteFound
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -72,11 +72,13 @@ internal class SummaryPresenter(
       movingFlowRepository.movingFlowState().collect { movingFlowState ->
         val movingFlowQuotes = movingFlowState?.movingFlowQuotes
         if (movingFlowQuotes == null) {
-          summaryInfo = SummaryInfoState.MissingOngoingMovingFlow
+          logcat(LogPriority.ERROR) { "In moving flow summary, no moving flow quotes found." }
+          summaryInfo = SummaryInfoState.Error.MissingOngoingMovingFlow
         } else {
           val matchingMoveHomeQuote = movingFlowQuotes.homeQuotes.firstOrNull { it.id == summaryRoute.homeQuoteId }
           if (matchingMoveHomeQuote == null) {
-            summaryInfo = SummaryInfoState.NoMatchingQuoteFound
+            logcat(LogPriority.ERROR) { "In moving flow summary, no matching move home quote found." }
+            summaryInfo = SummaryInfoState.Error.NoMatchingQuoteFound
             return@collect
           }
           val moveMtaQuotes = movingFlowQuotes.mtaQuotes
@@ -124,8 +126,8 @@ internal class SummaryPresenter(
 
     return when (val summaryInfoValue = summaryInfo) {
       SummaryInfoState.Loading -> Loading
-      SummaryInfoState.MissingOngoingMovingFlow -> MissingOngoingMovingFlow
-      SummaryInfoState.NoMatchingQuoteFound -> NoMatchingQuoteFound
+      SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
+      SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
       is SummaryInfoState.Content -> Content(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = false,
@@ -139,9 +141,11 @@ internal class SummaryPresenter(
 private sealed interface SummaryInfoState {
   data object Loading : SummaryInfoState
 
-  data object MissingOngoingMovingFlow : SummaryInfoState
+  sealed interface Error : SummaryInfoState {
+    data object MissingOngoingMovingFlow : Error
 
-  data object NoMatchingQuoteFound : SummaryInfoState
+    data object NoMatchingQuoteFound : Error
+  }
 
   data class Content(val summaryInfo: SummaryInfo) : SummaryInfoState
 }
@@ -149,9 +153,7 @@ private sealed interface SummaryInfoState {
 internal sealed interface SummaryUiState {
   data object Loading : SummaryUiState
 
-  data object MissingOngoingMovingFlow : SummaryUiState
-
-  data object NoMatchingQuoteFound : SummaryUiState
+  data object Error : SummaryUiState
 
   data class Content(
     val summaryInfo: SummaryInfo,
