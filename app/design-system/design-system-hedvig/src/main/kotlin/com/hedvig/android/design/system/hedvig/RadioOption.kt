@@ -168,10 +168,7 @@ fun RadioOptionRightAligned(
     size = size,
     optionContent = { radioButtonIcon ->
       HorizontalItemsWithMaximumSpaceTaken(
-        modifier = Modifier.padding(size.contentPadding),
-        startSlot = {
-          optionContent()
-        },
+        startSlot = { optionContent() },
         endSlot = {
           Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
             radioButtonIcon()
