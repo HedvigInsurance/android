@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
+import arrow.core.mapNotNull
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
@@ -82,18 +83,20 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
         }
         val uniqueCoverageOptions = homeQuotes
           .groupBy { it.tierName }
-          .map { (_, moveHomeQuotes) ->
-            moveHomeQuotes.minByOrNull { it.premium.amount }
-          }
-          .filterNotNull()
-          .map { moveHomeQuote ->
+          .mapNotNull { (_, moveHomeQuotes) ->
+            val alreadySelectedCoverage = moveHomeQuotes.firstOrNull { it.id == initiallySelectedHomeQuote?.id }
+            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.premium.amount }
+            val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
+            if (moveHomeQuote == null) return@mapNotNull null
             CoverageInfo(
               moveHomeQuote.id,
               moveHomeQuote.tierDisplayName,
               moveHomeQuote.tierDescription,
-              moveHomeQuote.premium,
+              minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
             )
           }
+          .values
+          .toList()
         val selectedCoverage = initiallySelectedHomeQuote ?: homeQuotes.first()
         tiersInfo = TiersInfo(
           allOptions = homeQuotes,
@@ -138,7 +141,7 @@ data class CoverageInfo(
   val moveHomeQuoteId: String,
   val tierName: String,
   val tierDescription: String?,
-  val premium: UiMoney,
+  val minimumPremiumForCoverage: UiMoney,
 )
 
 internal data class TiersInfo(

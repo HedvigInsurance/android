@@ -298,7 +298,7 @@ private fun CoverageChoiceDialogContent(
     radioOptions = coverageOptions.map {
       RadioOptionCoverageInfo(
         it.tierName,
-        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.premium.toString()),
+        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.minimumPremiumForCoverage.toString()),
         it.tierDescription,
       )
     },
@@ -443,7 +443,7 @@ fun PreviewCoverageChoiceDialogContent() {
         tierName = "tierName#$it",
         moveHomeQuoteId = "moveHomeQuoteId#$it",
         tierDescription = "tierDescription#$it".repeat(5),
-        premium = UiMoney(
+        minimumPremiumForCoverage = UiMoney(
           amount = it.toDouble(),
           currencyCode = SEK,
         ),
