@@ -367,32 +367,36 @@ private fun CommonChoiceDialogContent(
           onClick = {
             chosenItemIndex = index
           },
-          optionContent = {
-            Column {
-              HorizontalItemsWithMaximumSpaceTaken(
-                startSlot = {
-                  HedvigText(
-                    text = option.title,
-                    modifier = Modifier.wrapContentSize(Alignment.CenterStart),
-                  )
-                },
-                endSlot = {
-                  HighlightLabel(
-                    labelText = option.premiumLabel,
-                    size = HighLightSize.Small,
-                    color = HighlightColor.Grey(MEDIUM),
-                    modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-                  )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                spaceBetween = 8.dp,
-              )
-              if (option.description != null) {
-                HedvigText(
-                  text = option.description,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                  style = HedvigTheme.typography.label,
+          optionContent = { radioButtonIcon ->
+            Row {
+              radioButtonIcon()
+              Spacer(Modifier.width(8.dp))
+              Column(Modifier.weight(1f)) {
+                HorizontalItemsWithMaximumSpaceTaken(
+                  startSlot = {
+                    HedvigText(
+                      text = option.title,
+                      modifier = Modifier.wrapContentSize(Alignment.CenterStart),
+                    )
+                  },
+                  endSlot = {
+                    HighlightLabel(
+                      labelText = option.premiumLabel,
+                      size = HighLightSize.Small,
+                      color = HighlightColor.Grey(MEDIUM),
+                      modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+                    )
+                  },
+                  modifier = Modifier.fillMaxWidth(),
+                  spaceBetween = 8.dp,
                 )
+                if (option.description != null) {
+                  HedvigText(
+                    text = option.description,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                    style = HedvigTheme.typography.label,
+                  )
+                }
               }
             }
           },
