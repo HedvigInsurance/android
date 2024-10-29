@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
@@ -79,6 +80,7 @@ fun HedvigTextField(
     enabled = enabled,
     isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
   )
+  val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
     value = text,
     onValueChange = onValueChange,
@@ -103,7 +105,7 @@ fun HedvigTextField(
         { ReadOnlyTrailingIcon(trailingIconColor) }
       }
 
-      text.isNotEmpty() -> {
+      isFocused && text.isNotEmpty() -> {
         {
           IsNotEmptyTrailingIcon(
             trailingIconColor,
