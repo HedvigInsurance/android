@@ -51,6 +51,7 @@ import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialogError
@@ -157,6 +158,17 @@ private fun SummaryScreen(
   onDismissSubmissionError: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
+  if (showConfirmChangesDialog) {
+    HedvigAlertDialog(
+      title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
+      onDismissRequest = { showConfirmChangesDialog = false },
+      onConfirmClick = onConfirmChanges,
+      confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
+      dismissButtonLabel = stringResource(R.string.general_cancel_button),
+      subtitle = null,
+    )
+  }
   if (content.submitError != null) {
     HedvigDialogError(
       titleText = stringResource(R.string.something_went_wrong),
@@ -204,7 +216,7 @@ private fun SummaryScreen(
     HedvigButton(
       text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       enabled = !content.shouldDisableInput,
-      onClick = onConfirmChanges,
+      onClick = { showConfirmChangesDialog = true },
       isLoading = content.isSubmitting,
       modifier = Modifier.fillMaxWidth(),
     )
