@@ -38,7 +38,7 @@ internal data class MovingFlowState(
   val movingFlowQuotes: MovingFlowQuotes?,
   // If in the flow there was a quote selected once, we persist that selection so that it's pre-selected when going
   //  back to that step again
-  val selectedHomeQuoteId: String?,
+  val lastSelectedHomeQuoteId: String?,
 ) {
   @Serializable
   data class AddressInfo(
@@ -217,7 +217,7 @@ internal fun MovingFlowState.Companion.fromFragments(
     ),
     propertyState = propertyState,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
-    selectedHomeQuoteId = null,
+    lastSelectedHomeQuoteId = null,
   )
 }
 

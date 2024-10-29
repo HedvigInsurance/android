@@ -115,7 +115,7 @@ internal class MovingFlowRepository(
   suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
-        selectedHomeQuoteId = selectedHomeQuoteId,
+        lastSelectedHomeQuoteId = selectedHomeQuoteId,
       )
     }
   }

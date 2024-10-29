@@ -90,7 +90,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           return@collectLatest
         }
         val initiallySelectedHomeQuote = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
-          val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.selectedHomeQuoteId
+          val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.lastSelectedHomeQuoteId
           if (wasPreviouslySelectedInTheFlow || moveHomeQuote.defaultChoice) moveHomeQuote else null
         }
         val uniqueCoverageOptions = homeQuotes
