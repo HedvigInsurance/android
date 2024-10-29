@@ -236,7 +236,7 @@ private fun CoverageCard(
                 items = deductibleOptions.deductibleOptions.map { coverageInfo ->
                   SimpleDropdownItem(coverageInfo.deductible.amount.toString())
                 },
-                label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+                label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
               ),
               size = Small,
               hintText = tiersInfo.selectedDeductible?.tierDisplayName
