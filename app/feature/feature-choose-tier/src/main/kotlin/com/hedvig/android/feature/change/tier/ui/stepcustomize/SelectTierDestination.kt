@@ -338,7 +338,6 @@ private fun CustomizationCard(
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
-        containerColor = HedvigTheme.colorScheme.fillNegative,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
@@ -394,7 +393,6 @@ private fun CustomizationCard(
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
-          containerColor = HedvigTheme.colorScheme.fillNegative,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {
