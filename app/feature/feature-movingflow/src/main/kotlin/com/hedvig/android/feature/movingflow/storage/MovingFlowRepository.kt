@@ -111,4 +111,12 @@ internal class MovingFlowRepository(
       existingState.copy(movingFlowQuotes = moveIntentQuotesFragment.toMovingFlowQuotes())
     }
   }
+
+  suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {
+    movingFlowStorage.editMovingFlowState { existingState ->
+      existingState.copy(
+        selectedHomeQuoteId = selectedHomeQuoteId,
+      )
+    }
+  }
 }

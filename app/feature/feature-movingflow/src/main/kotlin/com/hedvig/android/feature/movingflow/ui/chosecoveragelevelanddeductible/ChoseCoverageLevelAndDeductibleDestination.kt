@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,10 +76,18 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
   onNavigateToSummaryScreen: (homeQuoteId: String) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+  if (uiState is Content && uiState.navigateToSummaryScreenWithHomeQuoteId != null) {
+    LaunchedEffect(uiState.navigateToSummaryScreenWithHomeQuoteId) {
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.NavigatedToSummary)
+      onNavigateToSummaryScreen(uiState.navigateToSummaryScreenWithHomeQuoteId)
+    }
+  }
   ChoseCoverageLevelAndDeductibleScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    onSubmit = { selectedHomeQuoteId -> onNavigateToSummaryScreen(selectedHomeQuoteId) },
+    onSubmit = { selectedHomeQuoteId ->
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId(selectedHomeQuoteId))
+    },
     onSelectCoverageOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectCoverage(it)) },
     onSelectDeductibleOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectDeductible(it)) },
   )
@@ -147,6 +156,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
           HedvigTextButton(
             text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
             modifier = Modifier.fillMaxWidth(),
+            buttonSize = Large,
           ) {
             // onCompareCoverageClicked()
           }
@@ -157,6 +167,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
           onClick = dropUnlessResumed {
             onSubmit?.invoke()
           },
+          isLoading = content.isSubmitting,
           enabled = onSubmit != null && content.canSubmit,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -519,6 +530,8 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         selectedCoverage = allOptions[0],
         selectedDeductible = allOptions[0],
       ),
+      navigateToSummaryScreenWithHomeQuoteId = null,
+      isSubmitting = false,
     ),
     navigateUp = {},
     onSubmit = {},

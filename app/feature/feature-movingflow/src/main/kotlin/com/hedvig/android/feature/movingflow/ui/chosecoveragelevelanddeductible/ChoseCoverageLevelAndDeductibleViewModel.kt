@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
@@ -15,8 +16,10 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.NavigatedToSummary
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectCoverage
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectDeductible
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
@@ -44,6 +47,8 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
         (lastState as? ChoseCoverageLevelAndDeductibleUiState.Content)?.tiersInfo?.some() ?: None,
       )
     }
+    var submittingSelectedHomeQuoteId: String? by remember { mutableStateOf(null) }
+    var navigateToSummaryScreenWithHomeQuoteId: String? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -64,6 +69,12 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
             currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId } ?: return@CollectEvents
           tiersInfo = currentContent.copy(selectedDeductible = newSelectedDeductible).some()
         }
+
+        is SubmitSelectedHomeQuoteId -> {
+          submittingSelectedHomeQuoteId = event.homeQuoteId
+        }
+
+        NavigatedToSummary -> navigateToSummaryScreenWithHomeQuoteId = null
       }
     }
 
@@ -79,7 +90,8 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           return@collectLatest
         }
         val initiallySelectedHomeQuote = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
-          if (moveHomeQuote.defaultChoice) moveHomeQuote else null
+          val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.selectedHomeQuoteId
+          if (wasPreviouslySelectedInTheFlow || moveHomeQuote.defaultChoice) moveHomeQuote else null
         }
         val uniqueCoverageOptions = homeQuotes
           .groupBy { it.tierName }
@@ -107,12 +119,25 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
       }
     }
 
+    LaunchedEffect(submittingSelectedHomeQuoteId) {
+      val submittingSelectedHomeQuoteIdValue = submittingSelectedHomeQuoteId ?: return@LaunchedEffect
+      movingFlowRepository.updatePreselectedHomeQuoteId(submittingSelectedHomeQuoteIdValue)
+      Snapshot.withMutableSnapshot {
+        submittingSelectedHomeQuoteId = null
+        navigateToSummaryScreenWithHomeQuoteId = submittingSelectedHomeQuoteIdValue
+      }
+    }
+
     return when (val tiersInfoValue = tiersInfo) {
       None -> ChoseCoverageLevelAndDeductibleUiState.Loading
       is Some -> {
         when (val state = tiersInfoValue.value) {
           null -> ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
-          else -> ChoseCoverageLevelAndDeductibleUiState.Content(state)
+          else -> ChoseCoverageLevelAndDeductibleUiState.Content(
+            tiersInfo = state,
+            navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
+            isSubmitting = submittingSelectedHomeQuoteId != null,
+          )
         }
       }
     }
@@ -123,6 +148,10 @@ sealed interface ChoseCoverageLevelAndDeductibleEvent {
   data class SelectCoverage(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
 
   data class SelectDeductible(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
+
+  data class SubmitSelectedHomeQuoteId(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
+
+  data object NavigatedToSummary : ChoseCoverageLevelAndDeductibleEvent
 }
 
 internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
@@ -132,8 +161,10 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
 
   data class Content(
     val tiersInfo: TiersInfo,
+    val navigateToSummaryScreenWithHomeQuoteId: String?,
+    val isSubmitting: Boolean,
   ) : ChoseCoverageLevelAndDeductibleUiState {
-    val canSubmit = tiersInfo.selectedHomeQuoteId != null
+    val canSubmit = tiersInfo.selectedHomeQuoteId != null && !isSubmitting
   }
 }
 
