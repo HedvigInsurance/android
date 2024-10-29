@@ -209,7 +209,7 @@ private fun CoverageCard(
             label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           ),
           size = Small,
-          hintText = tiersInfo.selectedCoverage.tierName,
+          hintText = tiersInfo.selectedCoverage.tierDisplayName,
           chosenItemIndex = chosenCoverageItemIndex,
           applyDefaultDialogPadding = false,
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
@@ -239,7 +239,7 @@ private fun CoverageCard(
                 label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
               ),
               size = Small,
-              hintText = tiersInfo.selectedDeductible?.tierName
+              hintText = tiersInfo.selectedDeductible?.tierDisplayName
                 ?: stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
               chosenItemIndex = chosenDeductibleItemIndex,
               applyDefaultDialogPadding = false,

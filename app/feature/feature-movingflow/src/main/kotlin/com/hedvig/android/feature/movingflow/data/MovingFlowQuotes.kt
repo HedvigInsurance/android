@@ -39,6 +39,8 @@ internal data class MovingFlowQuotes(
     val deductible: Deductible?,
     val defaultChoice: Boolean,
   ) : Quote {
+    val tierDisplayName = productVariant.displayTierName ?: tierName
+
     @Serializable
     data class Deductible(
       val amount: UiMoney,
