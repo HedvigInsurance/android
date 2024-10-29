@@ -347,15 +347,14 @@ private fun CommonChoiceDialogContent(
   onDismissRequest: () -> Unit,
 ) {
   var chosenItemIndex by remember { mutableStateOf(initiallyChosenItemIndex) }
-  Column(Modifier.padding(horizontal = 16.dp)) {
-    Spacer(Modifier.height(16.dp))
+  Column(Modifier.padding(16.dp)) {
     HedvigText(
       text = firstText,
-      style = HedvigTheme.typography.bodyMedium,
+      style = HedvigTheme.typography.bodySmall,
     )
     HedvigText(
       text = secondText,
-      style = HedvigTheme.typography.bodyMedium,
+      style = HedvigTheme.typography.bodySmall,
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(12.dp))
@@ -426,7 +425,6 @@ private fun CommonChoiceDialogContent(
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
   }
 }
 
