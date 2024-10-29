@@ -137,7 +137,7 @@ private fun ProfileScreen(
       title = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
       onDismissRequest = { showLogoutDialog = false },
       onConfirmClick = onLogout,
-      text = null,
+      subtitle = null,
       confirmButtonLabel = stringResource(R.string.GENERAL_YES),
       dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
     )
