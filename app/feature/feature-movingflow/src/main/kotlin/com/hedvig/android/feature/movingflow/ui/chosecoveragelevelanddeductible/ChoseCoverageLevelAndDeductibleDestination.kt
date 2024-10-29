@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -211,6 +212,7 @@ private fun CoverageCard(
           hintText = tiersInfo.selectedCoverage.tierName,
           chosenItemIndex = chosenCoverageItemIndex,
           applyDefaultDialogPadding = false,
+          dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) { onDismissRequest ->
           CoverageChoiceDialogContent(
             coverageOptions = tiersInfo.coverageOptions,
@@ -241,6 +243,7 @@ private fun CoverageCard(
                 ?: stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
               chosenItemIndex = chosenDeductibleItemIndex,
               applyDefaultDialogPadding = false,
+              dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) { onDismissRequest ->
               DeductibleChoiceDialogContent(
                 deductibleOptions = deductibleOptions.deductibleOptions,
