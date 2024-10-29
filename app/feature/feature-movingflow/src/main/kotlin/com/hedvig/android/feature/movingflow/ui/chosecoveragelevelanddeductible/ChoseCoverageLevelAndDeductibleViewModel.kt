@@ -89,9 +89,15 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           tiersInfo = null.some()
           return@collectLatest
         }
-        val initiallySelectedHomeQuote = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
-          val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.lastSelectedHomeQuoteId
-          if (wasPreviouslySelectedInTheFlow || moveHomeQuote.defaultChoice) moveHomeQuote else null
+        val initiallySelectedHomeQuote = run {
+          val previouslySelected = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
+            val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.lastSelectedHomeQuoteId
+            if (wasPreviouslySelectedInTheFlow) moveHomeQuote else null
+          }
+          if (previouslySelected != null) return@run previouslySelected
+          homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
+            if (moveHomeQuote.defaultChoice) moveHomeQuote else null
+          }
         }
         val uniqueCoverageOptions = homeQuotes
           .groupBy { it.tierName }
