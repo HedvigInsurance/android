@@ -82,7 +82,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         deductible = houseQuote.deductible?.let { deductible ->
           Deductible(
             amount = UiMoney.fromMoneyFragment(deductible.amount),
-            percentage = deductible.percentage,
+            percentage = deductible.percentage.takeIf { it != 0 },
             displayText = deductible.displayText,
           )
         },

@@ -320,7 +320,13 @@ private fun DeductibleChoiceDialogContent(
     secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
     radioOptions = deductibleOptions.map {
       RadioOptionCoverageInfo(
-        it.deductible.amount.toString(),
+        buildString {
+          append(it.deductible.amount.toString())
+          val percentage = it.deductible.percentage
+          if (percentage != null) {
+            append(" + $percentage%")
+          }
+        },
         stringResource(R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, it.homeQuotePremium.toString()),
         null,
       )
@@ -457,7 +463,7 @@ fun PreviewDeductibleChoiceDialogContent() {
       DeductibleOption(
         homeQuoteId = it.toString(),
         homeQuotePremium = UiMoney(it.toDouble(), SEK),
-        deductible = Deductible(UiMoney(it.toDouble(), SEK), null, "Display text#$it"),
+        deductible = Deductible(UiMoney(it.toDouble(), SEK), 15, "Display text#$it"),
       )
     },
     initiallyChosenItemIndex = null,
