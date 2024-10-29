@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
@@ -28,9 +29,9 @@ internal class StartViewModel(
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<StartEvent, StartUiState>(
-    StartUiState.Content(HousingType.entries, HousingType.entries.first(), null, null),
-    StartPresenter(apolloClient, movingFlowRepository),
-  )
+  StartUiState.Content(HousingType.entries, HousingType.entries.first(), null, null),
+  StartPresenter(apolloClient, movingFlowRepository),
+)
 
 private class StartPresenter(
   private val apolloClient: ApolloClient,
@@ -78,19 +79,29 @@ private class StartPresenter(
           moveIntent.id
         }.fold(
           ifLeft = {
-            error = it
+            Snapshot.withMutableSnapshot {
+              error = it
+              submittingHousingType = null
+            }
           },
           ifRight = { id ->
-            moveIntentId = id
+            Snapshot.withMutableSnapshot {
+              moveIntentId = id
+              submittingHousingType = null
+            }
           },
         )
-        submittingHousingType = null
       }
     }
     error?.let { error ->
       return error
     }
-    return StartUiState.Content(HousingType.entries, selectedHousingType, submittingHousingType, moveIntentId)
+    return StartUiState.Content(
+      possibleHousingTypes = HousingType.entries,
+      selectedHousingType = selectedHousingType,
+      submittingHousingType = submittingHousingType,
+      initiatedMovingFlowId = moveIntentId,
+    )
   }
 }
 
@@ -116,5 +127,7 @@ internal sealed interface StartUiState {
     val selectedHousingType: HousingType,
     val submittingHousingType: HousingType?,
     val initiatedMovingFlowId: String?,
-  ) : StartUiState
+  ) : StartUiState {
+    val isLoading: Boolean = submittingHousingType != null || initiatedMovingFlowId != null
+  }
 }

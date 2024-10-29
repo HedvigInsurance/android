@@ -77,7 +77,7 @@ private fun StartScreen(
             is GenericError -> stringResource(R.string.GENERAL_ERROR_BODY)
             is UserPresentable -> null
           },
-          modifier = Modifier.weight(1f)
+          modifier = Modifier.weight(1f),
         )
       }
 
@@ -131,7 +131,8 @@ private fun StartScreen(
     HedvigButton(
       text = stringResource(R.string.general_continue_button),
       onClick = onSubmitHousingType,
-      enabled = uiState.submittingHousingType == null,
+      enabled = !uiState.isLoading,
+      isLoading = uiState.isLoading,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
