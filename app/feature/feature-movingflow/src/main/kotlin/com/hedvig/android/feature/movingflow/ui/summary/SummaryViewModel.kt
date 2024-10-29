@@ -130,7 +130,7 @@ internal class SummaryPresenter(
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
       is SummaryInfoState.Content -> Content(
         summaryInfo = summaryInfoValue.summaryInfo,
-        isSubmitting = false,
+        isSubmitting = submittingChangesForDate != null,
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
       )
