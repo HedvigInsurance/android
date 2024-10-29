@@ -62,6 +62,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -211,11 +212,10 @@ private fun HelpCenterHomeScreen(
       }
     }
 
-    null -> {}
-
     is MultiSelectExpandedLink -> {
       HedvigDialog(
         applyDefaultPadding = false,
+        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
           onDismissQuickActionDialog()
         },
@@ -282,6 +282,8 @@ private fun HelpCenterHomeScreen(
         }
       }
     }
+
+    null -> {}
   }
   var searchQuery by remember {
     mutableStateOf<String?>(search?.searchQuery)
