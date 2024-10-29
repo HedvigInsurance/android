@@ -137,7 +137,8 @@ fun SingleSelectDialog(
 }
 
 @Composable
-fun MultiSelectDialog( // todo: not tested yet
+fun MultiSelectDialog(
+  // todo: not tested yet
   title: String,
   optionsList: List<RadioOptionData>,
   onSelected: (RadioOptionData) -> Unit,
@@ -188,7 +189,13 @@ fun HedvigDialog(
     Surface(
       shape = DialogDefaults.shape,
       color = DialogDefaults.containerColor,
-      modifier = modifier,
+      modifier = modifier.then(
+        if (dialogProperties.usePlatformDefaultWidth) {
+          Modifier
+        } else {
+          Modifier.padding(horizontal = 16.dp)
+        },
+      ),
     ) {
       val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
       Column(
@@ -310,6 +317,7 @@ object DialogDefaults {
           SMALL -> DialogTokens.SmallButtonsPadding
         }
       }
+
       NoButtons -> DialogTokens.NoButtonsPadding
     }
   }
