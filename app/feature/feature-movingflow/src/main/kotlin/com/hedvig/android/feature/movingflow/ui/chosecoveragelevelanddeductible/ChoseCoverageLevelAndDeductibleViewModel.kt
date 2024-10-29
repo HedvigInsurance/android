@@ -99,7 +99,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           allOptions = homeQuotes,
           coverageOptions = uniqueCoverageOptions,
           selectedCoverage = selectedCoverage,
-          selectedDeductible = null,
+          selectedDeductible = selectedCoverage,
         ).some()
       }
     }
