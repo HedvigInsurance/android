@@ -293,8 +293,8 @@ private fun CoverageChoiceDialogContent(
   onDismissRequest: () -> Unit,
 ) {
   CommonChoiceDialogContent(
-    firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-    secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
+    firstText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+    secondText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
     radioOptions = coverageOptions.map {
       RadioOptionCoverageInfo(
         it.tierName,
