@@ -321,7 +321,7 @@ private fun DeductibleChoiceDialogContent(
     radioOptions = deductibleOptions.map {
       RadioOptionCoverageInfo(
         it.deductible.amount.toString(),
-        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.homeQuotePremium.toString()),
+        stringResource(R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, it.homeQuotePremium.toString()),
         null,
       )
     },
