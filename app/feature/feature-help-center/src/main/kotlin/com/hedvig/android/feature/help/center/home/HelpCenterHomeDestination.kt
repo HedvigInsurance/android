@@ -205,8 +205,10 @@ private fun HelpCenterHomeScreen(
     }
 
     is StandaloneQuickLink -> {
-      onDismissQuickActionDialog()
-      onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+      LaunchedEffect(Unit) {
+        onDismissQuickActionDialog()
+        onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+      }
     }
 
     null -> {}
