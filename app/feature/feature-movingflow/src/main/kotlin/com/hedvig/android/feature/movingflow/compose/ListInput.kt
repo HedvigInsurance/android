@@ -8,6 +8,8 @@ import androidx.compose.runtime.snapshots.Snapshot
 internal interface ListInput<T> {
   val value: List<T>
 
+  fun removeItem(item: T)
+
   fun updateValue(newValue: List<T>)
 }
 
@@ -20,6 +22,10 @@ private class ListInputImpl<T>(initialList: List<T>) : ListInput<T> {
 
   override val value: List<T>
     get() = _value
+
+  override fun removeItem(item: T) {
+    _value.remove(item)
+  }
 
   override fun updateValue(newValue: List<T>) {
     Snapshot.withMutableSnapshot {
