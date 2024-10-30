@@ -48,17 +48,27 @@ private class BankIdStateImpl(
   }
 
   fun initialize() {
-    canOpenBankId = context.canOpenUri(bankIdUri).also {
+    canOpenBankId = context.canBankIdAppHandleUri(bankIdUri).also {
       logcat { "Trying to resolve BankID app with bankIdUri:$bankIdUri | result: canOpenBankId=$it" }
     }
   }
 
   @SuppressLint("QueryPermissionsNeeded")
-  private fun Context.canOpenUri(uri: Uri): Boolean {
+  private fun Context.canBankIdAppHandleUri(uri: Uri): Boolean {
     val resolvedActivity = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager)
     if (resolvedActivity == null) {
-      logcat(LogPriority.ERROR) { "Could not resolve BankID app with bankIdUri:$uri" }
+      logcat(LogPriority.ERROR) {
+        "Could not resolve BankID app with bankIdUri:$uri + resolvedActivity:$resolvedActivity"
+      }
+      return false
     }
-    return resolvedActivity != null
+    val resolvedActivityPackageName = resolvedActivity.packageName
+    if (resolvedActivityPackageName != BankIdAppPackageName) {
+      logcat(LogPriority.WARN) { "Package $resolvedActivityPackageName tried to open BankID uri:$uri" }
+      return false
+    }
+    return true
   }
 }
+
+private const val BankIdAppPackageName = "com.bankid.bus"
