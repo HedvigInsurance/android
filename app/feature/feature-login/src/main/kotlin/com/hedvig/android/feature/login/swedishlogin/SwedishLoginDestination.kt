@@ -95,7 +95,7 @@ private fun SwedishLoginScreen(
     if (showStartDemoDialog) {
       HedvigAlertDialog(
         title = "${stringResource(R.string.DEMO_MODE_START)}?",
-        text = null,
+        subtitle = null,
         onDismissRequest = { showStartDemoDialog = false },
         onConfirmClick = enterDemoMode,
       )
@@ -212,11 +212,11 @@ private fun SwedishLoginScreen(
         }
         HedvigTextButton(
           text = stringResource(R.string.bankid_missing_login_email_button),
-          onClick = loginWithEmail,
-          buttonSize = ButtonDefaults.ButtonSize.Large,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
+          buttonSize = ButtonDefaults.ButtonSize.Large,
+          onClick = loginWithEmail,
         )
         Spacer(Modifier.height(16.dp))
       }

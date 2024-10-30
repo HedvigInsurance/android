@@ -49,6 +49,8 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
+import com.hedvig.android.feature.movingflow.MovingFlowGraphDestination
+import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -99,6 +101,10 @@ internal fun HedvigNavHost(
     }
   }
 
+  fun navigateToNewConversation(builder: (NavOptionsBuilder.() -> Unit)? = null) {
+    hedvigAppState.navController.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
+  }
+
   fun navigateToNewConversation(backStackEntry: NavBackStackEntry, builder: (NavOptionsBuilder.() -> Unit)? = null) {
     with(navigator) {
       backStackEntry.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
@@ -108,6 +114,15 @@ internal fun HedvigNavHost(
   val navigateToConversation = { backStackEntry: NavBackStackEntry, conversationId: String ->
     with(navigator) {
       backStackEntry.navigate(ChatDestinations.Chat(conversationId))
+    }
+  }
+
+  fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
+    val movingFlowV2Enabled = hedvigAppState.movingFlowV2Enabled.value
+    if (movingFlowV2Enabled) {
+      hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
+    } else {
+      hedvigAppState.navController.navigate(AppDestination.ChangeAddress, navOptions)
     }
   }
 
@@ -188,14 +203,10 @@ internal fun HedvigNavHost(
           navigateToInsurances = { navOptionsBuilder ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptionsBuilder)
           },
-          navigateToMovingFlow = { backStackEntry ->
-            with(navigator) {
-              backStackEntry.navigate(
-                destination = AppDestination.ChangeAddress,
-              ) {
-                typedPopUpTo<TerminateInsuranceGraphDestination> {
-                  inclusive = true
-                }
+          navigateToMovingFlow = {
+            navigateToMovingFlow {
+              typedPopUpTo<TerminateInsuranceGraphDestination> {
+                inclusive = true
               }
             }
           },
@@ -236,11 +247,7 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = { backStackEntry ->
         navigateToNewConversation(backStackEntry)
       },
-      startMovingFlow = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.ChangeAddress)
-        }
-      },
+      startMovingFlow = ::navigateToMovingFlow,
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
           backStackEntry.navigate(
@@ -317,6 +324,15 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
     )
+    changeTierGraph(
+      navigator = navigator,
+      navController = hedvigAppState.navController,
+      applicationId = hedvigBuildConstants.appId,
+    )
+    movingFlowGraph(
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { navigateToNewConversation() },
+    )
     connectPaymentGraph(
       navigator = navigator,
       market = market,
@@ -326,9 +342,12 @@ internal fun HedvigNavHost(
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
-      onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+      onNavigateToQuickLink = onNavigateToQuickLink@{ backStackEntry, quickLinkDestination ->
         val destination: Destination = when (quickLinkDestination) {
-          QuickLinkChangeAddress -> ChangeAddress
+          QuickLinkChangeAddress -> {
+            navigateToMovingFlow()
+            return@onNavigateToQuickLink
+          }
           is QuickLinkCoInsuredAddInfo ->
             CoInsuredAddInfo(quickLinkDestination.contractId)
 

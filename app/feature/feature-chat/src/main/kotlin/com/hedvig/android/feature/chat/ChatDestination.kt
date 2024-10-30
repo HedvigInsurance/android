@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -113,7 +112,6 @@ private fun ChatScreen(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Column {
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }

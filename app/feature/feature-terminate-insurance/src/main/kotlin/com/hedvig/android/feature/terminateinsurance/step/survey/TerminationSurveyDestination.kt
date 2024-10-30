@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -263,7 +264,7 @@ private fun TerminationSurveyScreen(
                   val buttonText = suggestion.buttonTitle
                   val onSuggestionButtonClick: () -> Unit = when (suggestion) {
                     is UpdateAddress -> {
-                      { navigateToMovingFlow() }
+                      dropUnlessResumed { navigateToMovingFlow() }
                     }
 
                     is Redirect -> {

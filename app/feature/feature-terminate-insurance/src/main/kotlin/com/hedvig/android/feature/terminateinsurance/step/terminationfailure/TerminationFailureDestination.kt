@@ -66,10 +66,10 @@ private fun TerminationFailureScreen(
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        modifier = Modifier.fillMaxSize(),
         text = stringResource(R.string.general_done_button),
-        onClick = navigateBack,
+        modifier = Modifier.fillMaxSize(),
         buttonSize = Large,
+        onClick = navigateBack,
       )
     }
   }

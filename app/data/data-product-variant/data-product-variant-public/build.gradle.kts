@@ -6,6 +6,6 @@ plugins {
 }
 
 dependencies {
+  api(projects.dataContractPublic)
   implementation(libs.kotlinx.serialization.core)
-  implementation(projects.dataContractPublic)
 }

@@ -97,8 +97,8 @@ fun FirstVetScreen(
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTextButton(
         text = stringResource(R.string.general_close_button),
-        onClick = navigateBack,
         modifier = Modifier.padding(horizontal = 16.dp),
+        onClick = navigateBack,
       )
       Spacer(modifier = Modifier.height(16.dp))
     }

@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -200,7 +200,7 @@ private fun NavigationItem(
   modifier: Modifier = Modifier,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  var itemWidthPx by remember { mutableStateOf(0) }
+  var itemWidthPx by remember { mutableIntStateOf(0) }
   val deltaOffset: Offset = with(LocalDensity.current) {
     val indicatorWidth = NavigationTokens.IndicatorWidth.toPx()
     Offset((itemWidthPx - indicatorWidth).toFloat() / 2, itemPaddings.calculateTopPadding().toPx())

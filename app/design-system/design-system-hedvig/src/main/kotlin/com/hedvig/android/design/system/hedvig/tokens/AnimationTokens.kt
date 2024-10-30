@@ -1,8 +1,8 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
-internal class AnimationTokens {
-  val fastAnimationDuration: Int = 200
-  val pulsatingAnimationDuration: Int = 200
-  val pulsatingAnimationDurationExit: Int = 800
-  val errorPulsatingDuration: Int = 400
+internal object AnimationTokens {
+  const val fastAnimationDuration: Int = 200
+  const val pulsatingAnimationDuration: Int = 200
+  const val pulsatingAnimationDurationExit: Int = 800
+  const val errorPulsatingDuration: Int = 400
 }

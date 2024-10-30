@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import com.hedvig.android.data.chat.database.converter.InstantConverter
-import com.hedvig.android.data.chat.database.converter.TierQuoteTypeConverter
 import com.hedvig.android.data.chat.database.converter.UuidConverter
 
 @Database(

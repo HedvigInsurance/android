@@ -148,7 +148,7 @@ private fun SubmitBugWarningDialog(memberId: String?, appVersionName: String, on
   )
   HedvigAlertDialog(
     title = stringResource(id = R.string.app_info_submit_bug_warning),
-    text = null,
+    subtitle = null,
     onDismissRequest = onDismissRequest,
     onConfirmClick = {
       openEmailClientWithPrefilledData(
