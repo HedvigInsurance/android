@@ -88,6 +88,7 @@ object HedvigDateTimeFormatterDefaults {
 /**
  * Example output: "2021.07.01"
  */
+@SuppressLint("NewApi")
 private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
   .appendLiteral('.')
@@ -98,6 +99,7 @@ private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBu
 /**
  * Example output: "12:34"
  */
+@SuppressLint("NewApi")
 private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.HOUR_OF_DAY, 2)
   .appendLiteral(':')
@@ -106,6 +108,7 @@ private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
 /**
  * Example output: "Fri 12:34"
  */
+@SuppressLint("NewApi")
 private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("EEE")
   .appendLiteral(' ')
@@ -116,6 +119,7 @@ private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBui
 /**
  * Example output: "Nov 11 9:04"
  */
+@SuppressLint("NewApi")
 private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("MMM")
   .appendLiteral(' ')
@@ -128,6 +132,7 @@ private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilde
 /**
  * Example output: "11 Nov 2024"
  */
+@SuppressLint("NewApi")
 private val dateMonthAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.DAY_OF_MONTH, 2)
   .appendLiteral(' ')
@@ -138,6 +143,7 @@ private val dateMonthAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilde
 /**
  * Example output: "Nov 11 2024"
  */
+@SuppressLint("NewApi")
 private val monthDateAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("MMM")
   .appendLiteral(' ')
@@ -148,6 +154,7 @@ private val monthDateAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilde
 /**
  * Example output: "2022 Nov 11 9:04"
  */
+@SuppressLint("NewApi")
 private val yearMonthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("yyyy")
   .appendLiteral(' ')
