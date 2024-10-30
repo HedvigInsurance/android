@@ -29,9 +29,9 @@ internal class StartViewModel(
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<StartEvent, StartUiState>(
-  StartUiState.Content(HousingType.entries, HousingType.entries.first(), null, null),
-  StartPresenter(apolloClient, movingFlowRepository),
-)
+    StartUiState.Content(HousingType.entries, HousingType.entries.first(), null, null),
+    StartPresenter(apolloClient, movingFlowRepository),
+  )
 
 private class StartPresenter(
   private val apolloClient: ApolloClient,

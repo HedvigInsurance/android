@@ -326,7 +326,7 @@ private fun DropdownSelector(
               modifier = Modifier
                 .size(DropdownTokens.ChevronSize)
                 .graphicsLayer {
-                    rotationZ = fullRotation
+                  rotationZ = fullRotation
                 },
             ) {
               val icon = when (isEnabled) {
