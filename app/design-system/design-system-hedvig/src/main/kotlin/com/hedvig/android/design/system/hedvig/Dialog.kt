@@ -77,7 +77,10 @@ fun HedvigAlertDialog(
       confirmButtonText = confirmButtonLabel,
       dismissButtonText = dismissButtonLabel,
       onDismissRequest = onDismissRequest,
-      onConfirmButtonClick = onConfirmClick,
+      onConfirmButtonClick = {
+        onDismissRequest()
+        onConfirmClick()
+      },
       buttonSize = buttonSize,
     ),
     onDismissRequest = onDismissRequest,
