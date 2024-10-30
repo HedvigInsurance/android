@@ -1,0 +1,10 @@
+mutation MoveIntentV2Commit($intentId: ID!, $homeQuoteId: ID!) {
+  moveIntentCommit(intentId: $intentId, homeQuoteId: $homeQuoteId) {
+    moveIntent {
+      id
+    }
+    userError {
+      message
+    }
+  }
+}

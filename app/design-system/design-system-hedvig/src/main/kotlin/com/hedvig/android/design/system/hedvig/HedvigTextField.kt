@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
@@ -56,6 +57,7 @@ fun HedvigTextField(
   modifier: Modifier = Modifier,
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
@@ -78,6 +80,7 @@ fun HedvigTextField(
     enabled = enabled,
     isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
   )
+  val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
     value = text,
     onValueChange = onValueChange,
@@ -91,6 +94,9 @@ fun HedvigTextField(
     suffix = suffix,
     leadingContent = leadingContent,
     trailingContent = when {
+      trailingContent != null -> {
+        trailingContent
+      }
       errorState.isError -> {
         { ErrorTrailingIcon(trailingIconColor) }
       }
@@ -99,8 +105,17 @@ fun HedvigTextField(
         { ReadOnlyTrailingIcon(trailingIconColor) }
       }
 
-      text.isNotEmpty() -> {
-        { IsNotEmptyTrailingIcon(trailingIconColor, { onValueChange("") }) }
+      isFocused && text.isNotEmpty() -> {
+        {
+          IsNotEmptyTrailingIcon(
+            trailingIconColor,
+            {
+              if (enabled && !readOnly) {
+                onValueChange("")
+              }
+            },
+          )
+        }
       }
 
       else -> {
@@ -124,6 +139,9 @@ fun HedvigTextField(
   )
 }
 
+/**
+ * Similar to above, without an `ErrorState` parameter, and it allows a custom supportingText slot,
+ */
 @Composable
 fun HedvigTextField(
   text: String,

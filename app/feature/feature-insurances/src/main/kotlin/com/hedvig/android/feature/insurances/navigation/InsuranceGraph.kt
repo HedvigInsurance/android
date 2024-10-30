@@ -24,7 +24,7 @@ fun NavGraphBuilder.insuranceGraph(
   navigator: Navigator,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
-  startMovingFlow: (NavBackStackEntry) -> Unit,
+  startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, cancelInsuranceData: CancelInsuranceData) -> Unit,
   startEditCoInsured: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
@@ -54,7 +54,7 @@ fun NavGraphBuilder.insuranceGraph(
         navigateToCancelledInsurances = {
           with(navigator) { backStackEntry.navigate(InsurancesDestinations.TerminatedInsurances) }
         },
-        onNavigateToMovingFlow = { startMovingFlow(backStackEntry) },
+        onNavigateToMovingFlow = startMovingFlow,
         imageLoader = imageLoader,
       )
     }
@@ -69,7 +69,7 @@ fun NavGraphBuilder.insuranceGraph(
         viewModel = viewModel,
         onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },
         onMissingInfoClick = { contractId -> startEditCoInsuredAddMissingInfo(backStackEntry, contractId) },
-        onChangeAddressClick = { startMovingFlow(backStackEntry) },
+        onChangeAddressClick = startMovingFlow,
         onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           startTerminationFlow(
             backStackEntry,

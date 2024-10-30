@@ -1,7 +1,9 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,13 +42,23 @@ import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 
 @Composable
-fun HedvigCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
+fun HedvigCard(
+  modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
+  interactionSource: MutableInteractionSource? = null,
+  indication: Indication? = null,
+  content: @Composable () -> Unit,
+) {
   Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
       .then(
         if (onClick != null) {
-          Modifier.clickable(onClick = onClick)
+          Modifier.clickable(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            indication = indication,
+          )
         } else {
           Modifier
         },

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -96,7 +97,7 @@ internal fun EditInsuranceBottomSheetContent(
     HedvigContainedButton(
       text = stringResource(id = R.string.general_continue_button),
       enabled = selectedItemIndex > -1,
-      onClick = {
+      onClick = dropUnlessResumed {
         if (selectedItemIndex == 0) {
           onChangeAddressClick()
         } else if (selectedItemIndex == 1 && allowEditCoInsured) {

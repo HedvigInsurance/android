@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.change.tier.ui.stepcustomize
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -242,11 +242,11 @@ private fun SelectTierScreen(
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
-      buttonSize = Large,
+      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+      buttonSize = Large,
       onClick = {
         onCompareClick()
       },
@@ -315,7 +315,6 @@ private fun CustomizationCard(
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
-        containerColor = HedvigTheme.colorScheme.fillNegative,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
@@ -371,7 +370,6 @@ private fun CustomizationCard(
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
-          containerColor = HedvigTheme.colorScheme.fillNegative,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {
@@ -468,11 +466,12 @@ private fun DropdownContent(
       RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
-        optionContent = {
+        optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
             premium = option.premium,
             comment = option.tierDescription,
+            radioButtonIcon = radioButtonIcon,
           )
         },
       )
@@ -490,9 +489,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(R.string.general_cancel_button),
-      onClick = onCancelButtonClick,
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
+      onClick = onCancelButtonClick,
     )
   }
 }
@@ -529,31 +528,37 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
 }
 
 @Composable
-private fun ExpandedOptionContent(title: String, premium: String, comment: String?) {
-  Column {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(title)
-      },
-      spaceBetween = 8.dp,
-      endSlot = {
-        Row(horizontalArrangement = Arrangement.End) {
+private fun ExpandedOptionContent(
+  title: String,
+  premium: String,
+  comment: String?,
+  radioButtonIcon: @Composable () -> Unit,
+) {
+  Row {
+    radioButtonIcon()
+    Spacer(Modifier.width(8.dp))
+    Column(Modifier.weight(1f)) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        { HedvigText(title) },
+        {
           HighlightLabel(
             labelText = premium,
             size = HighLightSize.Small,
             color = HighlightColor.Grey(MEDIUM),
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd),
           )
-        }
-      },
-    )
-    if (comment != null) {
-      Spacer(Modifier.height(4.dp))
-      HedvigText(
-        text = comment,
-        modifier = Modifier.fillMaxWidth(),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
+        },
+        spaceBetween = 8.dp,
       )
+      if (comment != null) {
+        Spacer(Modifier.height(4.dp))
+        HedvigText(
+          text = comment,
+          modifier = Modifier.fillMaxWidth(),
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
     }
   }
 }
@@ -599,6 +604,30 @@ private fun CustomizationCardPreview() {
       onSetTierBackToPreviouslyChosen = {},
       onSetDeductibleBackToPreviouslyChosen = {},
     )
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDropdownContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DropdownContent(
+        "Title",
+        "Subtitle",
+        {},
+        {},
+        List(2) {
+          ExpandedRadioOptionData(
+            {},
+            Chosen,
+            "Title",
+            "Premium",
+            "TierDescription",
+          )
+        },
+      )
+    }
   }
 }
 
