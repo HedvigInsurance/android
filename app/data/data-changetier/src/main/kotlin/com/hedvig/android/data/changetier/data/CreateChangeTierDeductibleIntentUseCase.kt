@@ -10,6 +10,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
@@ -100,14 +101,14 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
               activationDate = intent.activationDate,
               quotes = listOf(currentQuote) + quotesToOffer,
             )
-            logcat { "Mariia: createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+            logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
             intentResult
           } else {
             val intentResult = ChangeTierDeductibleIntent(
               activationDate = intent.activationDate,
               quotes = listOf(),
             )
-            logcat { "Mariia: createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+            logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
             intentResult
           }
         } else {
