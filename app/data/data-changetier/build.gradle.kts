@@ -6,6 +6,10 @@ plugins {
   alias(libs.plugins.serialization)
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
@@ -25,6 +29,25 @@ dependencies {
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.featureFlagsPublic)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(projects.dataChat)
+
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
 
 apollo {

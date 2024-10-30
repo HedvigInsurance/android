@@ -32,7 +32,9 @@ internal class GetCustomizableInsurancesUseCaseImpl(
         .safeFlow(::ErrorMessage),
     ) { isEnabled, memberResponse ->
       either {
-        if (!isEnabled) return@either null
+        if (!isEnabled) {
+          raise(ErrorMessage())
+        }
         memberResponse.bind().currentMember.toInsurancesForChangingTier().toNonEmptyListOrNull()
       }
     }
