@@ -17,14 +17,6 @@ import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthAttemptResult
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.AuthorizationCodeGrant
-import com.hedvig.authlib.LoginStatusResult
-import com.hedvig.authlib.RefreshToken
-import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runCurrent

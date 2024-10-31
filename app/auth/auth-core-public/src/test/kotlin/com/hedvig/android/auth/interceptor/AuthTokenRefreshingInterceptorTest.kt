@@ -13,9 +13,6 @@ import com.hedvig.android.auth.test.FakeAuthRepository
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.RefreshToken
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

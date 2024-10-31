@@ -6,17 +6,6 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.market.test.FakeMarketManager
-import com.hedvig.authlib.AuthAttemptResult
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.Grant
-import com.hedvig.authlib.LoginMethod
-import com.hedvig.authlib.LoginStatusResult
-import com.hedvig.authlib.OtpMarket
-import com.hedvig.authlib.ResendOtpResult
-import com.hedvig.authlib.RevokeResult
-import com.hedvig.authlib.StatusUrl
-import com.hedvig.authlib.SubmitOtpResult
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

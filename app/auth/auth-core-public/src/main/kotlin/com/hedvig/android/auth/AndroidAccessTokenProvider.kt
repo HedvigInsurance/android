@@ -45,7 +45,8 @@ internal class AndroidAccessTokenProvider(
         logcat(LogPriority.VERBOSE) { "$requestId Refreshing failed, proceed unauthenticated" }
       }
       logcat(LogPriority.VERBOSE) { "$requestId Refreshing succeeded, proceeding with refreshed tokens" }
-      refreshedAccessToken.token
+      refreshedAccessToken
+      null
     }
   }
 

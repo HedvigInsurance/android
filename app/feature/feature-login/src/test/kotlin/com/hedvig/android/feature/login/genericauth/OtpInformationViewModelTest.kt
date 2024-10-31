@@ -13,12 +13,6 @@ import com.hedvig.android.auth.test.FakeAuthRepository
 import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.feature.login.otpinput.OtpInputViewModel
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.AuthorizationCodeGrant
-import com.hedvig.authlib.RefreshToken
-import com.hedvig.authlib.ResendOtpResult
-import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule

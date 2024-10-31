@@ -19,18 +19,12 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.AuthorizationCodeGrant
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.context.loadKoinModules
@@ -87,7 +81,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get(), get())
+        ImpersonationReceiverViewModel(params.get(), get())
       }
     }
   }
@@ -96,7 +90,6 @@ class ImpersonationReceiverActivity : ComponentActivity() {
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
   authTokenService: AuthTokenService,
-  authRepository: AuthRepository,
 ) : ViewModel() {
   sealed class ViewState {
     object Loading : ViewState()
@@ -115,16 +108,6 @@ class ImpersonationReceiverViewModel(
   val events = _events.receiveAsFlow()
 
   init {
-    viewModelScope.launch {
-      when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.toString()) }
-        is AuthTokenResult.Success -> {
-          authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
-          _state.update { ViewState.Success }
-          delay(500.milliseconds)
-          _events.send(GoToLoggedInActivityEvent)
-        }
-      }
-    }
+    viewModelScope.launch {}
   }
 }

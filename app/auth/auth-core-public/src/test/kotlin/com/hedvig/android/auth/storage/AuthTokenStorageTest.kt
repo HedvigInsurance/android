@@ -5,8 +5,6 @@ import assertk.assertions.isEqualTo
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
