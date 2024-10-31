@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -9,11 +8,11 @@ plugins {
 }
 
 val lokaliseProperties = Properties()
-lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
+// lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
 
 lokalise {
-  lokaliseProjectId.set(lokaliseProperties.getProperty("id"))
-  lokaliseToken.set(lokaliseProperties.getProperty("token"))
+  lokaliseProjectId.set(lokaliseProperties.getProperty("id", ""))
+  lokaliseToken.set(lokaliseProperties.getProperty("token", ""))
   outputDirectory.set(file("src/main/res"))
 }
 
