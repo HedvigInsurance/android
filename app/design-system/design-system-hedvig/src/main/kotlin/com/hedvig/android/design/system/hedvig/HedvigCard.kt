@@ -50,7 +50,7 @@ fun HedvigCard(
   content: @Composable () -> Unit,
 ) {
   Surface(
-    shape = HedvigTheme.shapes.cornerLarge,
+    shape = HedvigTheme.shapes.cornerXLarge,
     modifier = modifier
       .then(
         if (onClick != null) {
