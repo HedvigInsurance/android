@@ -29,10 +29,6 @@ dependencies {
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.featureFlagsPublic)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(projects.dataChat)
-
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

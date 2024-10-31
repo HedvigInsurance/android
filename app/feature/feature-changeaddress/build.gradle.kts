@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
@@ -49,7 +50,6 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.composeUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

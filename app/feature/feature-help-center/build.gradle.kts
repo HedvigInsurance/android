@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.test)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -48,8 +49,6 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
   implementation(projects.uiEmergency)
-
-  implementation(libs.androidx.test)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
