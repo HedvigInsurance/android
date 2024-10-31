@@ -99,10 +99,7 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      CompositionLocalProvider(
-        LocalUriHandler provides deepLinkFirstUriHandler,
-//        UseSimplerShapesForOldAndroidVersions provides (hedvigBuildConstants.buildApiVersion <= 27),
-      ) {
+      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
         HedvigAppUi(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
