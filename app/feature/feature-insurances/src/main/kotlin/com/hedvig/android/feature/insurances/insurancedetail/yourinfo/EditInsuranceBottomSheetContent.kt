@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -29,8 +30,10 @@ import hedvig.resources.R
 internal fun EditInsuranceBottomSheetContent(
   allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
+  allowChangeTier: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
+  onChangeTierClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -76,16 +79,31 @@ internal fun EditInsuranceBottomSheetContent(
           },
         )
       }
+      if (allowChangeTier) {
+        SelectableHedvigCard(
+          text = stringResource(R.string.insurance_details_change_coverage),
+          isSelected = selectedItemIndex == 2,
+          onClick = {
+            selectedItemIndex = if (selectedItemIndex == 2) {
+              -1
+            } else {
+              2
+            }
+          },
+        )
+      }
     }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.general_continue_button),
       enabled = selectedItemIndex > -1,
-      onClick = {
+      onClick = dropUnlessResumed {
         if (selectedItemIndex == 0) {
           onChangeAddressClick()
         } else if (selectedItemIndex == 1 && allowEditCoInsured) {
           onEditCoInsuredClick()
+        } else if (selectedItemIndex == 2 && allowChangeTier) {
+          onChangeTierClick()
         }
       },
     )
@@ -106,6 +124,8 @@ private fun PreviewEditInsuranceBottomSheetContent() {
       EditInsuranceBottomSheetContent(
         allowChangeAddress = true,
         allowEditCoInsured = true,
+        allowChangeTier = true,
+        onChangeTierClick = {},
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         onDismiss = {},

@@ -73,6 +73,8 @@ internal fun YourInfoTab(
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
+  allowChangeTier: Boolean,
+  onChangeTierClick: () -> Unit,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
   onMissingInfoClick: () -> Unit,
@@ -103,6 +105,15 @@ internal fun YourInfoTab(
       EditInsuranceBottomSheetContent(
         allowChangeAddress = allowChangeAddress,
         allowEditCoInsured = allowEditCoInsured,
+        allowChangeTier = allowChangeTier,
+        onChangeTierClick = {
+          coroutineScope.launch {
+            sheetState.hide()
+          }.invokeOnCompletion {
+            showEditYourInfoBottomSheet = false
+            onChangeTierClick()
+          }
+        },
         onEditCoInsuredClick = {
           coroutineScope.launch {
             sheetState.hide()
@@ -205,8 +216,7 @@ internal fun YourInfoTab(
       } else {
         VectorInfoCard(
           text = stringResource(
-            id = R.string.CONTRACT_COINSURED_UPDATE_IN_FUTURE,
-            upcomingChangesInsuranceAgreement.coInsured.size,
+            id = R.string.insurances_tab_your_insurance_will_be_updated,
             dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
           ),
           modifier = Modifier
@@ -506,6 +516,8 @@ private fun PreviewYourInfoTab() {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our most standard coverage",
           ),
           certificateUrl = null,
           coInsured = listOf(
@@ -539,6 +551,8 @@ private fun PreviewYourInfoTab() {
         contractHolderSSN = "19910113-1093",
         onMissingInfoClick = {},
         openUrl = {},
+        allowChangeTier = true,
+        onChangeTierClick = {},
       )
     }
   }

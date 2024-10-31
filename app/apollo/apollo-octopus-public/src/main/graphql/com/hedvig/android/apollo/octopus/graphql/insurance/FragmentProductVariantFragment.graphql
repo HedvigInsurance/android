@@ -1,14 +1,13 @@
 fragment ProductVariantFragment on ProductVariant {
   displayName
   displayNameTier
-  displayNameTierLong
+  tierDescription
   typeOfContract
   partner
   perils {
     id
     title
     description
-    info
     covered
     exceptions
     colorCode

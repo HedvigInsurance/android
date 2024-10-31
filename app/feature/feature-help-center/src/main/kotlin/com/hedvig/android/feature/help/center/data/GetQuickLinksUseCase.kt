@@ -6,7 +6,9 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -25,51 +27,73 @@ internal class GetQuickLinksUseCase(
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
-      if (memberActionOptions.isMovingEnabled) {
+      val linksToExpand = buildList<StandaloneQuickLink> {
+        if (memberActionOptions.isMovingEnabled) {
+          add(
+            StandaloneQuickLink(
+              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+              titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            ),
+          )
+        }
+        if (memberActionOptions.isEditCoInsuredEnabled) {
+          val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
+            .safeExecute(::ErrorMessage)
+            .onLeft { logcat(LogPriority.ERROR) { "Could not fetch contracts ${it.message}" } }
+            .bind()
+            .currentMember
+            .activeContracts
+          contracts
+            .filter { it.supportsCoInsured }
+            .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
+            ?.createCoInsuredQuickLink()
+            ?.let { quickAction ->
+              add(quickAction)
+            }
+        }
+        // double-check - here and in getMemberActionsUseCase, but why not
+        if (memberActionOptions.isTierChangeEnabled && featureManager.isFeatureEnabled(Feature.TIER).first()) {
+          add(
+            QuickAction.StandaloneQuickLink(
+              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+              titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+            ),
+          )
+        }
+        if (memberActionOptions.isCancelInsuranceEnabled) {
+          add(
+            QuickAction.StandaloneQuickLink(
+              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
+              titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+            ),
+          )
+        }
+      }
+      if (linksToExpand.isNotEmpty()) {
         add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+          QuickAction.MultiSelectExpandedLink(
+            links = linksToExpand,
+            titleRes = R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
           ),
         )
       }
+
       if (memberActionOptions.isConnectPaymentEnabled) {
         add(
-          QuickAction.StandaloneQuickLink(
+          StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
             titleRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
           ),
         )
       }
-      if (memberActionOptions.isEditCoInsuredEnabled) {
-        val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
-          .safeExecute(::ErrorMessage)
-          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
-          .bind()
-          .currentMember
-          .activeContracts
-        contracts
-          .filter { it.supportsCoInsured }
-          .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
-          ?.createCoInsuredQuickLink()
-          ?.let { quickAction ->
-            add(quickAction)
-          }
-      }
-      if (memberActionOptions.isCancelInsuranceEnabled) {
-        add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
-            titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
-          ),
-        )
-      }
       if (memberActionOptions.isTravelCertificateEnabled) {
         add(
-          QuickAction.StandaloneQuickLink(
+          StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
             titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
@@ -78,7 +102,7 @@ internal class GetQuickLinksUseCase(
       }
       if (memberActionOptions.firstVetAction?.sections?.isNotEmpty() == true) {
         add(
-          QuickAction.StandaloneQuickLink(
+          StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.InnerHelpCenterDestination.FirstVet(
               sections = memberActionOptions.firstVetAction.sections,
             ),
@@ -89,7 +113,7 @@ internal class GetQuickLinksUseCase(
       }
       if (memberActionOptions.sickAbroadAction?.partners?.isNotEmpty() == true) {
         add(
-          QuickAction.StandaloneQuickLink(
+          StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad(
               emergencyNumber = memberActionOptions.sickAbroadAction.partners[0].phoneNumber,
               emergencyUrl = memberActionOptions.sickAbroadAction.partners[0].url,
@@ -104,36 +128,23 @@ internal class GetQuickLinksUseCase(
 }
 
 private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink():
-  QuickAction? {
+  StandaloneQuickLink? {
   if (this.size > 1) {
-    val links = this.map { contract ->
-      if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-        QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
-          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id),
-          displayName = contract.currentAgreement.productVariant.displayName,
-        )
-      } else {
-        QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
-          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
-          displayName = contract.currentAgreement.productVariant.displayName,
-        )
-      }
-    }
-    return QuickAction.MultiSelectQuickLink(
+    return StandaloneQuickLink(
       titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
       hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-      links = links,
+      quickLinkDestination = ChooseInsuranceForEditCoInsured,
     )
   } else if (this.size == 1) {
     val contract = this.first()
     return if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-      QuickAction.StandaloneQuickLink(
+      StandaloneQuickLink(
         quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(this.first().id),
         titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
         hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       )
     } else {
-      QuickAction.StandaloneQuickLink(
+      StandaloneQuickLink(
         quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(this.first().id),
         titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
         hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
@@ -157,9 +168,13 @@ sealed interface QuickLinkDestination {
     data object QuickLinkChangeAddress : OuterDestination
 
     data object QuickLinkConnectPayment : OuterDestination
+
+    data object QuickLinkChangeTier : OuterDestination
   }
 
   sealed interface InnerHelpCenterDestination : QuickLinkDestination {
+    data object ChooseInsuranceForEditCoInsured : InnerHelpCenterDestination
+
     data class QuickLinkSickAbroad(
       val emergencyNumber: String?,
       val emergencyUrl: String?,

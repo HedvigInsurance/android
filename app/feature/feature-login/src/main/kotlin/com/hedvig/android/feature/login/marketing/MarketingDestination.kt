@@ -171,14 +171,14 @@ private fun MarketingScreen(
           )
           HedvigTextButton(
             text = stringResource(R.string.MARKETING_GET_HEDVIG),
-            buttonSize = Large,
+            modifier = Modifier.fillMaxWidth(),
             enabled = uiState is MarketingUiState.Success,
+            buttonSize = Large,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
                 openWebOnboarding(market)
               }
             },
-            modifier = Modifier.fillMaxWidth(),
           )
         }
       }

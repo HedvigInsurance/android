@@ -39,6 +39,7 @@ fun ToggleShowcase() {
         turnedOn = enabled,
         onClick = { enabled = !enabled },
         labelText = "Large",
+        enabled = true,
         toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Large),
       )
       Spacer(Modifier.height(8.dp))
@@ -48,6 +49,7 @@ fun ToggleShowcase() {
           onClick = { enabled3 = !enabled3 },
           labelText = "Medium",
           toggleStyle = Default(Medium),
+          enabled = true,
           modifier = Modifier.weight(1f),
         )
         Spacer(Modifier.width(8.dp))
@@ -56,6 +58,7 @@ fun ToggleShowcase() {
           onClick = { enabled4 = !enabled4 },
           labelText = "Small",
           toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Small),
+          enabled = true,
           modifier = Modifier.weight(1f),
         )
       }
@@ -66,6 +69,7 @@ fun ToggleShowcase() {
           onClick = { enabled2 = !enabled2 },
           labelText = "Large",
           modifier = Modifier.weight(1f),
+          enabled = true,
           toggleStyle = Detailed(
             size = Large,
             descriptionText = "Long long long description Long long ",
@@ -77,6 +81,7 @@ fun ToggleShowcase() {
           onClick = { enabled5 = !enabled5 },
           labelText = "Small",
           modifier = Modifier.weight(1f),
+          enabled = true,
           toggleStyle = Detailed(
             size = Small,
             descriptionText = "Long long long description Long long ",

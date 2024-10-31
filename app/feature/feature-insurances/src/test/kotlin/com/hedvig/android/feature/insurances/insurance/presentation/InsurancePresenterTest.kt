@@ -56,6 +56,8 @@ internal class InsurancePresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -68,6 +70,8 @@ internal class InsurancePresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
+      tierName = "STANDARD",
     ),
     InsuranceContract(
       id = "contractId#2",
@@ -87,6 +91,8 @@ internal class InsurancePresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -99,6 +105,8 @@ internal class InsurancePresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
+      tierName = "STANDARD",
     ),
   )
   private val terminatedContracts: List<InsuranceContract> = listOf(
@@ -120,6 +128,8 @@ internal class InsurancePresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -132,6 +142,8 @@ internal class InsurancePresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
+      tierName = "STANDARD",
     ),
     InsuranceContract(
       id = "contractId#4",
@@ -151,6 +163,8 @@ internal class InsurancePresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -163,6 +177,8 @@ internal class InsurancePresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
+      tierName = "STANDARD",
     ),
   )
   private val validCrossSells: List<CrossSellsQuery.Data.CurrentMember.CrossSell> = listOf(

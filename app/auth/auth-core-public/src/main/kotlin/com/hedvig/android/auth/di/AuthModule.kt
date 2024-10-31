@@ -21,8 +21,6 @@ import com.hedvig.android.initializable.Initializable
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.OkHttpNetworkAuthRepository
-import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
-import com.hedvig.authlib.connectpayment.PaymentRepository
 import kotlin.coroutines.CoroutineContext
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
@@ -65,17 +63,6 @@ val authModule = module {
       },
       additionalHttpHeadersProvider = { emptyMap() },
       okHttpClientBuilder = get<OkHttpClient.Builder>(),
-    )
-  }
-  single<PaymentRepository> {
-    OkHttpNetworkPaymentRepository(
-      environment = if (get<HedvigBuildConstants>().isProduction) {
-        AuthEnvironment.PRODUCTION
-      } else {
-        AuthEnvironment.STAGING
-      },
-      additionalHttpHeadersProvider = { emptyMap() },
-      okHttpClientBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>()),
     )
   }
 

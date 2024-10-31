@@ -14,7 +14,7 @@ import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val homeModule = module {

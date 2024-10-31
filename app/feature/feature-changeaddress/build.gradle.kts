@@ -3,6 +3,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -48,6 +49,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.composeUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -57,4 +59,11 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
+  }
 }

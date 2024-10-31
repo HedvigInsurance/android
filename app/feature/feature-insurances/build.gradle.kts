@@ -60,6 +60,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.featureFlagsTest)

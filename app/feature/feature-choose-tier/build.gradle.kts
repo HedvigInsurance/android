@@ -49,15 +49,24 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.dataChangetier)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreFileUpload)
+  implementation(projects.composeUi)
 
+  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
 
 apollo {

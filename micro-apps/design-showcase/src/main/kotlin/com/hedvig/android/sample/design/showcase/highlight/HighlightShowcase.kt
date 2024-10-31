@@ -1,17 +1,14 @@
 package com.hedvig.android.sample.design.showcase.highlight
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
@@ -37,28 +34,22 @@ import com.hedvig.android.design.system.hedvig.Surface
 @Composable
 fun HighlightShowcase() {
   Surface(
-    modifier = Modifier
-      .fillMaxSize(),
+    modifier = Modifier.fillMaxSize(),
     color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
-    Column(
+    LazyVerticalGrid(
+      columns = GridCells.Fixed(3),
       modifier = Modifier
         .safeContentPadding()
         .fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(16.dp))
-      LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-      ) {
-        items(itemsList) { item ->
-          HighlightLabel(
-            modifier = Modifier.padding(2.dp),
-            labelText = "Label",
-            color = item.color,
-            size = item.size,
-          )
-        }
+      items(itemsList) { item ->
+        HighlightLabel(
+          modifier = Modifier.padding(2.dp),
+          labelText = "Label",
+          color = item.color,
+          size = item.size,
+        )
       }
     }
   }
@@ -152,3 +143,11 @@ private val itemsList = listOf(
   HighLightShowcaseItem(Small, Grey(MEDIUM)),
   HighLightShowcaseItem(Small, Grey(DARK)),
 )
+
+@Preview
+@Composable
+private fun PreviewShowcaseIcons() {
+  HedvigTheme {
+    HighlightShowcase()
+  }
+}

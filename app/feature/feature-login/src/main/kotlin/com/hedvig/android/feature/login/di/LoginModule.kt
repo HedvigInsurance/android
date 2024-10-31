@@ -12,7 +12,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.set.SetMarketUseCase
 import com.hedvig.authlib.AuthRepository
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val loginModule = module {

@@ -1,12 +1,14 @@
 package com.hedvig.android.data.changetier.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.data.changetier.data.ChangeTierQuoteStorage
+import com.hedvig.android.data.changetier.data.ChangeTierQuoteStorageImpl
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCaseImpl
-import com.hedvig.android.data.changetier.database.TierQuoteMapper
-import com.hedvig.android.data.chat.database.TierQuoteDao
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.dsl.module
 
@@ -17,14 +19,14 @@ val dataChangeTierModule = module {
       get<FeatureManager>(),
     )
   }
-  single<TierQuoteMapper> {
-    TierQuoteMapper()
+  single<ChangeTierQuoteStorage> {
+    ChangeTierQuoteStorageImpl(get<DataStore<Preferences>>())
   }
   single<ChangeTierRepository> {
     ChangeTierRepositoryImpl(
       createChangeTierDeductibleIntentUseCase = get<CreateChangeTierDeductibleIntentUseCase>(),
-      tierQuoteDao = get<TierQuoteDao>(),
-      mapper = get<TierQuoteMapper>(),
+      changeTierQuoteStorage = get<ChangeTierQuoteStorage>(),
+      apolloClient = get<ApolloClient>(),
     )
   }
 }

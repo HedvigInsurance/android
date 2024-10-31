@@ -61,9 +61,9 @@ private fun UnknownScreenScreen(
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        buttonSize = Large,
-        modifier = Modifier.fillMaxWidth(),
         text = stringResource(R.string.general_close_button),
+        modifier = Modifier.fillMaxWidth(),
+        buttonSize = Large,
         onClick = navigateBack,
       )
     }
