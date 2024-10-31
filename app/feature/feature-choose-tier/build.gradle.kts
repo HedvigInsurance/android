@@ -3,10 +3,11 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization) //todo: maybe not needed at all - check!
+  alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
-  id("kotlin-parcelize")
   alias(libs.plugins.apollo)
+  id("kotlin-parcelize")
 }
 
 android {

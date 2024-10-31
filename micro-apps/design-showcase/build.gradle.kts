@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 

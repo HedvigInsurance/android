@@ -11,6 +11,7 @@ plugins {
   alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 

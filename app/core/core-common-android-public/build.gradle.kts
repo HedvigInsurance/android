@@ -4,6 +4,7 @@ plugins {
   id("hedvig.android.library.compose")
   id("kotlin-parcelize")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 

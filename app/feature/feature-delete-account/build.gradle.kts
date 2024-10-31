@@ -4,6 +4,7 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
