@@ -21,7 +21,7 @@ import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayout
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.language.LanguageService
 import kotlinx.datetime.Clock
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val odysseyModule = module {

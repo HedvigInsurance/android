@@ -11,7 +11,7 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
 import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val movingFlowModule = module {
