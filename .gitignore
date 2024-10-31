@@ -14,15 +14,10 @@ sentry.properties
 .kotlin
 mapping.txt
 
-# graphql
-schema.json
-schema.graphqls
-
 open_source_licenses.html
 
 # lokalise credentials
 lokalise.properties
-app/src/main/res/**/strings.xml
 
 # Local jks store
 Jks
