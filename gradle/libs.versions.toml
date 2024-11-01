@@ -43,7 +43,6 @@ androidx-other-core = "1.15.0"
 androidx-other-splashscreen = "1.2.0-alpha02"
 androidx-other-startup = "1.2.0"
 androidx-other-workManager = "2.10.0"
-androidx-profileInstaller = "1.4.1"
 androidx-test = "1.6.1"
 androidx-testRunners = "1.6.2"
 androidxGraphicsShapes = "1.0.1"
@@ -123,7 +122,6 @@ androidx-other-coreKtx = { module = "androidx.core:core-ktx", version.ref = "and
 androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-other-splashscreen" }
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
 androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
-androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }

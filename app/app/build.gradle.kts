@@ -125,7 +125,6 @@ dependencies {
   implementation(libs.androidx.other.coreKtx)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
-  runtimeOnly(libs.androidx.profileInstaller)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
