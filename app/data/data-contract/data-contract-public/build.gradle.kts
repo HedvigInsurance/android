@@ -7,5 +7,4 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.serialization.core)
 }

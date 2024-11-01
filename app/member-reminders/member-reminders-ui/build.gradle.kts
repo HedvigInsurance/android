@@ -8,8 +8,6 @@ plugins {
 
 dependencies {
   api(projects.memberRemindersPublic)
-
-  implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.kotlinx.datetime)
   implementation(projects.composePagerIndicator)

@@ -10,9 +10,6 @@ dependencies {
   api(libs.apollo.adapters.datetime)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
-
-  implementation(libs.apollo.runtime)
-  implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreMarkdown)
@@ -42,7 +39,8 @@ apollo {
     generateOptionalOperationVariables = false
     outputDirConnection {
       // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
-      connectToKotlinSourceSet("main")
+      // connectToKotlinSourceSet("main")
+      connectToAllAndroidVariants()
     }
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")

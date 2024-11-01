@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  api(libs.junit)
+
   implementation(libs.apollo.testingSupport)
-  implementation(libs.junit)
 }

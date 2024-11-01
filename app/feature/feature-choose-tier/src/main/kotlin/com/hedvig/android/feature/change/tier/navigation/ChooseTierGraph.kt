@@ -104,7 +104,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
 
     navdestination<ChooseTierDestination.Summary>(
       destinationNavTypeAware = ChooseTierDestination.Summary.Companion,
-    ) { backStackEntry ->
+    ) {
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
@@ -128,7 +128,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       )
     }
 
-    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) { backStackEntry ->
+    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) {
       SubmitTierSuccessScreen(
         activationDate,
         popBackStack = navigator::popBackStack,

@@ -6,6 +6,6 @@ plugins {
 }
 
 dependencies {
+  api(libs.junit)
   api(projects.loggingPublic)
-  implementation(libs.junit)
 }

@@ -15,22 +15,19 @@ android {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.runtime)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
-  implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayerData)

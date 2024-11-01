@@ -23,3 +23,13 @@ plugins {
 apply {
   from(file("gradle/projectDependencyGraph.gradle"))
 }
+
+dependencyAnalysis {
+  issues {
+    all {
+      onUsedTransitiveDependencies {
+        severity("ignore")
+      }
+    }
+  }
+}

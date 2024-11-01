@@ -12,22 +12,15 @@ android {
 }
 
 dependencies {
-  implementation(libs.accompanist.permissions)
-  implementation(libs.androidx.activity.compose)
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.test)
-  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  implementation(libs.coil.coil)
-  implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
@@ -58,7 +51,6 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
-  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)

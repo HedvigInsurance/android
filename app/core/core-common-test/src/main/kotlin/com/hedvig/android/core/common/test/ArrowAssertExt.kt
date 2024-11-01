@@ -6,6 +6,7 @@ import assertk.assertions.support.expected
 import assertk.assertions.support.show
 
 fun <T : Either<Left, *>, Left> Assert<T>.isLeft(): Assert<Left> = transform { actual ->
+  @Suppress("UNCHECKED_CAST")
   when (actual) {
     is Either.Left<*> -> actual.value as Left
     is Either.Right<*> -> expected(
@@ -17,6 +18,7 @@ fun <T : Either<Left, *>, Left> Assert<T>.isLeft(): Assert<Left> = transform { a
 }
 
 fun <T : Either<*, Right>, Right> Assert<T>.isRight(): Assert<Right> = transform { actual ->
+  @Suppress("UNCHECKED_CAST")
   when (actual) {
     is Either.Left<*> -> expected(
       "to be instance of:${show(Either.Right::class)} but was instance of:${show(Either.Left::class)}",

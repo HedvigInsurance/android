@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
   api(projects.moleculePublic)
-
+  implementation(libs.androidx.compose.runtime)
   implementation(libs.molecule)
   implementation(libs.turbine)
 }

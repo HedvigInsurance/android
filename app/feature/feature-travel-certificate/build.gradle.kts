@@ -10,19 +10,16 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
 
-  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.navigation.runtime)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
@@ -50,7 +47,6 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.testParameterInjector)
-  testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)

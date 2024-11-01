@@ -6,8 +6,8 @@ plugins {
 }
 
 dependencies {
+  api(libs.okhttp.core)
+
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.okhttp.core)
 }
