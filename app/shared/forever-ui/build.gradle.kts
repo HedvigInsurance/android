@@ -19,7 +19,6 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.koin.coreViewmodel)
-  runtimeOnly(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)

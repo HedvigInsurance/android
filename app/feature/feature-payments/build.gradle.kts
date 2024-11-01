@@ -23,7 +23,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
-  runtimeOnly(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)

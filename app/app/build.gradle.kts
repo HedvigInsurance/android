@@ -146,7 +146,6 @@ dependencies {
   runtimeOnly(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  runtimeOnly(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)

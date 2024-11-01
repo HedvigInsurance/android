@@ -27,7 +27,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  runtimeOnly(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayerData)
