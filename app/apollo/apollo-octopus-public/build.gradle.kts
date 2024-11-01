@@ -42,7 +42,8 @@ apollo {
     generateOptionalOperationVariables = false
     outputDirConnection {
       // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
-      connectToKotlinSourceSet("main")
+      // connectToKotlinSourceSet("main")
+      connectToAllAndroidVariants()
     }
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
