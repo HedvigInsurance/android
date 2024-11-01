@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
+  implementation(libs.androidx.other.workManager)
   implementation(libs.koin.workManager)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)

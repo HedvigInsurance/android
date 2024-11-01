@@ -113,7 +113,6 @@ androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-graphicsShapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes" }
-androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
@@ -130,7 +129,7 @@ androidx-other-core = { module = "androidx.core:core", version.ref = "androidx-o
 androidx-other-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-other-core" }
 androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-other-splashscreen" }
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
-androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-other-workManager" }
+androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
