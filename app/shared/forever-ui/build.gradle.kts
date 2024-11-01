@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  runtimeOnly(libs.coroutines.android)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.koin.coreViewmodel)

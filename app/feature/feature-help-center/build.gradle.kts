@@ -20,7 +20,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
-  runtimeOnly(libs.coroutines.android)
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

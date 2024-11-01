@@ -45,7 +45,7 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
-  testRuntimeOnly(libs.robolectric)
+  testImplementation(libs.robolectric)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventCore)
