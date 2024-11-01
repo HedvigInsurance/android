@@ -10,10 +10,11 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.browser)
   implementation(libs.apollo.api)

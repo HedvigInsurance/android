@@ -10,13 +10,14 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
+
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  api(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)

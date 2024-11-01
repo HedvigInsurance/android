@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
+  api(libs.junit)
   api(libs.room.runtime)
   api(libs.sqlite.bundled)
-  api(libs.junit)
 }

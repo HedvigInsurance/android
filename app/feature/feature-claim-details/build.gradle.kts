@@ -14,17 +14,17 @@ android {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
-  api(libs.coil.coil)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)

@@ -8,14 +8,15 @@ plugins {
 }
 
 dependencies {
+  api(libs.retrofit)
+  api(libs.retrofitArrow)
+
   implementation(libs.androidx.compose.runtime)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
-  api(libs.retrofit)
-  api(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)

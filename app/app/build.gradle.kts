@@ -146,9 +146,9 @@ dependencies {
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
+  implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
-  implementation(libs.playReview)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
@@ -220,8 +220,9 @@ dependencies {
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 
-  debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
+
+  debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 
 easylauncher {

@@ -14,9 +14,10 @@ android {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -41,6 +42,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

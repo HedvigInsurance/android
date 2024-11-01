@@ -7,8 +7,9 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.annotation)
   api(libs.androidx.navigation.common)
+
+  implementation(libs.androidx.annotation)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)

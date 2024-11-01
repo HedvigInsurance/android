@@ -6,7 +6,8 @@ plugins {
 }
 
 dependencies {
+  api(libs.okhttp.core)
+
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  api(libs.okhttp.core)
 }

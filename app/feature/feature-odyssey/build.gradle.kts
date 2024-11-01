@@ -9,6 +9,9 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
@@ -16,10 +19,8 @@ dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
-  api(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)

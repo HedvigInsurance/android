@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+  api(libs.coil.coil)
 
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
@@ -21,7 +22,6 @@ dependencies {
   implementation(libs.apollo.testingSupport)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
-  api(libs.coil.coil)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

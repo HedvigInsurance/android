@@ -10,9 +10,10 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)

@@ -39,9 +39,9 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 
+  testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.junit)
   testImplementation(libs.androidx.test)
-  testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

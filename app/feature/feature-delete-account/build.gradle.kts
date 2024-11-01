@@ -9,10 +9,11 @@ plugins {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
-  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
