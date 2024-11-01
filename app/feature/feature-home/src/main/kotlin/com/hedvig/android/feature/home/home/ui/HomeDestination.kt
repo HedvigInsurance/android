@@ -247,7 +247,7 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          actionsList.forEachIndexed { index, action ->
+          actionsList.forEach { action ->
             when (action) {
               HomeTopBarAction.ChatAction -> ToolbarChatIcon(
                 onClick = onNavigateToInbox,

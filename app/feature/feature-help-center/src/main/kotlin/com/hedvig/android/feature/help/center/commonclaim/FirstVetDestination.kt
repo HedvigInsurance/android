@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.help.center.commonclaim
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -16,9 +14,7 @@ internal fun FirstVetDestination(sections: List<FirstVetSection>, navigateUp: ()
 
 @HedvigPreview
 @Composable
-private fun PreviewCommonClaimDestination(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isManyPets: Boolean,
-) {
+private fun PreviewCommonClaimDestination() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       FirstVetDestination(
