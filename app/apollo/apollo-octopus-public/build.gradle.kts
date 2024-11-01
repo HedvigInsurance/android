@@ -10,9 +10,6 @@ dependencies {
   api(libs.apollo.adapters.datetime)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
-
-  implementation(libs.apollo.runtime)
-  implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreMarkdown)

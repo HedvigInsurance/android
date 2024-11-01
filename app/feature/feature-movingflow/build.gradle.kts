@@ -9,16 +9,13 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
+  api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)

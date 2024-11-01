@@ -8,7 +8,7 @@ plugins {
 dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.unleash)
+  api(libs.unleash)
   implementation(projects.authCorePublic)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)

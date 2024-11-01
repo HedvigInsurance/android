@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

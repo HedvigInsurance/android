@@ -12,8 +12,6 @@ dependencies {
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
-  implementation(libs.androidx.compose.uiUtil)
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)

@@ -7,6 +7,6 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.compose.runtime)
   implementation(libs.coroutines.core)
-  implementation(libs.molecule)
 }

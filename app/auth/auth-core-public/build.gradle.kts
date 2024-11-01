@@ -16,7 +16,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor)
-  implementation(libs.okhttp.core)
+  api(libs.okhttp.core)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)

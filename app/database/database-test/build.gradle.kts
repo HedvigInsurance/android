@@ -8,5 +8,5 @@ plugins {
 dependencies {
   api(libs.room.runtime)
   api(libs.sqlite.bundled)
-  implementation(libs.junit)
+  api(libs.junit)
 }

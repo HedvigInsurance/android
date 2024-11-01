@@ -6,8 +6,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.arrow.core)
-  api(libs.retrofit)
   api(libs.retrofitArrow)
   api(projects.coreCommonPublic)
 }

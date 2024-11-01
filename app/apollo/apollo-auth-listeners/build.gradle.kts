@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.apollo.api)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)

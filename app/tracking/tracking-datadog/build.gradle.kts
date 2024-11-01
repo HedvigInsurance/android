@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
   api(projects.trackingCore)
-  implementation(libs.datadog.sdk.rum)
+  api(libs.datadog.sdk.rum)
   implementation(libs.koin.core)
   implementation(projects.initializable)
 }

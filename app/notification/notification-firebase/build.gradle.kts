@@ -9,7 +9,6 @@ dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.androidx.other.workManager)
   implementation(libs.apollo.runtime)
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
