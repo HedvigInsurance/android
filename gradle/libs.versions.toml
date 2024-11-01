@@ -51,7 +51,6 @@ arrow = "1.2.4"
 assertK = "0.28.1"
 coil = "2.7.0"
 composeRichtext = "1.0.0-alpha01"
-concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.1.2"
 coroutines = "1.9.0"
 datadog = "2.15.0"
@@ -62,7 +61,6 @@ junit = "4.13.2"
 koinBom = "4.0.0"
 kotlinx-serialization = "1.7.3"
 kotlinxDatetime = "0.6.1"
-leakCanary = "2.14"
 modalSheet = "0.7.0"
 moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
@@ -83,8 +81,6 @@ turbine = "1.2.0"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
-zoomable = "1.6.2"
-core = "1.15.0"
 
 [libraries]
 
@@ -99,10 +95,8 @@ androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foun
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
-androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
-androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
 androidx-compose-uiGraphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest" }
@@ -113,7 +107,7 @@ androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-graphicsShapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes" }
-androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
@@ -124,7 +118,6 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-other-appCompat" }
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }
-androidx-other-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-other-constraintLayout" }
 androidx-other-core = { module = "androidx.core:core", version.ref = "androidx-other-core" }
 androidx-other-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-other-core" }
 androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-other-splashscreen" }
@@ -172,15 +165,12 @@ koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
 koin-coreViewmodelNavigation = { module = "io.insert-koin:koin-core-viewmodel-navigation" }
-koin-test = { module = "io.insert-koin:koin-test" }
 koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
-leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
-material-components = { module = "com.google.android.material:material", version = "1.12.0" }
 modal-sheet = { module = "io.github.oleksandrbalan:modalsheet", version.ref = "modalSheet" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
@@ -208,7 +198,6 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
-zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
@@ -219,7 +208,6 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
-androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [bundles]
 
