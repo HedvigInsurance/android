@@ -183,11 +183,6 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       navigator = navigator,
     )
-    changeTierGraph(
-      navigator = navigator,
-      navController = hedvigAppState.navController,
-      applicationId = hedvigBuildConstants.appId,
-    )
     insuranceGraph(
       nestedGraphs = {
         terminateInsuranceGraph(
