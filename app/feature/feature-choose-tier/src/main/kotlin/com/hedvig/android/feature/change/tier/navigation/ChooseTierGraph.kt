@@ -3,7 +3,6 @@ package com.hedvig.android.feature.change.tier.navigation
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonDestination
@@ -24,7 +23,7 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavController, applicationId: String) {
+fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavController) {
   navdestination<StartTierFlowDestination> { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
       parametersOf(this.insuranceId)
@@ -114,9 +113,6 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
         navigateUp = navigator::navigateUp,
         onFailure = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
-        },
-        sharePdf = {
-          context.sharePDF(it, applicationId)
         },
         onSuccess = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {

@@ -48,7 +48,6 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Succes
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
-import java.io.File
 
 @Composable
 internal fun ChangeTierSummaryDestination(
@@ -56,7 +55,6 @@ internal fun ChangeTierSummaryDestination(
   navigateUp: () -> Unit,
   onSuccess: () -> Unit,
   onFailure: () -> Unit,
-  sharePdf: (File) -> Unit,
 ) {
   val uiState: SummaryState by viewModel.uiState.collectAsStateWithLifecycle()
   SummaryScreen(
@@ -72,10 +70,6 @@ internal fun ChangeTierSummaryDestination(
       viewModel.emit(SummaryEvent.ClearNavigation)
       onFailure()
     },
-    sharePdf = { file ->
-      viewModel.emit(SummaryEvent.HandledSharingPdfFile)
-      sharePdf(file)
-    },
     navigateUp = navigateUp,
     onSubmitQuoteClick = {
       viewModel.emit(SummaryEvent.SubmitQuote)
@@ -90,7 +84,6 @@ private fun SummaryScreen(
   onSuccess: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
-  sharePdf: (File) -> Unit,
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
@@ -127,9 +120,6 @@ private fun SummaryScreen(
         uiState = uiState,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
-        sharePdf = { file ->
-          sharePdf(file)
-        },
       )
     }
   }
@@ -144,17 +134,7 @@ private fun MakingChangesScreen() {
 }
 
 @Composable
-private fun SummarySuccessScreen(
-  uiState: Success,
-  onConfirmClick: () -> Unit,
-  sharePdf: (File) -> Unit,
-  navigateUp: () -> Unit,
-) {
-  if (uiState.savedFileUri != null) {
-    LaunchedEffect(uiState.savedFileUri) {
-      sharePdf(uiState.savedFileUri)
-    }
-  }
+private fun SummarySuccessScreen(uiState: Success, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
@@ -254,7 +234,6 @@ private fun PreviewChooseInsuranceScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SummaryScreen(
         uiState,
-        {},
         {},
         {},
         {},

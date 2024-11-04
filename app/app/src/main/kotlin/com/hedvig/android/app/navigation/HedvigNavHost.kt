@@ -327,7 +327,6 @@ internal fun HedvigNavHost(
     changeTierGraph(
       navigator = navigator,
       navController = hedvigAppState.navController,
-      applicationId = hedvigBuildConstants.appId,
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
