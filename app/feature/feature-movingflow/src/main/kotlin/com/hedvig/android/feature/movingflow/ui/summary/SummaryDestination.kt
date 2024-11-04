@@ -84,6 +84,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.serialization.json.JsonNull.content
 
 @Composable
 internal fun SummaryDestination(
@@ -239,6 +240,42 @@ private fun SummaryScreen(
 
 @Composable
 private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
+  val locale = getLocale()
+  val startDate = remember(quote.startDate) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
+      locale,
+    ).format(quote.startDate.toJavaLocalDate())
+  }
+  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  QuoteCard(
+    productVariant = quote.productVariant,
+    subtitle = subtitle,
+    premium = quote.premium.toString(),
+    displayItems = quote.displayItems.map {
+      QuoteDisplayItem(
+            title = it.title,
+            subtitle = it.subtitle,
+            value = it.value,
+      )
+    },
+    modifier = modifier,
+  )
+}
+
+data class QuoteDisplayItem(
+  val title: String,
+  val subtitle: String?,
+  val value: String,
+)
+
+@Composable
+private fun QuoteCard(
+  productVariant: ProductVariant,
+  subtitle: String,
+  premium: String,
+  displayItems: List<QuoteDisplayItem>,
+  modifier: Modifier = Modifier,
+) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   HedvigCard(
     modifier = modifier,
@@ -249,21 +286,17 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
     Column(modifier = Modifier.padding(16.dp)) {
       Row {
         Image(
-          painter = painterResource(quote.productVariant.contractGroup.toPillow()),
+          painter = painterResource(productVariant.contractGroup.toPillow()),
           contentDescription = null,
           modifier = Modifier.size(48.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
           HedvigText(
-            text = quote.productVariant.displayName,
+            text = productVariant.displayName,
           )
-          val locale = getLocale()
-          val startDate = remember(quote.startDate) {
-            HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(quote.startDate.toJavaLocalDate())
-          }
           HedvigText(
-            text = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate),
+            text = subtitle,
             color = HedvigTheme.colorScheme.textSecondary,
           )
         }
@@ -277,7 +310,7 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              quote.premium.toString(),
+              premium,
             ),
             textAlign = TextAlign.End,
             modifier = Modifier.wrapContentWidth(Alignment.End),
@@ -293,18 +326,18 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
           Spacer(Modifier.height(16.dp))
           Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             HorizontalDivider()
-            if (quote.displayItems.isNotEmpty()) {
+            if (displayItems.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-                for (displayItem in quote.displayItems) {
+                for (displayItem in displayItems) {
                   InfoRow(displayItem.title, displayItem.value)
                 }
               }
             }
-            if (quote.productVariant.insurableLimits.isNotEmpty()) {
+            if (productVariant.insurableLimits.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                for (insurableLimit in quote.productVariant.insurableLimits) {
+                for (insurableLimit in productVariant.insurableLimits) {
                   InfoRow(
                     insurableLimit.label,
                     insurableLimit.limit,
@@ -312,10 +345,10 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
                 }
               }
             }
-            if (quote.productVariant.documents.isNotEmpty()) {
+            if (productVariant.documents.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-                for (document in quote.productVariant.documents) {
+                for (document in productVariant.documents) {
                   val uriHandler = LocalUriHandler.current
                   Row(
                     modifier = Modifier
