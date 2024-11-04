@@ -1,24 +1,17 @@
 package com.hedvig.android.feature.change.tier.ui.stepsummary
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +19,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
@@ -35,10 +27,8 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -48,22 +38,16 @@ import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.PillAndBasicInfo
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
+import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
-import java.io.File
 
 @Composable
 internal fun ChangeTierSummaryDestination(
@@ -71,7 +55,6 @@ internal fun ChangeTierSummaryDestination(
   navigateUp: () -> Unit,
   onSuccess: () -> Unit,
   onFailure: () -> Unit,
-  sharePdf: (File) -> Unit,
 ) {
   val uiState: SummaryState by viewModel.uiState.collectAsStateWithLifecycle()
   SummaryScreen(
@@ -87,16 +70,9 @@ internal fun ChangeTierSummaryDestination(
       viewModel.emit(SummaryEvent.ClearNavigation)
       onFailure()
     },
-    sharePdf = { file ->
-      viewModel.emit(SummaryEvent.HandledSharingPdfFile)
-      sharePdf(file)
-    },
     navigateUp = navigateUp,
     onSubmitQuoteClick = {
       viewModel.emit(SummaryEvent.SubmitQuote)
-    },
-    downloadFromUrl = { url ->
-      viewModel.emit(SummaryEvent.DownLoadFromUrl(url))
     },
   )
 }
@@ -108,9 +84,7 @@ private fun SummaryScreen(
   onSuccess: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
-  sharePdf: (File) -> Unit,
   onSubmitQuoteClick: () -> Unit,
-  downloadFromUrl: (url: String) -> Unit,
 ) {
   when (uiState) {
     Failure -> HedvigScaffold(navigateUp) {
@@ -146,10 +120,6 @@ private fun SummaryScreen(
         uiState = uiState,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
-        downloadFromUrl = downloadFromUrl,
-        sharePdf = { file ->
-          sharePdf(file)
-        },
       )
     }
   }
@@ -164,18 +134,7 @@ private fun MakingChangesScreen() {
 }
 
 @Composable
-private fun SummarySuccessScreen(
-  uiState: Success,
-  onConfirmClick: () -> Unit,
-  downloadFromUrl: (String) -> Unit,
-  sharePdf: (File) -> Unit,
-  navigateUp: () -> Unit,
-) {
-  if (uiState.savedFileUri != null) {
-    LaunchedEffect(uiState.savedFileUri) {
-      sharePdf(uiState.savedFileUri)
-    }
-  }
+private fun SummarySuccessScreen(uiState: Success, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
@@ -196,7 +155,6 @@ private fun SummarySuccessScreen(
       modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
-      downloadFromUrl = downloadFromUrl,
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
@@ -237,37 +195,21 @@ private fun SummarySuccessScreen(
 }
 
 @Composable
-private fun SummaryCard(uiState: Success, downloadFromUrl: (url: String) -> Unit, modifier: Modifier = Modifier) {
-  var showExpanded by remember { mutableStateOf(false) }
-  Surface(
-    modifier = modifier,
-    shape = HedvigTheme.shapes.cornerXLarge,
-  ) {
-    Column(Modifier.padding(16.dp)) {
-      PillAndBasicInfo(
-        contractGroup = uiState.currentContractData.contractGroup,
-        displayName = uiState.quote.productVariant.displayName,
-        displaySubtitle = uiState.currentContractData.contractDisplaySubtitle,
+private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
+  QuoteCard(
+    productVariant = uiState.quote.productVariant,
+    subtitle = uiState.currentContractData.contractDisplaySubtitle,
+    premium = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
+    displayItems = uiState.quote.displayItems.map {
+      QuoteDisplayItem(
+        it.displayTitle,
+        null,
+        it.displayValue,
       )
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
-            style = HedvigTheme.typography.bodySmall,
-          )
-        },
-        spaceBetween = 8.dp,
-        endSlot = {
-          HedvigText(
-            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
-            textAlign = TextAlign.End,
-            style = HedvigTheme.typography.bodySmall,
-          )
-        },
-      )
+    },
+    underTitleContent = {
       HedvigText(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
         textAlign = TextAlign.End,
         text = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
@@ -276,127 +218,9 @@ private fun SummaryCard(uiState: Success, downloadFromUrl: (url: String) -> Unit
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
       )
-      AnimatedVisibility(showExpanded) {
-        ExtendedCardContent(
-          quote = uiState.quote,
-          downloadFromUrl = downloadFromUrl,
-          isPDFLoading = uiState.isLoadingPdf,
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        modifier = Modifier.fillMaxWidth(),
-        text = if (showExpanded) {
-          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        } else {
-          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-        },
-        onClick = { showExpanded = !showExpanded },
-        enabled = true,
-        buttonStyle = Secondary,
-        buttonSize = ButtonSize.Medium,
-      )
-    }
-  }
-}
-
-@Composable
-fun DisplayItemRowSecondaryColor(leftText: String, rightText: String) {
-  HorizontalItemsWithMaximumSpaceTaken(
-    startSlot = {
-      HedvigText(leftText, color = HedvigTheme.colorScheme.textSecondary)
     },
-    endSlot = {
-      Row(
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        HedvigText(
-          rightText,
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-        )
-      }
-    },
-    spaceBetween = 8.dp,
+    modifier = modifier,
   )
-}
-
-@Composable
-private fun ExtendedCardContent(
-  isPDFLoading: Boolean,
-  quote: TierDeductibleQuote,
-  downloadFromUrl: (url: String) -> Unit,
-) {
-  Column {
-    Spacer(Modifier.height(16.dp))
-    HorizontalDivider()
-    Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-    quote.displayItems.forEachIndexed { _, item ->
-      DisplayItemRowSecondaryColor(item.displayTitle, item.displayValue)
-    }
-    Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-    quote.productVariant.insurableLimits.forEach { insurableLimit ->
-      DisplayItemRowSecondaryColor(insurableLimit.label, insurableLimit.limit)
-    }
-    Spacer(Modifier.height(16.dp))
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-      Spacer(Modifier.width(16.dp))
-      AnimatedVisibility(isPDFLoading) { HedvigThreeDotsProgressIndicator() }
-    }
-    quote.productVariant.documents.forEach { document ->
-      DocumentRow(
-        name = document.displayName,
-        downloadFromUrl = {
-          downloadFromUrl(document.url)
-        },
-      )
-    }
-  }
-}
-
-@Composable
-private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.clickable { downloadFromUrl() },
-  ) {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          HedvigText(
-            color = HedvigTheme.colorScheme.textSecondary,
-            text = stringWithShiftedLabel(
-              text = name,
-              labelText = "PDF",
-              textColor = HedvigTheme.colorScheme.textSecondary,
-              textFontSize = HedvigTheme.typography.bodySmall.fontSize,
-              labelFontSize = HedvigTheme.typography.label.fontSize,
-            ),
-          )
-        }
-      },
-      endSlot = {
-        Row(
-          horizontalArrangement = Arrangement.End,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          IconButton(
-            modifier = Modifier.size(24.dp),
-            onClick = {
-              downloadFromUrl()
-            },
-          ) {
-            Icon(HedvigIcons.ArrowNorthEast, null)
-          }
-        }
-      },
-      spaceBetween = 8.dp,
-    )
-  }
 }
 
 @HedvigMultiScreenPreview
@@ -410,8 +234,6 @@ private fun PreviewChooseInsuranceScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SummaryScreen(
         uiState,
-        {},
-        {},
         {},
         {},
         {},

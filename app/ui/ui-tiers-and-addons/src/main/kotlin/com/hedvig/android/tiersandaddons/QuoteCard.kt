@@ -33,7 +33,12 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.ContractType.SE_HOUSE
 import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -63,6 +68,7 @@ fun QuoteCard(
   premium: String,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
 ) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
@@ -72,6 +78,7 @@ fun QuoteCard(
     subtitle = subtitle,
     premium = premium,
     displayItems = displayItems,
+    underTitleContent = underTitleContent,
     modifier = modifier,
   )
 }
@@ -85,6 +92,7 @@ private fun QuoteCard(
   premium: String,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
 ) {
   HedvigCard(
     modifier = modifier,
@@ -126,6 +134,7 @@ private fun QuoteCard(
           )
         },
       )
+      underTitleContent()
       AnimatedVisibility(
         visible = showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),
@@ -237,9 +246,31 @@ private fun PreviewQuoteCard(
           contractGroup = DOG,
           contractType = SE_HOUSE,
           partner = "partner",
-          perils = emptyList(),
-          insurableLimits = emptyList(),
-          documents = emptyList(),
+          perils = List(3) {
+            ProductVariantPeril(
+              id = it.toString(),
+              title = "title#$it",
+              description = "description#$it",
+              covered = emptyList(),
+              exceptions = emptyList(),
+              colorCode = "colorCode#$it",
+            )
+          },
+          insurableLimits = List(3) {
+            InsurableLimit(
+              label = "label#$it",
+              limit = "limit#$it",
+              description = "description#$it",
+              type = BIKE,
+            )
+          },
+          documents = List(3) {
+            InsuranceVariantDocument(
+              displayName = "displayName#$it",
+              url = "url#$it",
+              type = GENERAL_TERMS,
+            )
+          },
           displayTierName = "displayTierName",
           tierDescription = "tierDescription",
         ),
