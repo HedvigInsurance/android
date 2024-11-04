@@ -17,7 +17,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageVie
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.featureflags.FeatureManager
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val chooseTierModule = module {

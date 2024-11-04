@@ -136,7 +136,7 @@ internal class TerminationSurveyPresenter(
       result.fold(
         ifLeft = { errorMessage ->
           logcat(LogPriority.ERROR) {
-            "Received error while creating changeTierDeductibleIntent from termination flow"
+            "Received error while creating changeTierDeductibleIntent from termination flow : $errorMessage"
           }
           currentState = currentState.copy(
             actionButtonLoading = false,

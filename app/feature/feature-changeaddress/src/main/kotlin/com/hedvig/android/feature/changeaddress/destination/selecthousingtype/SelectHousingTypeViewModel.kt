@@ -97,6 +97,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
                 HousingType.APARTMENT_RENT,
                 HousingType.APARTMENT_OWN,
                 -> moveIntent.maxApartmentNumberCoInsured
+
                 HousingType.VILLA -> moveIntent.maxHouseNumberCoInsured
                 null -> null
               },

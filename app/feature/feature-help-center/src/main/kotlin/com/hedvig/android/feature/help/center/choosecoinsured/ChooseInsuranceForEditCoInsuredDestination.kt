@@ -166,18 +166,14 @@ private fun mapToListOfDataWithLabel(
   list: List<InsuranceForEditOrAddCoInsured>,
   selectedInsurance: InsuranceForEditOrAddCoInsured?,
 ): List<RadioOptionGroupDataWithLabel> {
-  return buildList {
-    list.forEachIndexed { index, insurance ->
-      add(
-        RadioOptionGroupDataWithLabel(
-          RadioOptionData(
-            id = insurance.id,
-            optionText = insurance.displayName,
-            chosenState = if (selectedInsurance == insurance) Chosen else NotChosen,
-          ),
-          labelText = insurance.exposureName,
-        ),
-      )
-    }
+  return list.map { insurance ->
+    RadioOptionGroupDataWithLabel(
+      RadioOptionData(
+        id = insurance.id,
+        optionText = insurance.displayName,
+        chosenState = if (selectedInsurance == insurance) Chosen else NotChosen,
+      ),
+      labelText = insurance.exposureName,
+    )
   }
 }

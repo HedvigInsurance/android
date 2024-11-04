@@ -6,7 +6,7 @@ import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryDemo
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryImpl
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryProvider
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val foreverModule = module {

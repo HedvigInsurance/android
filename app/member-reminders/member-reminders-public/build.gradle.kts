@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   alias(libs.plugins.apollo)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -14,7 +15,6 @@ dependencies {
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

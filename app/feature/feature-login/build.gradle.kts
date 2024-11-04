@@ -4,6 +4,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -39,10 +40,8 @@ dependencies {
   implementation(projects.navigationCore)
 
   testImplementation(libs.androidx.datastore.core)
-  testImplementation(libs.androidx.datastore.preferencesCore)
   testImplementation(libs.androidx.junit)
   testImplementation(libs.androidx.test)
-  testImplementation(libs.androidx.testRunners)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

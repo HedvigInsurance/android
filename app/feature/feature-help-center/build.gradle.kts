@@ -5,26 +5,22 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(libs.accompanist.permissions)
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
-  implementation(libs.coil.coil)
-  implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextMarkdown)
-  implementation(libs.coroutines.android)
+  implementation(libs.compose.richtextCommonmark)
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
@@ -48,6 +44,21 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
   implementation(projects.uiEmergency)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
 
 apollo {

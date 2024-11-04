@@ -1,0 +1,62 @@
+mutation MoveIntentV2Request($intentId: ID!, $moveIntentRequestInput: MoveIntentRequestInput!) {
+  moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
+    moveIntent {
+      ...MoveIntentQuotesFragment
+    }
+    userError {
+      message
+    }
+  }
+}
+
+fragment MoveIntentQuotesFragment on MoveIntent {
+  homeQuotes {
+    id
+    premium {
+      ...MoneyFragment
+    }
+    startDate
+    defaultChoice
+    tierName
+    tierLevel
+    deductible {
+      amount {
+        ...MoneyFragment
+      }
+      percentage
+      displayText
+    }
+    displayItems {
+      ...MoveQuoteDisplayItemFragment
+    }
+    exposureName
+    productVariant {
+      ...ProductVariantFragment
+      # These are not in the fragment, why?
+      #          termsVersion
+      #          displayNameSubtype
+    }
+  }
+  mtaQuotes {
+    premium {
+      ...MoneyFragment
+    }
+    startDate
+    displayItems {
+      ...MoveQuoteDisplayItemFragment
+    }
+    exposureName
+    productVariant {
+      ...ProductVariantFragment
+      # These are not in the fragment, why?
+      #          termsVersion
+      #          displayNameSubtype
+    }
+  }
+}
+
+fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
+  displayTitle
+  displaySubtitle
+  displayValue
+}

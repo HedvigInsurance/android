@@ -62,6 +62,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -105,7 +106,6 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -178,7 +178,6 @@ private fun HelpCenterHomeScreen(
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
-  logcat { "Mariia: selectedQuickAction is $selectedQuickAction" }
   when (selectedQuickAction) {
     is MultiSelectQuickLink -> {
       var chosenIndex by remember { mutableStateOf<Int?>(null) }
@@ -207,15 +206,16 @@ private fun HelpCenterHomeScreen(
     }
 
     is StandaloneQuickLink -> {
-      onDismissQuickActionDialog()
-      onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+      LaunchedEffect(Unit) {
+        onDismissQuickActionDialog()
+        onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+      }
     }
-
-    null -> {}
 
     is MultiSelectExpandedLink -> {
       HedvigDialog(
         applyDefaultPadding = false,
+        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
           onDismissQuickActionDialog()
         },
@@ -282,6 +282,8 @@ private fun HelpCenterHomeScreen(
         }
       }
     }
+
+    null -> {}
   }
   var searchQuery by remember {
     mutableStateOf<String?>(search?.searchQuery)

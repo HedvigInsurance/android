@@ -3,11 +3,9 @@ package com.hedvig.android.feature.home.home.ui
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -21,20 +19,12 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,43 +42,52 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.warningContainer
-import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
-import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
-import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
-import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
-import com.hedvig.android.core.ui.appbar.m3.ToolbarFirstVetIcon
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
-import com.hedvig.android.core.ui.infocard.InfoCardTextButton
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.plus
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
+import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
+import com.hedvig.android.design.system.hedvig.notificationCircle
+import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
-import com.hedvig.android.memberreminders.MemberReminder
+import com.hedvig.android.feature.home.home.ui.HomeText.Active
+import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
+import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
+import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
+import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
@@ -101,8 +100,11 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import com.hedvig.android.ui.claimstatus.ClaimStatusCards
-import com.hedvig.android.ui.claimstatus.model.ClaimPillType
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCompensated
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
@@ -245,10 +247,7 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          actionsList.forEachIndexed { index, action ->
-            if (index != 0) {
-              Spacer(modifier = Modifier.width(8.dp))
-            }
+          actionsList.forEach { action ->
             when (action) {
               HomeTopBarAction.ChatAction -> ToolbarChatIcon(
                 onClick = onNavigateToInbox,
@@ -336,7 +335,6 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
-@ExperimentalMaterial3Api
 @Composable
 private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
@@ -416,20 +414,25 @@ private fun HomeScreenSuccess(
           )
         },
         startClaimButton = {
-          HedvigContainedButton(
+          HedvigButton(
             text = stringResource(R.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
+            enabled = true,
             modifier = Modifier
+              .fillMaxWidth()
               .padding(horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
         helpCenterButton = {
           if (uiState.isHelpCenterEnabled) {
-            HedvigSecondaryContainedButton(
+            HedvigButton(
               text = stringResource(R.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
+              buttonStyle = Secondary,
+              enabled = true,
               modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
@@ -518,35 +521,26 @@ private fun VeryImportantMessageCard(
   modifier: Modifier = Modifier,
 ) {
   key(veryImportantMessage.id) {
-    VectorInfoCard(
-      text = veryImportantMessage.message,
-      icon = Icons.Hedvig.WarningFilled,
-      iconColor = MaterialTheme.colorScheme.warningElement,
-      colors = CardDefaults.outlinedCardColors(
-        containerColor = MaterialTheme.colorScheme.warningContainer,
-        contentColor = MaterialTheme.colorScheme.onWarningContainer,
-      ),
+    HedvigNotificationCard(
+      message = veryImportantMessage.message,
+      priority = NotificationPriority.Attention,
       modifier = modifier.fillMaxSize(),
-    ) {
-      Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize(),
-      ) {
-        InfoCardTextButton(
-          text = stringResource(R.string.important_message_hide),
-          onClick = { hideImportantMessage(veryImportantMessage.id) },
-          modifier = Modifier.weight(1f),
+      withIcon = false,
+      style = if (veryImportantMessage.linkInfo != null) {
+        NotificationDefaults.InfoCardStyle.Buttons(
+          leftButtonText = stringResource(R.string.important_message_hide),
+          rightButtonText =
+            veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+          onLeftButtonClick = { hideImportantMessage(veryImportantMessage.id) },
+          onRightButtonClick = { openUrl(veryImportantMessage.linkInfo.link) },
         )
-        if (veryImportantMessage.linkInfo != null) {
-          Spacer(modifier = Modifier.width(8.dp))
-          InfoCardTextButton(
-            text = veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
-            onClick = { openUrl(veryImportantMessage.linkInfo.link) },
-            modifier = Modifier.weight(1f),
-          )
-        }
-      }
-    }
+      } else {
+        NotificationDefaults.InfoCardStyle.Button(
+          buttonText = stringResource(R.string.important_message_hide),
+          onButtonClick = { hideImportantMessage(veryImportantMessage.id) },
+        )
+      },
+    )
   }
 }
 
@@ -566,9 +560,16 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
     is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
     is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
   }
-  Text(
+  HedvigText(
     text = headlineText,
-    style = MaterialTheme.typography.headlineMedium,
+    // todo custom style since new DS does not have this specification
+    //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
+    style = HedvigTheme.typography.headlineMedium.copy(
+      fontFamily = FontFamily.HedvigSerif,
+      fontSize = 28.0.sp,
+      lineBreak = LineBreak.Heading,
+      textAlign = TextAlign.Center,
+    ),
     modifier = modifier.fillMaxWidth(),
   )
 }
@@ -580,7 +581,8 @@ private fun CrossSellBottomSheet(
   onCrossSellClick: (String) -> Unit,
 ) {
   HedvigBottomSheet(
-    onDismissed = onDismissed,
+    isVisible = true,
+    onVisibleChange = { onDismissed() },
     content = {
       Column {
         Spacer(Modifier.height(32.dp))
@@ -612,20 +614,20 @@ private fun PreviewHomeScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HomeScreen(
-        uiState = HomeUiState.Success(
+        uiState = Success(
           isReloading = false,
-          homeText = HomeText.Active,
-          claimStatusCardsData = HomeData.ClaimStatusCardsData(
+          homeText = Active,
+          claimStatusCardsData = ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
+                pillTypes = listOf(Claim, NotCompensated),
                 claimProgressItemsUiState = listOf(
                   ClaimProgressSegment(
-                    ClaimProgressSegment.SegmentText.Closed,
-                    ClaimProgressSegment.SegmentType.PAID,
+                    Closed,
+                    INACTIVE,
                   ),
                 ),
                 claimType = "Broken item",
@@ -635,7 +637,7 @@ private fun PreviewHomeScreen(
             ),
           ),
           veryImportantMessages = listOf(
-            HomeData.VeryImportantMessage(
+            VeryImportantMessage(
               "id",
               "Beware of the earthquake",
               LinkInfo(
@@ -645,14 +647,14 @@ private fun PreviewHomeScreen(
             ),
           ),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
+            connectPayment = ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            listOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+          crossSellsAction = CrossSellsAction(
+            listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
           ),
-          firstVetAction = HomeTopBarAction.FirstVetAction(
+          firstVetAction = FirstVetAction(
             listOf(
               FirstVetSection(
                 "",
@@ -662,7 +664,7 @@ private fun PreviewHomeScreen(
               ),
             ),
           ),
-          chatAction = HomeTopBarAction.ChatAction,
+          chatAction = ChatAction,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

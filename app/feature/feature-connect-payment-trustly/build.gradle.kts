@@ -5,16 +5,17 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.navigation.runtime)
   implementation(libs.androidx.other.browser)
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)

@@ -12,7 +12,7 @@ import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val helpCenterModule = module {

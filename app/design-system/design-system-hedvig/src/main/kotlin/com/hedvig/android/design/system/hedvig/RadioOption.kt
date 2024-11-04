@@ -110,22 +110,19 @@ internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLock
   return if (groupLockedState == Locked) Locked else data.lockedState
 }
 
-/*
-* Overload with Left-Aligned style, Medium size, with Composable content parameter
- */
 @Composable
 fun RadioOption(
   chosenState: ChosenState,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   lockedState: LockedState = NotLocked,
-  optionContent: @Composable () -> Unit,
+  size: RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned),
+  optionContent: @Composable (radioButtonIcon: @Composable () -> Unit) -> Unit,
 ) {
-  val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
   val interactionSource = remember { MutableInteractionSource() }
   val clickableModifier =
     modifier
-      .clip(fixedSize.shape)
+      .clip(size.shape)
       .semantics { role = Role.RadioButton }
       .clickable(
         enabled = when (lockedState) {
@@ -140,16 +137,15 @@ fun RadioOption(
 
   Surface(
     modifier = clickableModifier,
-    shape = fixedSize.shape,
+    shape = size.shape,
     color = radioOptionColors.containerColor,
   ) {
-    Row(
-      modifier = Modifier.padding(fixedSize.contentPadding),
+    Box(
+      modifier = Modifier.padding(size.contentPadding),
+      propagateMinConstraints = true,
     ) {
-      SelectIndicationCircle(chosenState, lockedState)
-      Spacer(Modifier.width(8.dp))
-      Row(Modifier.weight(1f)) {
-        optionContent()
+      optionContent {
+        SelectIndicationCircle(chosenState, lockedState)
       }
     }
   }
@@ -161,43 +157,27 @@ fun RadioOptionRightAligned(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   lockedState: LockedState = NotLocked,
+  size: RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned),
   optionContent: @Composable () -> Unit,
 ) {
-  val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
-  val interactionSource = remember { MutableInteractionSource() }
-  val clickableModifier =
-    modifier
-      .clip(fixedSize.shape)
-      .semantics { role = Role.RadioButton }
-      .clickable(
-        enabled = when (lockedState) {
-          Locked -> false
-          NotLocked -> true
+  RadioOption(
+    chosenState = chosenState,
+    onClick = onClick,
+    modifier = modifier,
+    lockedState = lockedState,
+    size = size,
+    optionContent = { radioButtonIcon ->
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { optionContent() },
+        endSlot = {
+          Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+            radioButtonIcon()
+          }
         },
-        interactionSource = interactionSource,
-        indication = LocalIndication.current,
-      ) {
-        onClick()
-      }
-
-  Surface(
-    modifier = clickableModifier,
-    shape = fixedSize.shape,
-    color = radioOptionColors.containerColor,
-  ) {
-    HorizontalItemsWithMaximumSpaceTaken(
-      modifier = Modifier.padding(fixedSize.contentPadding),
-      startSlot = {
-        optionContent()
-      },
-      endSlot = {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
-          SelectIndicationCircle(chosenState, lockedState)
-        }
-      },
-      spaceBetween = 8.dp,
-    )
-  }
+        spaceBetween = 8.dp,
+      )
+    },
+  )
 }
 
 @Composable
@@ -456,7 +436,7 @@ internal val radioOptionColors: RadioOptionColors
     }
   }
 
-internal sealed interface RadioOptionSize {
+sealed interface RadioOptionSize {
   val contentPadding: PaddingValues
 
   @get:Composable

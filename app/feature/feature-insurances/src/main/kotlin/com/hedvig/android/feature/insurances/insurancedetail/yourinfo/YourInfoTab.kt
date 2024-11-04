@@ -216,8 +216,7 @@ internal fun YourInfoTab(
       } else {
         VectorInfoCard(
           text = stringResource(
-            id = R.string.CONTRACT_COINSURED_UPDATE_IN_FUTURE,
-            upcomingChangesInsuranceAgreement.coInsured.size,
+            id = R.string.insurances_tab_your_insurance_will_be_updated,
             dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
           ),
           modifier = Modifier

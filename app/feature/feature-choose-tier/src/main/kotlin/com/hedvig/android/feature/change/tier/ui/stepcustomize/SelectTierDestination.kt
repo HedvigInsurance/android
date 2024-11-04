@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.change.tier.ui.stepcustomize
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -49,9 +49,6 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
-import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -72,8 +69,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
@@ -95,7 +90,6 @@ internal fun SelectTierDestination(
   ) {
     when (val state = uiState) {
       is Failure -> FailureScreen(
-        reason = state.reason,
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
@@ -150,45 +144,32 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
-    when (reason) {
-      GENERAL -> {
-        HedvigErrorSection(
-          onButtonClick = reload,
-          modifier = Modifier.fillMaxSize(),
-        )
-      }
-      QUOTES_ARE_EMPTY -> {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Horizontal +
-                  WindowInsetsSides.Bottom,
-              ),
-            ),
-        ) {
-          Spacer(Modifier.weight(1f))
-          EmptyState(
-            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
-            iconStyle = INFO,
-            buttonStyle = NoButton,
-            description = null,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.weight(1f))
-          HedvigTextButton(
-            stringResource(R.string.general_close_button),
-            onClick = popBackStack,
-            buttonSize = Large,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(32.dp))
-        }
-      }
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(
+          WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal +
+              WindowInsetsSides.Bottom,
+          ),
+        ),
+    ) {
+      Spacer(Modifier.weight(1f))
+      HedvigErrorSection(
+        onButtonClick = reload,
+        modifier = Modifier.fillMaxSize(),
+      )
+      Spacer(Modifier.weight(1f))
+      HedvigTextButton(
+        stringResource(R.string.general_close_button),
+        onClick = popBackStack,
+        buttonSize = Large,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(32.dp))
     }
   }
 }
@@ -276,7 +257,7 @@ private fun SelectTierScreen(
     HedvigButton(
       buttonSize = Large,
       text = stringResource(R.string.general_continue_button),
-      enabled = !uiState.isCurrentChosen,
+      enabled = (uiState.chosenQuote != null && !uiState.isCurrentChosen),
       onClick = {
         onContinueClick()
       },
@@ -336,7 +317,6 @@ private fun CustomizationCard(
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         chosenItemIndex = chosenTierIndex,
         onSelectorClick = {},
-        containerColor = HedvigTheme.colorScheme.fillNegative,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
@@ -392,7 +372,6 @@ private fun CustomizationCard(
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           chosenItemIndex = chosenQuoteIndex,
           onSelectorClick = {},
-          containerColor = HedvigTheme.colorScheme.fillNegative,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {
@@ -489,11 +468,12 @@ private fun DropdownContent(
       RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
-        optionContent = {
+        optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
             premium = option.premium,
             comment = option.tierDescription,
+            radioButtonIcon = radioButtonIcon,
           )
         },
       )
@@ -511,9 +491,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(R.string.general_cancel_button),
-      onClick = onCancelButtonClick,
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
+      onClick = onCancelButtonClick,
     )
   }
 }
@@ -550,31 +530,37 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
 }
 
 @Composable
-private fun ExpandedOptionContent(title: String, premium: String, comment: String?) {
-  Column {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(title)
-      },
-      spaceBetween = 8.dp,
-      endSlot = {
-        Row(horizontalArrangement = Arrangement.End) {
+private fun ExpandedOptionContent(
+  title: String,
+  premium: String,
+  comment: String?,
+  radioButtonIcon: @Composable () -> Unit,
+) {
+  Row {
+    radioButtonIcon()
+    Spacer(Modifier.width(8.dp))
+    Column(Modifier.weight(1f)) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        { HedvigText(title) },
+        {
           HighlightLabel(
             labelText = premium,
             size = HighLightSize.Small,
             color = HighlightColor.Grey(MEDIUM),
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd),
           )
-        }
-      },
-    )
-    if (comment != null) {
-      Spacer(Modifier.height(4.dp))
-      HedvigText(
-        text = comment,
-        modifier = Modifier.fillMaxWidth(),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
+        },
+        spaceBetween = 8.dp,
       )
+      if (comment != null) {
+        Spacer(Modifier.height(4.dp))
+        HedvigText(
+          text = comment,
+          modifier = Modifier.fillMaxWidth(),
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
     }
   }
 }
@@ -620,6 +606,30 @@ private fun CustomizationCardPreview() {
       onSetTierBackToPreviouslyChosen = {},
       onSetDeductibleBackToPreviouslyChosen = {},
     )
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDropdownContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DropdownContent(
+        "Title",
+        "Subtitle",
+        {},
+        {},
+        List(2) {
+          ExpandedRadioOptionData(
+            {},
+            Chosen,
+            "Title",
+            "Premium",
+            "TierDescription",
+          )
+        },
+      )
+    }
   }
 }
 

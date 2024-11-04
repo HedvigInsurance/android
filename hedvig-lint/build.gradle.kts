@@ -4,6 +4,7 @@ plugins {
   `java-library`
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.lintGradlePlugin)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 

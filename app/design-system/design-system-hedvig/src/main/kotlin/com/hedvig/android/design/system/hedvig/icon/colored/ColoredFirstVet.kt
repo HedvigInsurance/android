@@ -9,8 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType.Companion.EvenOdd
+import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,237 +25,77 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 @Suppress("UnusedReceiverParameter")
 public val HedvigIcons.ColoredFirstVet: ImageVector
   get() {
-    val current = _firstVet
-    if (current != null) return current
-
-    return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.icon.colored.FirstVet",
-      defaultWidth = 40.0.dp,
-      defaultHeight = 40.0.dp,
-      viewportWidth = 40.0f,
-      viewportHeight = 40.0f,
+    if (_firstVet != null) {
+      return _firstVet!!
+    }
+    _firstVet = Builder(
+      name = "FirstVet",
+      defaultWidth = 32.0.dp,
+      defaultHeight = 32.0.dp,
+      viewportWidth = 32.0f,
+      viewportHeight = 32.0f,
     ).apply {
-      // M20 4 A16 16 0 1 0 20 36 16 16 0 1 0 20 4z
       path(
         fill = SolidColor(Color(0xFF0061FF)),
+        strokeLineCap = StrokeCap.Butt,
+        strokeLineJoin = StrokeJoin.Miter,
+        pathFillType = NonZero,
       ) {
-        // M 20 4
-        moveTo(x = 20.0f, y = 4.0f)
-        // A 16 16 0 1 0 20 36
-        arcTo(
-          horizontalEllipseRadius = 16.0f,
-          verticalEllipseRadius = 16.0f,
-          theta = 0.0f,
-          isMoreThanHalf = true,
-          isPositiveArc = false,
-          x1 = 20.0f,
-          y1 = 36.0f,
-        )
-        // A 16 16 0 1 0 20 4z
-        arcTo(
-          horizontalEllipseRadius = 16.0f,
-          verticalEllipseRadius = 16.0f,
-          theta = 0.0f,
-          isMoreThanHalf = true,
-          isPositiveArc = false,
-          x1 = 20.0f,
-          y1 = 4.0f,
-        )
+        moveTo(32.0f, 16.0f)
+        curveTo(32.0f, 24.8366f, 24.8366f, 32.0f, 16.0f, 32.0f)
+        curveTo(7.1634f, 32.0f, 0.0f, 24.8366f, 0.0f, 16.0f)
+        curveTo(0.0f, 7.1634f, 7.1634f, 0.0f, 16.0f, 0.0f)
+        curveTo(24.8366f, 0.0f, 32.0f, 7.1634f, 32.0f, 16.0f)
         close()
       }
-      // m28 15.14 -2.75 1.44 -.02 -.17 a3.14 3.14 0 0 0 -2.8 -2.7 34 34 0 0 0 -3.73 -.21 h-.45 a34 34 0 0 0 -3.73 .2 3.14 3.14 0 0 0 -2.8 2.71 31 31 0 0 0 0 7.4 3.14 3.14 0 0 0 2.8 2.71 35 35 0 0 0 3.73 .2 h.45 q1.88 0 3.73 -.2 a3.14 3.14 0 0 0 2.8 -2.71 l.02 -.17 L28 25.08 c.23 .12 .5 -.04 .5 -.3 v-9.35 c0 -.25 -.27 -.4 -.5 -.29 m-5.32 5.66 a1 1 0 0 1 -1.18 .8 l-2 -.34 -.52 2.93 -1 -.17 a1 1 0 0 1 -.82 -1.15 l.35 -1.96 -2.99 -.51 .18 -.98 a1 1 0 0 1 1.17 -.8 l2 .34 .52 -2.93 1 .17 a1 1 0 0 1 .82 1.15 l-.35 1.96 3 .51z
       path(
         fill = SolidColor(Color(0xFFFAFAFA)),
+        strokeLineCap = StrokeCap.Butt,
+        strokeLineJoin = StrokeJoin.Miter,
+        pathFillType = EvenOdd,
       ) {
-        // m 28 15.14
-        moveToRelative(dx = 28.0f, dy = 15.14f)
-        // l -2.75 1.44
-        lineToRelative(dx = -2.75f, dy = 1.44f)
-        // l -0.02 -0.17
-        lineToRelative(dx = -0.02f, dy = -0.17f)
-        // a 3.14 3.14 0 0 0 -2.8 -2.7
-        arcToRelative(
-          a = 3.14f,
-          b = 3.14f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -2.8f,
-          dy1 = -2.7f,
-        )
-        // a 34 34 0 0 0 -3.73 -0.21
-        arcToRelative(
-          a = 34.0f,
-          b = 34.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -3.73f,
-          dy1 = -0.21f,
-        )
-        // h -0.45
-        horizontalLineToRelative(dx = -0.45f)
-        // a 34 34 0 0 0 -3.73 0.2
-        arcToRelative(
-          a = 34.0f,
-          b = 34.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -3.73f,
-          dy1 = 0.2f,
-        )
-        // a 3.14 3.14 0 0 0 -2.8 2.71
-        arcToRelative(
-          a = 3.14f,
-          b = 3.14f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -2.8f,
-          dy1 = 2.71f,
-        )
-        // a 31 31 0 0 0 0 7.4
-        arcToRelative(
-          a = 31.0f,
-          b = 31.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 0.0f,
-          dy1 = 7.4f,
-        )
-        // a 3.14 3.14 0 0 0 2.8 2.71
-        arcToRelative(
-          a = 3.14f,
-          b = 3.14f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 2.8f,
-          dy1 = 2.71f,
-        )
-        // a 35 35 0 0 0 3.73 0.2
-        arcToRelative(
-          a = 35.0f,
-          b = 35.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 3.73f,
-          dy1 = 0.2f,
-        )
-        // h 0.45
-        horizontalLineToRelative(dx = 0.45f)
-        // q 1.88 0 3.73 -0.2
-        quadToRelative(
-          dx1 = 1.88f,
-          dy1 = 0.0f,
-          dx2 = 3.73f,
-          dy2 = -0.2f,
-        )
-        // a 3.14 3.14 0 0 0 2.8 -2.71
-        arcToRelative(
-          a = 3.14f,
-          b = 3.14f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 2.8f,
-          dy1 = -2.71f,
-        )
-        // l 0.02 -0.17
-        lineToRelative(dx = 0.02f, dy = -0.17f)
-        // L 28 25.08
-        lineTo(x = 28.0f, y = 25.08f)
-        // c 0.23 0.12 0.5 -0.04 0.5 -0.3
-        curveToRelative(
-          dx1 = 0.23f,
-          dy1 = 0.12f,
-          dx2 = 0.5f,
-          dy2 = -0.04f,
-          dx3 = 0.5f,
-          dy3 = -0.3f,
-        )
-        // v -9.35
-        verticalLineToRelative(dy = -9.35f)
-        // c 0 -0.25 -0.27 -0.4 -0.5 -0.29
-        curveToRelative(
-          dx1 = 0.0f,
-          dy1 = -0.25f,
-          dx2 = -0.27f,
-          dy2 = -0.4f,
-          dx3 = -0.5f,
-          dy3 = -0.29f,
-        )
-        // m -5.32 5.66
-        moveToRelative(dx = -5.32f, dy = 5.66f)
-        // a 1 1 0 0 1 -1.18 0.8
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -1.18f,
-          dy1 = 0.8f,
-        )
-        // l -2 -0.34
-        lineToRelative(dx = -2.0f, dy = -0.34f)
-        // l -0.52 2.93
-        lineToRelative(dx = -0.52f, dy = 2.93f)
-        // l -1 -0.17
-        lineToRelative(dx = -1.0f, dy = -0.17f)
-        // a 1 1 0 0 1 -0.82 -1.15
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -0.82f,
-          dy1 = -1.15f,
-        )
-        // l 0.35 -1.96
-        lineToRelative(dx = 0.35f, dy = -1.96f)
-        // l -2.99 -0.51
-        lineToRelative(dx = -2.99f, dy = -0.51f)
-        // l 0.18 -0.98
-        lineToRelative(dx = 0.18f, dy = -0.98f)
-        // a 1 1 0 0 1 1.17 -0.8
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 1.17f,
-          dy1 = -0.8f,
-        )
-        // l 2 0.34
-        lineToRelative(dx = 2.0f, dy = 0.34f)
-        // l 0.52 -2.93
-        lineToRelative(dx = 0.52f, dy = -2.93f)
-        // l 1 0.17
-        lineToRelative(dx = 1.0f, dy = 0.17f)
-        // a 1 1 0 0 1 0.82 1.15
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 0.82f,
-          dy1 = 1.15f,
-        )
-        // l -0.35 1.96
-        lineToRelative(dx = -0.35f, dy = 1.96f)
-        // l 3 0.51z
-        lineToRelative(dx = 3.0f, dy = 0.51f)
+        moveTo(24.4754f, 10.7368f)
+        lineTo(21.5583f, 12.258f)
+        curveTo(21.5516f, 12.2004f, 21.5465f, 12.1411f, 21.5398f, 12.0835f)
+        curveTo(21.3599f, 10.5673f, 20.1157f, 9.3819f, 18.5756f, 9.214f)
+        curveTo(17.2726f, 9.0708f, 15.9494f, 9.0f, 14.6244f, 9.0f)
+        horizontalLineTo(14.1486f)
+        curveTo(12.8254f, 9.0f, 11.5005f, 9.0708f, 10.1992f, 9.214f)
+        curveTo(8.6591f, 9.3819f, 7.4149f, 10.5673f, 7.2333f, 12.0818f)
+        curveTo(6.9222f, 14.6846f, 6.9222f, 17.3137f, 7.2333f, 19.9165f)
+        curveTo(7.4149f, 21.4311f, 8.6591f, 22.6181f, 10.1992f, 22.786f)
+        curveTo(11.5005f, 22.9275f, 12.8254f, 23.0f, 14.1486f, 23.0f)
+        horizontalLineTo(14.6244f)
+        curveTo(15.9477f, 23.0f, 17.2726f, 22.9292f, 18.5739f, 22.786f)
+        curveTo(20.114f, 22.6181f, 21.3582f, 21.4311f, 21.5398f, 19.9165f)
+        curveTo(21.5465f, 19.8573f, 21.5516f, 19.7996f, 21.5583f, 19.7404f)
+        lineTo(24.4737f, 21.2615f)
+        curveTo(24.7125f, 21.385f, 25.0f, 21.2171f, 25.0f, 20.952f)
+        verticalLineTo(11.0447f)
+        curveTo(25.0f, 10.7813f, 24.7125f, 10.6117f, 24.4754f, 10.7368f)
+        close()
+        moveTo(18.8328f, 16.7293f)
+        curveTo(18.7303f, 17.3006f, 18.1738f, 17.6825f, 17.5904f, 17.5804f)
+        lineTo(15.4786f, 17.2149f)
+        lineTo(14.9204f, 20.3166f)
+        lineTo(13.8645f, 20.1338f)
+        curveTo(13.2811f, 20.0334f, 12.891f, 19.4885f, 12.9953f, 18.9172f)
+        lineTo(13.3685f, 16.8495f)
+        lineTo(10.2008f, 16.3029f)
+        lineTo(10.3875f, 15.2691f)
+        curveTo(10.49f, 14.6978f, 11.0466f, 14.3158f, 11.63f, 14.4179f)
+        lineTo(13.7418f, 14.7817f)
+        lineTo(14.3f, 11.6802f)
+        lineTo(15.3559f, 11.8629f)
+        curveTo(15.9393f, 11.9633f, 16.3293f, 12.5082f, 16.2251f, 13.0795f)
+        lineTo(15.8535f, 15.1472f)
+        lineTo(19.0212f, 15.6938f)
+        lineTo(18.8328f, 16.7293f)
         close()
       }
-      // M31 4 A5 5 0 1 0 31 14 5 5 0 1 0 31 4z
-    }.build().also { _firstVet = it }
+    }
+      .build()
+    return _firstVet!!
   }
 
 @Preview

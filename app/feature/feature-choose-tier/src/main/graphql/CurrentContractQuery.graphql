@@ -3,46 +3,6 @@ query CurrentContractsForTierChange {
     activeContracts {
       id
       exposureDisplayName
-      upcomingChangedAgreement {
-        displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
-        }
-        premium {
-          ...MoneyFragment
-        }
-        deductible {
-          displayText
-          percentage
-          amount {
-            ...MoneyFragment
-          }
-        }
-        productVariant {
-          ...ProductVariantFragment
-        }
-      }
-      currentAgreement {
-        displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
-        }
-        premium {
-          ...MoneyFragment
-        }
-        deductible {
-          displayText
-          percentage
-          amount {
-            ...MoneyFragment
-          }
-        }
-        productVariant {
-          ...ProductVariantFragment
-        }
-      }
     }
   }
 }

@@ -31,7 +31,9 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
     }
     StartChangeTierFlowDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      popBackStack = {
+        navigator.popBackStack()
+      },
       launchFlow = { params: InsuranceCustomizationParameters ->
         navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowDestination> {
@@ -108,7 +110,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
 
     navdestination<ChooseTierDestination.Summary>(
       destinationNavTypeAware = ChooseTierDestination.Summary.Companion,
-    ) { backStackEntry ->
+    ) {
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
@@ -132,7 +134,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       )
     }
 
-    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) { backStackEntry ->
+    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) {
       SubmitTierSuccessScreen(
         activationDate,
         popBackStack = navigator::popBackStack,

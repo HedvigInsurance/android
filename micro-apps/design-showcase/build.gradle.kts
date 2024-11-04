@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -49,15 +50,10 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.graphicsShapes)
-  implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.material.components)
   implementation(libs.timber)
-  implementation(libs.zoomable)
   implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
   implementation(projects.loggingAndroid)

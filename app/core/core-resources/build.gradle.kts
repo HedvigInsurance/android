@@ -4,6 +4,7 @@ import java.util.Properties
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.lokalise")
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 

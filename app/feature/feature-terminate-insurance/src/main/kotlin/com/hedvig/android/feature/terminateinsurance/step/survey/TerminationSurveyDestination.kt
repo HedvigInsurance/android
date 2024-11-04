@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -220,7 +221,7 @@ private fun TerminationSurveyScreen(
             verticalArrangement = Arrangement.Center,
           ) {
             val subTitle = stringResource(R.string.GENERAL_ERROR_BODY)
-            val title = stringResource(R.string.GENERAL_ERROR_BODY)
+            val title = stringResource(R.string.something_went_wrong)
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -263,7 +264,7 @@ private fun TerminationSurveyScreen(
                   val buttonText = suggestion.buttonTitle
                   val onSuggestionButtonClick: () -> Unit = when (suggestion) {
                     is UpdateAddress -> {
-                      { navigateToMovingFlow() }
+                      dropUnlessResumed { navigateToMovingFlow() }
                     }
 
                     is Redirect -> {
@@ -380,7 +381,7 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
-        errorWhileLoadingNextStep = false,
+        errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),

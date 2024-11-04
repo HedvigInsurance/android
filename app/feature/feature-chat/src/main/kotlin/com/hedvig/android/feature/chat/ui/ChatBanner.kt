@@ -29,7 +29,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 
 @Composable
-internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun ChatBanner(text: String, modifier: Modifier = Modifier) {
   HedvigInfoCard(
     modifier = modifier,
     contentPadding = PaddingValues(
@@ -72,7 +72,7 @@ internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, mod
 private fun PreviewChatBanner() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChatBanner("HHHHHH".repeat(15), {})
+      ChatBanner("HHHHHH".repeat(15))
     }
   }
 }

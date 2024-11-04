@@ -63,10 +63,10 @@ internal fun ChooseInsuranceToChangeTierDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = { viewModel.emit(ChooseInsuranceToCustomizeEvent.RetryLoadData) },
-    fetchTerminationStep = { viewModel.emit(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToTerminate(it)) },
+    fetchTerminationStep = { viewModel.emit(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(it)) },
     selectInsurance = { id -> viewModel.emit(ChooseInsuranceToCustomizeEvent.SelectInsurance(id)) },
     navigateToNextStep = { params ->
-      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearTerminationStep)
+      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearNavigationStep)
       navigateToNextStep(params)
     },
   )

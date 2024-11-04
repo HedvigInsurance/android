@@ -145,10 +145,14 @@ fun TopAppBar(
   }
 }
 
+/**
+ * Just the layout and placing of the top app bar, without the background, drag handling and so on. Can be used to
+ * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
+ */
 @Composable
-internal fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
+fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
   Row(
-    horizontalArrangement = Arrangement.End,
+    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .windowInsetsPadding(windowInsets)

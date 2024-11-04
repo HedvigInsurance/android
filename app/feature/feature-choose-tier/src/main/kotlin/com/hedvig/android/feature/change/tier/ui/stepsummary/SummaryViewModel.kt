@@ -127,16 +127,24 @@ private class SummaryPresenter(
               currentState = Failure
             },
             ifRight = { rightQuote ->
-              val currentContract = ContractData(
-                contractGroup = currentContractData.productVariant.contractGroup,
-                activeDisplayPremium = currentContractData.currentDisplayPremium.toString(),
-                contractDisplayName = currentContractData.productVariant.displayName,
-                contractDisplaySubtitle = currentContractData.currentExposureName,
-              )
-              currentState = Success(
-                quote = rightQuote,
-                currentContractData = currentContract,
-              )
+              val currentQuoteToChange = tierRepository.getQuoteById(tierRepository.getCurrentQuoteId()).getOrNull()
+              if (currentQuoteToChange == null) {
+                logcat(ERROR) {
+                  " Change tier flow SummaryViewModel: currentQuoteId not found in DB!"
+                }
+                currentState = Failure
+              } else {
+                val currentContract = ContractData(
+                  contractGroup = currentQuoteToChange.productVariant.contractGroup,
+                  activeDisplayPremium = currentQuoteToChange.premium.toString(),
+                  contractDisplayName = currentQuoteToChange.productVariant.displayName,
+                  contractDisplaySubtitle = currentContractData.currentExposureName,
+                )
+                currentState = Success(
+                  quote = rightQuote,
+                  currentContractData = currentContract,
+                )
+              }
             },
           )
         },

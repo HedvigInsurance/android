@@ -188,7 +188,7 @@ private fun SummarySuccessScreen(
         onConfirmClick = onConfirmClick,
         confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(R.string.general_cancel_button),
-        text = null,
+        subtitle = null,
       )
     }
     SummaryCard(
@@ -338,7 +338,7 @@ private fun ExtendedCardContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-    quote.productVariant.insurableLimits.forEachIndexed { i, insurableLimit ->
+    quote.productVariant.insurableLimits.forEach { insurableLimit ->
       DisplayItemRowSecondaryColor(insurableLimit.label, insurableLimit.limit)
     }
     Spacer(Modifier.height(16.dp))

@@ -7,7 +7,7 @@ import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUse
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallbackImpl
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val connectPaymentTrustlyModule = module {

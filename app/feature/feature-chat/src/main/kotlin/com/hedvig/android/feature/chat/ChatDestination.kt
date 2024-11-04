@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -70,7 +69,6 @@ internal fun CbmChatDestination(
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
-    onBannerLinkClicked = openUrl,
     onNavigateUp = onNavigateUp,
     onNavigateToClaimDetails = onNavigateToClaimDetails,
     onSendMessage = { message: String ->
@@ -100,7 +98,6 @@ private fun ChatScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
   onSendMessage: (String) -> Unit,
@@ -113,7 +110,6 @@ private fun ChatScreen(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Column {
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
@@ -147,7 +143,6 @@ private fun ChatScreen(
               imageLoader = imageLoader,
               appPackageId = appPackageId,
               openUrl = openUrl,
-              onBannerLinkClicked = onBannerLinkClicked,
               onRetrySendChatMessage = onRetrySendChatMessage,
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
@@ -256,7 +251,6 @@ private fun PreviewChatScreen(
             imageLoader = rememberPreviewImageLoader(),
             appPackageId = "",
             openUrl = {},
-            onBannerLinkClicked = {},
             onNavigateToClaimDetails = {},
             onNavigateUp = {},
             onSendMessage = {},

@@ -11,6 +11,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
+import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
@@ -32,7 +34,7 @@ internal class StartTierFlowViewModel(
     ),
   )
 
-private class StartTierChangePresenter(
+internal class StartTierChangePresenter(
   private val insuranceID: String,
   private val tierRepository: ChangeTierRepository,
 ) : MoleculePresenter<StartTierChangeEvent, StartTierChangeState> {
@@ -47,17 +49,19 @@ private class StartTierChangePresenter(
       tierRepository.startChangeTierIntentAndGetQuotesId(insuranceID, ChangeTierCreateSource.SELF_SERVICE).fold(
         ifLeft = { left: ErrorMessage ->
           logcat(WARN) { "Start TierFlow failed with: $left" }
-          currentState = Failure
+          currentState = Failure(GENERAL)
         },
         ifRight = { result ->
-          val parameters = InsuranceCustomizationParameters(
-            insuranceId = insuranceID,
-            activationDate = result.activationDate,
-            currentTierLevel = result.currentTierLevel,
-            currentTierName = result.currentTierName,
-            quoteIds = result.quotes.map { it.id },
-          )
-          currentState = Success(parameters)
+          if (result.quotes.isEmpty()) {
+            currentState = Failure(QUOTES_ARE_EMPTY)
+          } else {
+            val parameters = InsuranceCustomizationParameters(
+              insuranceId = insuranceID,
+              activationDate = result.activationDate,
+              quoteIds = result.quotes.map { it.id },
+            )
+            currentState = Success(parameters)
+          }
         },
       )
     }
@@ -75,12 +79,17 @@ internal sealed interface StartTierChangeState {
   data object Loading : StartTierChangeState
 
   data class Success(
-    val paramsToNavigate: InsuranceCustomizationParameters?,
+    val paramsToNavigate: InsuranceCustomizationParameters,
   ) : StartTierChangeState
 
-  data object Failure : StartTierChangeState
+  data class Failure(val reason: FailureReason) : StartTierChangeState
 }
 
 internal sealed interface StartTierChangeEvent {
   data object Reload : StartTierChangeEvent
+}
+
+internal enum class FailureReason {
+  GENERAL,
+  QUOTES_ARE_EMPTY,
 }

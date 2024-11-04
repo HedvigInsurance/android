@@ -4,16 +4,13 @@ plugins {
   id("hedvig.android.library.compose")
   id("kotlin-parcelize")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
-
-  implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

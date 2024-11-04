@@ -8,6 +8,8 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +34,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -53,8 +56,6 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDetailedStyl
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Default
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detailed
-import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.End
-import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.Start
 import com.hedvig.android.design.system.hedvig.internal.rememberAnchorDraggableState
 import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultToggleTokens
@@ -68,62 +69,145 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
 @Composable
 fun HedvigToggle(
   labelText: String,
   turnedOn: Boolean,
   onClick: (Boolean) -> Unit,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
   val containerColor by toggleColors.containerColor(turnedOn)
-  val labelColor by toggleColors.labelColor(turnedOn)
+  val labelColor by toggleColors.labelColor(turnedOn, enabled)
   val descriptionColor by toggleColors.descriptionColor(turnedOn)
-  when (toggleStyle) {
-    is Default -> {
-      DefaultToggle(
-        size = toggleStyle.size,
-        labelText = labelText,
-        turnedOn = turnedOn,
-        onClick = onClick,
-        modifier = modifier,
-        containerColor = containerColor,
-        labelColor = labelColor,
-      )
-    }
 
-    is Detailed -> {
-      DetailedToggle(
-        size = toggleStyle.size,
-        labelText = labelText,
-        turnedOn = turnedOn,
-        modifier = modifier,
-        onClick = onClick,
-        descriptionText = toggleStyle.descriptionText,
-        containerColor = containerColor,
-        descriptionColor = descriptionColor,
-        labelColor = labelColor,
-      )
+  val density = LocalDensity.current
+  val positionalThreshold = { distance: Float -> distance * 0.3f }
+  val velocityThreshold = { with(density) { 100.dp.toPx() } }
+  val animationSpec = tween<Float>()
+  val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+  val state = rememberAnchorDraggableState(
+    density = density,
+    initialValue = turnedOn,
+    positionalThreshold = positionalThreshold,
+    velocityThreshold = velocityThreshold,
+    snapAnimationSpec = animationSpec,
+    decayAnimationSpec = decayAnimationSpec,
+  )
+  LaunchedEffect(turnedOn) {
+    if (state.targetValue != turnedOn) {
+      state.snapTo(turnedOn)
+    }
+  }
+  LaunchedEffect(state) {
+    snapshotFlow { state.settledValue }
+      .drop(1)
+      .collect { settledValue ->
+        onClick(settledValue)
+      }
+  }
+
+  val coroutineScope = rememberCoroutineScope()
+  Surface(
+    onClick = {
+      coroutineScope.launch {
+        val newValue = !state.targetValue
+        onClick(newValue)
+        state.animateTo(newValue)
+      }
+    },
+    shape = toggleStyle.shape,
+    color = containerColor,
+    enabled = enabled,
+    modifier = modifier,
+  ) {
+    when (toggleStyle) {
+      is Default -> {
+        DefaultToggle(
+          state = state,
+          size = toggleStyle.size,
+          labelText = labelText,
+          turnedOn = turnedOn,
+          enabled = enabled,
+          labelColor = labelColor,
+        )
+      }
+
+      is Detailed -> {
+        DetailedToggle(
+          state = state,
+          size = toggleStyle.size,
+          labelText = labelText,
+          turnedOn = turnedOn,
+          enabled = enabled,
+          descriptionText = toggleStyle.descriptionText,
+          descriptionColor = descriptionColor,
+          labelColor = labelColor,
+        )
+      }
     }
   }
 }
 
 @Composable
 private fun DefaultToggle(
+  state: AnchoredDraggableState<Boolean>,
   size: ToggleDefaults.ToggleDefaultStyleSize,
-  containerColor: Color,
   labelText: String,
   labelColor: Color,
   turnedOn: Boolean,
-  onClick: (Boolean) -> Unit,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Surface(
-    shape = size.size.shape,
-    color = containerColor,
-    modifier = modifier,
-  ) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        HedvigText(
+          text = labelText,
+          style = size.size.textStyle,
+          color = labelColor,
+        )
+      }
+    },
+    endSlot = {
+      Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Toggle(
+          state = state,
+          turnedOn = turnedOn,
+          enabled = enabled,
+          modifier = Modifier
+            .padding(
+              size.size.togglePadding,
+            ),
+        )
+      }
+    },
+    spaceBetween = 4.dp,
+    modifier = modifier.padding(size.size.contentPadding),
+  )
+}
+
+@Composable
+private fun DetailedToggle(
+  state: AnchoredDraggableState<Boolean>,
+  size: ToggleDefaults.ToggleDetailedStyleSize,
+  labelText: String,
+  descriptionText: String,
+  descriptionColor: Color,
+  labelColor: Color,
+  turnedOn: Boolean,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier.padding(size.size.contentPadding)) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(
@@ -131,7 +215,7 @@ private fun DefaultToggle(
         ) {
           HedvigText(
             text = labelText,
-            style = size.size.textStyle,
+            style = size.size.labelTextStyle,
             color = labelColor,
           )
         }
@@ -142,99 +226,35 @@ private fun DefaultToggle(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Toggle(
-            enabled = turnedOn,
-            onClick = onClick,
-            modifier = Modifier
-              .padding(
-                size.size.togglePadding,
-              ),
+            state = state,
+            turnedOn = turnedOn,
+            enabled = enabled,
+            modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
           )
         }
       },
       spaceBetween = 4.dp,
-      modifier = Modifier.padding(size.size.contentPadding),
+    )
+    Spacer(Modifier.height(size.size.spacerHeight))
+    HedvigText(
+      text = descriptionText,
+      style = size.size.descriptionTextStyle,
+      color = descriptionColor,
     )
   }
 }
 
 @Composable
-private fun DetailedToggle(
-  size: ToggleDefaults.ToggleDetailedStyleSize,
-  labelText: String,
-  descriptionText: String,
-  containerColor: Color,
-  descriptionColor: Color,
-  labelColor: Color,
+private fun Toggle(
+  state: AnchoredDraggableState<Boolean>,
   turnedOn: Boolean,
-  onClick: (Boolean) -> Unit,
+  enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Surface(
-    shape = size.size.shape,
-    color = containerColor,
-    modifier = modifier,
-  ) {
-    Column(Modifier.padding(size.size.contentPadding)) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            HedvigText(
-              text = labelText,
-              style = size.size.labelTextStyle,
-              color = labelColor,
-            )
-          }
-        },
-        endSlot = {
-          Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Toggle(
-              enabled = turnedOn,
-              onClick = onClick,
-              modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
-            )
-          }
-        },
-        spaceBetween = 4.dp,
-      )
-      Spacer(Modifier.height(size.size.spacerHeight))
-      HedvigText(
-        text = descriptionText,
-        style = size.size.descriptionTextStyle,
-        color = descriptionColor,
-      )
-    }
-  }
-}
-
-@Composable
-private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modifier = Modifier) {
   val density = LocalDensity.current
-  val positionalThreshold = { distance: Float -> distance * 0.3f }
-  val velocityThreshold = { with(density) { 100.dp.toPx() } }
-  val animationSpec = tween<Float>()
-  val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-  val state = rememberAnchorDraggableState(
-    density = density,
-    initialValue = if (enabled) End else Start,
-    positionalThreshold = positionalThreshold,
-    velocityThreshold = velocityThreshold,
-    snapAnimationSpec = animationSpec,
-    decayAnimationSpec = decayAnimationSpec,
-  )
-  LaunchedEffect(state.settledValue) {
-    when (state.settledValue) {
-      Start -> if (enabled) onClick(false)
-      End -> if (!enabled) onClick(true)
-    }
-  }
   val contentSize = toggleIconSize.height
   val contentSizePx = with(density) { contentSize.toPx() }
-  val backgroundColor = toggleColors.toggleBackgroundColor(enabled)
+  val backgroundColor = toggleColors.toggleBackgroundColor(turnedOn)
   val interactionSource = remember { MutableInteractionSource() }
   Box {
     ToggleBackground(
@@ -247,10 +267,8 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
             val dragEndPoint = layoutSize.width - contentSizePx
             state.updateAnchors(
               DraggableAnchors {
-                ToggleDragAnchors.entries
-                  .forEach { anchor ->
-                    anchor at dragEndPoint * anchor.fraction
-                  }
+                false at 0f
+                true at dragEndPoint
               },
             )
           },
@@ -258,6 +276,7 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
       interactionSource = interactionSource,
       contentSize = contentSize,
       draggableState = state,
+      enabled = enabled,
       content = {
         ToggleTop(
           backgroundColor = backgroundColor.value,
@@ -267,17 +286,13 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   }
 }
 
-private enum class ToggleDragAnchors(val fraction: Float) {
-  Start(0f),
-  End(1f),
-}
-
 @Composable
 private fun ToggleBackground(
   color: Color,
   interactionSource: MutableInteractionSource,
   contentSize: Dp,
-  draggableState: AnchoredDraggableState<ToggleDragAnchors>,
+  draggableState: AnchoredDraggableState<Boolean>,
+  enabled: Boolean,
   content: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -299,8 +314,9 @@ private fun ToggleBackground(
           )
         }
         .anchoredDraggable(
-          draggableState,
-          Orientation.Horizontal,
+          state = draggableState,
+          orientation = Orientation.Horizontal,
+          enabled = enabled,
           interactionSource = interactionSource,
         ),
     ) {
@@ -325,13 +341,24 @@ private fun ToggleTop(backgroundColor: Color, modifier: Modifier = Modifier) {
 object ToggleDefaults {
   internal val toggleStyle: ToggleStyle = Default(ToggleDefaultStyleSize.Large)
 
-  sealed class ToggleStyle {
-    class Default(val size: ToggleDefaultStyleSize) : ToggleStyle()
+  sealed interface ToggleStyle {
+    @get:Composable
+    val shape: Shape
+
+    class Default(val size: ToggleDefaultStyleSize) : ToggleStyle {
+      override val shape: Shape
+        @Composable
+        get() = size.size.shape
+    }
 
     class Detailed(
       val size: ToggleDetailedStyleSize,
       val descriptionText: String,
-    ) : ToggleStyle()
+    ) : ToggleStyle {
+      override val shape: Shape
+        @Composable
+        get() = size.size.shape
+    }
   }
 
   enum class ToggleDefaultStyleSize {
@@ -363,6 +390,7 @@ private val ToggleDefaults.ToggleDetailedStyleSize.size: ToggleDetailedStyleSize
 private data class ToggleColors(
   val containerColor: Color,
   val labelColor: Color,
+  val disabledLabelColor: Color,
   private val descriptionColor: Color,
   val pulsatingContainerColor: Color,
   val pulsatingLabelColor: Color,
@@ -372,16 +400,17 @@ private data class ToggleColors(
   private val toggleBackgroundOffColor: Color,
 ) {
   @Composable
-  fun labelColor(isTurnedOn: Boolean): State<Color> {
+  fun labelColor(isTurnedOn: Boolean, enabled: Boolean): State<Color> {
     val shouldPulsate = shouldPulsate(isTurnedOn)
     val targetValue = when {
       shouldPulsate -> pulsatingLabelColor
+      !enabled -> disabledLabelColor
       else -> labelColor
     }
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -396,7 +425,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -411,7 +440,7 @@ private data class ToggleColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -426,7 +455,7 @@ private data class ToggleColors(
         .collectLatest { latest ->
           if (latest) {
             shouldPulsate = true
-            delay(AnimationTokens().pulsatingAnimationDuration.toLong())
+            delay(AnimationTokens.pulsatingAnimationDuration.toLong())
             shouldPulsate = false
           }
         }
@@ -435,15 +464,15 @@ private data class ToggleColors(
   }
 
   @Composable
-  fun toggleBackgroundColor(enabled: Boolean): State<Color> {
+  fun toggleBackgroundColor(turnedOn: Boolean): State<Color> {
     val targetValue = when {
-      enabled -> toggleBackgroundOnColor
+      turnedOn -> toggleBackgroundOnColor
       else -> toggleBackgroundOffColor
     }
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+        durationMillis = AnimationTokens.pulsatingAnimationDuration,
       ),
     )
   }
@@ -606,6 +635,7 @@ private val toggleColors: ToggleColors
       ToggleColors(
         containerColor = fromToken(ToggleColorTokens.ContainerColor),
         labelColor = fromToken(ToggleColorTokens.LabelColor),
+        disabledLabelColor = fromToken(ToggleColorTokens.DisabledLabelColor),
         descriptionColor = fromToken(ToggleColorTokens.DescriptionColor),
         pulsatingContainerColor = fromToken(ToggleColorTokens.PulsatingContainerColor),
         pulsatingLabelColor = fromToken(ToggleColorTokens.PulsatingLabelColor),
@@ -644,6 +674,7 @@ private fun TogglePreview() {
           onClick = { enabled = !enabled },
           labelText = "LargeLarge onLarge optionLarge optionLarge optionLarge " +
             "optionLarge optionLarge optionLarge option",
+          enabled = true,
           toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Large),
         )
         Spacer(Modifier.height(8.dp))
@@ -653,6 +684,7 @@ private fun TogglePreview() {
             onClick = { enabled3 = !enabled3 },
             labelText = "Medium",
             toggleStyle = Default(Medium),
+            enabled = true,
             modifier = Modifier.weight(1f),
           )
           Spacer(Modifier.width(8.dp))
@@ -661,6 +693,7 @@ private fun TogglePreview() {
             onClick = { enabled4 = !enabled4 },
             labelText = "Small",
             toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Small),
+            enabled = true,
             modifier = Modifier.weight(1f),
           )
         }
@@ -670,6 +703,7 @@ private fun TogglePreview() {
             turnedOn = enabled2,
             onClick = { enabled2 = !enabled2 },
             labelText = "Large",
+            enabled = true,
             modifier = Modifier.weight(1f),
             toggleStyle = Detailed(
               size = Large,
@@ -681,6 +715,7 @@ private fun TogglePreview() {
             turnedOn = enabled5,
             onClick = { enabled5 = !enabled5 },
             labelText = "Small",
+            enabled = true,
             modifier = Modifier.weight(1f),
             toggleStyle = Detailed(
               size = Small,
