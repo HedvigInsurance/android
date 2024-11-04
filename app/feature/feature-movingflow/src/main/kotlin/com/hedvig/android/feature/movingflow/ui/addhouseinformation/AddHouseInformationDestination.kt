@@ -145,6 +145,7 @@ private fun AddHouseInformationScreen(
         onButtonClick = popBackStack,
         subTitle = null,
         buttonText = stringResource(R.string.app_info_submit_bug_go_back),
+        modifier = Modifier.fillMaxWidth(),
       )
 
       is Content -> AddHouseInformationScreen(uiState, dismissSubmissionError, onSubmit, Modifier.weight(1f))
@@ -244,6 +245,7 @@ private fun AddHouseInformationScreen(
       HedvigNotificationCard(
         message = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
         priority = Info,
+        modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(
