@@ -30,7 +30,6 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataChangetier)
