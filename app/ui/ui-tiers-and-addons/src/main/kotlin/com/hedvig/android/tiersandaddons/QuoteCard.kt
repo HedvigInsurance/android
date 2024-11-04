@@ -68,6 +68,7 @@ fun QuoteCard(
   premium: String,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
 ) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
@@ -77,6 +78,7 @@ fun QuoteCard(
     subtitle = subtitle,
     premium = premium,
     displayItems = displayItems,
+    underTitleContent = underTitleContent,
     modifier = modifier,
   )
 }
@@ -90,6 +92,7 @@ private fun QuoteCard(
   premium: String,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
 ) {
   HedvigCard(
     modifier = modifier,
@@ -131,6 +134,7 @@ private fun QuoteCard(
           )
         },
       )
+      underTitleContent()
       AnimatedVisibility(
         visible = showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),

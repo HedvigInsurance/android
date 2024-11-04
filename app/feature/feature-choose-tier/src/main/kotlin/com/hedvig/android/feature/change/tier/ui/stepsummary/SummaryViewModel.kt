@@ -207,5 +207,5 @@ internal sealed interface SummaryEvent {
 
   data object HandledSharingPdfFile : SummaryEvent
 
-  data class DownLoadFromUrl(val url: String) : SummaryEvent
+  data class DownLoadFromUrl(val url: String) : SummaryEvent // todo remove
 }
