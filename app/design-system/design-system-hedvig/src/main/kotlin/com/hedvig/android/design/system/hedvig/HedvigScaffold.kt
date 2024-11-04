@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
@@ -34,18 +35,20 @@ fun HedvigScaffold(
     modifier = modifier,
   ) {
     Column {
+      val topAppbarInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
       TopAppBar(
         title = topAppBarText ?: "",
         actionType = topAppBarActionType,
         onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = topAppBarActions,
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+        windowInsets = topAppbarInsets,
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,
         modifier = Modifier
           .fillMaxSize()
           .verticalScroll(rememberScrollState())
+          .consumeWindowInsets(topAppbarInsets)
           .windowInsetsPadding(
             // todo remove this bottom insets padding from Scaffold, as it forces the callers to clip the bottom bar
             //  insets if they happen to want to have their own scrollable state
