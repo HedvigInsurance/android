@@ -76,6 +76,7 @@ val chooseTierModule = module {
   viewModel<ComparisonViewModel> { params ->
     ComparisonViewModel(
       termsIds = params.get<List<String>>(),
+      selectedTermVersion = params.get<String>(),
       getCoverageComparisonUseCase = get<GetCoverageComparisonUseCase>(),
     )
   }

@@ -82,7 +82,7 @@ internal fun SelectTierDestination(
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
-  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>) -> Unit,
+  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>, selectedTermsVersion: String?) -> Unit,
 ) {
   val uiState: SelectCoverageState by viewModel.uiState.collectAsStateWithLifecycle()
   Box(
@@ -107,7 +107,7 @@ internal fun SelectTierDestination(
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
             viewModel.emit(ClearNavigateToComparison)
-            navigateToComparison(state.uiState.quotesToCompare)
+            navigateToComparison(state.uiState.quotesToCompare, state.uiState.chosenQuote?.productVariant?.termsVersion)
           }
         }
         SelectTierScreen(

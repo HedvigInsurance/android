@@ -42,7 +42,8 @@ internal class GetCoverageComparisonUseCaseImpl(
         .bind()
       logcat { "Mariia: coverage comparison result: $result " }
       ComparisonData(
-        columns = result.productVariantComparison.variantColumns.map { it.displayNameTier },
+        columns = result.productVariantComparison.variantColumns.map {
+          ComparisonColumn(title =  it.displayNameTier, termsVersion = it.termsVersion) },
         rows = result.productVariantComparison.rows.map { row ->
           ComparisonRow(
             title = row.title,
@@ -61,8 +62,13 @@ internal class GetCoverageComparisonUseCaseImpl(
 }
 
 internal data class ComparisonData(
-  val columns: List<String?>,
+  val columns: List<ComparisonColumn>,
   val rows: List<ComparisonRow>,
+)
+
+internal data class ComparisonColumn(
+  val title: String?,
+  val termsVersion: String
 )
 
 internal data class ComparisonRow(
@@ -77,7 +83,14 @@ internal data class ComparisonCell(
 )
 
 internal val mockComparisonData = ComparisonData(
-  columns = listOf("Student", "Basic", "Standard", "Premium"),
+  columns = listOf(
+    ComparisonColumn(
+    "Student",
+      "termsVersion0"),
+    ComparisonColumn (
+    "Basic",
+      "termsVersion1"), ComparisonColumn("Standard","termsVersion2"),
+    ComparisonColumn ("Premium", "termsVersion3")),
   rows = listOf(
     ComparisonRow(
       title = "Veterinary care",

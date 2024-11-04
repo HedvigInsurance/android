@@ -145,13 +145,14 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
             .horizontalScroll(scrollState),
         ) {
           for (column in uiState.comparisonData.columns) {
-            column?.let {
+            column.title?.let {
               HedvigText(
                 it,
                 fontSize = HedvigTheme.typography.label.fontSize,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.defaultMinSize(minWidth = 100.dp))
             }
+
             Spacer(Modifier.width(2.dp))
           }
         }
@@ -229,6 +230,7 @@ private fun ComparisonScreenPreview() {
       ComparisonScreen(
         ComparisonState.Success(
           mockComparisonData,
+          0
         ),
         {},
       )

@@ -86,12 +86,13 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
         popBackStack = {
           navigator.popBackStack()
         },
-        navigateToComparison = { listOfQuotes ->
+        navigateToComparison = { listOfQuotes, selectedTerms ->
           navigator.navigateUnsafe(
             ChooseTierDestination.Comparison(
-              listOfQuotes.map {
+              quoteIds = listOfQuotes.map {
                 it.productVariant.termsVersion
               },
+              selectedTermsVersion = selectedTerms
             ),
           )
         },
@@ -100,7 +101,7 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
 
     navdestination<ChooseTierDestination.Comparison> { _ ->
       val viewModel: ComparisonViewModel = koinViewModel {
-        parametersOf(this.quoteIds)
+        parametersOf(this.quoteIds, this.selectedTermsVersion)
       }
       ComparisonDestination(
         viewModel = viewModel,

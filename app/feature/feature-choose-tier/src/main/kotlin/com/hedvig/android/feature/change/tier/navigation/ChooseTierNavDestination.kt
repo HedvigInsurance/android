@@ -38,7 +38,7 @@ internal sealed interface ChooseTierDestination {
   data object SelectTierAndDeductible : ChooseTierDestination, Destination
 
   @Serializable
-  data class Comparison(val quoteIds: List<String>) : ChooseTierDestination, Destination
+  data class Comparison(val quoteIds: List<String>, val selectedTermsVersion: String?) : ChooseTierDestination, Destination
 
   @Serializable
   data class Summary(

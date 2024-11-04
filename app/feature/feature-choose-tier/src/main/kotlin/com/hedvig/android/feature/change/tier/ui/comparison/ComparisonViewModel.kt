@@ -28,11 +28,13 @@ internal class ComparisonViewModel(
     presenter = ComparisonPresenter(
       termsIds = termsIds,
       getCoverageComparisonUseCase = getCoverageComparisonUseCase,
+      selectedTermVersion = selectedTermVersion
     ),
   )
 
 private class ComparisonPresenter(
   private val termsIds: List<String>,
+  private val selectedTermVersion: String?,
   private val getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculePresenter<ComparisonEvent, ComparisonState> {
   @Composable
@@ -53,7 +55,11 @@ private class ComparisonPresenter(
           Failure
         }
         is Right -> {
-          Success(result.value)
+          val selectedColumn = result.value.columns.firstOrNull { it.termsVersion== selectedTermVersion}
+          val selectedIndex = selectedColumn?.let {
+            result.value.columns.indexOf(it)
+          }
+          Success(result.value, selectedIndex)
         }
       }
     }
