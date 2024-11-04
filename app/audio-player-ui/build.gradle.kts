@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.animation)
+  implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.lifecycle.compose)

@@ -1,22 +1,12 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,9 +19,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +30,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -52,12 +38,9 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -66,16 +49,11 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
@@ -85,6 +63,8 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
+import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -244,144 +224,25 @@ private fun SummaryScreen(
 
 @Composable
 private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
-  var showDetails by rememberSaveable { mutableStateOf(false) }
-  HedvigCard(
-    modifier = modifier,
-    onClick = { showDetails = !showDetails },
-    interactionSource = null,
-    indication = ripple(bounded = true, radius = 1000.dp),
-  ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row {
-        Image(
-          painter = painterResource(quote.productVariant.contractGroup.toPillow()),
-          contentDescription = null,
-          modifier = Modifier.size(48.dp),
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column {
-          HedvigText(
-            text = quote.productVariant.displayName,
-          )
-          val locale = getLocale()
-          val startDate = remember(quote.startDate) {
-            HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(quote.startDate.toJavaLocalDate())
-          }
-          HedvigText(
-            text = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate),
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-        },
-        endSlot = {
-          HedvigText(
-            text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              quote.premium.toString(),
-            ),
-            textAlign = TextAlign.End,
-            modifier = Modifier.wrapContentWidth(Alignment.End),
-          )
-        },
-      )
-      AnimatedVisibility(
-        visible = showDetails,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            HorizontalDivider()
-            if (quote.displayItems.isNotEmpty()) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-                for (displayItem in quote.displayItems) {
-                  InfoRow(displayItem.title, displayItem.value)
-                }
-              }
-            }
-            if (quote.productVariant.insurableLimits.isNotEmpty()) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                for (insurableLimit in quote.productVariant.insurableLimits) {
-                  InfoRow(
-                    insurableLimit.label,
-                    insurableLimit.limit,
-                  )
-                }
-              }
-            }
-            if (quote.productVariant.documents.isNotEmpty()) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-                for (document in quote.productVariant.documents) {
-                  val uriHandler = LocalUriHandler.current
-                  Row(
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .clip(HedvigTheme.shapes.cornerExtraSmall)
-                      .clickable {
-                        uriHandler.openUri(document.url)
-                      },
-                  ) {
-                    HedvigText(
-                      text = document.displayName,
-                      color = HedvigTheme.colorScheme.textSecondary,
-                      modifier = Modifier.weight(1f),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                      imageVector = HedvigIcons.ArrowNorthEast,
-                      contentDescription = null,
-                      tint = HedvigTheme.colorScheme.fillPrimary,
-                      modifier = Modifier.wrapContentWidth(),
-                    )
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = if (showDetails) {
-          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        } else {
-          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-        },
-        onClick = { showDetails = !showDetails },
-        enabled = true,
-        buttonStyle = Secondary,
-        buttonSize = Medium,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
+  val locale = getLocale()
+  val startDate = remember(quote.startDate) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
+      locale,
+    ).format(quote.startDate.toJavaLocalDate())
   }
-}
-
-@Composable
-private fun InfoRow(leftText: String, rightText: String, modifier: Modifier = Modifier) {
-  HorizontalItemsWithMaximumSpaceTaken(
-    startSlot = {
-      HedvigText(leftText, color = HedvigTheme.colorScheme.textSecondary)
-    },
-    endSlot = {
-      HedvigText(
-        text = rightText,
-        color = HedvigTheme.colorScheme.textSecondary,
-        textAlign = TextAlign.End,
-        modifier = Modifier.wrapContentWidth(Alignment.End),
+  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  QuoteCard(
+    productVariant = quote.productVariant,
+    subtitle = subtitle,
+    premium = quote.premium.toString(),
+    displayItems = quote.displayItems.map {
+      QuoteDisplayItem(
+        title = it.title,
+        subtitle = it.subtitle,
+        value = it.value,
       )
     },
     modifier = modifier,
-    spaceBetween = 8.dp,
   )
 }
 

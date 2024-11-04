@@ -12,7 +12,7 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyTokens
 data class Typography(
   val bodyLarge: TextStyle = TypographyTokens.BodyLarge,
   val bodyMedium: TextStyle = TypographyTokens.BodyMedium,
-  val bodySmall: TextStyle = TypographyTokens.BodySmall,
+  val bodySmall: TextStyle = TypographyTokens.BodySmall, // The default typography of the app
   val displayLarge: TextStyle = TypographyTokens.DisplayLarge,
   val displayMedium: TextStyle = TypographyTokens.DisplayMedium,
   val displaySmall: TextStyle = TypographyTokens.DisplaySmall,
