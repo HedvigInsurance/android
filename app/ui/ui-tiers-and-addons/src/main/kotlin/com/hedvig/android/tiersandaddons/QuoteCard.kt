@@ -23,12 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.ContractType.SE_HOUSE
@@ -166,28 +169,45 @@ private fun QuoteCard(
             if (productVariant.documents.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-                for (document in productVariant.documents) {
-                  val uriHandler = LocalUriHandler.current
-                  Row(
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .clip(HedvigTheme.shapes.cornerExtraSmall)
-                      .clickable {
-                        uriHandler.openUri(document.url)
-                      },
-                  ) {
-                    HedvigText(
-                      text = document.displayName,
-                      color = HedvigTheme.colorScheme.textSecondary,
-                      modifier = Modifier.weight(1f),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                      imageVector = HedvigIcons.ArrowNorthEast,
-                      contentDescription = null,
-                      tint = HedvigTheme.colorScheme.fillPrimary,
-                      modifier = Modifier.wrapContentWidth(),
-                    )
+                Column(
+                  verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                  for (document in productVariant.documents) {
+                    val uriHandler = LocalUriHandler.current
+                    Row(
+                      modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(HedvigTheme.shapes.cornerExtraSmall)
+                        .clickable {
+                          uriHandler.openUri(document.url)
+                        },
+                    ) {
+                      HedvigText(
+                        text = document.displayName,
+                        style = HedvigTheme.typography.bodySmall,
+                        color = HedvigTheme.colorScheme.textSecondary,
+                        modifier = Modifier.weight(1f),
+                      )
+                      Spacer(Modifier.width(8.dp))
+                      LayoutWithoutPlacement(
+                        sizeAdjustingContent = {
+                          HedvigText(
+                            "H",
+                            style = HedvigTheme.typography.bodySmall,
+                          )
+                        },
+                      ) {
+                        val density = LocalDensity.current
+                        Icon(
+                          imageVector = HedvigIcons.ArrowNorthEast,
+                          contentDescription = null,
+                          tint = HedvigTheme.colorScheme.fillPrimary,
+                          modifier = Modifier
+                            .then(with(density) { Modifier.size(16.sp.toDp()) })
+                            .align(Alignment.Center),
+                        )
+                      }
+                    }
                   }
                 }
               }
