@@ -89,19 +89,23 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
         navigateToComparison = { listOfQuotes, selectedTerms ->
           navigator.navigateUnsafe(
             ChooseTierDestination.Comparison(
-              quoteIds = listOfQuotes.map {
-                it.productVariant.termsVersion
-              },
-              selectedTermsVersion = selectedTerms
+              ComparisonParameters(
+                termsIds = listOfQuotes.map {
+                  it.productVariant.termsVersion
+                },
+                selectedTermsVersion = selectedTerms,
+              ),
             ),
           )
         },
       )
     }
 
-    navdestination<ChooseTierDestination.Comparison> { _ ->
+    navdestination<ChooseTierDestination.Comparison>(
+      destinationNavTypeAware = ChooseTierDestination.Comparison.Companion,
+    ) { _ ->
       val viewModel: ComparisonViewModel = koinViewModel {
-        parametersOf(this.quoteIds, this.selectedTermsVersion)
+        parametersOf(this.comparisonParameters)
       }
       ComparisonDestination(
         viewModel = viewModel,

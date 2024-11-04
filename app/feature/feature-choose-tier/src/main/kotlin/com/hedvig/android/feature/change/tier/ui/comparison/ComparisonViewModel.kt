@@ -11,6 +11,7 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import com.hedvig.android.feature.change.tier.data.ComparisonData
 import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
+import com.hedvig.android.feature.change.tier.navigation.ComparisonParameters
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Failure
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
@@ -20,15 +21,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class ComparisonViewModel(
-  termsIds: List<String>,
-  selectedTermVersion: String?,
+  comparisonParameters: ComparisonParameters,
   getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
     initialState = Loading,
     presenter = ComparisonPresenter(
-      termsIds = termsIds,
+      termsIds = comparisonParameters.termsIds,
       getCoverageComparisonUseCase = getCoverageComparisonUseCase,
-      selectedTermVersion = selectedTermVersion
+      selectedTermVersion = comparisonParameters.selectedTermsVersion,
     ),
   )
 
@@ -55,7 +55,7 @@ private class ComparisonPresenter(
           Failure
         }
         is Right -> {
-          val selectedColumn = result.value.columns.firstOrNull { it.termsVersion== selectedTermVersion}
+          val selectedColumn = result.value.columns.firstOrNull { it.termsVersion == selectedTermVersion }
           val selectedIndex = selectedColumn?.let {
             result.value.columns.indexOf(it)
           }
@@ -75,7 +75,8 @@ internal sealed interface ComparisonState {
 
   data class Success(
     val comparisonData: ComparisonData,
-    val selectedColumnIndex: Int?) : ComparisonState
+    val selectedColumnIndex: Int?,
+  ) : ComparisonState
 }
 
 internal sealed interface ComparisonEvent {

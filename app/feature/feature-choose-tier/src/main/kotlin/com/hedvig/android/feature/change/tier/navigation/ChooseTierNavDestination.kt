@@ -38,7 +38,11 @@ internal sealed interface ChooseTierDestination {
   data object SelectTierAndDeductible : ChooseTierDestination, Destination
 
   @Serializable
-  data class Comparison(val quoteIds: List<String>, val selectedTermsVersion: String?) : ChooseTierDestination, Destination
+  data class Comparison(val comparisonParameters: ComparisonParameters) : ChooseTierDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
+    }
+  }
 
   @Serializable
   data class Summary(
@@ -61,6 +65,12 @@ internal sealed interface ChooseTierDestination {
   @Serializable
   data object SubmitFailure : ChooseTierDestination, Destination
 }
+
+@Serializable
+data class ComparisonParameters(
+  val termsIds: List<String>,
+  val selectedTermsVersion: String?,
+)
 
 @Serializable
 data class SummaryParameters(

@@ -43,11 +43,26 @@ internal class GetCoverageComparisonUseCaseImpl(
       logcat { "Mariia: coverage comparison result: $result " }
       ComparisonData(
         columns = result.productVariantComparison.variantColumns.map {
-          ComparisonColumn(title =  it.displayNameTier, termsVersion = it.termsVersion) },
+          ComparisonColumn(title = it.displayNameTier, termsVersion = it.termsVersion)
+        },
         rows = result.productVariantComparison.rows.map { row ->
+          val numbers = if (row.cells.any { it.coverageText != null }) {
+            buildString {
+              row.cells.forEachIndexed { index, cell ->
+                val columnTitle = result.productVariantComparison.variantColumns[index].displayNameTier
+                if (cell.coverageText != null && columnTitle != null) {
+                  append("$columnTitle: ${cell.coverageText}\n")
+                }
+              }
+            }
+          } else {
+            null
+          }
+          logcat { "Mariia: numbers $numbers" }
           ComparisonRow(
             title = row.title,
             description = row.description,
+            numbers = numbers,
             cells = row.cells.map { cell ->
               ComparisonCell(
                 coverageText = cell.coverageText,
@@ -68,12 +83,13 @@ internal data class ComparisonData(
 
 internal data class ComparisonColumn(
   val title: String?,
-  val termsVersion: String
+  val termsVersion: String,
 )
 
 internal data class ComparisonRow(
   val title: String,
   val description: String,
+  val numbers: String?,
   val cells: List<ComparisonCell>,
 )
 
@@ -85,16 +101,21 @@ internal data class ComparisonCell(
 internal val mockComparisonData = ComparisonData(
   columns = listOf(
     ComparisonColumn(
-    "Student",
-      "termsVersion0"),
-    ComparisonColumn (
-    "Basic",
-      "termsVersion1"), ComparisonColumn("Standard","termsVersion2"),
-    ComparisonColumn ("Premium", "termsVersion3")),
+      "Student",
+      "termsVersion0",
+    ),
+    ComparisonColumn(
+      "Basic",
+      "termsVersion1",
+    ),
+    ComparisonColumn("Standard", "termsVersion2"),
+    ComparisonColumn("Premium", "termsVersion3"),
+  ),
   rows = listOf(
     ComparisonRow(
       title = "Veterinary care",
       description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell("30 000 kr", true),
         ComparisonCell("30 000 kr", true),
@@ -105,6 +126,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Advanced diagnostics",
       description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),
@@ -115,6 +137,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Care of pet at home",
       description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),
@@ -125,6 +148,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Life insurance",
       description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),
@@ -135,6 +159,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Veterinary care",
       description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell("30 000 kr", true),
         ComparisonCell("30 000 kr", true),
@@ -145,6 +170,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Advanced diagnostics",
       description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),
@@ -155,6 +181,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Care of pet at home",
       description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),
@@ -165,6 +192,7 @@ internal val mockComparisonData = ComparisonData(
     ComparisonRow(
       title = "Life insurance",
       description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
+      numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
         ComparisonCell(null, false),

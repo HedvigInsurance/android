@@ -9,6 +9,7 @@ import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCaseImpl
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCaseImpl
+import com.hedvig.android.feature.change.tier.navigation.ComparisonParameters
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
@@ -72,11 +73,9 @@ val chooseTierModule = module {
       downloadPdfUseCase = get<DownloadPdfUseCase>(),
     )
   }
-
   viewModel<ComparisonViewModel> { params ->
     ComparisonViewModel(
-      termsIds = params.get<List<String>>(),
-      selectedTermVersion = params.get<String>(),
+      comparisonParameters = params.get<ComparisonParameters>(),
       getCoverageComparisonUseCase = get<GetCoverageComparisonUseCase>(),
     )
   }
