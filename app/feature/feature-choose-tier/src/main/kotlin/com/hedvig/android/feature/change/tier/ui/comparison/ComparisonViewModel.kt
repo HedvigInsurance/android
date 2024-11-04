@@ -21,6 +21,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class ComparisonViewModel(
   termsIds: List<String>,
+  selectedTermVersion: String?,
   getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
     initialState = Loading,
@@ -66,7 +67,9 @@ internal sealed interface ComparisonState {
 
   data object Failure : ComparisonState
 
-  data class Success(val comparisonData: ComparisonData) : ComparisonState
+  data class Success(
+    val comparisonData: ComparisonData,
+    val selectedColumnIndex: Int?) : ComparisonState
 }
 
 internal sealed interface ComparisonEvent {

@@ -76,13 +76,14 @@ internal data class ComparisonCell(
   val isCovered: Boolean,
 )
 
-private val mockComparisonData = ComparisonData(
-  columns = listOf("Basic", "Standard", "Premium"),
+internal val mockComparisonData = ComparisonData(
+  columns = listOf("Student", "Basic", "Standard", "Premium"),
   rows = listOf(
     ComparisonRow(
       title = "Veterinary care",
       description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
       cells = listOf(
+        ComparisonCell("30 000 kr", true),
         ComparisonCell("30 000 kr", true),
         ComparisonCell("60 000 kr", true),
         ComparisonCell("120 000 kr", true),
@@ -93,6 +94,7 @@ private val mockComparisonData = ComparisonData(
       description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
       cells = listOf(
         ComparisonCell(null, false),
+        ComparisonCell(null, false),
         ComparisonCell(null, true),
         ComparisonCell(null, true),
       ),
@@ -102,6 +104,7 @@ private val mockComparisonData = ComparisonData(
       description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
       cells = listOf(
         ComparisonCell(null, false),
+        ComparisonCell(null, false),
         ComparisonCell("500 kr", true),
         ComparisonCell("2 000 kr", true),
       ),
@@ -110,6 +113,47 @@ private val mockComparisonData = ComparisonData(
       title = "Life insurance",
       description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
       cells = listOf(
+        ComparisonCell(null, false),
+        ComparisonCell(null, false),
+        ComparisonCell(null, false),
+        ComparisonCell("30 000 kr", true),
+      ),
+    ),
+    ComparisonRow(
+      title = "Veterinary care",
+      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
+      cells = listOf(
+        ComparisonCell("30 000 kr", true),
+        ComparisonCell("30 000 kr", true),
+        ComparisonCell("60 000 kr", true),
+        ComparisonCell("120 000 kr", true),
+      ),
+    ),
+    ComparisonRow(
+      title = "Advanced diagnostics",
+      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
+      cells = listOf(
+        ComparisonCell(null, false),
+        ComparisonCell(null, false),
+        ComparisonCell(null, true),
+        ComparisonCell(null, true),
+      ),
+    ),
+    ComparisonRow(
+      title = "Care of pet at home",
+      description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
+      cells = listOf(
+        ComparisonCell(null, false),
+        ComparisonCell(null, false),
+        ComparisonCell("500 kr", true),
+        ComparisonCell("2 000 kr", true),
+      ),
+    ),
+    ComparisonRow(
+      title = "Life insurance",
+      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
+      cells = listOf(
+        ComparisonCell(null, false),
         ComparisonCell(null, false),
         ComparisonCell(null, false),
         ComparisonCell("30 000 kr", true),

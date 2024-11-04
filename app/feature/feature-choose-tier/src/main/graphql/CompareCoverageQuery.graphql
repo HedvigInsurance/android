@@ -2,6 +2,7 @@ query CompareCoverage($termsVersions: [ID!]!) {
   productVariantComparison(termsVersions: $termsVersions) {
     variantColumns {
       displayNameTier
+
     }
     rows {
       title

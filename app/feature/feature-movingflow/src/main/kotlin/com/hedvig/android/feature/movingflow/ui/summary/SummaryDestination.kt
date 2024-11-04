@@ -443,6 +443,7 @@ private fun PreviewSummaryScreen() {
         ),
         displayTierName = "tierDescription",
         tierDescription = "displayNameTier",
+        termsVersion = "termsVersion"
       )
       val startDate = LocalDate.parse("2025-01-01")
       SummaryScreen(

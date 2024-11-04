@@ -512,6 +512,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         documents = listOf(),
         displayTierName = null,
         tierDescription = null,
+        termsVersion = "termsVersion"
       ),
       tierName = "Pat Vance",
       tierLevel = 1299,
