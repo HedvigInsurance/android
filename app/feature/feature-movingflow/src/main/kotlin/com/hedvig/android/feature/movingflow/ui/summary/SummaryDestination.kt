@@ -7,8 +7,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -124,11 +128,12 @@ private fun SummaryScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     when (uiState) {
-      Loading -> HedvigFullScreenCenterAlignedProgress()
+      Loading -> HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
       SummaryUiState.Error -> HedvigErrorSection(
         onButtonClick = navigateBack,
         subTitle = null,
         buttonText = stringResource(R.string.general_back_button),
+        modifier = Modifier.weight(1f).fillMaxWidth(),
       )
 
       is Content -> SummaryScreen(
@@ -408,79 +413,13 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 @HedvigPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
-private fun PreviewSummaryScreen() {
+private fun PreviewSummaryScreen(
+  @PreviewParameter(SummaryUiStateProvider::class) summaryUiState: SummaryUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val productVariant = ProductVariant(
-        displayName = "Variant",
-        contractGroup = ContractGroup.RENTAL,
-        contractType = ContractType.SE_APARTMENT_RENT,
-        partner = null,
-        perils = listOf(
-          ProductVariantPeril(
-            "id",
-            "peril title",
-            "peril description",
-            emptyList(),
-            emptyList(),
-            null,
-          ),
-        ),
-        insurableLimits = listOf(
-          InsurableLimit(
-            label = "insurable limit label",
-            limit = "insurable limit limit",
-            description = "insurable limit description",
-            type = BIKE,
-          ),
-        ),
-        documents = listOf(
-          InsuranceVariantDocument(
-            displayName = "displayName",
-            url = "url",
-            type = CERTIFICATE,
-          ),
-        ),
-        displayTierName = "tierDescription",
-        tierDescription = "displayNameTier",
-      )
-      val startDate = LocalDate.parse("2025-01-01")
       SummaryScreen(
-        uiState = SummaryUiState.Content(
-          summaryInfo = SummaryInfo(
-            moveHomeQuote = MoveHomeQuote(
-              id = "id",
-              premium = UiMoney(99.0, SEK),
-              startDate = startDate,
-              displayItems = listOf(
-                DisplayItem(
-                  title = "display title",
-                  subtitle = "display subtitle",
-                  value = "display value",
-                ),
-              ),
-              exposureName = "exposureName",
-              productVariant = productVariant,
-              tierName = "tierName",
-              tierLevel = 1,
-              tierDescription = "tierDescription",
-              deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
-              defaultChoice = false,
-            ),
-            moveMtaQuotes = listOf(
-              MoveMtaQuote(
-                premium = UiMoney(49.0, SEK),
-                exposureName = "exposureName",
-                productVariant = productVariant,
-                startDate = startDate,
-                displayItems = emptyList(),
-              ),
-            ),
-          ),
-          false,
-          null,
-          null,
-        ),
+        uiState = summaryUiState,
         navigateUp = {},
         navigateBack = {},
         onNavigateToNewConversation = {},
@@ -489,4 +428,81 @@ private fun PreviewSummaryScreen() {
       )
     }
   }
+}
+
+private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> {
+  private val productVariant = ProductVariant(
+    displayName = "Variant",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = null,
+    perils = listOf(
+      ProductVariantPeril(
+        "id",
+        "peril title",
+        "peril description",
+        emptyList(),
+        emptyList(),
+        null,
+      ),
+    ),
+    insurableLimits = listOf(
+      InsurableLimit(
+        label = "insurable limit label",
+        limit = "insurable limit limit",
+        description = "insurable limit description",
+        type = BIKE,
+      ),
+    ),
+    documents = listOf(
+      InsuranceVariantDocument(
+        displayName = "displayName",
+        url = "url",
+        type = CERTIFICATE,
+      ),
+    ),
+    displayTierName = "tierDescription",
+    tierDescription = "displayNameTier",
+  )
+  val startDate = LocalDate.parse("2025-01-01")
+
+  override val values: Sequence<SummaryUiState> = sequenceOf(
+    SummaryUiState.Loading,
+    SummaryUiState.Error,
+    SummaryUiState.Content(
+      summaryInfo = SummaryInfo(
+        moveHomeQuote = MoveHomeQuote(
+          id = "id",
+          premium = UiMoney(99.0, SEK),
+          startDate = startDate,
+          displayItems = listOf(
+            DisplayItem(
+              title = "display title",
+              subtitle = "display subtitle",
+              value = "display value",
+            ),
+          ),
+          exposureName = "exposureName",
+          productVariant = productVariant,
+          tierName = "tierName",
+          tierLevel = 1,
+          tierDescription = "tierDescription",
+          deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
+          defaultChoice = false,
+        ),
+        moveMtaQuotes = listOf(
+          MoveMtaQuote(
+            premium = UiMoney(49.0, SEK),
+            exposureName = "exposureName",
+            productVariant = productVariant,
+            startDate = startDate,
+            displayItems = emptyList(),
+          ),
+        ),
+      ),
+      false,
+      null,
+      null,
+    ),
+  )
 }
