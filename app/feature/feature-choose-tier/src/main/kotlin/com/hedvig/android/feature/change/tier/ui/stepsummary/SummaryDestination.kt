@@ -199,7 +199,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
   QuoteCard(
     productVariant = uiState.quote.productVariant,
     subtitle = uiState.currentContractData.contractDisplaySubtitle,
-    premium = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
+    premium = uiState.quote.premium.toString(),
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
