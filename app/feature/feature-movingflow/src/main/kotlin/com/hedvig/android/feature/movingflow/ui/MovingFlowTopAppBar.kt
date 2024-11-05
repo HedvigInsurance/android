@@ -39,7 +39,7 @@ internal fun MovingFlowTopAppBar(
   var showExitDialog by rememberSaveable { mutableStateOf(false) }
   MovingFlowTopAppBar(
     showExitDialog = showExitDialog,
-    dismisDialog = { showExitDialog = false },
+    setShowExitDialog = { showExitDialog = it },
     navigateUp = navigateUp,
     exitFlow = exitFlow,
     topAppBarText = topAppBarText,
@@ -50,7 +50,7 @@ internal fun MovingFlowTopAppBar(
 @Composable
 private fun MovingFlowTopAppBar(
   showExitDialog: Boolean,
-  dismisDialog: () -> Unit,
+  setShowExitDialog: (Boolean) -> Unit,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
   topAppBarText: String? = null,
@@ -58,11 +58,14 @@ private fun MovingFlowTopAppBar(
 ) {
   if (showExitDialog) {
     HedvigDialog(
-      onDismissRequest = dismisDialog,
+      onDismissRequest = { setShowExitDialog(false) },
       style = Buttons(
-        onDismissRequest = dismisDialog,
+        onDismissRequest = { setShowExitDialog(false) },
         dismissButtonText = stringResource(R.string.GENERAL_NO),
-        onConfirmButtonClick = exitFlow,
+        onConfirmButtonClick = {
+          setShowExitDialog(false)
+          exitFlow()
+        },
         confirmButtonText = stringResource(R.string.GENERAL_YES),
       ),
     ) {
@@ -88,7 +91,7 @@ private fun MovingFlowTopAppBar(
         modifier = Modifier.size(24.dp),
         onClick = dropUnlessResumed {
           if (withExitConfirmation) {
-            dismisDialog()
+            setShowExitDialog(true)
           } else {
             exitFlow()
           }
