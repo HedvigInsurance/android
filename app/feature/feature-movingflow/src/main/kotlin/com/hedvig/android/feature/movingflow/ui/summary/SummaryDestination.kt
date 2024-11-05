@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -115,34 +116,30 @@ private fun SummaryScreen(
         exitFlow = exitFlow,
         topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
-      when (uiState) {
-        Loading -> HedvigFullScreenCenterAlignedProgress(
-          Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        )
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          Loading -> HedvigFullScreenCenterAlignedProgress()
 
-        SummaryUiState.Error -> HedvigErrorSection(
-          onButtonClick = navigateBack,
-          subTitle = null,
-          buttonText = stringResource(R.string.general_back_button),
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        )
-
-        is Content -> {
-          SummaryScreen(
-            content = uiState,
-            onNavigateToNewConversation = onNavigateToNewConversation,
-            onConfirmChanges = onConfirmChanges,
-            onDismissSubmissionError = onDismissSubmissionError,
-            modifier = Modifier
-              .fillMaxWidth()
-              .weight(1f)
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          SummaryUiState.Error -> HedvigErrorSection(
+            onButtonClick = navigateBack,
+            subTitle = null,
+            buttonText = stringResource(R.string.general_back_button),
           )
+
+          is Content -> {
+            SummaryScreen(
+              content = uiState,
+              onNavigateToNewConversation = onNavigateToNewConversation,
+              onConfirmChanges = onConfirmChanges,
+              onDismissSubmissionError = onDismissSubmissionError,
+            )
+          }
         }
       }
     }
