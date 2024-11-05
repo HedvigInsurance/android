@@ -293,6 +293,7 @@ private fun PreviewQuoteCard(
           },
           displayTierName = "displayTierName",
           tierDescription = "tierDescription",
+          termsVersion = "termsVersion"
         ),
         subtitle = "subtitle",
         premium = "premium",
