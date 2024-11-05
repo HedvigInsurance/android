@@ -19,6 +19,8 @@ internal object TypographyTokens {
     lineHeight = TypeScaleTokens.BodyMediumLineHeight,
     letterSpacing = TypeScaleTokens.BodyMediumTracking,
   )
+
+  // The default typography of the app
   val BodySmall = DefaultTextStyle.copy(
     fontFamily = TypeScaleTokens.BodySmallFont,
     fontWeight = TypeScaleTokens.BodySmallWeight,

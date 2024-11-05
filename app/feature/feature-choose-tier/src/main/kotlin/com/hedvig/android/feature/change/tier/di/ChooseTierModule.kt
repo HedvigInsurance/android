@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.change.tier.di
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
 import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCaseImpl
@@ -70,7 +69,6 @@ val chooseTierModule = module {
       params = params.get<SummaryParameters>(),
       tierRepository = get<ChangeTierRepository>(),
       getCurrentContractDataUseCase = get<GetCurrentContractDataUseCase>(),
-      downloadPdfUseCase = get<DownloadPdfUseCase>(),
     )
   }
   viewModel<ComparisonViewModel> { params ->

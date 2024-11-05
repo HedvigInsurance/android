@@ -107,7 +107,7 @@ android {
 dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.animation)
+  implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)

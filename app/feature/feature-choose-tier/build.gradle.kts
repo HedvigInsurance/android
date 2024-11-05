@@ -30,7 +30,6 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataChangetier)
@@ -46,6 +45,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.uiTiersAndAddons)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
