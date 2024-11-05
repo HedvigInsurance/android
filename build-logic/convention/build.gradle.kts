@@ -32,7 +32,7 @@ dependencies {
 gradlePlugin {
   plugins {
     fun createPlugin(id: String, className: String) {
-      plugins.create(id) {
+      plugins.register(id) {
         this.id = id
         implementationClass = className
       }
