@@ -402,10 +402,7 @@ private fun CommonChoiceDialogContent(
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(12.dp))
-    Column(
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-      modifier = Modifier.verticalScroll(rememberScrollState()),
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Spacer(Modifier.height(12.dp))
       radioOptions.forEachIndexed { index, option ->
         RadioOption(
