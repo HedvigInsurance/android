@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.change.tier.navigation
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
@@ -107,7 +106,6 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
-      val context = LocalContext.current
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,

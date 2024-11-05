@@ -2,14 +2,22 @@ package com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -44,8 +52,9 @@ import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -57,9 +66,11 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
+import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleUiState.Content
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleUiState.Loading
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
@@ -73,6 +84,8 @@ import kotlinx.datetime.LocalDate
 internal fun ChoseCoverageLevelAndDeductibleDestination(
   viewModel: ChoseCoverageLevelAndDeductibleViewModel,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToSummaryScreen: (homeQuoteId: String) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -85,6 +98,8 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
   ChoseCoverageLevelAndDeductibleScreen(
     uiState = uiState,
     navigateUp = navigateUp,
+    popBackStack = popBackStack,
+    exitFlow = exitFlow,
     onSubmit = { selectedHomeQuoteId ->
       viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId(selectedHomeQuoteId))
     },
@@ -97,82 +112,94 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
 private fun ChoseCoverageLevelAndDeductibleScreen(
   uiState: ChoseCoverageLevelAndDeductibleUiState,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
+  exitFlow: () -> Unit,
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
 ) {
-  when (uiState) {
-    Loading -> {
-      HedvigText("Loading")
-    }
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Column {
+      MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          Loading -> {
+            HedvigFullScreenCenterAlignedProgress()
+          }
 
-    MissingOngoingMovingFlow -> {
-      HedvigText("MissingOngoingMovingFlow")
-    }
+          MissingOngoingMovingFlow -> {
+            HedvigErrorSection(
+              onButtonClick = popBackStack,
+              buttonText = stringResource(R.string.general_back_button),
+            )
+          }
 
-    is Content -> ChoseCoverageLevelAndDeductibleScreen(
-      content = uiState,
-      navigateUp = navigateUp,
-      onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
-      onSelectCoverageOption = onSelectCoverageOption,
-      onSelectDeductibleOption = onSelectDeductibleOption,
-    )
+          is Content -> ChoseCoverageLevelAndDeductibleScreen(
+            content = uiState,
+            onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
+            onSelectCoverageOption = onSelectCoverageOption,
+            onSelectDeductibleOption = onSelectDeductibleOption,
+          )
+        }
+      }
+    }
   }
 }
 
 @Composable
 private fun ChoseCoverageLevelAndDeductibleScreen(
   content: Content,
-  navigateUp: () -> Unit,
   onSubmit: (() -> Unit)?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
 ) {
-  HedvigScaffold(navigateUp) {
-    Column(Modifier.weight(1f)) {
-      HedvigText(
-        text = stringResource(R.string.TIER_FLOW_TITLE),
-        style = HedvigTheme.typography.bodyMedium,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      HedvigText(
-        text = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-        style = HedvigTheme.typography.bodyMedium,
-        color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.weight(1f))
+  Column(Modifier.padding(horizontal = 16.dp)) {
+    HedvigText(
+      text = stringResource(R.string.TIER_FLOW_TITLE),
+      style = HedvigTheme.typography.bodyMedium,
+    )
+    HedvigText(
+      text = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+      style = HedvigTheme.typography.bodyMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(8.dp))
+    Column(Modifier.verticalScroll(rememberScrollState())) {
       Spacer(Modifier.height(8.dp))
-      Column(
-        Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
-      ) {
-        Spacer(Modifier.height(8.dp))
-        CoverageCard(content.tiersInfo, onSelectCoverageOption, onSelectDeductibleOption)
-        Spacer(Modifier.height(8.dp))
-        // todo Add comparison API results here
-        if (content.tiersInfo.coverageOptions.isNotEmpty()) {
-          HedvigTextButton(
-            text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-            modifier = Modifier.fillMaxWidth(),
-            buttonSize = Large,
-          ) {
-            // onCompareCoverageClicked()
-          }
-          Spacer(Modifier.height(4.dp))
-        }
-        HedvigButton(
-          text = stringResource(R.string.general_continue_button),
-          onClick = dropUnlessResumed {
-            onSubmit?.invoke()
-          },
-          isLoading = content.isSubmitting,
-          enabled = onSubmit != null && content.canSubmit,
+      CoverageCard(content.tiersInfo, onSelectCoverageOption, onSelectDeductibleOption)
+      Spacer(Modifier.height(8.dp))
+      // todo Add comparison API results here
+      if (content.tiersInfo.coverageOptions.isNotEmpty()) {
+        HedvigTextButton(
+          text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
           modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
+          buttonSize = Large,
+        ) {
+          // onCompareCoverageClicked()
+        }
+        Spacer(Modifier.height(4.dp))
       }
+      HedvigButton(
+        text = stringResource(R.string.general_continue_button),
+        onClick = dropUnlessResumed {
+          onSubmit?.invoke()
+        },
+        isLoading = content.isSubmitting,
+        enabled = onSubmit != null && content.canSubmit,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }
@@ -521,7 +548,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     )
   }
   ChoseCoverageLevelAndDeductibleScreen(
-    uiState = ChoseCoverageLevelAndDeductibleUiState.Content(
+    uiState = Content(
       tiersInfo = TiersInfo(
         allOptions = allOptions,
         coverageOptions = List(2) {
@@ -534,7 +561,9 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       isSubmitting = false,
     ),
     navigateUp = {},
+    popBackStack = {},
     onSubmit = {},
+    exitFlow = {},
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
   )

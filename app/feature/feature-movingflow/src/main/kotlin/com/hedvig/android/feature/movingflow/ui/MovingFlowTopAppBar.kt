@@ -32,7 +32,7 @@ import hedvig.resources.R
 @Composable
 internal fun MovingFlowTopAppBar(
   navigateUp: () -> Unit,
-  closeFlow: () -> Unit,
+  exitFlow: () -> Unit,
   topAppBarText: String? = null,
   withExitConfirmation: Boolean = true,
 ) {
@@ -41,7 +41,7 @@ internal fun MovingFlowTopAppBar(
     showExitDialog = showExitDialog,
     dismisDialog = { showExitDialog = false },
     navigateUp = navigateUp,
-    closeFlow = closeFlow,
+    exitFlow = exitFlow,
     topAppBarText = topAppBarText,
     withExitConfirmation = withExitConfirmation,
   )
@@ -52,7 +52,7 @@ private fun MovingFlowTopAppBar(
   showExitDialog: Boolean,
   dismisDialog: () -> Unit,
   navigateUp: () -> Unit,
-  closeFlow: () -> Unit,
+  exitFlow: () -> Unit,
   topAppBarText: String? = null,
   withExitConfirmation: Boolean = true,
 ) {
@@ -62,7 +62,7 @@ private fun MovingFlowTopAppBar(
       style = Buttons(
         onDismissRequest = dismisDialog,
         dismissButtonText = stringResource(R.string.GENERAL_NO),
-        onConfirmButtonClick = closeFlow,
+        onConfirmButtonClick = exitFlow,
         confirmButtonText = stringResource(R.string.GENERAL_YES),
       ),
     ) {
@@ -90,7 +90,7 @@ private fun MovingFlowTopAppBar(
           if (withExitConfirmation) {
             dismisDialog()
           } else {
-            closeFlow()
+            exitFlow()
           }
         },
         content = { Icon(imageVector = HedvigIcons.Close, contentDescription = null) },

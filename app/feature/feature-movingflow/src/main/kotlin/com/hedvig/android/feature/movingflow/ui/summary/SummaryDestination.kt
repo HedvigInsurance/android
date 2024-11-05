@@ -3,10 +3,15 @@ package com.hedvig.android.feature.movingflow.ui.summary
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -44,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
@@ -57,6 +61,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
+import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
@@ -72,6 +77,7 @@ internal fun SummaryDestination(
   viewModel: SummaryViewModel,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
@@ -85,6 +91,7 @@ internal fun SummaryDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
+    exitFlow = exitFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
@@ -96,30 +103,48 @@ private fun SummaryScreen(
   uiState: SummaryUiState,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
-  HedvigScaffold(
-    navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
-    modifier = Modifier.fillMaxSize(),
-  ) {
-    when (uiState) {
-      Loading -> HedvigFullScreenCenterAlignedProgress()
-      SummaryUiState.Error -> HedvigErrorSection(
-        onButtonClick = navigateBack,
-        subTitle = null,
-        buttonText = stringResource(R.string.general_back_button),
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column {
+      MovingFlowTopAppBar(
+        navigateUp = navigateUp,
+        exitFlow = exitFlow,
+        topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
+      when (uiState) {
+        Loading -> HedvigFullScreenCenterAlignedProgress(
+          Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        )
 
-      is Content -> SummaryScreen(
-        content = uiState,
-        onNavigateToNewConversation = onNavigateToNewConversation,
-        onConfirmChanges = onConfirmChanges,
-        onDismissSubmissionError = onDismissSubmissionError,
-        modifier = Modifier.weight(1f),
-      )
+        SummaryUiState.Error -> HedvigErrorSection(
+          onButtonClick = navigateBack,
+          subTitle = null,
+          buttonText = stringResource(R.string.general_back_button),
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        )
+
+        is Content -> {
+          SummaryScreen(
+            content = uiState,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+            onConfirmChanges = onConfirmChanges,
+            onDismissSubmissionError = onDismissSubmissionError,
+            modifier = Modifier
+              .fillMaxWidth()
+              .weight(1f)
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        }
+      }
     }
   }
 }
@@ -160,6 +185,7 @@ private fun SummaryScreen(
       .padding(horizontal = 16.dp)
       .verticalScroll(rememberScrollState()),
   ) {
+    Spacer(Modifier.height(16.dp))
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       QuoteCard(content.summaryInfo.moveHomeQuote)
       for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
@@ -216,6 +242,7 @@ private fun SummaryScreen(
       )
     }
     Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -346,6 +373,7 @@ private fun PreviewSummaryScreen() {
         ),
         navigateUp = {},
         navigateBack = {},
+        exitFlow = {},
         onNavigateToNewConversation = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
