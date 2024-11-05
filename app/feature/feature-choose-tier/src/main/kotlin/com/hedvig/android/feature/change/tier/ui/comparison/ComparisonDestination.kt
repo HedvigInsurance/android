@@ -3,6 +3,7 @@ package com.hedvig.android.feature.change.tier.ui.comparison
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,6 +59,7 @@ import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Fail
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
 import kotlinx.coroutines.delay
+import hedvig.resources.R
 
 @Composable
 internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
@@ -87,6 +91,7 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 @Composable
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
+  var clickedRowIndex by remember { mutableStateOf<Int?>(null) }
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -135,7 +140,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = "Compare coverage levels", // todo: remove hardcoded
+      text = stringResource(R.string.TIER_COMPARISON_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -145,7 +150,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = "Explore the differences between available plans", // todo: remove hardcoded
+      text = stringResource(R.string.TIER_COMPARISON_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
@@ -155,6 +160,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       scrollState.animateScrollTo(50)
       scrollState.animateScrollTo(0)
     }
+    val interactionSource = remember { MutableInteractionSource()}
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -162,14 +168,14 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
           LayoutWithoutPlacement(
             sizeAdjustingContent =
-              {
-                HedvigText(
-                  "emptyspace",
-                  fontSize = HedvigTheme.typography.label.fontSize,
-                  textAlign = TextAlign.Center,
-                  modifier = Modifier.padding(vertical = 4.dp),
-                )
-              },
+            {
+              HedvigText(
+                "emptyspace",
+                fontSize = HedvigTheme.typography.label.fontSize,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 4.dp),
+              )
+            },
           ) { }
           uiState.comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
             Row(
@@ -208,14 +214,17 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               } else {
                 Modifier
               }
-              val textColor = if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
+              val textColor =
+                if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
               column.title?.let {
                 HedvigText(
                   it,
                   fontSize = HedvigTheme.typography.label.fontSize,
                   textAlign = TextAlign.Center,
                   color = textColor,
-                  modifier = cellModifier.defaultMinSize(minWidth = 100.dp).padding(vertical = 4.dp),
+                  modifier = cellModifier
+                    .defaultMinSize(minWidth = 100.dp)
+                    .padding(vertical = 4.dp),
                 )
               }
 
@@ -247,7 +256,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
                   Modifier
                 }
                 val checkMarkColor = if (!cell.isCovered) {
-                  HedvigTheme.colorScheme.textSecondary
+                  HedvigTheme.colorScheme.textDisabled
                 } else if (isThisSelected) {
                   HedvigTheme.colorScheme.textBlack
                 } else {
@@ -262,7 +271,8 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               }
             }
             if (rowIndex != uiState.comparisonData.rows.lastIndex) {
-              HorizontalDivider()
+              HorizontalDivider(
+              )
             }
           }
         }
@@ -282,7 +292,7 @@ private fun RowTitle(comparisonRow: ComparisonRow, modifier: Modifier = Modifier
       fontSize = HedvigTheme.typography.label.fontSize,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.padding(vertical = 8.dp),
+      modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 8.dp),
     )
   }
 }
