@@ -391,7 +391,7 @@ private fun CommonChoiceDialogContent(
   onDismissRequest: () -> Unit,
 ) {
   var chosenItemIndex by remember { mutableStateOf(initiallyChosenItemIndex) }
-  Column(Modifier.padding(16.dp)) {
+  Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
     HedvigText(
       text = firstText,
       style = HedvigTheme.typography.bodySmall,
