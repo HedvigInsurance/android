@@ -1,5 +1,4 @@
-import com.apollographql.apollo.relocated.okhttp3.internal.platform.Platform.platform
-import com.hedvig.android.configureComposeCompiler
+import com.hedvig.android.configureComposeCompilerMetrics
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,7 +18,7 @@ class KotlinLibraryComposeConventionPlugin : Plugin<Project> {
         apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
       }
       extensions.configure<ComposeCompilerGradlePluginExtension> {
-        configureComposeCompiler(this@with)
+        configureComposeCompilerMetrics(this@with)
       }
       dependencies {
         val bom = libs.androidx.compose.bom
