@@ -2,17 +2,13 @@ package com.hedvig.android.feature.change.tier.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
-import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCaseImpl
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCaseImpl
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCaseImpl
-import com.hedvig.android.feature.change.tier.navigation.ComparisonParameters
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
@@ -33,13 +29,6 @@ val chooseTierModule = module {
     StartTierFlowViewModel(
       insuranceID = params.get<String>(),
       tierRepository = get<ChangeTierRepository>(),
-    )
-  }
-
-  single<GetCoverageComparisonUseCase> {
-    GetCoverageComparisonUseCaseImpl(
-      apolloClient = get<ApolloClient>(),
-      featureManager = get<FeatureManager>(),
     )
   }
 
@@ -69,12 +58,6 @@ val chooseTierModule = module {
       params = params.get<SummaryParameters>(),
       tierRepository = get<ChangeTierRepository>(),
       getCurrentContractDataUseCase = get<GetCurrentContractDataUseCase>(),
-    )
-  }
-  viewModel<ComparisonViewModel> { params ->
-    ComparisonViewModel(
-      comparisonParameters = params.get<ComparisonParameters>(),
-      getCoverageComparisonUseCase = get<GetCoverageComparisonUseCase>(),
     )
   }
 }

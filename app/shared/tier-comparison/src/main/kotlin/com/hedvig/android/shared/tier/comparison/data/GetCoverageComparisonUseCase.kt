@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.change.tier.data
+package com.hedvig.android.shared.tier.comparison.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -12,7 +12,7 @@ import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
 import octopus.CompareCoverageQuery
 
-internal interface GetCoverageComparisonUseCase {
+interface GetCoverageComparisonUseCase {
   suspend fun invoke(termsVersionIds: List<String>): Either<ErrorMessage, ComparisonData>
 }
 
@@ -75,24 +75,24 @@ internal class GetCoverageComparisonUseCaseImpl(
   }
 }
 
-internal data class ComparisonData(
+data class ComparisonData(
   val columns: List<ComparisonColumn>,
   val rows: List<ComparisonRow>,
 )
 
-internal data class ComparisonColumn(
+data class ComparisonColumn(
   val title: String?,
   val termsVersion: String,
 )
 
-internal data class ComparisonRow(
+data class ComparisonRow(
   val title: String,
   val description: String,
   val numbers: String?,
   val cells: List<ComparisonCell>,
 )
 
-internal data class ComparisonCell(
+data class ComparisonCell(
   val coverageText: String?,
   val isCovered: Boolean,
 )

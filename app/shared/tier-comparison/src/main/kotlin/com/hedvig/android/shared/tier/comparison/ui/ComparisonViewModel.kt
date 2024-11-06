@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.change.tier.ui.comparison
+package com.hedvig.android.shared.tier.comparison.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,18 +9,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import com.hedvig.android.feature.change.tier.data.ComparisonData
-import com.hedvig.android.feature.change.tier.data.GetCoverageComparisonUseCase
-import com.hedvig.android.feature.change.tier.navigation.ComparisonParameters
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonEvent.Reload
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Failure
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.shared.tier.comparison.data.ComparisonData
+import com.hedvig.android.shared.tier.comparison.data.GetCoverageComparisonUseCase
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonEvent.Reload
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Failure
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Loading
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success
 
-internal class ComparisonViewModel(
+class ComparisonViewModel(
   comparisonParameters: ComparisonParameters,
   getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
@@ -54,6 +54,7 @@ private class ComparisonPresenter(
         is Left -> {
           Failure
         }
+
         is Right -> {
           val selectedColumn = result.value.columns.firstOrNull { it.termsVersion == selectedTermVersion }
           val selectedIndex = selectedColumn?.let {
@@ -68,7 +69,7 @@ private class ComparisonPresenter(
   }
 }
 
-internal sealed interface ComparisonState {
+sealed interface ComparisonState {
   data object Loading : ComparisonState
 
   data object Failure : ComparisonState
@@ -79,6 +80,6 @@ internal sealed interface ComparisonState {
   ) : ComparisonState
 }
 
-internal sealed interface ComparisonEvent {
+sealed interface ComparisonEvent {
   data object Reload : ComparisonEvent
 }

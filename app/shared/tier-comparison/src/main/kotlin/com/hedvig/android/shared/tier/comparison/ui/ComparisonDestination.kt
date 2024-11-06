@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.change.tier.ui.comparison
+package com.hedvig.android.shared.tier.comparison.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -56,17 +55,18 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
-import com.hedvig.android.feature.change.tier.data.ComparisonData
-import com.hedvig.android.feature.change.tier.data.ComparisonRow
-import com.hedvig.android.feature.change.tier.data.mockComparisonData
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Failure
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
+import com.hedvig.android.shared.tier.comparison.data.ComparisonData
+import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
+import com.hedvig.android.shared.tier.comparison.data.mockComparisonData
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonEvent.Reload
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Failure
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Loading
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success
 import hedvig.resources.R
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
+fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
   val uiState: ComparisonState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
     Loading -> {
@@ -83,7 +83,7 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
       Box(Modifier.fillMaxSize()) {
         HedvigErrorSection(
           onButtonClick = {
-            viewModel.emit(ComparisonEvent.Reload)
+            viewModel.emit(Reload)
           },
           modifier = Modifier.fillMaxSize(),
         )
@@ -377,7 +377,7 @@ private fun ComparisonScreenPreview() {
       color = HedvigTheme.colorScheme.backgroundPrimary,
     ) {
       ComparisonScreen(
-        ComparisonState.Success(
+        Success(
           mockComparisonData,
           1,
         ),

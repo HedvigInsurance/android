@@ -2,6 +2,7 @@ package com.hedvig.android.feature.change.tier.navigation
 
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
@@ -65,12 +66,6 @@ internal sealed interface ChooseTierDestination {
   @Serializable
   data object SubmitFailure : ChooseTierDestination, Destination
 }
-
-@Serializable
-data class ComparisonParameters(
-  val termsIds: List<String>,
-  val selectedTermsVersion: String?,
-)
 
 @Serializable
 data class SummaryParameters(
