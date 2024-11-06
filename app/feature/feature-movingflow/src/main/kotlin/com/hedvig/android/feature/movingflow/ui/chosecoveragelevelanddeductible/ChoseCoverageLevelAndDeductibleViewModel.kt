@@ -16,6 +16,8 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.ClearNavigateToComparison
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.LaunchComparison
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.NavigatedToSummary
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectCoverage
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectDeductible
@@ -26,6 +28,7 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlinx.coroutines.flow.collectLatest
 
 internal class ChoseCoverageLevelAndDeductibleViewModel(
@@ -49,6 +52,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
     var submittingSelectedHomeQuoteId: String? by remember { mutableStateOf(null) }
     var navigateToSummaryScreenWithHomeQuoteId: String? by remember { mutableStateOf(null) }
+    var comparisonParameters: ComparisonParameters? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -75,6 +79,18 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
         }
 
         NavigatedToSummary -> navigateToSummaryScreenWithHomeQuoteId = null
+
+        ClearNavigateToComparison -> comparisonParameters = null
+
+        LaunchComparison -> {
+          val currentContent = tiersInfo.getOrNull() ?: return@CollectEvents
+          val filtered = currentContent.allOptions.distinctBy { it.tierName }
+          val selected = filtered.firstOrNull { it.tierName == currentContent.selectedCoverage.tierName }
+          comparisonParameters = ComparisonParameters(
+            termsIds = filtered.map { it.productVariant.termsVersion },
+            selectedTermsVersion = selected?.productVariant?.termsVersion,
+          )
+        }
       }
     }
 
@@ -143,6 +159,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
             tiersInfo = state,
             navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
             isSubmitting = submittingSelectedHomeQuoteId != null,
+            comparisonParameters = comparisonParameters,
           )
         }
       }
@@ -158,6 +175,10 @@ sealed interface ChoseCoverageLevelAndDeductibleEvent {
   data class SubmitSelectedHomeQuoteId(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
 
   data object NavigatedToSummary : ChoseCoverageLevelAndDeductibleEvent
+
+  data object LaunchComparison : ChoseCoverageLevelAndDeductibleEvent
+
+  data object ClearNavigateToComparison : ChoseCoverageLevelAndDeductibleEvent
 }
 
 internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
@@ -167,6 +188,7 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
 
   data class Content(
     val tiersInfo: TiersInfo,
+    val comparisonParameters: ComparisonParameters?,
     val navigateToSummaryScreenWithHomeQuoteId: String?,
     val isSubmitting: Boolean,
   ) : ChoseCoverageLevelAndDeductibleUiState {

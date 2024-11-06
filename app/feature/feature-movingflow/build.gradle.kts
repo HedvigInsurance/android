@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.uiTiersAndAddons)
+  implementation(projects.tierComparison)
 }
 
 apollo {
