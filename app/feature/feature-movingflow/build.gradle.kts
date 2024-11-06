@@ -1,11 +1,12 @@
 plugins {
-  id("hedvig.android.ktlint")
-  id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.apollo)
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+  id("hedvig.android")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  apollo(packageName = "octopus.feature.movingflow")
+  serialization()
+  compose()
 }
 
 dependencies {
@@ -34,11 +35,4 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.uiTiersAndAddons)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus.feature.movingflow"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }
