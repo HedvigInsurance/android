@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.change.tier.ui.comparison
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +25,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
@@ -45,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
@@ -53,13 +56,14 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
+import com.hedvig.android.feature.change.tier.data.ComparisonData
 import com.hedvig.android.feature.change.tier.data.ComparisonRow
 import com.hedvig.android.feature.change.tier.data.mockComparisonData
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Failure
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
-import kotlinx.coroutines.delay
 import hedvig.resources.R
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
@@ -91,7 +95,12 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 @Composable
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
-  var clickedRowIndex by remember { mutableStateOf<Int?>(null) }
+  val scrollState = rememberScrollState()
+  LaunchedEffect(scrollState) {
+    delay(200)
+    scrollState.animateScrollTo(scrollState.maxValue, tween(durationMillis = 1500))
+  }
+  val animatedShadowSize = animateFloatAsState(if (scrollState.value > 0) 0.05f else 0f)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -154,34 +163,41 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
-    val scrollState = rememberScrollState()
-    LaunchedEffect(scrollState) {
-      delay(200)
-      scrollState.animateScrollTo(50)
-      scrollState.animateScrollTo(0)
-    }
-    val interactionSource = remember { MutableInteractionSource()}
+
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+          modifier = Modifier.weight(1f),
+        ) {
           LayoutWithoutPlacement(
             sizeAdjustingContent =
-            {
-              HedvigText(
-                "emptyspace",
-                fontSize = HedvigTheme.typography.label.fontSize,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 4.dp),
-              )
-            },
+              {
+                HedvigText(
+                  "emptyspace",
+                  fontSize = HedvigTheme.typography.label.fontSize,
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.padding(vertical = 4.dp),
+                )
+              },
           ) { }
           uiState.comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+            val borderColor = HedvigTheme.colorScheme.borderSecondary
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
                 .fillMaxSize()
+                .drawWithContent {
+                  drawContent()
+                  if (rowIndex != 0) {
+                    drawLine(
+                      color = borderColor,
+                      start = Offset.Zero,
+                      end = Offset(size.width, 0f),
+                    )
+                  }
+                }
                 .clickable {
                   bottomSheetRow = comparisonRow
                 },
@@ -190,91 +206,131 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
                 comparisonRow = comparisonRow,
               )
             }
-            if (rowIndex != uiState.comparisonData.rows.lastIndex) {
-              HorizontalDivider()
-            }
           }
         }
-
-        Column(
+        val colorStops = arrayOf(
+          0.0f to HedvigTheme.colorScheme.textDisabled,
+          animatedShadowSize.value to Color.Transparent,
+        )
+        Box(
           modifier = Modifier
             .weight(1.5f)
-            .horizontalScroll(state = scrollState),
-        ) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            for (column in uiState.comparisonData.columns) {
-              val isThisSelected = uiState.comparisonData.columns.indexOf(column) == uiState.selectedColumnIndex
-              val cellModifier = if (isThisSelected) {
-                Modifier.background(
-                  shape = HedvigTheme.shapes.smallTopCorners,
-                  color = HedvigTheme.colorScheme.highlightGreenFill1,
-                )
-              } else {
-                Modifier
-              }
-              val textColor =
-                if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
-              column.title?.let {
-                HedvigText(
-                  it,
-                  fontSize = HedvigTheme.typography.label.fontSize,
-                  textAlign = TextAlign.Center,
-                  color = textColor,
-                  modifier = cellModifier
-                    .defaultMinSize(minWidth = 100.dp)
-                    .padding(vertical = 4.dp),
-                )
-              }
-
-              Spacer(Modifier.width(2.dp))
-            }
-          }
-          uiState.comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .clickable {
-                  bottomSheetRow = comparisonRow
-                },
-            ) {
-              comparisonRow.cells.forEachIndexed { index, cell ->
-                val isThisSelected = index == uiState.selectedColumnIndex
-                val cellModifier = if (isThisSelected) {
-                  Modifier.background(
-                    shape = if (rowIndex ==
-                      uiState.comparisonData.rows.lastIndex
-                    ) {
-                      HedvigTheme.shapes.smallBottomCorners
-                    } else {
-                      RectangleShape
-                    },
-                    color = HedvigTheme.colorScheme.highlightGreenFill1,
-                  )
-                } else {
-                  Modifier
-                }
-                val checkMarkColor = if (!cell.isCovered) {
-                  HedvigTheme.colorScheme.textDisabled
-                } else if (isThisSelected) {
-                  HedvigTheme.colorScheme.textBlack
-                } else {
-                  HedvigTheme.colorScheme.textPrimary
-                }
-                CheckMarkCell(
-                  isCovered = cell.isCovered,
-                  modifier = cellModifier,
-                  tint = checkMarkColor,
-                )
-                Spacer(Modifier.width(2.dp))
-              }
-            }
-            if (rowIndex != uiState.comparisonData.rows.lastIndex) {
-              HorizontalDivider(
+            .drawWithContent {
+              drawContent()
+              drawRect(
+                topLeft = Offset(0f, 0f),
+                brush = Brush.horizontalGradient(
+                  colorStops =
+                  colorStops,
+                ),
               )
-            }
+            },
+        ) {
+          ScrollableTable(
+            scrollState = scrollState,
+            comparisonData = uiState.comparisonData,
+            selectedColumnIndex = uiState.selectedColumnIndex,
+            onRowClick = { comparisonRow ->
+              bottomSheetRow = comparisonRow
+            },
+          )
+//          if (scrollState.value>0) {
+//            LayoutWithoutPlacement(
+//              modifier = Modifier
+//                .background(Brush.horizontalGradient(colorStops = colorStops)),
+//              sizeAdjustingContent = {
+//                ScrollableTable(
+//                  scrollState = scrollState,
+//                  comparisonData = uiState.comparisonData,
+//                  selectedColumnIndex = uiState.selectedColumnIndex,
+//                  onRowClick = { comparisonRow ->
+//                    bottomSheetRow = comparisonRow})
+//              }
+//            ) {}
+//          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ScrollableTable(
+  scrollState: ScrollState,
+  comparisonData: ComparisonData,
+  selectedColumnIndex: Int?,
+  onRowClick: (ComparisonRow) -> Unit,
+) {
+  Column(
+    Modifier.horizontalScroll(state = scrollState),
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      for (column in comparisonData.columns) {
+        val isThisSelected = comparisonData.columns.indexOf(column) == selectedColumnIndex
+        val cellModifier = if (isThisSelected) {
+          Modifier.background(
+            shape = HedvigTheme.shapes.smallTopCorners,
+            color = HedvigTheme.colorScheme.highlightGreenFill1,
+          )
+        } else {
+          Modifier
+        }
+        val textColor =
+          if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
+        column.title?.let {
+          HedvigText(
+            it,
+            fontSize = HedvigTheme.typography.label.fontSize,
+            textAlign = TextAlign.Center,
+            color = textColor,
+            modifier = cellModifier
+              .defaultMinSize(minWidth = 100.dp)
+              .padding(vertical = 4.dp),
+          )
+        }
+
+        Spacer(Modifier.width(2.dp))
+      }
+    }
+    comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .clickable {
+            onRowClick(comparisonRow)
+          },
+      ) {
+        comparisonRow.cells.forEachIndexed { index, cell ->
+          val isThisSelected = index == selectedColumnIndex
+          val cellModifier = if (isThisSelected) {
+            Modifier.background(
+              shape = if (rowIndex ==
+                comparisonData.rows.lastIndex
+              ) {
+                HedvigTheme.shapes.smallBottomCorners
+              } else {
+                RectangleShape
+              },
+              color = HedvigTheme.colorScheme.highlightGreenFill1,
+            )
+          } else {
+            Modifier
           }
+          val checkMarkColor = if (!cell.isCovered) {
+            HedvigTheme.colorScheme.textDisabled
+          } else if (isThisSelected) {
+            HedvigTheme.colorScheme.textBlack
+          } else {
+            HedvigTheme.colorScheme.textPrimary
+          }
+          CheckMarkCell(
+            isCovered = cell.isCovered,
+            modifier = cellModifier,
+            tint = checkMarkColor,
+            drawTopBorder = rowIndex != 0,
+          )
         }
       }
     }
@@ -298,11 +354,22 @@ private fun RowTitle(comparisonRow: ComparisonRow, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun CheckMarkCell(isCovered: Boolean, tint: Color, modifier: Modifier = Modifier) {
+private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolean, modifier: Modifier = Modifier) {
+  val borderColor = HedvigTheme.colorScheme.borderSecondary
   Row(
     horizontalArrangement = Arrangement.Center,
     modifier = modifier
-      .defaultMinSize(minWidth = 100.dp),
+      .defaultMinSize(minWidth = 100.dp)
+      .drawWithContent {
+        drawContent()
+        if (drawTopBorder) {
+          drawLine(
+            color = borderColor,
+            start = Offset.Zero,
+            end = Offset(size.width, 0f),
+          )
+        }
+      },
   ) {
     Icon(
       imageVector = if (isCovered) {

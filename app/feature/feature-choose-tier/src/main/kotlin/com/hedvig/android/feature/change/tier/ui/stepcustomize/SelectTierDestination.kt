@@ -107,7 +107,12 @@ internal fun SelectTierDestination(
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
             viewModel.emit(ClearNavigateToComparison)
-            navigateToComparison(state.uiState.quotesToCompare, state.uiState.chosenQuote?.productVariant?.termsVersion)
+            navigateToComparison(
+              state.uiState.quotesToCompare,
+              state.uiState.quotesToCompare.firstOrNull {
+                it.tier.tierName == state.uiState.chosenTier?.tierName
+              }?.productVariant?.termsVersion,
+            )
           }
         }
         SelectTierScreen(

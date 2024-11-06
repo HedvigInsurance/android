@@ -30,7 +30,6 @@ internal class GetCoverageComparisonUseCaseImpl(
         logcat(ERROR) { "Tried to ask for coverage comparison when feature flag is disabled" }
         raise(ErrorMessage("Tried to ask for coverage comparison when feature flag is disabled"))
       }
-      logcat { "Mariia: sending termsVersions: $termsVersionIds" }
       val result = apolloClient.query(CompareCoverageQuery(termsVersionIds))
         .safeExecute()
         .mapLeft {

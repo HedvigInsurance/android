@@ -23,17 +23,19 @@ fun HorizontalDivider(
   modifier: Modifier = Modifier,
   thickness: Dp = DividerDefaults.thickness,
   color: Color = DividerDefaults.color,
-) = Canvas(
-  modifier
-    .fillMaxWidth()
-    .height(thickness),
 ) {
-  drawLine(
-    color = color,
-    strokeWidth = thickness.toPx(),
-    start = Offset(0f, thickness.toPx() / 2),
-    end = Offset(size.width, thickness.toPx() / 2),
-  )
+  Canvas(
+    modifier
+      .fillMaxWidth()
+      .height(thickness),
+  ) {
+    drawLine(
+      color = color,
+      strokeWidth = thickness.toPx(),
+      start = Offset(0f, thickness.toPx() / 2),
+      end = Offset(size.width, thickness.toPx() / 2),
+    )
+  }
 }
 
 internal object DividerDefaults {
