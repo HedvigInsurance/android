@@ -234,20 +234,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               bottomSheetRow = comparisonRow
             },
           )
-//          if (scrollState.value>0) {
-//            LayoutWithoutPlacement(
-//              modifier = Modifier
-//                .background(Brush.horizontalGradient(colorStops = colorStops)),
-//              sizeAdjustingContent = {
-//                ScrollableTable(
-//                  scrollState = scrollState,
-//                  comparisonData = uiState.comparisonData,
-//                  selectedColumnIndex = uiState.selectedColumnIndex,
-//                  onRowClick = { comparisonRow ->
-//                    bottomSheetRow = comparisonRow})
-//              }
-//            ) {}
-//          }
         }
       }
     }
@@ -290,8 +276,6 @@ private fun ScrollableTable(
               .padding(vertical = 4.dp),
           )
         }
-
-        Spacer(Modifier.width(2.dp))
       }
     }
     comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
@@ -395,7 +379,7 @@ private fun ComparisonScreenPreview() {
       ComparisonScreen(
         ComparisonState.Success(
           mockComparisonData,
-          0,
+          1,
         ),
         {},
       )
