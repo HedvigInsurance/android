@@ -32,7 +32,7 @@ dependencies {
 gradlePlugin {
   plugins {
     fun createPlugin(id: String, className: String) {
-      plugins.register(id) {
+      plugins.create(id) {
         this.id = id
         implementationClass = className
       }
@@ -47,5 +47,8 @@ gradlePlugin {
     createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
     createPlugin("hedvig.kotlin.library.compose", "KotlinLibraryComposeConventionPlugin")
     createPlugin("hedvig.lint", "HedvigLintConventionPlugin")
+
+    createPlugin("hedvig.gradle.plugin", "HedvigGradlePlugin")
+    createPlugin("hedvig.android", "LibraryConventionPlugin")
   }
 }
