@@ -1,7 +1,7 @@
 package com.hedvig.android.shared.tier.comparison.ui
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -101,8 +101,8 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     delay(200)
     scrollState.animateScrollTo(scrollState.maxValue, tween(durationMillis = 1500))
   }
-  val showShadow by remember { derivedStateOf { scrollState.value > 0 } }
-  val animatedShadowSize = animateFloatAsState(if (showShadow) 0.05f else 0f)
+  val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
+  val animatedShadowSize by animateDpAsState(shadowWidth)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -219,7 +219,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               drawRect(
                 brush = Brush.horizontalGradient(
                   colors = listOf(shadowColor, Color.Transparent),
-                  endX = animatedShadowSize.value,
+                  endX = animatedShadowSize.toPx(),
                 ),
               )
             },
