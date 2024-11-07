@@ -210,20 +210,16 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
             }
           }
         }
-        val colorStops = arrayOf(
-          0.0f to HedvigTheme.colorScheme.textDisabled,
-          animatedShadowSize.value to Color.Transparent,
-        )
+        val shadowColor = HedvigTheme.colorScheme.textDisabled
         Box(
           modifier = Modifier
             .weight(1.5f)
             .drawWithContent {
               drawContent()
               drawRect(
-                topLeft = Offset(0f, 0f),
                 brush = Brush.horizontalGradient(
-                  colorStops =
-                  colorStops,
+                  colors = listOf(shadowColor, Color.Transparent),
+                  endX = animatedShadowSize.value,
                 ),
               )
             },
@@ -259,7 +255,7 @@ private fun ScrollableTable(
         val isThisSelected = comparisonData.columns.indexOf(column) == selectedColumnIndex
         val cellModifier = if (isThisSelected) {
           Modifier.background(
-            shape = HedvigTheme.shapes.smallTopCorners,
+            shape = HedvigTheme.shapes.cornerXSmallTop,
             color = HedvigTheme.colorScheme.highlightGreenFill1,
           )
         } else {
@@ -295,7 +291,7 @@ private fun ScrollableTable(
               shape = if (rowIndex ==
                 comparisonData.rows.lastIndex
               ) {
-                HedvigTheme.shapes.smallBottomCorners
+                HedvigTheme.shapes.cornerXSmallBottom
               } else {
                 RectangleShape
               },

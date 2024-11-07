@@ -11,12 +11,12 @@ import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerMedium
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerNone
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerSmall
+import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerTopOnlyXLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerXLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerXXLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.SmallBottomCorners
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.SmallTopCorners
 import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens
-import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens.CornerTopOnlyXLarge
 
 @Immutable
 data class Shapes internal constructor(
@@ -25,10 +25,11 @@ data class Shapes internal constructor(
   val cornerLarge: Shape = ShapeTokens.CornerLarge,
   val cornerMedium: Shape = ShapeTokens.CornerMedium,
   val cornerSmall: Shape = ShapeTokens.CornerSmall,
-  val cornerExtraSmall: Shape = ShapeTokens.CornerExtraSmall,
+  val cornerXSmall: Shape = ShapeTokens.CornerXSmall,
   val cornerNone: Shape = ShapeTokens.CornerNone,
-  val smallTopCorners: Shape = ShapeTokens.SmallTopCorners,
-  val smallBottomCorners: Shape = ShapeTokens.SmallBottomCorners,
+  val cornerXLargeTop: Shape = ShapeTokens.CornerXLarge,
+  val cornerXSmallTop: Shape = ShapeTokens.CornerXSmallTop,
+  val cornerXSmallBottom: Shape = ShapeTokens.CornerXSmallBottom,
 )
 
 internal fun Shapes.fromToken(token: ShapeKeyTokens): Shape {
@@ -38,11 +39,11 @@ internal fun Shapes.fromToken(token: ShapeKeyTokens): Shape {
     CornerLarge -> cornerLarge
     CornerMedium -> cornerMedium
     CornerSmall -> cornerSmall
-    CornerExtraSmall -> cornerExtraSmall
+    CornerExtraSmall -> cornerXSmall
     CornerNone -> cornerNone
-    ShapeKeyTokens.CornerTopOnlyXLarge -> CornerTopOnlyXLarge
-    ShapeKeyTokens.SmallTopCorners -> ShapeTokens.SmallTopCorners
-    ShapeKeyTokens.SmallBottomCorners -> ShapeTokens.SmallBottomCorners
+    CornerTopOnlyXLarge -> cornerXLargeTop
+    SmallTopCorners -> cornerXSmallTop
+    SmallBottomCorners -> cornerXSmallBottom
   }
 }
 

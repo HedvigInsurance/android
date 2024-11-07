@@ -177,7 +177,7 @@ private fun QuoteCard(
                     Row(
                       modifier = Modifier
                         .fillMaxWidth()
-                        .clip(HedvigTheme.shapes.cornerExtraSmall)
+                        .clip(HedvigTheme.shapes.cornerXSmall)
                         .clickable {
                           uriHandler.openUri(document.url)
                         },
