@@ -41,14 +41,14 @@ internal class GetInsuranceContractsUseCaseImpl(
         val insuranceQueryData = insuranceQueryResponse.bind()
         val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
-        val isMovingEnabledForMember = insuranceQueryData.currentMember.memberActions?.isMovingEnabled ?: false
+        val isMovingEnabledForMember = insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true && isMovingFlowFlagEnabled
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
             isTerminated = true,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-            isMovingFlowEnabled = isMovingFlowFlagEnabled && isMovingEnabledForMember,
+            isMovingFlowEnabled = isMovingEnabledForMember,
             isTierFlagEnabled = isTierEnabled,
           )
         }
@@ -59,7 +59,7 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-            isMovingFlowEnabled = isMovingFlowFlagEnabled && isMovingEnabledForMember,
+            isMovingFlowEnabled = isMovingEnabledForMember,
             isTierFlagEnabled = isTierEnabled,
           )
         }
