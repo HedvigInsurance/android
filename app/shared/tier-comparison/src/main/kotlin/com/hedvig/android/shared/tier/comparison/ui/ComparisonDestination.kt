@@ -99,7 +99,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   val scrollState = rememberScrollState()
   LaunchedEffect(scrollState) {
     delay(200)
-    scrollState.animateScrollTo(scrollState.maxValue, tween(durationMillis = 1500))
+    scrollState.animateScrollTo(scrollState.maxValue, spring(stiffness = 20f))
   }
   val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
   val animatedShadowSize by animateDpAsState(shadowWidth)
