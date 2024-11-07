@@ -14,18 +14,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -123,10 +127,7 @@ private fun SummaryScreen(
         topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
       Box(
-        modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        modifier = Modifier.fillMaxWidth().weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -158,7 +159,6 @@ private fun SummaryScreen(
   onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
-  modifier: Modifier = Modifier,
 ) {
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
@@ -183,69 +183,91 @@ private fun SummaryScreen(
       onDismissRequest = onDismissSubmissionError,
     )
   }
-  Column(
-    modifier = modifier
-      .padding(horizontal = 16.dp)
-      .verticalScroll(rememberScrollState()),
-  ) {
-    Spacer(Modifier.height(16.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      QuoteCard(content.summaryInfo.moveHomeQuote)
-      for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
-        QuoteCard(mtaQuote)
+  Box(propagateMinConstraints = true) {
+    var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
+    Column(
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .verticalScroll(rememberScrollState()),
+    ) {
+      Spacer(Modifier.height(16.dp))
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        QuoteCard(content.summaryInfo.moveHomeQuote)
+        for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
+          QuoteCard(mtaQuote)
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
+      Spacer(Modifier.height(40.dp))
+      QuestionsAndAnswers()
+      Spacer(Modifier.height(40.dp))
+      Column {
+        HedvigText(
+          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = stringResource(R.string.open_chat),
+          enabled = true,
+          onClick = onNavigateToNewConversation,
+          buttonSize = Small,
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      with(LocalDensity.current) {
+        Spacer(Modifier.height(bottomAttachedContentHeightPx.toDp()))
+      }
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.wrapContentHeight(Alignment.Bottom).onPlaced {
+        bottomAttachedContentHeightPx = it.size.height
+      },
+    ) {
+      Column(
+        Modifier
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        Spacer(Modifier.height(16.dp))
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+          },
+          endSlot = {
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                content.summaryInfo.totalPremium.toString(),
+              ),
+              textAlign = TextAlign.End,
+              modifier = Modifier.wrapContentWidth(Alignment.End),
+            )
+          },
+          modifier = Modifier.fillMaxWidth(),
+          spaceBetween = 8.dp,
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
+          enabled = !content.shouldDisableInput,
+          onClick = { showConfirmChangesDialog = true },
+          isLoading = content.isSubmitting,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
-    Spacer(Modifier.height(16.dp))
-    HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
-    Spacer(Modifier.height(24.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-      },
-      endSlot = {
-        HedvigText(
-          text = stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            content.summaryInfo.totalPremium.toString(),
-          ),
-          textAlign = TextAlign.End,
-          modifier = Modifier.wrapContentWidth(Alignment.End),
-        )
-      },
-      modifier = Modifier.fillMaxWidth(),
-      spaceBetween = 8.dp,
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
-      enabled = !content.shouldDisableInput,
-      onClick = { showConfirmChangesDialog = true },
-      isLoading = content.isSubmitting,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(40.dp))
-    QuestionsAndAnswers()
-    Spacer(Modifier.height(40.dp))
-    Column {
-      HedvigText(
-        text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
-      )
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(R.string.open_chat),
-        enabled = true,
-        onClick = onNavigateToNewConversation,
-        buttonSize = Small,
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
-      )
-    }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
