@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,7 +101,8 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     delay(200)
     scrollState.animateScrollTo(scrollState.maxValue, tween(durationMillis = 1500))
   }
-  val animatedShadowSize = animateFloatAsState(if (scrollState.value > 0) 0.05f else 0f)
+  val showShadow by remember { derivedStateOf { scrollState.value > 0 } }
+  val animatedShadowSize = animateFloatAsState(if (showShadow) 0.05f else 0f)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
