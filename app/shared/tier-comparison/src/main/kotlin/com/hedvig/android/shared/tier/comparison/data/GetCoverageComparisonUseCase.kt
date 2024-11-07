@@ -39,7 +39,7 @@ internal class GetCoverageComparisonUseCaseImpl(
           logcat(ERROR) { "Tried to to ask for coverage comparison but got error from CompareCoverageQuery: $it" }
         }
         .bind()
-      logcat { "Mariia: coverage comparison result: $result " }
+      logcat { "Coverage comparison result: $result " }
       ComparisonData(
         columns = result.productVariantComparison.variantColumns.map {
           ComparisonColumn(title = it.displayNameTier, termsVersion = it.termsVersion)
@@ -50,14 +50,13 @@ internal class GetCoverageComparisonUseCaseImpl(
               row.cells.forEachIndexed { index, cell ->
                 val columnTitle = result.productVariantComparison.variantColumns[index].displayNameTier
                 if (cell.coverageText != null && columnTitle != null) {
-                  append("$columnTitle: ${cell.coverageText}\n")
+                  appendLine("$columnTitle: ${cell.coverageText}")
                 }
               }
-            }
+            }.trimIndent()
           } else {
             null
           }
-          logcat { "Mariia: numbers $numbers" }
           ComparisonRow(
             title = row.title,
             description = row.description,
