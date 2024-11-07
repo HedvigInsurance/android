@@ -6,7 +6,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,13 +38,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.LayoutWithoutPlacement
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -177,17 +178,12 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         Column(
           modifier = Modifier.weight(1f),
         ) {
-          LayoutWithoutPlacement(
-            sizeAdjustingContent =
-              {
-                HedvigText(
-                  "emptyspace",
-                  fontSize = HedvigTheme.typography.label.fontSize,
-                  textAlign = TextAlign.Center,
-                  modifier = Modifier.padding(vertical = 4.dp),
-                )
-              },
-          ) { }
+          HedvigText(
+            "emptyspace",
+            fontSize = HedvigTheme.typography.label.fontSize,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 4.dp).withoutPlacement(),
+          )
           uiState.comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
             val borderColor = HedvigTheme.colorScheme.borderSecondary
             Surface(
@@ -345,8 +341,8 @@ private fun ScrollableTable(
 @Composable
 private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolean, modifier: Modifier = Modifier) {
   val borderColor = HedvigTheme.colorScheme.borderSecondary
-  Row(
-    horizontalArrangement = Arrangement.Center,
+  Box(
+    contentAlignment = Alignment.Center,
     modifier = modifier
       .defaultMinSize(minWidth = 100.dp)
       .drawWithContent {
@@ -358,8 +354,14 @@ private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolea
             end = Offset(size.width, 0f),
           )
         }
-      },
+      }
+      .padding(vertical = 8.dp),
   ) {
+    HedvigText(
+      text = "H",
+      fontSize = HedvigTheme.typography.label.fontSize,
+      modifier = Modifier.withoutPlacement(),
+    )
     Icon(
       imageVector = if (isCovered) {
         HedvigIcons.Checkmark
@@ -368,12 +370,12 @@ private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolea
       },
       null,
       tint = tint,
-      modifier = Modifier.padding(vertical = 8.dp),
     )
   }
 }
 
 @HedvigPreview
+@PreviewFontScale
 @Composable
 private fun ComparisonScreenPreview() {
   HedvigTheme {
