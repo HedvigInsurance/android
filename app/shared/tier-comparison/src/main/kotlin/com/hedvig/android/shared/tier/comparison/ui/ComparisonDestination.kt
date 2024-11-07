@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -235,7 +234,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               )
               drawRect(
                 brush = Brush.horizontalGradient(
-                  0.95f to Color.Black,
+                  0.9f to Color.Black,
                   1f to Color.Transparent,
                 ),
                 blendMode = BlendMode.DstIn,
