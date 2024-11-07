@@ -16,7 +16,7 @@ dependencies {
   implementation(projects.coreMarkdown)
 }
 
-project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
+extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
   // Octopus client
   service("octopus") {
     introspection {

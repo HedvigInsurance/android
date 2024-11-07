@@ -22,12 +22,12 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   private val pluginManager: PluginManager,
 ) {
   internal val apolloSchemaHandler: ApolloSchemaHandler =
-    project.objects.newInstance<ApolloSchemaHandler>(project, pluginManager, libs)
+    project.objects.newInstance<ApolloSchemaHandler>()
   internal val composeHandler: ComposeHandler =
-    project.objects.newInstance<ComposeHandler>(project, pluginManager, libs)
+    project.objects.newInstance<ComposeHandler>()
 
   fun apolloSchema() {
-    apolloSchemaHandler.configure()
+    apolloSchemaHandler.configure(project)
   }
 
   /**
@@ -45,7 +45,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   }
 
   fun compose() {
-    composeHandler.configure()
+    composeHandler.configure(project)
   }
 
   fun serialization() {
@@ -65,28 +65,27 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
       return extensions.create<HedvigGradlePluginExtension>(
         "hedvig",
         project,
-        with(project) { the<LibrariesForLibs>() },
+        project.the<LibrariesForLibs>(),
         project.pluginManager,
       )
     }
   }
 }
 
-internal abstract class ApolloSchemaHandler @Inject constructor(
-  private val project: Project,
-  private val pluginManager: PluginManager,
-  private val libs: LibrariesForLibs,
-) {
-  fun configure() {
-    pluginManager.apply(libs.plugins.apollo.get().pluginId)
-    project.tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
-      doLast {
-        val schemaFile = outputFile.get().asFile
-        val schemaText = schemaFile.readText()
-        val convertedSchema = schemaText.performClientSideChanges()
-        schemaFile.writeText(convertedSchema)
-      }
+internal abstract class ApolloSchemaHandler {
+  fun configure(project: Project) {
+    with(project) {
+      pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
     }
+    project.tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>()
+      .configureEach {
+        doLast {
+          val schemaFile = outputFile.get().asFile
+          val schemaText = schemaFile.readText()
+          val convertedSchema = schemaText.performClientSideChanges()
+          schemaFile.writeText(convertedSchema)
+        }
+      }
   }
 
   private fun String.performClientSideChanges(): String {
@@ -136,13 +135,10 @@ internal abstract class ApolloSchemaHandler @Inject constructor(
   }
 }
 
-internal abstract class ComposeHandler @Inject constructor(
-  private val project: Project,
-  private val pluginManager: PluginManager,
-  private val libs: LibrariesForLibs,
-) {
-  fun configure() {
-    pluginManager.apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
+internal abstract class ComposeHandler @Inject constructor() {
+  fun configure(project: Project) {
+    val libs = project.the<LibrariesForLibs>()
+    project.pluginManager.apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
     project.extensions.configure<ComposeCompilerGradlePluginExtension> {
       configureComposeCompilerMetrics(project)
     }
