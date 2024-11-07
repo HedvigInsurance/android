@@ -32,9 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -214,6 +217,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         Box(
           modifier = Modifier
             .weight(1.5f)
+            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
             .drawWithContent {
               drawContent()
               drawLine(
@@ -226,6 +230,13 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
                   colors = listOf(shadowColor, Color.Transparent),
                   endX = animatedShadowSize.toPx(),
                 ),
+              )
+              drawRect(
+                brush = Brush.horizontalGradient(
+                  0.95f to Color.Black,
+                  1f to Color.Transparent,
+                ),
+                blendMode = BlendMode.DstIn,
               )
             },
         ) {
