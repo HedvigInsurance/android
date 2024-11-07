@@ -216,6 +216,11 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
             .weight(1.5f)
             .drawWithContent {
               drawContent()
+              drawLine(
+                color = shadowColor,
+                start = Offset.Zero,
+                end = Offset(0f, size.height),
+              )
               drawRect(
                 brush = Brush.horizontalGradient(
                   colors = listOf(shadowColor, Color.Transparent),
