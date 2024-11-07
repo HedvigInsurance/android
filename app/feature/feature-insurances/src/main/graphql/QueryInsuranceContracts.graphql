@@ -1,5 +1,8 @@
 query InsuranceContracts {
   currentMember {
+    memberActions {
+      isMovingEnabled
+    }
     firstName
     lastName
     ssn
