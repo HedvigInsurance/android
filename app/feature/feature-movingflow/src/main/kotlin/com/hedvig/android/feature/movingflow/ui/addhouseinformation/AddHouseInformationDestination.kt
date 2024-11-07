@@ -264,6 +264,7 @@ private fun AddHouseInformationScreen(
       HedvigNotificationCard(
         message = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
         priority = Info,
+        modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(

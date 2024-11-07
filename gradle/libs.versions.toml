@@ -11,7 +11,7 @@ lintGradlePlugin = "8.7.2"
 # gradlePlugin versions
 androidGradlePlugin = "8.7.2"
 apolloAdapters = "0.0.4"
-apollo = "4.0.1"
+apollo = "4.1.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.2"
 datadogPlugin = "1.14.0"
@@ -24,7 +24,7 @@ ksp = "2.0.21-1.0.26"
 ktor = "3.0.1"
 license = "0.9.8"
 molecule = "2.0.0"
-squareSortDependencies = "0.11"
+squareSortDependencies = "0.12"
 
 # Other versions sorted alphabetically
 accompanist = "0.36.0"

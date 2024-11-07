@@ -19,12 +19,10 @@ kotlin {
 
 dependencies {
   compileOnly(libs.android.gradlePlugin)
+  compileOnly(libs.apollo.gradlePlugin)
+  compileOnly(libs.compose.compilerGradlePlugin)
   compileOnly(libs.kotlin.gradlePlugin)
   compileOnly(libs.kotlinter.gradlePlugin)
-  compileOnly(libs.compose.compilerGradlePlugin)
-
-  // Not sure why this can't be compileOnly. Not a big deal, but might figure it out in the future
-  implementation(libs.apollo.gradlePlugin)
 
   // Enables using type-safe accessors to reference plugins from the [plugins] block defined in version catalogs.
   // Context: https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
