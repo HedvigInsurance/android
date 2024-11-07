@@ -2,7 +2,6 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,22 +48,23 @@ fun HedvigCard(
   indication: Indication? = null,
   content: @Composable () -> Unit,
 ) {
-  Surface(
-    shape = HedvigTheme.shapes.cornerXLarge,
-    modifier = modifier
-      .then(
-        if (onClick != null) {
-          Modifier.clickable(
-            onClick = onClick,
-            interactionSource = interactionSource,
-            indication = indication,
-          )
-        } else {
-          Modifier
-        },
-      ),
-  ) {
-    content()
+  if (onClick != null) {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLarge,
+      onClick = onClick,
+      interactionSource = interactionSource,
+      indication = indication,
+      modifier = modifier,
+    ) {
+      content()
+    }
+  } else {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLarge,
+      modifier = modifier,
+    ) {
+      content()
+    }
   }
 }
 

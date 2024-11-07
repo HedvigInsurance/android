@@ -19,6 +19,7 @@ import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -81,6 +82,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
       StartDestination(
         viewModel = koinViewModel<StartViewModel>(),
         navigateUp = navController::navigateUp,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToNextStep = { moveIntentId ->
           navController.navigate(EnterNewAddress(moveIntentId))
         },
@@ -92,6 +94,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         viewModel = koinViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToAddHouseInformation = {
           navController.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
         },
@@ -105,6 +108,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         viewModel = koinViewModel<AddHouseInformationViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToChoseCoverageLevelAndDeductible = {
           navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
         },
@@ -115,6 +119,8 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
       ChoseCoverageLevelAndDeductibleDestination(
         viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>(),
         navigateUp = navController::navigateUp,
+        popBackStack = navController::popBackStack,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToSummaryScreen = { homeQuoteId ->
           navController.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))
         },
@@ -141,6 +147,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         viewModel = koinViewModel<SummaryViewModel>(),
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToNewConversation = onNavigateToNewConversation,
         onNavigateToFinishedScreen = { moveDate ->
           navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
