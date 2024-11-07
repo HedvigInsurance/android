@@ -1,9 +1,10 @@
 plugins {
-  id("hedvig.android.apollo")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.ktlint")
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  apolloSchema()
 }
 
 dependencies {
@@ -15,7 +16,7 @@ dependencies {
   implementation(projects.coreMarkdown)
 }
 
-apollo {
+project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
   // Octopus client
   service("octopus") {
     introspection {
