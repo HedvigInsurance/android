@@ -4,6 +4,7 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.assign
@@ -26,8 +27,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   internal val composeHandler: ComposeHandler =
     project.objects.newInstance<ComposeHandler>(project, pluginManager, libs)
 
-  fun apolloSchema() {
-    apolloSchemaHandler.configure()
+  fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
+    apolloSchemaHandler.configure(apolloServiceAction)
   }
 
   /**
@@ -72,13 +73,18 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   }
 }
 
-internal abstract class ApolloSchemaHandler @Inject constructor(
+abstract class ApolloSchemaHandler @Inject constructor(
   private val project: Project,
   private val pluginManager: PluginManager,
   private val libs: LibrariesForLibs,
 ) {
-  fun configure() {
+  fun configure(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     pluginManager.apply(libs.plugins.apollo.get().pluginId)
+    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
+      service("octopus") {
+        apolloServiceAction.execute(this)
+      }
+    }
     project.tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
       doLast {
         val schemaFile = outputFile.get().asFile
