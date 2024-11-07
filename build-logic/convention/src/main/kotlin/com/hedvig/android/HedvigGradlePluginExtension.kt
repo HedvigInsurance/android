@@ -4,6 +4,7 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.assign
@@ -26,8 +27,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   internal val composeHandler: ComposeHandler =
     project.objects.newInstance<ComposeHandler>()
 
-  fun apolloSchema() {
-    apolloSchemaHandler.configure(project)
+  fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
+    apolloSchemaHandler.configure(project, apolloServiceAction)
   }
 
   /**
@@ -73,9 +74,14 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 }
 
 internal abstract class ApolloSchemaHandler {
-  fun configure(project: Project) {
+  fun configure(project: Project, apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     with(project) {
       pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
+    }
+    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
+      service("octopus") {
+        apolloServiceAction.execute(this)
+      }
     }
     project.tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>()
       .configureEach {
