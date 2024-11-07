@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -169,7 +170,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column {
       Row(
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -189,26 +190,31 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
           ) { }
           uiState.comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
             val borderColor = HedvigTheme.colorScheme.borderSecondary
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .fillMaxSize()
-                .drawWithContent {
-                  drawContent()
-                  if (rowIndex != 0) {
-                    drawLine(
-                      color = borderColor,
-                      start = Offset.Zero,
-                      end = Offset(size.width, 0f),
-                    )
-                  }
-                }
-                .clickable {
-                  bottomSheetRow = comparisonRow
-                },
+            Surface(
+              onClick = { bottomSheetRow = comparisonRow },
+              color = HedvigTheme.colorScheme.backgroundPrimary,
+              modifier = Modifier.fillMaxSize(),
             ) {
-              RowTitle(
-                comparisonRow = comparisonRow,
+              HedvigText(
+                text = comparisonRow.title,
+                fontSize = HedvigTheme.typography.label.fontSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                  .fillMaxSize()
+                  .padding(start = 16.dp)
+                  .drawWithContent {
+                    drawContent()
+                    if (rowIndex != 0) {
+                      drawLine(
+                        color = borderColor,
+                        start = Offset.Zero,
+                        end = Offset(size.width, 0f),
+                      )
+                    }
+                  }
+                  .padding(end = 8.dp)
+                  .padding(vertical = 8.dp),
               )
             }
           }
@@ -330,24 +336,9 @@ private fun ScrollableTable(
             drawTopBorder = rowIndex != 0,
           )
         }
+        Spacer(Modifier.width(16.dp))
       }
     }
-  }
-}
-
-@Composable
-private fun RowTitle(comparisonRow: ComparisonRow, modifier: Modifier = Modifier) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier,
-  ) {
-    HedvigText(
-      text = comparisonRow.title,
-      fontSize = HedvigTheme.typography.label.fontSize,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 8.dp),
-    )
   }
 }
 
