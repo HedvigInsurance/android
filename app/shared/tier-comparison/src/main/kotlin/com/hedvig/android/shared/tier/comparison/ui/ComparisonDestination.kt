@@ -57,12 +57,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -127,11 +125,38 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
   val scrollState = rememberScrollState()
-  val density = LocalDensity.current
-  IndicateScrollableTableEffect(scrollState, density)
+  IndicateScrollableTableEffect(scrollState)
 
-  val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
-  val animatedShadowSize by animateDpAsState(shadowWidth)
+  HedvigBottomSheet(
+    sheetPadding = PaddingValues(0.dp),
+    isVisible = bottomSheetRow != null,
+    onVisibleChange = { isVisible ->
+      if (!isVisible) {
+        bottomSheetRow = null
+      }
+    },
+  ) {
+    Column {
+      bottomSheetRow?.let { HedvigText(text = it.title) }
+      Spacer(Modifier.height(16.dp))
+      bottomSheetRow?.let {
+        HedvigText(
+          text = it.description,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      val exactNumbers = bottomSheetRow?.numbers
+      if (exactNumbers != null) {
+        Spacer(Modifier.height(16.dp))
+        HedvigText(
+          text = exactNumbers,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+  }
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -148,36 +173,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       )
     },
   ) {
-    HedvigBottomSheet(
-      sheetPadding = PaddingValues(0.dp),
-      isVisible = bottomSheetRow != null,
-      onVisibleChange = { isVisible ->
-        if (!isVisible) {
-          bottomSheetRow = null
-        }
-      },
-    ) {
-      Column {
-        bottomSheetRow?.let { HedvigText(text = it.title) }
-        Spacer(Modifier.height(16.dp))
-        bottomSheetRow?.let {
-          HedvigText(
-            text = it.description,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-        val exactNumbers = bottomSheetRow?.numbers
-        if (exactNumbers != null) {
-          Spacer(Modifier.height(16.dp))
-          HedvigText(
-            text = exactNumbers,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-      }
-    }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
       text = stringResource(R.string.TIER_COMPARISON_TITLE),
@@ -200,76 +195,18 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         mutableStateOf(IntOffset(0, 0))
       }
       val interactionSource = remember { MutableInteractionSource() }
-      var outerConstraints: Constraints? by remember { mutableStateOf(null) }
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .layout { measurable, constraints ->
-            outerConstraints = constraints
-            val placeable = measurable.measure(constraints)
-            layout(placeable.width, placeable.height) {
-              placeable.placeRelative(0, 0)
-            }
-          },
-      ) {
-        FixSizedComparisonDataColumn(
-          comparisonData = uiState.comparisonData,
-          selectComparisonRow = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          interactionSource = interactionSource,
-          onSetRippleOffset = { rowOffset ->
-            rippleOffset = rowOffset
-          },
-          modifier = Modifier
-            .then(
-              if (outerConstraints != null) {
-                Modifier.widthIn(
-                  max = with(density) {
-                    (outerConstraints!!.maxWidth * 0.4f).toDp()
-                  },
-                )
-              } else {
-                Modifier
-              },
-            )
-            .width(IntrinsicSize.Max),
-        )
-        val shadowColor = HedvigTheme.colorScheme.textDisabled
-        ScrollableTable(
-          scrollState = scrollState,
-          comparisonData = uiState.comparisonData,
-          selectedColumnIndex = uiState.selectedColumnIndex,
-          onRowClick = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          interactionSource = interactionSource,
-          onSetRippleOffset = { rowOffset ->
-            rippleOffset = rowOffset
-          },
-          modifier = Modifier
-            .weight(1f)
-            .graphicsLayer {
-              compositingStrategy = CompositingStrategy.Offscreen
-            }
-            .drawWithContent {
-              drawContent()
-              drawLine(
-                color = shadowColor,
-                start = Offset.Zero,
-                end = Offset(0f, size.height),
-              )
-              drawRect(
-                brush = Brush.horizontalGradient(
-                  colors = listOf(shadowColor, Color.Transparent),
-                  endX = animatedShadowSize.toPx(),
-                ),
-              )
-            },
-        )
-      }
-
-      LayoutWithoutPlacement(
+      Table(
+        uiState = uiState,
+        selectComparisonRow = { comparisonRow ->
+          bottomSheetRow = comparisonRow
+        },
+        onSetRippleOffset = { intOffset ->
+          rippleOffset = intOffset
+        },
+        interactionSource = interactionSource,
+        scrollState = scrollState,
+      )
+      Box(
         modifier = Modifier
           .offset {
             rippleOffset
@@ -300,7 +237,8 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
  *  subtle otherwise
  */
 @Composable
-private fun IndicateScrollableTableEffect(scrollState: ScrollState, density: Density) {
+private fun IndicateScrollableTableEffect(scrollState: ScrollState) {
+  val density = LocalDensity.current
   LaunchedEffect(scrollState, density) {
     with(density) {
       delay(200)
@@ -330,6 +268,79 @@ private fun IndicateScrollableTableEffect(scrollState: ScrollState, density: Den
         }
       }
     }
+  }
+}
+
+@Composable
+private fun Table(
+  uiState: Success,
+  selectComparisonRow: (ComparisonRow) -> Unit,
+  onSetRippleOffset: (IntOffset) -> Unit,
+  interactionSource: MutableInteractionSource,
+  scrollState: ScrollState,
+) {
+  val density = LocalDensity.current
+  var tableConstraints: Constraints? by remember { mutableStateOf(null) }
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .layout { measurable, constraints ->
+        tableConstraints = constraints
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) {
+          placeable.placeRelative(0, 0)
+        }
+      },
+  ) {
+    FixSizedComparisonDataColumn(
+      comparisonData = uiState.comparisonData,
+      selectComparisonRow = selectComparisonRow,
+      interactionSource = interactionSource,
+      onSetRippleOffset = onSetRippleOffset,
+      modifier = Modifier
+        .then(
+          if (tableConstraints != null) {
+            Modifier.widthIn(
+              max = with(density) {
+                (tableConstraints!!.maxWidth * 0.4f).toDp()
+              },
+            )
+          } else {
+            Modifier
+          },
+        )
+        .width(IntrinsicSize.Max),
+    )
+    val shadowColor = HedvigTheme.colorScheme.textDisabled
+    val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
+    val animatedShadowSize by animateDpAsState(shadowWidth)
+    ScrollableTableSection(
+      scrollState = scrollState,
+      comparisonData = uiState.comparisonData,
+      selectedColumnIndex = uiState.selectedColumnIndex,
+      onRowClick = selectComparisonRow,
+      interactionSource = interactionSource,
+      onSetRippleOffset = onSetRippleOffset,
+      modifier = Modifier
+        .weight(1f)
+        .graphicsLayer {
+          compositingStrategy = CompositingStrategy.Offscreen
+        }
+        .drawWithContent {
+          drawContent()
+          drawLine(
+            color = shadowColor,
+            start = Offset.Zero,
+            end = Offset(0f, size.height),
+          )
+          drawRect(
+            brush = Brush.horizontalGradient(
+              colors = listOf(shadowColor, Color.Transparent),
+              endX = animatedShadowSize.toPx(),
+            ),
+          )
+        },
+    )
   }
 }
 
@@ -407,7 +418,7 @@ private fun FixSizedComparisonDataColumn(
 }
 
 @Composable
-private fun ScrollableTable(
+private fun ScrollableTableSection(
   scrollState: ScrollState,
   comparisonData: ComparisonData,
   selectedColumnIndex: Int?,
