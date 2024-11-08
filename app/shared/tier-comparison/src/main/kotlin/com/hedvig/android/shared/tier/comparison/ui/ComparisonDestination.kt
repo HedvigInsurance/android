@@ -72,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Saver
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -102,7 +103,12 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
       }
     }
 
-    is Success -> ComparisonScreen(state, navigateUp)
+    is Success -> {
+      ProvideTextStyle(HedvigTheme.typography.label) {
+        ComparisonScreen(state, navigateUp)
+      }
+    }
+
     Failure -> {
       Box(Modifier.fillMaxSize()) {
         HedvigErrorSection(
@@ -314,9 +320,7 @@ private fun FixSizedComparisonDataColumn(
 ) {
   Column(modifier = modifier) {
     HedvigText(
-      "emptyspace",
-      fontSize = HedvigTheme.typography.label.fontSize,
-      textAlign = TextAlign.Center,
+      "H",
       modifier = Modifier
         .padding(vertical = 4.dp)
         .withoutPlacement(),
@@ -357,7 +361,6 @@ private fun FixSizedComparisonDataColumn(
       ) {
         HedvigText(
           text = comparisonRow.title,
-          fontSize = HedvigTheme.typography.label.fontSize,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           modifier = Modifier
@@ -411,7 +414,6 @@ private fun ScrollableTable(
         column.title?.let {
           HedvigText(
             it,
-            fontSize = HedvigTheme.typography.label.fontSize,
             textAlign = TextAlign.Center,
             color = textColor,
             modifier = cellModifier
@@ -510,7 +512,6 @@ private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolea
   ) {
     HedvigText(
       text = "H",
-      fontSize = HedvigTheme.typography.label.fontSize,
       modifier = Modifier.withoutPlacement(),
     )
     Icon(
