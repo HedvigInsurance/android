@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
@@ -127,36 +128,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
   val scrollState = rememberScrollState()
   val density = LocalDensity.current
-  LaunchedEffect(scrollState, density) {
-    with(density) {
-      delay(200)
-      var absoluteXPosition = scrollState.value.toFloat()
-      var lastVelocity = 0f
-      scrollState.scroll {
-        animate(
-          initialValue = 0f,
-          targetValue = (scrollState.maxValue).toFloat(),
-          animationSpec = spring(stiffness = 20f, visibilityThreshold = 10.dp.toPx()),
-        ) { currentValue, velocity ->
-          // Ignore the last emission where we reach the `visibilityThreshold` and we "snap" to the end, since we're
-          //  going to animate back right after anyway, and we want to do that while retaining the velocity we
-          //  previously had.
-          if (velocity != 0f) {
-            lastVelocity = velocity
-            absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
-          }
-        }
-        animate(
-          initialValue = scrollState.value.toFloat(),
-          targetValue = 0f,
-          initialVelocity = lastVelocity,
-          animationSpec = spring(stiffness = 60f, visibilityThreshold = 2.dp.toPx()),
-        ) { currentValue, _ ->
-          absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
-        }
-      }
-    }
-  }
+  IndicateScrollableTableEffect(scrollState, density)
 
   val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
   val animatedShadowSize by animateDpAsState(shadowWidth)
@@ -318,6 +290,44 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
           )
         },
       ) {
+      }
+    }
+  }
+}
+
+/**
+ * Used when first entering the screen to give a hint to the user that the table is scrollable, because it's a bit
+ *  subtle otherwise
+ */
+@Composable
+private fun IndicateScrollableTableEffect(scrollState: ScrollState, density: Density) {
+  LaunchedEffect(scrollState, density) {
+    with(density) {
+      delay(200)
+      var absoluteXPosition = scrollState.value.toFloat()
+      var lastVelocity = 0f
+      scrollState.scroll {
+        animate(
+          initialValue = 0f,
+          targetValue = (scrollState.maxValue).toFloat(),
+          animationSpec = spring(stiffness = 20f, visibilityThreshold = 10.dp.toPx()),
+        ) { currentValue, velocity ->
+          // Ignore the last emission where we reach the `visibilityThreshold` and we "snap" to the end, since we're
+          //  going to animate back right after anyway, and we want to do that while retaining the velocity we
+          //  previously had.
+          if (velocity != 0f) {
+            lastVelocity = velocity
+            absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
+          }
+        }
+        animate(
+          initialValue = scrollState.value.toFloat(),
+          targetValue = 0f,
+          initialVelocity = lastVelocity,
+          animationSpec = spring(stiffness = 60f, visibilityThreshold = 2.dp.toPx()),
+        ) { currentValue, _ ->
+          absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
+        }
       }
     }
   }
