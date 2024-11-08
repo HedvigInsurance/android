@@ -223,7 +223,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
 
-
     Box {
       var rippleOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
         mutableStateOf(
@@ -245,8 +244,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               }
             },
         ) {
-          val density = LocalDensity.current
-
           FixSizedComparisonDataColumn(
             comparisonData = uiState.comparisonData,
             selectComparisonRow = { comparisonRow ->
