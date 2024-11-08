@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -26,6 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 
 @Composable
@@ -121,8 +122,8 @@ private fun PreviewSubmittedAndClosedInformation() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SubmittedAndClosedColumns(
-        submittedAt = Clock.System.now().minus(10.days),
-        closedAt = Clock.System.now().minus(30.seconds),
+        submittedAt = System.now().minus(10.days),
+        closedAt = System.now().minus(30.seconds),
         locale = Locale.ENGLISH,
       )
     }

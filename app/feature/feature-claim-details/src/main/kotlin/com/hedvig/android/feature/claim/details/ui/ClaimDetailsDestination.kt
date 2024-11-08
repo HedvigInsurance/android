@@ -54,29 +54,25 @@ import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
-import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
@@ -440,7 +436,7 @@ private fun AfterGridContent(
 
 @Composable
 private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
-  HedvigCard(onClick) {
+  HedvigCard(onClick = onClick) {
     Row(
       modifier,
       verticalAlignment = Alignment.CenterVertically,
@@ -602,8 +598,7 @@ private fun ClaimTypeAndDatesSection(
 @HedvigPreview
 @Composable
 private fun PreviewClaimDetailScreen() {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
+  HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
         ClaimDetailScreen(
           uiState = ClaimDetailUiState.Content(
@@ -710,15 +705,14 @@ private fun PreviewClaimDetailScreen() {
       }
     }
   }
-}
+
 
 @HedvigPreview
 @Composable
 private fun PreviewClaimDetailTopAppBar(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withNotification: Boolean,
 ) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
+  HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
         ClaimDetailTopAppBar(
           withNotification,
@@ -727,5 +721,5 @@ private fun PreviewClaimDetailTopAppBar(
         )
       }
     }
-  }
+
 }
