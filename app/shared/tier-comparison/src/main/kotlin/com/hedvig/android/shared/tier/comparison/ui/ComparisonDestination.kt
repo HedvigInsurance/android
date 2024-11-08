@@ -189,7 +189,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
 
-    var outerConstraints: Constraints? by remember { mutableStateOf(null) }
+
     Box {
       var rippleOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
         mutableStateOf(
@@ -197,7 +197,9 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         )
       }
       val interactionSource = remember { MutableInteractionSource() }
+
       Column {
+        var outerConstraints: Constraints? by remember { mutableStateOf(null) }
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
@@ -209,14 +211,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
               }
             },
         ) {
-          HedvigText(
-            "emptyspace",
-            fontSize = HedvigTheme.typography.label.fontSize,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-              .padding(vertical = 4.dp)
-              .withoutPlacement(),
-          )
           val density = LocalDensity.current
 
           FixSizedComparisonDataColumn(
