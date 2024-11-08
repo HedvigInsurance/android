@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -77,7 +78,7 @@ fun HedvigButton(
           ThreeDotsLoading(
             stableColor = buttonColors.activeLoadingIndicatorColor,
             temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.wrapContentSize(Alignment.Center),
           )
         }
       } else {
