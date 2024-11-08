@@ -225,81 +225,76 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
 
     Box {
       var rippleOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
-        mutableStateOf(
-          IntOffset(0, 0),
-        )
+        mutableStateOf(IntOffset(0, 0))
       }
       val interactionSource = remember { MutableInteractionSource() }
-
-      Column {
-        var outerConstraints: Constraints? by remember { mutableStateOf(null) }
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
+      var outerConstraints: Constraints? by remember { mutableStateOf(null) }
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .layout { measurable, constraints ->
+            outerConstraints = constraints
+            val placeable = measurable.measure(constraints)
+            layout(placeable.width, placeable.height) {
+              placeable.placeRelative(0, 0)
+            }
+          },
+      ) {
+        FixSizedComparisonDataColumn(
+          comparisonData = uiState.comparisonData,
+          selectComparisonRow = { comparisonRow ->
+            bottomSheetRow = comparisonRow
+          },
+          interactionSource = interactionSource,
+          onSetRippleOffset = { rowOffset ->
+            rippleOffset = rowOffset
+          },
           modifier = Modifier
-            .layout { measurable, constraints ->
-              outerConstraints = constraints
-              val placeable = measurable.measure(constraints)
-              layout(placeable.width, placeable.height) {
-                placeable.placeRelative(0, 0)
-              }
-            },
-        ) {
-          FixSizedComparisonDataColumn(
-            comparisonData = uiState.comparisonData,
-            selectComparisonRow = { comparisonRow ->
-              bottomSheetRow = comparisonRow
-            },
-            interactionSource = interactionSource,
-            onSetRippleOffset = { rowOffset ->
-              rippleOffset = rowOffset
-            },
-            modifier = Modifier
-              .then(
-                if (outerConstraints != null) {
-                  Modifier.widthIn(
-                    max = with(density) {
-                      (outerConstraints!!.maxWidth * 0.4f).toDp()
-                    },
-                  )
-                } else {
-                  Modifier
-                },
-              )
-              .width(IntrinsicSize.Max),
-          )
-          val shadowColor = HedvigTheme.colorScheme.textDisabled
-          ScrollableTable(
-            scrollState = scrollState,
-            comparisonData = uiState.comparisonData,
-            selectedColumnIndex = uiState.selectedColumnIndex,
-            onRowClick = { comparisonRow ->
-              bottomSheetRow = comparisonRow
-            },
-            interactionSource = interactionSource,
-            onSetRippleOffset = { rowOffset ->
-              rippleOffset = rowOffset
-            },
-            modifier = Modifier
-              .weight(1f)
-              .graphicsLayer {
-                compositingStrategy = CompositingStrategy.Offscreen
-              }
-              .drawWithContent {
-                drawContent()
-                drawLine(
-                  color = shadowColor,
-                  start = Offset.Zero,
-                  end = Offset(0f, size.height),
+            .then(
+              if (outerConstraints != null) {
+                Modifier.widthIn(
+                  max = with(density) {
+                    (outerConstraints!!.maxWidth * 0.4f).toDp()
+                  },
                 )
-                drawRect(
-                  brush = Brush.horizontalGradient(
-                    colors = listOf(shadowColor, Color.Transparent),
-                    endX = animatedShadowSize.toPx(),
-                  ),
-                )
+              } else {
+                Modifier
               },
-          )
-        }
+            )
+            .width(IntrinsicSize.Max),
+        )
+        val shadowColor = HedvigTheme.colorScheme.textDisabled
+        ScrollableTable(
+          scrollState = scrollState,
+          comparisonData = uiState.comparisonData,
+          selectedColumnIndex = uiState.selectedColumnIndex,
+          onRowClick = { comparisonRow ->
+            bottomSheetRow = comparisonRow
+          },
+          interactionSource = interactionSource,
+          onSetRippleOffset = { rowOffset ->
+            rippleOffset = rowOffset
+          },
+          modifier = Modifier
+            .weight(1f)
+            .graphicsLayer {
+              compositingStrategy = CompositingStrategy.Offscreen
+            }
+            .drawWithContent {
+              drawContent()
+              drawLine(
+                color = shadowColor,
+                start = Offset.Zero,
+                end = Offset(0f, size.height),
+              )
+              drawRect(
+                brush = Brush.horizontalGradient(
+                  colors = listOf(shadowColor, Color.Transparent),
+                  endX = animatedShadowSize.toPx(),
+                ),
+              )
+            },
+        )
       }
 
       LayoutWithoutPlacement(
