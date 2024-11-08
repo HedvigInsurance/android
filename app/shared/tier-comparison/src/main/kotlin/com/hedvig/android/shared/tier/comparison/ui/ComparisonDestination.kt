@@ -4,8 +4,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -30,6 +34,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -49,8 +57,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -61,11 +72,13 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.Saver
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData
 import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
 import com.hedvig.android.shared.tier.comparison.data.mockComparisonData
@@ -176,67 +189,116 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
 
-    var outerConstraints: Constraints? by remember { mutableStateOf(null) }
-    Column {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.layout { measurable, constraints ->
-          outerConstraints = constraints
-          val placeable = measurable.measure(constraints)
-          layout(placeable.width, placeable.height) {
-            placeable.placeRelative(0, 0)
+
+    Box {
+      var rippleOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
+        mutableStateOf(
+          IntOffset(0, 0),
+        )
+      }
+      val interactionSource = remember { MutableInteractionSource() }
+
+      Column {
+        var outerConstraints: Constraints? by remember { mutableStateOf(null) }
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .layout { measurable, constraints ->
+              outerConstraints = constraints
+              val placeable = measurable.measure(constraints)
+              layout(placeable.width, placeable.height) {
+                placeable.placeRelative(0, 0)
+              }
+            },
+        ) {
+          val density = LocalDensity.current
+
+          FixSizedComparisonDataColumn(
+            comparisonData = uiState.comparisonData,
+            selectComparisonRow = { comparisonRow ->
+              bottomSheetRow = comparisonRow
+            },
+            interactionSource = interactionSource,
+            onSetRippleOffset = { rowOffset ->
+              rippleOffset = rowOffset
+            },
+            modifier = Modifier
+              .then(
+                if (outerConstraints != null) {
+                  Modifier.widthIn(
+                    max = with(density) {
+                      (outerConstraints!!.maxWidth * 0.4f).toDp()
+                    },
+                  )
+                } else {
+                  Modifier
+                },
+              )
+              .width(IntrinsicSize.Max),
+          )
+          val shadowColor = HedvigTheme.colorScheme.textDisabled
+          ScrollableTable(
+            scrollState = scrollState,
+            comparisonData = uiState.comparisonData,
+            selectedColumnIndex = uiState.selectedColumnIndex,
+            onRowClick = { comparisonRow ->
+              bottomSheetRow = comparisonRow
+            },
+            interactionSource = interactionSource,
+            onSetRippleOffset = { rowOffset ->
+              rippleOffset = rowOffset
+            },
+            modifier = Modifier
+              .weight(1f)
+              .graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
+              }
+              .drawWithContent {
+                drawContent()
+                drawLine(
+                  color = shadowColor,
+                  start = Offset.Zero,
+                  end = Offset(0f, size.height),
+                )
+                drawRect(
+                  brush = Brush.horizontalGradient(
+                    colors = listOf(shadowColor, Color.Transparent),
+                    endX = animatedShadowSize.toPx(),
+                  ),
+                )
+                drawRect(
+                  brush = Brush.horizontalGradient(
+                    0.9f to Color.Black,
+                    1f to Color.Transparent,
+                  ),
+                  blendMode = BlendMode.DstIn,
+                )
+              },
+          )
+        }
+      }
+
+      LayoutWithoutPlacement(
+        modifier = Modifier
+          .offset {
+            rippleOffset
           }
+          .indication(
+            interactionSource = interactionSource,
+            indication = ripple(),
+          ),
+        sizeAdjustingContent = {
+          HedvigText(
+            "ripple",
+            fontSize = HedvigTheme.typography.label.fontSize,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+              .padding(vertical = 8.dp)
+              .fillMaxWidth()
+              .withoutPlacement(),
+          )
         },
       ) {
-        val density = LocalDensity.current
-        FixSizedComparisonDataColumn(
-          comparisonData = uiState.comparisonData,
-          selectComparisonRow = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          modifier = Modifier
-            .then(
-              if (outerConstraints != null) {
-                Modifier.widthIn(max = with(density) { (outerConstraints!!.maxWidth * 0.4f).toDp() })
-              } else {
-                Modifier
-              },
-            )
-            .width(IntrinsicSize.Max),
-        )
-        val shadowColor = HedvigTheme.colorScheme.textDisabled
-        ScrollableTable(
-          scrollState = scrollState,
-          comparisonData = uiState.comparisonData,
-          selectedColumnIndex = uiState.selectedColumnIndex,
-          onRowClick = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          modifier = Modifier
-            .weight(1f)
-            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-            .drawWithContent {
-              drawContent()
-              drawLine(
-                color = shadowColor,
-                start = Offset.Zero,
-                end = Offset(0f, size.height),
-              )
-              drawRect(
-                brush = Brush.horizontalGradient(
-                  colors = listOf(shadowColor, Color.Transparent),
-                  endX = animatedShadowSize.toPx(),
-                ),
-              )
-              drawRect(
-                brush = Brush.horizontalGradient(
-                  0.9f to Color.Black,
-                  1f to Color.Transparent,
-                ),
-                blendMode = BlendMode.DstIn,
-              )
-            },
-        )
       }
     }
   }
@@ -247,6 +309,8 @@ private fun FixSizedComparisonDataColumn(
   modifier: Modifier = Modifier,
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
+  onSetRippleOffset: (IntOffset) -> Unit,
+  interactionSource: MutableInteractionSource,
 ) {
   Column(modifier = modifier) {
     HedvigText(
@@ -258,11 +322,38 @@ private fun FixSizedComparisonDataColumn(
         .withoutPlacement(),
     )
     comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+      var rowOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
+        mutableStateOf(
+          IntOffset(0, 0),
+        )
+      }
       val borderColor = HedvigTheme.colorScheme.borderSecondary
       Surface(
-        onClick = { selectComparisonRow(comparisonRow) },
         color = HedvigTheme.colorScheme.backgroundPrimary,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+          .fillMaxWidth()
+          .onPlaced { layoutCoordinates ->
+            rowOffset = layoutCoordinates
+              .positionInParent()
+              .round()
+          }
+          .pointerInput(Unit) {
+            detectTapGestures(
+              onPress = { offset ->
+                val press = PressInteraction.Press(offset)
+                onSetRippleOffset(rowOffset)
+                interactionSource.tryEmit(press)
+                interactionSource.tryEmit(PressInteraction.Release(press))
+              },
+              onTap = { offset ->
+                val press = PressInteraction.Press(offset)
+                onSetRippleOffset(rowOffset)
+                interactionSource.tryEmit(press)
+                selectComparisonRow(comparisonRow)
+                interactionSource.tryEmit(PressInteraction.Release(press))
+              },
+            )
+          },
       ) {
         HedvigText(
           text = comparisonRow.title,
@@ -295,6 +386,8 @@ private fun ScrollableTable(
   comparisonData: ComparisonData,
   selectedColumnIndex: Int?,
   onRowClick: (ComparisonRow) -> Unit,
+  onSetRippleOffset: (IntOffset) -> Unit,
+  interactionSource: MutableInteractionSource,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -329,11 +422,35 @@ private fun ScrollableTable(
       }
     }
     comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+      var rowOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
+        mutableStateOf(
+          IntOffset(0, 0),
+        )
+      }
       Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-          .clickable {
-            onRowClick(comparisonRow)
+          .onPlaced { layoutCoordinates ->
+            rowOffset = layoutCoordinates
+              .positionInParent()
+              .round()
+          }
+          .pointerInput(Unit) {
+            detectTapGestures(
+              onPress = { offset ->
+                val press = PressInteraction.Press(offset)
+                onSetRippleOffset(rowOffset)
+                interactionSource.tryEmit(press)
+                interactionSource.tryEmit(PressInteraction.Release(press))
+              },
+              onTap = { offset ->
+                val press = PressInteraction.Press(offset)
+                onSetRippleOffset(rowOffset)
+                interactionSource.tryEmit(press)
+                onRowClick(comparisonRow)
+                interactionSource.tryEmit(PressInteraction.Release(press))
+              },
+            )
           },
       ) {
         comparisonRow.cells.forEachIndexed { index, cell ->

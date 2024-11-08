@@ -375,7 +375,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
     displayTierName = "tierDescription",
     tierDescription = "displayNameTier",
     termsVersion = "termsVersion",
-    )
+  )
   val startDate = LocalDate.parse("2025-01-01")
 
   override val values: Sequence<SummaryUiState> = sequenceOf(

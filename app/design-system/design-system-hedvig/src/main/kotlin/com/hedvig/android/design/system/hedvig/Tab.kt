@@ -440,7 +440,7 @@ private fun TabIndicator(indicatorColor: Color, indicatorShape: Shape) {
   )
 }
 
-private val IntOffset.Companion.Saver: Saver<IntOffset, Any>
+val IntOffset.Companion.Saver: Saver<IntOffset, Any>
   get() = listSaver(
     save = { listOf(it.x, it.y) },
     restore = { IntOffset(it[0], it[1]) },
