@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 internal object HighlightLabelTokens {
   val ContainerShapeLarge = ShapeKeyTokens.CornerMedium
   val ContainerShapeMedium = ShapeKeyTokens.CornerSmall
-  val ContainerShapeSmall = ShapeKeyTokens.CornerExtraSmall
+  val ContainerShapeSmall = ShapeKeyTokens.CornerXSmall
   val TypographyLarge = TypographyKeyTokens.BodySmall
   val TypographyMedium = TypographyKeyTokens.Label
   val TypographySmall = TypographyKeyTokens.Label

@@ -9,6 +9,6 @@ internal object BottomSheetTokens {
   val ArrowColorBackground = ColorSchemeKeyTokens.FillPrimary
   val BottomSheetBackgroundColor = ColorSchemeKeyTokens.BackgroundPrimary
   val ContentColor = ColorSchemeKeyTokens.TextPrimary
-  val ContainerShape = ShapeKeyTokens.CornerTopOnlyXLarge
+  val ContainerShape = ShapeKeyTokens.CornerXLargeTop
   val ContentPadding = 16.dp
 }

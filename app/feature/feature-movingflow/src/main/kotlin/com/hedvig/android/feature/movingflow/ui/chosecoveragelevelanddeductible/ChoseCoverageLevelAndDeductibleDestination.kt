@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.ACCIDENT
@@ -77,6 +78,7 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -87,6 +89,7 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
   popBackStack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToSummaryScreen: (homeQuoteId: String) -> Unit,
+  navigateToComparison: (comparisonParameters: ComparisonParameters) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content && uiState.navigateToSummaryScreenWithHomeQuoteId != null) {
@@ -95,7 +98,16 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
       onNavigateToSummaryScreen(uiState.navigateToSummaryScreenWithHomeQuoteId)
     }
   }
+  if (uiState is Content && uiState.comparisonParameters != null) {
+    LaunchedEffect(uiState.comparisonParameters) {
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.ClearNavigateToComparison)
+      navigateToComparison(uiState.comparisonParameters)
+    }
+  }
   ChoseCoverageLevelAndDeductibleScreen(
+    onCompareCoverageClicked = {
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.LaunchComparison)
+    },
     uiState = uiState,
     navigateUp = navigateUp,
     popBackStack = popBackStack,
@@ -117,6 +129,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onCompareCoverageClicked: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -148,7 +161,8 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
             onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
             onSelectCoverageOption = onSelectCoverageOption,
             onSelectDeductibleOption = onSelectDeductibleOption,
-          )
+            onCompareCoverageClicked = onCompareCoverageClicked,
+            )
         }
       }
     }
@@ -161,6 +175,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSubmit: (() -> Unit)?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onCompareCoverageClicked: () -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
     HedvigText(
@@ -185,7 +200,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
           modifier = Modifier.fillMaxWidth(),
           buttonSize = Large,
         ) {
-          // onCompareCoverageClicked()
+           onCompareCoverageClicked()
         }
         Spacer(Modifier.height(4.dp))
       }
@@ -542,6 +557,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         documents = listOf(),
         displayTierName = null,
         tierDescription = null,
+        termsVersion = "termsVersion",
       ),
       tierName = "Pat Vance",
       tierLevel = 1299,
@@ -562,6 +578,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       ),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
+      comparisonParameters = null,
     ),
     navigateUp = {},
     popBackStack = {},
@@ -569,5 +586,6 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     exitFlow = {},
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
+    onCompareCoverageClicked = {},
   )
 }

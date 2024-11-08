@@ -279,6 +279,7 @@ private class ChooseInsuranceUiStateProvider :
             documents = listOf(),
             displayTierName = "Standard",
             tierDescription = "Our most standard coverage",
+            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
         ),
       ),

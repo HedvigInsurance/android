@@ -9,7 +9,6 @@ import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseC
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
@@ -59,13 +58,6 @@ val chooseTierModule = module {
       params = params.get<SummaryParameters>(),
       tierRepository = get<ChangeTierRepository>(),
       getCurrentContractDataUseCase = get<GetCurrentContractDataUseCase>(),
-    )
-  }
-
-  viewModel<ComparisonViewModel> { params ->
-    ComparisonViewModel(
-      quoteIds = params.get<List<String>>(),
-      tierRepository = get<ChangeTierRepository>(),
     )
   }
 }
