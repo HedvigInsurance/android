@@ -309,7 +309,7 @@ private fun Table(
         )
         .width(IntrinsicSize.Max),
     )
-    val shadowColor = HedvigTheme.colorScheme.textDisabled
+    val borderColor = HedvigTheme.colorScheme.borderSecondary
     val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
     val animatedShadowSize by animateDpAsState(shadowWidth)
     ScrollableTableSection(
@@ -324,13 +324,13 @@ private fun Table(
         .drawWithContent {
           drawContent()
           drawLine(
-            color = shadowColor,
+            color = borderColor,
             start = Offset.Zero,
             end = Offset(0f, size.height),
           )
           drawRect(
             brush = Brush.horizontalGradient(
-              colors = listOf(shadowColor, Color.Transparent),
+              colors = listOf(borderColor, Color.Transparent),
               endX = animatedShadowSize.toPx(),
             ),
           )
