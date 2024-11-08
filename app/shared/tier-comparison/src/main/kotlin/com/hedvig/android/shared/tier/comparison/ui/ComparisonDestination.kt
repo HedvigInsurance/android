@@ -43,9 +43,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
@@ -323,9 +321,6 @@ private fun Table(
       onSetRippleOffset = onSetRippleOffset,
       modifier = Modifier
         .weight(1f)
-        .graphicsLayer {
-          compositingStrategy = CompositingStrategy.Offscreen
-        }
         .drawWithContent {
           drawContent()
           drawLine(
