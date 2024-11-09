@@ -46,6 +46,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
@@ -282,11 +283,14 @@ private fun Table(
         }
       },
   ) {
+    val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
+    val animatedShadowSize by animateDpAsState(shadowWidth)
     FixSizedComparisonDataColumn(
       comparisonData = uiState.comparisonData,
       selectComparisonRow = selectComparisonRow,
       interactionSource = interactionSource,
       onSetRippleOffset = onSetRippleOffset,
+      shadowSize = { animatedShadowSize },
       modifier = Modifier
         .then(
           if (tableConstraints != null) {
@@ -301,9 +305,6 @@ private fun Table(
         )
         .width(IntrinsicSize.Max),
     )
-    val borderColor = HedvigTheme.colorScheme.borderSecondary
-    val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
-    val animatedShadowSize by animateDpAsState(shadowWidth)
     ScrollableTableSection(
       scrollState = scrollState,
       comparisonData = uiState.comparisonData,
@@ -311,22 +312,7 @@ private fun Table(
       onRowClick = selectComparisonRow,
       interactionSource = interactionSource,
       onSetRippleOffset = onSetRippleOffset,
-      modifier = Modifier
-        .weight(1f)
-        .drawWithContent {
-          drawContent()
-          drawLine(
-            color = borderColor,
-            start = Offset.Zero,
-            end = Offset(0f, size.height),
-          )
-          drawRect(
-            brush = Brush.horizontalGradient(
-              colors = listOf(borderColor, Color.Transparent),
-              endX = animatedShadowSize.toPx(),
-            ),
-          )
-        },
+      modifier = Modifier.weight(1f),
     )
   }
 }
@@ -337,62 +323,86 @@ private fun FixSizedComparisonDataColumn(
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
   onSetRippleOffset: (IntOffset) -> Unit,
+  shadowSize: () -> Dp,
   interactionSource: MutableInteractionSource,
 ) {
+  val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
     Cell()
-    comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
-      var rowOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
-        mutableStateOf(
-          IntOffset(0, 0),
-        )
-      }
-      val borderColor = HedvigTheme.colorScheme.borderSecondary
-      Cell(
-        modifier = Modifier
-          .fillMaxWidth()
-          .onPlaced { layoutCoordinates ->
-            rowOffset = layoutCoordinates
-              .positionInParent()
-              .round()
-          }
-          .pointerInput(Unit) {
-            detectTapGestures(
-              onPress = { offset ->
-                val press = PressInteraction.Press(offset)
-                onSetRippleOffset(rowOffset)
-                interactionSource.tryEmit(press)
-                interactionSource.tryEmit(PressInteraction.Release(press))
-              },
-              onTap = { offset ->
-                val press = PressInteraction.Press(offset)
-                onSetRippleOffset(rowOffset)
-                interactionSource.tryEmit(press)
-                selectComparisonRow(comparisonRow)
-                interactionSource.tryEmit(PressInteraction.Release(press))
-              },
+    Column(
+      Modifier
+        .drawWithContent {
+          drawContent()
+          drawLine(
+            color = borderColor,
+            start = Offset(size.width, 0f),
+            end = Offset(size.width, size.height),
+          )
+          withTransform(
+            { translate(left = size.width) },
+          ) {
+            drawRect(
+              brush = Brush.horizontalGradient(
+                colors = listOf(borderColor, Color.Transparent),
+                startX = 0f,
+                endX = shadowSize().toPx(),
+              ),
             )
-          },
-      ) {
-        HedvigText(
-          text = comparisonRow.title,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
+          }
+        },
+    ) {
+      comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+        var rowOffset by rememberSaveable(stateSaver = IntOffset.Saver) {
+          mutableStateOf(
+            IntOffset(0, 0),
+          )
+        }
+        Cell(
           modifier = Modifier
-            .padding(start = 16.dp)
-            .drawWithContent {
-              drawContent()
-              if (rowIndex != 0) {
-                drawLine(
-                  color = borderColor,
-                  start = Offset.Zero,
-                  end = Offset(size.width, 0f),
-                )
-              }
+            .fillMaxWidth()
+            .onPlaced { layoutCoordinates ->
+              rowOffset = layoutCoordinates
+                .positionInParent()
+                .round()
             }
-            .padding(end = 6.dp)
-            .wrapContentSize(Alignment.CenterStart),
-        )
+            .pointerInput(Unit) {
+              detectTapGestures(
+                onPress = { offset ->
+                  val press = PressInteraction.Press(offset)
+                  onSetRippleOffset(rowOffset)
+                  interactionSource.tryEmit(press)
+                  interactionSource.tryEmit(PressInteraction.Release(press))
+                },
+                onTap = { offset ->
+                  val press = PressInteraction.Press(offset)
+                  onSetRippleOffset(rowOffset)
+                  interactionSource.tryEmit(press)
+                  selectComparisonRow(comparisonRow)
+                  interactionSource.tryEmit(PressInteraction.Release(press))
+                },
+              )
+            },
+        ) {
+          HedvigText(
+            text = comparisonRow.title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+              .padding(start = 16.dp)
+              .drawWithContent {
+                drawContent()
+                if (rowIndex != 0) {
+                  drawLine(
+                    color = borderColor,
+                    start = Offset.Zero,
+                    end = Offset(size.width, 0f),
+                  )
+                }
+              }
+              .padding(end = 6.dp)
+              .wrapContentSize(Alignment.CenterStart),
+          )
+        }
       }
     }
   }
