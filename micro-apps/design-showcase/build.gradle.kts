@@ -1,9 +1,9 @@
 hedvig {
+  compose()
 }
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.application")
-  id("hedvig.android.application.compose")
 }
 
 android {
