@@ -54,10 +54,6 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     pluginManager.apply(libs.plugins.serialization.get().pluginId)
   }
 
-  fun ksp() {
-    pluginManager.apply(libs.plugins.ksp.get().pluginId)
-  }
-
   fun room() {
     // todo
   }
