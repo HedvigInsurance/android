@@ -1,13 +1,13 @@
-hedvig {
-  apollo("octopus")
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
 }
 
-dependencies {
+hedvig {
+  apollo("octopus")
+}
 
+dependencies {
   api(libs.kotlinx.datetime)
 
   implementation(libs.androidx.datastore.core)

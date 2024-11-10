@@ -1,17 +1,19 @@
-hedvig {
-  apollo("octopus")
-  serialization()
-  compose()
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
   id("kotlin-parcelize")
 }
 
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
+}
+
 android {
   testOptions.unitTests.isReturnDefaultValues = true
 }
+
 dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.runtime)

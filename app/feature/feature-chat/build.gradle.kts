@@ -1,13 +1,14 @@
+plugins {
+  id("hedvig.gradle.plugin")
+  id("hedvig.android.library")
+}
+
 hedvig {
   apollo("octopus") {
     generateOptionalOperationVariables.set(false)
   }
   serialization()
   compose()
-}
-plugins {
-  id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
 }
 
 dependencies {

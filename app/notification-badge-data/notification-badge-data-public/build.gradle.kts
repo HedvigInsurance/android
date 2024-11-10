@@ -1,13 +1,13 @@
-hedvig {
-  apollo("octopus")
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
 }
 
-dependencies {
+hedvig {
+  apollo("octopus")
+}
 
+dependencies {
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrow.core)

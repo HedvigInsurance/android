@@ -1,9 +1,10 @@
-hedvig {
-  apollo("octopus")
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+}
+
+hedvig {
+  apollo("octopus")
 }
 
 dependencies {

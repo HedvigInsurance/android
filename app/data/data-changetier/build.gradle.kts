@@ -1,10 +1,11 @@
-hedvig {
-  apollo("octopus")
-  serialization()
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
 }
 
 android {

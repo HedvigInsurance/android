@@ -1,10 +1,11 @@
-hedvig {
-  serialization()
-  compose()
-}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+}
+
+hedvig {
+  serialization()
+  compose()
 }
 
 android {
