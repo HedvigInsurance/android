@@ -3,12 +3,12 @@ hedvig {
     generateOptionalOperationVariables.set(false)
   }
   serialization()
+  compose()
 }
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.feature")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
 }
 
 dependencies {

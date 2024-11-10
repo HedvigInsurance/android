@@ -1,10 +1,10 @@
 hedvig {
   serialization()
+  compose()
 }
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
   id("kotlin-parcelize")
 }
 
