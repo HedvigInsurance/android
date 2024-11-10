@@ -1,7 +1,8 @@
 import java.io.FileInputStream
 import java.util.Properties
 
-hedvig {}
+hedvig {
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")

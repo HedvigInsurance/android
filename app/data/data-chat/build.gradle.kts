@@ -1,10 +1,11 @@
-hedvig {}
+hedvig {
+  serialization()
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
   alias(libs.plugins.ksp)
   alias(libs.plugins.room)
-  alias(libs.plugins.serialization)
 }
 
 dependencies {

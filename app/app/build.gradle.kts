@@ -1,6 +1,8 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
-hedvig {}
+hedvig {
+  serialization()
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.application")
@@ -11,7 +13,6 @@ plugins {
   alias(libs.plugins.datadog)
   alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
-  alias(libs.plugins.serialization)
 }
 
 android {

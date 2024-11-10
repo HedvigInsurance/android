@@ -1,8 +1,9 @@
-hedvig {}
+hedvig {
+  serialization()
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.serialization)
 }
 
 dependencies {

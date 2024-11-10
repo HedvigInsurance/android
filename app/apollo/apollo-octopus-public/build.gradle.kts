@@ -1,7 +1,8 @@
 import com.apollographql.apollo.gradle.internal.connectToAllAndroidVariants
 import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
 
-hedvig {}
+hedvig {
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")

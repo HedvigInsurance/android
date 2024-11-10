@@ -1,5 +1,6 @@
 hedvig {
   apollo("octopus")
+  serialization()
 }
 plugins {
   id("hedvig.gradle.plugin")
@@ -7,7 +8,6 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("kotlin-parcelize")
-  alias(libs.plugins.serialization)
 }
 
 android {
