@@ -40,14 +40,12 @@ gradlePlugin {
     createPlugin("hedvig.android.apollo", "ApolloConventionPlugin")
     createPlugin("hedvig.android.application", "ApplicationConventionPlugin")
     createPlugin("hedvig.android.application.compose", "ApplicationComposeConventionPlugin")
-    createPlugin("hedvig.android.feature", "FeatureConventionPlugin")
     createPlugin("hedvig.android.ktlint", "KtlintConventionPlugin")
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.android.library.compose", "LibraryComposeConventionPlugin")
     createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
     createPlugin("hedvig.kotlin.library.compose", "KotlinLibraryComposeConventionPlugin")
     createPlugin("hedvig.lint", "HedvigLintConventionPlugin")
-
     createPlugin("hedvig.gradle.plugin", "HedvigGradlePlugin")
     createPlugin("hedvig.android", "LibraryConventionPlugin")
   }

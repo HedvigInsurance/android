@@ -2,10 +2,10 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  featureModule()
 }
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.feature")
   id("hedvig.android.library")
 }
 
