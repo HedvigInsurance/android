@@ -26,8 +26,6 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<ApolloSchemaHandler>()
   internal val composeHandler: ComposeHandler =
     project.objects.newInstance<ComposeHandler>()
-  internal val featureModuleHandler: FeatureModuleHandler =
-    project.objects.newInstance<FeatureModuleHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -54,10 +52,6 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
   fun serialization() {
     pluginManager.apply(libs.plugins.serialization.get().pluginId)
-  }
-
-  fun featureModule() {
-    featureModuleHandler.configure(project)
   }
 
   companion object {
@@ -173,33 +167,6 @@ internal abstract class ComposeHandler {
   private fun AndroidCommonExtension.configureComposeAndroidBuildFeature() {
     buildFeatures {
       compose = true
-    }
-  }
-}
-
-internal abstract class FeatureModuleHandler {
-  fun configure(project: Project) {
-    project.ensureNotDependingOnOtherFeatureModule()
-  }
-
-  private fun Project.ensureNotDependingOnOtherFeatureModule() {
-    val thisModuleName = this.name
-    configurations.configureEach {
-      resolutionStrategy {
-        eachDependency {
-          if (requested.group != "hedvigandroid") return@eachDependency // Only check for our own modules
-          if (requested.name == thisModuleName) return@eachDependency // Only check deps to other modules
-          val requestedModuleIsAFeatureModule =
-            requested.name.startsWith("feature-") && !requested.name.startsWith("feature-flags")
-          require(!requestedModuleIsAFeatureModule) {
-            "Hedvig build error on a module marked as featureModule() in HGP." +
-              "\nYou are trying to depend on another feature module from a feature module." +
-              "\nThis is not allowed as it breaks our ability to properly share code between modules." +
-              "\nIn particular, $thisModuleName is trying to depend on ${requested.name}." +
-              "\nIf you need to share code between feature modules, consider moving the shared code to a library module."
-          }
-        }
-      }
     }
   }
 }

@@ -13,6 +13,7 @@ class HedvigGradlePlugin : Plugin<Project> {
     with(project) {
       val libs = the<LibrariesForLibs>()
       configureHedvigPlugin()
+      configureFeatureModuleGuidelines()
       configureKtlint(libs)
       pluginManager.apply(libs.plugins.dependencyAnalysis.get().pluginId)
       pluginManager.apply(libs.plugins.squareSortDependencies.get().pluginId)
@@ -47,5 +48,29 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
 
   tasks.register("ktlintFormat") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>())
+  }
+}
+
+private fun Project.configureFeatureModuleGuidelines() {
+  fun String.isFeatureModule(): Boolean {
+    return startsWith("feature-") && !startsWith("feature-flags")
+  }
+  val thisModuleName = this.name
+  if (!thisModuleName.isFeatureModule()) return
+  configurations.configureEach {
+    resolutionStrategy {
+      eachDependency {
+        if (requested.group != "hedvigandroid") return@eachDependency // Only check for our own modules
+        if (requested.name == thisModuleName) return@eachDependency // Only check deps to other modules
+        val requestedModuleIsAFeatureModule = requested.name.isFeatureModule()
+        require(!requestedModuleIsAFeatureModule) {
+          "Hedvig build error on a module marked as featureModule() in HGP." +
+            "\nYou are trying to depend on another feature module from a feature module." +
+            "\nThis is not allowed as it breaks our ability to properly share code between modules." +
+            "\nIn particular, $thisModuleName is trying to depend on ${requested.name}." +
+            "\nIf you need to share code between feature modules, consider moving the shared code to a library module."
+        }
+      }
+    }
   }
 }
