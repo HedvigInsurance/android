@@ -54,10 +54,6 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     pluginManager.apply(libs.plugins.serialization.get().pluginId)
   }
 
-  fun room() {
-    // todo
-  }
-
   companion object {
     internal fun Project.configureHedvigPlugin(): HedvigGradlePluginExtension {
       return extensions.create<HedvigGradlePluginExtension>(
