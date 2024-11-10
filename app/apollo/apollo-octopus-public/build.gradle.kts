@@ -22,6 +22,7 @@ hedvig {
     codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
 
     generateApolloMetadata = true
+    @Suppress("OPT_IN_USAGE")
     generateDataBuilders = true
 
     failOnWarnings = true

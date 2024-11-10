@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.android")
   id("hedvig.gradle.plugin")
+  id("hedvig.android")
 }
 
 hedvig {
