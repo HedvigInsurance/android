@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+hedvig {}
 plugins {
   id("hedvig.gradle.plugin")
   `java-library`

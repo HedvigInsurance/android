@@ -1,10 +1,12 @@
+hedvig {
+  apollo("octopus")
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.feature")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
-  alias(libs.plugins.apollo)
   id("kotlin-parcelize")
 }
 
@@ -30,11 +32,4 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

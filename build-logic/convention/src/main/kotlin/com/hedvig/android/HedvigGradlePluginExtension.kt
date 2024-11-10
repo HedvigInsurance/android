@@ -34,13 +34,14 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   /**
    * [packageName] is the package that the generated apollo classes will have for this module.
    */
-  fun apollo(packageName: String) {
+  fun apollo(packageName: String, extraConfiguration: Action<com.apollographql.apollo.gradle.api.Service> = Action {}) {
     pluginManager.apply(libs.plugins.apollo.get().pluginId)
     project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
       service("octopus") {
         this.packageName = packageName
         @Suppress("OPT_IN_USAGE")
         dependsOn(project.project(":apollo-octopus-public"), true)
+        extraConfiguration.execute(this)
       }
     }
   }

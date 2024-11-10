@@ -1,9 +1,11 @@
+hedvig {
+  apollo("octopus")
+}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.feature")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
 }
 
@@ -64,11 +66,4 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

@@ -1,5 +1,6 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
+hedvig {}
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.application")
