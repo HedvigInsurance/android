@@ -7,7 +7,6 @@ hedvig {
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.application")
-  id("kotlin-parcelize")
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
