@@ -44,8 +44,8 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.uiTiersAndAddons)
   implementation(projects.tierComparison)
+  implementation(projects.uiTiersAndAddons)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

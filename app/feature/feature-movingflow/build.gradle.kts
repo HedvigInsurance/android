@@ -35,6 +35,6 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
-  implementation(projects.uiTiersAndAddons)
   implementation(projects.tierComparison)
+  implementation(projects.uiTiersAndAddons)
 }
