@@ -221,7 +221,7 @@ private fun HelpCenterHomeScreen(
         },
         style = DialogDefaults.DialogStyle.NoButtons,
       ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
           var selectedIndex by remember { mutableStateOf<Int?>(null) }
           Spacer(Modifier.height(24.dp))
           HedvigText(

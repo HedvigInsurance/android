@@ -106,7 +106,7 @@ private annotation class HedvigTabletPreview
   uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
   device = "spec:width=1280dp,height=800dp,dpi=240",
 )
-private annotation class HedvigTabletLandscapePreview
+annotation class HedvigTabletLandscapePreview
 
 @HedvigPreview
 @HedvigLandscapePreview

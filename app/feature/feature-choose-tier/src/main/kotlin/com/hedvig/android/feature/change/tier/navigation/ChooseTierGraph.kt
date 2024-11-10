@@ -1,12 +1,9 @@
 package com.hedvig.android.feature.change.tier.navigation
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonDestination
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectTierDestination
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartChangeTierFlowDestination
@@ -20,6 +17,9 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -85,15 +85,26 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
         popBackStack = {
           navigator.popBackStack()
         },
-        navigateToComparison = { listOfQuotes ->
-          navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id }))
+        navigateToComparison = { listOfQuotes, selectedTerms ->
+          navigator.navigateUnsafe(
+            ChooseTierDestination.Comparison(
+              ComparisonParameters(
+                termsIds = listOfQuotes.map {
+                  it.productVariant.termsVersion
+                },
+                selectedTermsVersion = selectedTerms,
+              ),
+            ),
+          )
         },
       )
     }
 
-    navdestination<ChooseTierDestination.Comparison> { _ ->
+    navdestination<ChooseTierDestination.Comparison>(
+      destinationNavTypeAware = ChooseTierDestination.Comparison.Companion,
+    ) { _ ->
       val viewModel: ComparisonViewModel = koinViewModel {
-        parametersOf(this.quoteIds)
+        parametersOf(this.comparisonParameters)
       }
       ComparisonDestination(
         viewModel = viewModel,
@@ -107,7 +118,6 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
-      val context = LocalContext.current
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,

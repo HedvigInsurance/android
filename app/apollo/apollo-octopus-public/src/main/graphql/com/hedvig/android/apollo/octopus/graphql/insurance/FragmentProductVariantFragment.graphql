@@ -4,6 +4,7 @@ fragment ProductVariantFragment on ProductVariant {
   tierDescription
   typeOfContract
   partner
+  termsVersion
   perils {
     id
     title

@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -294,7 +293,7 @@ private enum class ShowcaseTextFieldType {
 }
 
 @Composable
-private fun WithWidthOfTypeLabel(content: @Composable BoxScope.() -> Unit) {
+private fun WithWidthOfTypeLabel(content: @Composable () -> Unit) {
   LayoutWithoutPlacement(
     sizeAdjustingContent = {
       HedvigText(
@@ -307,7 +306,7 @@ private fun WithWidthOfTypeLabel(content: @Composable BoxScope.() -> Unit) {
 }
 
 @Composable
-private fun WithHeightOfTextField(content: @Composable BoxScope.() -> Unit) {
+private fun WithHeightOfTextField(content: @Composable () -> Unit) {
   LayoutWithoutPlacement(
     sizeAdjustingContent = {
       HedvigTextField("", {}, "", HedvigTextFieldDefaults.TextFieldSize.Large, Modifier.requiredWidth(1.dp))

@@ -6,7 +6,9 @@ internal enum class ShapeKeyTokens {
   CornerLarge,
   CornerMedium,
   CornerSmall,
-  CornerExtraSmall,
+  CornerXSmall,
   CornerNone,
-  CornerTopOnlyXLarge,
+  CornerXLargeTop,
+  CornerXSmallTop,
+  CornerXSmallBottom,
 }

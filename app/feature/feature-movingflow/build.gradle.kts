@@ -24,6 +24,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
@@ -35,4 +36,5 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.uiTiersAndAddons)
+  implementation(projects.tierComparison)
 }

@@ -83,6 +83,7 @@ import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
+import com.hedvig.android.shared.tier.comparison.di.comparisonModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -305,6 +306,7 @@ val applicationModule = module {
       claimTriagingModule,
       clockModule,
       coilModule,
+      comparisonModule,
       connectPaymentTrustlyModule,
       coreAppReviewModule,
       coreCommonModule,

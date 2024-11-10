@@ -514,6 +514,7 @@ private val previewInsurance = InsuranceContract(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     certificateUrl = null,
     coInsured = listOf(),

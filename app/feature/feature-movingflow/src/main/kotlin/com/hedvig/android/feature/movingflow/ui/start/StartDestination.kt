@@ -1,10 +1,19 @@
 package com.hedvig.android.feature.movingflow.ui.start
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -16,7 +25,6 @@ import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
@@ -26,7 +34,9 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.movingflow.data.HousingType
+import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.Content
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError.GenericError
@@ -37,6 +47,7 @@ import hedvig.resources.R
 internal fun StartDestination(
   viewModel: StartViewModel,
   navigateUp: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToNextStep: (String) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -49,6 +60,7 @@ internal fun StartDestination(
   StartScreen(
     uiState = uiState,
     navigateUp = navigateUp,
+    exitFlow = exitFlow,
     onDismissStartError = { viewModel.emit(StartEvent.DismissStartError) },
     onSelectHousingType = { viewModel.emit(StartEvent.SelectHousingType(it)) },
     onSubmitHousingType = { viewModel.emit(StartEvent.SubmitHousingType) },
@@ -59,30 +71,40 @@ internal fun StartDestination(
 private fun StartScreen(
   uiState: StartUiState,
   navigateUp: () -> Unit,
+  exitFlow: () -> Unit,
   onDismissStartError: () -> Unit,
   onSelectHousingType: (HousingType) -> Unit,
   onSubmitHousingType: () -> Unit,
-  modifier: Modifier = Modifier,
 ) {
-  HedvigScaffold(navigateUp, modifier) {
-    when (uiState) {
-      is StartError -> {
-        HedvigErrorSection(
-          onButtonClick = onDismissStartError,
-          title = when (uiState) {
-            is GenericError -> stringResource(R.string.something_went_wrong)
-            is UserPresentable -> uiState.message
-          },
-          subTitle = when (uiState) {
-            is GenericError -> stringResource(R.string.GENERAL_ERROR_BODY)
-            is UserPresentable -> null
-          },
-          modifier = Modifier.weight(1f),
-        )
-      }
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column {
+      MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow, withExitConfirmation = false)
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          is StartError -> {
+            HedvigErrorSection(
+              onButtonClick = onDismissStartError,
+              title = when (uiState) {
+                is GenericError -> stringResource(R.string.something_went_wrong)
+                is UserPresentable -> uiState.message
+              },
+              subTitle = when (uiState) {
+                is GenericError -> stringResource(R.string.GENERAL_ERROR_BODY)
+                is UserPresentable -> null
+              },
+            )
+          }
 
-      is Content -> {
-        StartScreen(uiState, onSelectHousingType, onSubmitHousingType, Modifier.weight(1f))
+          is Content -> {
+            StartScreen(uiState, onSelectHousingType, onSubmitHousingType)
+          }
+        }
       }
     }
   }
@@ -106,36 +128,38 @@ private fun StartScreen(
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    RadioGroup(
-      radioGroupStyle = Default(
-        uiState.possibleHousingTypes.map {
-          RadioOptionGroupDataSimple(
-            RadioOptionData(
-              id = it.name,
-              optionText = stringResource(it.stringResource()),
-              chosenState = if (it == uiState.selectedHousingType) Chosen else NotChosen,
-              lockedState = NotLocked,
-            ),
-          )
-        },
-      ),
-      onOptionClick = {
-        onSelectHousingType(HousingType.valueOf(it))
-      },
-      radioGroupSize = Medium,
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT), Info)
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(R.string.general_continue_button),
-      onClick = onSubmitHousingType,
-      enabled = !uiState.isLoading,
-      isLoading = uiState.isLoading,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+      Spacer(Modifier.height(8.dp))
+      RadioGroup(
+        radioGroupStyle = Default(
+          uiState.possibleHousingTypes.map {
+            RadioOptionGroupDataSimple(
+              RadioOptionData(
+                id = it.name,
+                optionText = stringResource(it.stringResource()),
+                chosenState = if (it == uiState.selectedHousingType) Chosen else NotChosen,
+                lockedState = NotLocked,
+              ),
+            )
+          },
+        ),
+        onOptionClick = { onSelectHousingType(HousingType.valueOf(it)) },
+        radioGroupSize = Medium,
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT), Info)
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = stringResource(R.string.general_continue_button),
+        onClick = onSubmitHousingType,
+        enabled = !uiState.isLoading,
+        isLoading = uiState.isLoading,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
   }
 }
 

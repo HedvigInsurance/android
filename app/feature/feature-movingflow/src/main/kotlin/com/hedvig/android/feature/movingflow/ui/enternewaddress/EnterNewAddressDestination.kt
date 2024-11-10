@@ -5,9 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +37,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -41,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -51,6 +57,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.NoopValidator
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
+import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment.WithStudentOption
@@ -78,6 +85,7 @@ internal fun EnterNewAddressDestination(
   viewModel: EnterNewAddressViewModel,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToAddHouseInformation: () -> Unit,
   onNavigateToChoseCoverageLevelAndDeductible: () -> Unit,
 ) {
@@ -98,6 +106,7 @@ internal fun EnterNewAddressDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     popBackStack = popBackStack,
+    exitFlow = exitFlow,
     submitInput = { viewModel.emit(EnterNewAddressEvent.Submit) },
     dismissSubmissionError = { viewModel.emit(EnterNewAddressEvent.DismissSubmissionError) },
   )
@@ -108,24 +117,35 @@ private fun EnterNewAddressScreen(
   uiState: EnterNewAddressUiState,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
+  exitFlow: () -> Unit,
   submitInput: () -> Unit,
   dismissSubmissionError: () -> Unit,
 ) {
-  HedvigScaffold(navigateUp) {
-    when (uiState) {
-      Loading -> HedvigFullScreenCenterAlignedProgress()
-      MissingOngoingMovingFlow -> HedvigErrorSection(
-        onButtonClick = popBackStack,
-        subTitle = null,
-        buttonText = stringResource(R.string.app_info_submit_bug_go_back),
-      )
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column {
+      MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          Loading -> HedvigFullScreenCenterAlignedProgress()
+          MissingOngoingMovingFlow -> HedvigErrorSection(
+            onButtonClick = popBackStack,
+            subTitle = null,
+            buttonText = stringResource(R.string.app_info_submit_bug_go_back),
+          )
 
-      is Content -> EnterNewAddressScreen(
-        uiState = uiState,
-        submitInput = submitInput,
-        dismissSubmissionError = dismissSubmissionError,
-        modifier = Modifier.weight(1f),
-      )
+          is Content -> EnterNewAddressScreen(
+            uiState = uiState,
+            submitInput = submitInput,
+            dismissSubmissionError = dismissSubmissionError,
+          )
+        }
+      }
     }
   }
 }
@@ -260,6 +280,7 @@ private fun EnterNewAddressScreen(
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }

@@ -7,15 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -171,34 +165,7 @@ private fun TerminationSurveyScreen(
             onDismissRequest = closeEmptyQuotesDialog,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
           ) {
-            Column(
-              modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(
-                  WindowInsets.safeDrawing.only(
-                    WindowInsetsSides.Horizontal +
-                      WindowInsetsSides.Bottom,
-                  ),
-                ),
-            ) {
-              Spacer(Modifier.weight(1f))
-              EmptyState(
-                text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
-                iconStyle = INFO,
-                buttonStyle = NoButton,
-                modifier = Modifier.fillMaxWidth(),
-                description = null,
-              )
-              Spacer(Modifier.weight(1f))
-              HedvigTextButton(
-                stringResource(R.string.general_close_button),
-                onClick = closeEmptyQuotesDialog,
-                buttonSize = Large,
-                modifier = Modifier.fillMaxWidth(),
-              )
-              Spacer(Modifier.height(32.dp))
-            }
+            EmptyQuotesDialogContent(closeEmptyQuotesDialog)
           }
         }
         HedvigText(
@@ -335,12 +302,29 @@ private fun TerminationSurveyScreen(
   )
 }
 
+@Composable
+private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
+  Column {
+    EmptyState(
+      text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+      iconStyle = INFO,
+      buttonStyle = NoButton,
+      modifier = Modifier.fillMaxWidth(),
+      description = null,
+    )
+    HedvigTextButton(
+      stringResource(R.string.general_close_button),
+      onClick = closeEmptyQuotesDialog,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
 @HedvigPreview
 @Composable
-private fun ShowSurveyScreenPreview(
-  @PreviewParameter(
-    ShowSurveyUiStateProvider::class,
-  ) uiState: TerminationSurveyState,
+private fun PreviewTerminationSurveyScreen(
+  @PreviewParameter(ShowSurveyUiStateProvider::class) uiState: TerminationSurveyState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -359,6 +343,16 @@ private fun ShowSurveyScreenPreview(
         tryToUpgradeCoverage = {},
         closeEmptyQuotesDialog = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewEmptyQuotesDialogContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EmptyQuotesDialogContent({})
     }
   }
 }

@@ -88,6 +88,7 @@ internal val testQuote = TierDeductibleQuote(
     documents = listOf(),
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
   ),
 )
 
@@ -117,6 +118,7 @@ internal val testQuote2 = TierDeductibleQuote(
     documents = listOf(),
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
   ),
 )
 
@@ -146,6 +148,7 @@ internal val testQuote3 = TierDeductibleQuote(
     documents = listOf(),
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
   ),
 )
 
@@ -175,5 +178,6 @@ internal val currentQuote = TierDeductibleQuote(
     documents = listOf(),
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
   ),
 )

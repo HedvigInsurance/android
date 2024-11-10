@@ -1,27 +1,40 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
@@ -44,7 +57,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
@@ -57,6 +69,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
+import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
@@ -72,6 +85,7 @@ internal fun SummaryDestination(
   viewModel: SummaryViewModel,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
@@ -85,6 +99,7 @@ internal fun SummaryDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
+    exitFlow = exitFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
@@ -96,30 +111,44 @@ private fun SummaryScreen(
   uiState: SummaryUiState,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
+  exitFlow: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
-  HedvigScaffold(
-    navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
-    when (uiState) {
-      Loading -> HedvigFullScreenCenterAlignedProgress()
-      SummaryUiState.Error -> HedvigErrorSection(
-        onButtonClick = navigateBack,
-        subTitle = null,
-        buttonText = stringResource(R.string.general_back_button),
+    Column {
+      MovingFlowTopAppBar(
+        navigateUp = navigateUp,
+        exitFlow = exitFlow,
+        topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
+      Box(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          Loading -> HedvigFullScreenCenterAlignedProgress()
 
-      is Content -> SummaryScreen(
-        content = uiState,
-        onNavigateToNewConversation = onNavigateToNewConversation,
-        onConfirmChanges = onConfirmChanges,
-        onDismissSubmissionError = onDismissSubmissionError,
-        modifier = Modifier.weight(1f),
-      )
+          SummaryUiState.Error -> HedvigErrorSection(
+            onButtonClick = navigateBack,
+            subTitle = null,
+            buttonText = stringResource(R.string.general_back_button),
+          )
+
+          is Content -> {
+            SummaryScreen(
+              content = uiState,
+              onNavigateToNewConversation = onNavigateToNewConversation,
+              onConfirmChanges = onConfirmChanges,
+              onDismissSubmissionError = onDismissSubmissionError,
+            )
+          }
+        }
+      }
     }
   }
 }
@@ -130,7 +159,6 @@ private fun SummaryScreen(
   onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
-  modifier: Modifier = Modifier,
 ) {
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
@@ -155,67 +183,91 @@ private fun SummaryScreen(
       onDismissRequest = onDismissSubmissionError,
     )
   }
-  Column(
-    modifier = modifier
-      .padding(horizontal = 16.dp)
-      .verticalScroll(rememberScrollState()),
-  ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      QuoteCard(content.summaryInfo.moveHomeQuote)
-      for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
-        QuoteCard(mtaQuote)
+  Box(propagateMinConstraints = true) {
+    var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
+    Column(
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .verticalScroll(rememberScrollState()),
+    ) {
+      Spacer(Modifier.height(16.dp))
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        QuoteCard(content.summaryInfo.moveHomeQuote)
+        for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
+          QuoteCard(mtaQuote)
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
+      Spacer(Modifier.height(40.dp))
+      QuestionsAndAnswers()
+      Spacer(Modifier.height(40.dp))
+      Column {
+        HedvigText(
+          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = stringResource(R.string.open_chat),
+          enabled = true,
+          onClick = onNavigateToNewConversation,
+          buttonSize = Small,
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      with(LocalDensity.current) {
+        Spacer(Modifier.height(bottomAttachedContentHeightPx.toDp()))
+      }
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.wrapContentHeight(Alignment.Bottom).onPlaced {
+        bottomAttachedContentHeightPx = it.size.height
+      },
+    ) {
+      Column(
+        Modifier
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        Spacer(Modifier.height(16.dp))
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+          },
+          endSlot = {
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                content.summaryInfo.totalPremium.toString(),
+              ),
+              textAlign = TextAlign.End,
+              modifier = Modifier.wrapContentWidth(Alignment.End),
+            )
+          },
+          modifier = Modifier.fillMaxWidth(),
+          spaceBetween = 8.dp,
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
+          enabled = !content.shouldDisableInput,
+          onClick = { showConfirmChangesDialog = true },
+          isLoading = content.isSubmitting,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
-    Spacer(Modifier.height(16.dp))
-    HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
-    Spacer(Modifier.height(24.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-      },
-      endSlot = {
-        HedvigText(
-          text = stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            content.summaryInfo.totalPremium.toString(),
-          ),
-          textAlign = TextAlign.End,
-          modifier = Modifier.wrapContentWidth(Alignment.End),
-        )
-      },
-      modifier = Modifier.fillMaxWidth(),
-      spaceBetween = 8.dp,
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
-      enabled = !content.shouldDisableInput,
-      onClick = { showConfirmChangesDialog = true },
-      isLoading = content.isSubmitting,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(40.dp))
-    QuestionsAndAnswers()
-    Spacer(Modifier.height(40.dp))
-    Column {
-      HedvigText(
-        text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
-      )
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(R.string.open_chat),
-        enabled = true,
-        onClick = onNavigateToNewConversation,
-        buttonSize = Small,
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
-      )
-    }
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -271,85 +323,98 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 @HedvigPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
-private fun PreviewSummaryScreen() {
+private fun PreviewSummaryScreen(
+  @PreviewParameter(SummaryUiStateProvider::class) summaryUiState: SummaryUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val productVariant = ProductVariant(
-        displayName = "Variant",
-        contractGroup = ContractGroup.RENTAL,
-        contractType = ContractType.SE_APARTMENT_RENT,
-        partner = null,
-        perils = listOf(
-          ProductVariantPeril(
-            "id",
-            "peril title",
-            "peril description",
-            emptyList(),
-            emptyList(),
-            null,
-          ),
-        ),
-        insurableLimits = listOf(
-          InsurableLimit(
-            label = "insurable limit label",
-            limit = "insurable limit limit",
-            description = "insurable limit description",
-            type = BIKE,
-          ),
-        ),
-        documents = listOf(
-          InsuranceVariantDocument(
-            displayName = "displayName",
-            url = "url",
-            type = CERTIFICATE,
-          ),
-        ),
-        displayTierName = "tierDescription",
-        tierDescription = "displayNameTier",
-      )
-      val startDate = LocalDate.parse("2025-01-01")
       SummaryScreen(
-        uiState = SummaryUiState.Content(
-          summaryInfo = SummaryInfo(
-            moveHomeQuote = MoveHomeQuote(
-              id = "id",
-              premium = UiMoney(99.0, SEK),
-              startDate = startDate,
-              displayItems = listOf(
-                DisplayItem(
-                  title = "display title",
-                  subtitle = "display subtitle",
-                  value = "display value",
-                ),
-              ),
-              exposureName = "exposureName",
-              productVariant = productVariant,
-              tierName = "tierName",
-              tierLevel = 1,
-              tierDescription = "tierDescription",
-              deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
-              defaultChoice = false,
-            ),
-            moveMtaQuotes = listOf(
-              MoveMtaQuote(
-                premium = UiMoney(49.0, SEK),
-                exposureName = "exposureName",
-                productVariant = productVariant,
-                startDate = startDate,
-                displayItems = emptyList(),
-              ),
-            ),
-          ),
-          false,
-          null,
-          null,
-        ),
+        uiState = summaryUiState,
         navigateUp = {},
         navigateBack = {},
+        exitFlow = {},
         onNavigateToNewConversation = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
       )
     }
   }
+}
+
+private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> {
+  private val productVariant = ProductVariant(
+    displayName = "Variant",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = null,
+    perils = listOf(
+      ProductVariantPeril(
+        "id",
+        "peril title",
+        "peril description",
+        emptyList(),
+        emptyList(),
+        null,
+      ),
+    ),
+    insurableLimits = listOf(
+      InsurableLimit(
+        label = "insurable limit label",
+        limit = "insurable limit limit",
+        description = "insurable limit description",
+        type = BIKE,
+      ),
+    ),
+    documents = listOf(
+      InsuranceVariantDocument(
+        displayName = "displayName",
+        url = "url",
+        type = CERTIFICATE,
+      ),
+    ),
+    displayTierName = "tierDescription",
+    tierDescription = "displayNameTier",
+    termsVersion = "termsVersion",
+  )
+  val startDate = LocalDate.parse("2025-01-01")
+
+  override val values: Sequence<SummaryUiState> = sequenceOf(
+    SummaryUiState.Loading,
+    SummaryUiState.Error,
+    SummaryUiState.Content(
+      summaryInfo = SummaryInfo(
+        moveHomeQuote = MoveHomeQuote(
+          id = "id",
+          premium = UiMoney(99.0, SEK),
+          startDate = startDate,
+          displayItems = listOf(
+            DisplayItem(
+              title = "display title",
+              subtitle = "display subtitle",
+              value = "display value",
+            ),
+          ),
+          exposureName = "exposureName",
+          productVariant = productVariant,
+          tierName = "tierName",
+          tierLevel = 1,
+          tierDescription = "tierDescription",
+          deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
+          defaultChoice = false,
+        ),
+        moveMtaQuotes = listOf(
+          MoveMtaQuote(
+            premium = UiMoney(49.0, SEK),
+            exposureName = "exposureName",
+            productVariant = productVariant,
+            startDate = startDate,
+            displayItems = emptyList(),
+          ),
+        ),
+      ),
+      false,
+      null,
+      null,
+    ),
+  )
 }

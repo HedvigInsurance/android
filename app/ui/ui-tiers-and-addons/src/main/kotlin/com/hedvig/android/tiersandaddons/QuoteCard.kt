@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -177,7 +178,7 @@ private fun QuoteCard(
                     Row(
                       modifier = Modifier
                         .fillMaxWidth()
-                        .clip(HedvigTheme.shapes.cornerExtraSmall)
+                        .clip(HedvigTheme.shapes.cornerXSmall)
                         .clickable {
                           uriHandler.openUri(document.url)
                         },
@@ -203,8 +204,8 @@ private fun QuoteCard(
                           contentDescription = null,
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
-                            .then(with(density) { Modifier.size(16.sp.toDp()) })
-                            .align(Alignment.Center),
+                            .wrapContentSize(Alignment.Center)
+                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
                         )
                       }
                     }
@@ -293,6 +294,7 @@ private fun PreviewQuoteCard(
           },
           displayTierName = "displayTierName",
           tierDescription = "tierDescription",
+          termsVersion = "termsVersion",
         ),
         subtitle = "subtitle",
         premium = "premium",

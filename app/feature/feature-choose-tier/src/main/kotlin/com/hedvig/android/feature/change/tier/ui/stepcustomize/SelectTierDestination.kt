@@ -82,7 +82,7 @@ internal fun SelectTierDestination(
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
-  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>) -> Unit,
+  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>, selectedTermsVersion: String?) -> Unit,
 ) {
   val uiState: SelectCoverageState by viewModel.uiState.collectAsStateWithLifecycle()
   Box(
@@ -107,7 +107,12 @@ internal fun SelectTierDestination(
         LaunchedEffect(state.uiState.quotesToCompare) {
           if (state.uiState.quotesToCompare != null) {
             viewModel.emit(ClearNavigateToComparison)
-            navigateToComparison(state.uiState.quotesToCompare)
+            navigateToComparison(
+              state.uiState.quotesToCompare,
+              state.uiState.quotesToCompare.firstOrNull {
+                it.tier.tierName == state.uiState.chosenTier?.tierName
+              }?.productVariant?.termsVersion,
+            )
           }
         }
         SelectTierScreen(
@@ -240,17 +245,19 @@ private fun SelectTierScreen(
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
-    Spacer(Modifier.height(4.dp))
-    HedvigTextButton(
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-      buttonSize = Large,
-      onClick = {
-        onCompareClick()
-      },
-    )
+    if (uiState.tiers.size > 1) {
+      Spacer(Modifier.height(4.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        onClick = {
+          onCompareClick()
+        },
+      )
+    }
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       buttonSize = Large,
@@ -718,6 +725,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -745,6 +753,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -772,6 +781,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Bas",
       tierDescription = "Our most basic coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -799,6 +809,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
   TierDeductibleQuote(
@@ -826,6 +837,7 @@ private val quotesForPreview = listOf(
       documents = listOf(),
       displayTierName = "Standard",
       tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
   ),
 )
