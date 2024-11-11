@@ -52,7 +52,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -309,7 +308,6 @@ private fun Table(
       }
   }
   val fixedCellWidth: Dp = remember(uiState.comparisonData.columns, textStyle) {
-    val totalHorizontalPadding = 16.dp
     with(density) {
       uiState.comparisonData.columns.map { it.title }.filterNotNull().maxOf { title ->
         textMeasurer.measure(
@@ -319,7 +317,7 @@ private fun Table(
           softWrap = false,
           maxLines = 1,
         ).size.width
-      }.toDp() + totalHorizontalPadding
+      }.toDp() + CellTitleHorizontalPadding
     }
   }
   val numberOfCells = remember(uiState.comparisonData.columns) {
@@ -631,6 +629,7 @@ private fun ComparisonScreenPreview() {
 }
 
 private val CellEndPadding = 16.dp
+private val CellTitleHorizontalPadding = 16.dp
 private val ColumnTextStartPadding = 16.dp
 private val ColumnTextEndPadding = 6.dp
 private val MaxSizeRatioForFixedColumn = 0.4f
