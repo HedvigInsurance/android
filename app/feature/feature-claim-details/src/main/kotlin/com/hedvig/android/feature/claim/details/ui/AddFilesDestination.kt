@@ -134,6 +134,7 @@ private fun AddFilesScreen(
         fileToRemoveId = null
       },
       onConfirmClick = {
+        logcat { "Mariia: fileToRemoveId?.let(onRemove) with id: $fileToRemoveId" }
         fileToRemoveId?.let(onRemove)
       },
     )
@@ -156,6 +157,7 @@ private fun AddFilesScreen(
         onClick = navigateUp,
         title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
       )
+      logcat { "Mariia: calling DynamicFilesGridBetweenOtherThings from AddFilesScreen" }
       DynamicFilesGridBetweenOtherThings(
         belowGridContent = {
           BelowGridContent(

@@ -49,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.icon.Play
+import com.hedvig.android.logger.logcat
 
 /**
  * Makes a column with content above and below a dynamic lazy grid of files thumbnails. The column
@@ -237,9 +238,13 @@ private fun File(
         }
       }
     }
+    logcat { "Mariia: onRemoveFile is null: ${onRemoveFile==null}" }
     if (onRemoveFile != null) {
       IconButton(
-        onClick = { onRemoveFile(id) },
+        onClick = {
+          logcat { "Mariia: onRemoveFile with id: $id" }
+          onRemoveFile(id)
+                  },
         colors = IconButtonColors(
           containerColor = HedvigTheme.colorScheme.surfaceSecondary,
           contentColor = HedvigTheme.colorScheme.textSecondary,
@@ -254,7 +259,7 @@ private fun File(
           .size(24.dp),
       ) {
         Icon(
-          imageVector = HedvigIcons.Close, // todo: check!!!
+          imageVector = HedvigIcons.Close,
           contentDescription = null,
           modifier = Modifier.size(16.dp),
         )
@@ -264,7 +269,7 @@ private fun File(
 }
 
 private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
-  "image/jpg" -> HedvigIcons.Image // todo: check!!!
+  "image/jpg" -> HedvigIcons.Image
   "video/quicktime" -> HedvigIcons.Play
   "application/pdf" -> HedvigIcons.Document
   else -> HedvigIcons.Document
