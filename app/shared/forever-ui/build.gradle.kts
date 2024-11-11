@@ -10,7 +10,6 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.other.core)
   implementation(libs.apollo.normalizedCache)
@@ -24,10 +23,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)

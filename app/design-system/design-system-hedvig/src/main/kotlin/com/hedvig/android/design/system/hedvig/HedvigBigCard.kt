@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.BigCardDefaults.inputTextStyle
@@ -21,6 +22,30 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
  * The card which looks like a TextField, but functions as a button which has the text in the positions of a button.
  * https://www.figma.com/file/qUhLjrKl98PAzHov9ilaDH/New-Web-UI-Kit?type=design&node-id=114-2605&t=NMbwHBp5OhuKjgZ4-4
  */
+
+@Composable
+fun HedvigBigCard(
+// todo: rename after complete migration to new DS to ButtonWithLabelTextField
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  shape: Shape = HedvigTheme.shapes.cornerLarge,
+  content: @Composable () -> Unit,
+) {
+  Surface(
+    shape = shape,
+    color = bigCardColors.containerColor,
+    modifier = modifier
+      .clip(shape)
+      .clickable(
+        onClick = onClick,
+        enabled = enabled,
+      ),
+  ) {
+    content()
+  }
+}
+
 @Composable
 fun HedvigBigCard(
 // todo: rename after complete migration to new DS to ButtonWithLabelTextField

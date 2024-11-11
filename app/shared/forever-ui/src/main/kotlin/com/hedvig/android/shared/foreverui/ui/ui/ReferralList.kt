@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +19,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.typeElement
-import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState.IN_PROGRESS
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState.TERMINATED
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState.UNKNOWN
 import hedvig.resources.R
 
 @Composable
@@ -42,7 +43,7 @@ internal fun ReferralList(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
     )
@@ -56,15 +57,15 @@ internal fun ReferralList(
         .fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      Text(stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
+      HedvigText(stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
       Row {
-        Text(
+        HedvigText(
           text = grossPriceAmount?.toString() ?: "-",
           style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(currentNetAmount?.toString() ?: "-")
+        HedvigText(currentNetAmount?.toString() ?: "-")
       }
     }
   }
@@ -88,31 +89,31 @@ private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Mod
           .background(referral.state.toColor(), CircleShape),
       )
       Spacer(modifier = Modifier.width(8.dp))
-      Text(referral.name ?: "-")
+      HedvigText(referral.name ?: "-")
     }
     when (referral.state) {
-      ReferralState.ACTIVE -> {
-        Text(referral.discount?.toString()?.let { "-$it" } ?: "-")
+      ACTIVE -> {
+        HedvigText(referral.discount?.toString()?.let { "-$it" } ?: "-")
       }
 
-      ReferralState.IN_PROGRESS -> {
-        Text(
+      IN_PROGRESS -> {
+        HedvigText(
           text = stringResource(id = R.string.REFERRAL_PENDING_STATUS_LABEL),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       }
 
-      ReferralState.TERMINATED -> {
-        Text(
+      TERMINATED -> {
+        HedvigText(
           text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       }
 
-      ReferralState.UNKNOWN -> {
-        Text(
+      UNKNOWN -> {
+        HedvigText(
           text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       }
     }
@@ -122,35 +123,35 @@ private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Mod
 
 @Composable
 private fun ReferralState.toColor(): Color = when (this) {
-  ReferralState.ACTIVE -> MaterialTheme.colorScheme.typeElement
-  ReferralState.IN_PROGRESS -> MaterialTheme.colorScheme.warningElement
-  ReferralState.TERMINATED -> MaterialTheme.colorScheme.error
-  ReferralState.UNKNOWN -> MaterialTheme.colorScheme.error
+  ACTIVE -> HedvigTheme.colorScheme.signalGreenElement
+  IN_PROGRESS -> HedvigTheme.colorScheme.signalAmberElement
+  TERMINATED -> HedvigTheme.colorScheme.signalRedElement
+  ReferralState.UNKNOWN -> HedvigTheme.colorScheme.signalRedElement
 }
 
 @Composable
 @HedvigPreview
 private fun PreviewReferralList() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReferralList(
-        grossPriceAmount = UiMoney(138.0, UiCurrencyCode.SEK),
-        currentNetAmount = UiMoney(118.0, UiCurrencyCode.SEK),
+        grossPriceAmount = UiMoney(138.0, SEK),
+        currentNetAmount = UiMoney(118.0, SEK),
         referrals = listOf(
           Referral(
             name = "Ermir",
-            state = ReferralState.ACTIVE,
-            discount = UiMoney(10.0, UiCurrencyCode.SEK),
+            state = ACTIVE,
+            discount = UiMoney(10.0, SEK),
           ),
           Referral(
             name = "Genc",
-            state = ReferralState.IN_PROGRESS,
+            state = IN_PROGRESS,
             discount = null,
           ),
           Referral(
             name = "Ermir",
-            state = ReferralState.TERMINATED,
-            discount = UiMoney(10.0, UiCurrencyCode.SEK),
+            state = TERMINATED,
+            discount = UiMoney(10.0, SEK),
           ),
         ),
       )

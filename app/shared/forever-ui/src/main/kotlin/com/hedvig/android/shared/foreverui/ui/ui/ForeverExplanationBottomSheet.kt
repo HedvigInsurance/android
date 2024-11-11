@@ -4,48 +4,45 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun ForeverExplanationBottomSheet(discount: String, onDismiss: () -> Unit, sheetState: SheetState) {
-  ModalBottomSheet(
-    containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
+internal fun ForeverExplanationBottomSheet(isVisible: Boolean, discount: String, onDismiss: () -> Unit) {
+  HedvigBottomSheet(
+    isVisible = isVisible,
+    onVisibleChange = { visible ->
+      if (!isVisible) {
+        onDismiss()
+      }
     },
-    shape = MaterialTheme.shapes.squircleLargeTop,
-    sheetState = sheetState,
-    tonalElevation = 0.dp,
   ) {
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.referrals_info_sheet_headline),
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.referrals_info_sheet_body, discount),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
       onClick = { onDismiss() },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+      modifier = Modifier
+        .padding(bottom = 16.dp)
+        .fillMaxWidth(),
     )
   }
 }
