@@ -81,8 +81,9 @@ internal class SelectCoveragePresenter(
           if (state !is PartialUiState.Success) return@CollectEvents
           chosenTier = chosenTierInDialog
           val listOfQuotes = state.map[chosenTierInDialog]
-          chosenQuote = if (listOfQuotes?.size==1) listOfQuotes[0] else null
-          chosenQuoteInDialog = null
+          val quoteToChoose = if (listOfQuotes?.size==1) listOfQuotes[0] else null
+          chosenQuote = quoteToChoose
+          chosenQuoteInDialog = quoteToChoose
         }
 
         ClearNavigateFurtherStep -> {
