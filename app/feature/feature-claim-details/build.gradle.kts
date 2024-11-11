@@ -1,12 +1,12 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.apollo)
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
 }
 
 android {
@@ -54,11 +54,4 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

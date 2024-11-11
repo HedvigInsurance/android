@@ -1,18 +1,18 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
 plugins {
+  id("hedvig.gradle.plugin")
   id("hedvig.android.application")
-  id("hedvig.android.application.compose")
-  id("hedvig.android.ktlint")
-  id("kotlin-parcelize")
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
   alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
+  compose()
 }
 
 android {
@@ -216,8 +216,8 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
-  implementation(projects.tierComparison)
   implementation(projects.theme)
+  implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 

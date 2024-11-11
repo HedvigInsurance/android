@@ -1,23 +1,10 @@
 plugins {
-  id("hedvig.android.apollo")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.ktlint")
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
 }
 
-dependencies {
-  api(libs.apollo.adapters.datetime)
-  api(libs.apollo.api)
-  api(libs.kotlinx.datetime)
-  implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreMarkdown)
-}
-
-apollo {
-  // Octopus client
-  service("octopus") {
+hedvig {
+  apolloSchema {
     introspection {
       endpointUrl = "https://apollo-router.dev.hedvigit.com"
       schemaFile = file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
@@ -32,6 +19,7 @@ apollo {
     codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
 
     generateApolloMetadata = true
+    @Suppress("OPT_IN_USAGE")
     generateDataBuilders = true
 
     failOnWarnings = true
@@ -54,4 +42,13 @@ apollo {
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
   }
+}
+
+dependencies {
+  api(libs.apollo.adapters.datetime)
+  api(libs.apollo.api)
+  api(libs.kotlinx.datetime)
+  implementation(projects.coreBuildConstants)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreMarkdown)
 }

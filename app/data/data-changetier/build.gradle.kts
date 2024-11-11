@@ -1,10 +1,11 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.apollo)
-  alias(libs.plugins.serialization)
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
 }
 
 android {
@@ -43,11 +44,4 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }
