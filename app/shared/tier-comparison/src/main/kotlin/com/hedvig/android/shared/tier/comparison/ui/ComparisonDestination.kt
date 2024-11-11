@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -57,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -261,12 +263,12 @@ private fun IndicateScrollableTableEffect(scrollState: ScrollState) {
 }
 
 @Composable
-private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit, modifier: Modifier = Modifier) {
-  val density = LocalDensity.current
-  val textStyle = LocalTextStyle.current
-  val textMeasurer = rememberTextMeasurer(
-    cacheSize = uiState.comparisonData.columns.count() + uiState.comparisonData.rows.count() + 1,
-  )
+private fun measureTableMeasurementInfo(
+  textMeasurer: TextMeasurer,
+  density: Density,
+  textStyle: TextStyle,
+  uiState: Success
+): TableMeasurementInfo {
   val maxWidthRequiredForFixedColumnTexts = remember(textMeasurer, uiState.comparisonData.rows, textStyle) {
     uiState
       .comparisonData
@@ -299,25 +301,38 @@ private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit
   val numberOfCells = remember(uiState.comparisonData.columns) {
     uiState.comparisonData.columns.mapNotNull { it.title }.count()
   }
+  return TableMeasurementInfo(maxWidthRequiredForFixedColumnTexts, fixedCellWidth, numberOfCells)
+}
 
+data class TableMeasurementInfo(
+  val maxWidthRequiredForFixedColumnTexts: Int,
+  val fixedCellWidth: Dp,
+  val numberOfCells: Int,
+)
+
+@Composable
+private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit, modifier: Modifier = Modifier) {
+  val density = LocalDensity.current
+  val textStyle = LocalTextStyle.current
+  val textMeasurer = rememberTextMeasurer(
+    cacheSize = uiState.comparisonData.columns.count() + uiState.comparisonData.rows.count() + 1,
+  )
   val overlaidIndicationState = rememberOverlaidIndicationState()
   val cellsScrollState = rememberScrollState()
-  IndicateScrollableTableEffect(cellsScrollState)
-  val shadowWidth by remember { derivedStateOf { if (cellsScrollState.value > 0) 4.dp else 0.dp } }
-  val animatedShadowSize by animateDpAsState(shadowWidth)
+  val tableMeasurementInfo = measureTableMeasurementInfo(textMeasurer, density, textStyle, uiState)
   Layout(
     {
       FixSizedComparisonDataColumn(
         textMeasurer = textMeasurer,
         comparisonData = uiState.comparisonData,
         selectComparisonRow = selectComparisonRow,
-        shadowSize = { animatedShadowSize },
+        cellsScrollState = cellsScrollState,
         overlaidIndicationState = overlaidIndicationState,
         modifier = Modifier.width(IntrinsicSize.Max),
       )
       ScrollableTableSection(
         textMeasurer = textMeasurer,
-        fixedCellWidth = fixedCellWidth,
+        fixedCellWidth = tableMeasurementInfo.fixedCellWidth,
         scrollState = cellsScrollState,
         comparisonData = uiState.comparisonData,
         selectedColumnIndex = uiState.selectedColumnIndex,
@@ -335,14 +350,15 @@ private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit
     val scrollableTableSection = measurables[1]
     val overlaidIndication = measurables[2]
 
-    val cellSectionFullWidth = (fixedCellWidth * numberOfCells + CellEndPadding).roundToPx()
+    val cellSectionFullWidth =
+      (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellEndPadding).roundToPx()
 
     val bothFitCompletely =
-      maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
+      tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
     val columnConstraints = if (bothFitCompletely) {
       constraints.copy(
-        minWidth = maxWidthRequiredForFixedColumnTexts,
-        maxWidth = maxWidthRequiredForFixedColumnTexts,
+        minWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
+        maxWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
       )
     } else {
       val spaceLeftAfterCellsAreFullyPlaced = constraints.maxWidth - cellSectionFullWidth
@@ -381,10 +397,12 @@ private fun FixSizedComparisonDataColumn(
   textMeasurer: TextMeasurer,
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
-  shadowSize: () -> Dp,
+  cellsScrollState: ScrollState,
   overlaidIndicationState: OverlaidIndicationState,
   modifier: Modifier = Modifier,
 ) {
+  val shadowWidth by remember { derivedStateOf { if (cellsScrollState.value > 0) 4.dp else 0.dp } }
+  val animatedShadowSize by animateDpAsState(shadowWidth)
   val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
     Cell(textMeasurer)
@@ -397,7 +415,7 @@ private fun FixSizedComparisonDataColumn(
             start = Offset(size.width, 0f),
             end = Offset(size.width, size.height),
           )
-          val shadowSizePx = shadowSize().toPx()
+          val shadowSizePx = animatedShadowSize.toPx()
           drawRect(
             topLeft = Offset(size.width, 0f),
             size = Size(shadowSizePx, size.height),
@@ -458,6 +476,7 @@ private fun ScrollableTableSection(
   overlaidIndicationState: OverlaidIndicationState,
   modifier: Modifier = Modifier,
 ) {
+  IndicateScrollableTableEffect(scrollState)
   Column(
     modifier.horizontalScroll(state = scrollState),
   ) {
