@@ -79,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
+import com.hedvig.android.design.system.hedvig.internal.MappedInteractionSource
 import com.hedvig.android.shared.tier.comparison.data.ComparisonCell
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData
 import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
@@ -353,6 +354,7 @@ private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit
         maxWidth = remainingWidthCoercedToAtLeastTheMinimumScreenPercentage,
       )
     }
+    overlaidIndicationState.fixedColumnWidth = columnConstraints.maxWidth
     val fixSizedComparisonDataColumnPlaceable = fixSizedComparisonDataColumn.measure(columnConstraints)
     val spaceRemainingForCells = constraints.maxWidth - fixSizedComparisonDataColumnPlaceable.width
     val remainingWidthForCellSection = cellSectionFullWidth.coerceAtMost(spaceRemainingForCells)
@@ -492,14 +494,19 @@ private fun ScrollableTableSection(
     }
     Column {
       comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
-        val interactionSource = remember { MutableInteractionSource() }
+        val mappedInteractionSource = remember {
+          MappedInteractionSource(
+            MutableInteractionSource(),
+            { Offset(overlaidIndicationState.fixedColumnWidth.toFloat(), 0f) },
+          )
+        }
         val borderColor = HedvigTheme.colorScheme.borderSecondary
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
-            .overlaidIndicationConnection(overlaidIndicationState, interactionSource)
+            .overlaidIndicationConnection(overlaidIndicationState, mappedInteractionSource)
             .clickable(
-              interactionSource = interactionSource,
+              interactionSource = mappedInteractionSource,
               indication = null,
               onClick = { onRowClick(comparisonRow) },
             )
