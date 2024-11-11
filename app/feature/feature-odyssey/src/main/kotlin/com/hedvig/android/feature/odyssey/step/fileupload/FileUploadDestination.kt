@@ -77,7 +77,6 @@ internal fun FileUploadDestination(
     isVisible = showFileTypeSelectBottomSheet,
   )
 
-
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
   if (fileToRemoveId != null) {
     HedvigAlertDialog(

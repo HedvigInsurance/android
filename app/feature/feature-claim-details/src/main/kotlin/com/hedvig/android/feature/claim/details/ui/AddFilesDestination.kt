@@ -170,10 +170,10 @@ private fun AddFilesScreen(
         onRemoveFile = { fileToRemoveId = it },
         imageLoader = imageLoader,
         contentPadding =
-        PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
-          WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-        )
-          .asPaddingValues(),
+          PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+          )
+            .asPaddingValues(),
         onClickFile = null,
       )
     }
@@ -193,7 +193,7 @@ private fun BelowGridContent(
       onClick = onAddMoreFilesButtonClick,
       modifier = Modifier.fillMaxWidth(),
       buttonStyle = Secondary,
-      enabled = true
+      enabled = true,
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
@@ -201,7 +201,7 @@ private fun BelowGridContent(
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       isLoading = isLoading,
-      enabled = true
+      enabled = true,
     )
     Spacer(Modifier.height(16.dp))
   }

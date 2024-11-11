@@ -39,6 +39,7 @@ import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
@@ -316,11 +317,11 @@ private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromU
           ) {
             HedvigText(
               text = stringResource(R.string.claim_status_title),
-              style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.label,
+              style = HedvigTheme.typography.label,
             )
             HedvigText(
               text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
-              style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.label.copy(
+              style = HedvigTheme.typography.label.copy(
                 color = HedvigTheme.colorScheme.textSecondary,
               ),
             )
@@ -428,15 +429,23 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
       verticalAlignment = Alignment.CenterVertically,
     ) {
       if (isLoading) {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier.fillMaxWidth(),
+        LayoutWithoutPlacement(
+          sizeAdjustingContent = {
+            DocumentCard(
+              title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+              subtitle = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+            )
+          },
         ) {
-          HedvigCircularProgressIndicator()
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            HedvigCircularProgressIndicator()
+          }
         }
       } else {
         DocumentCard(
-          onClick = onClick,
           title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
           subtitle = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
         )
@@ -446,45 +455,41 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
 }
 
 @Composable
-private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
-  HedvigCard(
-    onClick = onClick,
+private fun DocumentCard(title: String, subtitle: String?) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          Column {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Column {
+          HedvigText(
+            text = stringWithShiftedLabel(
+              text = title,
+              labelText = "PDF",
+              labelFontSize = HedvigTheme.typography.label.fontSize,
+              textColor = LocalContentColor.current,
+              textFontSize = LocalTextStyle.current.fontSize,
+            ),
+          )
+          if (!subtitle.isNullOrBlank()) {
             HedvigText(
-              text = stringWithShiftedLabel(
-                text = title,
-                labelText = "PDF",
-                labelFontSize = HedvigTheme.typography.bodySmall.fontSize,
-                textColor = LocalContentColor.current,
-                textFontSize = LocalTextStyle.current.fontSize,
-              ),
-            )
-            if (!subtitle.isNullOrBlank()) {
-              HedvigText(
-                text = subtitle,
-                color = HedvigTheme.colorScheme.textSecondary,
-              )
-            }
-          }
-        },
-        endSlot = {
-          Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-              imageVector = HedvigIcons.ArrowNorthEast,
-              contentDescription = null,
-              modifier = Modifier.size(16.dp),
+              text = subtitle,
+              color = HedvigTheme.colorScheme.textSecondary,
             )
           }
-        },
-        spaceBetween = 8.dp,
-      )
-    }
+        }
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+          Icon(
+            imageVector = HedvigIcons.ArrowNorthEast,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
   }
 }
 

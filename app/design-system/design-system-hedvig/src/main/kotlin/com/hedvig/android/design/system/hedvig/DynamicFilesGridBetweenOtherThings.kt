@@ -49,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.icon.Play
-import com.hedvig.android.logger.logcat
 
 /**
  * Makes a column with content above and below a dynamic lazy grid of files thumbnails. The column
@@ -242,7 +241,7 @@ private fun File(
       IconButton(
         onClick = {
           onRemoveFile(id)
-                  },
+        },
         colors = IconButtonColors(
           containerColor = HedvigTheme.colorScheme.surfaceSecondary,
           contentColor = HedvigTheme.colorScheme.textSecondary,
