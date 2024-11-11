@@ -1,11 +1,15 @@
 package com.hedvig.android.shared.tier.comparison.ui
 
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,16 +17,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,37 +42,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTabletLandscapePreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
+import com.hedvig.android.shared.tier.comparison.data.ComparisonCell
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData
 import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
 import com.hedvig.android.shared.tier.comparison.data.mockComparisonData
@@ -89,7 +99,12 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
       }
     }
 
-    is Success -> ComparisonScreen(state, navigateUp)
+    is Success -> {
+      ProvideTextStyle(HedvigTheme.typography.label) {
+        ComparisonScreen(state, navigateUp)
+      }
+    }
+
     Failure -> {
       Box(Modifier.fillMaxSize()) {
         HedvigErrorSection(
@@ -106,13 +121,36 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 @Composable
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
-  val scrollState = rememberScrollState()
-  LaunchedEffect(scrollState) {
-    delay(200)
-    scrollState.animateScrollTo(scrollState.maxValue, spring(stiffness = 20f))
+  HedvigBottomSheet(
+    sheetPadding = PaddingValues(0.dp),
+    isVisible = bottomSheetRow != null,
+    onVisibleChange = { isVisible ->
+      if (!isVisible) {
+        bottomSheetRow = null
+      }
+    },
+  ) {
+    Column {
+      bottomSheetRow?.let { HedvigText(text = it.title) }
+      Spacer(Modifier.height(16.dp))
+      bottomSheetRow?.let {
+        HedvigText(
+          text = it.description,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      val exactNumbers = bottomSheetRow?.numbers
+      if (exactNumbers != null) {
+        Spacer(Modifier.height(16.dp))
+        HedvigText(
+          text = exactNumbers,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
   }
-  val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
-  val animatedShadowSize by animateDpAsState(shadowWidth)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -129,36 +167,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       )
     },
   ) {
-    HedvigBottomSheet(
-      sheetPadding = PaddingValues(0.dp),
-      isVisible = bottomSheetRow != null,
-      onVisibleChange = { isVisible ->
-        if (!isVisible) {
-          bottomSheetRow = null
-        }
-      },
-    ) {
-      Column {
-        bottomSheetRow?.let { HedvigText(text = it.title) }
-        Spacer(Modifier.height(16.dp))
-        bottomSheetRow?.let {
-          HedvigText(
-            text = it.description,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-        val exactNumbers = bottomSheetRow?.numbers
-        if (exactNumbers != null) {
-          Spacer(Modifier.height(16.dp))
-          HedvigText(
-            text = exactNumbers,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-      }
-    }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
       text = stringResource(R.string.TIER_COMPARISON_TITLE),
@@ -176,69 +184,133 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
 
-    var outerConstraints: Constraints? by remember { mutableStateOf(null) }
-    Column {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.layout { measurable, constraints ->
-          outerConstraints = constraints
-          val placeable = measurable.measure(constraints)
-          layout(placeable.width, placeable.height) {
-            placeable.placeRelative(0, 0)
-          }
+    val overlaidIndicationState = rememberOverlaidIndicationState()
+    Box(Modifier.width(IntrinsicSize.Max)) {
+      val scrollState = rememberScrollState()
+      IndicateScrollableTableEffect(scrollState)
+      Table(
+        uiState = uiState,
+        selectComparisonRow = { comparisonRow ->
+          bottomSheetRow = comparisonRow
         },
-      ) {
-        val density = LocalDensity.current
-        FixSizedComparisonDataColumn(
-          comparisonData = uiState.comparisonData,
-          selectComparisonRow = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          modifier = Modifier
-            .then(
-              if (outerConstraints != null) {
-                Modifier.widthIn(max = with(density) { (outerConstraints!!.maxWidth * 0.4f).toDp() })
-              } else {
-                Modifier
-              },
-            )
-            .width(IntrinsicSize.Max),
-        )
-        val shadowColor = HedvigTheme.colorScheme.textDisabled
-        ScrollableTable(
-          scrollState = scrollState,
-          comparisonData = uiState.comparisonData,
-          selectedColumnIndex = uiState.selectedColumnIndex,
-          onRowClick = { comparisonRow ->
-            bottomSheetRow = comparisonRow
-          },
-          modifier = Modifier
-            .weight(1f)
-            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-            .drawWithContent {
-              drawContent()
-              drawLine(
-                color = shadowColor,
-                start = Offset.Zero,
-                end = Offset(0f, size.height),
-              )
-              drawRect(
-                brush = Brush.horizontalGradient(
-                  colors = listOf(shadowColor, Color.Transparent),
-                  endX = animatedShadowSize.toPx(),
-                ),
-              )
-              drawRect(
-                brush = Brush.horizontalGradient(
-                  0.9f to Color.Black,
-                  1f to Color.Transparent,
-                ),
-                blendMode = BlendMode.DstIn,
-              )
-            },
-        )
+        overlaidIndicationState = overlaidIndicationState,
+        scrollState = scrollState,
+      )
+      Column {
+        Cell()
+        Cell {
+          OverlaidIndication(state = overlaidIndicationState)
+        }
       }
     }
+  }
+}
+
+/**
+ * The "fake" indication which is laid out on *top* of the table, so that when clicking on any part of the table, it
+ * feels like the entire "row" is interacted with, despite those two items being completely separate composables.
+ */
+@Composable
+private fun OverlaidIndication(state: OverlaidIndicationState) {
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .offset { state.offset }
+      .indication(
+        interactionSource = state.interactionSource,
+        indication = LocalIndication.current,
+      ),
+  )
+}
+
+/**
+ * Used when first entering the screen to give a hint to the user that the table is scrollable, because it's a bit
+ * subtle otherwise
+ */
+@Composable
+private fun IndicateScrollableTableEffect(scrollState: ScrollState) {
+  val density = LocalDensity.current
+  LaunchedEffect(scrollState, density) {
+    with(density) {
+      delay(200)
+      var absoluteXPosition = scrollState.value.toFloat()
+      var lastVelocity = 0f
+      scrollState.scroll {
+        animate(
+          initialValue = 0f,
+          targetValue = (scrollState.maxValue).toFloat(),
+          animationSpec = spring(stiffness = 20f, visibilityThreshold = 10.dp.toPx()),
+        ) { currentValue, velocity ->
+          // Ignore the last emission where we reach the `visibilityThreshold` and we "snap" to the end, since we're
+          //  going to animate back right after anyway, and we want to do that while retaining the velocity we
+          //  previously had.
+          if (velocity != 0f) {
+            lastVelocity = velocity
+            absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
+          }
+        }
+        animate(
+          initialValue = scrollState.value.toFloat(),
+          targetValue = 0f,
+          initialVelocity = lastVelocity,
+          animationSpec = spring(stiffness = 60f, visibilityThreshold = 2.dp.toPx()),
+        ) { currentValue, _ ->
+          absoluteXPosition += scrollBy(currentValue - absoluteXPosition)
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun Table(
+  uiState: Success,
+  selectComparisonRow: (ComparisonRow) -> Unit,
+  overlaidIndicationState: OverlaidIndicationState,
+  scrollState: ScrollState,
+) {
+  val density = LocalDensity.current
+  var tableConstraints: Constraints? by remember { mutableStateOf(null) }
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .layout { measurable, constraints ->
+        tableConstraints = constraints
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) {
+          placeable.placeRelative(0, 0)
+        }
+      },
+  ) {
+    val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
+    val animatedShadowSize by animateDpAsState(shadowWidth)
+    FixSizedComparisonDataColumn(
+      comparisonData = uiState.comparisonData,
+      selectComparisonRow = selectComparisonRow,
+      shadowSize = { animatedShadowSize },
+      overlaidIndicationState = overlaidIndicationState,
+      modifier = Modifier
+        .then(
+          if (tableConstraints != null) {
+            Modifier.widthIn(
+              max = with(density) {
+                (tableConstraints!!.maxWidth * 0.4f).toDp()
+              },
+            )
+          } else {
+            Modifier
+          },
+        )
+        .width(IntrinsicSize.Max),
+    )
+    ScrollableTableSection(
+      scrollState = scrollState,
+      comparisonData = uiState.comparisonData,
+      selectedColumnIndex = uiState.selectedColumnIndex,
+      onRowClick = selectComparisonRow,
+      overlaidIndicationState = overlaidIndicationState,
+      modifier = Modifier.weight(1f),
+    )
   }
 }
 
@@ -247,30 +319,142 @@ private fun FixSizedComparisonDataColumn(
   modifier: Modifier = Modifier,
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
+  shadowSize: () -> Dp,
+  overlaidIndicationState: OverlaidIndicationState,
 ) {
+  val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
-    HedvigText(
-      "emptyspace",
-      fontSize = HedvigTheme.typography.label.fontSize,
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .padding(vertical = 4.dp)
-        .withoutPlacement(),
-    )
-    comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
-      val borderColor = HedvigTheme.colorScheme.borderSecondary
-      Surface(
-        onClick = { selectComparisonRow(comparisonRow) },
-        color = HedvigTheme.colorScheme.backgroundPrimary,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        HedvigText(
-          text = comparisonRow.title,
-          fontSize = HedvigTheme.typography.label.fontSize,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
+    Cell()
+    Column(
+      Modifier
+        .drawWithContent {
+          drawContent()
+          drawLine(
+            color = borderColor,
+            start = Offset(size.width, 0f),
+            end = Offset(size.width, size.height),
+          )
+          val shadowSizePx = shadowSize().toPx()
+          drawRect(
+            topLeft = Offset(size.width, 0f),
+            size = Size(shadowSizePx, size.height),
+            brush = Brush.horizontalGradient(
+              colors = listOf(borderColor, Color.Transparent),
+              startX = size.width,
+              endX = size.width + shadowSizePx,
+            ),
+          )
+        },
+    ) {
+      comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+        val interactionSource = remember { MutableInteractionSource() }
+        Cell(
           modifier = Modifier
-            .padding(start = 16.dp)
+            .fillMaxWidth()
+            .overlaidIndicationConnection(overlaidIndicationState, interactionSource)
+            .clickable(
+              interactionSource = interactionSource,
+              indication = null,
+              onClick = { selectComparisonRow(comparisonRow) },
+            ),
+        ) {
+          HedvigText(
+            text = comparisonRow.title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+              .padding(start = 16.dp)
+              .drawWithContent {
+                drawContent()
+                if (rowIndex != 0) {
+                  drawLine(
+                    color = borderColor,
+                    start = Offset.Zero,
+                    end = Offset(size.width, 0f),
+                  )
+                }
+              }
+              .padding(end = 6.dp)
+              .wrapContentSize(Alignment.CenterStart),
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ScrollableTableSection(
+  scrollState: ScrollState,
+  comparisonData: ComparisonData,
+  selectedColumnIndex: Int?,
+  onRowClick: (ComparisonRow) -> Unit,
+  overlaidIndicationState: OverlaidIndicationState,
+  modifier: Modifier = Modifier,
+) {
+  val textMeasurer = rememberTextMeasurer()
+  val textStyle = LocalTextStyle.current
+  val density = LocalDensity.current
+  val fixedCellWidth = remember(comparisonData.columns, textStyle) {
+    val totalHorizontalPadding = 8.dp
+    with(density) {
+      comparisonData.columns.map { it.title }.filterNotNull().maxOf { title ->
+        textMeasurer.measure(
+          text = title,
+          style = textStyle,
+          overflow = TextOverflow.Visible,
+          softWrap = false,
+          maxLines = 1,
+        ).size.width
+      }.toDp() + totalHorizontalPadding
+    }
+  }
+  Column(
+    modifier.horizontalScroll(state = scrollState),
+  ) {
+    Row {
+      comparisonData.columns.forEachIndexed { index, column ->
+        column.title?.let { title ->
+          val isThisSelected = index == selectedColumnIndex
+          val textColor =
+            if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
+          Cell(
+            fixedWidth = fixedCellWidth,
+            modifier = Modifier
+              .then(
+                if (isThisSelected) {
+                  Modifier.background(
+                    shape = HedvigTheme.shapes.cornerXSmallTop,
+                    color = HedvigTheme.colorScheme.highlightGreenFill1,
+                  )
+                } else {
+                  Modifier
+                },
+              ),
+          ) {
+            HedvigText(
+              text = title,
+              textAlign = TextAlign.Center,
+              color = textColor,
+              modifier = Modifier.wrapContentHeight(),
+            )
+          }
+        }
+      }
+    }
+    Column {
+      comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
+        val interactionSource = remember { MutableInteractionSource() }
+        val borderColor = HedvigTheme.colorScheme.borderSecondary
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .overlaidIndicationConnection(overlaidIndicationState, interactionSource)
+            .clickable(
+              interactionSource = interactionSource,
+              indication = null,
+              onClick = { onRowClick(comparisonRow) },
+            )
             .drawWithContent {
               drawContent()
               if (rowIndex != 0) {
@@ -280,135 +464,97 @@ private fun FixSizedComparisonDataColumn(
                   end = Offset(size.width, 0f),
                 )
               }
-            }
-            .padding(end = 8.dp)
-            .padding(vertical = 8.dp),
-        )
+            },
+        ) {
+          comparisonRow.cells.forEachIndexed { index, cell ->
+            val isThisSelected = index == selectedColumnIndex
+            ComparisonCell(
+              cell = cell,
+              isThisSelected = isThisSelected,
+              fixedCellWidth = fixedCellWidth,
+              modifier = Modifier.then(
+                if (isThisSelected) {
+                  Modifier.background(
+                    shape = if (rowIndex == comparisonData.rows.lastIndex) {
+                      HedvigTheme.shapes.cornerXSmallBottom
+                    } else {
+                      HedvigTheme.shapes.cornerNone
+                    },
+                    color = HedvigTheme.colorScheme.highlightGreenFill1,
+                  )
+                } else {
+                  Modifier
+                },
+              ),
+            )
+          }
+          Spacer(Modifier.width(16.dp))
+        }
       }
     }
   }
 }
 
 @Composable
-private fun ScrollableTable(
-  scrollState: ScrollState,
-  comparisonData: ComparisonData,
-  selectedColumnIndex: Int?,
-  onRowClick: (ComparisonRow) -> Unit,
+private fun ComparisonCell(
+  cell: ComparisonCell,
+  isThisSelected: Boolean,
+  fixedCellWidth: Dp,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier.horizontalScroll(state = scrollState),
+  Cell(
+    fixedWidth = fixedCellWidth,
+    modifier = modifier,
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      for (column in comparisonData.columns) {
-        val isThisSelected = comparisonData.columns.indexOf(column) == selectedColumnIndex
-        val cellModifier = if (isThisSelected) {
-          Modifier.background(
-            shape = HedvigTheme.shapes.cornerXSmallTop,
-            color = HedvigTheme.colorScheme.highlightGreenFill1,
-          )
-        } else {
-          Modifier
-        }
-        val textColor =
-          if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
-        column.title?.let {
-          HedvigText(
-            it,
-            fontSize = HedvigTheme.typography.label.fontSize,
-            textAlign = TextAlign.Center,
-            color = textColor,
-            modifier = cellModifier
-              .defaultMinSize(minWidth = 100.dp)
-              .padding(vertical = 4.dp),
-          )
-        }
-      }
+    val checkMarkColor = if (!cell.isCovered) {
+      HedvigTheme.colorScheme.textDisabled
+    } else if (isThisSelected) {
+      HedvigTheme.colorScheme.textBlack
+    } else {
+      HedvigTheme.colorScheme.textPrimary
     }
-    comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .clickable {
-            onRowClick(comparisonRow)
-          },
-      ) {
-        comparisonRow.cells.forEachIndexed { index, cell ->
-          val isThisSelected = index == selectedColumnIndex
-          val cellModifier = if (isThisSelected) {
-            Modifier.background(
-              shape = if (rowIndex ==
-                comparisonData.rows.lastIndex
-              ) {
-                HedvigTheme.shapes.cornerXSmallBottom
-              } else {
-                RectangleShape
-              },
-              color = HedvigTheme.colorScheme.highlightGreenFill1,
-            )
-          } else {
-            Modifier
-          }
-          val checkMarkColor = if (!cell.isCovered) {
-            HedvigTheme.colorScheme.textDisabled
-          } else if (isThisSelected) {
-            HedvigTheme.colorScheme.textBlack
-          } else {
-            HedvigTheme.colorScheme.textPrimary
-          }
-          CheckMarkCell(
-            isCovered = cell.isCovered,
-            modifier = cellModifier,
-            tint = checkMarkColor,
-            drawTopBorder = rowIndex != 0,
-          )
-        }
-        Spacer(Modifier.width(16.dp))
-      }
-    }
-  }
-}
-
-@Composable
-private fun CheckMarkCell(isCovered: Boolean, tint: Color, drawTopBorder: Boolean, modifier: Modifier = Modifier) {
-  val borderColor = HedvigTheme.colorScheme.borderSecondary
-  Box(
-    contentAlignment = Alignment.Center,
-    modifier = modifier
-      .defaultMinSize(minWidth = 100.dp)
-      .drawWithContent {
-        drawContent()
-        if (drawTopBorder) {
-          drawLine(
-            color = borderColor,
-            start = Offset.Zero,
-            end = Offset(size.width, 0f),
-          )
-        }
-      }
-      .padding(vertical = 8.dp),
-  ) {
-    HedvigText(
-      text = "H",
-      fontSize = HedvigTheme.typography.label.fontSize,
-      modifier = Modifier.withoutPlacement(),
-    )
     Icon(
-      imageVector = if (isCovered) {
+      imageVector = if (cell.isCovered) {
         HedvigIcons.Checkmark
       } else {
         HedvigIcons.Minus
       },
       null,
-      tint = tint,
+      tint = checkMarkColor,
+      modifier = Modifier
+        .requiredSize(0.dp)
+        .wrapContentSize(unbounded = true),
     )
   }
 }
 
+@Composable
+private fun Cell(
+  modifier: Modifier = Modifier,
+  fixedWidth: Dp? = null,
+  customText: String? = null,
+  content: @Composable () -> Unit = {},
+) {
+  LayoutWithoutPlacement(
+    modifier = modifier.then(
+      if (fixedWidth != null) {
+        Modifier.width(fixedWidth)
+      } else {
+        Modifier
+      },
+    ),
+    sizeAdjustingContent = {
+      HedvigText(
+        text = customText ?: "H",
+        Modifier.padding(vertical = 8.dp),
+      )
+    },
+    content = content,
+  )
+}
+
 @HedvigPreview
+@HedvigTabletLandscapePreview
 @PreviewFontScale
 @Composable
 private fun ComparisonScreenPreview() {

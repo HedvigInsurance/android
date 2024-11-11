@@ -1,11 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+  id("hedvig.gradle.plugin")
   `java-library`
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.lintGradlePlugin)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {

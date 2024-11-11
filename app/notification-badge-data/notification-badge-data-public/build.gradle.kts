@@ -1,13 +1,13 @@
 plugins {
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.ktlint")
-  alias(libs.plugins.apollo)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  apollo("octopus")
 }
 
 dependencies {
-
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrow.core)
@@ -24,11 +24,4 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.featureFlagsTest)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

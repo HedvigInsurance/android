@@ -1,12 +1,12 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.apollo)
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
 }
 
 dependencies {
@@ -34,11 +34,4 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

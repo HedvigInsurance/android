@@ -2,10 +2,9 @@ package com.hedvig.android
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
-internal fun ComposeCompilerGradlePluginExtension.configureComposeCompiler(project: Project) {
+internal fun ComposeCompilerGradlePluginExtension.configureComposeCompilerMetrics(project: Project) {
   with(project) {
     fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
 

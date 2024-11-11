@@ -1,13 +1,12 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.apollo)
-  id("kotlin-parcelize")
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
 }
 
 android {
@@ -45,8 +44,8 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.uiTiersAndAddons)
   implementation(projects.tierComparison)
+  implementation(projects.uiTiersAndAddons)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -61,11 +60,4 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

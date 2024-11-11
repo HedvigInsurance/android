@@ -1,9 +1,10 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
 }
 
 dependencies {
