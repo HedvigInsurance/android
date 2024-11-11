@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -45,18 +46,20 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -183,41 +186,12 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
-
-    val overlaidIndicationState = rememberOverlaidIndicationState()
-//    Box(Modifier.width(IntrinsicSize.Max)) {
-    Box {
-      val scrollState = rememberScrollState()
-      IndicateScrollableTableEffect(scrollState)
-      var tableSize: Int? by remember { mutableStateOf(null) }
-      Table(
-        uiState = uiState,
-        selectComparisonRow = { comparisonRow ->
-          bottomSheetRow = comparisonRow
-        },
-        overlaidIndicationState = overlaidIndicationState,
-        scrollState = scrollState,
-        modifier = Modifier.onPlaced {
-          tableSize = it.size.width
-        },
-      )
-      Column {
-        Cell()
-        val density = LocalDensity.current
-        Cell {
-          OverlaidIndication(
-            state = overlaidIndicationState,
-            modifier = if (tableSize != null) {
-              with(density) {
-                Modifier.width(tableSize!!.toDp())
-              }
-            } else {
-              Modifier
-            },
-          )
-        }
-      }
-    }
+    Table(
+      uiState = uiState,
+      selectComparisonRow = { comparisonRow ->
+        bottomSheetRow = comparisonRow
+      },
+    )
   }
 }
 
@@ -226,10 +200,17 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
  * feels like the entire "row" is interacted with, despite those two items being completely separate composables.
  */
 @Composable
-private fun OverlaidIndication(state: OverlaidIndicationState, modifier: Modifier = Modifier) {
+private fun OverlaidIndication(
+  textMeasurer: TextMeasurer,
+  state: OverlaidIndicationState,
+  modifier: Modifier = Modifier,
+) {
+  val cellheight = calculateCellHeight(textMeasurer)
+  val cellheightPx = with(LocalDensity.current) { cellheight.roundToPx() }
   Box(
     modifier = modifier
-      .offset { state.offset }
+      .height(cellheight)
+      .offset { IntOffset(0, cellheightPx) + state.offset }
       .indication(
         interactionSource = state.interactionSource,
         indication = LocalIndication.current,
@@ -277,19 +258,11 @@ private fun IndicateScrollableTableEffect(scrollState: ScrollState) {
 }
 
 @Composable
-private fun Table(
-  uiState: Success,
-  selectComparisonRow: (ComparisonRow) -> Unit,
-  overlaidIndicationState: OverlaidIndicationState,
-  scrollState: ScrollState,
-  modifier: Modifier = Modifier,
-) {
+private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit, modifier: Modifier = Modifier) {
   val density = LocalDensity.current
   val textStyle = LocalTextStyle.current
   val textMeasurer = rememberTextMeasurer()
-  val shadowWidth by remember { derivedStateOf { if (scrollState.value > 0) 4.dp else 0.dp } }
-  val animatedShadowSize by animateDpAsState(shadowWidth)
-  val maxWidthRequiredForFixedColumnTexts = remember(uiState.comparisonData.rows, textStyle) {
+  val maxWidthRequiredForFixedColumnTexts = remember(textMeasurer, uiState.comparisonData.rows, textStyle) {
     uiState
       .comparisonData
       .rows
@@ -300,20 +273,18 @@ private fun Table(
           textMeasurer.measure(
             text = title,
             style = textStyle,
-            overflow = TextOverflow.Visible,
             softWrap = false,
             maxLines = 1,
           ).size.width + ColumnTextStartPadding.roundToPx() + ColumnTextEndPadding.roundToPx()
         }
       }
   }
-  val fixedCellWidth: Dp = remember(uiState.comparisonData.columns, textStyle) {
+  val fixedCellWidth: Dp = remember(textMeasurer, uiState.comparisonData.columns, textStyle) {
     with(density) {
       uiState.comparisonData.columns.map { it.title }.filterNotNull().maxOf { title ->
         textMeasurer.measure(
           text = title,
           style = textStyle,
-          overflow = TextOverflow.Visible,
           softWrap = false,
           maxLines = 1,
         ).size.width
@@ -323,9 +294,16 @@ private fun Table(
   val numberOfCells = remember(uiState.comparisonData.columns) {
     uiState.comparisonData.columns.mapNotNull { it.title }.count()
   }
+
+  val overlaidIndicationState = rememberOverlaidIndicationState()
+  val cellsScrollState = rememberScrollState()
+  IndicateScrollableTableEffect(cellsScrollState)
+  val shadowWidth by remember { derivedStateOf { if (cellsScrollState.value > 0) 4.dp else 0.dp } }
+  val animatedShadowSize by animateDpAsState(shadowWidth)
   Layout(
     {
       FixSizedComparisonDataColumn(
+        textMeasurer = textMeasurer,
         comparisonData = uiState.comparisonData,
         selectComparisonRow = selectComparisonRow,
         shadowSize = { animatedShadowSize },
@@ -333,18 +311,24 @@ private fun Table(
         modifier = Modifier.width(IntrinsicSize.Max),
       )
       ScrollableTableSection(
+        textMeasurer = textMeasurer,
         fixedCellWidth = fixedCellWidth,
-        scrollState = scrollState,
+        scrollState = cellsScrollState,
         comparisonData = uiState.comparisonData,
         selectedColumnIndex = uiState.selectedColumnIndex,
         onRowClick = selectComparisonRow,
         overlaidIndicationState = overlaidIndicationState,
+      )
+      OverlaidIndication(
+        textMeasurer = textMeasurer,
+        state = overlaidIndicationState,
       )
     },
     modifier = modifier,
   ) { measurables, constraints ->
     val fixSizedComparisonDataColumn = measurables[0]
     val scrollableTableSection = measurables[1]
+    val overlaidIndication = measurables[2]
 
     val cellSectionFullWidth = (fixedCellWidth * numberOfCells + CellEndPadding).roundToPx()
 
@@ -377,24 +361,27 @@ private fun Table(
     val layoutWidth = (fixSizedComparisonDataColumnPlaceable.width + scrollableTableSectionPlaceable.width)
       .coerceAtMost(constraints.maxWidth)
     val layoutHeight = max(fixSizedComparisonDataColumnPlaceable.height, scrollableTableSectionPlaceable.height)
+    val overlaidIndicationPlaceable = overlaidIndication.measure(Constraints.fixedWidth(layoutWidth))
     layout(layoutWidth, layoutHeight) {
       fixSizedComparisonDataColumnPlaceable.place(0, 0)
       scrollableTableSectionPlaceable.place(fixSizedComparisonDataColumnPlaceable.width, 0)
+      overlaidIndicationPlaceable.place(0, 0)
     }
   }
 }
 
 @Composable
 private fun FixSizedComparisonDataColumn(
-  modifier: Modifier = Modifier,
+  textMeasurer: TextMeasurer,
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
   shadowSize: () -> Dp,
   overlaidIndicationState: OverlaidIndicationState,
+  modifier: Modifier = Modifier,
 ) {
   val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
-    Cell()
+    Cell(textMeasurer)
     Column(
       Modifier
         .drawWithContent {
@@ -419,6 +406,7 @@ private fun FixSizedComparisonDataColumn(
       comparisonData.rows.forEachIndexed { rowIndex, comparisonRow ->
         val interactionSource = remember { MutableInteractionSource() }
         Cell(
+          textMeasurer = textMeasurer,
           modifier = Modifier
             .fillMaxWidth()
             .overlaidIndicationConnection(overlaidIndicationState, interactionSource)
@@ -455,6 +443,7 @@ private fun FixSizedComparisonDataColumn(
 
 @Composable
 private fun ScrollableTableSection(
+  textMeasurer: TextMeasurer,
   fixedCellWidth: Dp,
   scrollState: ScrollState,
   comparisonData: ComparisonData,
@@ -473,6 +462,7 @@ private fun ScrollableTableSection(
           val textColor =
             if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
           Cell(
+            textMeasurer = textMeasurer,
             fixedWidth = fixedCellWidth,
             modifier = Modifier
               .then(
@@ -523,6 +513,7 @@ private fun ScrollableTableSection(
           comparisonRow.cells.forEachIndexed { index, cell ->
             val isThisSelected = index == selectedColumnIndex
             ComparisonCell(
+              textMeasurer = textMeasurer,
               cell = cell,
               isThisSelected = isThisSelected,
               fixedCellWidth = fixedCellWidth,
@@ -551,12 +542,14 @@ private fun ScrollableTableSection(
 
 @Composable
 private fun ComparisonCell(
+  textMeasurer: TextMeasurer,
   cell: ComparisonCell,
   isThisSelected: Boolean,
   fixedCellWidth: Dp,
   modifier: Modifier = Modifier,
 ) {
   Cell(
+    textMeasurer = textMeasurer,
     fixedWidth = fixedCellWidth,
     modifier = modifier,
   ) {
@@ -584,32 +577,49 @@ private fun ComparisonCell(
 
 @Composable
 private fun Cell(
-  modifier: Modifier = Modifier,
+  textMeasurer: TextMeasurer,
   fixedWidth: Dp? = null,
+  modifier: Modifier = Modifier,
   customText: String? = null,
   content: @Composable () -> Unit = {},
 ) {
-  LayoutWithoutPlacement(
-    modifier = modifier.then(
-      if (fixedWidth != null) {
-        Modifier.width(fixedWidth)
-      } else {
-        Modifier
-      },
-    ),
-    sizeAdjustingContent = {
-      HedvigText(
-        text = customText ?: "H",
-        Modifier.padding(vertical = 8.dp),
+  val fixedHeight = calculateCellHeight(textMeasurer, customText)
+  Box(
+    modifier = modifier
+      .then(
+        if (fixedWidth != null) {
+          Modifier.width(fixedWidth)
+        } else {
+          Modifier
+        },
       )
-    },
-    content = content,
-  )
+      .requiredHeight(fixedHeight),
+    propagateMinConstraints = true,
+  ) {
+    content()
+  }
+}
+
+@Composable
+private fun calculateCellHeight(textMeasurer: TextMeasurer, customText: String? = null): Dp {
+  val textStyle = LocalTextStyle.current
+  val density = LocalDensity.current
+  return remember(textMeasurer, customText) {
+    with(density) {
+      textMeasurer.measure(
+        text = customText ?: "H",
+        style = textStyle,
+        softWrap = false,
+        maxLines = 1,
+      ).size.height.toDp() + (CellVerticalPadding * 2)
+    }
+  }
 }
 
 @HedvigPreview
 @HedvigTabletLandscapePreview
 @PreviewFontScale
+@Preview
 @Composable
 private fun ComparisonScreenPreview() {
   HedvigTheme {
@@ -629,6 +639,7 @@ private fun ComparisonScreenPreview() {
 }
 
 private val CellEndPadding = 16.dp
+private val CellVerticalPadding = 8.dp
 private val CellTitleHorizontalPadding = 16.dp
 private val ColumnTextStartPadding = 16.dp
 private val ColumnTextEndPadding = 6.dp
