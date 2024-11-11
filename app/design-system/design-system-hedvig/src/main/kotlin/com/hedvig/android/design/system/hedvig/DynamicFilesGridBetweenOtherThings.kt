@@ -238,11 +238,9 @@ private fun File(
         }
       }
     }
-    logcat { "Mariia: onRemoveFile is null: ${onRemoveFile==null}" }
     if (onRemoveFile != null) {
       IconButton(
         onClick = {
-          logcat { "Mariia: onRemoveFile with id: $id" }
           onRemoveFile(id)
                   },
         colors = IconButtonColors(
