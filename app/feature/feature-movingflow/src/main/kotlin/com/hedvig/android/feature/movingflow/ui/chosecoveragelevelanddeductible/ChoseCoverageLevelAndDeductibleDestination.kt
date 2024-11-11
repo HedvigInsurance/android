@@ -162,7 +162,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
             onSelectCoverageOption = onSelectCoverageOption,
             onSelectDeductibleOption = onSelectDeductibleOption,
             onCompareCoverageClicked = onCompareCoverageClicked,
-            )
+          )
         }
       }
     }
@@ -200,7 +200,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
           modifier = Modifier.fillMaxWidth(),
           buttonSize = Large,
         ) {
-           onCompareCoverageClicked()
+          onCompareCoverageClicked()
         }
         Spacer(Modifier.height(4.dp))
       }

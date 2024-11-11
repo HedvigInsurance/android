@@ -10,7 +10,6 @@ plugins {
 
 dependencies {
   api(libs.androidx.compose.foundation)
-  api(libs.androidx.compose.material3)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
@@ -22,8 +21,7 @@ dependencies {
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
+  implementation(projects.designSystemHedvig)
 }

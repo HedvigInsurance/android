@@ -28,6 +28,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
@@ -40,7 +41,6 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
@@ -50,7 +50,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-  implementation(projects.placeholder)
+
 }
 
 apollo {

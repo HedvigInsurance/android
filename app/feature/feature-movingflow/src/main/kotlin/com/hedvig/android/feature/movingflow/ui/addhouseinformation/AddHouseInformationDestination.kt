@@ -42,10 +42,10 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primar
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
-import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -180,15 +180,15 @@ private fun AddHouseInformationScreen(
   modifier: Modifier = Modifier,
 ) {
   if (content.submittingInfoFailure != null) {
-    HedvigDialogError(
-      titleText = stringResource(R.string.something_went_wrong),
-      descriptionText = when (content.submittingInfoFailure) {
+    ErrorDialog(
+      title = stringResource(R.string.something_went_wrong),
+      message = when (content.submittingInfoFailure) {
         NetworkFailure -> stringResource(R.string.GENERAL_ERROR_BODY)
         is UserError -> content.submittingInfoFailure.message
       },
       buttonText = stringResource(R.string.GENERAL_RETRY),
       onButtonClick = dismissSubmissionError,
-      onDismissRequest = dismissSubmissionError,
+      onDismiss = dismissSubmissionError,
     )
   }
   Column(modifier.padding(horizontal = 16.dp)) {

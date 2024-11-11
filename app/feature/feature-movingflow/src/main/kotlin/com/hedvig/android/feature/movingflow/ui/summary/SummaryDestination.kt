@@ -50,9 +50,9 @@ import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -172,15 +172,15 @@ private fun SummaryScreen(
     )
   }
   if (content.submitError != null) {
-    HedvigDialogError(
-      titleText = stringResource(R.string.something_went_wrong),
-      descriptionText = when (content.submitError) {
+    ErrorDialog(
+      title = stringResource(R.string.something_went_wrong),
+      message = when (content.submitError) {
         Generic -> stringResource(R.string.GENERAL_ERROR_BODY)
         is WithMessage -> content.submitError.message
       },
       buttonText = stringResource(R.string.general_close_button),
       onButtonClick = onDismissSubmissionError,
-      onDismissRequest = onDismissSubmissionError,
+      onDismiss = onDismissSubmissionError,
     )
   }
   Box(propagateMinConstraints = true) {
@@ -375,7 +375,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
     displayTierName = "tierDescription",
     tierDescription = "displayNameTier",
     termsVersion = "termsVersion",
-    )
+  )
   val startDate = LocalDate.parse("2025-01-01")
 
   override val values: Sequence<SummaryUiState> = sequenceOf(
