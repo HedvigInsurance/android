@@ -261,7 +261,9 @@ private fun IndicateScrollableTableEffect(scrollState: ScrollState) {
 private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit, modifier: Modifier = Modifier) {
   val density = LocalDensity.current
   val textStyle = LocalTextStyle.current
-  val textMeasurer = rememberTextMeasurer()
+  val textMeasurer = rememberTextMeasurer(
+    cacheSize = uiState.comparisonData.columns.count() + uiState.comparisonData.rows.count() + 1,
+  )
   val maxWidthRequiredForFixedColumnTexts = remember(textMeasurer, uiState.comparisonData.rows, textStyle) {
     uiState
       .comparisonData
@@ -580,10 +582,9 @@ private fun Cell(
   textMeasurer: TextMeasurer,
   fixedWidth: Dp? = null,
   modifier: Modifier = Modifier,
-  customText: String? = null,
   content: @Composable () -> Unit = {},
 ) {
-  val fixedHeight = calculateCellHeight(textMeasurer, customText)
+  val fixedHeight = calculateCellHeight(textMeasurer)
   Box(
     modifier = modifier
       .then(
@@ -601,13 +602,13 @@ private fun Cell(
 }
 
 @Composable
-private fun calculateCellHeight(textMeasurer: TextMeasurer, customText: String? = null): Dp {
+private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
   val textStyle = LocalTextStyle.current
   val density = LocalDensity.current
-  return remember(textMeasurer, customText) {
+  return remember(textMeasurer) {
     with(density) {
       textMeasurer.measure(
-        text = customText ?: "H",
+        text = ConstantLetterUsedAsMeasurementPlaceholder,
         style = textStyle,
         softWrap = false,
         maxLines = 1,
@@ -629,7 +630,10 @@ private fun ComparisonScreenPreview() {
     ) {
       ComparisonScreen(
         Success(
-          mockComparisonData,
+          mockComparisonData.copy(
+            rows = mockComparisonData.rows,
+            columns = mockComparisonData.columns,
+          ),
           1,
         ),
         {},
@@ -638,6 +642,7 @@ private fun ComparisonScreenPreview() {
   }
 }
 
+private val ConstantLetterUsedAsMeasurementPlaceholder = "H"
 private val CellEndPadding = 16.dp
 private val CellVerticalPadding = 8.dp
 private val CellTitleHorizontalPadding = 16.dp
