@@ -14,7 +14,6 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.kotlinJvm.get().pluginId)
-        apply("hedvig.lint")
       }
 
       configureKotlin()
@@ -23,7 +22,6 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         val koinBom = libs.koin.bom
         add("implementation", platform(koinBom))
 
-        add("lintChecks", project(":hedvig-lint"))
         if (target.name != "logging-public") {
           add("implementation", project(":logging-public"))
         }

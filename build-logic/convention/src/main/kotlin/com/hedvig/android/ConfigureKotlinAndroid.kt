@@ -47,7 +47,6 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
     add("implementation", platform(koinBom))
 
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
-    add("lintChecks", project(":hedvig-lint"))
     // Add logging-public and tracking-core to all modules except themselves
     if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
       add("implementation", project(":logging-public"))

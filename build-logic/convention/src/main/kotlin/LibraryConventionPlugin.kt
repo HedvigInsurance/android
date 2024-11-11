@@ -17,7 +17,6 @@ class LibraryConventionPlugin : Plugin<Project> {
         apply(libs.plugins.androidLibrary.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
         apply(libs.plugins.kotlin.get().pluginId)
-        apply("hedvig.lint")
       }
 
       extensions.configure<LibraryExtension> {
