@@ -55,11 +55,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -622,7 +624,24 @@ private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
 @PreviewFontScale
 @Preview
 @Composable
-private fun ComparisonScreenPreview() {
+private fun ComparisonScreenPreview(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withExtraData: Boolean,
+) {
+  val comparisonData = if (withExtraData) {
+    val rows = mockComparisonData.rows.map {
+      it.copy(
+        title = it.title.repeat(2),
+        cells = it.cells + it.cells,
+      )
+    }
+    val columns = (mockComparisonData.columns + mockComparisonData.columns)
+    mockComparisonData.copy(
+      rows = rows + rows,
+      columns = columns,
+    )
+  } else {
+    mockComparisonData
+  }
   HedvigTheme {
     Surface(
       modifier = Modifier.fillMaxSize(),
@@ -630,10 +649,7 @@ private fun ComparisonScreenPreview() {
     ) {
       ComparisonScreen(
         Success(
-          mockComparisonData.copy(
-            rows = mockComparisonData.rows,
-            columns = mockComparisonData.columns,
-          ),
+          comparisonData,
           1,
         ),
         {},
