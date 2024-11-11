@@ -168,7 +168,7 @@ private fun SummaryScreen(
       onConfirmClick = onConfirmChanges,
       confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
       dismissButtonLabel = stringResource(R.string.general_cancel_button),
-      subtitle = null,
+      text = null,
     )
   }
   if (content.submitError != null) {

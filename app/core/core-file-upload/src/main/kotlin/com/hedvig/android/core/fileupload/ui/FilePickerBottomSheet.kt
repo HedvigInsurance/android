@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -47,7 +48,6 @@ fun FilePickerBottomSheet(
         onPickPhoto = onPickPhoto,
         onTakePhoto = onTakePhoto,
         onPickFile = onPickFile,
-        modifier = Modifier.padding(horizontal = 16.dp),
       )
     },
   )
@@ -79,6 +79,7 @@ private fun FilePickerBottomSheetContent(
       icon = HedvigIcons.Document,
       onClick = onPickFile,
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
 

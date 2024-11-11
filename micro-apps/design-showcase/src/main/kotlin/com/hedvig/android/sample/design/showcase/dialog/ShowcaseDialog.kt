@@ -69,7 +69,7 @@ fun DialogShowcase() {
     HedvigAlertDialog(
       onDismissRequest = { isAlertDialogVisible = false },
       title = "Title",
-      subtitle = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
+      text = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
       onConfirmClick = {},
       confirmButtonLabel = "Confirm",
       dismissButtonLabel = "Dismiss",

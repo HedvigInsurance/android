@@ -64,7 +64,7 @@ fun ErrorDialog(
 @Composable
 fun HedvigAlertDialog(
   title: String,
-  subtitle: String?,
+  text: String?,
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
@@ -93,9 +93,9 @@ fun HedvigAlertDialog(
         text = title,
         textAlign = TextAlign.Center,
       )
-      if (subtitle != null) {
+      if (text != null) {
         HedvigText(
-          text = subtitle,
+          text = text,
           textAlign = TextAlign.Center,
           color = HedvigTheme.colorScheme.textSecondary,
         )

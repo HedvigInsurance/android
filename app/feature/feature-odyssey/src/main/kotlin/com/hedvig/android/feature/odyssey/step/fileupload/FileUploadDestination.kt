@@ -57,25 +57,26 @@ internal fun FileUploadDestination(
   }
 
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
-  if (showFileTypeSelectBottomSheet) {
-    FilePickerBottomSheet(
-      onPickPhoto = {
-        photoPicker.launch(PickVisualMediaRequest())
-        showFileTypeSelectBottomSheet = false
-      },
-      onPickFile = {
-        filePicker.launch("*/*")
-        showFileTypeSelectBottomSheet = false
-      },
-      onTakePhoto = {
-        photoCaptureState.launchTakePhotoRequest()
-        showFileTypeSelectBottomSheet = false
-      },
-      onDismiss = {
-        showFileTypeSelectBottomSheet = false
-      },
-    )
-  }
+
+  FilePickerBottomSheet(
+    onPickPhoto = {
+      photoPicker.launch(PickVisualMediaRequest())
+      showFileTypeSelectBottomSheet = false
+    },
+    onPickFile = {
+      filePicker.launch("*/*")
+      showFileTypeSelectBottomSheet = false
+    },
+    onTakePhoto = {
+      photoCaptureState.launchTakePhotoRequest()
+      showFileTypeSelectBottomSheet = false
+    },
+    onDismiss = {
+      showFileTypeSelectBottomSheet = false
+    },
+    isVisible = showFileTypeSelectBottomSheet,
+  )
+
 
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
   if (fileToRemoveId != null) {
