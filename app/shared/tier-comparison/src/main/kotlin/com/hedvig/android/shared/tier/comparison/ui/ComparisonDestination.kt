@@ -1,8 +1,11 @@
 package com.hedvig.android.shared.tier.comparison.ui
 
+import android.annotation.SuppressLint
+import android.graphics.RuntimeShader
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -33,18 +36,23 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -128,6 +136,7 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
   }
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
@@ -193,13 +202,41 @@ fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
+    val iTime = produceITime()
     Table(
       uiState = uiState,
       tableStyle = TableStyle(),
       selectComparisonRow = { comparisonRow ->
         bottomSheetRow = comparisonRow
       },
+      modifier = Modifier
+        .drawWithCache {
+          val shader = RuntimeShader(FlameShader)
+          val brush = ShaderBrush(shader)
+          onDrawWithContent {
+            drawContent()
+            shader.setFloatUniform("iTime", iTime.value)
+            shader.setFloatUniform("iResolution", size.width.toFloat(), size.height.toFloat())
+            withTransform(
+              { rotate(180f) },
+            ) {
+              drawRect(brush)
+            }
+          }
+        },
     )
+  }
+}
+
+@Composable
+private fun produceITime(): State<Float> {
+  val startNanos = remember { System.nanoTime() }
+  return produceState(0f) {
+    while (true) {
+      withInfiniteAnimationFrameNanos {
+        value = (it - startNanos) / 1_000_000_000f
+      }
+    }
   }
 }
 
