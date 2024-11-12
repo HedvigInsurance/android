@@ -72,6 +72,7 @@ data class ColorScheme(
   val borderPrimary: Color,
   val borderSecondary: Color,
   val borderHighlight: Color,
+  val shadowLightOnly: Color,
   val signalRedFill: Color,
   val signalRedHighlight: Color,
   val signalRedElement: Color,
@@ -176,6 +177,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   borderPrimary = ColorLightTokens.BorderPrimary,
   borderSecondary = ColorLightTokens.BorderSecondary,
   borderHighlight = ColorLightTokens.BorderHighlight,
+  shadowLightOnly = ColorLightTokens.ShadowLightOnly,
   signalRedFill = ColorLightTokens.SignalRedFill,
   signalRedHighlight = ColorLightTokens.SignalRedHighlight,
   signalRedElement = ColorLightTokens.SignalRedElement,
@@ -280,6 +282,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   borderPrimary = ColorDarkTokens.BorderPrimary,
   borderSecondary = ColorDarkTokens.BorderSecondary,
   borderHighlight = ColorDarkTokens.BorderHighlight,
+  shadowLightOnly = ColorDarkTokens.ShadowLightOnly,
   signalRedFill = ColorDarkTokens.SignalRedFill,
   signalRedHighlight = ColorDarkTokens.SignalRedHighlight,
   signalRedElement = ColorDarkTokens.SignalRedElement,
@@ -410,6 +413,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.BorderPrimary -> borderPrimary
     ColorSchemeKeyTokens.BorderSecondary -> borderSecondary
     ColorSchemeKeyTokens.BorderHighlight -> borderHighlight
+    ColorSchemeKeyTokens.ShadowLightOnly -> shadowLightOnly
     ColorSchemeKeyTokens.SignalRedFill -> signalRedFill
     ColorSchemeKeyTokens.SignalRedHighlight -> signalRedHighlight
     ColorSchemeKeyTokens.SignalRedElement -> signalRedElement
