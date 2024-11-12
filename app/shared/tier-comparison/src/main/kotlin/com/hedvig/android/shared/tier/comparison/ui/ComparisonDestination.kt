@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -267,7 +268,7 @@ private fun measureTableMeasurementInfo(
   textMeasurer: TextMeasurer,
   density: Density,
   textStyle: TextStyle,
-  uiState: Success
+  uiState: Success,
 ): TableMeasurementInfo {
   val maxWidthRequiredForFixedColumnTexts = remember(textMeasurer, uiState.comparisonData.rows, textStyle) {
     uiState
@@ -385,8 +386,8 @@ private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit
     val layoutHeight = max(fixSizedComparisonDataColumnPlaceable.height, scrollableTableSectionPlaceable.height)
     val overlaidIndicationPlaceable = overlaidIndication.measure(Constraints.fixedWidth(layoutWidth))
     layout(layoutWidth, layoutHeight) {
-      fixSizedComparisonDataColumnPlaceable.place(0, 0)
       scrollableTableSectionPlaceable.place(fixSizedComparisonDataColumnPlaceable.width, 0)
+      fixSizedComparisonDataColumnPlaceable.place(0, 0)
       overlaidIndicationPlaceable.place(0, 0)
     }
   }
@@ -401,7 +402,14 @@ private fun FixSizedComparisonDataColumn(
   overlaidIndicationState: OverlaidIndicationState,
   modifier: Modifier = Modifier,
 ) {
-  val shadowWidth by remember { derivedStateOf { if (cellsScrollState.value > 0) 4.dp else 0.dp } }
+  val density = LocalDensity.current
+  val shadowWidth by remember {
+    with(density) {
+      derivedStateOf {
+        (1.dp + cellsScrollState.value.toDp() / 4).coerceAtMost(4.dp)
+      }
+    }
+  }
   val animatedShadowSize by animateDpAsState(shadowWidth)
   val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
@@ -410,11 +418,6 @@ private fun FixSizedComparisonDataColumn(
       Modifier
         .drawWithContent {
           drawContent()
-          drawLine(
-            color = borderColor,
-            start = Offset(size.width, 0f),
-            end = Offset(size.width, size.height),
-          )
           val shadowSizePx = animatedShadowSize.toPx()
           drawRect(
             topLeft = Offset(size.width, 0f),
