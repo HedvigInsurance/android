@@ -66,7 +66,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
-import com.hedvig.android.navigation.core.AppDestination.ChangeAddress
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.AppDestination.CoInsuredAddInfo
 import com.hedvig.android.navigation.core.AppDestination.CoInsuredAddOrRemove
@@ -172,7 +171,7 @@ internal fun HedvigNavHost(
       navigateToClaimDetails = { backStackEntry, claimId ->
         with(navigator) { backStackEntry.navigate(AppDestination.ClaimDetails(claimId)) }
       },
-      navigateToPayinScreen = navigateToConnectPayment,
+      navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) { backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId)) }
       },
@@ -330,6 +329,7 @@ internal fun HedvigNavHost(
     connectPaymentGraph(
       navigator = navigator,
       market = market,
+      onNavigateToNewConversation = { navigateToNewConversation() },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     editCoInsuredGraph(navigator)
