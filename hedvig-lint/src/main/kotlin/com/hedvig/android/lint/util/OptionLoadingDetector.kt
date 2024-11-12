@@ -5,7 +5,6 @@ import com.android.tools.lint.detector.api.Detector
 
 /** A [Detector] that supports reading the given [options]. */
 abstract class OptionLoadingDetector(vararg options: LintOption) : Detector() {
-
   private val options = options.toList()
 
   override fun beforeCheckRootProject(context: Context) {
