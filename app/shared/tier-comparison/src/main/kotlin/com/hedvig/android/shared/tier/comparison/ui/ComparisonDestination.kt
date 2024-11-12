@@ -129,7 +129,7 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 }
 
 @Composable
-private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
+fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
   HedvigBottomSheet(
     sheetPadding = PaddingValues(0.dp),

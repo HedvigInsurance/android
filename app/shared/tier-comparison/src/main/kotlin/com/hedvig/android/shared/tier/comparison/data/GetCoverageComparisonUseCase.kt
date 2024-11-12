@@ -96,7 +96,7 @@ data class ComparisonCell(
   val isCovered: Boolean,
 )
 
-internal val mockComparisonData = ComparisonData(
+val mockComparisonData = ComparisonData(
   columns = listOf(
     ComparisonColumn(
       "Student",
