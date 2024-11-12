@@ -205,7 +205,7 @@ private fun NavigationItem(
     Offset((itemWidthPx - indicatorWidth).toFloat() / 2, itemPaddings.calculateTopPadding().toPx())
   }
   val offsetInteractionSource = remember(interactionSource, deltaOffset) {
-    MappedInteractionSource(interactionSource, deltaOffset)
+    MappedInteractionSource(interactionSource, { -deltaOffset })
   }
   val indicatorShape = HedvigTheme.shapes.cornerLarge
   Column(
