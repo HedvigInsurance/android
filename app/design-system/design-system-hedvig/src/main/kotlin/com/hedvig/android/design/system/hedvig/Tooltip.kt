@@ -1,7 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -111,12 +110,12 @@ private fun InnerChatTooltip(
       Surface(
         color = tooltipStyle.containerColor,
         shape = remember(shape) { shape.withBeak(beakDirection) },
+        onClick = onClick,
         modifier = Modifier
           .widthIn(
             min = TooltipDefaults.defaultMinWidth,
             max = maxWidth,
-          )
-          .clickable(onClick = onClick),
+          ),
       ) {
         val padding = when (beakDirection) {
           BottomCenter, BottomEnd, BottomStart -> TooltipDefaults.paddingForBottomBeak
