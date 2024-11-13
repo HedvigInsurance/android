@@ -213,12 +213,14 @@ private fun OverlaidIndication(
   state: OverlaidIndicationState,
   modifier: Modifier = Modifier,
 ) {
+  val topHeightOffset = with(LocalDensity.current) {
+    calculateCellHeight(textMeasurer, forceMinimumInteractiveComponentSize = false).roundToPx()
+  }
   val cellheight = calculateCellHeight(textMeasurer)
-  val cellheightPx = with(LocalDensity.current) { cellheight.roundToPx() }
   Box(
     modifier = modifier
       .height(cellheight)
-      .offset { IntOffset(0, cellheightPx) + state.offset }
+      .offset { IntOffset(0, topHeightOffset) + state.offset }
       .indication(
         interactionSource = state.interactionSource,
         indication = LocalIndication.current,
@@ -424,7 +426,7 @@ private fun FixSizedComparisonDataColumn(
   }
   val animatedShadowSize by animateDpAsState(shadowWidth)
   Column(modifier = modifier) {
-    Cell(textMeasurer)
+    Cell(textMeasurer, forceMinimumInteractiveComponentSize = false)
     Column(
       Modifier
         .drawWithContent {
@@ -508,6 +510,7 @@ private fun ScrollableTableSection(
           Cell(
             textMeasurer = textMeasurer,
             fixedWidth = fixedCellWidth,
+            forceMinimumInteractiveComponentSize = false,
             modifier = Modifier.background(
               shape = tableStyle.selectedCellShape(isFirst = true),
               color = tableStyle.cellContainerColor(isThisSelected),
@@ -607,9 +610,10 @@ private fun Cell(
   textMeasurer: TextMeasurer,
   fixedWidth: Dp? = null,
   modifier: Modifier = Modifier,
+  forceMinimumInteractiveComponentSize: Boolean = true,
   content: @Composable () -> Unit = {},
 ) {
-  val fixedHeight = calculateCellHeight(textMeasurer)
+  val fixedHeight = calculateCellHeight(textMeasurer, forceMinimumInteractiveComponentSize)
   Box(
     modifier = modifier
       .then(
@@ -627,11 +631,12 @@ private fun Cell(
 }
 
 @Composable
-private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
+private fun calculateCellHeight(textMeasurer: TextMeasurer, forceMinimumInteractiveComponentSize: Boolean = true): Dp {
   val textStyle = LocalTextStyle.current
   val density = LocalDensity.current
+  val minimumInteractiveComponentSize = LocalMinimumInteractiveComponentSize.current
   return remember(textMeasurer) {
-    with(density) {
+    val measuredHeight = with(density) {
       textMeasurer.measure(
         text = ConstantLetterUsedAsMeasurementPlaceholder,
         style = textStyle,
@@ -639,7 +644,12 @@ private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
         maxLines = 1,
       ).size.height.toDp() + (CellVerticalPadding * 2)
     }
-  }.coerceAtLeast(LocalMinimumInteractiveComponentSize.current)
+    if (forceMinimumInteractiveComponentSize) {
+      measuredHeight.coerceAtLeast(minimumInteractiveComponentSize)
+    } else {
+      measuredHeight
+    }
+  }
 }
 
 @HedvigPreview
