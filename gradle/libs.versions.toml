@@ -24,7 +24,7 @@ ksp = "2.0.21-1.0.27"
 ktor = "3.0.1"
 license = "0.9.8"
 molecule = "2.0.0"
-squareSortDependencies = "0.12"
+squareSortDependencies = "0.13"
 
 # Other versions sorted alphabetically
 accompanist = "0.36.0"
@@ -46,7 +46,7 @@ androidx-other-workManager = "2.10.0"
 androidx-test = "1.6.1"
 androidx-testRunners = "1.6.2"
 androidxGraphicsShapes = "1.0.1"
-arrow = "1.2.4"
+arrow = "2.0.0-beta.1"
 assertK = "0.28.1"
 coil = "2.7.0"
 composeRichtext = "1.0.0-alpha01"
@@ -69,7 +69,6 @@ paging = "3.3.2"
 playReview = "2.0.2"
 playServicesBase = "18.5.0"
 retrofit = "2.11.0"
-retrofitArrow = "1.2.4"
 robolectric = "4.13"
 room = "2.7.0-alpha11"
 slimber = "2.0.0"
@@ -185,7 +184,7 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 playReview = { module = "com.google.android.play:review", version.ref = "playReview" }
 playServicesBase = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "retrofitArrow" }
+retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "arrow" }
 retrofitKotlinxSerializationConverter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }

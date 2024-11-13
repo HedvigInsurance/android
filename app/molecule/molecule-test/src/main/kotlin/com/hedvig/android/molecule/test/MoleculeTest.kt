@@ -1,6 +1,6 @@
 package com.hedvig.android.molecule.test
 
-import androidx.compose.runtime.CheckResult
+import androidx.annotation.CheckResult
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.TurbineTestContext
