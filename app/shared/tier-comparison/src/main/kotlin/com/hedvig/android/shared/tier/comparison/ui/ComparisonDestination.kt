@@ -364,7 +364,8 @@ private fun Table(
       val overlaidIndication = measurables[2]
 
       val cellSectionFullWidth =
-        (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellEndPadding).roundToPx()
+        (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellStartPadding + CellEndPadding)
+          .roundToPx()
 
       val bothFitCompletely =
         tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
@@ -503,6 +504,7 @@ private fun ScrollableTableSection(
     modifier.horizontalScroll(state = scrollState),
   ) {
     Row {
+      Spacer(Modifier.width(CellStartPadding))
       comparisonData.columns.forEachIndexed { index, column ->
         column.title?.let { title ->
           val isThisSelected = index == selectedColumnIndex
@@ -554,6 +556,7 @@ private fun ScrollableTableSection(
               }
             },
         ) {
+          Spacer(Modifier.width(CellStartPadding))
           comparisonRow.cells.forEachIndexed { index, cell ->
             val isThisSelected = index == selectedColumnIndex
             ComparisonCell(
@@ -692,6 +695,7 @@ private fun ComparisonScreenPreview(
 }
 
 private val ConstantLetterUsedAsMeasurementPlaceholder = "H"
+private val CellStartPadding = 8.dp
 private val CellEndPadding = 16.dp
 private val CellVerticalPadding = 8.dp
 private val CellTitleHorizontalPadding = 16.dp
