@@ -137,7 +137,7 @@ private fun ColumnScope.PerilSection(perilItems: List<ProductVariantPeril>) {
           expandedItemIndex = index
         }
       },
-      color = perilItem.colorCode?.color,
+      color = perilItem.colorCode?.color(),
       title = perilItem.title,
       expandedTitle = perilItem.description,
       expandedDescriptionList = perilItem.covered,
@@ -149,8 +149,13 @@ private fun ColumnScope.PerilSection(perilItems: List<ProductVariantPeril>) {
   }
 }
 
-private val String.color
-  get() = Color(android.graphics.Color.parseColor(this))
+private fun String.color(): Color {
+  return try {
+    Color(android.graphics.Color.parseColor(this))
+  } catch (e: Exception) {
+    Color.Black // todo: was crushing in dev, possibly terms migration not finished
+  }
+}
 
 @Composable
 private fun ExpandableCoverageCard(
@@ -321,7 +326,6 @@ private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
     description = "description$index",
     covered = listOf("Covered#$index"),
     colorCode = "0xFFC45D4F",
-    info = "test",
     exceptions = listOf(),
   )
 }

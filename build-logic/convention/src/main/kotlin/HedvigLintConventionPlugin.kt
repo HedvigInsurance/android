@@ -18,19 +18,20 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline")
         .resolve("lint-baseline-$moduleName.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
-      when {
-        pluginManager.hasPlugin(libs.plugins.androidApplication.get().pluginId) -> {
-          configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        }
+      var didConfigureLint = false
+      pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
+        configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
+        didConfigureLint = true
+      }
 
-        pluginManager.hasPlugin(libs.plugins.androidLibrary.get().pluginId) -> {
-          configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        }
+      pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
+        configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
+        didConfigureLint = true
+      }
 
-        else -> {
-          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
-          configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
-        }
+      if (!didConfigureLint) {
+        pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+        configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
       }
     }
   }

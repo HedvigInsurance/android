@@ -1,0 +1,16 @@
+query CompareCoverage($termsVersions: [ID!]!) {
+  productVariantComparison(termsVersions: $termsVersions) {
+    variantColumns {
+      displayNameTier
+      termsVersion
+    }
+    rows {
+      title
+      description
+      cells {
+        isCovered
+        coverageText
+      }
+    }
+  }
+}

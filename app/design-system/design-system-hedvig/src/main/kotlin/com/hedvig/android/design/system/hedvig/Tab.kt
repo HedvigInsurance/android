@@ -15,6 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +57,7 @@ fun HedvigTabRowMaxSixTabs(
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
 ) {
-  var currentIndicatorOffset by remember { mutableStateOf(IntOffset(0, 0)) }
+  var currentIndicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(0, 0)) }
   val indicatorOffset: IntOffset by animateIntOffsetAsState(
     targetValue = currentIndicatorOffset,
     animationSpec = tween(
@@ -108,108 +111,107 @@ fun HedvigTabRowMaxSixTabs(
       ),
     ) { allMeasurables: List<List<Measurable>>, constraints ->
       val tabItemsMeasurables = allMeasurables[1]
-      if (tabItemsMeasurables.size <= 1) {
-        layout(0, 0) {}
-      } else {
-        // calculate the size
-        val fullWidth = constraints.maxWidth
-        val desiredItemWidth =
-          if (tabItemsMeasurables.size == 2) {
-            fullWidth / 2
-            // if there are only two tabs they always take full width
-          } else if (tabItemsMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) {
-            fullWidth / 2
-            // this is the maximum width we give the item, if the text is too big for the basic 1/3 of the full width.
-            // If it's still not enough, the text itself gets eclipsed later on
-          } else {
-            fullWidth / 3
-            // basic
-          }
 
-        // calculate the offsets
-        val howManyLines = (ceil(tabItemsMeasurables.size.toDouble() * desiredItemWidth / fullWidth)).toInt()
-        val howManyItemsInEachLine = fullWidth / desiredItemWidth
-        val fullLayoutCapacity = howManyLines * howManyItemsInEachLine
-        val isLastRowFull = tabItemsMeasurables.size == fullLayoutCapacity
-        val howManyItemsToCenter = if (isLastRowFull || tabItemsMeasurables.size == 2) {
-          0
+      // calculate the size
+      val fullWidth = constraints.maxWidth
+      val desiredItemWidth =
+        if (tabItemsMeasurables.size <= 1) {
+          fullWidth
+        } else if (tabItemsMeasurables.size == 2) {
+          fullWidth / 2
+          // if there are only two tabs they always take full width
+        } else if (tabItemsMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) {
+          fullWidth / 2
+          // this is the maximum width we give the item, if the text is too big for the basic 1/3 of the full width.
+          // If it's still not enough, the text itself gets eclipsed later on
         } else {
-          howManyItemsInEachLine - (fullLayoutCapacity - tabItemsMeasurables.size)
-        }
-        val indicesToCenter = tabItemsMeasurables.indices.filter {
-          it > tabItemsMeasurables.lastIndex - howManyItemsToCenter
+          fullWidth / 3
+          // basic
         }
 
-        val mapOfOffsets = mutableMapOf<Int, IntOffset>()
+      // calculate the offsets
+      val howManyLines = (ceil(tabItemsMeasurables.size.toDouble() * desiredItemWidth / fullWidth)).toInt()
+      val howManyItemsInEachLine = fullWidth / desiredItemWidth
+      val fullLayoutCapacity = howManyLines * howManyItemsInEachLine
+      val isLastRowFull = tabItemsMeasurables.size == fullLayoutCapacity
+      val howManyItemsToCenter = if (isLastRowFull || tabItemsMeasurables.size == 2) {
+        0
+      } else {
+        howManyItemsInEachLine - (fullLayoutCapacity - tabItemsMeasurables.size)
+      }
+      val indicesToCenter = tabItemsMeasurables.indices.filter {
+        it > tabItemsMeasurables.lastIndex - howManyItemsToCenter
+      }
 
-        tabItemsMeasurables.forEachIndexed { index, _ ->
-          val currentRow = if (index <= howManyItemsInEachLine - 1) {
-            0
-          } else if (index <= (2 * howManyItemsInEachLine - 1)) {
-            1
-          } else {
-            2
-          }
+      val mapOfOffsets = mutableMapOf<Int, IntOffset>()
 
-          val verticalOffset = oneLineHeight * currentRow
+      tabItemsMeasurables.forEachIndexed { index, _ ->
+        val currentRow = if (index <= howManyItemsInEachLine - 1) {
+          0
+        } else if (index <= (2 * howManyItemsInEachLine - 1)) {
+          1
+        } else {
+          2
+        }
 
-          val horizontalOffset = if (indicesToCenter.contains(index)) {
-            // last line not full, centered
-            calculateHorizontalOffsetForCentered(
-              desiredItemWidth = desiredItemWidth,
-              fullWidth = fullWidth,
-              howManyItemsToCenter = howManyItemsToCenter,
-              currentIndex = index,
-              lastIndex = tabItemsMeasurables.lastIndex,
-            )
-          } else { // full line
-            val adjustedIndex = index - (currentRow * howManyItemsInEachLine)
-            desiredItemWidth * adjustedIndex
-          }
+        val verticalOffset = oneLineHeight * currentRow
 
-          mapOfOffsets[index] = IntOffset(
-            y = verticalOffset,
-            x = horizontalOffset,
+        val horizontalOffset = if (indicesToCenter.contains(index)) {
+          // last line not full, centered
+          calculateHorizontalOffsetForCentered(
+            desiredItemWidth = desiredItemWidth,
+            fullWidth = fullWidth,
+            howManyItemsToCenter = howManyItemsToCenter,
+            currentIndex = index,
+            lastIndex = tabItemsMeasurables.lastIndex,
           )
+        } else { // full line
+          val adjustedIndex = index - (currentRow * howManyItemsInEachLine)
+          desiredItemWidth * adjustedIndex
         }
 
-        // measure
-        val tabItemsPlaceables = mutableListOf<Placeable>()
-        for (item in tabItemsMeasurables) {
-          val desiredItemHeight = oneLineHeight
-          val placeable = item.measure(
-            constraints.copy(
-              maxWidth = desiredItemWidth,
-              minWidth = desiredItemWidth,
-              maxHeight = desiredItemHeight,
-              minHeight = desiredItemHeight,
-            ),
-          )
-          tabItemsPlaceables.add(placeable)
-        }
-        val chosenItem = tabItemsPlaceables[selectedTabIndex]
-        val indicatorPlaceable = allMeasurables[0][0].measure(
-          Constraints(
-            minWidth = chosenItem.width,
-            minHeight = chosenItem.height,
-            maxHeight = chosenItem.height,
-            maxWidth = chosenItem.width,
+        mapOfOffsets[index] = IntOffset(
+          y = verticalOffset,
+          x = horizontalOffset,
+        )
+      }
+
+      // measure
+      val tabItemsPlaceables = mutableListOf<Placeable>()
+      for (item in tabItemsMeasurables) {
+        val desiredItemHeight = oneLineHeight
+        val placeable = item.measure(
+          constraints.copy(
+            maxWidth = desiredItemWidth,
+            minWidth = desiredItemWidth,
+            maxHeight = desiredItemHeight,
+            minHeight = desiredItemHeight,
           ),
         )
+        tabItemsPlaceables.add(placeable)
+      }
+      val chosenItem = tabItemsPlaceables[selectedTabIndex]
+      val indicatorPlaceable = allMeasurables[0][0].measure(
+        Constraints(
+          minWidth = chosenItem.width,
+          minHeight = chosenItem.height,
+          maxHeight = chosenItem.height,
+          maxWidth = chosenItem.width,
+        ),
+      )
 
-        // placing first indicator, then items
-        layout(
-          width = fullWidth,
-          height = howManyLines * oneLineHeight,
-        ) {
-          currentIndicatorOffset = IntOffset(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
-          indicatorPlaceable.placeRelative(indicatorOffset)
-          tabItemsPlaceables.forEachIndexed { index, placeable ->
-            placeable.placeRelative(
-              x = mapOfOffsets[index]!!.x,
-              y = mapOfOffsets[index]!!.y,
-            )
-          }
+      // placing first indicator, then items
+      layout(
+        width = fullWidth,
+        height = howManyLines * oneLineHeight,
+      ) {
+        currentIndicatorOffset = IntOffset(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
+        indicatorPlaceable.placeRelative(indicatorOffset)
+        tabItemsPlaceables.forEachIndexed { index, placeable ->
+          placeable.placeRelative(
+            x = mapOfOffsets[index]!!.x,
+            y = mapOfOffsets[index]!!.y,
+          )
         }
       }
     }
@@ -437,3 +439,9 @@ private fun TabIndicator(indicatorColor: Color, indicatorShape: Shape) {
       ),
   )
 }
+
+val IntOffset.Companion.Saver: Saver<IntOffset, Any>
+  get() = listSaver(
+    save = { listOf(it.x, it.y) },
+    restore = { IntOffset(it[0], it[1]) },
+  )

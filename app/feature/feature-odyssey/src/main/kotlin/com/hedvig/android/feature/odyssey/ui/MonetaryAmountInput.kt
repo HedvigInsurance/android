@@ -27,6 +27,7 @@ import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParam
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 
 /**
@@ -44,7 +45,7 @@ internal fun MonetaryAmountInput(
 ) {
   var text by rememberSaveable { mutableStateOf(value ?: "") }
   val focusManager = LocalFocusManager.current
-  com.hedvig.android.design.system.hedvig.HedvigTextField(
+  HedvigTextField(
     text = text,
     onValueChange = onValueChange@{ newValue ->
       if (newValue.length > 10) return@onValueChange

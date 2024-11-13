@@ -8,8 +8,8 @@ import com.hedvig.android.core.common.await
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
-import java.io.IOException
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -35,26 +35,29 @@ internal class DownloadPdfUseCaseImpl(
 ) : DownloadPdfUseCase {
   override suspend fun invoke(url: String): Either<ErrorMessage, File> = withContext(Dispatchers.IO) {
     either {
-      val request = Request.Builder()
-        .url(url)
-        .build()
-
-      val now = DateTimeFormatter.ISO_DATE_TIME.format(
-        clock.now()
-          .toLocalDateTime(TimeZone.UTC)
-          .toJavaLocalDateTime(),
-      )
-
-      val downloadedFile = File(context.filesDir, FILE_NAME + now + FILE_EXT)
-
       try {
+        val request = Request.Builder()
+          .url(url)
+          .build()
+
+        val now = DateTimeFormatter.ISO_DATE_TIME.format(
+          clock.now()
+            .toLocalDateTime(TimeZone.UTC)
+            .toJavaLocalDateTime(),
+        )
+
+        val downloadedFile = File(context.filesDir, FILE_NAME + now + FILE_EXT)
+
         val response = okHttpClient.newCall(request).await()
         downloadedFile.sink().buffer().use { fileSink ->
           fileSink.writeAll(response.body!!.source())
         }
         downloadedFile
-      } catch (exception: IOException) {
-        logcat(LogPriority.ERROR, exception) { "Could not download pdf" }
+      } catch (exception: Exception) {
+        if (exception is CancellationException) {
+          throw exception
+        }
+        logcat(LogPriority.ERROR, exception) { "Could not download pdf with: $exception" }
         raise(ErrorMessage("Could not download pdf"))
       }
     }

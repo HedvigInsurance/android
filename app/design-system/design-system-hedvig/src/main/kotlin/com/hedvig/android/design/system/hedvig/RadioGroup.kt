@@ -259,7 +259,6 @@ private fun HorizontalWithLabelRadioOption(
         indication = ripple(
           bounded = false,
           radius = 50.dp,
-          // todo: pls check out this ripple. I like this one, but maybe it's too much
         ),
       ) {
         if (enabled) {

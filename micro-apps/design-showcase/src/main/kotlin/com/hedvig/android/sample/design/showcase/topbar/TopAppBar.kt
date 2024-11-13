@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,14 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.Scaffold
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
@@ -34,7 +32,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 fun TopAppBarShowcase() {
   var showScreenTwo by remember { mutableStateOf(false) }
 
-  Scaffold(
+  HedvigScaffold(
     navigateUp = {},
     topAppBarText = "Screen 1",
   ) {
@@ -51,7 +49,7 @@ fun TopAppBarShowcase() {
     enter = fadeIn() + slideInHorizontally(),
     exit = fadeOut() + slideOutHorizontally(),
   ) {
-    Scaffold(
+    HedvigScaffold(
       navigateUp = { showScreenTwo = false },
       topAppBarText = "Screen 2",
       topAppBarActions = {
@@ -61,7 +59,8 @@ fun TopAppBarShowcase() {
       },
     ) {
       Column(
-        modifier = Modifier.fillMaxSize().border(1.dp, Color.Red)
+        modifier = Modifier
+          .fillMaxSize()
           .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

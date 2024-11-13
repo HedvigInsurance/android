@@ -1,28 +1,27 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
+  compose()
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.navigation.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)

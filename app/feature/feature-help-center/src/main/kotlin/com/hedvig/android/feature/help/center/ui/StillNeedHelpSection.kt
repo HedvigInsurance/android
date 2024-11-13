@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,10 +14,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
@@ -33,24 +32,22 @@ internal fun StillNeedHelpSection(
 ) {
   Surface(
     modifier = modifier,
-    color = MaterialTheme.colorScheme.surface,
   ) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(contentPadding)
-        .padding(horizontal = 16.dp),
+        .padding(contentPadding),
     ) {
       Spacer(modifier = Modifier.height(32.dp))
-      Text(
+      HedvigText(
         text = stringResource(R.string.HC_CHAT_QUESTION),
         textAlign = TextAlign.Center,
       )
-      Text(
+      HedvigText(
         text = stringResource(R.string.HC_CHAT_ANSWER),
         textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = HedvigTheme.colorScheme.textSecondary,
       )
       Spacer(modifier = Modifier.height(16.dp))
       if (showNavigateToInboxButton) {
@@ -85,7 +82,7 @@ private fun PreviewStillNeedHelpSection(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) showNavigateToInboxButton: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StillNeedHelpSection({}, {}, showNavigateToInboxButton)
     }
   }

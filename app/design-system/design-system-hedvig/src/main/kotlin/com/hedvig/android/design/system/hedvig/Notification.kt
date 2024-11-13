@@ -1,10 +1,12 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,12 +15,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.SecondaryAlt
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
@@ -66,6 +70,7 @@ fun HedvigNotificationCard(
   modifier: Modifier = Modifier,
   withIcon: Boolean = NotificationDefaults.withIconDefault,
   style: InfoCardStyle = defaultStyle,
+  buttonLoading: Boolean = false,
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
   Surface(
@@ -124,7 +129,20 @@ fun HedvigNotificationCard(
                   buttonSize = Small,
                   modifier = Modifier.fillMaxWidth(),
                 ) {
-                  HedvigText(style.buttonText, style = textStyle)
+                  LayoutWithoutPlacement(sizeAdjustingContent = {
+                    HedvigText(style.buttonText, style = textStyle)
+                  }) {
+                    if (!buttonLoading) {
+                      HedvigText(style.buttonText, style = textStyle)
+                    } else {
+                      Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                      ) {
+                        ThreeDotsLoading()
+                      }
+                    }
+                  }
                 }
               }
             }

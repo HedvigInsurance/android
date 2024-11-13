@@ -40,8 +40,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -66,7 +64,6 @@ import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -140,9 +137,7 @@ internal fun CbmChatLoadedScreen(
   uiState: CbmChatUiState.Loaded,
   imageLoader: ImageLoader,
   appPackageId: String,
-  topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -159,9 +154,7 @@ internal fun CbmChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
     imageLoader = imageLoader,
-    topAppBarScrollBehavior = topAppBarScrollBehavior,
     openUrl = openUrl,
-    onBannerLinkClicked = onBannerLinkClicked,
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
       ChatInput(
@@ -190,9 +183,7 @@ private fun ChatLoadedScreen(
   uiState: CbmChatUiState.Loaded,
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
-  topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
@@ -208,8 +199,7 @@ private fun ChatLoadedScreen(
         modifier = Modifier
           .fillMaxWidth()
           .weight(1f)
-          .clearFocusOnTap()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+          .clearFocusOnTap(),
       )
       if (uiState.bannerText != null) {
         AnimatedVisibility(
@@ -234,7 +224,6 @@ private fun ChatLoadedScreen(
                 ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
                 is BannerText.Text -> uiState.bannerText.text
               },
-              onBannerLinkClicked = onBannerLinkClicked,
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -750,7 +739,7 @@ private fun PreviewChatLoadedScreen() {
             uiState = Loaded(
               backendConversationInfo = ConversationInfo.Info(
                 "1",
-                ClaimInfo("claimType"),
+                ClaimInfo("id", "claimType"),
                 Instant.parse("2024-05-01T00:00:00Z"),
                 false,
               ),
@@ -760,9 +749,7 @@ private fun PreviewChatLoadedScreen() {
             ),
             lazyListState = rememberLazyListState(),
             imageLoader = rememberPreviewImageLoader(),
-            topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
             openUrl = {},
-            onBannerLinkClicked = {},
             onRetrySendChatMessage = {},
             chatInput = {},
           )

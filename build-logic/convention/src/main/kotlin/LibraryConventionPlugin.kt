@@ -3,6 +3,7 @@ import com.hedvig.android.configureKotlinAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 
@@ -17,7 +18,7 @@ class LibraryConventionPlugin : Plugin<Project> {
         apply(libs.plugins.androidLibrary.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
         apply(libs.plugins.kotlin.get().pluginId)
-        apply("hedvig.lint")
+        apply<HedvigLintConventionPlugin>()
       }
 
       extensions.configure<LibraryExtension> {

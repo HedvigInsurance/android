@@ -1,10 +1,12 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
 }
 
 android {
@@ -12,24 +14,19 @@ android {
 }
 
 dependencies {
-  implementation(libs.androidx.activity.compose)
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
-  implementation(libs.coil.coil)
-  implementation(libs.coil.compose)
-  implementation(libs.coil.gif)
-  implementation(libs.coil.svg)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)

@@ -1,0 +1,8 @@
+query CurrentContractsForTierChange {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+    }
+  }
+}

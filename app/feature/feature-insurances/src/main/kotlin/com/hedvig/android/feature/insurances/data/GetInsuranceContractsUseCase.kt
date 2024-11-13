@@ -35,28 +35,33 @@ internal class GetInsuranceContractsUseCaseImpl(
         .safeFlow(::ErrorMessage),
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
       featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
-    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowEnabled ->
+      featureManager.isFeatureEnabled(Feature.TIER),
+    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowFlagEnabled, isTierEnabled ->
       either {
         val insuranceQueryData = insuranceQueryResponse.bind()
         val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
-
+        val isMovingEnabledForMember =
+          insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true && isMovingFlowFlagEnabled
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
             isTerminated = true,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-            isMovingFlowEnabled = isMovingFlowEnabled,
+            isMovingFlowEnabled = isMovingEnabledForMember,
+            isTierFlagEnabled = isTierEnabled,
           )
         }
+
         val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
           it.toContract(
             isTerminated = false,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-            isMovingFlowEnabled = isMovingFlowEnabled,
+            isMovingFlowEnabled = isMovingEnabledForMember,
+            isTierFlagEnabled = isTierEnabled,
           )
         }
         terminatedContracts + activeContracts
@@ -76,9 +81,11 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
+  isTierFlagEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
+    tierName = if (isTierFlagEnabled) currentAgreement.productVariant.displayNameTier else null,
     displayName = currentAgreement.productVariant.displayName,
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
@@ -119,6 +126,7 @@ private fun ContractFragment.toContract(
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
+    supportsTierChange = supportsChangeTier && isTierFlagEnabled,
   )
 }
 

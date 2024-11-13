@@ -8,7 +8,7 @@ internal object MiniTabTokens {
   val TabHorizontalPadding = 8.dp
   val TabVerticalPadding = 3.dp
   val ContainerShape = ShapeKeyTokens.CornerSmall
-  val TabShape = ShapeKeyTokens.CornerExtraSmall
+  val TabShape = ShapeKeyTokens.CornerXSmall
   val TextFont = TypographyKeyTokens.Label
 }
 

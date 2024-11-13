@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.dp
 internal object ToggleColorTokens {
   val ContainerColor = ColorSchemeKeyTokens.SurfacePrimary
   val LabelColor = ColorSchemeKeyTokens.TextPrimary
+  val DisabledLabelColor = ColorSchemeKeyTokens.TextSecondary
   val DescriptionColor = ColorSchemeKeyTokens.TextSecondary
   val PulsatingContainerColor = ColorSchemeKeyTokens.SignalGreenFill
   val PulsatingLabelColor = ColorSchemeKeyTokens.TextBlack

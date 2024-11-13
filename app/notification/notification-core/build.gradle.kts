@@ -1,13 +1,12 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
   implementation(platform(libs.firebase.bom))
 
-  implementation(libs.androidx.other.core)
+  implementation(libs.androidx.other.coreKtx)
   implementation(libs.firebase.messaging)
   implementation(projects.coreResources)
 }

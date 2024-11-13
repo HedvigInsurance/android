@@ -1,12 +1,9 @@
 package com.hedvig.android.feature.help.center.commonclaim
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.ui.emergency.FirstVetScreen
 import com.hedvig.android.ui.emergency.FirstVetSection
 
@@ -17,11 +14,9 @@ internal fun FirstVetDestination(sections: List<FirstVetSection>, navigateUp: ()
 
 @HedvigPreview
 @Composable
-private fun PreviewCommonClaimDestination(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isManyPets: Boolean,
-) {
+private fun PreviewCommonClaimDestination() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       FirstVetDestination(
         sections = listOf(
           FirstVetSection(

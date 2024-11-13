@@ -1,11 +1,9 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
@@ -25,7 +23,6 @@ internal class TerminationDateViewModel(
     parameters.minDate,
     parameters.maxDate,
   )
-
   private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
     TerminateInsuranceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
@@ -36,6 +33,13 @@ internal class TerminationDateViewModel(
     ),
   )
   val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
+
+  fun changeSelectedDate(date: Long?) {
+    _uiState.value = uiState.value.copy(
+      datePickerState =
+        uiState.value.datePickerState.copy(selectedDateMillis = date),
+    )
+  }
 
   fun changeCheckBoxState() {
     val isCheckedNow = uiState.value.isCheckBoxChecked
@@ -49,22 +53,18 @@ private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDat
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val yearRange = minDate.year..maxDate.year
 
-  val datePickerState = DatePickerState(
+  val datePickerState = HedvigDatePickerState(
     locale = locale,
-    initialSelectedDateMillis = null,
-    initialDisplayedMonthMillis = null,
+    selectedDateMillis = null,
+    displayedMonthMillis = null,
     yearRange = yearRange,
-    initialDisplayMode = DisplayMode.Picker,
-    selectableDates = object : SelectableDates {
-      override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
-
-      override fun isSelectableYear(year: Int): Boolean = year in yearRange
-    },
+    minDateInMillis = minDateInMillis,
+    maxDateInMillis = maxDateInMillis,
   )
 }
 
 internal data class TerminateInsuranceUiState(
-  val datePickerState: DatePickerState,
+  val datePickerState: HedvigDatePickerState,
   val isLoading: Boolean,
   val exposureName: String,
   val displayName: String,

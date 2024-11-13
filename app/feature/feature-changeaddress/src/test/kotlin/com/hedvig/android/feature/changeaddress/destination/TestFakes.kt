@@ -119,6 +119,9 @@ internal val fakeMoveQuote = MoveQuote(
       ),
     ),
     documents = listOf(),
+    displayTierName = "Standard",
+    tierDescription = "Our standard coverage",
+    termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
   ),
   displayItems = listOf(),
 )

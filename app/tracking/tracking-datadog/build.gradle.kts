@@ -1,12 +1,12 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
+  api(libs.datadog.sdk.rum)
   api(projects.trackingCore)
-  implementation(libs.datadog.sdk.rum)
+
   implementation(libs.koin.core)
   implementation(projects.initializable)
 }

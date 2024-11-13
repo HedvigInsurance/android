@@ -1,31 +1,27 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
 }
+
+hedvig {
+  serialization()
+  compose()
+}
+
 android {
   testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
-  implementation(libs.accompanist.permissions)
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.material3)
+  api(libs.androidx.navigation.common)
+
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  implementation(libs.coil.coil)
-  implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
@@ -35,12 +31,12 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.dataChangetier)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
@@ -56,7 +52,6 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
-  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)

@@ -64,10 +64,6 @@ class GenericAuthViewModelTest {
         error("Not yet implemented")
       }
 
-      override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-        error("Not yet implemented")
-      }
-
       override suspend fun revoke(token: String): RevokeResult {
         error("Not yet implemented")
       }
@@ -96,19 +92,6 @@ class GenericAuthViewModelTest {
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("valid@email.com")
     assertThat(viewModel.viewState.value.error).isEqualTo(null)
     assertThat(viewModel.viewState.value.verifyUrl).isEqualTo("verifyUrl")
-  }
-
-  @Test
-  fun `clear should remove input and error state`() = runTest {
-    viewModel.setEmailInput("invalid email.. ")
-    viewModel.submitEmail()
-    advanceUntilIdle()
-    assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email.. ")
-    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.Other.InvalidEmail)
-
-    viewModel.clear()
-    assertThat(viewModel.viewState.value.emailInput).isEqualTo("")
-    assertThat(viewModel.viewState.value.error).isEqualTo(null)
   }
 
   @Test

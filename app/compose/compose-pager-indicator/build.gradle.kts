@@ -1,8 +1,10 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  compose()
 }
 
 dependencies {
@@ -10,5 +12,5 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
-  implementation(projects.coreDesignSystem)
+  implementation(projects.designSystemHedvig)
 }

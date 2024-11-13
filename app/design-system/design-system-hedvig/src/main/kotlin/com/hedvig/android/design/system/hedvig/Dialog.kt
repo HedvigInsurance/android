@@ -11,22 +11,29 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
+import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
+import hedvig.resources.R
 
 @Composable
 fun HedvigDialogError(
@@ -55,33 +62,152 @@ fun HedvigDialogError(
 }
 
 @Composable
+fun HedvigAlertDialog(
+  title: String,
+  subtitle: String?,
+  onConfirmClick: () -> Unit,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
+  buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
+) {
+  HedvigDialog(
+    style = Buttons(
+      confirmButtonText = confirmButtonLabel,
+      dismissButtonText = dismissButtonLabel,
+      onDismissRequest = onDismissRequest,
+      onConfirmButtonClick = {
+        onDismissRequest()
+        onConfirmClick()
+      },
+      buttonSize = buttonSize,
+    ),
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      HedvigText(
+        text = title,
+        textAlign = TextAlign.Center,
+      )
+      if (subtitle != null) {
+        HedvigText(
+          text = subtitle,
+          textAlign = TextAlign.Center,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+fun SingleSelectDialog(
+  title: String,
+  optionsList: List<RadioOptionData>,
+  onSelected: (RadioOptionData) -> Unit,
+  onDismissRequest: () -> Unit,
+  radioOptionStyle: RadioOptionStyle = RadioOptionStyle.LeftAligned,
+  radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+) {
+  HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Spacer(Modifier.height(8.dp))
+      HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
+      Spacer(Modifier.height(24.dp))
+      optionsList.forEachIndexed { index, radioOptionData ->
+        RadioOption(
+          data = radioOptionData,
+          radioOptionStyle = radioOptionStyle,
+          radioOptionSize = radioOptionSize,
+          groupLockedState = NotLocked,
+          onOptionClick = {
+            onSelected(radioOptionData)
+            onDismissRequest()
+          },
+        )
+        if (index != optionsList.lastIndex) {
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun MultiSelectDialog(
+  // todo: not tested yet
+  title: String,
+  optionsList: List<RadioOptionData>,
+  onSelected: (RadioOptionData) -> Unit,
+  onDismissRequest: () -> Unit,
+  checkboxStyle: CheckboxStyle = CheckboxStyle.Default,
+  checkboxSize: CheckboxDefaults.CheckboxSize = Medium,
+) {
+  HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(16.dp),
+    ) {
+      Spacer(Modifier.height(8.dp))
+      HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
+      Spacer(Modifier.height(24.dp))
+      optionsList.forEachIndexed { index, radioOptionData ->
+        Checkbox(
+          data = radioOptionData,
+          checkboxStyle = checkboxStyle,
+          checkboxSize = checkboxSize,
+          lockedState = NotLocked,
+          onClick = {
+            onSelected(radioOptionData)
+            onDismissRequest()
+          },
+        )
+        if (index != optionsList.lastIndex) {
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+    }
+  }
+}
+
+@Composable
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  applyDefaultPadding: Boolean = false,
+  applyDefaultPadding: Boolean = true,
+  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   content: @Composable () -> Unit,
 ) {
   Dialog(
     onDismissRequest = onDismissRequest,
-    properties = DialogDefaults.defaultProperties,
+    properties = dialogProperties,
   ) {
-    (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
-    // a workaround to stop the overlay from dimming background too much, otherwise in the dark theme the overlay color
-    // becomes the same as the background color of the dialog itself.
     Surface(
       shape = DialogDefaults.shape,
       color = DialogDefaults.containerColor,
-      modifier = modifier,
+      modifier = modifier.then(
+        if (dialogProperties.usePlatformDefaultWidth) {
+          Modifier
+        } else {
+          Modifier.padding(horizontal = 16.dp)
+        },
+      ),
     ) {
-      val padding = if (applyDefaultPadding) DialogDefaults.padding else PaddingValues()
+      val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
       Column(
         Modifier.padding(padding),
       ) {
         when (style) {
           is Buttons -> {
             content()
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(40.dp))
             when (style.buttonSize) {
               BIG -> {
                 BigVerticalButtons(
@@ -91,6 +217,7 @@ fun HedvigDialog(
                   confirmButtonText = style.confirmButtonText,
                 )
               }
+
               SMALL -> {
                 SmallHorizontalButtons(
                   onDismissRequest = style.onDismissRequest,
@@ -101,6 +228,7 @@ fun HedvigDialog(
               }
             }
           }
+
           NoButtons -> content()
         }
       }
@@ -115,7 +243,9 @@ private fun SmallHorizontalButtons(
   onConfirmButtonClick: () -> Unit,
   confirmButtonText: String,
 ) {
-  Row {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
     HedvigButton(
       modifier = Modifier.weight(1f),
       onClick = onDismissRequest,
@@ -182,7 +312,18 @@ object DialogDefaults {
       }
     }
 
-  internal val padding = PaddingValues(DialogTokens.Padding)
+  internal fun padding(style: DialogStyle): PaddingValues {
+    return when (style) {
+      is Buttons -> {
+        when (style.buttonSize) {
+          BIG -> DialogTokens.BigButtonsPadding
+          SMALL -> DialogTokens.SmallButtonsPadding
+        }
+      }
+
+      NoButtons -> DialogTokens.NoButtonsPadding
+    }
+  }
 
   sealed class DialogStyle {
     data class Buttons(

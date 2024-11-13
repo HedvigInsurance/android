@@ -45,6 +45,9 @@ internal data class MoveQuote(
             ),
           ),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our most standard coverage for rental home",
+          termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
         ),
         displayItems = listOf(),
       )

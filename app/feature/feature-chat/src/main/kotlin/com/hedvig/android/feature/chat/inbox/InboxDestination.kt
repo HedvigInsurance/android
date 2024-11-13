@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -37,9 +38,6 @@ import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.getLocale
@@ -94,7 +92,7 @@ private fun InboxScreen(
         InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
         InboxUiState.Failure -> HedvigErrorSection(
           onButtonClick = reload,
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f).fillMaxWidth(),
         )
 
         is InboxUiState.Success -> InboxSuccessScreen(

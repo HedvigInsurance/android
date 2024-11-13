@@ -32,6 +32,9 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               perils = listOf(),
               insurableLimits = listOf(),
               documents = listOf(),
+              displayTierName = "Standard",
+              tierDescription = "Our most standard coverage",
+              termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
@@ -72,6 +75,8 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           isTerminated = false,
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
+          supportsTierChange = true,
+          tierName = "STANDARD",
         ),
       ).right(),
     )

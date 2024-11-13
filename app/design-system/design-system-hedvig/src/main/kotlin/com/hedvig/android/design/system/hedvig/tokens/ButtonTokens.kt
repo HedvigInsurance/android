@@ -11,6 +11,7 @@ internal object PrimaryStyleButtonTokens {
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
   val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillNegative
   val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
+  val RedContentColor = ColorSchemeKeyTokens.SignalRedElement
 }
 
 internal object PrimaryAltStyleButtonTokens {
@@ -85,6 +86,6 @@ internal object MiniSizeButtonTokens {
   val HorizontalPadding = 8.dp
   val TopPadding = 3.dp
   val BottomPadding = 3.dp
-  val ContainerShape = ShapeKeyTokens.CornerExtraSmall
+  val ContainerShape = ShapeKeyTokens.CornerXSmall
   val LabelTextFont = TypographyKeyTokens.Label
 }

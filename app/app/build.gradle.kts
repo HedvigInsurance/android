@@ -1,17 +1,18 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
 plugins {
+  id("hedvig.gradle.plugin")
   id("hedvig.android.application")
-  id("hedvig.android.application.compose")
-  id("hedvig.android.ktlint")
-  id("kotlin-parcelize")
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
   alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
+  compose()
 }
 
 android {
@@ -25,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.8.5"
+    versionName = "12.9.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -106,17 +107,14 @@ android {
 dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.animation)
+  implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.compose.runtime.livedata)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiUnit)
-  implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
@@ -124,21 +122,15 @@ dependencies {
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.appCompat)
-  implementation(libs.androidx.other.browser)
-  implementation(libs.androidx.other.constraintLayout)
-  implementation(libs.androidx.other.core)
+  implementation(libs.androidx.other.coreKtx)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
-  implementation(libs.androidx.other.workManager)
-  implementation(libs.androidx.profileInstaller)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coil.gif)
   implementation(libs.coil.svg)
-  implementation(libs.concatAdapterExtension)
-  implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
   implementation(libs.datadog.sdk.compose)
   implementation(libs.datadog.sdk.core)
@@ -148,12 +140,9 @@ dependencies {
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
-  implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
-  implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
@@ -177,6 +166,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.crossSells)
+  implementation(projects.dataChangetier)
   implementation(projects.dataChat)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
@@ -190,9 +180,9 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
+  implementation(projects.featureChooseTier)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimTriaging)
-  implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
@@ -203,6 +193,7 @@ dependencies {
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
+  implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
@@ -226,12 +217,13 @@ dependencies {
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
   implementation(projects.theme)
+  implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 
-  debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
-  debugImplementation(libs.leakCanary)
+
+  debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 
 easylauncher {

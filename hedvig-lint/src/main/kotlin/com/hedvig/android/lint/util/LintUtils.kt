@@ -32,10 +32,7 @@ internal inline fun <reified T> sourceImplementation(
 }
 
 /** Loads a [StringOption] as a [delimiter]-delimited [Set] of strings. */
-internal fun StringOption.loadAsSet(
-  configuration: Configuration,
-  delimiter: String = ",",
-): Set<String> {
+internal fun StringOption.loadAsSet(configuration: Configuration, delimiter: String = ","): Set<String> {
   return getValue(configuration)
     ?.splitToSequence(delimiter)
     .orEmpty()

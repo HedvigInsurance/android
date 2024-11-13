@@ -15,27 +15,28 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.fastSumBy
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.layout.FixedSizePlaceable
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import kotlin.math.max
 
 @Composable
@@ -185,19 +186,32 @@ private enum class HomeLayoutContent {
   BottomSpacer,
 }
 
+/**
+ * A [Placeable] to be used inside custom [androidx.compose.ui.layout.Layout] if we need to add some spacing manually.
+ */
+private class FixedSizePlaceable(width: Int, height: Int) : Placeable() {
+  init {
+    measuredSize = IntSize(width, height)
+  }
+
+  override fun get(alignmentLine: AlignmentLine): Int = AlignmentLine.Unspecified
+
+  override fun placeAt(position: IntOffset, zIndex: Float, layerBlock: (GraphicsLayerScope.() -> Unit)?) = Unit
+}
+
 // region previews
 @Preview(showSystemUi = true)
 @Composable
 private fun PreviewHomeLayoutCenteredContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
           maxWidth = constraints.maxWidth,
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox { Text("claim status card") }
+              PreviewBox { HedvigText("claim status card") }
             }
           },
         )
@@ -210,7 +224,7 @@ private fun PreviewHomeLayoutCenteredContent() {
 @Composable
 private fun PreviewHomeLayoutCenteredContentWithSomeBottomAttachedContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
           maxWidth = constraints.maxWidth,
@@ -232,14 +246,14 @@ private fun PreviewHomeLayoutCenteredContentWithSomeBottomAttachedContent() {
 @Composable
 private fun PreviewHomeLayoutNonCenteredNonScrollableContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
           maxWidth = constraints.maxWidth,
           maxHeight = constraints.maxHeight,
           veryImportantMessages = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox(0) { Text("Important message") }
+              PreviewBox(0) { HedvigText("Important message") }
             }
           },
           memberReminderCards = {
@@ -259,14 +273,14 @@ private fun PreviewHomeLayoutNonCenteredNonScrollableContent() {
 @Composable
 private fun PreviewHomeLayoutScrollingContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
           maxWidth = constraints.maxWidth,
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox { Text("claim status card") }
+              PreviewBox { HedvigText("claim status card") }
             }
           },
           memberReminderCards = {
@@ -294,7 +308,7 @@ private fun PreviewHomeLayout(
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),
     welcomeMessage = {
-      Text(
+      HedvigText(
         "Welcome!",
         Modifier
           .fillMaxWidth()
@@ -305,10 +319,11 @@ private fun PreviewHomeLayout(
     veryImportantMessages = veryImportantMessages,
     memberReminderCards = memberReminderCards,
     startClaimButton = {
-      HedvigContainedButton(
+      HedvigButton(
         text = "Start claim",
         onClick = {},
-        modifier = Modifier.padding(horizontal = 16.dp),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
     },
     helpCenterButton = {

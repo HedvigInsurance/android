@@ -1,5 +1,12 @@
 package com.hedvig.android.logger
 
+import slimber.log.d
+import slimber.log.e
+import slimber.log.i
+import slimber.log.v
+import slimber.log.w
+import slimber.log.wtf
+
 /**
  * A [LogcatLogger] logger that delegates to [slimber].
  *
@@ -28,48 +35,48 @@ class AndroidLogcatLogger : LogcatLogger {
 
 private fun v(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.v(throwable, message)
+    v(throwable, message)
   } else {
-    slimber.log.v(message)
+    v(message)
   }
 }
 
 private fun d(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.d(throwable, message)
+    d(throwable, message)
   } else {
-    slimber.log.d(message)
+    d(message)
   }
 }
 
 private fun i(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.i(throwable, message)
+    i(throwable, message)
   } else {
-    slimber.log.i(message)
+    i(message)
   }
 }
 
 private fun w(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.w(throwable, message)
+    w(throwable, message)
   } else {
-    slimber.log.w(message)
+    w(message)
   }
 }
 
 private fun e(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.e(throwable, message)
+    e(throwable, message)
   } else {
-    slimber.log.e(message)
+    e(message)
   }
 }
 
 private fun wtf(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
-    slimber.log.wtf(throwable, message)
+    wtf(throwable, message)
   } else {
-    slimber.log.wtf(message)
+    wtf(message)
   }
 }

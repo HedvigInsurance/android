@@ -50,10 +50,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
@@ -62,7 +58,11 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.InsuranceCard
+import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -154,7 +154,7 @@ private fun InsuranceScreen(
       ) {
         Text(
           text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
-          style = MaterialTheme.typography.titleLarge,
+          style = HedvigTheme.typography.headlineSmall,
         )
       }
       AnimatedContent(
@@ -299,7 +299,6 @@ private fun InsuranceCard(
       .clickable {
         onInsuranceCardClick(contract.id)
       },
-    shape = MaterialTheme.shapes.squircleMedium,
     fallbackPainter = contract.createPainter(),
     isLoading = false,
   )
@@ -346,8 +345,8 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
 private fun PreviewInsuranceScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
 ) {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    Surface {
       InsuranceScreen(
         InsuranceUiState(
           contracts = if (withContracts) {
@@ -387,7 +386,7 @@ private fun PreviewInsuranceScreen(
 private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,
         content = { insuranceUiState ->
@@ -513,6 +512,9 @@ private val previewInsurance = InsuranceContract(
       perils = listOf(),
       insurableLimits = listOf(),
       documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     certificateUrl = null,
     coInsured = listOf(),
@@ -525,4 +527,6 @@ private val previewInsurance = InsuranceContract(
   isTerminated = false,
   contractHolderDisplayName = "Hhhhh Hhhhh",
   contractHolderSSN = "19910913-1893",
+  tierName = "Bas",
+  supportsTierChange = true,
 )

@@ -18,6 +18,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,16 +37,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,29 +62,46 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.compose.ui.withoutPlacement
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.onYellowContainer
-import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.material3.typeContainer
-import com.hedvig.android.core.designsystem.material3.yellowContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.MultiSelectDialog
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.DialogDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Search
+import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
+import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -112,7 +122,13 @@ internal fun HelpCenterHomeDestination(
   onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+  LaunchedEffect(uiState.destinationToNavigate) {
+    val destination = uiState.destinationToNavigate
+    if (destination != null && uiState.selectedQuickAction == null) {
+      viewModel.emit(HelpCenterEvent.ClearNavigation)
+      onNavigateToQuickLink(destination)
+    }
+  }
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,
@@ -120,7 +136,9 @@ internal fun HelpCenterHomeDestination(
     selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
-    onNavigateToQuickLink = onNavigateToQuickLink,
+    onNavigateToQuickLink = {
+      viewModel.emit(HelpCenterEvent.NavigateToQuickAction(it))
+    },
     onQuickActionsSelected = {
       viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
     },
@@ -161,22 +179,108 @@ private fun HelpCenterHomeScreen(
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
-    is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
-      onDismissRequest = onDismissQuickActionDialog,
-      title = stringResource(id = selectedQuickAction.titleRes),
-      optionsList = selectedQuickAction.links,
-      onSelected = {
-        onDismissQuickActionDialog()
-        onNavigateToQuickLink(it.quickLinkDestination)
-      },
-      getDisplayText = { it.displayName },
-      getIsSelected = null,
-      getId = { it.hashCode().toString() },
-    )
+    is MultiSelectQuickLink -> {
+      var chosenIndex by remember { mutableStateOf<Int?>(null) }
+      val entries = buildList {
+        selectedQuickAction.links.forEachIndexed { index, quickLink ->
+          add(
+            RadioOptionData(
+              id = quickLink.hashCode().toString(),
+              chosenState = if (index == chosenIndex) Chosen else NotChosen,
+              optionText = quickLink.displayName,
+            ),
+          )
+        }
+      }
+      SingleSelectDialog(
+        onDismissRequest = onDismissQuickActionDialog,
+        title = stringResource(id = selectedQuickAction.titleRes),
+        optionsList = entries,
+        onSelected = { data ->
+          val chosen = entries.indexOf(data)
+          chosenIndex = chosen
+          onDismissQuickActionDialog()
+          onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
+        },
+      )
+    }
 
-    is QuickAction.StandaloneQuickLink -> {
-      onDismissQuickActionDialog()
-      onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+    is StandaloneQuickLink -> {
+      LaunchedEffect(Unit) {
+        onDismissQuickActionDialog()
+        onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
+      }
+    }
+
+    is MultiSelectExpandedLink -> {
+      HedvigDialog(
+        applyDefaultPadding = false,
+        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        onDismissRequest = {
+          onDismissQuickActionDialog()
+        },
+        style = DialogDefaults.DialogStyle.NoButtons,
+      ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+          var selectedIndex by remember { mutableStateOf<Int?>(null) }
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+          )
+          Spacer(Modifier.height(24.dp))
+          selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
+            RadioOptionRightAligned(
+              chosenState = if (index == selectedIndex) Chosen else NotChosen,
+              onClick = {
+                selectedIndex = index
+              },
+              optionContent = {
+                Column {
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.titleRes,
+                    ),
+                  )
+                  HedvigText(
+                    text = stringResource(
+                      standaloneQuickLink.hintTextRes,
+                    ),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                    style = HedvigTheme.typography.label,
+                  )
+                }
+              },
+            )
+            if (index != selectedQuickAction.links.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
+          }
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(R.string.general_continue_button),
+            enabled = selectedIndex != null,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex?.let { index ->
+                onNavigateToQuickLink(selectedQuickAction.links[index].quickLinkDestination)
+              }
+            },
+          )
+          Spacer(Modifier.height(4.dp))
+          HedvigTextButton(
+            buttonSize = Large,
+            text = stringResource(R.string.general_cancel_button),
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+              selectedIndex = null
+              onDismissQuickActionDialog()
+            },
+          )
+          Spacer(Modifier.height(24.dp))
+        }
+      }
     }
 
     null -> {}
@@ -187,7 +291,7 @@ private fun HelpCenterHomeScreen(
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.clearFocusOnTap(),
   ) {
     Column(Modifier.fillMaxSize()) {
@@ -287,72 +391,73 @@ private fun ContentWithoutSearch(
   onNavigateToNewConversation: () -> Unit,
 ) {
   Column {
-    Spacer(Modifier.height(32.dp))
-    Image(
-      painter = painterResource(id = R.drawable.pillow_hedvig),
-      contentDescription = null,
-      modifier = Modifier
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-        .size(170.dp)
-        .align(Alignment.CenterHorizontally),
-    )
-    Spacer(Modifier.height(50.dp))
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier
-        .padding(horizontal = 20.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      modifier =
+        Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
-      Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
-      Text(
-        text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      Spacer(Modifier.height(32.dp))
+      Image(
+        painter = painterResource(id = R.drawable.pillow_hedvig),
+        contentDescription = null,
+        modifier = Modifier
+          .size(170.dp)
+          .align(Alignment.CenterHorizontally),
       )
-    }
-    Spacer(Modifier.height(24.dp))
-
-    Column {
-      AnimatedVisibility(
-        visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-        enter = QuickLinksSectionEnterTransition,
-        exit = QuickLinksSectionExitTransition,
+      Spacer(Modifier.height(50.dp))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+          .padding(horizontal = 20.dp),
       ) {
-        Column {
-          QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-          Spacer(Modifier.height(32.dp))
-        }
+        HedvigText(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
+        HedvigText(
+          text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
       }
-      HelpCenterSection(
-        title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-        chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
-        contentColor = MaterialTheme.colorScheme.onYellowContainer,
-        content = {
-          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            for (topic in topics) {
-              HedvigCard(
-                onClick = { onNavigateToTopic(topic) },
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp)
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              ) {
-                Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
+      Spacer(Modifier.height(24.dp))
+
+      Column {
+        AnimatedVisibility(
+          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+          enter = QuickLinksSectionEnterTransition,
+          exit = QuickLinksSectionExitTransition,
+        ) {
+          Column {
+            QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+            Spacer(Modifier.height(32.dp))
+          }
+        }
+        HelpCenterSection(
+          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+          title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+          chipContainerColor = HighlightColor.Yellow(LIGHT),
+          content = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+              for (topic in topics) {
+                HedvigCard(
+                  onClick = { onNavigateToTopic(topic) },
+                  modifier = Modifier
+                    .fillMaxWidth(),
+                ) {
+                  HedvigText(stringResource(topic.titleRes), Modifier.padding(16.dp))
+                }
               }
             }
-          }
-        },
-      )
-      Spacer(Modifier.height(32.dp))
-      LocalConfiguration.current
-      val resources = LocalContext.current.resources
-      HelpCenterSectionWithClickableRows(
-        title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-        chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-        contentColor = MaterialTheme.colorScheme.onInfoContainer,
-        items = questions,
-        itemText = { resources.getString(it.questionRes) },
-        onClickItem = { onNavigateToQuestion(it) },
-      )
+          },
+        )
+        Spacer(Modifier.height(32.dp))
+        LocalConfiguration.current
+        val resources = LocalContext.current.resources
+        HelpCenterSectionWithClickableRows(
+          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+          title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+          chipContainerColor = HighlightColor.Blue(LIGHT),
+          items = questions,
+          itemText = { resources.getString(it.questionRes) },
+          onClickItem = { onNavigateToQuestion(it) },
+        )
+      }
     }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(40.dp))
@@ -360,7 +465,8 @@ private fun ContentWithoutSearch(
       onNavigateToInbox = onNavigateToInbox,
       onNavigateToNewConversation = onNavigateToNewConversation,
       showNavigateToInboxButton = showNavigateToInboxButton,
-      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+        PaddingValues(horizontal = 16.dp),
     )
   }
 }
@@ -384,7 +490,7 @@ private fun SearchResults(
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
+        HedvigText(
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center,
           text = stringResource(R.string.SEARCH_NOTHING_FOUND),
@@ -396,7 +502,8 @@ private fun SearchResults(
     is HelpCenterUiState.ActiveSearchState.Success -> {
       Column(
         Modifier.padding(
-          WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+          WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal).asPaddingValues() +
+            PaddingValues(horizontal = 16.dp),
         ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -407,8 +514,7 @@ private fun SearchResults(
         if (activeSearchState.results.filteredQuickLinks != null) {
           HelpCenterSectionWithClickableRows(
             title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
-            chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-            contentColor = MaterialTheme.colorScheme.onTypeContainer,
+            chipContainerColor = HighlightColor.Green(LIGHT),
             items = activeSearchState.results.filteredQuickLinks,
             itemText = { resources.getString(it.quickAction.titleRes) },
             itemSubtitle = { resources.getString(it.quickAction.hintTextRes) },
@@ -419,8 +525,7 @@ private fun SearchResults(
         if (activeSearchState.results.filteredQuestions != null) {
           HelpCenterSectionWithClickableRows(
             title = stringResource(R.string.HC_COMMON_QUESTIONS_TITLE),
-            chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-            contentColor = MaterialTheme.colorScheme.onInfoContainer,
+            chipContainerColor = HighlightColor.Blue(LIGHT),
             items = activeSearchState.results.filteredQuestions,
             itemText = { resources.getString(it.questionRes) },
             onClickItem = { onNavigateToQuestion(it) },
@@ -446,18 +551,18 @@ private fun SearchField(
       .fillMaxWidth()
       .height(40.dp)
       .background(
-        color = MaterialTheme.colorScheme.surface,
-        shape = MaterialTheme.shapes.squircleMedium,
+        color = HedvigTheme.colorScheme.surfacePrimary,
+        shape = HedvigTheme.shapes.cornerMedium,
       ),
   ) {
     BasicTextField(
       value = searchQuery ?: "",
       onValueChange = onSearchChange,
-      cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+      cursorBrush = SolidColor(HedvigTheme.colorScheme.fillPrimary),
       modifier = Modifier
         .fillMaxWidth()
         .focusRequester(focusRequester),
-      textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+      textStyle = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textPrimary),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
       keyboardActions = KeyboardActions(
         onSearch = {
@@ -472,7 +577,7 @@ private fun SearchField(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
-            Icons.Default.Search,
+            HedvigIcons.Search,
             contentDescription = null,
             modifier = Modifier
               .alpha(0.60f)
@@ -483,11 +588,12 @@ private fun SearchField(
             modifier = Modifier
               .weight(1f)
               .padding(horizontal = 4.dp),
+            contentAlignment = Alignment.CenterStart,
           ) {
             if (searchQuery.isNullOrEmpty()) {
-              Text(
+              HedvigText(
                 text = stringResource(R.string.SEARCH_PLACEHOLDER),
-                style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+                style = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
                 modifier = Modifier
                   .alpha(0.60f),
               )
@@ -496,14 +602,17 @@ private fun SearchField(
           }
           ClearSearchIcon(
             onClick = onClearSearch,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(8.dp).size(24.dp).then(
-              if (searchQuery.isNullOrEmpty()) {
-                Modifier.withoutPlacement()
-              } else {
-                Modifier
-              },
-            ),
+            tint = HedvigTheme.colorScheme.fillPrimary,
+            modifier = Modifier
+              .padding(8.dp)
+              .size(24.dp)
+              .then(
+                if (searchQuery.isNullOrEmpty()) {
+                  Modifier.withoutPlacement()
+                } else {
+                  Modifier
+                },
+              ),
           )
         }
       },
@@ -522,7 +631,7 @@ private fun ClearSearchIcon(
     modifier = modifier,
   ) {
     Icon(
-      Icons.Default.Clear,
+      HedvigIcons.Close,
       contentDescription = null,
       tint = tint,
     )
@@ -550,9 +659,9 @@ private fun QuickLinksSection(
   onQuickActionsClick: (QuickAction) -> Unit,
 ) {
   HelpCenterSection(
+    modifier = Modifier.padding(horizontal = 16.dp),
     title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
-    chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-    contentColor = MaterialTheme.colorScheme.onTypeContainer,
+    chipContainerColor = HighlightColor.Green(LIGHT),
     content = {
       AnimatedContent(
         targetState = quickLinksUiState,
@@ -563,7 +672,7 @@ private fun QuickLinksSection(
             for (quickLink in quickLinks.quickLinks) {
               QuickLinkCard(
                 topText = {
-                  Text(
+                  HedvigText(
                     text = stringResource(
                       quickLink.quickAction.titleRes,
                     ),
@@ -571,13 +680,13 @@ private fun QuickLinksSection(
                   )
                 },
                 bottomText = {
-                  Text(
+                  HedvigText(
                     text = stringResource(
                       quickLink.quickAction.hintTextRes,
                     ),
                     textAlign = TextAlign.Start,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleSmall,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                    style = HedvigTheme.typography.label,
                   )
                 },
                 onClick = {
@@ -600,16 +709,16 @@ private fun PlaceholderQuickLinks() {
     List(5) {
       QuickLinkCard(
         topText = {
-          Text(
+          HedvigText(
             text = "HHHHHH",
             modifier = Modifier
               .placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
           )
         },
         bottomText = {
-          Text(
+          HedvigText(
             text = "HHHHHHHHHHHHHHHHHH",
-            style = MaterialTheme.typography.titleSmall,
+            style = HedvigTheme.typography.label,
             modifier = Modifier
               .placeholder(true, highlight = PlaceholderHighlight.fade()),
           )
@@ -629,12 +738,10 @@ private fun QuickLinkCard(
   HedvigCard(
     onClick = onClick,
     modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      .fillMaxWidth(),
   ) {
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
       modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
     ) {
       topText()
@@ -680,7 +787,7 @@ private fun PreviewHelpCenterHomeScreen(
   @PreviewParameter(QuickLinkUiStatePreviewProvider::class) quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterHomeScreen(
         topics = listOf(Topic.PAYMENTS, Topic.PAYMENTS),
         questions = listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
@@ -708,7 +815,7 @@ private fun PreviewHelpCenterHomeScreen(
 private fun PreviewQuickLinkAnimations() {
   val provider = QuickLinkUiStatePreviewProvider()
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = provider.values.toList(),
       ) { quickLinkUiState ->
@@ -745,7 +852,7 @@ private class QuickLinkUiStatePreviewProvider :
           addAll(
             List(3) {
               HelpCenterUiState.QuickLink(
-                QuickAction.StandaloneQuickLink(
+                StandaloneQuickLink(
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
                   R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
                   QuickLinkDestination.OuterDestination.QuickLinkTermination,
@@ -755,14 +862,14 @@ private class QuickLinkUiStatePreviewProvider :
           )
           add(
             HelpCenterUiState.QuickLink(
-              QuickAction.MultiSelectQuickLink(
+              MultiSelectQuickLink(
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                 R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                 emptyList(),
               ),
             ),
           )
-        },
+        }.toNonEmptyListOrNull()!!,
       ),
     ),
   )

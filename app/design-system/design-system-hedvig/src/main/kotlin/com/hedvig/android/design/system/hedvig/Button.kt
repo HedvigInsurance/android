@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -31,6 +32,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
@@ -75,7 +78,7 @@ fun HedvigButton(
           ThreeDotsLoading(
             stableColor = buttonColors.activeLoadingIndicatorColor,
             temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.wrapContentSize(Alignment.Center),
           )
         }
       } else {
@@ -132,10 +135,11 @@ fun HedvigButton(
 @Composable
 fun HedvigTextButton(
   text: String,
-  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
+  buttonSize: ButtonSize = Medium,
+  onClick: () -> Unit,
 ) {
   HedvigButton(
     text = text,
@@ -143,9 +147,29 @@ fun HedvigTextButton(
     enabled = enabled,
     modifier = modifier,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    buttonSize = ButtonDefaults.ButtonSize.Medium,
+    buttonSize = buttonSize,
     interactionSource = interactionSource,
   )
+}
+
+@Composable
+fun HedvigRedTextButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  HedvigButton(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+    buttonSize = ButtonDefaults.ButtonSize.Large,
+    interactionSource = interactionSource,
+  ) {
+    HedvigText(text, color = ButtonDefaults.ButtonStyle.Ghost.style.buttonColors.redTextColor)
+  }
 }
 
 object ButtonDefaults {
@@ -195,6 +219,7 @@ private data class ButtonColors(
   val hoverContentColor: Color,
   val activeLoadingIndicatorColor: Color,
   val inactiveLoadingIndicatorColor: Color,
+  val redTextColor: Color,
 ) {
   @Stable
   internal fun containerColor(enabled: Boolean): Color = when {
@@ -318,6 +343,7 @@ private sealed interface Style {
             hoverContentColor = fromToken(PrimaryStyleButtonTokens.HoverContentColor),
             activeLoadingIndicatorColor = fromToken(PrimaryStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(PrimaryStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
           )
         }
       }
@@ -337,6 +363,7 @@ private sealed interface Style {
             hoverContentColor = fromToken(PrimaryAltStyleButtonTokens.HoverContentColor),
             activeLoadingIndicatorColor = fromToken(PrimaryAltStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(PrimaryAltStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
           )
         }
       }
@@ -356,6 +383,7 @@ private sealed interface Style {
             hoverContentColor = fromToken(SecondaryStyleButtonTokens.HoverContentColor),
             activeLoadingIndicatorColor = fromToken(SecondaryStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(SecondaryStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
           )
         }
       }
@@ -375,6 +403,7 @@ private sealed interface Style {
             hoverContentColor = fromToken(SecondaryAltStyleButtonTokens.HoverContentColor),
             activeLoadingIndicatorColor = fromToken(SecondaryAltStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(SecondaryAltStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
           )
         }
       }
@@ -394,6 +423,7 @@ private sealed interface Style {
             hoverContentColor = fromToken(GhostStyleButtonTokens.HoverContentColor),
             activeLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
           )
         }
       }

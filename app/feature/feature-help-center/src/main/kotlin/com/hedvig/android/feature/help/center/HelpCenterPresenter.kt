@@ -9,8 +9,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.NonEmptyList
 import arrow.core.merge
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.feature.help.center.HelpCenterEvent.ClearNavigation
+import com.hedvig.android.feature.help.center.HelpCenterEvent.ClearSearchQuery
+import com.hedvig.android.feature.help.center.HelpCenterEvent.NavigateToQuickAction
+import com.hedvig.android.feature.help.center.HelpCenterEvent.OnDismissQuickActionDialog
+import com.hedvig.android.feature.help.center.HelpCenterEvent.OnQuickActionSelected
+import com.hedvig.android.feature.help.center.HelpCenterEvent.UpdateSearchResults
+import com.hedvig.android.feature.help.center.HelpCenterUiState.ActiveSearchState.Empty
+import com.hedvig.android.feature.help.center.HelpCenterUiState.ActiveSearchState.Success
+import com.hedvig.android.feature.help.center.HelpCenterUiState.Search
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
@@ -29,6 +40,10 @@ internal sealed interface HelpCenterEvent {
   ) : HelpCenterEvent
 
   data object ClearSearchQuery : HelpCenterEvent
+
+  data class NavigateToQuickAction(val destination: QuickLinkDestination) : HelpCenterEvent
+
+  data object ClearNavigation : HelpCenterEvent
 }
 
 internal data class HelpCenterUiState(
@@ -38,6 +53,7 @@ internal data class HelpCenterUiState(
   val selectedQuickAction: QuickAction?,
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
+  val destinationToNavigate: QuickLinkDestination? = null,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -46,7 +62,7 @@ internal data class HelpCenterUiState(
 
     data object NoQuickLinks : QuickLinkUiState
 
-    data class QuickLinks(val quickLinks: List<QuickLink>) : QuickLinkUiState
+    data class QuickLinks(val quickLinks: NonEmptyList<QuickLink>) : QuickLinkUiState
   }
 
   data class Search(
@@ -83,28 +99,37 @@ internal class HelpCenterPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is HelpCenterEvent.OnQuickActionSelected -> selectedQuickAction = event.quickAction
-        is HelpCenterEvent.OnDismissQuickActionDialog -> selectedQuickAction = null
-        HelpCenterEvent.ClearSearchQuery -> {
+        is OnQuickActionSelected -> selectedQuickAction = event.quickAction
+        is OnDismissQuickActionDialog -> selectedQuickAction = null
+        ClearSearchQuery -> {
           currentState = currentState.copy(search = null)
         }
 
-        is HelpCenterEvent.UpdateSearchResults -> {
+        is UpdateSearchResults -> {
           currentState = if (event.results == null) {
             currentState.copy(
-              search = HelpCenterUiState.Search(
+              search = Search(
                 event.searchQuery,
-                HelpCenterUiState.ActiveSearchState.Empty,
+                Empty,
               ),
             )
           } else {
             currentState.copy(
-              search = HelpCenterUiState.Search(
+              search = Search(
                 event.searchQuery,
-                HelpCenterUiState.ActiveSearchState.Success(event.results),
+                Success(event.results),
               ),
             )
           }
+        }
+
+        ClearNavigation -> {
+          selectedQuickAction = null
+          currentState = currentState.copy(destinationToNavigate = null)
+        }
+        is NavigateToQuickAction -> {
+          selectedQuickAction = null
+          currentState = currentState.copy(destinationToNavigate = event.destination)
         }
       }
     }
@@ -117,15 +142,18 @@ internal class HelpCenterPresenter(
         ifLeft = {
           HelpCenterUiState.QuickLinkUiState.NoQuickLinks
         },
-        ifRight = {
-          val list = it.map { action ->
-            HelpCenterUiState.QuickLink(action)
+        ifRight = { quickActionList ->
+          val list = quickActionList.map { quickAction ->
+            HelpCenterUiState.QuickLink(quickAction)
+          }.toNonEmptyListOrNull()
+          if (list == null) {
+            HelpCenterUiState.QuickLinkUiState.NoQuickLinks
+          } else {
+            HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
           }
-          HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
         },
       )
     }
-
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,
       selectedQuickAction = selectedQuickAction,
