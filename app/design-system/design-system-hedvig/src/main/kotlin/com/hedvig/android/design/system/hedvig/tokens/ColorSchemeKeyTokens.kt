@@ -1,7 +1,7 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
 // Semantic names https://www.figma.com/file/5kmmDdh6StpXzbEfr7WevV/Hedvig-UI-Kit?type=design&node-id=15526%3A3163
-enum class ColorSchemeKeyTokens {
+internal enum class ColorSchemeKeyTokens {
   TextPrimary,
   TextNegative,
   TextSecondary,
@@ -61,6 +61,7 @@ enum class ColorSchemeKeyTokens {
   BorderPrimary,
   BorderSecondary,
   BorderHighlight,
+  ShadowLightOnly,
   SignalRedFill,
   SignalRedHighlight,
   SignalRedElement,

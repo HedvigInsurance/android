@@ -62,6 +62,7 @@ internal object ColorLightTokens {
   val BorderPrimary: Color = PaletteTokens.G200TLight
   val BorderSecondary: Color = PaletteTokens.G300TLight
   val BorderHighlight: Color = PaletteTokens.G200TLight
+  val ShadowLightOnly: Color = PaletteTokens.G300TLight
   val SignalRedFill: Color = PaletteTokens.Red100
   val SignalRedHighlight: Color = PaletteTokens.Red300
   val SignalRedElement: Color = PaletteTokens.Red600

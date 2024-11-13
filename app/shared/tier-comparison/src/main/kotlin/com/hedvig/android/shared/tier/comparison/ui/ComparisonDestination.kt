@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,9 +76,11 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalMinimumInteractiveComponentSize
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TableStyle
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -109,9 +112,7 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
     }
 
     is Success -> {
-      ProvideTextStyle(HedvigTheme.typography.label) {
-        ComparisonScreen(state, navigateUp)
-      }
+      ComparisonScreen(state, navigateUp)
     }
 
     Failure -> {
@@ -194,6 +195,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     Spacer(Modifier.height(24.dp))
     Table(
       uiState = uiState,
+      tableStyle = TableStyle(),
       selectComparisonRow = { comparisonRow ->
         bottomSheetRow = comparisonRow
       },
@@ -312,89 +314,99 @@ data class TableMeasurementInfo(
 )
 
 @Composable
-private fun Table(uiState: Success, selectComparisonRow: (ComparisonRow) -> Unit, modifier: Modifier = Modifier) {
+private fun Table(
+  uiState: Success,
+  tableStyle: TableStyle,
+  selectComparisonRow: (ComparisonRow) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val textStyle = tableStyle.textStyle
   val density = LocalDensity.current
-  val textStyle = LocalTextStyle.current
   val textMeasurer = rememberTextMeasurer(
     cacheSize = uiState.comparisonData.columns.count() + uiState.comparisonData.rows.count() + 1,
   )
   val overlaidIndicationState = rememberOverlaidIndicationState()
   val cellsScrollState = rememberScrollState()
   val tableMeasurementInfo = measureTableMeasurementInfo(textMeasurer, density, textStyle, uiState)
-  Layout(
-    {
-      FixSizedComparisonDataColumn(
-        textMeasurer = textMeasurer,
-        comparisonData = uiState.comparisonData,
-        selectComparisonRow = selectComparisonRow,
-        cellsScrollState = cellsScrollState,
-        overlaidIndicationState = overlaidIndicationState,
-        modifier = Modifier.width(IntrinsicSize.Max),
-      )
-      ScrollableTableSection(
-        textMeasurer = textMeasurer,
-        fixedCellWidth = tableMeasurementInfo.fixedCellWidth,
-        scrollState = cellsScrollState,
-        comparisonData = uiState.comparisonData,
-        selectedColumnIndex = uiState.selectedColumnIndex,
-        onRowClick = selectComparisonRow,
-        overlaidIndicationState = overlaidIndicationState,
-      )
-      OverlaidIndication(
-        textMeasurer = textMeasurer,
-        state = overlaidIndicationState,
-      )
-    },
-    modifier = modifier,
-  ) { measurables, constraints ->
-    val fixSizedComparisonDataColumn = measurables[0]
-    val scrollableTableSection = measurables[1]
-    val overlaidIndication = measurables[2]
+  ProvideTextStyle(textStyle) {
+    Layout(
+      {
+        FixSizedComparisonDataColumn(
+          tableStyle = tableStyle,
+          textMeasurer = textMeasurer,
+          comparisonData = uiState.comparisonData,
+          selectComparisonRow = selectComparisonRow,
+          cellsScrollState = cellsScrollState,
+          overlaidIndicationState = overlaidIndicationState,
+          modifier = Modifier.width(IntrinsicSize.Max),
+        )
+        ScrollableTableSection(
+          tableStyle = tableStyle,
+          textMeasurer = textMeasurer,
+          fixedCellWidth = tableMeasurementInfo.fixedCellWidth,
+          scrollState = cellsScrollState,
+          comparisonData = uiState.comparisonData,
+          selectedColumnIndex = uiState.selectedColumnIndex,
+          onRowClick = selectComparisonRow,
+          overlaidIndicationState = overlaidIndicationState,
+        )
+        OverlaidIndication(
+          textMeasurer = textMeasurer,
+          state = overlaidIndicationState,
+        )
+      },
+      modifier = modifier.background(tableStyle.containerColor),
+    ) { measurables, constraints ->
+      val fixSizedComparisonDataColumn = measurables[0]
+      val scrollableTableSection = measurables[1]
+      val overlaidIndication = measurables[2]
 
-    val cellSectionFullWidth =
-      (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellEndPadding).roundToPx()
+      val cellSectionFullWidth =
+        (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellEndPadding).roundToPx()
 
-    val bothFitCompletely =
-      tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
-    val columnConstraints = if (bothFitCompletely) {
-      constraints.copy(
-        minWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
-        maxWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
+      val bothFitCompletely =
+        tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
+      val columnConstraints = if (bothFitCompletely) {
+        constraints.copy(
+          minWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
+          maxWidth = tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts,
+        )
+      } else {
+        val spaceLeftAfterCellsAreFullyPlaced = constraints.maxWidth - cellSectionFullWidth
+        val minimumSpaceFixedColumnShouldTakeIfBothDontFullyFit = constraints.maxWidth * MaxSizeRatioForFixedColumn
+        val remainingWidthCoercedToAtLeastTheMinimumScreenPercentage =
+          spaceLeftAfterCellsAreFullyPlaced.coerceAtLeast(minimumSpaceFixedColumnShouldTakeIfBothDontFullyFit.toInt())
+        constraints.copy(
+          minWidth = remainingWidthCoercedToAtLeastTheMinimumScreenPercentage,
+          maxWidth = remainingWidthCoercedToAtLeastTheMinimumScreenPercentage,
+        )
+      }
+      overlaidIndicationState.fixedColumnWidth = columnConstraints.maxWidth
+      val fixSizedComparisonDataColumnPlaceable = fixSizedComparisonDataColumn.measure(columnConstraints)
+      val spaceRemainingForCells = constraints.maxWidth - fixSizedComparisonDataColumnPlaceable.width
+      val remainingWidthForCellSection = cellSectionFullWidth.coerceAtMost(spaceRemainingForCells)
+      val cellSectionConstraints = constraints.copy(
+        minWidth = remainingWidthForCellSection,
+        maxWidth = remainingWidthForCellSection,
       )
-    } else {
-      val spaceLeftAfterCellsAreFullyPlaced = constraints.maxWidth - cellSectionFullWidth
-      val minimumSpaceFixedColumnShouldTakeIfBothDontFullyFit = constraints.maxWidth * MaxSizeRatioForFixedColumn
-      val remainingWidthCoercedToAtLeastTheMinimumScreenPercentage =
-        spaceLeftAfterCellsAreFullyPlaced.coerceAtLeast(minimumSpaceFixedColumnShouldTakeIfBothDontFullyFit.toInt())
-      constraints.copy(
-        minWidth = remainingWidthCoercedToAtLeastTheMinimumScreenPercentage,
-        maxWidth = remainingWidthCoercedToAtLeastTheMinimumScreenPercentage,
-      )
-    }
-    overlaidIndicationState.fixedColumnWidth = columnConstraints.maxWidth
-    val fixSizedComparisonDataColumnPlaceable = fixSizedComparisonDataColumn.measure(columnConstraints)
-    val spaceRemainingForCells = constraints.maxWidth - fixSizedComparisonDataColumnPlaceable.width
-    val remainingWidthForCellSection = cellSectionFullWidth.coerceAtMost(spaceRemainingForCells)
-    val cellSectionConstraints = constraints.copy(
-      minWidth = remainingWidthForCellSection,
-      maxWidth = remainingWidthForCellSection,
-    )
-    val scrollableTableSectionPlaceable = scrollableTableSection.measure(cellSectionConstraints)
+      val scrollableTableSectionPlaceable = scrollableTableSection.measure(cellSectionConstraints)
 
-    val layoutWidth = (fixSizedComparisonDataColumnPlaceable.width + scrollableTableSectionPlaceable.width)
-      .coerceAtMost(constraints.maxWidth)
-    val layoutHeight = max(fixSizedComparisonDataColumnPlaceable.height, scrollableTableSectionPlaceable.height)
-    val overlaidIndicationPlaceable = overlaidIndication.measure(Constraints.fixedWidth(layoutWidth))
-    layout(layoutWidth, layoutHeight) {
-      scrollableTableSectionPlaceable.place(fixSizedComparisonDataColumnPlaceable.width, 0)
-      fixSizedComparisonDataColumnPlaceable.place(0, 0)
-      overlaidIndicationPlaceable.place(0, 0)
+      val layoutWidth = (fixSizedComparisonDataColumnPlaceable.width + scrollableTableSectionPlaceable.width)
+        .coerceAtMost(constraints.maxWidth)
+      val layoutHeight = max(fixSizedComparisonDataColumnPlaceable.height, scrollableTableSectionPlaceable.height)
+      val overlaidIndicationPlaceable = overlaidIndication.measure(Constraints.fixedWidth(layoutWidth))
+      layout(layoutWidth, layoutHeight) {
+        scrollableTableSectionPlaceable.place(fixSizedComparisonDataColumnPlaceable.width, 0)
+        fixSizedComparisonDataColumnPlaceable.place(0, 0)
+        overlaidIndicationPlaceable.place(0, 0)
+      }
     }
   }
 }
 
 @Composable
 private fun FixSizedComparisonDataColumn(
+  tableStyle: TableStyle,
   textMeasurer: TextMeasurer,
   comparisonData: ComparisonData,
   selectComparisonRow: (ComparisonRow) -> Unit,
@@ -411,19 +423,23 @@ private fun FixSizedComparisonDataColumn(
     }
   }
   val animatedShadowSize by animateDpAsState(shadowWidth)
-  val borderColor = HedvigTheme.colorScheme.borderSecondary
   Column(modifier = modifier) {
     Cell(textMeasurer)
     Column(
       Modifier
         .drawWithContent {
           drawContent()
+          drawLine(
+            color = tableStyle.borderColor,
+            start = Offset(size.width, 0f),
+            end = Offset(size.width, size.height),
+          )
           val shadowSizePx = animatedShadowSize.toPx()
           drawRect(
             topLeft = Offset(size.width, 0f),
             size = Size(shadowSizePx, size.height),
             brush = Brush.horizontalGradient(
-              colors = listOf(borderColor, Color.Transparent),
+              colors = listOf(tableStyle.shadowColor, Color.Transparent),
               startX = size.width,
               endX = size.width + shadowSizePx,
             ),
@@ -453,7 +469,7 @@ private fun FixSizedComparisonDataColumn(
                 drawContent()
                 if (rowIndex != 0) {
                   drawLine(
-                    color = borderColor,
+                    color = tableStyle.borderColor,
                     start = Offset.Zero,
                     end = Offset(size.width, 0f),
                   )
@@ -470,6 +486,7 @@ private fun FixSizedComparisonDataColumn(
 
 @Composable
 private fun ScrollableTableSection(
+  tableStyle: TableStyle,
   textMeasurer: TextMeasurer,
   fixedCellWidth: Dp,
   scrollState: ScrollState,
@@ -487,22 +504,14 @@ private fun ScrollableTableSection(
       comparisonData.columns.forEachIndexed { index, column ->
         column.title?.let { title ->
           val isThisSelected = index == selectedColumnIndex
-          val textColor =
-            if (isThisSelected) HedvigTheme.colorScheme.textBlack else HedvigTheme.colorScheme.textPrimary
+          val textColor = tableStyle.cellTextColor(isThisSelected)
           Cell(
             textMeasurer = textMeasurer,
             fixedWidth = fixedCellWidth,
-            modifier = Modifier
-              .then(
-                if (isThisSelected) {
-                  Modifier.background(
-                    shape = HedvigTheme.shapes.cornerXSmallTop,
-                    color = HedvigTheme.colorScheme.highlightGreenFill1,
-                  )
-                } else {
-                  Modifier
-                },
-              ),
+            modifier = Modifier.background(
+              shape = tableStyle.selectedCellShape(isFirst = true),
+              color = tableStyle.cellContainerColor(isThisSelected),
+            ),
           ) {
             HedvigText(
               text = title,
@@ -522,7 +531,6 @@ private fun ScrollableTableSection(
             { Offset(overlaidIndicationState.fixedColumnWidth.toFloat(), 0f) },
           )
         }
-        val borderColor = HedvigTheme.colorScheme.borderSecondary
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
@@ -536,7 +544,7 @@ private fun ScrollableTableSection(
               drawContent()
               if (rowIndex != 0) {
                 drawLine(
-                  color = borderColor,
+                  color = tableStyle.borderColor,
                   start = Offset.Zero,
                   end = Offset(size.width, 0f),
                 )
@@ -546,23 +554,14 @@ private fun ScrollableTableSection(
           comparisonRow.cells.forEachIndexed { index, cell ->
             val isThisSelected = index == selectedColumnIndex
             ComparisonCell(
+              tableStyle = tableStyle,
               textMeasurer = textMeasurer,
               cell = cell,
               isThisSelected = isThisSelected,
               fixedCellWidth = fixedCellWidth,
-              modifier = Modifier.then(
-                if (isThisSelected) {
-                  Modifier.background(
-                    shape = if (rowIndex == comparisonData.rows.lastIndex) {
-                      HedvigTheme.shapes.cornerXSmallBottom
-                    } else {
-                      HedvigTheme.shapes.cornerNone
-                    },
-                    color = HedvigTheme.colorScheme.highlightGreenFill1,
-                  )
-                } else {
-                  Modifier
-                },
+              modifier = Modifier.background(
+                shape = tableStyle.selectedCellShape(isLast = rowIndex == comparisonData.rows.lastIndex),
+                color = tableStyle.cellContainerColor(isThisSelected),
               ),
             )
           }
@@ -575,6 +574,7 @@ private fun ScrollableTableSection(
 
 @Composable
 private fun ComparisonCell(
+  tableStyle: TableStyle,
   textMeasurer: TextMeasurer,
   cell: ComparisonCell,
   isThisSelected: Boolean,
@@ -586,13 +586,7 @@ private fun ComparisonCell(
     fixedWidth = fixedCellWidth,
     modifier = modifier,
   ) {
-    val checkMarkColor = if (!cell.isCovered) {
-      HedvigTheme.colorScheme.textDisabled
-    } else if (isThisSelected) {
-      HedvigTheme.colorScheme.textBlack
-    } else {
-      HedvigTheme.colorScheme.textPrimary
-    }
+    val contentColor = tableStyle.cellContentColor(cell.isCovered, isThisSelected)
     Icon(
       imageVector = if (cell.isCovered) {
         HedvigIcons.Checkmark
@@ -600,7 +594,7 @@ private fun ComparisonCell(
         HedvigIcons.Minus
       },
       null,
-      tint = checkMarkColor,
+      tint = contentColor,
       modifier = Modifier
         .requiredSize(0.dp)
         .wrapContentSize(unbounded = true),
@@ -645,7 +639,7 @@ private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
         maxLines = 1,
       ).size.height.toDp() + (CellVerticalPadding * 2)
     }
-  }
+  }.coerceAtLeast(LocalMinimumInteractiveComponentSize.current)
 }
 
 @HedvigPreview
