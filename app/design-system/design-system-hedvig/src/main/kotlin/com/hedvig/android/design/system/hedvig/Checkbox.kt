@@ -82,6 +82,7 @@ fun Checkbox(
   checkboxStyle: CheckboxStyle = CheckboxDefaults.checkboxStyle,
   checkboxSize: CheckboxDefaults.CheckboxSize = CheckboxDefaults.checkboxSize,
   interactionSource: MutableInteractionSource? = null,
+  containerColor: Color = checkboxColors.containerColor,
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
@@ -105,7 +106,7 @@ fun Checkbox(
   Surface(
     modifier = clickableModifier,
     shape = checkboxSize.size(checkboxStyle).shape,
-    color = checkboxColors.containerColor,
+    color = containerColor,
   ) {
     val optionTextColor = checkboxColors.optionTextColor(lockedState)
     val labelTextColor = checkboxColors.labelTextColor(lockedState)

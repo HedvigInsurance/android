@@ -11,12 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,12 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import hedvig.resources.R
 
 @Composable
@@ -88,10 +86,8 @@ private fun AboutAppScreen(
         .fillMaxWidth()
         .padding(16.dp),
     ) {
-      Text(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-        Text(memberId ?: "")
-      }
+      HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+      HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
     }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -100,21 +96,20 @@ private fun AboutAppScreen(
         .fillMaxWidth()
         .padding(16.dp),
     ) {
-      Text(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-        Text(
-          text = buildString {
-            append(appVersionName)
-            if (!isProduction) {
-              append(" (")
-              append(appVersionCode)
-              append(")")
-            }
-          },
-          textAlign = TextAlign.End,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
+      HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
+      HedvigText(
+        text = buildString {
+          append(appVersionName)
+          if (!isProduction) {
+            append(" (")
+            append(appVersionCode)
+            append(")")
+          }
+        },
+        color = HedvigTheme.colorScheme.textSecondary,
+        textAlign = TextAlign.End,
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -124,12 +119,14 @@ private fun AboutAppScreen(
         .clickable(onClick = showOpenSourceLicenses)
         .padding(16.dp),
     ) {
-      Text(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+      HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
     }
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
-    HedvigSecondaryContainedButton(
+    HedvigButton(
       text = stringResource(R.string.app_info_submit_bug_button),
+      enabled = true,
+      buttonStyle = Secondary,
       onClick = { showSubmitBugWarning = true },
       modifier = Modifier
         .fillMaxWidth()
@@ -150,8 +147,8 @@ private fun SubmitBugWarningDialog(memberId: String?, appVersionName: String, on
     "Android ${Build.VERSION.SDK_INT}",
   )
   HedvigAlertDialog(
-    title = null,
-    text = stringResource(id = R.string.app_info_submit_bug_warning),
+    title = stringResource(id = R.string.app_info_submit_bug_warning),
+    subtitle = null,
     onDismissRequest = onDismissRequest,
     onConfirmClick = {
       openEmailClientWithPrefilledData(
@@ -191,7 +188,7 @@ private fun openEmailClientWithPrefilledData(
 @Composable
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AboutAppScreen(
         memberId = "123",
         onBackPressed = {},

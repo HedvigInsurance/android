@@ -41,6 +41,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
+import com.hedvig.android.data.changetier.di.dataChangeTierModule
 import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
@@ -50,11 +51,11 @@ import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
+import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
-import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
@@ -62,6 +63,7 @@ import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
+import com.hedvig.android.feature.movingflow.di.movingFlowModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
@@ -81,6 +83,7 @@ import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
+import com.hedvig.android.shared.tier.comparison.di.comparisonModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
@@ -291,22 +294,24 @@ private val coilModule = module {
 val applicationModule = module {
   includes(
     listOf(
-      adyenFeatureModule,
       apolloAuthListenersModule,
       appModule,
       authModule,
       buildConstantsModule,
       changeAddressModule,
+      chooseTierModule,
       chatModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
       clockModule,
       coilModule,
+      comparisonModule,
       connectPaymentTrustlyModule,
       coreAppReviewModule,
       coreCommonModule,
       dataChatModule,
+      dataChangeTierModule,
       dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,
@@ -331,6 +336,7 @@ val applicationModule = module {
       loginModule,
       marketManagerModule,
       memberRemindersModule,
+      movingFlowModule,
       networkCacheManagerModule,
       networkModule,
       notificationBadgeModule,

@@ -7,5 +7,6 @@ internal object TopAppBarTokens {
   val ContentColor = ColorSchemeKeyTokens.TextPrimary
   val ContainerHeight = 64.dp
   val ContentHorizontalPadding = 16.dp
+  val IconTitleSpacerWidth = 12.dp
   val TextStyle = TypographyKeyTokens.HeadlineSmall
 }

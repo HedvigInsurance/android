@@ -51,6 +51,7 @@ fun TopAppBar(
         .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
     ) {
       IconButton(
+        modifier = Modifier.size(24.dp),
         onClick = onActionClick,
         content = {
           Icon(
@@ -59,11 +60,10 @@ fun TopAppBar(
               TopAppBarActionType.CLOSE -> HedvigIcons.Close
             },
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
           )
         },
       )
-      Spacer(Modifier.width(8.dp))
+      Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
       CompositionLocalProvider(LocalTextStyle provides TopAppBarTokens.TextStyle.value) {
         Box(
           Modifier
@@ -91,13 +91,13 @@ fun TopAppBar(
     color = TopAppBarTokens.ContainerColor.value,
     contentColor = TopAppBarTokens.ContentColor.value,
     modifier = modifier
+      .windowInsetsPadding(windowInsets)
       .fillMaxWidth()
       .height(TopAppBarTokens.ContainerHeight),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .windowInsetsPadding(windowInsets)
         .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
@@ -119,7 +119,7 @@ fun TopAppBar(
                 )
               },
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
             HedvigText(
               text = title,
               maxLines = 1,
@@ -145,10 +145,14 @@ fun TopAppBar(
   }
 }
 
+/**
+ * Just the layout and placing of the top app bar, without the background, drag handling and so on. Can be used to
+ * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
+ */
 @Composable
-internal fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
+fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
   Row(
-    horizontalArrangement = Arrangement.End,
+    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .windowInsetsPadding(windowInsets)
@@ -161,7 +165,7 @@ internal fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @
 }
 
 @Composable
-internal fun TopAppBarWithBack(
+fun TopAppBarWithBack(
   title: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,

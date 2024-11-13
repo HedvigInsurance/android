@@ -11,7 +11,7 @@ import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.Se
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.language.LanguageService
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val changeAddressModule = module {

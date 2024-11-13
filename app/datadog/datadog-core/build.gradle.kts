@@ -1,20 +1,18 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(libs.androidx.other.startup)
-  implementation(libs.androidx.other.workManager)
+  api(libs.androidx.other.startup)
+  api(libs.okhttp.core)
+
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.logs)
   implementation(libs.datadog.sdk.okhttp)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.datadog.sdk.trace)
-  implementation(libs.koin.android)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.okhttp.core)
+  implementation(libs.koin.core)
   implementation(libs.timber)
   implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)

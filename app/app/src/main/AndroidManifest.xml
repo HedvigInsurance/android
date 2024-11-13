@@ -134,13 +134,15 @@
   </application>
 
   <queries>
+    <!--
+    Allow querying for BankID app
+    https://developer.android.com/training/package-visibility/declaring#intent-filter-signature
+    -->
     <intent>
       <action android:name="android.intent.action.VIEW" />
-      <data android:scheme="bankid" />
-    </intent>
-    <intent>
-      <action android:name="android.intent.action.VIEW" />
-      <data android:scheme="https" />
+      <data
+        android:host="app.bankid.com"
+        android:scheme="https" />
     </intent>
     <intent>
       <action android:name="android.intent.action.VIEW" />

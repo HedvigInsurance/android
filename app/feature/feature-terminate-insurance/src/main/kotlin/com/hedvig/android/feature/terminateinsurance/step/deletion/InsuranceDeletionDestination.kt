@@ -4,17 +4,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -32,9 +32,9 @@ internal fun InsuranceDeletionDestination(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
   ) {
-    Text(
-      style = MaterialTheme.typography.headlineSmall.copy(
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    HedvigText(
+      style = HedvigTheme.typography.headlineMedium.copy(
+        color = HedvigTheme.colorScheme.textSecondary,
       ),
       text = stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_INFORMATION),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -53,20 +53,27 @@ internal fun InsuranceDeletionDestination(
       dateValue = stringResource(id = R.string.TERMINATION_FLOW_TODAY),
       onClick = null,
       isLocked = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(8.dp))
-    VectorInfoCard(
-      text = stringResource(id = R.string.TERMINATION_FLOW_DELETION_INFO_CARD),
+    HedvigNotificationCard(
+      message = stringResource(id = R.string.TERMINATION_FLOW_DELETION_INFO_CARD),
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
+      priority = NotificationPriority.Info,
     )
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+
+    HedvigButton(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
       onClick = onContinue,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      enabled = true,
     )
+
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -75,7 +82,7 @@ internal fun InsuranceDeletionDestination(
 @Composable
 private fun PreviewInsuranceDeletionScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InsuranceDeletionDestination(
         displayName = "Homeowner insurance",
         exposureName = "Bellmansgatan 19",

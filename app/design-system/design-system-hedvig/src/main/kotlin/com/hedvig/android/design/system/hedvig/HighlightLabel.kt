@@ -14,6 +14,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Blue
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Frosted
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Green
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Pink
@@ -25,11 +26,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.BackgroundNegative
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfaceSecondary
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextNegative
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.HighlightLabelTokens
 
 @Composable
@@ -60,10 +56,22 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
     }
 
     is Grey -> {
-      when (color.shade) {
-        LIGHT -> highLightColors.greyLight
-        MEDIUM -> highLightColors.greyMedium
-        DARK -> highLightColors.greyDark
+      when (color.translucent) {
+        false -> {
+          when (color.shade) {
+            LIGHT -> highLightColors.greyLight
+            MEDIUM -> highLightColors.greyMedium
+            DARK -> highLightColors.greyDark
+          }
+        }
+
+        true -> {
+          when (color.shade) {
+            LIGHT -> highLightColors.greyLightTranslucent
+            MEDIUM -> highLightColors.greyMediumTranslucent
+            DARK -> highLightColors.greyDarkTranslucent
+          }
+        }
       }
     }
 
@@ -106,6 +114,12 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         DARK -> highLightColors.yellowDark
       }
     }
+
+    is Frosted -> when (color.shade) {
+      LIGHT -> highLightColors.frostedLight
+      MEDIUM -> highLightColors.frostedMedium
+      DARK -> highLightColors.frostedDark
+    }
   }
   val textColor = when (color) {
     is Grey -> {
@@ -114,6 +128,10 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         MEDIUM -> highLightColors.textColorForGreyMedium
         DARK -> highLightColors.textColorForGreyDark
       }
+    }
+
+    is Frosted -> {
+      highLightColors.textColorForFrosted
     }
 
     else -> highLightColors.defaultTextColor
@@ -221,7 +239,10 @@ object HighlightLabelDefaults {
 
     data class Pink(override val shade: HighlightShade) : HighlightColor()
 
-    data class Grey(override val shade: HighlightShade) : HighlightColor()
+    // Temp translucent grey colors https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727340030201129
+    data class Grey(override val shade: HighlightShade, val translucent: Boolean = false) : HighlightColor()
+
+    data class Frosted(override val shade: HighlightShade) : HighlightColor()
   }
 }
 
@@ -253,10 +274,17 @@ private data class HighLightColors(
   val greyLight: Color,
   val greyMedium: Color,
   val greyDark: Color,
+  val greyLightTranslucent: Color,
+  val greyMediumTranslucent: Color,
+  val greyDarkTranslucent: Color,
   val defaultTextColor: Color,
   val textColorForGreyLight: Color,
   val textColorForGreyMedium: Color,
   val textColorForGreyDark: Color,
+  val textColorForFrosted: Color,
+  val frostedLight: Color,
+  val frostedMedium: Color,
+  val frostedDark: Color,
 )
 
 private val highLightColors: HighLightColors
@@ -288,13 +316,20 @@ private val highLightColors: HighLightColors
         pinkLight = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
         pinkMedium = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
         pinkDark = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
-        greyLight = fromToken(SurfacePrimary),
-        greyMedium = fromToken(SurfaceSecondary),
-        greyDark = fromToken(BackgroundNegative),
+        greyLight = fromToken(ColorSchemeKeyTokens.SurfacePrimary),
+        greyMedium = fromToken(ColorSchemeKeyTokens.SurfaceSecondary),
+        greyDark = fromToken(ColorSchemeKeyTokens.BackgroundNegative),
+        greyLightTranslucent = fromToken(ColorSchemeKeyTokens.SurfacePrimaryTransparent),
+        greyMediumTranslucent = fromToken(ColorSchemeKeyTokens.SurfaceSecondaryTransparent),
+        greyDarkTranslucent = fromToken(ColorSchemeKeyTokens.BackgroundNegative),
         defaultTextColor = fromToken(ColorSchemeKeyTokens.TextBlack),
-        textColorForGreyLight = fromToken(TextPrimary),
-        textColorForGreyMedium = fromToken(TextPrimary),
-        textColorForGreyDark = fromToken(TextNegative),
+        textColorForGreyLight = fromToken(ColorSchemeKeyTokens.TextPrimary),
+        textColorForGreyMedium = fromToken(ColorSchemeKeyTokens.TextPrimary),
+        textColorForGreyDark = fromToken(ColorSchemeKeyTokens.TextNegative),
+        textColorForFrosted = fromToken(ColorSchemeKeyTokens.TextWhite),
+        frostedLight = fromToken(ColorSchemeKeyTokens.SurfaceSecondaryTransparent),
+        frostedMedium = fromToken(ColorSchemeKeyTokens.FillTertiaryTransparent),
+        frostedDark = fromToken(ColorSchemeKeyTokens.FillSecondaryTransparent),
       )
     }
   }

@@ -1,15 +1,17 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.dataContractPublic)

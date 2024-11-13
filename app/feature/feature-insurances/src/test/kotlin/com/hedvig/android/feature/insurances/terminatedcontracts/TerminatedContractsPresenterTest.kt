@@ -202,6 +202,9 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage",
+            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -214,6 +217,8 @@ class TerminatedContractsPresenterTest {
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
+        tierName = "STANDARD",
       ),
       InsuranceContract(
         "contractId2",
@@ -233,6 +238,9 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage",
+            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -245,6 +253,8 @@ class TerminatedContractsPresenterTest {
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
+        tierName = "STANDARD",
       ),
     )
 
@@ -266,6 +276,9 @@ class TerminatedContractsPresenterTest {
           perils = listOf(),
           insurableLimits = listOf(),
           documents = listOf(),
+          displayTierName = "Standard",
+          tierDescription = "Our standard coverage",
+          termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
         ),
         certificateUrl = null,
         coInsured = listOf(),
@@ -278,6 +291,8 @@ class TerminatedContractsPresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
+      tierName = "STANDARD",
     )
 
     private val activeInsurances = listOf(
@@ -299,6 +314,9 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage",
+            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -311,6 +329,8 @@ class TerminatedContractsPresenterTest {
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
+        tierName = "STANDARD",
       ),
       InsuranceContract(
         "contractId4",
@@ -330,6 +350,9 @@ class TerminatedContractsPresenterTest {
             perils = listOf(),
             insurableLimits = listOf(),
             documents = listOf(),
+            displayTierName = "Standard",
+            tierDescription = "Our standard coverage",
+            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
           certificateUrl = null,
           coInsured = listOf(),
@@ -342,6 +365,8 @@ class TerminatedContractsPresenterTest {
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
+        tierName = "STANDARD",
       ),
     )
   }

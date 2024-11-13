@@ -1,25 +1,10 @@
 plugins {
-  id("hedvig.android.apollo")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.ktlint")
-  alias(libs.plugins.squareSortDependencies)
 }
 
-dependencies {
-  api(libs.apollo.adapters.datetime)
-  api(libs.apollo.api)
-  api(libs.kotlinx.datetime)
-
-  implementation(libs.apollo.runtime)
-  implementation(libs.koin.core)
-  implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreMarkdown)
-}
-
-apollo {
-  // Octopus client
-  service("octopus") {
+hedvig {
+  apolloSchema {
     introspection {
       endpointUrl = "https://apollo-router.dev.hedvigit.com"
       schemaFile = file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
@@ -34,6 +19,7 @@ apollo {
     codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
 
     generateApolloMetadata = true
+    @Suppress("OPT_IN_USAGE")
     generateDataBuilders = true
 
     failOnWarnings = true
@@ -41,7 +27,8 @@ apollo {
     generateOptionalOperationVariables = false
     outputDirConnection {
       // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
-      connectToKotlinSourceSet("main")
+      // connectToKotlinSourceSet("main")
+      connectToAllAndroidVariants()
     }
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
@@ -55,4 +42,13 @@ apollo {
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
   }
+}
+
+dependencies {
+  api(libs.apollo.adapters.datetime)
+  api(libs.apollo.api)
+  api(libs.kotlinx.datetime)
+  implementation(projects.coreBuildConstants)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreMarkdown)
 }

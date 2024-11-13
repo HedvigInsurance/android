@@ -8,32 +8,29 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.systemGestureExclusion
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.core.common.android.time.daysUntil
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.InfoCardTextButton
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.memberreminders.MemberReminder
+import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -115,7 +112,7 @@ fun MemberReminderCards(
       HorizontalPagerIndicator(
         pagerState = pagerState,
         pageCount = memberReminders.size,
-        activeColor = LocalContentColor.current,
+        activeColor = HedvigTheme.colorScheme.fillPrimary,
         modifier = Modifier
           .padding(contentPadding)
           .align(Alignment.CenterHorizontally),
@@ -194,38 +191,30 @@ fun ReminderCardEnableNotifications(
   requestNotificationPermission: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  VectorInfoCard(
-    text = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
+  HedvigNotificationCard(
+    message = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
     modifier = modifier,
-  ) {
-    Row {
-      InfoCardTextButton(
-        onClick = snoozeNotificationPermissionReminder,
-        text = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(Modifier.width(8.dp))
-      InfoCardTextButton(
-        onClick = requestNotificationPermission,
-        text = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
-        modifier = Modifier.weight(1f),
-      )
-    }
-  }
+    priority = NotificationPriority.Info,
+    style = InfoCardStyle.Buttons(
+      leftButtonText = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
+      onLeftButtonClick = snoozeNotificationPermissionReminder,
+      rightButtonText = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
+      onRightButtonClick = requestNotificationPermission,
+    ),
+  )
 }
 
 @Composable
 private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
-  VectorWarningCard(
-    text = stringResource(R.string.info_card_missing_payment_body),
+  HedvigNotificationCard(
+    message = stringResource(R.string.info_card_missing_payment_body),
     modifier = modifier,
-  ) {
-    InfoCardTextButton(
-      onClick = navigateToConnectPayment,
-      text = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
-      modifier = Modifier.fillMaxWidth(),
-    )
-  }
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+      onButtonClick = navigateToConnectPayment,
+    ),
+  )
 }
 
 @Composable
@@ -234,16 +223,15 @@ private fun ReminderCardMissingPayment(
   onNavigateToNewConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  VectorWarningCard(
-    text = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
+  HedvigNotificationCard(
+    message = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
     modifier = modifier,
-  ) {
-    InfoCardTextButton(
-      onClick = onNavigateToNewConversation,
-      text = stringResource(R.string.open_chat),
-      modifier = Modifier.fillMaxWidth(),
-    )
-  }
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(R.string.open_chat),
+      onButtonClick = onNavigateToNewConversation,
+    ),
+  )
 }
 
 @Composable
@@ -255,72 +243,71 @@ private fun ReminderCardUpcomingRenewals(
   val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingRenewal.renewalDate) {
     daysUntil(upcomingRenewal.renewalDate)
   }
-  VectorInfoCard(
-    text = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
+  val style = upcomingRenewal.draftCertificateUrl?.let {
+    InfoCardStyle.Button(
+      onButtonClick = { openUrl(it) },
+      buttonText = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+    )
+  } ?: InfoCardStyle.Default
+  HedvigNotificationCard(
+    message = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
     modifier = modifier,
-  ) {
-    upcomingRenewal.draftCertificateUrl?.let {
-      InfoCardTextButton(
-        onClick = { openUrl(it) },
-        text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
-  }
+    priority = NotificationPriority.Info,
+    style = style,
+  )
 }
 
 @Composable
 private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier: Modifier = Modifier) {
-  VectorWarningCard(
-    text = stringResource(R.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
+  HedvigNotificationCard(
+    message = stringResource(R.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
     modifier = modifier,
-  ) {
-    InfoCardTextButton(
-      onClick = navigateToContractDetail,
-      text = stringResource(R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-      modifier = Modifier.fillMaxWidth(),
-    )
-  }
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+      onButtonClick = navigateToContractDetail,
+    ),
+  )
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewReminderCardEnableNotifications() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReminderCardEnableNotifications({}, {})
     }
   }
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewReminderCardConnectPayment() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReminderCardConnectPayment({})
     }
   }
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewReminderCardUpcomingRenewals() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReminderCardUpcomingRenewals(
-        MemberReminder.UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""),
+        UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""),
         {},
       )
     }
   }
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewReminderCardCoInsuredInfo() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReminderCoInsuredInfo(
         {},
       )

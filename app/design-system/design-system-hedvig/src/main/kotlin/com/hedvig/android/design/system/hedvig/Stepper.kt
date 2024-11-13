@@ -1,8 +1,13 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,14 +68,13 @@ fun HedvigStepper(
   modifier: Modifier = Modifier,
   stepperStyle: StepperStyle = StepperDefaults.stepperStyle,
   stepperSize: StepperDefaults.StepperSize = StepperDefaults.stepperSize,
-  showError: Boolean = false,
   errorText: String? = null,
 ) {
-  val containerColor = stepperColors.containerColor(showError)
-  val labelColor = stepperColors.labelColor(showError)
-  val textColor = stepperColors.textColor(showError)
-  val plusColor = stepperColors.symbolColor(showError, isPlusEnabled)
-  val minusColor = stepperColors.symbolColor(showError, isMinusEnabled)
+  val containerColor = stepperColors.containerColor(errorText != null)
+  val labelColor = stepperColors.labelColor(errorText != null)
+  val textColor = stepperColors.textColor(errorText != null)
+  val plusColor = stepperColors.symbolColor(errorText != null, isPlusEnabled)
+  val minusColor = stepperColors.symbolColor(errorText != null, isMinusEnabled)
 
   when (stepperStyle) {
     Default -> DefaultStepper(
@@ -78,12 +82,13 @@ fun HedvigStepper(
       text = text,
       onMinusClick = onMinusClick,
       onPlusClick = onPlusClick,
+      isPlusEnabled = isPlusEnabled,
+      isMinusEnabled = isMinusEnabled,
       containerColor = containerColor.value,
       textColor = textColor.value,
       plusColor = plusColor.value,
       minusColor = minusColor.value,
       errorText = errorText,
-      showError = showError,
       modifier = modifier,
     )
 
@@ -93,13 +98,14 @@ fun HedvigStepper(
       labelText = stepperStyle.labelText,
       onMinusClick = onMinusClick,
       onPlusClick = onPlusClick,
+      isPlusEnabled = isPlusEnabled,
+      isMinusEnabled = isMinusEnabled,
       containerColor = containerColor.value,
       textColor = textColor.value,
       labelColor = labelColor.value,
       plusColor = plusColor.value,
       minusColor = minusColor.value,
       errorText = errorText,
-      showError = showError,
       modifier = modifier,
     )
   }
@@ -111,11 +117,12 @@ private fun DefaultStepper(
   text: String,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   containerColor: Color,
   textColor: Color,
   plusColor: Color,
   minusColor: Color,
-  showError: Boolean,
   errorText: String?,
   modifier: Modifier = Modifier,
 ) {
@@ -142,6 +149,8 @@ private fun DefaultStepper(
             StepperSymbols(
               onMinusClick,
               onPlusClick,
+              isPlusEnabled,
+              isMinusEnabled,
               plusColor,
               minusColor,
               modifier = Modifier.padding(stepperSize.size.symbolsPadding),
@@ -152,7 +161,12 @@ private fun DefaultStepper(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Default)),
       )
     }
-    AnimatedVisibility(showError) {
+    AnimatedContent(
+      errorText,
+      transitionSpec = {
+        (fadeIn() + expandVertically()) togetherWith (fadeOut() + shrinkVertically())
+      },
+    ) { errorText ->
       if (errorText != null) {
         HedvigText(
           text = errorText,
@@ -169,6 +183,8 @@ private fun DefaultStepper(
 private fun StepperSymbols(
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   plusColor: Color,
   minusColor: Color,
   modifier: Modifier = Modifier,
@@ -176,6 +192,7 @@ private fun StepperSymbols(
   Row(modifier) {
     IconButton(
       onClick = onMinusClick,
+      enabled = isMinusEnabled,
       modifier = Modifier.size(24.dp),
     ) {
       Icon(
@@ -187,6 +204,7 @@ private fun StepperSymbols(
     Spacer(Modifier.width(16.dp))
     IconButton(
       onClick = onPlusClick,
+      enabled = isPlusEnabled,
       modifier = Modifier.size(24.dp),
     ) {
       Icon(
@@ -205,20 +223,20 @@ private fun LabeledStepper(
   labelText: String,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
   containerColor: Color,
   textColor: Color,
   labelColor: Color,
   plusColor: Color,
   minusColor: Color,
   errorText: String?,
-  showError: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     Surface(
       shape = stepperSize.size.shape,
       color = containerColor,
-      //  modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Labeled(labelText))),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
@@ -247,6 +265,8 @@ private fun LabeledStepper(
             StepperSymbols(
               onMinusClick,
               onPlusClick,
+              isPlusEnabled,
+              isMinusEnabled,
               plusColor,
               minusColor,
               modifier = Modifier.padding(stepperSize.size.symbolsPadding),
@@ -256,15 +276,20 @@ private fun LabeledStepper(
         spaceBetween = 4.dp,
       )
     }
-    if (showError && errorText != null) {
-      HedvigText(
-        text = errorText,
-        color = stepperColors.errorTextColor,
-        style = stepperSize.size.labelTextStyle,
-        modifier = Modifier.padding(
-          stepperSize.size.errorTextPadding(Labeled(labelText)),
-        ),
-      )
+    AnimatedContent(
+      errorText,
+      transitionSpec = {
+        (fadeIn() + expandVertically()) togetherWith (fadeOut() + shrinkVertically())
+      },
+    ) { errorText ->
+      if (errorText != null) {
+        HedvigText(
+          text = errorText,
+          color = stepperColors.errorTextColor,
+          style = stepperSize.size.labelTextStyle,
+          modifier = Modifier.padding(stepperSize.size.errorTextPadding(Labeled(labelText))),
+        )
+      }
     }
   }
 }
@@ -514,7 +539,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -530,7 +555,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -546,7 +571,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -563,7 +588,7 @@ private data class StepperColors(
     return animateColorAsState(
       targetValue = targetValue,
       animationSpec = tween(
-        durationMillis = AnimationTokens().errorPulsatingDuration,
+        durationMillis = AnimationTokens.errorPulsatingDuration,
       ),
       label = "",
     )
@@ -572,16 +597,16 @@ private data class StepperColors(
   @Composable
   private fun shouldPulsate(isError: Boolean): Boolean {
     var shouldPulsate by remember { mutableStateOf(false) }
-    val updatedValue by rememberUpdatedState(isError)
+    val updatedIsError by rememberUpdatedState(isError)
     LaunchedEffect(Unit) {
-      snapshotFlow { updatedValue }
+      snapshotFlow { updatedIsError }
         .drop(1)
-        .collectLatest { latest ->
-          if (latest) {
+        .collectLatest { isError ->
+          if (isError) {
             shouldPulsate = true
-            delay(AnimationTokens().errorPulsatingDuration.toLong())
-            shouldPulsate = false
+            delay(AnimationTokens.errorPulsatingDuration.toLong())
           }
+          shouldPulsate = false
         }
     }
     return shouldPulsate
@@ -618,7 +643,6 @@ private fun StepperPreview() {
             stepperStyle = Default,
             size = Large,
             quantity = 1,
-            showError = false,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = true,
@@ -631,7 +655,6 @@ private fun StepperPreview() {
             stepperStyle = Default,
             size = Medium,
             quantity = 6,
-            showError = true,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = false,
@@ -644,7 +667,6 @@ private fun StepperPreview() {
             stepperStyle = Default,
             size = Small,
             quantity = 0,
-            showError = false,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = true,
@@ -659,7 +681,6 @@ private fun StepperPreview() {
             stepperStyle = Labeled("Label"),
             size = Large,
             quantity = 1,
-            showError = false,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = true,
@@ -672,7 +693,6 @@ private fun StepperPreview() {
             stepperStyle = Labeled("Label"),
             size = Medium,
             quantity = 1,
-            showError = false,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = true,
@@ -685,7 +705,6 @@ private fun StepperPreview() {
             stepperStyle = Labeled("Label"),
             size = Small,
             quantity = 1,
-            showError = false,
             onPlusClick = { },
             onMinusClick = { },
             isPlusEnabled = true,
@@ -708,13 +727,11 @@ private fun StepperPreviewWithParameters(
   quantity: Int,
   onMinusClick: () -> Unit,
   onPlusClick: () -> Unit,
-  showError: Boolean,
   isPlusEnabled: Boolean,
   isMinusEnabled: Boolean,
   modifier: Modifier,
 ) {
   HedvigStepper(
-    showError = showError,
     onPlusClick = onPlusClick,
     onMinusClick = onMinusClick,
     text = "$text: $quantity",

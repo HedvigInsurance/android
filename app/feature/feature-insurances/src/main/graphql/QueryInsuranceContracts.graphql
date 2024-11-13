@@ -1,5 +1,8 @@
 query InsuranceContracts {
   currentMember {
+    memberActions {
+      isMovingEnabled
+    }
     firstName
     lastName
     ssn
@@ -20,6 +23,7 @@ fragment ContractFragment on Contract {
   exposureDisplayName
   supportsMoving
   supportsCoInsured
+  supportsChangeTier
   coInsured {
     firstName
     lastName

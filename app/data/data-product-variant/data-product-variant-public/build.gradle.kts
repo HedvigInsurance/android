@@ -1,9 +1,13 @@
 plugins {
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.kotlin.library")
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  serialization()
 }
 
 dependencies {
-  implementation(projects.dataContractPublic)
+  api(projects.dataContractPublic)
+  implementation(libs.kotlinx.serialization.core)
 }

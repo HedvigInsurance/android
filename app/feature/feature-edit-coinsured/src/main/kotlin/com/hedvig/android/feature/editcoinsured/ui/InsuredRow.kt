@@ -96,8 +96,7 @@ internal fun InsuredRow(
         } else {
           onRemove()
         }
-      }
-      .padding(horizontal = 16.dp),
+      },
   )
 }
 

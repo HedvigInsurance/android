@@ -138,7 +138,6 @@ internal fun CbmChatLoadedScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -156,7 +155,6 @@ internal fun CbmChatLoadedScreen(
     lazyListState = lazyListState,
     imageLoader = imageLoader,
     openUrl = openUrl,
-    onBannerLinkClicked = onBannerLinkClicked,
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
       ChatInput(
@@ -186,7 +184,6 @@ private fun ChatLoadedScreen(
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
@@ -227,7 +224,6 @@ private fun ChatLoadedScreen(
                 ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
                 is BannerText.Text -> uiState.bannerText.text
               },
-              onBannerLinkClicked = onBannerLinkClicked,
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -754,7 +750,6 @@ private fun PreviewChatLoadedScreen() {
             lazyListState = rememberLazyListState(),
             imageLoader = rememberPreviewImageLoader(),
             openUrl = {},
-            onBannerLinkClicked = {},
             onRetrySendChatMessage = {},
             chatInput = {},
           )

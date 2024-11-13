@@ -7,6 +7,7 @@ An example of usage is:
 
 ```kotlin
 plugins {
+  id("hedvig.gradle.plugin")
   // Other plugins
   id("hedvig.android.lokalise")
 }

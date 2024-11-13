@@ -1,0 +1,10 @@
+mutation MoveIntentV2Create {
+  moveIntentCreate {
+    moveIntent {
+      ...MoveIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}

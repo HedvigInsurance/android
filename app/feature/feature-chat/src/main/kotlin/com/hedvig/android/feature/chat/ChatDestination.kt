@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +37,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
@@ -68,7 +69,6 @@ internal fun CbmChatDestination(
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
-    onBannerLinkClicked = openUrl,
     onNavigateUp = onNavigateUp,
     onNavigateToClaimDetails = onNavigateToClaimDetails,
     onSendMessage = { message: String ->
@@ -98,7 +98,6 @@ private fun ChatScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
-  onBannerLinkClicked: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
   onSendMessage: (String) -> Unit,
@@ -111,7 +110,6 @@ private fun ChatScreen(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Column {
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
@@ -145,7 +143,6 @@ private fun ChatScreen(
               imageLoader = imageLoader,
               appPackageId = appPackageId,
               openUrl = openUrl,
-              onBannerLinkClicked = onBannerLinkClicked,
               onRetrySendChatMessage = onRetrySendChatMessage,
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
@@ -183,31 +180,34 @@ private fun ChatTopAppBar(
     ) {
       when (uiState) {
         is Loaded -> {
-          when (val topAppBarText = uiState.topAppBarText) {
-            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
-            NewConversation -> {
-              Column {
-                HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
-                HedvigText(
-                  stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
+          val textStyle = HedvigTheme.typography.headlineSmall
+          CompositionLocalProvider(LocalTextStyle provides textStyle) {
+            when (val topAppBarText = uiState.topAppBarText) {
+              Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+              NewConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                  HedvigText(
+                    stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                }
               }
-            }
 
-            is ClaimConversation -> {
-              Column {
-                HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
-                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+              is ClaimConversation -> {
+                Column {
+                  HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                }
               }
-            }
 
-            is ServiceConversation -> {
-              Column {
-                HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
-                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+              is ServiceConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                }
               }
             }
           }
@@ -251,7 +251,6 @@ private fun PreviewChatScreen(
             imageLoader = rememberPreviewImageLoader(),
             appPackageId = "",
             openUrl = {},
-            onBannerLinkClicked = {},
             onNavigateToClaimDetails = {},
             onNavigateUp = {},
             onSendMessage = {},

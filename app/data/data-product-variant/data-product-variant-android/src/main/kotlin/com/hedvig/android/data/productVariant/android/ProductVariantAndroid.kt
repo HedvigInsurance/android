@@ -22,6 +22,9 @@ fun InsuranceVariantDocument.InsuranceDocumentType.getStringRes() = when (this) 
 }
 
 fun ProductVariantFragment.toProductVariant() = ProductVariant(
+  tierDescription = tierDescription,
+  displayTierName = displayNameTier,
+  termsVersion = termsVersion,
   displayName = this.displayName,
   contractGroup = this.typeOfContract.toContractGroup(),
   contractType = this.typeOfContract.toContractType(),
@@ -31,7 +34,6 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       id = peril.id,
       title = peril.title,
       description = peril.description,
-      info = peril.info,
       covered = peril.covered,
       exceptions = peril.exceptions,
       colorCode = peril.colorCode,

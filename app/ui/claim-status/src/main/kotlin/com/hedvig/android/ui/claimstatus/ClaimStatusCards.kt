@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.systemGestureExclusion
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,10 +16,15 @@ import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.ui.claimstatus.model.ClaimPillType
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCompensated
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.datetime.Instant
 
@@ -72,16 +74,16 @@ fun ClaimStatusCards(
 @Composable
 private fun PreviewClaimStatusCards() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimStatusCards(
         onClick = {},
         contentPadding = PaddingValues(horizontal = 16.dp),
         claimStatusCardsUiState = List(3) {
           ClaimStatusCardUiState(
             id = "id#$it",
-            pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
+            pillTypes = listOf(Claim, NotCompensated),
             claimProgressItemsUiState = listOf(
-              ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+              ClaimProgressSegment(Closed, SegmentType.INACTIVE),
             ),
             claimType = "Broken item",
             insuranceDisplayName = "Home Insurance Homeowner",

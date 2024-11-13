@@ -9,14 +9,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberWebViewState
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import hedvig.resources.R
 
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
@@ -24,8 +24,11 @@ private const val licensesUrl = "file:///android_asset/open_source_licenses.html
 @Composable
 internal fun LicensesDestination(onBackPressed: () -> Unit) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.fillMaxSize(),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = Modifier.fillMaxSize()
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+      ),
   ) {
     Column {
       TopAppBarWithBack(
@@ -43,7 +46,7 @@ internal fun LicensesDestination(onBackPressed: () -> Unit) {
           modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
             ),
         )
       }

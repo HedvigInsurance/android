@@ -26,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,11 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,6 +52,7 @@ import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -63,9 +61,7 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.dialog.ErrorDialog
@@ -78,6 +74,9 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.Chat
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
@@ -290,7 +289,7 @@ private fun ClaimDetailTopAppBar(
         onClick = navigateUp,
         content = {
           Icon(
-            imageVector = Icons.Hedvig.ArrowBack,
+            imageVector = HedvigIcons.ArrowLeft,
             contentDescription = null,
           )
         },
@@ -300,9 +299,9 @@ private fun ClaimDetailTopAppBar(
       if (navigateToConversation != null) {
         IconButton(navigateToConversation, Modifier.size(40.dp)) {
           Icon(
-            imageVector = Icons.Hedvig.Chat,
+            imageVector = HedvigIcons.Chat,
             contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
+            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
             modifier = Modifier
               .size(32.dp)
               .notificationCircle(hasUnreadMessages)
@@ -324,7 +323,7 @@ private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromU
     Spacer(Modifier.height(8.dp))
     HedvigCard {
       Column {
-        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState)
+        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
         val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
         if (!claimIsInUndeterminedState) {
           HorizontalDivider()
@@ -454,24 +453,55 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
           CircularProgressIndicator()
         }
       } else {
-        Column {
-          val fontSize = MaterialTheme.typography.bodySmall.fontSize
-          Text(
-            text = buildAnnotatedString {
-              append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-              withStyle(SpanStyle(baselineShift = BaselineShift(0.3f), fontSize = fontSize)) {
-                append("PDF")
-              }
-            },
-          )
-          Text(
-            text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
+        DocumentCard(
+          onClick = onClick,
+          title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+          subtitle = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
+  HedvigCard(
+    onClick = onClick,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Column {
+            Text(
+              text = stringWithShiftedLabel(
+                text = title,
+                labelText = "PDF",
+                labelFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textColor = LocalContentColor.current,
+                textFontSize = LocalTextStyle.current.fontSize,
+              ),
+            )
+            if (!subtitle.isNullOrBlank()) {
+              Text(
+                text = subtitle,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        },
+        endSlot = {
+          Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+              imageVector = Icons.Hedvig.ArrowNorthEast,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        },
+        spaceBetween = 8.dp,
+      )
     }
   }
 }
@@ -587,8 +617,8 @@ private fun PreviewClaimDetailScreen() {
               insuranceDisplayName = null, // "Home Insurance Homeowner",
               submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               pillTypes = listOf(
-                ClaimPillType.Open,
-                ClaimPillType.Reopened,
+                ClaimPillType.Claim,
+                ClaimPillType.Closed.GenericClosed,
                 ClaimPillType.Closed.Paid,
                 ClaimPillType.PaymentAmount(UiMoney(399.0, UiCurrencyCode.SEK)),
                 ClaimPillType.Closed.NotCompensated,
@@ -597,15 +627,15 @@ private fun PreviewClaimDetailScreen() {
               claimProgressItemsUiState = listOf(
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Submitted,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.BeingHandled,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Closed,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
               ),
             ),

@@ -20,7 +20,9 @@ data class InsuranceContract(
   val renewalDate: LocalDate?,
   val supportsAddressChange: Boolean,
   val supportsEditCoInsured: Boolean,
+  val supportsTierChange: Boolean,
   val isTerminated: Boolean,
+  val tierName: String?,
 )
 
 data class InsuranceAgreement(

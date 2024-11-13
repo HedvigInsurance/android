@@ -11,6 +11,9 @@ import arrow.core.Either
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.TravelCertificateAvailabilityError
+import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
+import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
+import com.hedvig.android.feature.profile.tab.ProfileUiEvent.SnoozeNotificationPermission
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -59,9 +62,9 @@ internal class ProfilePresenter(
 
     CollectEvents { event ->
       when (event) {
-        ProfileUiEvent.Logout -> logoutUseCase.invoke()
-        ProfileUiEvent.SnoozeNotificationPermission -> snoozeNotificationReminderRequest++
-        ProfileUiEvent.Reload -> dataLoadIteration++
+        Logout -> logoutUseCase.invoke()
+        SnoozeNotificationPermission -> snoozeNotificationReminderRequest++
+        Reload -> dataLoadIteration++
       }
     }
 

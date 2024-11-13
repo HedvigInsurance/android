@@ -1,10 +1,16 @@
 package com.hedvig.android.apollo
 
 import arrow.core.Either
-import arrow.core.raise.Raise
-import arrow.core.raise.either
+import arrow.core.Ior
+import arrow.core.IorNel
+import arrow.core.Nel
+import arrow.core.nel
+import arrow.core.raise.IorRaise
+import arrow.core.raise.iorNel
+import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
 import com.apollographql.apollo.cache.normalized.watch
@@ -39,7 +45,7 @@ sealed interface ApolloOperationError {
 }
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
-  return either { parseResponse(execute()) }
+  return iorNel<ApolloOperationError, D> { parseResponse(execute()) }.iorToEither()
 }
 
 suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
@@ -67,7 +73,7 @@ fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationEr
       // Flow has terminated without a valid response, emit the error one if it exists.
       emit(errorResponseValue)
     }
-  }.map { either { parseResponse(it) } }
+  }.map { iorNel { parseResponse(it) }.iorToEither() }
 }
 
 fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
@@ -77,7 +83,7 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
 }
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
-  return this.watch().map { either { parseResponse(it) } }
+  return this.watch().map { iorNel { parseResponse(it) }.iorToEither() }
 }
 
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {
@@ -98,7 +104,7 @@ fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = obj
 }
 
 // https://www.apollographql.com/docs/kotlin/essentials/errors/#truth-table
-private fun <D : Operation.Data> Raise<ApolloOperationError>.parseResponse(response: ApolloResponse<D>): D {
+private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseResponse(response: ApolloResponse<D>): D {
   val exception = response.exception
   val data = response.data
   val errors = response.errors
@@ -117,21 +123,44 @@ private fun <D : Operation.Data> Raise<ApolloOperationError>.parseResponse(respo
     }
     raise(ApolloOperationError.OperationException(exception))
   }
-  if (errors != null) {
-    raise(
-      ApolloOperationError.OperationError(
-        message = errors.map { error ->
-          buildString {
-            append(error.message)
-            if (error.extensions != null) {
-              append(error.extensions!!.toList().joinToString(prefix = " ext: [", postfix = "]", separator = ", "))
-            }
-          }
-        }.joinToString(separator = " | "),
-      ),
+  return iorFromErrorsAndData(errors.mapToOperationErrors(), data).bind()
+}
+
+private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
+  if (this == null) return null
+  return map { error ->
+    ApolloOperationError.OperationError(
+      buildString {
+        append(error.message)
+        if (error.extensions != null) {
+          append(error.extensions!!.toList().joinToString(prefix = " ext: [", postfix = "]", separator = ", "))
+        }
+      },
     )
-  }
-  return requireNotNull(data) {
-    "Data must be null after checking all other possible scenarios"
+  }.toNonEmptyListOrNull()
+}
+
+/**
+ * Turn it all back into the `Either<ApolloOperationError, D>` return type as all call-sites expect it this way for now
+ */
+private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.iorToEither(): Either<ApolloOperationError, D> {
+  return mapLeft { errors ->
+    ApolloOperationError.OperationError(
+      errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
+    )
+  }.toEither()
+}
+
+private fun <D : Operation.Data> iorFromErrorsAndData(
+  errors: Nel<ApolloOperationError>?,
+  data: D?,
+): Ior<Nel<ApolloOperationError>, D> {
+  return when {
+    errors != null && data != null -> Ior.Both(errors, data)
+    errors != null -> Ior.Left(errors)
+    data != null -> Ior.Right(data)
+    else -> error("Non compliant server")
   }
 }
+
+private fun <E> IorRaise<Nel<E>>.raise(value: E): Unit = raise(value.nel())

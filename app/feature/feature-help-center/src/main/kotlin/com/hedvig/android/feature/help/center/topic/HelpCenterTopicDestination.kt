@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.help.center.topic
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,8 +14,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,16 +23,17 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.onPurpleContainer
-import com.hedvig.android.core.designsystem.material3.purpleContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.model.Question
+import com.hedvig.android.feature.help.center.model.Question.CLAIMS_Q1
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
@@ -86,7 +86,7 @@ private fun HelpCenterTopicScreen(
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
-  Surface(color = MaterialTheme.colorScheme.background) {
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = topic?.titleRes?.let { stringResource(it) } ?: stringResource(id = R.string.HC_TITLE),
@@ -126,29 +126,34 @@ private fun HelpCenterTopicScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         ) {
-          Spacer(Modifier.height(16.dp))
-          if (commonQuestions.isNotEmpty()) {
-            HelpCenterSectionWithClickableRows(
-              title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-              chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-              contentColor = MaterialTheme.colorScheme.onInfoContainer,
-              items = commonQuestions,
-              itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it) },
-            )
-          }
-          if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
-            Spacer(Modifier.height(40.dp))
-          }
-          if (allQuestions.isNotEmpty()) {
-            HelpCenterSectionWithClickableRows(
-              title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
-              chipContainerColor = MaterialTheme.colorScheme.purpleContainer,
-              contentColor = MaterialTheme.colorScheme.onPurpleContainer,
-              items = allQuestions,
-              itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it) },
-            )
+          Column(
+            modifier = Modifier
+              .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
+          ) {
+            Spacer(Modifier.height(16.dp))
+            if (commonQuestions.isNotEmpty()) {
+              HelpCenterSectionWithClickableRows(
+                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+                title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+                chipContainerColor = HighlightColor.Blue(LIGHT),
+                items = commonQuestions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
+            if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
+              Spacer(Modifier.height(40.dp))
+            }
+            if (allQuestions.isNotEmpty()) {
+              HelpCenterSectionWithClickableRows(
+                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+                title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
+                chipContainerColor = HighlightColor.Purple(LIGHT),
+                items = allQuestions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
           }
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))
@@ -156,7 +161,8 @@ private fun HelpCenterTopicScreen(
             onNavigateToInbox = onNavigateToInbox,
             onNavigateToNewConversation = onNavigateToNewConversation,
             showNavigateToInboxButton = showNavigateToInboxButton,
-            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+              PaddingValues(horizontal = 16.dp),
           )
         }
       }
@@ -172,16 +178,16 @@ private fun PreviewHelpCenterTopicScreen(
   val hasTopic = input.first
   val hasQuestions = input.second
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
         Topic.PAYMENTS.takeIf { hasTopic },
         if (hasQuestions) {
-          listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
+          listOf(CLAIMS_Q1, CLAIMS_Q1)
         } else {
           listOf()
         },
         if (hasQuestions) {
-          listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
+          listOf(CLAIMS_Q1, CLAIMS_Q1)
         } else {
           listOf()
         },

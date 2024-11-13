@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,102 +22,59 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Chat: ImageVector
   get() {
-    val current = _chat
-    if (current != null) return current
-
-    return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.icon.Chat",
-      defaultWidth = 24.0.dp,
-      defaultHeight = 24.0.dp,
-      viewportWidth = 24.0f,
-      viewportHeight = 24.0f,
-    ).apply {
-      // M21.5 12 C21.5 17.2467 17.2467 21.5 12 21.5 C10.6182 21.5 9.30527 21.205 8.12082 20.6745 C7.88245 20.5677 7.61343 20.5445 7.36467 20.6241 L3.34833 21.9088 C2.5741 22.1564 1.84356 21.4259 2.09121 20.6517 L3.37588 16.6353 C3.45545 16.3866 3.43227 16.1175 3.32551 15.8792 C2.79502 14.6947 2.5 13.3818 2.5 12 C2.5 6.75329 6.7533 2.5 12 2.5 C17.2467 2.5 21.5 6.75329 21.5 12Z
-      path(
-        fill = SolidColor(Color(0xFF121212)),
-        pathFillType = PathFillType.EvenOdd,
-      ) {
-        // M 21.5 12
-        moveTo(x = 21.5f, y = 12.0f)
-        // C 21.5 17.2467 17.2467 21.5 12 21.5
-        curveTo(
-          x1 = 21.5f,
-          y1 = 17.2467f,
-          x2 = 17.2467f,
-          y2 = 21.5f,
-          x3 = 12.0f,
-          y3 = 21.5f,
-        )
-        // C 10.6182 21.5 9.30527 21.205 8.12082 20.6745
-        curveTo(
-          x1 = 10.6182f,
-          y1 = 21.5f,
-          x2 = 9.30527f,
-          y2 = 21.205f,
-          x3 = 8.12082f,
-          y3 = 20.6745f,
-        )
-        // C 7.88245 20.5677 7.61343 20.5445 7.36467 20.6241
-        curveTo(
-          x1 = 7.88245f,
-          y1 = 20.5677f,
-          x2 = 7.61343f,
-          y2 = 20.5445f,
-          x3 = 7.36467f,
-          y3 = 20.6241f,
-        )
-        // L 3.34833 21.9088
-        lineTo(x = 3.34833f, y = 21.9088f)
-        // C 2.5741 22.1564 1.84356 21.4259 2.09121 20.6517
-        curveTo(
-          x1 = 2.5741f,
-          y1 = 22.1564f,
-          x2 = 1.84356f,
-          y2 = 21.4259f,
-          x3 = 2.09121f,
-          y3 = 20.6517f,
-        )
-        // L 3.37588 16.6353
-        lineTo(x = 3.37588f, y = 16.6353f)
-        // C 3.45545 16.3866 3.43227 16.1175 3.32551 15.8792
-        curveTo(
-          x1 = 3.45545f,
-          y1 = 16.3866f,
-          x2 = 3.43227f,
-          y2 = 16.1175f,
-          x3 = 3.32551f,
-          y3 = 15.8792f,
-        )
-        // C 2.79502 14.6947 2.5 13.3818 2.5 12
-        curveTo(
-          x1 = 2.79502f,
-          y1 = 14.6947f,
-          x2 = 2.5f,
-          y2 = 13.3818f,
-          x3 = 2.5f,
-          y3 = 12.0f,
-        )
-        // C 2.5 6.75329 6.7533 2.5 12 2.5
-        curveTo(
-          x1 = 2.5f,
-          y1 = 6.75329f,
-          x2 = 6.7533f,
-          y2 = 2.5f,
-          x3 = 12.0f,
-          y3 = 2.5f,
-        )
-        // C 17.2467 2.5 21.5 6.75329 21.5 12z
-        curveTo(
-          x1 = 17.2467f,
-          y1 = 2.5f,
-          x2 = 21.5f,
-          y2 = 6.75329f,
-          x3 = 21.5f,
-          y3 = 12.0f,
-        )
-        close()
-      }
-    }.build().also { _chat = it }
+    if (_chat != null) {
+      return _chat!!
+    }
+    _chat = ImageVector
+      .Builder(
+        name = "Chat",
+        defaultWidth = 32.0.dp,
+        defaultHeight = 32.0.dp,
+        viewportWidth = 32.0f,
+        viewportHeight = 32.0f,
+      ).apply {
+        path(
+          fill = SolidColor(Color(0xFF000000)),
+          fillAlpha = 1.0f,
+          stroke = null,
+          strokeAlpha = 1.0f,
+          strokeLineWidth = 1.0f,
+          strokeLineCap = StrokeCap.Butt,
+          strokeLineJoin = StrokeJoin.Miter,
+          strokeLineMiter = 1.0f,
+          pathFillType = PathFillType.EvenOdd,
+        ) {
+          moveTo(16f, 32.0001f)
+          curveTo(24.8366f, 32.0001f, 32f, 24.8366f, 32f, 16.0001f)
+          curveTo(32f, 7.1635f, 24.8366f, 0.0001f, 16f, 0.0001f)
+          curveTo(7.1634f, 0.0001f, 0f, 7.1635f, 0f, 16.0001f)
+          curveTo(0f, 24.8366f, 7.1634f, 32.0001f, 16f, 32.0001f)
+          close()
+          moveTo(7.5f, 11.5f)
+          curveTo(7.5f, 10.3954f, 8.3954f, 9.5f, 9.5f, 9.5f)
+          horizontalLineTo(22.5f)
+          curveTo(23.6046f, 9.5f, 24.5f, 10.3954f, 24.5f, 11.5f)
+          verticalLineTo(20.5f)
+          curveTo(24.5f, 21.6046f, 23.6046f, 22.5f, 22.5f, 22.5f)
+          horizontalLineTo(9.5f)
+          curveTo(8.3954f, 22.5f, 7.5f, 21.6046f, 7.5f, 20.5f)
+          verticalLineTo(11.5f)
+          close()
+          moveTo(9.82169f, 13.4264f)
+          lineTo(15.4495f, 17.1371f)
+          curveTo(15.7835f, 17.3572f, 16.2165f, 17.3572f, 16.5505f, 17.1371f)
+          lineTo(22.1783f, 13.4264f)
+          curveTo(22.3791f, 13.294f, 22.5f, 13.0695f, 22.5f, 12.829f)
+          curveTo(22.5f, 12.2591f, 21.8663f, 11.9178f, 21.3905f, 12.2315f)
+          lineTo(16.5505f, 15.4228f)
+          curveTo(16.2165f, 15.643f, 15.7835f, 15.643f, 15.4495f, 15.4228f)
+          lineTo(10.6095f, 12.2315f)
+          curveTo(10.1337f, 11.9178f, 9.5f, 12.2591f, 9.5f, 12.829f)
+          curveTo(9.5f, 13.0695f, 9.6209f, 13.294f, 9.8217f, 13.4264f)
+          close()
+        }
+      }.build()
+    return _chat!!
   }
 
 @Preview

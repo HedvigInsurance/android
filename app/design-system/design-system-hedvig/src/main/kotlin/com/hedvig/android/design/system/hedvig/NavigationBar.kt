@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
@@ -200,13 +199,13 @@ private fun NavigationItem(
   modifier: Modifier = Modifier,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  var itemWidthPx by remember { mutableStateOf(0) }
+  var itemWidthPx by remember { mutableIntStateOf(0) }
   val deltaOffset: Offset = with(LocalDensity.current) {
     val indicatorWidth = NavigationTokens.IndicatorWidth.toPx()
     Offset((itemWidthPx - indicatorWidth).toFloat() / 2, itemPaddings.calculateTopPadding().toPx())
   }
   val offsetInteractionSource = remember(interactionSource, deltaOffset) {
-    MappedInteractionSource(interactionSource, deltaOffset)
+    MappedInteractionSource(interactionSource, { -deltaOffset })
   }
   val indicatorShape = HedvigTheme.shapes.cornerLarge
   Column(
@@ -255,24 +254,6 @@ private fun NavigationItem(
       },
       maxLines = 1,
       overflow = TextOverflow.Visible,
-    )
-  }
-}
-
-/**
- * A notification circle attached to the top right taking up ~35% of the available size.
- * https://www.figma.com/file/qUhLjrKl98PAzHov9ilaDH/Hedvig-UI-Kit?type=design&node-id=3813%3A19134&mode=design&t=V1DM52RqO3kDFMUq-1
- */
-private fun Modifier.notificationCircle(showNotification: Boolean = true) = this.drawWithContent {
-  drawContent()
-  if (showNotification) {
-    // The red circle takes up ~34% of the icon's size
-    val circleDiameter = size.minDimension * 0.34375f
-    val circleRadius = circleDiameter / 2
-    drawCircle(
-      color = Color(0xFFFF513A),
-      radius = circleRadius,
-      center = Offset(size.width - circleRadius, circleRadius),
     )
   }
 }

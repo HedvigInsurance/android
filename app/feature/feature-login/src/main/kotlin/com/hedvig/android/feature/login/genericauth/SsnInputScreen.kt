@@ -11,9 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,11 +18,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.market.Market
 import hedvig.resources.R
 
@@ -56,9 +56,9 @@ fun SSNInputScreen(
         .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(60.dp))
-      Text(
+      HedvigText(
         text = stringResource(R.string.zignsec_login_screen_title),
-        style = MaterialTheme.typography.headlineMedium,
+        style = HedvigTheme.typography.headlineMedium,
       )
       Spacer(Modifier.height(20.dp))
       SSNTextField(
@@ -70,11 +70,12 @@ fun SSNInputScreen(
       )
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
+      HedvigButton(
         text = stringResource(R.string.login_continue_button),
         onClick = onSubmitSSN,
         isLoading = loading,
         enabled = canSubmitSsn,
+        modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -90,7 +91,7 @@ private fun SSNTextField(
   error: String?,
 ) {
   HedvigTextField(
-    value = input,
+    text = input,
     onValueChange = onValueChange@{ newInput ->
       if (!newInput.isDigitsOnly()) return@onValueChange
       val maxLengthAllowed = when (market) {
@@ -103,19 +104,16 @@ private fun SSNTextField(
       }
       onInputChanged(newInput)
     },
-    label = {
-      Text(
-        stringResource(
-          when (market) {
-            Market.NO -> R.string.simple_sign_login_text_field_label
-            Market.DK -> R.string.simple_sign_login_text_field_label_dk
-            Market.SE -> error("Should not be able to login with SSN in SE")
-          },
-        ),
-      )
-    },
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    labelText = stringResource(
+      when (market) {
+        Market.NO -> R.string.simple_sign_login_text_field_label
+        Market.DK -> R.string.simple_sign_login_text_field_label_dk
+        Market.SE -> error("Should not be able to login with SSN in SE")
+      },
+    ),
     supportingText = {
-      Text(
+      HedvigText(
         stringResource(
           when (market) {
             Market.NO -> R.string.simple_sign_login_text_field_helper_text
@@ -135,9 +133,9 @@ private fun SSNTextField(
     modifier = Modifier.fillMaxWidth(),
   )
   if (error != null) {
-    Text(
+    HedvigText(
       text = error,
-      style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
+      style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.signalRedElement),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
   }
@@ -147,7 +145,7 @@ private fun SSNTextField(
 @Composable
 private fun PreviewEmailInputScreenValid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},
@@ -166,7 +164,7 @@ private fun PreviewEmailInputScreenValid() {
 @Composable
 private fun PreviewEmailInputScreenInvalid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},

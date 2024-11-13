@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.Scaffold
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
@@ -32,7 +32,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 fun TopAppBarShowcase() {
   var showScreenTwo by remember { mutableStateOf(false) }
 
-  Scaffold(
+  HedvigScaffold(
     navigateUp = {},
     topAppBarText = "Screen 1",
   ) {
@@ -49,7 +49,7 @@ fun TopAppBarShowcase() {
     enter = fadeIn() + slideInHorizontally(),
     exit = fadeOut() + slideOutHorizontally(),
   ) {
-    Scaffold(
+    HedvigScaffold(
       navigateUp = { showScreenTwo = false },
       topAppBarText = "Screen 2",
       topAppBarActions = {

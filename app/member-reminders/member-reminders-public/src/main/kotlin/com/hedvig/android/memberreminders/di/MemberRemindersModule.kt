@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManagerImpl
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCase
@@ -24,7 +25,11 @@ val memberRemindersModule = module {
     EnableNotificationsReminderManagerImpl(get<DataStore<Preferences>>(), get<Clock>(), get<HedvigBuildConstants>())
   }
   single<GetConnectPaymentReminderUseCase> {
-    GetConnectPaymentReminderUseCaseImpl(get<ApolloClient>(), get<GetOnlyHasNonPayingContractsUseCaseProvider>())
+    GetConnectPaymentReminderUseCaseImpl(
+      get<ApolloClient>(),
+      get<GetOnlyHasNonPayingContractsUseCaseProvider>(),
+      get<MarketManager>(),
+    )
   }
   single<GetUpcomingRenewalRemindersUseCase> {
     GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(), get<Clock>())

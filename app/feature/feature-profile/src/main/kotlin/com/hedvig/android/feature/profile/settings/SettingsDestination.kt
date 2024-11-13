@@ -9,15 +9,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,22 +28,33 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.dialog.SingleSelectDialog
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.profile.settings.SettingsUiState.Loaded
 import com.hedvig.android.language.Language
+import com.hedvig.android.language.Language.EN_SE
+import com.hedvig.android.language.Language.SV_SE
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
+import com.hedvig.android.theme.Theme.SYSTEM_DEFAULT
 import hedvig.resources.R
 
 @Composable
@@ -97,7 +106,7 @@ private fun SettingsScreen(
         HedvigFullScreenCenterAlignedProgressDebounced()
       }
 
-      is SettingsUiState.Loaded -> {
+      is Loaded -> {
         Spacer(Modifier.height(8.dp))
         LanguageWithDialog(
           languageOptions = uiState.languageOptions,
@@ -129,7 +138,7 @@ private fun SettingsScreen(
           } else {
             stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
           },
-          hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
+          labelText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -163,14 +172,18 @@ private fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
-        HedvigTextButton(
-          text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
-          onClick = onTerminateAccountClicked,
-          colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
+        Row(
+          Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+        ) {
+          HedvigRedTextButton(
+            text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
+            onClick = onTerminateAccountClicked,
+            modifier = Modifier
+              .padding(horizontal = 16.dp),
+          )
+        }
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -185,24 +198,35 @@ internal fun LanguageWithDialog(
   enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val context = LocalContext.current
   var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLanguagePickerDialog) {
+    val entries = buildList {
+      languageOptions.forEachIndexed { index, language ->
+        add(
+          RadioOptionData(
+            id = index.toString(),
+            optionText = stringResource(language.label),
+            chosenState = if (selectedLanguage == language) Chosen else NotChosen,
+          ),
+        )
+      }
+    }
     SingleSelectDialog(
       title = stringResource(R.string.language_picker_modal_title),
-      optionsList = languageOptions,
-      onSelected = selectLanguage,
-      getDisplayText = { context.getString(it.label) },
-      getIsSelected = { selectedLanguage == it },
-      getId = { it.name },
+      optionsList = entries,
+      onSelected = {
+        val index = it.id.toInt()
+        val language = languageOptions[index]
+        selectLanguage(language)
+      },
       onDismissRequest = { showLanguagePickerDialog = false },
     )
   }
 
   HedvigBigCard(
     onClick = { showLanguagePickerDialog = true },
-    hintText = stringResource(id = R.string.language_picker_modal_title),
-    inputText = context.getString(selectedLanguage.label),
+    labelText = stringResource(id = R.string.language_picker_modal_title),
+    inputText = stringResource(selectedLanguage.label),
     enabled = enabled,
     modifier = modifier,
   )
@@ -217,27 +241,31 @@ internal fun EmailSubscriptionWithDialog(
   hasError: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
-  if (showLanguagePickerDialog) {
+  var showSubscriptionPrefDialog by rememberSaveable { mutableStateOf(false) }
+  if (showSubscriptionPrefDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
-      onConfirmClick = onConfirmUnsubscribeClick,
-      onDismissRequest = { showLanguagePickerDialog = false },
-      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      buttonSize = BIG,
+      onDismissRequest = { showSubscriptionPrefDialog = false },
+      onConfirmClick = {
+        onConfirmUnsubscribeClick()
+        showSubscriptionPrefDialog = false
+      },
       dismissButtonLabel = stringResource(R.string.general_close_button),
+      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      subtitle = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
     )
   }
   Column {
     HedvigBigCard(
       onClick = {
         if (isSubscribedToEmails) {
-          showLanguagePickerDialog = true
+          showSubscriptionPrefDialog = true
         } else {
           onSubscribeClick()
         }
       },
-      hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      labelText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
       inputText = if (isSubscribedToEmails) {
         stringResource(id = R.string.GENERAL_SUBSCRIBED)
       } else {
@@ -247,10 +275,10 @@ internal fun EmailSubscriptionWithDialog(
       modifier = modifier,
     )
     AnimatedVisibility(visible = hasError) {
-      Text(
+      HedvigText(
         text = stringResource(id = R.string.something_went_wrong),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.error,
+        style = HedvigTheme.typography.bodySmall,
+        color = HedvigTheme.colorScheme.signalRedText,
         modifier = Modifier.padding(horizontal = 32.dp),
       )
     }
@@ -264,23 +292,33 @@ internal fun ThemeWithDialog(
   enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val context = LocalContext.current
   var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showThemePickerDialog) {
+    val entries = buildList {
+      Theme.entries.forEachIndexed { index, theme ->
+        add(
+          RadioOptionData(
+            id = index.toString(),
+            optionText = stringResource(theme.getLabel()),
+            chosenState = if (selectedTheme == theme) Chosen else NotChosen,
+          ),
+        )
+      }
+    }
     SingleSelectDialog(
       title = stringResource(R.string.SETTINGS_THEME_TITLE),
-      optionsList = Theme.entries,
-      onSelected = selectTheme,
-      getDisplayText = { context.getString(it.getLabel()) },
-      getIsSelected = { selectedTheme == it },
-      getId = { it.name },
+      optionsList = entries,
+      onSelected = {
+        val index = it.id.toInt()
+        val theme = Theme.entries[index] // todo: could be outOfBounds etc?
+        selectTheme(theme)
+      },
       onDismissRequest = { showThemePickerDialog = false },
     )
   }
-
   HedvigBigCard(
     onClick = { showThemePickerDialog = true },
-    hintText = stringResource(R.string.SETTINGS_THEME_TITLE),
+    labelText = stringResource(R.string.SETTINGS_THEME_TITLE),
     inputText = stringResource(selectedTheme.getLabel()),
     enabled = enabled,
     modifier = modifier,
@@ -330,10 +368,10 @@ fun PreviewSettingsScreen() {
   HedvigTheme {
     Surface {
       SettingsScreen(
-        uiState = SettingsUiState.Loaded(
-          selectedLanguage = Language.SV_SE,
-          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
-          selectedTheme = Theme.SYSTEM_DEFAULT,
+        uiState = Loaded(
+          selectedLanguage = SV_SE,
+          languageOptions = listOf(SV_SE, EN_SE),
+          selectedTheme = SYSTEM_DEFAULT,
           showNotificationReminder = true,
           isSubscribedToEmails = true,
           showEmailSubscriptionPreferences = true,
@@ -347,7 +385,7 @@ fun PreviewSettingsScreen() {
           override fun launchPermissionRequest() {}
 
           override val permission: String = ""
-          override val status: PermissionStatus = PermissionStatus.Granted
+          override val status: PermissionStatus = Granted
         },
         navigateUp = {},
         openAppSettings = {},

@@ -4,7 +4,6 @@ package com.hedvig.android.core.designsystem.material3
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
-import com.hedvig.android.compose.ui.UseSimplerShapesForOldAndroidVersions
 import com.hedvig.android.core.designsystem.component.tokens.HedvigShapeKeyTokens
 
 // Take shapes from existing theme setup
@@ -83,33 +81,16 @@ private val SquircleLargeTop = FigmaShape(16.dp).top()
 private val SquircleExtraLarge = FigmaShape(24.dp)
 private val SquircleExtraLargeTop = FigmaShape(24.dp).top()
 
-private val RoundedSquircleExtraSmall = RoundedCornerShape(8.dp)
-private val RoundedSquircleExtraSmallTop = RoundedCornerShape(8.dp)
-  .copy(bottomStart = CornerSize(0), bottomEnd = CornerSize(0))
-private val RoundedSquircleSmall = RoundedCornerShape(10.dp)
-private val RoundedSquircleMedium = RoundedCornerShape(12.dp)
-private val RoundedSquircleLarge = RoundedCornerShape(16.dp)
-private val RoundedSquircleLargeTop = RoundedCornerShape(16.dp)
-  .copy(bottomStart = CornerSize(0), bottomEnd = CornerSize(0))
-private val RoundedSquircleExtraLarge = RoundedCornerShape(24.dp)
-private val RoundedSquircleExtraLargeTop = RoundedCornerShape(24.dp)
-  .copy(bottomStart = CornerSize(0), bottomEnd = CornerSize(0))
-
 val Shapes.squircleExtraSmall: Shape
-  @Composable
-  get() = if (UseSimplerShapesForOldAndroidVersions.current) RoundedSquircleExtraSmall else SquircleExtraSmall
+  get() = SquircleExtraSmall
 val Shapes.squircleSmall: Shape
-  @Composable
-  get() = if (UseSimplerShapesForOldAndroidVersions.current) RoundedSquircleSmall else SquircleSmall
+  get() = SquircleSmall
 val Shapes.squircleMedium: Shape
-  @Composable
-  get() = if (UseSimplerShapesForOldAndroidVersions.current) RoundedSquircleMedium else SquircleMedium
+  get() = SquircleMedium
 val Shapes.squircleLarge: Shape
-  @Composable
-  get() = if (UseSimplerShapesForOldAndroidVersions.current) RoundedSquircleLarge else SquircleLarge
+  get() = SquircleLarge
 val Shapes.squircleLargeTop: Shape
-  @Composable
-  get() = if (UseSimplerShapesForOldAndroidVersions.current) RoundedSquircleLargeTop else SquircleLargeTop
+  get() = SquircleLargeTop
 
 /**
  * Turns the shape into one where only the top corners apply, by combining the path with a square path at the bottom.
@@ -140,33 +121,18 @@ private fun Shape.top(): Shape = object : Shape {
  * tokens:
  * ``MaterialTheme.shapes.fromToken(FabPrimarySmallTokens.ContainerShape)``
  */
-internal fun Shapes.fromToken(token: HedvigShapeKeyTokens, useSimplerShapes: Boolean): Shape {
-  return if (useSimplerShapes) {
-    when (token) {
-      HedvigShapeKeyTokens.CornerExtraLarge -> RoundedSquircleExtraLarge
-      HedvigShapeKeyTokens.CornerExtraLargeTop -> RoundedSquircleExtraLargeTop
-      HedvigShapeKeyTokens.CornerExtraSmall -> RoundedSquircleExtraSmall
-      HedvigShapeKeyTokens.CornerExtraSmallTop -> RoundedSquircleExtraSmallTop
-      HedvigShapeKeyTokens.CornerFull -> CircleShape
-      HedvigShapeKeyTokens.CornerLarge -> RoundedSquircleLarge
-      HedvigShapeKeyTokens.CornerLargeTop -> RoundedSquircleLargeTop
-      HedvigShapeKeyTokens.CornerMedium -> RoundedSquircleMedium
-      HedvigShapeKeyTokens.CornerNone -> RectangleShape
-      HedvigShapeKeyTokens.CornerSmall -> RoundedSquircleSmall
-    }
-  } else {
-    when (token) {
-      HedvigShapeKeyTokens.CornerExtraLarge -> SquircleExtraLarge
-      HedvigShapeKeyTokens.CornerExtraLargeTop -> SquircleExtraLargeTop
-      HedvigShapeKeyTokens.CornerExtraSmall -> SquircleExtraSmall
-      HedvigShapeKeyTokens.CornerExtraSmallTop -> SquircleExtraSmallTop
-      HedvigShapeKeyTokens.CornerFull -> CircleShape
-      HedvigShapeKeyTokens.CornerLarge -> SquircleLarge
-      HedvigShapeKeyTokens.CornerLargeTop -> SquircleLargeTop
-      HedvigShapeKeyTokens.CornerMedium -> SquircleMedium
-      HedvigShapeKeyTokens.CornerNone -> RectangleShape
-      HedvigShapeKeyTokens.CornerSmall -> SquircleSmall
-    }
+internal fun Shapes.fromToken(token: HedvigShapeKeyTokens): Shape {
+  return when (token) {
+    HedvigShapeKeyTokens.CornerExtraLarge -> SquircleExtraLarge
+    HedvigShapeKeyTokens.CornerExtraLargeTop -> SquircleExtraLargeTop
+    HedvigShapeKeyTokens.CornerExtraSmall -> SquircleExtraSmall
+    HedvigShapeKeyTokens.CornerExtraSmallTop -> SquircleExtraSmallTop
+    HedvigShapeKeyTokens.CornerFull -> CircleShape
+    HedvigShapeKeyTokens.CornerLarge -> SquircleLarge
+    HedvigShapeKeyTokens.CornerLargeTop -> SquircleLargeTop
+    HedvigShapeKeyTokens.CornerMedium -> SquircleMedium
+    HedvigShapeKeyTokens.CornerNone -> RectangleShape
+    HedvigShapeKeyTokens.CornerSmall -> SquircleSmall
   }
 }
 
@@ -174,5 +140,5 @@ internal fun Shapes.fromToken(token: HedvigShapeKeyTokens, useSimplerShapes: Boo
 @Composable
 @ReadOnlyComposable
 internal fun HedvigShapeKeyTokens.toShape(): Shape {
-  return MaterialTheme.shapes.fromToken(this, UseSimplerShapesForOldAndroidVersions.current)
+  return MaterialTheme.shapes.fromToken(this)
 }

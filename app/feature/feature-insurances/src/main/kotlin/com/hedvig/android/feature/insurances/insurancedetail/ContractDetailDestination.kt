@@ -46,17 +46,19 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.InsuranceCard
+import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
@@ -71,6 +73,7 @@ internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
   onMissingInfoClick: (String) -> Unit,
+  onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -92,6 +95,7 @@ internal fun ContractDetailDestination(
     openUrl = openUrl,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
+    onChangeTierClick = onChangeTierClick,
   )
 }
 
@@ -103,6 +107,7 @@ private fun ContractDetailScreen(
   retry: () -> Unit,
   onEditCoInsuredClick: (String) -> Unit,
   onMissingInfoClick: (String) -> Unit,
+  onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
@@ -217,6 +222,10 @@ private fun ContractDetailScreen(
                       contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
+                      allowChangeTier = state.insuranceContract.supportsTierChange,
+                      onChangeTierClick = {
+                        onChangeTierClick(state.insuranceContract.id)
+                      },
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(state.insuranceContract.id)
                       },
@@ -324,10 +333,11 @@ private fun PreviewContractDetailScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ContractDetailScreen(
-        uiState = ContractDetailsUiState.Success(
+        uiState = Success(
           InsuranceContract(
             "1",
             "Test123",
+            tierName = "Premium",
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),
@@ -337,16 +347,19 @@ private fun PreviewContractDetailScreen() {
               displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
-                contractGroup = ContractGroup.RENTAL,
-                contractType = ContractType.SE_APARTMENT_RENT,
+                contractGroup = RENTAL,
+                contractType = SE_APARTMENT_RENT,
                 partner = null,
                 perils = listOf(),
                 insurableLimits = listOf(),
                 documents = listOf(),
+                displayTierName = "Standard",
+                tierDescription = "Our most standard coverage",
+                termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
               ),
               certificateUrl = null,
               coInsured = listOf(),
-              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+              creationCause = NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
@@ -355,6 +368,7 @@ private fun PreviewContractDetailScreen() {
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
+            supportsTierChange = true,
           ),
           true,
         ),
@@ -369,6 +383,7 @@ private fun PreviewContractDetailScreen() {
         onNavigateToNewConversation = {},
         onMissingInfoClick = {},
         openUrl = {},
+        onChangeTierClick = {},
       )
     }
   }

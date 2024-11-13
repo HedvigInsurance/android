@@ -9,7 +9,7 @@ import com.hedvig.android.feature.claimtriaging.GetEntryPointGroupsUseCase
 import com.hedvig.android.feature.claimtriaging.claimentrypointoptions.ClaimEntryPointOptionsViewModel
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.module
 

@@ -2,7 +2,6 @@ package com.hedvig.android
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
@@ -23,7 +22,7 @@ internal fun Project.configureAndroidCompose(commonExtension: AndroidCommonExten
     }
 
     extensions.configure<ComposeCompilerGradlePluginExtension> {
-      configureComposeCompiler(this@configureAndroidCompose)
+      configureComposeCompilerMetrics(this@configureAndroidCompose)
     }
     dependencies {
       val bom = libs.androidx.compose.bom

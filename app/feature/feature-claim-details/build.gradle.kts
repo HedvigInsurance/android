@@ -1,11 +1,12 @@
 plugins {
-  id("hedvig.android.feature")
-  id("hedvig.android.ktlint")
+  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
-  id("hedvig.android.library.compose")
-  alias(libs.plugins.apollo)
-  alias(libs.plugins.serialization)
-  alias(libs.plugins.squareSortDependencies)
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
 }
 
 android {
@@ -13,26 +14,21 @@ android {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
-  implementation(libs.coil.coil)
-  implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.retrofit)
-  implementation(libs.retrofitArrow)
-  implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
@@ -58,11 +54,4 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
-}
-
-apollo {
-  service("octopus") {
-    packageName = "octopus"
-    dependsOn(projects.apolloOctopusPublic, true)
-  }
 }

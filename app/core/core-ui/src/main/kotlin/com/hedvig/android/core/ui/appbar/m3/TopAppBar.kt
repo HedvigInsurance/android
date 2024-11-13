@@ -1,18 +1,7 @@
 package com.hedvig.android.core.ui.appbar.m3
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,35 +12,12 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.normal.X
-
-/**
- * Just the layout and placing of the top app bar, without the background, drag handling and so on. Can be used to
- * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
- */
-@Composable
-fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
-  Row(
-    horizontalArrangement = Arrangement.End,
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-      .windowInsetsPadding(
-        WindowInsets.systemBars
-          .union(WindowInsets.displayCutout)
-          .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
-      )
-      .height(64.dp)
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-  ) {
-    actions()
-  }
-}
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Composable
 fun TopAppBarWithBack(
@@ -97,7 +63,7 @@ fun TopAppBar(
     title = {
       Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
+        style = HedvigTheme.typography.headlineSmall,
       )
     },
     navigationIcon = {
@@ -106,7 +72,7 @@ fun TopAppBar(
         content = {
           Icon(
             imageVector = when (actionType) {
-              TopAppBarActionType.BACK -> Icons.Hedvig.ArrowBack
+              TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft
               TopAppBarActionType.CLOSE -> Icons.Hedvig.X
             },
             contentDescription = null,
