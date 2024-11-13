@@ -15,6 +15,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
@@ -121,6 +122,9 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
+        onExitTierFlow = {
+          navController.typedPopBackStack<ChooseTierGraphDestination>(inclusive = true)
+        },
         onFailure = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
         },
