@@ -439,6 +439,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
         ) {
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
             HedvigCircularProgressIndicator()
