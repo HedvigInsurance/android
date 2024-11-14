@@ -31,9 +31,6 @@ class MyInfoPresenterTest {
     "1234567",
   )
 
-  @Ignore(
-    "https://slack-chats.kotlinlang.org/t/23415572/tried-bumping-to-2-0-0-beta-1-and-i-am-getting-a-super-weird#f40b83a4-e5f0-4407-9dbb-c53491e66895",
-  )
   @Test
   fun `if phone and email are updated they are received in state`() = runTest {
     val profileRepository = FakeProfileRepository()
@@ -75,9 +72,6 @@ class MyInfoPresenterTest {
     }
   }
 
-  @Ignore(
-    "https://slack-chats.kotlinlang.org/t/23415572/tried-bumping-to-2-0-0-beta-1-and-i-am-getting-a-super-weird#f40b83a4-e5f0-4407-9dbb-c53491e66895",
-  )
   @Test
   fun `if save button is clicked it is not showing anymore`() = runTest {
     val profileRepository = FakeProfileRepository()
@@ -109,9 +103,6 @@ class MyInfoPresenterTest {
     }
   }
 
-  @Ignore(
-    "https://slack-chats.kotlinlang.org/t/23415572/tried-bumping-to-2-0-0-beta-1-and-i-am-getting-a-super-weird#f40b83a4-e5f0-4407-9dbb-c53491e66895",
-  )
   @Test
   fun `if error is received show error section`() = runTest {
     val profileRepository = FakeProfileRepository()
@@ -131,9 +122,6 @@ class MyInfoPresenterTest {
     }
   }
 
-  @Ignore(
-    "https://slack-chats.kotlinlang.org/t/23415572/tried-bumping-to-2-0-0-beta-1-and-i-am-getting-a-super-weird#f40b83a4-e5f0-4407-9dbb-c53491e66895",
-  )
   @Test
   fun `can recover from a network error`() = runTest {
     val profileRepository = FakeProfileRepository()
