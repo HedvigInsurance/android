@@ -94,6 +94,12 @@ fun ForeverDestination(
     },
     languageService = languageService,
     hedvigBuildConstants = hedvigBuildConstants,
+    openEditCodeBottomSheet = {
+      viewModel.emit(ForeverEvent.OpenEditCodeBottomSheet)
+    },
+    closeEditCodeBottomSheet = {
+      viewModel.emit(ForeverEvent.CloseEditCodeBottomSheet)
+    },
   )
 }
 
@@ -104,6 +110,8 @@ private fun ForeverScreen(
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
   showedReferralCodeSuccessfulChangeMessage: () -> Unit,
+  openEditCodeBottomSheet: () -> Unit,
+  closeEditCodeBottomSheet: () -> Unit,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -153,6 +161,8 @@ private fun ForeverScreen(
           onSubmitCode = onSubmitCode,
           showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
           showedCampaignCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
+          openEditCodeBottomSheet = openEditCodeBottomSheet,
+          closeEditCodeBottomSheet = closeEditCodeBottomSheet,
         )
       }
     }
@@ -173,6 +183,8 @@ internal fun ForeverContent(
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
   showedCampaignCodeSuccessfulChangeMessage: () -> Unit,
+  openEditCodeBottomSheet: () -> Unit,
+  closeEditCodeBottomSheet: () -> Unit,
 ) {
   var textFieldValue by remember(uiState.foreverData?.campaignCode) {
     mutableStateOf(uiState.foreverData?.campaignCode ?: "")
@@ -184,19 +196,16 @@ internal fun ForeverContent(
     }
   }
 
-  var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
-
   EditCodeBottomSheet(
-    isVisible = showEditReferralCodeBottomSheet,
+    isVisible = uiState.showEditReferralCodeBottomSheet,
     code = textFieldValue,
     onCodeChanged = { textFieldValue = it },
     onDismiss = {
       showedReferralCodeSubmissionError()
-      showEditReferralCodeBottomSheet = false
+      closeEditCodeBottomSheet()
     },
     onSubmitCode = {
       onSubmitCode(textFieldValue)
-      showEditReferralCodeBottomSheet = false
     },
     referralCodeUpdateError = uiState.referralCodeErrorMessage,
     showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
@@ -238,7 +247,9 @@ internal fun ForeverContent(
         )
         if (uiState.foreverData?.incentive != null) {
           IconButton(
-            onClick = { showReferralExplanationBottomSheet = true },
+            onClick = {
+              showReferralExplanationBottomSheet = true
+            },
             modifier = Modifier.size(40.dp),
           ) {
             Icon(
@@ -326,9 +337,7 @@ internal fun ForeverContent(
         Spacer(Modifier.height(8.dp))
         HedvigTextButton(
           text = stringResource(id = R.string.referrals_change_change_code),
-          onClick = {
-            showEditReferralCodeBottomSheet = true
-          },
+          onClick = openEditCodeBottomSheet,
           buttonSize = Large,
           modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -410,6 +419,8 @@ private fun PreviewForeverContent(
         {},
         {},
         {},
+        {},
+        {},
       )
     }
   }
@@ -424,6 +435,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
       showReferralCodeSuccessfullyChangedMessage = false,
+      showEditReferralCodeBottomSheet = false,
     ),
     ForeverUiState(
       foreverData = ForeverData(
@@ -444,6 +456,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
       showReferralCodeSuccessfullyChangedMessage = false,
+      showEditReferralCodeBottomSheet = false,
     ),
   ),
 )

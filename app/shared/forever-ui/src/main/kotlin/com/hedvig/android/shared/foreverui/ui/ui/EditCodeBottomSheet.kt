@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
@@ -69,7 +68,9 @@ internal fun EditCodeBottomSheet(
       errorState = if (referralCodeUpdateError == null) {
         HedvigTextFieldDefaults.ErrorState.NoError
       } else {
-        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(referralCodeUpdateError.toErrorMessage())
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
+          referralCodeUpdateError.toErrorMessage(),
+        )
       },
       modifier = Modifier
         .padding(horizontal = 16.dp)
