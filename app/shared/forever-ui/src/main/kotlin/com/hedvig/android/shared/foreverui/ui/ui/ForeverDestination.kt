@@ -82,6 +82,8 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import com.hedvig.android.shared.foreverui.ui.data.ForeverData
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
+import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
+import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 
@@ -162,17 +164,21 @@ private fun ForeverScreen(
       targetState = uiState,
       label = "forever_ui_state",
       transitionSpec = { fadeIn() togetherWith fadeOut() },
+      contentKey = {uiState ->
+        when (uiState) {
+          ForeverUiState.Error -> "Error"
+          Loading -> "Loading"
+          is Success -> "Success"
+        }
+      }
     ) { uiStateAnimated ->
-
       when (uiStateAnimated) {
         ForeverUiState.Error -> HedvigErrorSection(
           onButtonClick = reload,
           modifier = Modifier.fillMaxSize(),
         )
-
-        ForeverUiState.Loading -> LoadingForeverContent()
-
-        is ForeverUiState.Success -> {
+        Loading -> LoadingForeverContent()
+        is Success -> {
           ForeverContent(
             uiState = uiStateAnimated,
             pullRefreshState = pullRefreshState,
@@ -257,7 +263,10 @@ internal fun ForeverContent(
 
   LaunchedEffect(Unit) {
     snapshotFlow { textFieldValue }.collectLatest {
-      showedReferralCodeSubmissionError() // clear error after the member edits the code manually
+      if (uiState.referralCodeErrorMessage!=null) {
+        showedReferralCodeSubmissionError()
+      }
+    // clear error after the member edits the code manually
     }
   }
 
