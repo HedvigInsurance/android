@@ -18,11 +18,7 @@ import hedvig.resources.R
 internal fun ForeverExplanationBottomSheet(isVisible: Boolean, discount: String, onDismiss: () -> Unit) {
   HedvigBottomSheet(
     isVisible = isVisible,
-    onVisibleChange = { visible ->
-      if (!isVisible) {
-        onDismiss()
-      }
-    },
+    onVisibleChange = { onDismiss() },
   ) {
     HedvigText(
       text = stringResource(id = R.string.referrals_info_sheet_headline),

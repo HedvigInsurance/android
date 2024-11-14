@@ -49,11 +49,7 @@ internal fun EditCodeBottomSheet(
 
   HedvigBottomSheet(
     isVisible = isVisible,
-    onVisibleChange = { visible ->
-      if (!isVisible) {
-        onDismiss()
-      }
-    },
+    onVisibleChange = { onDismiss() },
   ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }

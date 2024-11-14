@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -74,6 +75,7 @@ import com.hedvig.android.shared.foreverui.ui.data.ForeverData
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import hedvig.resources.R
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ForeverDestination(
@@ -176,13 +178,20 @@ internal fun ForeverContent(
     mutableStateOf(uiState.foreverData?.campaignCode ?: "")
   }
 
-  var showEditReferralCodeBottomSheet by remember { mutableStateOf(false) }
+  LaunchedEffect(Unit) {
+    snapshotFlow { textFieldValue }.collectLatest {
+      showedReferralCodeSubmissionError() // clear error after the member edits the code manually
+    }
+  }
+
+  var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
   EditCodeBottomSheet(
     isVisible = showEditReferralCodeBottomSheet,
     code = textFieldValue,
     onCodeChanged = { textFieldValue = it },
     onDismiss = {
+      showedReferralCodeSubmissionError()
       showEditReferralCodeBottomSheet = false
     },
     onSubmitCode = {
@@ -194,7 +203,7 @@ internal fun ForeverContent(
     isLoading = uiState.referralCodeLoading,
   )
 
-  var showReferralExplanationBottomSheet by remember { mutableStateOf(false) }
+  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
 
   ForeverExplanationBottomSheet(
     discount = uiState.foreverData?.incentive.toString(),
@@ -204,11 +213,6 @@ internal fun ForeverContent(
 
   LaunchedEffect(textFieldValue) {
     showedReferralCodeSubmissionError() // Clear error on new referral code input
-  }
-  LaunchedEffect(showEditReferralCodeBottomSheet) {
-    if (!showEditReferralCodeBottomSheet) {
-      showedReferralCodeSubmissionError() // Clear error when the dialog is dismissed
-    }
   }
 
   Box {
