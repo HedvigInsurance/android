@@ -6,11 +6,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import arrow.core.raise.either
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -37,67 +37,86 @@ internal class ForeverPresenter(
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
-    var isLoadingForeverData by remember { mutableStateOf(lastState.isLoadingForeverData) }
+    var currentState by remember { mutableStateOf(lastState) }
     var foreverDataLoadIteration by remember { mutableIntStateOf(0) }
-    var foreverDataErrorMessage by remember { mutableStateOf(lastState.foreverDataErrorMessage) }
-    var foreverData by remember { mutableStateOf(lastState.foreverData) }
-
     var referralCodeToSubmit by remember { mutableStateOf<String?>(null) }
-    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepository.ReferralError?>(null) }
-    var showReferralCodeToSubmitSuccess by remember { mutableStateOf<Boolean>(false) }
-    var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     CollectEvents { event ->
       when (event) {
-        ShowedReferralCodeSuccessfulChangeMessage -> showReferralCodeToSubmitSuccess = false
-        ShowedReferralCodeSubmissionError -> referralCodeToSubmitErrorMessage = null
+        ShowedReferralCodeSuccessfulChangeMessage -> {
+          val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
+          currentState = state.copy(showReferralCodeSuccessfullyChangedMessage = false)
+        }
+        ShowedReferralCodeSubmissionError -> {
+          val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
+          currentState = state.copy(referralCodeErrorMessage = null)
+        }
         RetryLoadReferralData -> foreverDataLoadIteration++
         is SubmitNewReferralCode -> referralCodeToSubmit = event.code
 
-        CloseEditCodeBottomSheet -> showEditReferralCodeBottomSheet = false
+        CloseEditCodeBottomSheet -> {
+          val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
+          currentState = state.copy(showEditReferralCodeBottomSheet = false)
+        }
 
-        OpenEditCodeBottomSheet -> showEditReferralCodeBottomSheet = true
+        OpenEditCodeBottomSheet -> {
+          val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
+          currentState = state.copy(showEditReferralCodeBottomSheet = true)
+        }
       }
     }
 
     LaunchedEffect(foreverDataLoadIteration) {
-      isLoadingForeverData = true
-      foreverDataErrorMessage = null
+      if (lastState !is ForeverUiState.Success) {
+        currentState = ForeverUiState.Loading
+      } else {
+        currentState = lastState.copy(reloading = true)
+      }
       either {
         val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
         ForeverData(referralsData = referralsData)
       }.fold(
-        ifLeft = { foreverDataErrorMessage = it },
-        ifRight = { foreverData = it },
+        ifLeft = {
+          logcat(priority = LogPriority.INFO) { "Tried to load ForeverData but got error: $it" }
+          currentState = ForeverUiState.Error
+        },
+        ifRight = {
+          currentState = ForeverUiState.Success(
+            foreverData = it,
+            referralCodeLoading = false,
+            referralCodeErrorMessage = null,
+            showReferralCodeSuccessfullyChangedMessage = false,
+            showEditReferralCodeBottomSheet = false,
+            reloading = false,
+          )
+        },
       )
-      isLoadingForeverData = false
     }
 
     LaunchedEffect(referralCodeToSubmit) {
       val codeToSubmit = referralCodeToSubmit ?: return@LaunchedEffect
+      val state = currentState as? ForeverUiState.Success ?: return@LaunchedEffect
+      currentState = state.copy(referralCodeLoading = true)
       foreverRepositoryProvider.provide().updateCode(codeToSubmit).fold(
         ifLeft = {
           referralCodeToSubmit = null
-          referralCodeToSubmitErrorMessage = it
+          currentState = state.copy(
+            referralCodeErrorMessage = it,
+            referralCodeLoading = false,
+          )
         },
         ifRight = {
-          showEditReferralCodeBottomSheet = false
           referralCodeToSubmit = null
-          showReferralCodeToSubmitSuccess = true
+          currentState = state.copy(
+            referralCodeLoading = false,
+            showEditReferralCodeBottomSheet = false,
+            showReferralCodeSuccessfullyChangedMessage = true,
+          )
           foreverDataLoadIteration++ // Trigger a refetch of the data to update the campaign code
         },
       )
     }
-
-    return ForeverUiState(
-      foreverData = foreverData,
-      isLoadingForeverData = isLoadingForeverData,
-      foreverDataErrorMessage = foreverDataErrorMessage,
-      referralCodeLoading = referralCodeToSubmit != null,
-      referralCodeErrorMessage = referralCodeToSubmitErrorMessage,
-      showReferralCodeSuccessfullyChangedMessage = showReferralCodeToSubmitSuccess,
-      showEditReferralCodeBottomSheet = showEditReferralCodeBottomSheet,
-    )
+    return currentState
   }
 }
 
@@ -115,25 +134,17 @@ sealed interface ForeverEvent {
   data object CloseEditCodeBottomSheet : ForeverEvent
 }
 
-data class ForeverUiState(
-  val foreverData: ForeverData?,
-  val isLoadingForeverData: Boolean,
-  val foreverDataErrorMessage: ErrorMessage?,
-  val referralCodeLoading: Boolean,
-  val referralCodeErrorMessage: ForeverRepository.ReferralError?,
-  val showReferralCodeSuccessfullyChangedMessage: Boolean,
-  val showEditReferralCodeBottomSheet: Boolean,
-  // = false
-) {
-  companion object {
-    val Loading: ForeverUiState = ForeverUiState(
-      foreverData = null,
-      isLoadingForeverData = true,
-      foreverDataErrorMessage = null,
-      referralCodeLoading = false,
-      referralCodeErrorMessage = null,
-      showReferralCodeSuccessfullyChangedMessage = false,
-      showEditReferralCodeBottomSheet = false,
-    )
-  }
+sealed interface ForeverUiState {
+  data object Loading : ForeverUiState
+
+  data object Error : ForeverUiState
+
+  data class Success(
+    val foreverData: ForeverData?,
+    val referralCodeLoading: Boolean,
+    val reloading: Boolean,
+    val referralCodeErrorMessage: ForeverRepository.ReferralError?,
+    val showReferralCodeSuccessfullyChangedMessage: Boolean,
+    val showEditReferralCodeBottomSheet: Boolean,
+  ) : ForeverUiState
 }

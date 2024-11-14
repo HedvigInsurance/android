@@ -3,7 +3,9 @@ package com.hedvig.android.shared.foreverui.ui.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +28,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -46,8 +51,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
@@ -66,6 +71,9 @@ import com.hedvig.android.design.system.hedvig.icon.Copy
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
@@ -84,6 +92,10 @@ fun ForeverDestination(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val context = LocalContext.current
+  LocalConfiguration.current
+  val resources = context.resources
+  val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
   ForeverScreen(
     uiState = uiState,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
@@ -92,13 +104,30 @@ fun ForeverDestination(
     showedReferralCodeSuccessfulChangeMessage = {
       viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
     },
-    languageService = languageService,
-    hedvigBuildConstants = hedvigBuildConstants,
     openEditCodeBottomSheet = {
       viewModel.emit(ForeverEvent.OpenEditCodeBottomSheet)
     },
     closeEditCodeBottomSheet = {
       viewModel.emit(ForeverEvent.CloseEditCodeBottomSheet)
+    },
+    onShareCodeClick = { code: String, incentive: UiMoney ->
+      context.showShareSheet(shareSheetTitle) { intent ->
+        intent.putExtra(
+          Intent.EXTRA_TEXT,
+          resources.getString(
+            R.string.REFERRAL_SMS_MESSAGE,
+            incentive.toString(),
+            buildString {
+              append(hedvigBuildConstants.urlBaseWeb)
+              append("/")
+              append(languageService.getLanguage().webPath())
+              append("/forever/")
+              append(Uri.encode(code))
+            },
+          ),
+        )
+        intent.type = "text/plain"
+      }
     },
   )
 }
@@ -112,72 +141,108 @@ private fun ForeverScreen(
   showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
-  languageService: LanguageService,
-  hedvigBuildConstants: HedvigBuildConstants,
+  onShareCodeClick: (String, UiMoney) -> Unit,
 ) {
-  val context = LocalContext.current
-  LocalConfiguration.current
-  val resources = context.resources
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = uiState.isLoadingForeverData,
+    refreshing = (uiState as? ForeverUiState.Success)?.reloading == true,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Box(Modifier.fillMaxSize()) {
-    val transition = updateTransition(targetState = uiState, label = "home ui state")
-    transition.AnimatedContent(
-      modifier = Modifier.fillMaxSize(),
-      contentKey = { it.foreverDataErrorMessage },
-    ) { uiState ->
-      if (uiState.foreverDataErrorMessage != null) {
-        HedvigErrorSection(onButtonClick = reload)
-      } else {
-        val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
-        ForeverContent(
-          uiState = uiState,
-          pullRefreshState = pullRefreshState,
-          onShareCodeClick = { code: String, incentive: UiMoney ->
-            context.showShareSheet(shareSheetTitle) { intent ->
-              intent.putExtra(
-                Intent.EXTRA_TEXT,
-                resources.getString(
-                  R.string.REFERRAL_SMS_MESSAGE,
-                  incentive.toString(),
-                  buildString {
-                    append(hedvigBuildConstants.urlBaseWeb)
-                    append("/")
-                    append(languageService.getLanguage().webPath())
-                    append("/forever/")
-                    append(Uri.encode(code))
-                  },
-                ),
-              )
-              intent.type = "text/plain"
-            }
-          },
-          onSubmitCode = onSubmitCode,
-          showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
-          showedCampaignCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
-          openEditCodeBottomSheet = openEditCodeBottomSheet,
-          closeEditCodeBottomSheet = closeEditCodeBottomSheet,
+  Column(
+    Modifier
+      .fillMaxSize()
+      .consumeWindowInsets(
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+      ),
+  ) {
+    AnimatedContent(
+      targetState = uiState,
+      label = "forever_ui_state",
+      transitionSpec = { fadeIn() togetherWith fadeOut() },
+    ) { uiStateAnimated ->
+
+      when (uiStateAnimated) {
+        ForeverUiState.Error -> HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.fillMaxSize(),
         )
+
+        ForeverUiState.Loading -> LoadingForeverContent()
+
+        is ForeverUiState.Success -> {
+          ForeverContent(
+            uiState = uiStateAnimated,
+            pullRefreshState = pullRefreshState,
+            onShareCodeClick = onShareCodeClick,
+            onSubmitCode = onSubmitCode,
+            showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
+            showedCampaignCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
+            openEditCodeBottomSheet = openEditCodeBottomSheet,
+            closeEditCodeBottomSheet = closeEditCodeBottomSheet,
+          )
+        }
       }
     }
-    PullRefreshIndicator(
-      refreshing = uiState.isLoadingForeverData,
-      state = pullRefreshState,
-      scale = true,
-      modifier = Modifier.align(Alignment.TopCenter),
+  }
+}
+
+@Composable
+internal fun LoadingForeverContent() {
+  Column(
+    Modifier
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState())
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+  ) {
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    ) {
+      HedvigText(
+        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        style = HedvigTheme.typography.headlineSmall,
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigText(
+      text = "-",
+      textAlign = TextAlign.Center,
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier
+        .withoutPlacement()
+        .fillMaxWidth(),
     )
+    Spacer(Modifier.height(16.dp))
+    DiscountPieChart(
+      totalPrice = 0f,
+      totalExistingDiscount = 0f,
+      incentive = 0f,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth()
+        .wrapContentWidth(Alignment.CenterHorizontally)
+        .clip(CircleShape)
+        .size(215.dp)
+        .placeholder(
+          visible = true,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
+    )
+    Spacer(Modifier.weight(1f))
   }
 }
 
 @Composable
 internal fun ForeverContent(
-  uiState: ForeverUiState,
+  uiState: ForeverUiState.Success,
   pullRefreshState: PullRefreshState,
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
@@ -223,8 +288,7 @@ internal fun ForeverContent(
   LaunchedEffect(textFieldValue) {
     showedReferralCodeSubmissionError() // Clear error on new referral code input
   }
-
-  Box {
+  Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
         .matchParentSize()
@@ -356,6 +420,12 @@ internal fun ForeverContent(
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
+    PullRefreshIndicator(
+      refreshing = uiState.reloading == true,
+      state = pullRefreshState,
+      scale = true,
+      modifier = Modifier.align(Alignment.TopCenter),
+    )
     HedvigSnackbar(
       snackbarText = stringResource(R.string.referrals_change_code_changed),
       priority = NotificationPriority.Info,
@@ -412,15 +482,15 @@ private fun PreviewForeverContent(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ForeverContent(
+      ForeverScreen(
         foreverUiState,
-        rememberPullRefreshState(false, {}),
-        { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
+        onShareCodeClick = { _, _ -> },
+        reload = {},
+        onSubmitCode = {},
+        showedReferralCodeSubmissionError = {},
+        showedReferralCodeSuccessfulChangeMessage = {},
+        openEditCodeBottomSheet = {},
+        closeEditCodeBottomSheet = {},
       )
     }
   }
@@ -428,16 +498,8 @@ private fun PreviewForeverContent(
 
 private class ForeverUiStateProvider : CollectionPreviewParameterProvider<ForeverUiState>(
   listOf(
-    ForeverUiState(
-      foreverDataErrorMessage = ErrorMessage("Error message", null),
-      foreverData = null,
-      isLoadingForeverData = false,
-      referralCodeLoading = false,
-      referralCodeErrorMessage = null,
-      showReferralCodeSuccessfullyChangedMessage = false,
-      showEditReferralCodeBottomSheet = false,
-    ),
-    ForeverUiState(
+    ForeverUiState.Error,
+    ForeverUiState.Success(
       foreverData = ForeverData(
         referrals = listOf(
           Referral("Name#1", ReferralState.ACTIVE, null),
@@ -451,12 +513,12 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
         currentGrossCost = null,
         currentDiscountAmountExcludingReferrals = null,
       ),
-      isLoadingForeverData = false,
-      foreverDataErrorMessage = null,
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
       showReferralCodeSuccessfullyChangedMessage = false,
       showEditReferralCodeBottomSheet = false,
+      reloading = false,
     ),
+    ForeverUiState.Loading,
   ),
 )
