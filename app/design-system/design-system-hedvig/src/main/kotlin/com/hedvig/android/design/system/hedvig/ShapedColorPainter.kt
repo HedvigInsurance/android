@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 
-class ShapedColorPainter(
+internal class ShapedColorPainter(
   val shape: Shape,
   val color: Color,
 ) : Painter() {
@@ -73,7 +73,10 @@ class ShapedColorPainter(
 }
 
 @Composable
-fun rememberShapedColorPainter(color: Color, squircle: Shape = HedvigTheme.shapes.cornerMedium): ShapedColorPainter {
+internal fun rememberShapedColorPainter(
+  color: Color,
+  squircle: Shape = HedvigTheme.shapes.cornerMedium,
+): ShapedColorPainter {
   return remember(color, squircle) {
     ShapedColorPainter(squircle, color)
   }
