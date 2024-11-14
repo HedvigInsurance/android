@@ -22,8 +22,11 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectableHedvigCard
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
 import hedvig.resources.R
 
 @Composable
@@ -54,42 +57,57 @@ internal fun EditInsuranceBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       if (allowChangeAddress) {
-        SelectableHedvigCard(
-          text = stringResource(R.string.insurance_details_change_address_button),
-          isSelected = selectedItemIndex == 0,
-          onClick = {
-            selectedItemIndex = if (selectedItemIndex == 0) {
-              -1
-            } else {
-              0
-            }
-          },
-        )
+         RadioOptionRightAligned(
+           chosenState = if (selectedItemIndex == 0) Chosen else NotChosen,
+           onClick = { selectedItemIndex = 0 },
+           optionContent = {
+             Column {
+               HedvigText(
+                 text = stringResource(R.string.insurance_details_change_address_button),
+               )
+               HedvigText(
+                 text = stringResource(R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE),
+                 color = HedvigTheme.colorScheme.textSecondary,
+                 style = HedvigTheme.typography.label,
+               )
+             }
+           },
+         )
       }
       if (allowEditCoInsured) {
-        SelectableHedvigCard(
-          text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
-          isSelected = selectedItemIndex == 1,
-          onClick = {
-            selectedItemIndex = if (selectedItemIndex == 1) {
-              -1
-            } else {
-              1
+        RadioOptionRightAligned(
+          optionContent = {
+            Column {
+              HedvigText(
+                text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
+              )
+              HedvigText(
+                text = stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+                color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.label,
+              )
             }
           },
+          chosenState = if (selectedItemIndex == 1) Chosen else NotChosen,
+          onClick = { selectedItemIndex = 1 },
         )
       }
       if (allowChangeTier) {
-        SelectableHedvigCard(
-          text = stringResource(R.string.insurance_details_change_coverage),
-          isSelected = selectedItemIndex == 2,
-          onClick = {
-            selectedItemIndex = if (selectedItemIndex == 2) {
-              -1
-            } else {
-              2
+        RadioOptionRightAligned(
+          optionContent = {
+            Column {
+              HedvigText(
+                text = stringResource(R.string.insurance_details_change_coverage),
+              )
+              HedvigText(
+                text = stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
+                color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.label,
+              )
             }
           },
+          chosenState = if (selectedItemIndex == 2) Chosen else NotChosen,
+          onClick = { selectedItemIndex = 2 },
         )
       }
     }
@@ -119,7 +137,7 @@ internal fun EditInsuranceBottomSheetContent(
 @Composable
 @HedvigPreview
 private fun PreviewEditInsuranceBottomSheetContent() {
-  HedvigTheme {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EditInsuranceBottomSheetContent(
         allowChangeAddress = true,

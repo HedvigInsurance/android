@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,7 +51,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectableHedvigCard
+import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
@@ -190,6 +192,27 @@ internal fun SelectableCoInsuredList(
     text = stringResource(id = R.string.GENERAL_ADD_NEW),
     onClick = { onAddNewCoInsured() },
   )
+}
+
+@Composable
+private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () -> Unit) {
+  HedvigCard(onClick = onClick) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .heightIn(72.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 10.dp),
+    ) {
+      Text(
+        text = text,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.weight(1f),
+      )
+      Spacer(Modifier.width(8.dp))
+      SelectIndicationCircle(isSelected)
+    }
+  }
 }
 
 @Composable
