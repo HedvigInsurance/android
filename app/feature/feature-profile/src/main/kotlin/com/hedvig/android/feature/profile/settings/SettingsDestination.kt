@@ -253,7 +253,7 @@ internal fun EmailSubscriptionWithDialog(
       dismissButtonLabel = stringResource(R.string.general_close_button),
       confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
       title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-      subtitle = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
     )
   }
   Column {

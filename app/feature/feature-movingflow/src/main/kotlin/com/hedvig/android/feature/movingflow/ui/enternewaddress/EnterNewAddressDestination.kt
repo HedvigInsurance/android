@@ -31,8 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -158,15 +158,15 @@ private fun EnterNewAddressScreen(
   modifier: Modifier = Modifier,
 ) {
   if (uiState.submittingInfoFailure != null) {
-    HedvigDialogError(
-      titleText = stringResource(R.string.something_went_wrong),
-      descriptionText = when (uiState.submittingInfoFailure) {
+    ErrorDialog(
+      title = stringResource(R.string.something_went_wrong),
+      message = when (uiState.submittingInfoFailure) {
         NetworkFailure -> stringResource(R.string.GENERAL_ERROR_BODY)
         is UserError -> uiState.submittingInfoFailure.message
       },
       buttonText = stringResource(R.string.GENERAL_RETRY),
       onButtonClick = dismissSubmissionError,
-      onDismissRequest = dismissSubmissionError,
+      onDismiss = dismissSubmissionError,
     )
   }
   Column(

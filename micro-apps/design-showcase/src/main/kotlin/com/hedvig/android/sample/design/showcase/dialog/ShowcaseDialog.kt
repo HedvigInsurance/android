@@ -18,10 +18,10 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.BANK_ID
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
-import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Surface
 
@@ -55,12 +55,12 @@ fun DialogShowcase() {
   }
   var isErrorDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isErrorDialogVisible) {
-    HedvigDialogError(
-      onDismissRequest = { isErrorDialogVisible = false },
+    ErrorDialog(
+      onDismiss = { isErrorDialogVisible = false },
       buttonText = "Try again",
       onButtonClick = {},
-      titleText = "There is something wrong",
-      descriptionText = "Internet connection seems to be lost",
+      title = "There is something wrong",
+      message = "Internet connection seems to be lost",
     )
   }
 
@@ -69,7 +69,7 @@ fun DialogShowcase() {
     HedvigAlertDialog(
       onDismissRequest = { isAlertDialogVisible = false },
       title = "Title",
-      subtitle = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
+      text = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
       onConfirmClick = {},
       confirmButtonLabel = "Confirm",
       dismissButtonLabel = "Dismiss",

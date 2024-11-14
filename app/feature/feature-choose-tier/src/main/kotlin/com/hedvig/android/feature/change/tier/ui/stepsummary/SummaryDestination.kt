@@ -169,7 +169,7 @@ private fun SummarySuccessScreen(
         onConfirmClick = onConfirmClick,
         confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(R.string.general_cancel_button),
-        subtitle = null,
+        text = null,
       )
     }
     SummaryCard(

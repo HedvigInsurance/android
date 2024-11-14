@@ -2,6 +2,7 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -150,7 +151,11 @@ fun TopAppBar(
  * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
  */
 @Composable
-fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
+fun TopAppBarLayoutForActions(
+  modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(horizontal = TopAppBarTokens.ContentHorizontalPadding),
+  actions: @Composable RowScope.() -> Unit = {},
+) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
     verticalAlignment = Alignment.CenterVertically,
@@ -158,7 +163,7 @@ fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composabl
       .windowInsetsPadding(windowInsets)
       .height(TopAppBarTokens.ContainerHeight)
       .fillMaxWidth()
-      .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
+      .padding(contentPadding),
   ) {
     actions()
   }

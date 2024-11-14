@@ -95,7 +95,7 @@ private fun SwedishLoginScreen(
     if (showStartDemoDialog) {
       HedvigAlertDialog(
         title = "${stringResource(R.string.DEMO_MODE_START)}?",
-        subtitle = null,
+        text = null,
         onDismissRequest = { showStartDemoDialog = false },
         onConfirmClick = enterDemoMode,
       )

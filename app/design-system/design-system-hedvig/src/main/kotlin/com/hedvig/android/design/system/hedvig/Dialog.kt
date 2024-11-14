@@ -36,26 +36,26 @@ import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
 import hedvig.resources.R
 
 @Composable
-fun HedvigDialogError(
-  titleText: String,
-  descriptionText: String,
-  buttonText: String,
-  onButtonClick: () -> Unit,
-  onDismissRequest: () -> Unit,
+fun ErrorDialog(
+  title: String,
+  message: String?,
+  onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonText: String = stringResource(R.string.general_close_button),
+  onButtonClick: (() -> Unit)? = null,
 ) {
   HedvigDialog(
     style = NoButtons,
-    onDismissRequest = onDismissRequest,
+    onDismissRequest = onDismiss,
     modifier = modifier,
   ) {
     EmptyState(
-      text = titleText,
-      description = descriptionText,
+      text = title,
+      description = message,
       iconStyle = ERROR,
       buttonStyle = EmptyStateButtonStyle.Button(
         buttonText = buttonText,
-        onButtonClick = onButtonClick,
+        onButtonClick = onButtonClick ?: onDismiss,
       ),
     )
   }
@@ -64,7 +64,7 @@ fun HedvigDialogError(
 @Composable
 fun HedvigAlertDialog(
   title: String,
-  subtitle: String?,
+  text: String?,
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
@@ -78,8 +78,8 @@ fun HedvigAlertDialog(
       dismissButtonText = dismissButtonLabel,
       onDismissRequest = onDismissRequest,
       onConfirmButtonClick = {
-        onDismissRequest()
         onConfirmClick()
+        onDismissRequest()
       },
       buttonSize = buttonSize,
     ),
@@ -93,9 +93,9 @@ fun HedvigAlertDialog(
         text = title,
         textAlign = TextAlign.Center,
       )
-      if (subtitle != null) {
+      if (text != null) {
         HedvigText(
-          text = subtitle,
+          text = text,
           textAlign = TextAlign.Center,
           color = HedvigTheme.colorScheme.textSecondary,
         )
