@@ -257,33 +257,22 @@ internal fun ForeverContent(
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
 ) {
-  var textFieldValue by remember(uiState.foreverData?.campaignCode) {
-    mutableStateOf(uiState.foreverData?.campaignCode ?: "")
-  }
-
-  LaunchedEffect(Unit) {
-    snapshotFlow { textFieldValue }.collectLatest {
-      if (uiState.referralCodeErrorMessage!=null) {
-        showedReferralCodeSubmissionError()
-      }
-    // clear error after the member edits the code manually
-    }
-  }
 
   EditCodeBottomSheet(
     isVisible = uiState.showEditReferralCodeBottomSheet,
-    code = textFieldValue,
-    onCodeChanged = { textFieldValue = it },
+    code = uiState.foreverData?.campaignCode,
+   // onCodeChanged = { textFieldValue = it },
     onDismiss = {
-      showedReferralCodeSubmissionError()
       closeEditCodeBottomSheet()
     },
     onSubmitCode = {
-      onSubmitCode(textFieldValue)
+      onSubmitCode(it)
     },
     referralCodeUpdateError = uiState.referralCodeErrorMessage,
     showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
     isLoading = uiState.referralCodeLoading,
+    //showSnackBar = uiState.showReferralCodeSuccessfullyChangedMessage,
+    //showedCampaignCodeSuccessfulChangeMessage = showedCampaignCodeSuccessfulChangeMessage
   )
 
   var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -293,10 +282,6 @@ internal fun ForeverContent(
     onDismiss = { showReferralExplanationBottomSheet = false },
     isVisible = showReferralExplanationBottomSheet && uiState.foreverData?.incentive != null,
   )
-
-  LaunchedEffect(textFieldValue) {
-    showedReferralCodeSubmissionError() // Clear error on new referral code input
-  }
   Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
@@ -434,15 +419,6 @@ internal fun ForeverContent(
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
-    )
-    HedvigSnackbar(
-      snackbarText = stringResource(R.string.referrals_change_code_changed),
-      priority = NotificationPriority.Info,
-      showSnackbar = uiState.showReferralCodeSuccessfullyChangedMessage,
-      showedSnackbar = showedCampaignCodeSuccessfulChangeMessage,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing),
     )
   }
 }

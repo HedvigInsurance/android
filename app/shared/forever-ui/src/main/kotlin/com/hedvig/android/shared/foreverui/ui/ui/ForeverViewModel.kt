@@ -51,12 +51,17 @@ internal class ForeverPresenter(
           val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
           currentState = state.copy(referralCodeErrorMessage = null)
         }
+
         RetryLoadReferralData -> foreverDataLoadIteration++
-        is SubmitNewReferralCode -> referralCodeToSubmit = event.code
+
+        is SubmitNewReferralCode -> {
+          referralCodeToSubmit = event.code
+        }
 
         CloseEditCodeBottomSheet -> {
           val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
           currentState = state.copy(showEditReferralCodeBottomSheet = false)
+          currentState = (currentState as ForeverUiState.Success).copy(referralCodeErrorMessage = null)
         }
 
         OpenEditCodeBottomSheet -> {
