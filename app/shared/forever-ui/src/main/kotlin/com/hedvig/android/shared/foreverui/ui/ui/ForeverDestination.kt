@@ -176,7 +176,7 @@ internal fun ForeverContent(
     mutableStateOf(uiState.foreverData?.campaignCode ?: "")
   }
 
-  var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
+  var showEditReferralCodeBottomSheet by remember { mutableStateOf(false) }
 
   EditCodeBottomSheet(
     isVisible = showEditReferralCodeBottomSheet,
@@ -194,14 +194,13 @@ internal fun ForeverContent(
     isLoading = uiState.referralCodeLoading,
   )
 
-  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
-  if (uiState.foreverData?.incentive != null) {
-    ForeverExplanationBottomSheet(
-      discount = uiState.foreverData.incentive.toString(),
-      onDismiss = { showReferralExplanationBottomSheet = false },
-      isVisible = showReferralExplanationBottomSheet,
-    )
-  }
+  var showReferralExplanationBottomSheet by remember { mutableStateOf(false) }
+
+  ForeverExplanationBottomSheet(
+    discount = uiState.foreverData?.incentive.toString(),
+    onDismiss = { showReferralExplanationBottomSheet = false },
+    isVisible = showReferralExplanationBottomSheet && uiState.foreverData?.incentive != null,
+  )
 
   LaunchedEffect(textFieldValue) {
     showedReferralCodeSubmissionError() // Clear error on new referral code input
@@ -316,7 +315,9 @@ internal fun ForeverContent(
               uiState.foreverData.incentive,
             )
           },
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
         HedvigTextButton(
