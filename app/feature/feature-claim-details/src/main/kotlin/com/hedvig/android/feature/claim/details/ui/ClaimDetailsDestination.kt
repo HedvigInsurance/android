@@ -279,7 +279,7 @@ private fun ClaimDetailTopAppBar(
     onActionClick = navigateUp,
     topAppBarActions = {
       if (navigateToConversation != null) {
-        TopAppBarLayoutForActions(padding = PaddingValues()) {
+        TopAppBarLayoutForActions(contentPadding = PaddingValues()) {
           IconButton(navigateToConversation, Modifier.size(40.dp)) {
             Icon(
               imageVector = HedvigIcons.Chat,

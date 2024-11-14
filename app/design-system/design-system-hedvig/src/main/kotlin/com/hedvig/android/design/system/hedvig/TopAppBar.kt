@@ -153,7 +153,7 @@ fun TopAppBar(
 @Composable
 fun TopAppBarLayoutForActions(
   modifier: Modifier = Modifier,
-  padding: PaddingValues = PaddingValues(horizontal = TopAppBarTokens.ContentHorizontalPadding),
+  contentPadding: PaddingValues = PaddingValues(horizontal = TopAppBarTokens.ContentHorizontalPadding),
   actions: @Composable RowScope.() -> Unit = {},
 ) {
   Row(
@@ -163,7 +163,7 @@ fun TopAppBarLayoutForActions(
       .windowInsetsPadding(windowInsets)
       .height(TopAppBarTokens.ContainerHeight)
       .fillMaxWidth()
-      .padding(padding),
+      .padding(contentPadding),
   ) {
     actions()
   }
