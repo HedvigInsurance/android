@@ -103,9 +103,6 @@ fun ForeverDestination(
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
     onSubmitCode = { viewModel.emit(ForeverEvent.SubmitNewReferralCode(it)) },
     showedReferralCodeSubmissionError = { viewModel.emit(ForeverEvent.ShowedReferralCodeSubmissionError) },
-    showedReferralCodeSuccessfulChangeMessage = {
-      viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
-    },
     openEditCodeBottomSheet = {
       viewModel.emit(ForeverEvent.OpenEditCodeBottomSheet)
     },
@@ -140,7 +137,6 @@ private fun ForeverScreen(
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
-  showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
   onShareCodeClick: (String, UiMoney) -> Unit,
@@ -185,7 +181,6 @@ private fun ForeverScreen(
             onShareCodeClick = onShareCodeClick,
             onSubmitCode = onSubmitCode,
             showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
-            showedCampaignCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
             openEditCodeBottomSheet = openEditCodeBottomSheet,
             closeEditCodeBottomSheet = closeEditCodeBottomSheet,
           )
@@ -253,26 +248,40 @@ internal fun ForeverContent(
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
-  showedCampaignCodeSuccessfulChangeMessage: () -> Unit,
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
 ) {
+  var textFieldValue by remember(uiState.foreverData?.campaignCode) {
+    mutableStateOf(uiState.foreverData?.campaignCode ?: "")
+  }
+  LaunchedEffect(textFieldValue) {
+    showedReferralCodeSubmissionError() // Clear error on new referral code input
+  }
+  LaunchedEffect(uiState.showEditReferralCodeBottomSheet) {
+    if (!uiState.showEditReferralCodeBottomSheet) {
+      textFieldValue = uiState.foreverData?.campaignCode ?: ""
+    }
+  }
+  LaunchedEffect(Unit) {
+    snapshotFlow { textFieldValue }.collectLatest {
+      if (uiState.referralCodeErrorMessage!=null) {
+        showedReferralCodeSubmissionError()
+      }
+      // clear error after the member edits the code manually
+    }
+  }
 
   EditCodeBottomSheet(
     isVisible = uiState.showEditReferralCodeBottomSheet,
-    code = uiState.foreverData?.campaignCode,
-   // onCodeChanged = { textFieldValue = it },
-    onDismiss = {
-      closeEditCodeBottomSheet()
-    },
+    code = textFieldValue,
+    onCodeChanged = { textFieldValue = it },
+    onDismiss = closeEditCodeBottomSheet,
     onSubmitCode = {
-      onSubmitCode(it)
+      onSubmitCode(textFieldValue)
     },
     referralCodeUpdateError = uiState.referralCodeErrorMessage,
     showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
     isLoading = uiState.referralCodeLoading,
-    //showSnackBar = uiState.showReferralCodeSuccessfullyChangedMessage,
-    //showedCampaignCodeSuccessfulChangeMessage = showedCampaignCodeSuccessfulChangeMessage
   )
 
   var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -473,7 +482,6 @@ private fun PreviewForeverContent(
         reload = {},
         onSubmitCode = {},
         showedReferralCodeSubmissionError = {},
-        showedReferralCodeSuccessfulChangeMessage = {},
         openEditCodeBottomSheet = {},
         closeEditCodeBottomSheet = {},
       )
@@ -500,7 +508,6 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
-      showReferralCodeSuccessfullyChangedMessage = false,
       showEditReferralCodeBottomSheet = false,
       reloading = false,
     ),

@@ -20,17 +20,16 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.CloseEditCodeBotto
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.OpenEditCodeBottomSheet
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.RetryLoadReferralData
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.ShowedReferralCodeSubmissionError
-import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.SubmitNewReferralCode
 
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
-    ForeverUiState.Loading,
-    ForeverPresenter(
-      foreverRepositoryProvider = foreverRepositoryProvider,
-    ),
-  )
+  ForeverUiState.Loading,
+  ForeverPresenter(
+    foreverRepositoryProvider = foreverRepositoryProvider,
+  ),
+)
 
 internal class ForeverPresenter(
   private val foreverRepositoryProvider: Provider<ForeverRepository>,
@@ -43,10 +42,6 @@ internal class ForeverPresenter(
 
     CollectEvents { event ->
       when (event) {
-        ShowedReferralCodeSuccessfulChangeMessage -> {
-          val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
-          currentState = state.copy(showReferralCodeSuccessfullyChangedMessage = false)
-        }
         ShowedReferralCodeSubmissionError -> {
           val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
           currentState = state.copy(referralCodeErrorMessage = null)
@@ -90,7 +85,6 @@ internal class ForeverPresenter(
             foreverData = it,
             referralCodeLoading = false,
             referralCodeErrorMessage = null,
-            showReferralCodeSuccessfullyChangedMessage = false,
             showEditReferralCodeBottomSheet = false,
             reloading = false,
           )
@@ -115,7 +109,6 @@ internal class ForeverPresenter(
           currentState = state.copy(
             referralCodeLoading = false,
             showEditReferralCodeBottomSheet = false,
-            showReferralCodeSuccessfullyChangedMessage = true,
           )
           foreverDataLoadIteration++ // Trigger a refetch of the data to update the campaign code
         },
@@ -126,7 +119,6 @@ internal class ForeverPresenter(
 }
 
 sealed interface ForeverEvent {
-  data object ShowedReferralCodeSuccessfulChangeMessage : ForeverEvent
 
   data object ShowedReferralCodeSubmissionError : ForeverEvent
 
@@ -149,7 +141,6 @@ sealed interface ForeverUiState {
     val referralCodeLoading: Boolean,
     val reloading: Boolean,
     val referralCodeErrorMessage: ForeverRepository.ReferralError?,
-    val showReferralCodeSuccessfullyChangedMessage: Boolean,
     val showEditReferralCodeBottomSheet: Boolean,
   ) : ForeverUiState
 }
