@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,7 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -72,6 +70,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Copy
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder
@@ -174,6 +173,7 @@ private fun ForeverScreen(
           onButtonClick = reload,
           modifier = Modifier.fillMaxSize(),
         )
+
         Loading -> LoadingForeverContent()
         is Success -> {
           ForeverContent(
@@ -196,18 +196,18 @@ private fun ForeverScreen(
 internal fun LoadingForeverContent() {
   Column(
     Modifier
-      .fillMaxSize()
-      .verticalScroll(rememberScrollState())
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .height(64.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .height(64.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     ) {
       HedvigText(
         text = stringResource(R.string.TAB_REFERRALS_TITLE),
@@ -220,8 +220,8 @@ internal fun LoadingForeverContent() {
       textAlign = TextAlign.Center,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
-        .withoutPlacement()
-        .fillMaxWidth(),
+          .withoutPlacement()
+          .fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     DiscountPieChart(
@@ -229,15 +229,15 @@ internal fun LoadingForeverContent() {
       totalExistingDiscount = 0f,
       incentive = 0f,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally)
-        .clip(CircleShape)
-        .size(215.dp)
-        .placeholder(
-          visible = true,
-          highlight = PlaceholderHighlight.shimmer(),
-        ),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally)
+          .clip(CircleShape)
+          .size(215.dp)
+          .placeholder(
+              visible = true,
+              highlight = PlaceholderHighlight.shimmer(),
+          ),
     )
     Spacer(Modifier.weight(1f))
   }
@@ -300,29 +300,24 @@ internal fun ForeverContent(
     isLoading = uiState.referralCodeLoading,
   )
 
-  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
-
-  ForeverExplanationBottomSheet(
-    discount = uiState.foreverData?.incentive.toString(),
-    onDismiss = { showReferralExplanationBottomSheet = false },
-    isVisible = showReferralExplanationBottomSheet && uiState.foreverData?.incentive != null,
-  )
+  val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<UiMoney>()
+  ForeverExplanationBottomSheet(referralExplanationBottomSheetState)
   Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
-        .matchParentSize()
-        .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .matchParentSize()
+          .pullRefresh(pullRefreshState)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
       Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-          .height(64.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
       ) {
         HedvigText(
           text = stringResource(R.string.TAB_REFERRALS_TITLE),
@@ -330,9 +325,7 @@ internal fun ForeverContent(
         )
         if (uiState.foreverData?.incentive != null) {
           IconButton(
-            onClick = {
-              showReferralExplanationBottomSheet = true
-            },
+            onClick = { referralExplanationBottomSheetState.show(uiState.foreverData.incentive) },
             modifier = Modifier.size(40.dp),
           ) {
             Icon(
@@ -356,9 +349,9 @@ internal fun ForeverContent(
         totalExistingDiscount = uiState.foreverData?.currentDiscount?.amount?.toFloat() ?: 0f,
         incentive = uiState.foreverData?.incentive?.amount?.toFloat() ?: 0f,
         modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(24.dp))
       if (uiState.foreverData?.referrals?.isEmpty() == true && uiState.foreverData.incentive != null) {
@@ -373,16 +366,16 @@ internal fun ForeverContent(
           ),
           color = HedvigTheme.colorScheme.textSecondary,
           modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
         )
       } else {
         HedvigText(
           text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
           textAlign = TextAlign.Center,
           modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
         )
         HedvigText(
           text = stringResource(
@@ -414,8 +407,8 @@ internal fun ForeverContent(
             )
           },
           modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
         HedvigTextButton(
@@ -423,8 +416,8 @@ internal fun ForeverContent(
           onClick = openEditCodeBottomSheet,
           buttonSize = Large,
           modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
         )
       }
       if (uiState.foreverData?.referrals?.isNotEmpty() == true) {
@@ -451,9 +444,9 @@ internal fun ForeverContent(
       showedSnackbar = showedReferralCodeSuccessfulChangeMessage,
       priority = NotificationPriority.Info,
       modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing)
-        .padding(16.dp),
+          .align(Alignment.BottomCenter)
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .padding(16.dp),
     )
   }
 }
@@ -470,8 +463,8 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
   ) {
     Row(
       modifier = Modifier
-        .heightIn(min = 72.dp)
-        .padding(horizontal = 16.dp, vertical = 10.dp),
+          .heightIn(min = 72.dp)
+          .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
       Column {
         HedvigText(
@@ -488,8 +481,8 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
         imageVector = HedvigIcons.Copy,
         contentDescription = "Copy",
         modifier = Modifier
-          .align(Alignment.Bottom)
-          .padding(bottom = 8.dp),
+            .align(Alignment.Bottom)
+            .padding(bottom = 8.dp),
       )
     }
   }
