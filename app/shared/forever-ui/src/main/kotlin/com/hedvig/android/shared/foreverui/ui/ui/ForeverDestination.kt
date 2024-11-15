@@ -45,6 +45,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -258,20 +260,21 @@ internal fun ForeverContent(
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
 ) {
+  val initialTextValue = TextFieldValue(
+    text = uiState.foreverData?.campaignCode ?: "",
+    selection = TextRange((uiState.foreverData?.campaignCode ?: "").length),
+  )
   var textFieldValue by remember(uiState.foreverData?.campaignCode) {
-    mutableStateOf(uiState.foreverData?.campaignCode ?: "")
+    mutableStateOf(initialTextValue)
   }
+
   LaunchedEffect(textFieldValue) {
     showedReferralCodeSubmissionError() // Clear error on new referral code input
   }
   LaunchedEffect(uiState.showEditReferralCodeBottomSheet) {
     if (!uiState.showEditReferralCodeBottomSheet) {
-      delay(500)
-      // todo: okay, so this delay is ugly, I admit, but it's the only way to
-      // restore the value back on closing the BS and don't have
-      // a weird animation effect when closing the bottom sheet
-      // while having submit error/changed textFieldValue in the BS
-      textFieldValue = uiState.foreverData?.campaignCode ?: ""
+      delay(500) // to avoid extra animation effects on closing bottom sheet
+      textFieldValue = initialTextValue
       showedReferralCodeSubmissionError()
     }
   }
@@ -296,7 +299,7 @@ internal fun ForeverContent(
     onCodeChanged = { textFieldValue = it },
     onDismiss = closeEditCodeBottomSheet,
     onSubmitCode = {
-      onSubmitCode(textFieldValue)
+      onSubmitCode(textFieldValue.text.trim())
     },
     referralCodeUpdateError = uiState.referralCodeErrorMessage,
     showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,

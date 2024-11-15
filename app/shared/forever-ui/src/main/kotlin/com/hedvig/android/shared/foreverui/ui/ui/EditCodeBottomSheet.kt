@@ -12,6 +12,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -28,10 +29,10 @@ import hedvig.resources.R
 @Composable
 internal fun EditCodeBottomSheet(
   isVisible: Boolean,
-  code: String,
+  code: TextFieldValue,
   referralCodeUpdateError: ForeverRepository.ReferralError?,
   showedReferralCodeSubmissionError: () -> Unit,
-  onCodeChanged: (String) -> Unit,
+  onCodeChanged: (TextFieldValue) -> Unit,
   onDismiss: () -> Unit,
   onSubmitCode: () -> Unit,
   isLoading: Boolean,
@@ -54,7 +55,7 @@ internal fun EditCodeBottomSheet(
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextField(
-      text = code,
+      textValue = code,
       labelText = stringResource(R.string.referrals_empty_code_headline),
       onValueChange = onCodeChanged,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
