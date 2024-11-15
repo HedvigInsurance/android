@@ -85,6 +85,7 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
 import hedvig.resources.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -259,7 +260,13 @@ internal fun ForeverContent(
   }
   LaunchedEffect(uiState.showEditReferralCodeBottomSheet) {
     if (!uiState.showEditReferralCodeBottomSheet) {
+      delay(500)
+      //todo: okay, so this delay is ugly, I admit, but it's the only to
+      // restore the value back on closing the BS and don't have
+      // a weird animation effect when closing the bottom sheet
+      // while having submit error/changed textFieldValue
       textFieldValue = uiState.foreverData?.campaignCode ?: ""
+      showedReferralCodeSubmissionError()
     }
   }
   LaunchedEffect(Unit) {

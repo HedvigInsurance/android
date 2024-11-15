@@ -56,7 +56,6 @@ internal class ForeverPresenter(
         CloseEditCodeBottomSheet -> {
           val state = currentState as? ForeverUiState.Success ?: return@CollectEvents
           currentState = state.copy(showEditReferralCodeBottomSheet = false)
-          currentState = (currentState as ForeverUiState.Success).copy(referralCodeErrorMessage = null)
         }
 
         OpenEditCodeBottomSheet -> {
