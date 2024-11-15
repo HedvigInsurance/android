@@ -57,6 +57,7 @@ internal fun EditCodeBottomSheet(
     .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     .add(WindowInsets.ime)
   DismissSheetOnSuccessfulCodeChangeEffect(sheetState, referralCodeSuccessfullyChanged)
+  ClearErrorOnSheetDismissedEffect(sheetState, showedReferralCodeSubmissionError)
   HedvigBottomSheet(
     hedvigBottomSheetState = sheetState,
     sheetPadding = insetsAroundSheet.asPaddingValues(),
@@ -133,6 +134,23 @@ private fun DismissSheetOnSuccessfulCodeChangeEffect(
       .collect {
         if (it) {
           sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+private fun ClearErrorOnSheetDismissedEffect(
+  sheetState: HedvigBottomSheetState<String>,
+  showedReferralCodeSubmissionError: () -> Unit,
+) {
+  val updatedShowedReferralCodeSubmissionError by rememberUpdatedState(showedReferralCodeSubmissionError)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }
+      .drop(1)
+      .collect {
+        if (!it) {
+          updatedShowedReferralCodeSubmissionError()
         }
       }
   }
