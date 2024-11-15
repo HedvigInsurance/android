@@ -121,11 +121,7 @@ private fun CrossSellItem(
       contentDescription = null,
       modifier = Modifier
         .size(48.dp)
-        .hedvigPlaceholder(
-          visible = isLoading,
-          highlight = PlaceholderHighlight.fade(),
-          shape = HedvigTheme.shapes.cornerLarge,
-        ),
+        .hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
     )
     Spacer(Modifier.width(16.dp))
     Column(
@@ -135,7 +131,11 @@ private fun CrossSellItem(
       HedvigText(
         text = crossSellTitle,
         style = HedvigTheme.typography.bodySmall,
-        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+          shape = HedvigTheme.shapes.cornerXSmall,
+        ),
       )
       Spacer(Modifier.height(4.dp))
       HedvigText(
@@ -153,11 +153,7 @@ private fun CrossSellItem(
       },
       buttonSize = Small,
       buttonStyle = PrimaryAlt,
-      modifier = Modifier.hedvigPlaceholder(
-        visible = isLoading,
-        highlight = PlaceholderHighlight.shimmer(),
-        shape = HedvigTheme.shapes.cornerXLarge,
-      ),
+      modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       enabled = !isLoading,
     )
   }
