@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -206,7 +207,7 @@ private fun InternalHedvigBottomSheet(
           .verticalScroll(scrollState),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
-        DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+        DragHandle(modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.height(20.dp))
         content()
       }
@@ -228,7 +229,7 @@ private fun InternalHedvigBottomSheet(
 
 @Composable
 private fun DragHandle(modifier: Modifier = Modifier) {
-  Surface(
+  Box(
     modifier = modifier
       .width(40.dp)
       .height(4.dp)
@@ -236,8 +237,7 @@ private fun DragHandle(modifier: Modifier = Modifier) {
         shape = HedvigTheme.shapes.cornerSmall,
         color = bottomSheetColors.chipColor,
       )
-      .clip(HedvigTheme.shapes.cornerSmall),
-  ) {}
+  )
 }
 
 @Composable
