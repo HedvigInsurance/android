@@ -362,7 +362,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         label = "insurable limit label",
         limit = "insurable limit limit",
         description = "insurable limit description",
-        type = BIKE,
       ),
     ),
     documents = listOf(

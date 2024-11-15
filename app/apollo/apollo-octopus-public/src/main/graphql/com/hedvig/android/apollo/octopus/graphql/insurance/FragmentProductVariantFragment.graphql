@@ -17,7 +17,6 @@ fragment ProductVariantFragment on ProductVariant {
     label
     limit
     description
-    type
   }
   documents {
     displayName

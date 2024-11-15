@@ -282,7 +282,6 @@ private fun PreviewQuoteCard(
               label = "label#$it",
               limit = "limit#$it",
               description = "description#$it",
-              type = BIKE,
             )
           },
           documents = List(3) {

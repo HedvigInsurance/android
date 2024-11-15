@@ -8,7 +8,6 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import hedvig.resources.R
 import octopus.fragment.ProductVariantFragment
-import octopus.type.InsurableLimitType
 import octopus.type.InsuranceDocumentType
 
 fun InsuranceVariantDocument.InsuranceDocumentType.getStringRes() = when (this) {
@@ -44,28 +43,6 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       label = insurableLimit.label,
       limit = insurableLimit.limit,
       description = insurableLimit.description,
-      type = when (insurableLimit.type) {
-        InsurableLimitType.DEDUCTIBLE -> InsurableLimit.InsurableLimitType.DEDUCTIBLE
-        InsurableLimitType.DEDUCTIBLE_NATURE_DAMAGE -> InsurableLimit.InsurableLimitType.DEDUCTIBLE_NATURE_DAMAGE
-        InsurableLimitType.DEDUCTIBLE_ALL_RISK -> InsurableLimit.InsurableLimitType.DEDUCTIBLE_ALL_RISK
-        InsurableLimitType.INSURED_AMOUNT -> InsurableLimit.InsurableLimitType.INSURED_AMOUNT
-        InsurableLimitType.GOODS_INDIVIDUAL -> InsurableLimit.InsurableLimitType.GOODS_INDIVIDUAL
-        InsurableLimitType.GOODS_FAMILY -> InsurableLimit.InsurableLimitType.GOODS_FAMILY
-        InsurableLimitType.TRAVEL_DAYS -> InsurableLimit.InsurableLimitType.TRAVEL_DAYS
-        InsurableLimitType.MEDICAL_EXPENSES -> InsurableLimit.InsurableLimitType.MEDICAL_EXPENSES
-        InsurableLimitType.LOST_LUGGAGE -> InsurableLimit.InsurableLimitType.LOST_LUGGAGE
-        InsurableLimitType.BIKE -> InsurableLimit.InsurableLimitType.BIKE
-        InsurableLimitType.PERMANENT_INJURY -> InsurableLimit.InsurableLimitType.PERMANENT_INJURY
-        InsurableLimitType.TREATMENT -> InsurableLimit.InsurableLimitType.TREATMENT
-        InsurableLimitType.DENTAL_TREATMENT -> InsurableLimit.InsurableLimitType.DENTAL_TREATMENT
-        InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME ->
-          InsurableLimit.InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME
-
-        InsurableLimitType.TRAVEL_DELAYED_ON_TRIP -> InsurableLimit.InsurableLimitType.TRAVEL_DELAYED_ON_TRIP
-        InsurableLimitType.TRAVEL_DELAYED_LUGGAGE -> InsurableLimit.InsurableLimitType.TRAVEL_DELAYED_LUGGAGE
-        InsurableLimitType.TRAVEL_CANCELLATION -> InsurableLimit.InsurableLimitType.TRAVEL_CANCELLATION
-        InsurableLimitType.UNKNOWN__ -> InsurableLimit.InsurableLimitType.UNKNOWN
-      },
     )
   },
   documents = this.documents.map { document ->

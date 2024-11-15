@@ -331,7 +331,7 @@ private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
 }
 
 private val previewInsurableLimits: List<InsurableLimit> = listOf(
-  InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", "", InsurableLimit.InsurableLimitType.GOODS_FAMILY),
-  InsurableLimit("Deductible", "1 500 kr", "", InsurableLimit.InsurableLimitType.DEDUCTIBLE),
-  InsurableLimit("Travel insurance", "45 days", "", InsurableLimit.InsurableLimitType.BIKE),
+  InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
+  InsurableLimit("Deductible", "1 500 kr", ""),
+  InsurableLimit("Travel insurance", "45 days", ""),
 )
