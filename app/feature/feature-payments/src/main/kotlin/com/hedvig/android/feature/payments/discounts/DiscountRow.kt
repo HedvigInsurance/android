@@ -144,6 +144,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
           Discount.ExpiredState.NotExpired -> {}
         }
       },
+      spaceBetween = 16.dp,
     )
   }
 }

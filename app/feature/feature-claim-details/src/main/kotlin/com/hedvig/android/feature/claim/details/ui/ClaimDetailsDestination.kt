@@ -279,7 +279,7 @@ private fun ClaimDetailTopAppBar(
     onActionClick = navigateUp,
     topAppBarActions = {
       if (navigateToConversation != null) {
-        TopAppBarLayoutForActions {
+        TopAppBarLayoutForActions(contentPadding = PaddingValues()) {
           IconButton(navigateToConversation, Modifier.size(40.dp)) {
             Icon(
               imageVector = HedvigIcons.Chat,
@@ -439,6 +439,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
         ) {
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
             HedvigCircularProgressIndicator()

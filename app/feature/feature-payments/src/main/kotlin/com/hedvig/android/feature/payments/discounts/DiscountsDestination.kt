@@ -3,7 +3,9 @@ package com.hedvig.android.feature.payments.discounts
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -213,7 +215,7 @@ private fun ForeverSection(
         )
       },
     )
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(8.dp))
     val context = LocalContext.current
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -238,13 +240,18 @@ private fun ForeverSection(
         }
       },
       endSlot = {
-        Text(
-          stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            "-${foreverInformation.currentMonthlyDiscountFromForever}",
-          ),
-          textAlign = TextAlign.End,
-        )
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+        ) {
+          Text(
+            stringResource(
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              "-${foreverInformation.currentMonthlyDiscountFromForever}",
+            ),
+            textAlign = TextAlign.End,
+          )
+        }
       },
       spaceBetween = 8.dp,
     )
@@ -299,7 +306,7 @@ private fun PaymentDetailsScreenPreview(
               ),
               Discount(
                 "MYDISCOUNT3",
-                "display name of expiring soon",
+                "display name of expiring soon soon soon soon soon",
                 "description",
                 Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
                 UiMoney(10.0, UiCurrencyCode.SEK),

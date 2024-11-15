@@ -10,7 +10,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import arrow.core.mapNotNull
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
@@ -129,7 +128,6 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
               minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
             )
           }
-          .values
           .toList()
         val selectedCoverage = initiallySelectedHomeQuote ?: homeQuotes.first()
         tiersInfo = TiersInfo(

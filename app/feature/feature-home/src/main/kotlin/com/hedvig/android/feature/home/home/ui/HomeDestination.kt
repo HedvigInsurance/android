@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -584,14 +585,13 @@ private fun CrossSellBottomSheet(
     isVisible = true,
     onVisibleChange = { onDismissed() },
     content = {
-      Column {
-        Spacer(Modifier.height(32.dp))
-        CrossSellsSection(
-          showNotificationBadge = false,
-          crossSells = crossSells,
-          onCrossSellClick = onCrossSellClick,
-        )
-      }
+      CrossSellsSection(
+        showNotificationBadge = false,
+        crossSells = crossSells,
+        onCrossSellClick = onCrossSellClick,
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     },
   )
 }

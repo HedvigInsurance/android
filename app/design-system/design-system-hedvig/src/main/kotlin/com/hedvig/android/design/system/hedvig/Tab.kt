@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -56,14 +57,15 @@ fun HedvigTabRowMaxSixTabs(
   modifier: Modifier = Modifier,
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
+  selectIndicatorAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
+    durationMillis = 600,
+    easing = FastOutSlowInEasing,
+  ),
 ) {
   var currentIndicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(0, 0)) }
   val indicatorOffset: IntOffset by animateIntOffsetAsState(
     targetValue = currentIndicatorOffset,
-    animationSpec = tween(
-      durationMillis = 600,
-      easing = FastOutSlowInEasing,
-    ),
+    animationSpec = selectIndicatorAnimationSpec,
     label = "",
   )
   var oneLineHeight by remember { mutableIntStateOf(0) }

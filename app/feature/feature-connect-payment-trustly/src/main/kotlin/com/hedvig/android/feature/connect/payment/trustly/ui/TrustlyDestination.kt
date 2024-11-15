@@ -8,10 +8,10 @@ import android.net.Uri
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,29 +20,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.composewebview.AccompanistWebViewClient
 import com.hedvig.android.composewebview.LoadingState
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberSaveableWebViewState
 import com.hedvig.android.composewebview.rememberWebViewNavigator
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
@@ -50,6 +52,7 @@ import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascr
 import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.compose.Destination
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
@@ -58,16 +61,26 @@ import kotlinx.serialization.Serializable
 data object TrustlyDestination : Destination
 
 @Composable
-internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  TrustlyScreen(
-    uiState = uiState,
-    navigateUp = navigateUp,
-    connectingCardSucceeded = { viewModel.emit(TrustlyEvent.ConnectingCardSucceeded) },
-    connectingCardFailed = { viewModel.emit(TrustlyEvent.ConnectingCardFailed) },
-    retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
-    finishTrustlyFlow = finishTrustlyFlow,
-  )
+internal fun TrustlyDestination(
+  viewModel: TrustlyViewModel,
+  market: Market,
+  navigateUp: () -> Unit,
+  finishTrustlyFlow: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+) {
+  if (market != Market.SE) {
+    NonSwedishScreen(navigateUp, onNavigateToNewConversation)
+  } else {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TrustlyScreen(
+      uiState = uiState,
+      navigateUp = navigateUp,
+      connectingCardSucceeded = { viewModel.emit(TrustlyEvent.ConnectingCardSucceeded) },
+      connectingCardFailed = { viewModel.emit(TrustlyEvent.ConnectingCardFailed) },
+      retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
+      finishTrustlyFlow = finishTrustlyFlow,
+    )
+  }
 }
 
 @Composable
@@ -80,7 +93,7 @@ private fun TrustlyScreen(
   finishTrustlyFlow: () -> Unit,
 ) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     when (uiState) {
@@ -118,15 +131,11 @@ private fun TrustlyScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center,
         ) {
-          HedvigSuccessSection(
-            title = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
-            subTitle = null,
-            withDefaultVerticalSpacing = false,
-          )
-          Spacer(Modifier.height(24.dp))
-          HedvigContainedSmallButton(
-            text = stringResource(R.string.general_done_button),
-            onClick = finishTrustlyFlow,
+          EmptyState(
+            iconStyle = SUCCESS,
+            text = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+            description = null,
+            buttonStyle = Button(stringResource(R.string.general_done_button), finishTrustlyFlow),
           )
         }
       }
@@ -211,13 +220,6 @@ private fun TrustlyBrowser(
         .fillMaxWidth()
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)),
     ) {
-      val loadingState = webViewState.loadingState
-      if (loadingState is LoadingState.Loading) {
-        LinearProgressIndicator(
-          progress = { loadingState.progress },
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
       WebView(
         state = webViewState,
         navigator = webViewNavigator,
@@ -235,6 +237,34 @@ private fun TrustlyBrowser(
         },
         client = webViewClient,
         modifier = Modifier.matchParentSize(),
+      )
+      val loadingState = webViewState.loadingState
+      if (loadingState is LoadingState.Loading) {
+        val brushColor = HedvigTheme.colorScheme.fillPrimary
+        Canvas(Modifier.fillMaxWidth().height(4.dp)) {
+          drawRect(brushColor, size = Size(size.width * loadingState.progress, size.height))
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun NonSwedishScreen(navigateUp: () -> Unit, onNavigateToNewConversation: () -> Unit) {
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Column {
+      TopAppBarWithBack(onClick = dropUnlessResumed { navigateUp() }, title = "")
+      HedvigErrorSection(
+        title = stringResource(R.string.MOVEINTENT_GENERIC_ERROR),
+        subTitle = null,
+        onButtonClick = dropUnlessResumed { onNavigateToNewConversation() },
+        buttonText = stringResource(R.string.open_chat),
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxWidth(),
       )
     }
   }
