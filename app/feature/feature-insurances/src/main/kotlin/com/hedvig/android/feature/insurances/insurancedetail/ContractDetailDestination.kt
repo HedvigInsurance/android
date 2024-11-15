@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -104,7 +106,7 @@ internal fun ContractDetailDestination(
   )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ContractDetailScreen(
   uiState: ContractDetailsUiState,
@@ -177,7 +179,7 @@ private fun ContractDetailScreen(
         }
 
         is ContractDetailsUiState.Success -> {
-          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+          val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
               .safeDrawing
@@ -187,9 +189,7 @@ private fun ContractDetailScreen(
               .plus(PaddingValues(top = 16.dp)),
             modifier = Modifier
               .fillMaxSize()
-              .onConsumedWindowInsetsChanged {
-                consumedWindowInsets = it
-              }
+              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
               .windowInsetsPadding(
                 WindowInsets
                   .safeDrawing

@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -336,6 +338,7 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
@@ -364,6 +367,11 @@ private fun HomeScreenSuccess(
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
     if (fullScreenSizeValue != null) {
+      val consumedWindowInsets = remember { MutableWindowInsets() }
+      val horizontalInsets = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Horizontal)
+        .exclude(consumedWindowInsets)
+        .asPaddingValues()
       HomeLayout(
         fullScreenSize = fullScreenSizeValue,
         welcomeMessage = {
@@ -377,15 +385,10 @@ private fun HomeScreenSuccess(
         },
         claimStatusCards = {
           if (uiState.claimStatusCardsData != null) {
-            var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
             ClaimStatusCards(
               onClick = onClaimDetailCardClicked,
               claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
-              contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-                .exclude(consumedWindowInsets)
-                .only(WindowInsetsSides.Horizontal)
-                .asPaddingValues(),
-              modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+              contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
           }
         },
@@ -394,24 +397,19 @@ private fun HomeScreenSuccess(
             list = uiState.veryImportantMessages,
             openUrl = openUrl,
             hideImportantMessage = markMessageAsSeen,
+            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
           )
         },
         memberReminderCards = {
           val memberReminders =
             uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-
           MemberReminderCardsWithoutNotification(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
-            contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-              .exclude(consumedWindowInsets)
-              .only(WindowInsetsSides.Horizontal)
-              .asPaddingValues(),
-            modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
           )
         },
         startClaimButton = {
@@ -453,6 +451,7 @@ private fun HomeScreenSuccess(
               .height(16.dp),
           )
         },
+        modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
       )
     }
   }
@@ -463,17 +462,13 @@ private fun ImportantMessages(
   list: List<HomeData.VeryImportantMessage>,
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
   AnimatedContent(
     targetState = list,
-    modifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+    modifier = modifier,
   ) { animatedList ->
-    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-      .exclude(consumedWindowInsets)
-      .only(WindowInsetsSides.Horizontal)
-      .asPaddingValues()
     if (animatedList.size == 1) {
       VeryImportantMessageCard(
         openUrl = openUrl,

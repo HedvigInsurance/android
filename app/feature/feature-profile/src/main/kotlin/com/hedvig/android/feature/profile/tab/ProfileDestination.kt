@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -106,6 +108,7 @@ internal fun ProfileDestination(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ProfileScreen(
   uiState: ProfileUiState,
@@ -177,7 +180,7 @@ private fun ProfileScreen(
       val notificationPermissionState = rememberNotificationPermissionState()
 
       NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-      var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+      val consumedWindowInsets = remember { MutableWindowInsets() }
       if (uiState is ProfileUiState.Success) {
         val memberReminders =
           uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
@@ -193,7 +196,7 @@ private fun ProfileScreen(
           notificationPermissionState = notificationPermissionState,
           snoozeNotificationPermissionReminder = snoozeNotificationPermission,
           contentPadding = padding,
-          modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+          modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
         )
         if (memberReminders.isNotEmpty()) {
