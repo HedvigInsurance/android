@@ -8,7 +8,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.changeaddress.data.Address
 import com.hedvig.android.feature.changeaddress.data.AddressId
@@ -115,7 +114,6 @@ internal val fakeMoveQuote = MoveQuote(
         label = "test",
         description = "long".repeat(10),
         limit = "long".repeat(10),
-        type = BIKE,
       ),
     ),
     documents = listOf(),
