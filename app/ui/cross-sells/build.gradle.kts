@@ -16,5 +16,4 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.designSystemHedvig)
-  implementation(projects.placeholder)
 }
