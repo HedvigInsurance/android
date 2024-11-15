@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -46,17 +42,15 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -65,6 +59,8 @@ import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -152,7 +148,7 @@ private fun InsuranceScreen(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
-        Text(
+        HedvigText(
           text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
           style = HedvigTheme.typography.headlineSmall,
         )
@@ -212,19 +208,15 @@ private fun InsuranceScreenContent(
     modifier = modifier.padding(top = 16.dp),
     verticalArrangement = Arrangement.spacedBy(24.dp),
   ) {
-    val insuranceCardModifier = Modifier
-      .padding(horizontal = 16.dp)
-      .clip(MaterialTheme.shapes.squircleMedium)
     if (uiState.isLoading) {
       InsuranceCardPlaceholder(
         imageLoader = imageLoader,
-        modifier = insuranceCardModifier,
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
-      CrossSellItemPlaceholder()
+      CrossSellItemPlaceholder(Modifier.padding(horizontal = 16.dp))
     } else {
       ContractsSection(
         imageLoader = imageLoader,
-        modifier = insuranceCardModifier,
         onInsuranceCardClick = onInsuranceCardClick,
         contracts = uiState.contracts,
       )
@@ -239,6 +231,7 @@ private fun InsuranceScreenContent(
           showNotificationBadge = showNotificationBadge,
           crossSells = uiState.crossSells,
           onCrossSellClick = onCrossSellClick,
+          modifier = Modifier.padding(horizontal = 16.dp),
         )
       }
       if (quantityOfCancelledInsurances > 0) {
@@ -263,20 +256,21 @@ private fun ContractsSection(
   onInsuranceCardClick: (contractId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  if (contracts.isEmpty()) {
-    HedvigInformationSection(
-      title = stringResource(id = R.string.INSURANCES_NO_ACTIVE),
-      withDefaultVerticalSpacing = true,
-    )
-  } else {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      for (contract in contracts) {
-        InsuranceCard(
-          contract = contract,
-          imageLoader = imageLoader,
-          modifier = modifier,
-          onInsuranceCardClick = onInsuranceCardClick,
-        )
+  Box(modifier) {
+    if (contracts.isEmpty()) {
+      EmptyState(
+        text = stringResource(id = R.string.INSURANCES_NO_ACTIVE),
+        description = null,
+      )
+    } else {
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (contract in contracts) {
+          InsuranceCard(
+            contract = contract,
+            imageLoader = imageLoader,
+            onInsuranceCardClick = onInsuranceCardClick,
+          )
+        }
       }
     }
   }
@@ -295,7 +289,8 @@ private fun InsuranceCard(
     topText = contract.currentInsuranceAgreement.productVariant.displayName,
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
-    modifier = modifier
+    modifier = modifier.padding(horizontal = 16.dp)
+      .clip(HedvigTheme.shapes.cornerXLarge)
       .clickable {
         onInsuranceCardClick(contract.id)
       },
@@ -308,17 +303,9 @@ private fun InsuranceCard(
 private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
-    colors = CardDefaults.outlinedCardColors(),
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
-    ) {
-      Text(text)
-    }
+    HedvigText(text, Modifier.padding(16.dp))
   }
 }
 
@@ -345,8 +332,8 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
 private fun PreviewInsuranceScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
 ) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    Surface {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InsuranceScreen(
         InsuranceUiState(
           contracts = if (withContracts) {
@@ -386,7 +373,7 @@ private fun PreviewInsuranceScreen(
 private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,
         content = { insuranceUiState ->

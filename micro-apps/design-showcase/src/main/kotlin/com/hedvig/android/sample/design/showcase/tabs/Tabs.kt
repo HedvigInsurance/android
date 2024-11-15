@@ -57,140 +57,140 @@ fun TabsShowcase() {
       HedvigText(text = "1 tab")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = listOf("One title"),
         selectedTabIndex = selectedIndex00,
         onTabChosen = {
           selectedIndex00 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "3 tabs")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex01,
         onTabChosen = {
           selectedIndex01 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "4 tabs")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = titles4,
         selectedTabIndex = selectedIndex02,
         onTabChosen = {
           selectedIndex02 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "5 tabs")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = titles5,
         selectedTabIndex = selectedIndex03,
         onTabChosen = {
           selectedIndex03 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "6 tabs")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = titles6,
         selectedTabIndex = selectedIndex04,
         onTabChosen = {
           selectedIndex04 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Small, Filled and Default")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Small,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex,
         onTabChosen = {
           selectedIndex = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Default,
-        tabSize = Small,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex2,
         onTabChosen = {
           selectedIndex2 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Small,
+        tabStyle = Default,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Mini Filled")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Mini,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex3,
         onTabChosen = {
           selectedIndex3 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Mini,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Medium Filled")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Medium,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex4,
         onTabChosen = {
           selectedIndex4 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Medium,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Large Filled")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Large,
         tabTitles = titles3,
         selectedTabIndex = selectedIndex5,
         onTabChosen = {
           selectedIndex5 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Large,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
-        modifier = Modifier.fillMaxWidth(),
-        tabStyle = Filled,
-        tabSize = Large,
         tabTitles = titles6,
         selectedTabIndex = selectedIndex6,
         onTabChosen = {
           selectedIndex6 = it
         },
+        modifier = Modifier.fillMaxWidth(),
+        tabSize = Large,
+        tabStyle = Filled,
       )
       Spacer(modifier = Modifier.height(16.dp))
     }

@@ -4,7 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.design.system.hedvig.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
