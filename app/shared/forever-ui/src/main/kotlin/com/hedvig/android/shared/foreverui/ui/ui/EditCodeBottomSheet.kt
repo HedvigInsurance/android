@@ -36,8 +36,6 @@ internal fun EditCodeBottomSheet(
   onSubmitCode: () -> Unit,
   isLoading: Boolean,
 ) {
-
-
   HedvigBottomSheet(
     isVisible = isVisible,
     onVisibleChange = {
@@ -100,7 +98,6 @@ internal fun EditCodeBottomSheet(
     Spacer(Modifier.height(16.dp))
   }
 }
-
 
 @Composable
 private fun ForeverRepository.ReferralError.toErrorMessage(): String {

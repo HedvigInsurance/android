@@ -107,6 +107,9 @@ fun ForeverDestination(
     openEditCodeBottomSheet = {
       viewModel.emit(ForeverEvent.OpenEditCodeBottomSheet)
     },
+    showedReferralCodeSuccessfulChangeMessage = {
+      viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
+    },
     closeEditCodeBottomSheet = {
       viewModel.emit(ForeverEvent.CloseEditCodeBottomSheet)
     },
@@ -140,6 +143,7 @@ private fun ForeverScreen(
   showedReferralCodeSubmissionError: () -> Unit,
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
+  showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   onShareCodeClick: (String, UiMoney) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -161,13 +165,13 @@ private fun ForeverScreen(
       targetState = uiState,
       label = "forever_ui_state",
       transitionSpec = { fadeIn() togetherWith fadeOut() },
-      contentKey = {uiState ->
+      contentKey = { uiState ->
         when (uiState) {
           ForeverUiState.Error -> "Error"
           Loading -> "Loading"
           is Success -> "Success"
         }
-      }
+      },
     ) { uiStateAnimated ->
       when (uiStateAnimated) {
         ForeverUiState.Error -> HedvigErrorSection(
@@ -184,6 +188,7 @@ private fun ForeverScreen(
             showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
             openEditCodeBottomSheet = openEditCodeBottomSheet,
             closeEditCodeBottomSheet = closeEditCodeBottomSheet,
+            showedReferralCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
           )
         }
       }
@@ -249,6 +254,7 @@ internal fun ForeverContent(
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
+  showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   openEditCodeBottomSheet: () -> Unit,
   closeEditCodeBottomSheet: () -> Unit,
 ) {
@@ -261,17 +267,23 @@ internal fun ForeverContent(
   LaunchedEffect(uiState.showEditReferralCodeBottomSheet) {
     if (!uiState.showEditReferralCodeBottomSheet) {
       delay(500)
-      //todo: okay, so this delay is ugly, I admit, but it's the only to
+      // todo: okay, so this delay is ugly, I admit, but it's the only way to
       // restore the value back on closing the BS and don't have
       // a weird animation effect when closing the bottom sheet
-      // while having submit error/changed textFieldValue
+      // while having submit error/changed textFieldValue in the BS
       textFieldValue = uiState.foreverData?.campaignCode ?: ""
       showedReferralCodeSubmissionError()
     }
   }
+  LaunchedEffect(uiState.showReferralCodeSuccessfullyChangedMessage) {
+    if (uiState.showReferralCodeSuccessfullyChangedMessage) {
+      delay(3000)
+      showedReferralCodeSuccessfulChangeMessage()
+    }
+  }
   LaunchedEffect(Unit) {
     snapshotFlow { textFieldValue }.collectLatest {
-      if (uiState.referralCodeErrorMessage!=null) {
+      if (uiState.referralCodeErrorMessage != null) {
         showedReferralCodeSubmissionError()
       }
       // clear error after the member edits the code manually
@@ -436,6 +448,16 @@ internal fun ForeverContent(
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
     )
+    HedvigSnackbar(
+      snackbarText = stringResource(R.string.referrals_change_code_changed),
+      showSnackbar = uiState.showReferralCodeSuccessfullyChangedMessage,
+      showedSnackbar = showedReferralCodeSuccessfulChangeMessage,
+      priority = NotificationPriority.Info,
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .windowInsetsPadding(WindowInsets.safeDrawing)
+        .padding(16.dp),
+    )
   }
 }
 
@@ -491,6 +513,7 @@ private fun PreviewForeverContent(
         showedReferralCodeSubmissionError = {},
         openEditCodeBottomSheet = {},
         closeEditCodeBottomSheet = {},
+        showedReferralCodeSuccessfulChangeMessage = {},
       )
     }
   }
@@ -517,6 +540,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       referralCodeErrorMessage = null,
       showEditReferralCodeBottomSheet = false,
       reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
     ),
     ForeverUiState.Loading,
   ),
