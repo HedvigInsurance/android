@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.fastSumBy
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -330,7 +332,8 @@ private fun PreviewHomeLayout(
       HedvigTextButton(
         text = "Other services",
         onClick = {},
-        modifier = Modifier.padding(horizontal = 16.dp),
+        buttonSize = Large,
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       )
     },
     topSpacer = {

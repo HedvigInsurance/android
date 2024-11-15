@@ -18,7 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -97,10 +99,32 @@ fun FirstVetScreen(
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTextButton(
         text = stringResource(R.string.general_close_button),
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        buttonSize = Large,
         onClick = navigateBack,
       )
       Spacer(modifier = Modifier.height(16.dp))
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewFirstVetScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FirstVetScreen(
+        List(3) {
+          FirstVetSection(
+            buttonTitle = "Button title $it",
+            description = "Description $it",
+            title = "Title $it",
+            url = null,
+          )
+        },
+        {},
+        {},
+      )
     }
   }
 }

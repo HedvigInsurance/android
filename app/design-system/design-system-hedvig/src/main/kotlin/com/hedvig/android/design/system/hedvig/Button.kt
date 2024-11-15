@@ -138,7 +138,7 @@ fun HedvigTextButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
-  buttonSize: ButtonSize = Medium,
+  buttonSize: ButtonSize,
   onClick: () -> Unit,
 ) {
   HedvigButton(
