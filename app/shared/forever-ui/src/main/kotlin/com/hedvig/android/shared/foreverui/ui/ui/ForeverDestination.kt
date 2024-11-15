@@ -156,13 +156,7 @@ private fun ForeverScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Column(
-    Modifier
-      .fillMaxSize()
-      .consumeWindowInsets(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-      ),
-  ) {
+  Column(Modifier.fillMaxSize()) {
     AnimatedContent(
       targetState = uiState,
       label = "forever_ui_state",
