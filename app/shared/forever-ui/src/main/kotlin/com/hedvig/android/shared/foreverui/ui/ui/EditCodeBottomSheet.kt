@@ -1,66 +1,90 @@
 package com.hedvig.android.shared.foreverui.ui.ui
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository.ReferralError
 import hedvig.resources.R
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun EditCodeBottomSheet(
-  isVisible: Boolean,
-  code: TextFieldValue,
-  referralCodeUpdateError: ForeverRepository.ReferralError?,
+  sheetState: HedvigBottomSheetState<String>,
+  referralCodeUpdateError: ReferralError?,
   showedReferralCodeSubmissionError: () -> Unit,
-  onCodeChanged: (TextFieldValue) -> Unit,
-  onDismiss: () -> Unit,
-  onSubmitCode: () -> Unit,
+  referralCodeSuccessfullyChanged: Boolean,
+  onSubmitCode: (code: String) -> Unit,
   isLoading: Boolean,
 ) {
+  val insetsAroundSheet = WindowInsets
+    .safeDrawing
+    .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+    .add(WindowInsets.ime)
+  DismissSheetOnSuccessfulCodeChangeEffect(sheetState, referralCodeSuccessfullyChanged)
   HedvigBottomSheet(
-    isVisible = isVisible,
-    onVisibleChange = {
-      onDismiss()
-    },
-  ) {
+    hedvigBottomSheetState = sheetState,
+    sheetPadding = insetsAroundSheet.asPaddingValues(),
+    contentPadding = null,
+    modifier = Modifier.consumeWindowInsets(insetsAroundSheet),
+  ) { initialCode ->
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    var textFieldValue by remember {
+      mutableStateOf(
+        TextFieldValue(
+          text = initialCode,
+          selection = TextRange(initialCode.length),
+        ),
+      )
+    }
 
+    ClearErrorOnNewInputEffect({ textFieldValue }, showedReferralCodeSubmissionError)
     HedvigText(
       text = stringResource(R.string.referrals_change_change_code),
       textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextField(
-      textValue = code,
+      textValue = textFieldValue,
       labelText = stringResource(R.string.referrals_empty_code_headline),
-      onValueChange = onCodeChanged,
+      onValueChange = { textFieldValue = it },
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (referralCodeUpdateError == null) {
         HedvigTextFieldDefaults.ErrorState.NoError
@@ -70,7 +94,6 @@ internal fun EditCodeBottomSheet(
         )
       },
       modifier = Modifier
-        .padding(horizontal = 16.dp)
         .focusRequester(focusRequester)
         .fillMaxWidth(),
     )
@@ -80,27 +103,54 @@ internal fun EditCodeBottomSheet(
       onClick = {
         showedReferralCodeSubmissionError()
         focusManager.clearFocus()
-        onSubmitCode()
+        onSubmitCode(textFieldValue.text)
       },
       enabled = true,
       isLoading = isLoading,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(R.string.general_cancel_button),
-      onClick = {
-        onDismiss()
-      },
+      onClick = { sheetState.dismiss() },
       buttonSize = ButtonDefaults.ButtonSize.Large,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+private fun DismissSheetOnSuccessfulCodeChangeEffect(
+  sheetState: HedvigBottomSheetState<String>,
+  referralCodeSuccessfullyChanged: Boolean,
+) {
+  val updatedReferralCodeSuccessfullyChanged by rememberUpdatedState(referralCodeSuccessfullyChanged)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { updatedReferralCodeSuccessfullyChanged }
+      .drop(1)
+      .collect {
+        if (it) {
+          sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+private fun ClearErrorOnNewInputEffect(
+  textFieldValue: () -> TextFieldValue,
+  showedReferralCodeSubmissionError: () -> Unit,
+) {
+  val updatedShowedReferralCodeSubmissionError by rememberUpdatedState(showedReferralCodeSubmissionError)
+  LaunchedEffect(Unit) {
+    snapshotFlow { textFieldValue() }
+      .drop(1)
+      .collectLatest {
+        // clear error after the member edits the code manually
+        updatedShowedReferralCodeSubmissionError()
+      }
   }
 }
 

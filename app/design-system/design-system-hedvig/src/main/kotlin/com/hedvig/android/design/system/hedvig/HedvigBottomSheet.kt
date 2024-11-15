@@ -131,6 +131,9 @@ private class HedvigBottomSheetStateImpl<T>() : HedvigBottomSheetState<T> {
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
+  modifier: Modifier = Modifier,
+  sheetPadding: PaddingValues? = null,
+  contentPadding: PaddingValues? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   InternalHedvigBottomSheet(
@@ -143,6 +146,9 @@ fun <T> HedvigBottomSheet(
     onSystemBack = {
       hedvigBottomSheetState.dismiss()
     },
+    contentPadding = contentPadding,
+    sheetPadding = sheetPadding,
+    modifier = modifier,
   ) {
     if (hedvigBottomSheetState.data != null) {
       content(hedvigBottomSheetState.data!!)
@@ -155,6 +161,7 @@ fun <T> HedvigBottomSheet(
 private fun InternalHedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
   onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
   sheetPadding: PaddingValues? = null,
   contentPadding: PaddingValues? = null,
@@ -181,17 +188,17 @@ private fun InternalHedvigBottomSheet(
     onSystemBack = onSystemBack,
     shape = bottomSheetShape.shape,
   ) {
-    Box {
+    Box(modifier) {
       Column(
         modifier = Modifier
-          .then(
-            if (contentPadding != null) {
-              Modifier.padding(contentPadding)
-            } else {
-              Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
-            },
-          )
-          .verticalScroll(scrollState),
+            .then(
+                if (contentPadding != null) {
+                    Modifier.padding(contentPadding)
+                } else {
+                    Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+                },
+            )
+            .verticalScroll(scrollState),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -200,8 +207,8 @@ private fun InternalHedvigBottomSheet(
       }
       Crossfade(
         modifier = Modifier
-          .align(Alignment.BottomEnd)
-          .padding(horizontal = 32.dp, vertical = 16.dp),
+            .align(Alignment.BottomEnd)
+            .padding(horizontal = 32.dp, vertical = 16.dp),
         targetState = scrollDown,
       ) { animatedScrollDown ->
         if (scrollState.canScrollForward && !animatedScrollDown) {
@@ -218,13 +225,13 @@ private fun InternalHedvigBottomSheet(
 private fun DragHandle(modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier
-      .width(40.dp)
-      .height(4.dp)
-      .background(
-        shape = HedvigTheme.shapes.cornerSmall,
-        color = bottomSheetColors.chipColor,
-      )
-      .clip(HedvigTheme.shapes.cornerSmall),
+        .width(40.dp)
+        .height(4.dp)
+        .background(
+            shape = HedvigTheme.shapes.cornerSmall,
+            color = bottomSheetColors.chipColor,
+        )
+        .clip(HedvigTheme.shapes.cornerSmall),
   ) {}
 }
 
@@ -234,8 +241,8 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(
       onClick = onClick,
       modifier = Modifier
-        .clip(CircleShape)
-        .background(bottomSheetColors.arrowBackgroundColor),
+          .clip(CircleShape)
+          .background(bottomSheetColors.arrowBackgroundColor),
     ) {
       Icon(
         HedvigIcons.ArrowDown,

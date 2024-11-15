@@ -32,10 +32,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,8 +39,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -86,8 +80,8 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ForeverDestination(
@@ -105,14 +99,8 @@ fun ForeverDestination(
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
     onSubmitCode = { viewModel.emit(ForeverEvent.SubmitNewReferralCode(it)) },
     showedReferralCodeSubmissionError = { viewModel.emit(ForeverEvent.ShowedReferralCodeSubmissionError) },
-    openEditCodeBottomSheet = {
-      viewModel.emit(ForeverEvent.OpenEditCodeBottomSheet)
-    },
     showedReferralCodeSuccessfulChangeMessage = {
       viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
-    },
-    closeEditCodeBottomSheet = {
-      viewModel.emit(ForeverEvent.CloseEditCodeBottomSheet)
     },
     onShareCodeClick = { code: String, incentive: UiMoney ->
       context.showShareSheet(shareSheetTitle) { intent ->
@@ -142,8 +130,6 @@ private fun ForeverScreen(
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
-  openEditCodeBottomSheet: () -> Unit,
-  closeEditCodeBottomSheet: () -> Unit,
   showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   onShareCodeClick: (String, UiMoney) -> Unit,
 ) {
@@ -182,8 +168,6 @@ private fun ForeverScreen(
             onShareCodeClick = onShareCodeClick,
             onSubmitCode = onSubmitCode,
             showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
-            openEditCodeBottomSheet = openEditCodeBottomSheet,
-            closeEditCodeBottomSheet = closeEditCodeBottomSheet,
             showedReferralCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
           )
         }
@@ -251,52 +235,21 @@ internal fun ForeverContent(
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
   showedReferralCodeSuccessfulChangeMessage: () -> Unit,
-  openEditCodeBottomSheet: () -> Unit,
-  closeEditCodeBottomSheet: () -> Unit,
 ) {
-  val initialTextValue = TextFieldValue(
-    text = uiState.foreverData?.campaignCode ?: "",
-    selection = TextRange((uiState.foreverData?.campaignCode ?: "").length),
-  )
-  var textFieldValue by remember(uiState.foreverData?.campaignCode) {
-    mutableStateOf(initialTextValue)
-  }
-
-  LaunchedEffect(textFieldValue) {
-    showedReferralCodeSubmissionError() // Clear error on new referral code input
-  }
-  LaunchedEffect(uiState.showEditReferralCodeBottomSheet) {
-    if (!uiState.showEditReferralCodeBottomSheet) {
-      delay(500) // to avoid extra animation effects on closing bottom sheet
-      textFieldValue = initialTextValue
-      showedReferralCodeSubmissionError()
-    }
-  }
   LaunchedEffect(uiState.showReferralCodeSuccessfullyChangedMessage) {
     if (uiState.showReferralCodeSuccessfullyChangedMessage) {
-      delay(3000)
+      delay(3.seconds)
       showedReferralCodeSuccessfulChangeMessage()
     }
   }
-  LaunchedEffect(Unit) {
-    snapshotFlow { textFieldValue }.collectLatest {
-      if (uiState.referralCodeErrorMessage != null) {
-        showedReferralCodeSubmissionError()
-      }
-      // clear error after the member edits the code manually
-    }
-  }
 
+  val referralCodeBottomSheetState = rememberHedvigBottomSheetState<String>()
   EditCodeBottomSheet(
-    isVisible = uiState.showEditReferralCodeBottomSheet,
-    code = textFieldValue,
-    onCodeChanged = { textFieldValue = it },
-    onDismiss = closeEditCodeBottomSheet,
-    onSubmitCode = {
-      onSubmitCode(textFieldValue.text.trim())
-    },
+    sheetState = referralCodeBottomSheetState,
     referralCodeUpdateError = uiState.referralCodeErrorMessage,
     showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
+    referralCodeSuccessfullyChanged = uiState.showReferralCodeSuccessfullyChangedMessage,
+    onSubmitCode = onSubmitCode,
     isLoading = uiState.referralCodeLoading,
   )
 
@@ -413,7 +366,7 @@ internal fun ForeverContent(
         Spacer(Modifier.height(8.dp))
         HedvigTextButton(
           text = stringResource(id = R.string.referrals_change_change_code),
-          onClick = openEditCodeBottomSheet,
+          onClick = { referralCodeBottomSheetState.show(uiState.foreverData.campaignCode) },
           buttonSize = Large,
           modifier = Modifier
               .padding(horizontal = 16.dp)
@@ -501,8 +454,6 @@ private fun PreviewForeverContent(
         reload = {},
         onSubmitCode = {},
         showedReferralCodeSubmissionError = {},
-        openEditCodeBottomSheet = {},
-        closeEditCodeBottomSheet = {},
         showedReferralCodeSuccessfulChangeMessage = {},
       )
     }
@@ -528,7 +479,6 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
-      showEditReferralCodeBottomSheet = false,
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
