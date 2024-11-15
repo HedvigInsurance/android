@@ -52,7 +52,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
-  implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
 

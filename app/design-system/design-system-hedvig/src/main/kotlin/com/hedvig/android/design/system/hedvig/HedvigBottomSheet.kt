@@ -111,6 +111,10 @@ interface HedvigBottomSheetState<T> {
   fun dismiss()
 }
 
+fun HedvigBottomSheetState<Unit>.show() {
+  show(Unit)
+}
+
 private class HedvigBottomSheetStateImpl<T>() : HedvigBottomSheetState<T> {
   override var isVisible: Boolean by mutableStateOf(false)
     private set

@@ -37,10 +37,10 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import hedvig.resources.R
 
 @Composable
@@ -121,7 +121,7 @@ private fun CrossSellItem(
       contentDescription = null,
       modifier = Modifier
         .size(48.dp)
-        .placeholder(
+        .hedvigPlaceholder(
           visible = isLoading,
           highlight = PlaceholderHighlight.fade(),
           shape = HedvigTheme.shapes.cornerLarge,
@@ -135,14 +135,14 @@ private fun CrossSellItem(
       HedvigText(
         text = crossSellTitle,
         style = HedvigTheme.typography.bodySmall,
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
       Spacer(Modifier.height(4.dp))
       HedvigText(
         text = crossSellSubtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
     }
     Spacer(Modifier.width(16.dp))
@@ -153,7 +153,7 @@ private fun CrossSellItem(
       },
       buttonSize = Small,
       buttonStyle = PrimaryAlt,
-      modifier = Modifier.placeholder(
+      modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         highlight = PlaceholderHighlight.shimmer(),
         shape = HedvigTheme.shapes.cornerXLarge,
