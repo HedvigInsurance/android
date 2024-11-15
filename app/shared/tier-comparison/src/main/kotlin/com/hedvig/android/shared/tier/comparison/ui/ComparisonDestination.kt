@@ -213,12 +213,14 @@ private fun OverlaidIndication(
   state: OverlaidIndicationState,
   modifier: Modifier = Modifier,
 ) {
+  val topHeightOffset = with(LocalDensity.current) {
+    calculateCellHeight(textMeasurer, forceMinimumInteractiveComponentSize = false).roundToPx()
+  }
   val cellheight = calculateCellHeight(textMeasurer)
-  val cellheightPx = with(LocalDensity.current) { cellheight.roundToPx() }
   Box(
     modifier = modifier
       .height(cellheight)
-      .offset { IntOffset(0, cellheightPx) + state.offset }
+      .offset { IntOffset(0, topHeightOffset) + state.offset }
       .indication(
         interactionSource = state.interactionSource,
         indication = LocalIndication.current,
@@ -362,7 +364,8 @@ private fun Table(
       val overlaidIndication = measurables[2]
 
       val cellSectionFullWidth =
-        (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellEndPadding).roundToPx()
+        (tableMeasurementInfo.fixedCellWidth * tableMeasurementInfo.numberOfCells + CellStartPadding + CellEndPadding)
+          .roundToPx()
 
       val bothFitCompletely =
         tableMeasurementInfo.maxWidthRequiredForFixedColumnTexts + cellSectionFullWidth <= constraints.maxWidth
@@ -424,7 +427,7 @@ private fun FixSizedComparisonDataColumn(
   }
   val animatedShadowSize by animateDpAsState(shadowWidth)
   Column(modifier = modifier) {
-    Cell(textMeasurer)
+    Cell(textMeasurer, forceMinimumInteractiveComponentSize = false)
     Column(
       Modifier
         .drawWithContent {
@@ -501,6 +504,7 @@ private fun ScrollableTableSection(
     modifier.horizontalScroll(state = scrollState),
   ) {
     Row {
+      Spacer(Modifier.width(CellStartPadding))
       comparisonData.columns.forEachIndexed { index, column ->
         column.title?.let { title ->
           val isThisSelected = index == selectedColumnIndex
@@ -508,6 +512,7 @@ private fun ScrollableTableSection(
           Cell(
             textMeasurer = textMeasurer,
             fixedWidth = fixedCellWidth,
+            forceMinimumInteractiveComponentSize = false,
             modifier = Modifier.background(
               shape = tableStyle.selectedCellShape(isFirst = true),
               color = tableStyle.cellContainerColor(isThisSelected),
@@ -551,6 +556,7 @@ private fun ScrollableTableSection(
               }
             },
         ) {
+          Spacer(Modifier.width(CellStartPadding))
           comparisonRow.cells.forEachIndexed { index, cell ->
             val isThisSelected = index == selectedColumnIndex
             ComparisonCell(
@@ -607,9 +613,10 @@ private fun Cell(
   textMeasurer: TextMeasurer,
   fixedWidth: Dp? = null,
   modifier: Modifier = Modifier,
+  forceMinimumInteractiveComponentSize: Boolean = true,
   content: @Composable () -> Unit = {},
 ) {
-  val fixedHeight = calculateCellHeight(textMeasurer)
+  val fixedHeight = calculateCellHeight(textMeasurer, forceMinimumInteractiveComponentSize)
   Box(
     modifier = modifier
       .then(
@@ -627,11 +634,12 @@ private fun Cell(
 }
 
 @Composable
-private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
+private fun calculateCellHeight(textMeasurer: TextMeasurer, forceMinimumInteractiveComponentSize: Boolean = true): Dp {
   val textStyle = LocalTextStyle.current
   val density = LocalDensity.current
+  val minimumInteractiveComponentSize = LocalMinimumInteractiveComponentSize.current
   return remember(textMeasurer) {
-    with(density) {
+    val measuredHeight = with(density) {
       textMeasurer.measure(
         text = ConstantLetterUsedAsMeasurementPlaceholder,
         style = textStyle,
@@ -639,7 +647,12 @@ private fun calculateCellHeight(textMeasurer: TextMeasurer): Dp {
         maxLines = 1,
       ).size.height.toDp() + (CellVerticalPadding * 2)
     }
-  }.coerceAtLeast(LocalMinimumInteractiveComponentSize.current)
+    if (forceMinimumInteractiveComponentSize) {
+      measuredHeight.coerceAtLeast(minimumInteractiveComponentSize)
+    } else {
+      measuredHeight
+    }
+  }
 }
 
 @HedvigPreview
@@ -682,6 +695,7 @@ private fun ComparisonScreenPreview(
 }
 
 private val ConstantLetterUsedAsMeasurementPlaceholder = "H"
+private val CellStartPadding = 8.dp
 private val CellEndPadding = 16.dp
 private val CellVerticalPadding = 8.dp
 private val CellTitleHorizontalPadding = 16.dp

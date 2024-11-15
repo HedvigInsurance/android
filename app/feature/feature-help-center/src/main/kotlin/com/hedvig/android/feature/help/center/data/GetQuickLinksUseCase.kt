@@ -32,7 +32,7 @@ internal class GetQuickLinksUseCase(
           add(
             StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-              titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+              titleRes = R.string.insurance_details_change_address_button,
               hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
             ),
           )

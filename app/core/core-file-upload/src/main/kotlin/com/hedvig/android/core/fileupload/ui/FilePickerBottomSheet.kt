@@ -5,51 +5,49 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Camera
-import com.hedvig.android.core.icons.hedvig.normal.Document
-import com.hedvig.android.core.icons.hedvig.normal.Pictures
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Camera
+import com.hedvig.android.design.system.hedvig.icon.Document
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Image
 import hedvig.resources.R
 
 @Composable
 fun FilePickerBottomSheet(
-  sheetState: SheetState = rememberModalBottomSheetState(),
+  isVisible: Boolean,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
   onTakePhoto: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   HedvigBottomSheet(
-    onDismissed = onDismiss,
-    sheetState = sheetState,
+    isVisible = isVisible,
+    onVisibleChange = { visible ->
+      if (!visible) {
+        onDismiss()
+      }
+    },
     content = {
       FilePickerBottomSheetContent(
         onPickPhoto = onPickPhoto,
         onTakePhoto = onTakePhoto,
         onPickFile = onPickFile,
-        modifier = Modifier.padding(horizontal = 16.dp),
       )
     },
   )
@@ -68,33 +66,27 @@ private fun FilePickerBottomSheetContent(
   ) {
     ClickableOption(
       text = stringResource(R.string.file_upload_photo_library),
-      icon = Icons.Hedvig.Pictures,
+      icon = HedvigIcons.Image,
       onClick = onPickPhoto,
     )
     ClickableOption(
       text = stringResource(R.string.file_upload_take_photo),
-      icon = Icons.Hedvig.Camera,
+      icon = HedvigIcons.Camera,
       onClick = onTakePhoto,
     )
     ClickableOption(
       text = stringResource(R.string.file_upload_choose_files),
-      icon = Icons.Hedvig.Document,
+      icon = HedvigIcons.Document,
       onClick = onPickFile,
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
 @Composable
-private fun ClickableOption(
-  text: String,
-  icon: ImageVector,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  cardColors: CardColors = CardDefaults.outlinedCardColors(),
-) {
+private fun ClickableOption(text: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
-    colors = cardColors,
     modifier = modifier,
   ) {
     Row(
@@ -104,9 +96,9 @@ private fun ClickableOption(
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-      Text(
+      HedvigText(
         text = text,
-        style = MaterialTheme.typography.headlineSmall,
+        style = HedvigTheme.typography.headlineMedium,
         modifier = Modifier.weight(1f),
       )
       Spacer(Modifier.width(8.dp))
@@ -119,7 +111,7 @@ private fun ClickableOption(
 @Composable
 private fun PreviewFilePickerBottomSheetContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       FilePickerBottomSheetContent({}, {}, {})
     }
   }

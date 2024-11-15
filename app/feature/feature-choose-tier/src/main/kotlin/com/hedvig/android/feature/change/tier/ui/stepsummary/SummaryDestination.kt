@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
@@ -29,8 +33,10 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
+import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -39,7 +45,11 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
@@ -53,6 +63,7 @@ import hedvig.resources.R
 internal fun ChangeTierSummaryDestination(
   viewModel: SummaryViewModel,
   navigateUp: () -> Unit,
+  onExitTierFlow: () -> Unit,
   onSuccess: () -> Unit,
   onFailure: () -> Unit,
 ) {
@@ -74,6 +85,7 @@ internal fun ChangeTierSummaryDestination(
     onSubmitQuoteClick = {
       viewModel.emit(SummaryEvent.SubmitQuote)
     },
+    onExitTierFlow = onExitTierFlow,
   )
 }
 
@@ -85,6 +97,7 @@ private fun SummaryScreen(
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
+  onExitTierFlow: () -> Unit,
 ) {
   when (uiState) {
     Failure -> HedvigScaffold(navigateUp) {
@@ -120,6 +133,7 @@ private fun SummaryScreen(
         uiState = uiState,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
+        onExitTierFlow = onExitTierFlow,
       )
     }
   }
@@ -134,9 +148,17 @@ private fun MakingChangesScreen() {
 }
 
 @Composable
-private fun SummarySuccessScreen(uiState: Success, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
+private fun SummarySuccessScreen(
+  uiState: Success,
+  onConfirmClick: () -> Unit,
+  navigateUp: () -> Unit,
+  onExitTierFlow: () -> Unit,
+) {
   HedvigScaffold(
     navigateUp,
+    topAppBarActions = {
+      SummaryTopAppBar(onExitTierFlow)
+    },
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     var showConfirmationDialog by remember { mutableStateOf(false) }
@@ -147,7 +169,7 @@ private fun SummarySuccessScreen(uiState: Success, onConfirmClick: () -> Unit, n
         onConfirmClick = onConfirmClick,
         confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(R.string.general_cancel_button),
-        subtitle = null,
+        text = null,
       )
     }
     SummaryCard(
@@ -195,6 +217,40 @@ private fun SummarySuccessScreen(uiState: Success, onConfirmClick: () -> Unit, n
 }
 
 @Composable
+private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
+  var showExitDialog by rememberSaveable { mutableStateOf(false) }
+  if (showExitDialog) {
+    HedvigDialog(
+      onDismissRequest = { showExitDialog = false },
+      style = Buttons(
+        onDismissRequest = { showExitDialog = false },
+        dismissButtonText = stringResource(R.string.GENERAL_NO),
+        onConfirmButtonClick = dropUnlessResumed {
+          showExitDialog = false
+          onExitTierFlow()
+        },
+        confirmButtonText = stringResource(R.string.GENERAL_YES),
+      ),
+    ) {
+      Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        HedvigText(
+          text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+          textAlign = TextAlign.Center,
+        )
+        HedvigText(
+          text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+          textAlign = TextAlign.Center,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+    }
+  }
+  IconButton({ showExitDialog = true }) {
+    Icon(HedvigIcons.Close, null, Modifier.size(24.dp))
+  }
+}
+
+@Composable
 private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
   QuoteCard(
     productVariant = uiState.quote.productVariant,
@@ -234,6 +290,7 @@ private fun PreviewChooseInsuranceScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SummaryScreen(
         uiState,
+        {},
         {},
         {},
         {},

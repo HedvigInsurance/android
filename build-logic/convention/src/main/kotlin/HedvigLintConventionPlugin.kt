@@ -42,4 +42,5 @@ private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   lintConfig = lintXmlFile
   xmlReport = true
   disable.add("UnsafeOptInUsageError") // https://issuetracker.google.com/issues/328279054
+  disable.add("WrongNavigateRouteType") //The crash seems to involve the detector \\\`androidx.navigation.runtime.lint.WrongNavigateRouteDetector\\\`.
 }

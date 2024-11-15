@@ -11,11 +11,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,18 +27,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
-import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
+import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -104,26 +104,24 @@ private fun AddFilesScreen(
   onPickFile: () -> Unit,
 ) {
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
-
-  if (showFileTypeSelectBottomSheet) {
-    FilePickerBottomSheet(
-      onPickPhoto = {
-        onPickPhoto()
-        showFileTypeSelectBottomSheet = false
-      },
-      onPickFile = {
-        onPickFile()
-        showFileTypeSelectBottomSheet = false
-      },
-      onTakePhoto = {
-        launchTakePhotoRequest()
-        showFileTypeSelectBottomSheet = false
-      },
-      onDismiss = {
-        showFileTypeSelectBottomSheet = false
-      },
-    )
-  }
+  FilePickerBottomSheet(
+    onPickPhoto = {
+      onPickPhoto()
+      showFileTypeSelectBottomSheet = false
+    },
+    onPickFile = {
+      onPickFile()
+      showFileTypeSelectBottomSheet = false
+    },
+    onTakePhoto = {
+      launchTakePhotoRequest()
+      showFileTypeSelectBottomSheet = false
+    },
+    onDismiss = {
+      showFileTypeSelectBottomSheet = false
+    },
+    isVisible = showFileTypeSelectBottomSheet,
+  )
 
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
   if (fileToRemoveId != null) {
@@ -145,11 +143,12 @@ private fun AddFilesScreen(
     ErrorDialog(
       message = uiState.errorMessage,
       onDismiss = onDismissError,
+      title = stringResource(R.string.something_went_wrong),
     )
   }
 
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
@@ -189,15 +188,20 @@ private fun BelowGridContent(
 ) {
   Column {
     Spacer(Modifier.height(16.dp))
-    HedvigSecondaryContainedButton(
+    HedvigButton(
       text = stringResource(R.string.claim_status_detail_add_more_files),
       onClick = onAddMoreFilesButtonClick,
+      modifier = Modifier.fillMaxWidth(),
+      buttonStyle = Secondary,
+      enabled = true,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.general_continue_button),
       onClick = onContinueButtonClick,
+      modifier = Modifier.fillMaxWidth(),
       isLoading = isLoading,
+      enabled = true,
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -207,7 +211,7 @@ private fun BelowGridContent(
 @Composable
 private fun PreviewAddFilesScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddFilesScreen(
         FileUploadUiState(
           localFiles = List(25) {

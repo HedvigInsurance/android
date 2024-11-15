@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,7 +88,9 @@ private fun AboutAppScreen(
         .padding(16.dp),
     ) {
       HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-      HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
+      SelectionContainer {
+        HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
+      }
     }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -148,7 +151,7 @@ private fun SubmitBugWarningDialog(memberId: String?, appVersionName: String, on
   )
   HedvigAlertDialog(
     title = stringResource(id = R.string.app_info_submit_bug_warning),
-    subtitle = null,
+    text = null,
     onDismissRequest = onDismissRequest,
     onConfirmClick = {
       openEmailClientWithPrefilledData(

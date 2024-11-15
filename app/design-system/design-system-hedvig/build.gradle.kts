@@ -25,4 +25,5 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
+  implementation(projects.coreUiData)
 }

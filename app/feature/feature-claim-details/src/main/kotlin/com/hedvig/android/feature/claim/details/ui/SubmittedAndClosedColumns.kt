@@ -4,9 +4,6 @@ import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -17,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -26,6 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 
 @Composable
@@ -63,13 +63,13 @@ private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifi
     verticalArrangement = Arrangement.spacedBy(4.dp),
     modifier = modifier,
   ) {
-    Text(
+    HedvigText(
       text = topText,
-      style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+      style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
     )
-    Text(
+    HedvigText(
       text = bottomText,
-      style = MaterialTheme.typography.bodyMedium,
+      style = HedvigTheme.typography.bodySmall,
     )
   }
 }
@@ -119,10 +119,10 @@ private object HedvigDateUtils {
 @Composable
 private fun PreviewSubmittedAndClosedInformation() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SubmittedAndClosedColumns(
-        submittedAt = Clock.System.now().minus(10.days),
-        closedAt = Clock.System.now().minus(30.seconds),
+        submittedAt = System.now().minus(10.days),
+        closedAt = System.now().minus(30.seconds),
         locale = Locale.ENGLISH,
       )
     }
