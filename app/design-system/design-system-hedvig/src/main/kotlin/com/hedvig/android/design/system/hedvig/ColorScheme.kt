@@ -114,6 +114,7 @@ data class ColorScheme(
   val highlightPurpleFill1: Color,
   val highlightPurpleFill2: Color,
   val highlightPurpleFill3: Color,
+  val scrim: Color,
   val transparent: Color,
 )
 
@@ -219,6 +220,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   highlightPurpleFill1 = ColorLightTokens.HighlightPurpleFill1,
   highlightPurpleFill2 = ColorLightTokens.HighlightPurpleFill2,
   highlightPurpleFill3 = ColorLightTokens.HighlightPurpleFill3,
+  scrim = ColorLightTokens.Scrim,
   transparent = ColorLightTokens.Transparent,
 )
 
@@ -324,6 +326,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   highlightRedFill1 = ColorDarkTokens.HighlightRedFill1,
   highlightRedFill2 = ColorDarkTokens.HighlightRedFill2,
   highlightRedFill3 = ColorDarkTokens.HighlightRedFill3,
+  scrim = ColorDarkTokens.Scrim,
   transparent = ColorDarkTokens.Transparent,
 )
 
@@ -455,6 +458,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.HighlightPurpleFill1 -> highlightPurpleFill1
     ColorSchemeKeyTokens.HighlightPurpleFill2 -> highlightPurpleFill2
     ColorSchemeKeyTokens.HighlightPurpleFill3 -> highlightPurpleFill3
+    ColorSchemeKeyTokens.Scrim -> scrim
     ColorSchemeKeyTokens.Transparent -> transparent
   }
 }
