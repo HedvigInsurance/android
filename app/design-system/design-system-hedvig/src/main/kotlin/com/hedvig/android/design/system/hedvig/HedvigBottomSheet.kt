@@ -195,14 +195,14 @@ private fun InternalHedvigBottomSheet(
     Box(modifier) {
       Column(
         modifier = Modifier
-            .then(
-                if (contentPadding != null) {
-                    Modifier.padding(contentPadding)
-                } else {
-                    Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
-                },
-            )
-            .verticalScroll(scrollState),
+          .then(
+            if (contentPadding != null) {
+              Modifier.padding(contentPadding)
+            } else {
+              Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+            },
+          )
+          .verticalScroll(scrollState),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -211,8 +211,8 @@ private fun InternalHedvigBottomSheet(
       }
       Crossfade(
         modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(horizontal = 32.dp, vertical = 16.dp),
+          .align(Alignment.BottomEnd)
+          .padding(horizontal = 32.dp, vertical = 16.dp),
         targetState = scrollDown,
       ) { animatedScrollDown ->
         if (scrollState.canScrollForward && !animatedScrollDown) {
@@ -229,13 +229,13 @@ private fun InternalHedvigBottomSheet(
 private fun DragHandle(modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier
-        .width(40.dp)
-        .height(4.dp)
-        .background(
-            shape = HedvigTheme.shapes.cornerSmall,
-            color = bottomSheetColors.chipColor,
-        )
-        .clip(HedvigTheme.shapes.cornerSmall),
+      .width(40.dp)
+      .height(4.dp)
+      .background(
+        shape = HedvigTheme.shapes.cornerSmall,
+        color = bottomSheetColors.chipColor,
+      )
+      .clip(HedvigTheme.shapes.cornerSmall),
   ) {}
 }
 
@@ -245,8 +245,8 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(
       onClick = onClick,
       modifier = Modifier
-          .clip(CircleShape)
-          .background(bottomSheetColors.arrowBackgroundColor),
+        .clip(CircleShape)
+        .background(bottomSheetColors.arrowBackgroundColor),
     ) {
       Icon(
         HedvigIcons.ArrowDown,
