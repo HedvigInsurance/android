@@ -7,7 +7,7 @@ internal object TableTokens {
   val TextFont = TypographyKeyTokens.Label
   val CellContainerColor = ColorSchemeKeyTokens.Transparent
   val CellContentColor = ColorSchemeKeyTokens.FillPrimary
-  val CellInactiveContentColor = ColorSchemeKeyTokens.FillDisabled
+  val CellInactiveContentColor = ColorSchemeKeyTokens.FillTertiary
   val SelectedCellContainerColor = ColorSchemeKeyTokens.SignalGreenFill
   val SelectedCellContentColor = ColorSchemeKeyTokens.FillBlack
   val SelectedCellInactiveContentColor = ColorSchemeKeyTokens.FillDisabled
