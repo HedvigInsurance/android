@@ -187,7 +187,7 @@ private val emptyStateColors: EmptyStateColors
 
 @Preview
 @Composable
-fun EmptyStatePreview() {
+private fun EmptyStatePreview() {
   HedvigTheme {
     Surface(color = Color.White) {
       EmptyState(

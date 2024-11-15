@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsetsSides.Companion
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -21,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,6 +96,64 @@ fun HedvigBottomSheet(
   }
 }
 
+@Composable
+fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
+  return remember { HedvigBottomSheetStateImpl() }
+}
+
+@Stable
+interface HedvigBottomSheetState<T> {
+  val isVisible: Boolean
+  val data: T?
+
+  fun show(data: T)
+
+  fun dismiss()
+}
+
+fun HedvigBottomSheetState<Unit>.show() {
+  show(Unit)
+}
+
+private class HedvigBottomSheetStateImpl<T>() : HedvigBottomSheetState<T> {
+  override var isVisible: Boolean by mutableStateOf(false)
+    private set
+  override var data: T? by mutableStateOf(null)
+    private set
+
+  override fun dismiss() {
+    isVisible = false
+  }
+
+  override fun show(data: T) {
+    this.data = data
+    isVisible = true
+  }
+}
+
+@OptIn(ExperimentalSheetApi::class)
+@Composable
+fun <T> HedvigBottomSheet(
+  hedvigBottomSheetState: HedvigBottomSheetState<T>,
+  content: @Composable ColumnScope.(T) -> Unit,
+) {
+  InternalHedvigBottomSheet(
+    isVisible = hedvigBottomSheetState.isVisible,
+    onVisibleChange = {
+      if (!it) {
+        hedvigBottomSheetState.dismiss()
+      }
+    },
+    onSystemBack = {
+      hedvigBottomSheetState.dismiss()
+    },
+  ) {
+    if (hedvigBottomSheetState.data != null) {
+      content(hedvigBottomSheetState.data!!)
+    }
+  }
+}
+
 @OptIn(ExperimentalSheetApi::class)
 @Composable
 private fun InternalHedvigBottomSheet(
@@ -110,8 +172,8 @@ private fun InternalHedvigBottomSheet(
       scrollState.animateScrollTo(scrollState.maxValue)
     }
   }
-  val defaultPadding = WindowInsets.safeDrawing.asPaddingValues()
-  val finalSheetPadding = sheetPadding ?: defaultPadding
+  val finalSheetPadding =
+    sheetPadding ?: WindowInsets.safeDrawing.only(WindowInsetsSides.Top + Companion.Horizontal).asPaddingValues()
   ModalSheet(
     visible = isVisible,
     onVisibleChange = onVisibleChange,

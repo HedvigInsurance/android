@@ -306,10 +306,10 @@ private fun PreferencesPagerSelector(
       stringResource(R.string.market_picker_modal_title),
       stringResource(R.string.language_picker_modal_title),
     ),
-    tabStyle = TabDefaults.TabStyle.Filled,
     selectedTabIndex = selectedTabIndex,
     onTabChosen = { selectTabIndex(it) },
     modifier = modifier,
+    tabStyle = TabDefaults.TabStyle.Filled,
   )
 }
 

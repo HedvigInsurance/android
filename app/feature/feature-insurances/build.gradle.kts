@@ -16,7 +16,6 @@ android {
 dependencies {
   api(libs.coil.coil)
 
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
@@ -31,10 +30,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.crossSells)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)

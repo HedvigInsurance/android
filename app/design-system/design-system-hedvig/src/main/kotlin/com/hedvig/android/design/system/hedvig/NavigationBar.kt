@@ -117,7 +117,7 @@ fun NavigationRail(
   modifier: Modifier = Modifier,
 ) {
   val borderColor = NavigationTokens.BorderColor.value
-  NavigationContainer(modifier) {
+  NavigationContainer(modifier.fillMaxHeight()) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = if (isExtraTall) {
