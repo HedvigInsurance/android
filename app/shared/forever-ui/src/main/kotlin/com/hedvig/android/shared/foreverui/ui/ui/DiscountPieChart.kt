@@ -10,19 +10,15 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.typeContainer
-import com.hedvig.android.core.designsystem.material3.typeElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 
 @Composable
 fun DiscountPieChart(
@@ -30,9 +26,9 @@ fun DiscountPieChart(
   totalExistingDiscount: Float,
   incentive: Float,
   modifier: Modifier = Modifier,
-  containerColor: Color = MaterialTheme.colorScheme.typeElement,
-  discountColor: Color = MaterialTheme.colorScheme.onTypeContainer,
-  incentiveColor: Color = MaterialTheme.colorScheme.typeContainer,
+  containerColor: Color = HedvigTheme.colorScheme.signalGreenElement,
+  discountColor: Color = HedvigTheme.colorScheme.signalGreenText,
+  incentiveColor: Color = HedvigTheme.colorScheme.signalGreenFill,
 ) {
   val transition = rememberInfiniteTransition(label = "transition")
   val targetForeverIncentiveValue = calculateAngleDegrees(totalPrice, incentive)
@@ -85,7 +81,7 @@ private fun calculateAngleDegrees(totalPrice: Float, totalDiscount: Float): Floa
 @HedvigPreview
 fun PreviewDiscountPieChart() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
         DiscountPieChart(
           totalPrice = 290f,
