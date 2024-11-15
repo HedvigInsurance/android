@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -38,11 +39,11 @@ internal fun ForeverExplanationBottomSheet(isVisible: Boolean, discount: String,
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
+      buttonSize = Large,
       onClick = { onDismiss() },
-      modifier = Modifier
-        .padding(bottom = 16.dp)
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
