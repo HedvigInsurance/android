@@ -40,7 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -357,17 +357,24 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
+  val consumedWindowInsets = remember { MutableWindowInsets() }
   Box(
     modifier = modifier
       .fillMaxSize()
-      .onSizeChanged { fullScreenSize = it }
+      .layout { measurable, constraints ->
+        fullScreenSize = IntSize(constraints.maxWidth, constraints.maxHeight)
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) {
+          placeable.place(0, 0)
+        }
+      }
+      .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState)
       .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
     if (fullScreenSizeValue != null) {
-      val consumedWindowInsets = remember { MutableWindowInsets() }
       val horizontalInsets = WindowInsets.safeDrawing
         .only(WindowInsetsSides.Horizontal)
         .exclude(consumedWindowInsets)
@@ -451,7 +458,6 @@ private fun HomeScreenSuccess(
               .height(16.dp),
           )
         },
-        modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
       )
     }
   }
