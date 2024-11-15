@@ -135,6 +135,9 @@ private class HedvigBottomSheetStateImpl<T>() : HedvigBottomSheetState<T> {
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
+  modifier: Modifier = Modifier,
+  sheetPadding: PaddingValues? = null,
+  contentPadding: PaddingValues? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   InternalHedvigBottomSheet(
@@ -147,6 +150,9 @@ fun <T> HedvigBottomSheet(
     onSystemBack = {
       hedvigBottomSheetState.dismiss()
     },
+    contentPadding = contentPadding,
+    sheetPadding = sheetPadding,
+    modifier = modifier,
   ) {
     if (hedvigBottomSheetState.data != null) {
       content(hedvigBottomSheetState.data!!)
@@ -159,6 +165,7 @@ fun <T> HedvigBottomSheet(
 private fun InternalHedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
   onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
   sheetPadding: PaddingValues? = null,
   contentPadding: PaddingValues? = null,
@@ -185,7 +192,7 @@ private fun InternalHedvigBottomSheet(
     onSystemBack = onSystemBack,
     shape = bottomSheetShape.shape,
   ) {
-    Box {
+    Box(modifier) {
       Column(
         modifier = Modifier
           .then(

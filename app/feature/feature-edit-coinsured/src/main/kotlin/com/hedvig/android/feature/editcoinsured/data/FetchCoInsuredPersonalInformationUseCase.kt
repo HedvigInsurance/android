@@ -22,7 +22,7 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
       .safeExecute(::ErrorMessage)
       .bind()
     if (result.personalInformation == null) {
-      val birthdate = if (ssn.length>=8) convertSsnToBirthDateOrNull(ssn) else null
+      val birthdate = if (ssn.length >= 8) convertSsnToBirthDateOrNull(ssn) else null
       CoInsuredPersonalInformation.EmptyInfo(birthdate)
     } else {
       CoInsuredPersonalInformation.FullInfo(
