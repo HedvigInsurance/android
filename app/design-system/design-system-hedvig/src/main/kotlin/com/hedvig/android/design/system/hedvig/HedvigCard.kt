@@ -36,9 +36,9 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 
 @Composable
 fun HedvigCard(
@@ -86,7 +86,7 @@ fun InsuranceCard(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
           .matchParentSize()
-          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+          .hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
         contentDescription = null,
       )
     } else {
@@ -127,14 +127,14 @@ fun InsuranceCard(
       HedvigText(
         topText,
         color = HedvigTheme.colorScheme.textWhite,
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
       Spacer(Modifier.height(4.dp))
       HedvigTheme(darkTheme = true) {
         HedvigText(
           text = bottomText,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+          modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
       }
     }
