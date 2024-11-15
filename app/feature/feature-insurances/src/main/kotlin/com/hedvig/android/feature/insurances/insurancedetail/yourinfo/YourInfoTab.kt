@@ -46,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -145,7 +146,7 @@ internal fun YourInfoTab(
           style = if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
             Button(
               stringResource(id = R.string.insurances_tab_view_details),
-              { upcomingChangesBottomSheet.show(Unit) },
+              { upcomingChangesBottomSheet.show() },
             )
           } else {
             Default
@@ -174,7 +175,7 @@ internal fun YourInfoTab(
         HedvigButton(
           text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
           enabled = true,
-          onClick = { editYourInfoBottomSheet.show(Unit) },
+          onClick = { editYourInfoBottomSheet.show() },
           modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
