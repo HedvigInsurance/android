@@ -33,7 +33,6 @@ data class InsurableLimit(
   val label: String,
   val limit: String,
   val description: String,
-  val type: InsurableLimitType,
 ) {
   enum class InsurableLimitType {
     DEDUCTIBLE,

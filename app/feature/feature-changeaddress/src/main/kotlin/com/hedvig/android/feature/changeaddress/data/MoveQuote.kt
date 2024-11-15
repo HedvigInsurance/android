@@ -41,7 +41,6 @@ internal data class MoveQuote(
               label = "test",
               description = "long".repeat(10),
               limit = "long".repeat(10),
-              type = InsurableLimit.InsurableLimitType.BIKE,
             ),
           ),
           documents = listOf(),
