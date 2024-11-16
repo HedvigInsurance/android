@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.login.swedishlogin
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -228,6 +229,8 @@ private fun SwedishLoginScreen(
   }
 }
 
+// Supressing lint due to https://issuetracker.google.com/issues/379337777
+@SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
 internal fun QRCode(
   autoStartToken: BankIdUiState.HandlingBankId.BankIdLiveQrCodeData?,
