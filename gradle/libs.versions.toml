@@ -18,6 +18,7 @@ datadogPlugin = "1.14.0"
 doctor = "0.10.0"
 easylauncher = "6.4.0"
 googleServices = "4.4.2"
+gradleDevelocity = "3.18.2"
 kotlin = "2.0.21"
 kotlinter = "4.4.1"
 ksp = "2.0.21-1.0.27"
@@ -224,6 +225,7 @@ datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "da
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+gradleDevelocity = { id = "com.gradle.develocity", version.ref = "gradleDevelocity" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
