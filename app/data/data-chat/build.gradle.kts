@@ -28,13 +28,18 @@ dependencies {
   ksp(libs.room.ksp)
 }
 
+val schemaDirectory = project
+  .rootDir
+  .resolve("app")
+  .resolve("database")
+  .resolve("schemas")
+  .absolutePath
+
+// workaround for https://issuetracker.google.com/issues/379337774 Remove the `ksp` block completely when this is fixed
+ksp {
+  arg("room.schemaLocation", schemaDirectory)
+}
+
 room {
-  schemaDirectory(
-    project
-      .rootDir
-      .resolve("app")
-      .resolve("database")
-      .resolve("schemas")
-      .absolutePath,
-  )
+  schemaDirectory(schemaDirectory)
 }

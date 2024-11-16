@@ -73,7 +73,7 @@ private fun PaymentHistoryScreen(
       val (paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (String) -> Unit) =
         remember(uiState.paymentHistory) {
           if (uiState.paymentHistory.isEmpty()) {
-            PaymentHistory.NoHistoryData to { _ -> }
+            PaymentHistory.NoHistoryData to { _: String -> }
           } else {
             PaymentHistory.PastCharges(
               chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }
@@ -150,13 +150,13 @@ private fun PaymentHistorySuccessScreen(
                   color = charge.color(),
                   textAlign = TextAlign.End,
                   modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 2.dp),
+                      .fillMaxWidth()
+                      .padding(end = 2.dp),
                 )
               },
               modifier = Modifier
-                .clickable { onChargeClicked(charge.id) }
-                .padding(16.dp),
+                  .clickable { onChargeClicked(charge.id) }
+                  .padding(16.dp),
             )
           }
         }
