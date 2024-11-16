@@ -4,8 +4,11 @@ plugins {
 }
 
 hedvig {
-  serialization()
+  apollo("octopus") {
+    generateOptionalOperationVariables = false
+  }
   compose()
+  serialization()
 }
 
 dependencies {

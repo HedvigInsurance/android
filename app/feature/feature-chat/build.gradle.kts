@@ -5,7 +5,7 @@ plugins {
 
 hedvig {
   apollo("octopus") {
-    generateOptionalOperationVariables.set(false)
+    generateOptionalOperationVariables = false
   }
   serialization()
   compose()
