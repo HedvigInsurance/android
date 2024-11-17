@@ -3,7 +3,6 @@ package com.hedvig.android.feature.editcoinsured.navigation
 import androidx.annotation.Keep
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import com.hedvig.android.navigation.core.AppDestination
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate

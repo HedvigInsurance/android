@@ -26,6 +26,7 @@ import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
+import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
@@ -70,8 +71,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.AppDestination
-import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 
@@ -171,7 +170,7 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(ClaimsFlowGraphDestination) }
       },
       navigateToClaimDetails = { backStackEntry, claimId ->
-        with(navigator) { backStackEntry.navigate(AppDestination.ClaimDetails(claimId)) }
+        with(navigator) { backStackEntry.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId)) }
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
@@ -319,7 +318,7 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       onNavigateToClaimDetails = { claimId ->
         logcat { "Navigating to claim details from chat" }
-        hedvigAppState.navController.navigate(ClaimDetails(claimId))
+        hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       navigator = navigator,
     )
