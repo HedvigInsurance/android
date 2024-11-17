@@ -26,7 +26,6 @@ val fileUploadModule = module {
     UploadFileUseCaseImpl(
       uploadFileService = get<UploadFileService>(),
       fileService = get<FileService>(),
-      contentResolver = get<Context>().contentResolver,
     )
   }
   single<DownloadPdfUseCase> {
