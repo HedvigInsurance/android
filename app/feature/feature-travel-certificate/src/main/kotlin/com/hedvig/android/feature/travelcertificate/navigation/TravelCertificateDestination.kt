@@ -8,6 +8,9 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
+@Serializable
+data object TravelCertificateGraphDestination : Destination
+
 internal sealed interface TravelCertificateDestination {
   @Serializable
   data object TravelCertificateHistory : TravelCertificateDestination, Destination

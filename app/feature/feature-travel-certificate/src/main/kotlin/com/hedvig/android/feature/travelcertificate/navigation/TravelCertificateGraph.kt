@@ -30,7 +30,7 @@ fun NavGraphBuilder.travelCertificateGraph(
   applicationId: String,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
 ) {
-  navgraph<AppDestination.TravelCertificate>(
+  navgraph<TravelCertificateGraphDestination>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },

@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -307,7 +308,7 @@ private fun ColumnScope.ProfileItemRows(
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
       icon = HedvigIcons.MultipleDocuments,
-      onClick = navigateToTravelCertificate,
+      onClick = dropUnlessResumed { navigateToTravelCertificate() },
       isLoading = false,
     )
   }

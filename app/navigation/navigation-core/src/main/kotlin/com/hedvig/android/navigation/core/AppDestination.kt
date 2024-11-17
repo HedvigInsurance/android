@@ -6,9 +6,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
   @Serializable
-  data object TravelCertificate : AppDestination, Destination
-
-  @Serializable
   data object ClaimsFlow : AppDestination, Destination
 
   @Serializable

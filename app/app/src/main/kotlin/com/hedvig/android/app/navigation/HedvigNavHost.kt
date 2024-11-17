@@ -60,6 +60,7 @@ import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateGraphDestination
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -69,7 +70,6 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
-import com.hedvig.android.navigation.core.AppDestination.TravelCertificate
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 
@@ -306,6 +306,9 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = { backStackEntry ->
         navigateToNewConversation(backStackEntry)
       },
+      onNavigateToTravelCertificate = {
+        hedvigAppState.navController.navigate(TravelCertificateGraphDestination)
+      }
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -351,7 +354,7 @@ internal fun HedvigNavHost(
 
           QuickLinkConnectPayment -> TrustlyDestination
           QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
-          QuickLinkTravelCertificate -> TravelCertificate
+          QuickLinkTravelCertificate -> TravelCertificateGraphDestination
           QuickLinkChangeTier -> StartTierFlowChooseInsuranceDestination
         }
         with(navigator) {
