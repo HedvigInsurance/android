@@ -35,11 +35,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
-      - uses: test-summary/action@v2
-        with:
-          paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
-        if: always()
+        run: ./gradlew test
   lint:
     runs-on: ubuntu-latest-8-vcpu
     steps:
