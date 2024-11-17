@@ -21,6 +21,7 @@ import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationP
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressGraphDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
@@ -121,7 +122,7 @@ internal fun HedvigNavHost(
     if (movingFlowV2Enabled) {
       hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
     } else {
-      hedvigAppState.navController.navigate(AppDestination.ChangeAddress, navOptions)
+      hedvigAppState.navController.navigate(ChangeAddressGraphDestination, navOptions)
     }
   }
 

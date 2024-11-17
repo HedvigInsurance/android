@@ -11,6 +11,9 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
+@Serializable
+data object ChangeAddressGraphDestination : Destination
+
 internal sealed interface ChangeAddressDestination {
   @Serializable
   data object SelectHousingType : ChangeAddressDestination, Destination

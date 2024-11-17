@@ -5,9 +5,6 @@ import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
-  @Serializable
-  data object ChangeAddress : AppDestination, Destination
-
   // Workaround for https://issuetracker.google.com/issues/353898971
   @Keep
   @Serializable
