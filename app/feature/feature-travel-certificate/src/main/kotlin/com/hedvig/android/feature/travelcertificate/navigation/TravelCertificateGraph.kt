@@ -24,7 +24,12 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigator, applicationId: String) {
+fun NavGraphBuilder.travelCertificateGraph(
+  density: Density,
+  navigator: Navigator,
+  applicationId: String,
+  onNavigateToCoInsuredAddInfo: (String) -> Unit,
+) {
   navgraph<AppDestination.TravelCertificate>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
@@ -116,11 +121,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
             }
           }
         },
-        onNavigateToCoInsuredAddInfo = {
-          with(navigator) {
-            navBackStackEntry.navigate(AppDestination.CoInsuredAddInfo(primaryInput.contractId))
-          }
-        },
+        onNavigateToCoInsuredAddInfo = { onNavigateToCoInsuredAddInfo(primaryInput.contractId) },
       )
     }
 

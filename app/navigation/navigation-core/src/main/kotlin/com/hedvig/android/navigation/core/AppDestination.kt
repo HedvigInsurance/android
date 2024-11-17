@@ -5,11 +5,6 @@ import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
-  // Workaround for https://issuetracker.google.com/issues/353898971
-  @Keep
-  @Serializable
-  data object EditCoInsured : AppDestination, Destination
-
   @Serializable
   data object TravelCertificate : AppDestination, Destination
 
@@ -19,15 +14,5 @@ sealed interface AppDestination {
   @Serializable
   data class ClaimDetails(
     val claimId: String,
-  ) : AppDestination, Destination
-
-  @Serializable
-  data class CoInsuredAddInfo(
-    val contractId: String,
-  ) : AppDestination, Destination
-
-  @Serializable
-  data class CoInsuredAddOrRemove(
-    val contractId: String,
   ) : AppDestination, Destination
 }

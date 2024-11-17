@@ -33,6 +33,7 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
@@ -68,8 +69,6 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
-import com.hedvig.android.navigation.core.AppDestination.CoInsuredAddInfo
-import com.hedvig.android.navigation.core.AppDestination.CoInsuredAddOrRemove
 import com.hedvig.android.navigation.core.AppDestination.TravelCertificate
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -174,7 +173,7 @@ internal fun HedvigNavHost(
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
-        with(navigator) { backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId)) }
+        with(navigator) { backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) }
       },
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
@@ -254,7 +253,7 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
+          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId))
         }
       },
       onNavigateToStartChangeTier = { backStackEntry: NavBackStackEntry, contractId: String ->
@@ -269,7 +268,7 @@ internal fun HedvigNavHost(
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
         }
       },
     )
@@ -296,7 +295,7 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
         }
       },
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
@@ -343,11 +342,12 @@ internal fun HedvigNavHost(
             navigateToMovingFlow()
             return@onNavigateToQuickLink
           }
+
           is QuickLinkCoInsuredAddInfo ->
-            CoInsuredAddInfo(quickLinkDestination.contractId)
+            EditCoInsuredDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
 
           is QuickLinkCoInsuredAddOrRemove ->
-            CoInsuredAddOrRemove(quickLinkDestination.contractId)
+            EditCoInsuredDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
 
           QuickLinkConnectPayment -> TrustlyDestination
           QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
@@ -403,6 +403,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     density = density,
     navigator = navigator,
     applicationId = hedvigBuildConstants.appId,
+    onNavigateToCoInsuredAddInfo = { contractId ->
+      navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+    }
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
