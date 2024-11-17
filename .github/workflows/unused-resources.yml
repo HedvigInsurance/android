@@ -27,7 +27,6 @@ jobs:
       with:
         # Only write to the cache for builds on the 'develop' branch
         cache-read-only: false
-        gradle-home-cache-cleanup: true
 
     - name: Prebuild
       run: ./scripts/ci-prebuild.sh

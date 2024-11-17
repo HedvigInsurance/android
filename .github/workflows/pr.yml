@@ -29,7 +29,6 @@ jobs:
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -63,7 +62,6 @@ jobs:
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -96,7 +94,6 @@ jobs:
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -132,7 +129,6 @@ jobs:
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:
