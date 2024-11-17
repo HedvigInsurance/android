@@ -53,7 +53,7 @@ import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChro
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 

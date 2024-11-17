@@ -44,6 +44,7 @@ dependencies {
   implementation(projects.marketCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 }

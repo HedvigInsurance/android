@@ -35,7 +35,7 @@ import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDe
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph

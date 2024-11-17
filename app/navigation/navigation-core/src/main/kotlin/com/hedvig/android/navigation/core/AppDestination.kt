@@ -1,7 +1,7 @@
 package com.hedvig.android.navigation.core
 
 import androidx.annotation.Keep
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {

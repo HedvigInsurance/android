@@ -1,6 +1,6 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 hedvig {
@@ -30,10 +30,8 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
-  implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCommon)
 }
