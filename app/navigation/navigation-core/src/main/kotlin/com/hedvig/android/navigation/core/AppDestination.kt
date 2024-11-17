@@ -6,9 +6,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
   @Serializable
-  data object ClaimsFlow : AppDestination, Destination
-
-  @Serializable
   data class ClaimDetails(
     val claimId: String,
   ) : AppDestination, Destination

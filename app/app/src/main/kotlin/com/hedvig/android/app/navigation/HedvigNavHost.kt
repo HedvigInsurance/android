@@ -53,6 +53,7 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.MovingFlowGraphDestination
 import com.hedvig.android.feature.movingflow.movingFlowGraph
+import com.hedvig.android.feature.odyssey.navigation.ClaimsFlowGraphDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -67,6 +68,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
@@ -166,7 +168,7 @@ internal fun HedvigNavHost(
         navigateToNewConversation(backStackEntry)
       },
       onStartClaim = { backStackEntry ->
-        with(navigator) { backStackEntry.navigate(AppDestination.ClaimsFlow) }
+        with(navigator) { backStackEntry.navigate(ClaimsFlowGraphDestination) }
       },
       navigateToClaimDetails = { backStackEntry, claimId ->
         with(navigator) { backStackEntry.navigate(AppDestination.ClaimDetails(claimId)) }
@@ -211,7 +213,7 @@ internal fun HedvigNavHost(
              * The right way to handle this is to simply finish the app as per the docs:
              * https://developer.android.com/guide/navigation/backstack#handle-failure
              */
-            if (!hedvigAppState.navController.popBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
+            if (!hedvigAppState.navController.typedPopBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
               finishApp()
             }
           },
@@ -419,7 +421,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
-      hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+      hedvigAppState.navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
     },
     nestedGraphs = {
       claimTriagingDestinations(
@@ -429,7 +431,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         closeClaimFlow = {
-          hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+          hedvigAppState.navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
         },
       )
     },

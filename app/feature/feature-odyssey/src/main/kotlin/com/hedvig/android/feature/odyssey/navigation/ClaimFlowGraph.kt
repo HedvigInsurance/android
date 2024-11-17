@@ -65,7 +65,7 @@ fun NavGraphBuilder.claimFlowGraph(
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
-  navgraph<AppDestination.ClaimsFlow>(
+  navgraph<ClaimsFlowGraphDestination>(
     startDestination = ClaimFlowDestination.HonestyPledge::class,
   ) {
     nestedGraphs()
@@ -397,7 +397,7 @@ fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, 
       is ClaimFlowDestination.Failure,
       is ClaimFlowDestination.SingleItemPayout,
       -> {
-        typedPopUpTo<AppDestination.ClaimsFlow> {
+        typedPopUpTo<ClaimsFlowGraphDestination> {
           inclusive = true
         }
       }
