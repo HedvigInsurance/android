@@ -41,6 +41,7 @@ dependencies {
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.marketCore)

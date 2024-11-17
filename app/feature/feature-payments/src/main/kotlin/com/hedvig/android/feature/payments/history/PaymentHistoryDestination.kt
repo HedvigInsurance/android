@@ -150,13 +150,13 @@ private fun PaymentHistorySuccessScreen(
                   color = charge.color(),
                   textAlign = TextAlign.End,
                   modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(end = 2.dp),
+                    .fillMaxWidth()
+                    .padding(end = 2.dp),
                 )
               },
               modifier = Modifier
-                  .clickable { onChargeClicked(charge.id) }
-                  .padding(16.dp),
+                .clickable { onChargeClicked(charge.id) }
+                .padding(16.dp),
             )
           }
         }

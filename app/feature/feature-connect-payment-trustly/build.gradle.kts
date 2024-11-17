@@ -18,7 +18,6 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiGraphics)
-  implementation(libs.androidx.compose.uiText)
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)

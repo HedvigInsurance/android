@@ -7,7 +7,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority

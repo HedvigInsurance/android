@@ -34,7 +34,6 @@ dependencies {
   implementation(projects.dataChangetier)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
-  implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)

@@ -31,7 +31,9 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
+  implementation(projects.marketAndroid)
   implementation(projects.marketCore)
   implementation(projects.marketSet)
   implementation(projects.moleculeAndroid)
@@ -41,7 +43,6 @@ dependencies {
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.junit)
-  testImplementation(libs.androidx.test)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

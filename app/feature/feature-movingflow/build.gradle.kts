@@ -29,7 +29,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
-  implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)

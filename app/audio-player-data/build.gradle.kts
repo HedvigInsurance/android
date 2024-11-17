@@ -1,6 +1,6 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 hedvig {
@@ -11,8 +11,7 @@ dependencies {
   implementation(libs.androidx.annotation)
   implementation(libs.coroutines.core)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)

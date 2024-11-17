@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.movingflow.data
 
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible

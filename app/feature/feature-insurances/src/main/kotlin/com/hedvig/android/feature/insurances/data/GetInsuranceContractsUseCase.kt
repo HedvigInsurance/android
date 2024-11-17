@@ -10,7 +10,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
-import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow

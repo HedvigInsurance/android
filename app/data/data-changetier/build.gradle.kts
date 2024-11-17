@@ -1,15 +1,11 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 hedvig {
   apollo("octopus")
   serialization()
-}
-
-android {
-  testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
@@ -27,7 +23,6 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataChat)
   implementation(projects.dataContractPublic)
-  implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.featureFlagsPublic)
 

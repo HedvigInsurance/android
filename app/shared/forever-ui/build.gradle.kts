@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.koin.coreViewmodel)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -30,5 +31,4 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
-  implementation(projects.composeUi)
 }

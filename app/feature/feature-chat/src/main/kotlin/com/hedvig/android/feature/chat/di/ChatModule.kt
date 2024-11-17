@@ -1,11 +1,11 @@
 package com.hedvig.android.feature.chat.di
 
+import androidx.room.RoomDatabase
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
-import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.CbmChatViewModel
@@ -48,7 +48,7 @@ val chatModule = module {
   single<CbmChatRepositoryImpl> {
     CbmChatRepositoryImpl(
       apolloClient = get<ApolloClient>(),
-      database = get<AppDatabase>(),
+      database = get<RoomDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
       fileService = get<FileService>(),
@@ -71,7 +71,7 @@ val chatModule = module {
   viewModel<CbmChatViewModel> { (conversationId: String) ->
     CbmChatViewModel(
       conversationId = conversationId,
-      database = get<AppDatabase>(),
+      database = get<RoomDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
       chatRepository = get<GetCbmChatRepositoryProvider>(),
