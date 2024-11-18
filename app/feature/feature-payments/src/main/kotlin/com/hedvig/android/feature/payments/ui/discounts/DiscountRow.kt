@@ -61,7 +61,6 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
             size = HighlightLabelDefaults.HighLightSize.Small,
           )
         }
-
       },
       endSlot = {
         discount.amount?.let { discountAmount ->
