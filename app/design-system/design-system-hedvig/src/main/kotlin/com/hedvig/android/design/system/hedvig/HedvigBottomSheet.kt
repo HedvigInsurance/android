@@ -2,6 +2,7 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -194,7 +195,13 @@ private fun InternalHedvigBottomSheet(
     onSystemBack = onSystemBack,
     shape = bottomSheetShape.shape,
   ) {
-    Box(modifier) {
+    // [ModalSheet] automatically requests focus on appearance. This means that if there is a focusable child available,
+    // it gets focus immediately. This commonly is a TextField, which also brings the keyboard up. The keyboard ends up
+    // coming up way too early, before the sheet manages to show, which results in a very awkward and janky animation
+    // where the keyboard and the sheet are coming up in different timings, hiding each other while the insets are not
+    // quick enough to catch up to make them go up in sync.
+    // Making this box focusable means that it itself grabs the focus instead, not showing the keyboard on appearance.
+    Box(Modifier.consumeWindowInsets(sheetPadding).focusable()) {
       Column(
         modifier = Modifier
           .then(
