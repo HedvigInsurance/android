@@ -58,6 +58,7 @@ internal fun AddDiscountBottomSheetContent(isLoading: Boolean, errorMessage: Str
     HedvigButton(
       text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
       enabled = discountCodeInput.isNotBlank(),
+      modifier = Modifier.fillMaxWidth(),
       onClick = {
         onAddDiscount(discountCodeInput)
       },

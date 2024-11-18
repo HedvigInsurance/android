@@ -60,7 +60,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
       endSlot = {
         discount.amount?.let { discountAmount ->
           HedvigText(
-            text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, discount.toString()),
+            text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, discountAmount.toString()),
             color = if (discountIsExpired) {
               HedvigTheme.colorScheme.textDisabled
             } else {

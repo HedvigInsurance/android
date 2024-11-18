@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -88,6 +89,7 @@ private fun DiscountsScreen(
     var showInfoBottomSheet by remember { mutableStateOf(false) }
     HedvigBottomSheet(
       isVisible = showInfoBottomSheet,
+      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           showInfoBottomSheet = false
@@ -102,6 +104,7 @@ private fun DiscountsScreen(
     }
     HedvigBottomSheet(
       isVisible = uiState.showAddDiscountBottomSheet,
+      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           onDismissBottomSheet()
@@ -153,6 +156,7 @@ private fun DiscountsScreen(
       Spacer(modifier = Modifier.height(16.dp))
       HedvigButton(
         buttonStyle = ButtonStyle.Secondary,
+        modifier = Modifier.fillMaxWidth(),
         enabled = true,
         text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
         onClick = { onShowBottomSheet() },
@@ -180,6 +184,7 @@ private fun ForeverSection(
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     HedvigBottomSheet(
       isVisible = showForeverInfoBottomSheet,
+      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           showForeverInfoBottomSheet = false
