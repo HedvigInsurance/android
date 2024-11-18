@@ -88,11 +88,23 @@ fun TopAppBar(
   modifier: Modifier = Modifier,
   topAppBarActions: @Composable (RowScope.() -> Unit)? = null,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-  customTopAppBarColors: TopAppBarColors? = null
+  customTopAppBarColors: TopAppBarColors? = null,
 ) {
   Surface(
-    color = if (customTopAppBarColors!=null) customTopAppBarColors.containerColor else TopAppBarTokens.ContainerColor.value,
-    contentColor = if (customTopAppBarColors!=null) customTopAppBarColors.contentColor else TopAppBarTokens.ContentColor.value,
+    color = if (customTopAppBarColors !=
+      null
+    ) {
+      customTopAppBarColors.containerColor
+    } else {
+      TopAppBarTokens.ContainerColor.value
+    },
+    contentColor = if (customTopAppBarColors !=
+      null
+    ) {
+      customTopAppBarColors.contentColor
+    } else {
+      TopAppBarTokens.ContentColor.value
+    },
     modifier = modifier
       .windowInsetsPadding(windowInsets)
       .fillMaxWidth()
@@ -202,5 +214,5 @@ internal object TopAppBarDefaults {
 
 data class TopAppBarColors(
   val containerColor: Color,
-  val contentColor: Color
+  val contentColor: Color,
 )

@@ -49,9 +49,12 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
       startSlot = {
         HighlightLabel(
           labelText = discount.code,
-          color = if (discountIsExpired) HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
-          else HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
-          size = HighlightLabelDefaults.HighLightSize.Small
+          color = if (discountIsExpired) {
+            HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
+          } else {
+            HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT)
+          },
+          size = HighlightLabelDefaults.HighLightSize.Small,
         )
       },
       endSlot = {

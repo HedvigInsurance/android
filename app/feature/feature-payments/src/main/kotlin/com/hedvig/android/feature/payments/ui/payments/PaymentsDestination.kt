@@ -120,30 +120,30 @@ private fun PaymentsScreen(
   )
   Box(
     modifier = Modifier
-        .fillMaxSize()
-        .pullRefresh(pullRefreshState),
+      .fillMaxSize()
+      .pullRefresh(pullRefreshState),
   ) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
       Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .height(64.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+          .height(64.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       ) {
         HedvigText(
-          text = stringResource(R.string.TAB_REFERRALS_TITLE),
+          text = stringResource(R.string.PROFILE_PAYMENT_TITLE),
           style = HedvigTheme.typography.headlineSmall,
         )
       }
-      Spacer(Modifier.height(8.dp)) //todo: maybe 16?
+      Spacer(Modifier.height(8.dp)) // todo: maybe 16?
       when (uiState) {
         PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
         else -> {
@@ -191,15 +191,15 @@ private fun PaymentsContent(
         upcomingPayment = upcomingPayment as? UpcomingPayment.Content,
         onCardClicked = onUpcomingPaymentClicked,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
     }
     UpcomingPaymentInfoCard(
       upcomingPaymentInfo = (uiState as? PaymentsUiState.Content)?.upcomingPaymentInfo,
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
     val showConnectedPaymentInfo = uiState is PaymentsUiState.Content &&
       uiState.connectedPaymentInfo is NotConnected &&
@@ -214,8 +214,8 @@ private fun PaymentsContent(
         connectedPaymentInfo = (uiState as? PaymentsUiState.Content)?.connectedPaymentInfo as? NotConnected,
         onChangeBankAccount = onChangeBankAccount,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
     }
 
@@ -231,9 +231,9 @@ private fun PaymentsContent(
               enabled = true,
               buttonStyle = ButtonStyle.Secondary,
               modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                  .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
             )
           }
         }
@@ -245,8 +245,8 @@ private fun PaymentsContent(
             message = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
             priority = NotificationDefaults.NotificationPriority.Info,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         }
       }
@@ -316,9 +316,9 @@ private fun PaymentsListItems(
   onPaymentHistoryClicked: () -> Unit,
 ) {
   val listItemsSideSpacingModifier =
-      Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+    Modifier
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
     PaymentsListItem(
       text = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
@@ -326,15 +326,15 @@ private fun PaymentsListItems(
         Icon(
           imageVector = HedvigIcons.Campaign,
           contentDescription = null,
-          tint = HedvigTheme.colorScheme.signalGreenElement, //todo: check here!
+          tint = HedvigTheme.colorScheme.signalGreenElement, // todo: check here!
           modifier = Modifier.size(24.dp),
         )
       },
       modifier = Modifier
-          .clickable(onClick = onDiscountClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
+        .clickable(onClick = onDiscountClicked)
+        .then(listItemsSideSpacingModifier)
+        .padding(vertical = 16.dp)
+        .fillMaxWidth(),
     )
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
@@ -347,10 +347,10 @@ private fun PaymentsListItems(
         )
       },
       modifier = Modifier
-          .clickable(onClick = onPaymentHistoryClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
+        .clickable(onClick = onPaymentHistoryClicked)
+        .then(listItemsSideSpacingModifier)
+        .padding(vertical = 16.dp)
+        .fillMaxWidth(),
     )
     if (uiState is PaymentsUiState.Content) {
       if (uiState.connectedPaymentInfo is Connected) {
@@ -372,9 +372,9 @@ private fun PaymentsListItems(
             )
           },
           modifier = listItemsSideSpacingModifier
-              .padding(vertical = 16.dp)
-              .fillMaxWidth()
-              .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+            .padding(vertical = 16.dp)
+            .fillMaxWidth()
+            .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
         )
       }
     }
@@ -398,8 +398,8 @@ private fun PaymentAmountCard(
   ) {
     Column(
       modifier = Modifier
-          .padding(horizontal = 16.dp, vertical = 12.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 16.dp, vertical = 12.dp)
+        .fillMaxWidth(),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -416,11 +416,11 @@ private fun PaymentAmountCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .wrapContentWidth(Alignment.End)
-                .hedvigPlaceholder(
-                    visible = upcomingPayment == null,
-                    highlight = PlaceholderHighlight.shimmer(),
-                ),
+              .wrapContentWidth(Alignment.End)
+              .hedvigPlaceholder(
+                visible = upcomingPayment == null,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
           ) {
             HedvigText(
               text = if (upcomingPayment != null) {

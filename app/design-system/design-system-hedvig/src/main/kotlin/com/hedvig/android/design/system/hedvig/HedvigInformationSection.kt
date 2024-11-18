@@ -20,7 +20,7 @@ fun HedvigInformationSection(
   modifier: Modifier = Modifier,
   subTitle: String? = null,
   onButtonClick: (() -> Unit)? = null,
-  buttonText: String  = stringResource(id = R.string.ALERT_OK),
+  buttonText: String = stringResource(id = R.string.ALERT_OK),
   windowInsets: WindowInsets = WindowInsets.safeDrawing,
 ) {
   Column(
@@ -30,14 +30,18 @@ fun HedvigInformationSection(
       .windowInsetsPadding(windowInsets)
       .padding(horizontal = 16.dp),
   ) {
-    val buttonStyle = if (onButtonClick!=null) EmptyStateDefaults.EmptyStateButtonStyle.Button(
-      buttonText = buttonText,
-      onButtonClick = onButtonClick,
-    ) else NoButton
+    val buttonStyle = if (onButtonClick != null) {
+      EmptyStateDefaults.EmptyStateButtonStyle.Button(
+        buttonText = buttonText,
+        onButtonClick = onButtonClick,
+      )
+    } else {
+      NoButton
+    }
     EmptyState(
       text = title,
       description = subTitle,
-      iconStyle =  EmptyStateDefaults.EmptyStateIconStyle.INFO,
+      iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
       buttonStyle = buttonStyle,
     )
   }

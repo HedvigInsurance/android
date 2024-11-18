@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -42,7 +43,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
-import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
@@ -95,6 +95,7 @@ private fun MemberChargeDetailsScreen(
         HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
     }
+
     PaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentDetailsUiState.Success -> {
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -106,13 +107,21 @@ private fun MemberChargeDetailsScreen(
       ) {
         Column(modifier = Modifier.padding(16.dp)) {
           var showBottomSheet by remember { mutableStateOf(false) }
-          if (showBottomSheet) {
-            HedvigInfoBottomSheet(
-              onDismissed = { showBottomSheet = false },
-              title = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
-              body = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+          HedvigBottomSheet(
+            isVisible = showBottomSheet,
+            onVisibleChange = { visible ->
+              if (!visible) {
+                showBottomSheet = false
+              }
+            },
+          ) {
+            HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+            HedvigText(
+              text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+              color = HedvigTheme.colorScheme.textSecondary,
             )
           }
+
           uiState.paymentDetails.memberCharge.chargeBreakdowns.forEach { chargeBreakdown ->
             PaymentDetailExpandableCard(
               displayName = chargeBreakdown.contractDisplayName,
@@ -137,7 +146,8 @@ private fun MemberChargeDetailsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             HedvigNotificationCard(
               priority = NotificationDefaults.NotificationPriority.Info,
-              message = stringResource(id = R.string.payments_carried_adjustment_info))
+              message = stringResource(id = R.string.payments_carried_adjustment_info),
+            )
             Spacer(modifier = Modifier.height(16.dp))
           }
 
@@ -153,7 +163,8 @@ private fun MemberChargeDetailsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             HedvigNotificationCard(
               priority = NotificationDefaults.NotificationPriority.Info,
-              message  = stringResource(id = R.string.payments_settlement_adjustment_info))
+              message = stringResource(id = R.string.payments_settlement_adjustment_info),
+            )
             Spacer(modifier = Modifier.height(16.dp))
           }
 
@@ -202,7 +213,7 @@ private fun MemberChargeDetailsScreen(
                 text = dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate()),
                 textAlign = TextAlign.End,
                 modifier = Modifier.fillMaxWidth(),
-                color =  HedvigTheme.colorScheme.textSecondary,
+                color = HedvigTheme.colorScheme.textSecondary,
               )
             },
             modifier = Modifier.padding(vertical = 16.dp),
@@ -213,13 +224,12 @@ private fun MemberChargeDetailsScreen(
             MemberCharge.MemberChargeStatus.SUCCESS ->
               HedvigNotificationCard(
                 priority = NotificationDefaults.NotificationPriority.Campaign,
-                //so here we have the same color that was in the old DS - green; but the icon doesn't match (it was checkmark,
-                //we don't have Checkmark icon in the new NotificationCards. so I've put  withIcon = false here
+                // so here we have the same color that was in the old DS - green; but the icon doesn't match (it was checkmark,
+                // we don't have Checkmark icon in the new NotificationCards. so I've put  withIcon = false here
                 withIcon = false,
                 style = NotificationDefaults.InfoCardStyle.Default,
-                message = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL)
+                message = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL),
               )
-
 
             MemberCharge.MemberChargeStatus.PENDING -> HedvigNotificationCard(
               message = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
@@ -273,8 +283,8 @@ private fun MemberChargeDetailsScreen(
                     contentAlignment = Alignment.Center,
                   ) {
                     Icon(
-                      imageVector =HedvigIcons.InfoFilled,
-                      tint =  HedvigTheme.colorScheme.fillSecondary,
+                      imageVector = HedvigIcons.InfoFilled,
+                      tint = HedvigTheme.colorScheme.fillSecondary,
                       contentDescription = "Info icon",
                       modifier = Modifier.size(16.dp),
                     )
@@ -310,7 +320,7 @@ private fun MemberChargeDetailsScreen(
                   text = paymentConnection.displayValue,
                   textAlign = TextAlign.End,
                   modifier = Modifier.fillMaxWidth(),
-                  color =  HedvigTheme.colorScheme.textSecondary,
+                  color = HedvigTheme.colorScheme.textSecondary,
                 )
               },
               modifier = Modifier.padding(vertical = 16.dp),
@@ -324,7 +334,7 @@ private fun MemberChargeDetailsScreen(
                   text = paymentConnection.displayName,
                   textAlign = TextAlign.End,
                   modifier = Modifier.fillMaxWidth(),
-                  color =  HedvigTheme.colorScheme.textSecondary,
+                  color = HedvigTheme.colorScheme.textSecondary,
                 )
               },
               modifier = Modifier.padding(vertical = 16.dp),
@@ -341,9 +351,11 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors? {
   return if (this.status == MemberCharge.MemberChargeStatus.FAILED) {
     TopAppBarColors(
       contentColor = HedvigTheme.colorScheme.backgroundPrimary,
-      containerColor = HedvigTheme.colorScheme.signalRedText
+      containerColor = HedvigTheme.colorScheme.signalRedText,
     )
-  } else null
+  } else {
+    null
+  }
 }
 
 @Composable

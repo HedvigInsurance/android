@@ -236,7 +236,7 @@ private fun DragHandle(modifier: Modifier = Modifier) {
       .background(
         shape = HedvigTheme.shapes.cornerSmall,
         color = bottomSheetColors.chipColor,
-      )
+      ),
   )
 }
 

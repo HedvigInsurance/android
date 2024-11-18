@@ -5,10 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,17 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigInformationSection
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -121,7 +121,6 @@ private fun PaymentHistorySuccessScreen(
       PaymentHistory.NoHistoryData -> {
         HedvigInformationSection(
           title = stringResource(R.string.PAYMENTS_NO_HISTORY_DATA),
-          withDefaultVerticalSpacing = true,
           modifier = Modifier.weight(1f),
         )
       }
@@ -133,21 +132,21 @@ private fun PaymentHistorySuccessScreen(
           if (yearIndex != 0) {
             Spacer(Modifier.height(16.dp))
           }
-          Text(text = "${yearCharges.year}", modifier = Modifier.padding(horizontal = 18.dp))
+          HedvigText(text = "${yearCharges.year}", modifier = Modifier.padding(horizontal = 18.dp))
           yearCharges.charge.forEachIndexed { chargeIndex, charge ->
             if (chargeIndex != 0) {
               HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
-                Text(
+                HedvigText(
                   text = dateTimeFormatter.format(charge.dueDate.toJavaLocalDate()),
                   color = charge.color(),
                   modifier = Modifier.padding(start = 2.dp),
                 )
               },
               endSlot = {
-                Text(
+                HedvigText(
                   text = charge.netAmount.toString(),
                   color = charge.color(),
                   textAlign = TextAlign.End,
@@ -163,8 +162,9 @@ private fun PaymentHistorySuccessScreen(
           }
         }
         if (paymentHistory.showInfoAboutOlderCharges) {
-          VectorInfoCard(
-            text = stringResource(id = R.string.PAYMENTS_HISTORY_INFO),
+          HedvigNotificationCard(
+            message = stringResource(id = R.string.PAYMENTS_HISTORY_INFO),
+            priority = NotificationDefaults.NotificationPriority.Info,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
@@ -198,9 +198,9 @@ private sealed interface PaymentHistory {
 @Composable
 private fun PaymentHistory.PastCharges.YearCharges.Charge.color(): Color {
   return if (hasFailedCharge) {
-    MaterialTheme.colorScheme.error
+    HedvigTheme.colorScheme.signalRedText
   } else {
-    MaterialTheme.colorScheme.onSurfaceVariant
+    HedvigTheme.colorScheme.textSecondary
   }
 }
 
@@ -212,7 +212,7 @@ internal fun PaymentHistoryScreenPreview(
   ) cases: TripleCase,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       val buildChargesList: (Int) -> List<PaymentHistory.PastCharges.YearCharges.Charge> = { numberOfCharges ->
         List(numberOfCharges) { index ->
           PaymentHistory.PastCharges.YearCharges.Charge(

@@ -43,7 +43,7 @@ fun HedvigScaffold(
         onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = topAppBarActions,
         windowInsets = topAppbarInsets,
-        customTopAppBarColors = customTopAppBarColors
+        customTopAppBarColors = customTopAppBarColors,
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,
