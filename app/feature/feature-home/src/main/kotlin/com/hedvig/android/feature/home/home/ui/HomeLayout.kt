@@ -208,8 +208,8 @@ private fun PreviewHomeLayoutCenteredContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox { HedvigText("claim status card") }
@@ -228,8 +228,8 @@ private fun PreviewHomeLayoutCenteredContentWithSomeBottomAttachedContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           memberReminderCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               repeat(1) { index ->
@@ -250,8 +250,8 @@ private fun PreviewHomeLayoutNonCenteredNonScrollableContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           veryImportantMessages = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox(0) { HedvigText("Important message") }
@@ -277,8 +277,8 @@ private fun PreviewHomeLayoutScrollingContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox { HedvigText("claim status card") }
