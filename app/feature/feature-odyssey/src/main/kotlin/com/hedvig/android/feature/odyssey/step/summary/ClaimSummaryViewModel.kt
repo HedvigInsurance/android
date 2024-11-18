@@ -256,7 +256,7 @@ internal fun ItemModel.displayName(resources: Resources): String {
   }
 }
 
-internal fun ItemBrand.displayName(resources: Resources): String = when(this) {
+internal fun ItemBrand.displayName(resources: Resources): String = when (this) {
   is Known -> displayName
   Unknown -> resources.getString(R.string.GENERAL_NOT_SURE)
 }

@@ -121,16 +121,16 @@ internal fun AudioRecorder(
           Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .shadow(2.dp, CircleShape)
-                .size(72.dp)
-                .background(Color.White, CircleShape)
-                .clickable {
-                    if (isRecording) {
-                        stopRecording()
-                    } else {
-                        startRecording()
-                    }
-                },
+              .shadow(2.dp, CircleShape)
+              .size(72.dp)
+              .background(Color.White, CircleShape)
+              .clickable {
+                if (isRecording) {
+                  stopRecording()
+                } else {
+                  startRecording()
+                }
+              },
           ) {
             val size by isRecordingTransition.animateDp(label = "sizeAnimation") { isRecording ->
               if (isRecording) 18.dp else 32.dp
@@ -143,8 +143,8 @@ internal fun AudioRecorder(
             }
             Box(
               Modifier
-                  .size(size)
-                  .background(color, RoundedCornerShape(cornerRadius)),
+                .size(size)
+                .background(color, RoundedCornerShape(cornerRadius)),
             )
           }
         }

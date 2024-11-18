@@ -309,7 +309,7 @@ internal fun HedvigNavHost(
       },
       onNavigateToTravelCertificate = {
         hedvigAppState.navController.navigate(TravelCertificateGraphDestination)
-      }
+      },
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -409,7 +409,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appId,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
-    }
+    },
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
