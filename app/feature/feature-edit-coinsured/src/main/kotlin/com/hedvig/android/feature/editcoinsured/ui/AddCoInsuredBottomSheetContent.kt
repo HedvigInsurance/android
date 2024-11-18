@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -57,6 +60,8 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -73,6 +78,7 @@ internal fun AddCoInsuredBottomSheetContent(
   bottomSheetState: AddBottomSheetState,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
+  onDismiss: () -> Unit,
   onManualInputSwitchChanged: (Boolean) -> Unit,
   onBirthDateChanged: (LocalDate) -> Unit,
   onFirstNameChanged: (String) -> Unit,
@@ -166,6 +172,15 @@ internal fun AddCoInsuredBottomSheetContent(
       isLoading = bottomSheetState.isLoading,
     )
     Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      onClick = onDismiss,
+      text = stringResource(R.string.general_cancel_button),
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -200,9 +215,9 @@ private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () 
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .heightIn(72.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
+          .heightIn(72.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
       Text(
         text = text,
@@ -497,6 +512,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
         ),
         onSsnChanged = {},
         onContinue = {},
+        onDismiss = {},
         onManualInputSwitchChanged = {},
         onBirthDateChanged = {},
         onFirstNameChanged = {},
@@ -525,6 +541,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
         ),
         onSsnChanged = {},
         onContinue = {},
+        onDismiss = {},
         onManualInputSwitchChanged = {},
         onBirthDateChanged = {},
         onFirstNameChanged = {},

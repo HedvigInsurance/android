@@ -140,12 +140,11 @@ private fun EditCoInsuredScreen(
               onResetAddBottomSheetState()
             }
           },
-          sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
-          bottomButtonText = stringResource(id = R.string.general_cancel_button),
         ) {
           AddCoInsuredBottomSheetContent(
             bottomSheetState = uiState.addBottomSheetState,
             onContinue = onBottomSheetContinue,
+            onDismiss = onResetAddBottomSheetState,
             onSsnChanged = onSsnChanged,
             onFirstNameChanged = onFirstNameChanged,
             onLastNameChanged = onLastNameChanged,
@@ -199,7 +198,7 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(
             onClick = navigateUp,
-            text = stringResource(id = R.string.general_cancel_button),
+            text = stringResource(R.string.general_cancel_button),
             modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(16.dp))

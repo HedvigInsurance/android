@@ -2,14 +2,8 @@ package com.hedvig.android.shared.foreverui.ui.ui
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
@@ -52,17 +46,11 @@ internal fun EditCodeBottomSheet(
   onSubmitCode: (code: String) -> Unit,
   isLoading: Boolean,
 ) {
-  val insetsAroundSheet = WindowInsets
-    .safeDrawing
-    .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
-    .add(WindowInsets.ime)
   DismissSheetOnSuccessfulCodeChangeEffect(sheetState, referralCodeSuccessfullyChanged)
   ClearErrorOnSheetDismissedEffect(sheetState, showedReferralCodeSubmissionError)
   HedvigBottomSheet(
     hedvigBottomSheetState = sheetState,
-    sheetPadding = insetsAroundSheet.asPaddingValues(),
     contentPadding = null,
-    modifier = Modifier.consumeWindowInsets(insetsAroundSheet),
   ) { initialCode ->
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -95,8 +83,8 @@ internal fun EditCodeBottomSheet(
         )
       },
       modifier = Modifier
-        .focusRequester(focusRequester)
-        .fillMaxWidth(),
+          .focusRequester(focusRequester)
+          .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
@@ -117,7 +105,7 @@ internal fun EditCodeBottomSheet(
       buttonSize = ButtonDefaults.ButtonSize.Large,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }

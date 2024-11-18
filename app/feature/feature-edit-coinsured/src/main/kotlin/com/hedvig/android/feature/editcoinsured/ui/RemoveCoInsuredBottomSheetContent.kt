@@ -2,7 +2,11 @@ package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,11 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
 
 @Composable
 internal fun RemoveCoInsuredBottomSheetContent(
+  onDismiss: () -> Unit,
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
   errorMessage: String?,
@@ -49,6 +56,15 @@ internal fun RemoveCoInsuredBottomSheetContent(
       isLoading = isLoading,
     )
     Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      onClick = onDismiss,
+      text = stringResource(R.string.general_cancel_button),
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -58,6 +74,7 @@ private fun RemoveCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       RemoveCoInsuredBottomSheetContent(
+        onDismiss = {},
         onRemove = {},
         isLoading = false,
         coInsured = CoInsured(
@@ -79,6 +96,7 @@ private fun RemoveCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       RemoveCoInsuredBottomSheetContent(
+        onDismiss = {},
         onRemove = {},
         isLoading = false,
         coInsured = CoInsured(
