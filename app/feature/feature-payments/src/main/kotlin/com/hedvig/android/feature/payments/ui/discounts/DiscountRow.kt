@@ -2,10 +2,12 @@ package com.hedvig.android.feature.payments.ui.discounts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,15 +49,19 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        HighlightLabel(
-          labelText = discount.code,
-          color = if (discountIsExpired) {
-            HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
-          } else {
-            HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT)
-          },
-          size = HighlightLabelDefaults.HighLightSize.Small,
-        )
+        Row {
+          HighlightLabel(
+            labelText = discount.code,
+            modifier = Modifier.wrapContentWidth(),
+            color = if (discountIsExpired) {
+              HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
+            } else {
+              HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT)
+            },
+            size = HighlightLabelDefaults.HighLightSize.Small,
+          )
+        }
+
       },
       endSlot = {
         discount.amount?.let { discountAmount ->
