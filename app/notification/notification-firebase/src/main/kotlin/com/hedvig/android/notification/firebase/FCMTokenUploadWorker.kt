@@ -43,9 +43,17 @@ internal class FCMTokenUploadWorker(
           logcat { "NotificationRegisterDeviceMutation failed with token:$storedToken. Will retry later. Error:$it" }
           Result.retry()
         },
-        ifRight = {
-          logcat { "NotificationRegisterDeviceMutation success with token:$storedToken" }
-          Result.success()
+        ifRight = { response ->
+          if (response.memberDeviceRegister) {
+            logcat { "NotificationRegisterDeviceMutation success with token:$storedToken" }
+            Result.success()
+          } else {
+            logcat {
+              "NotificationRegisterDeviceMutation failed with token:$storedToken. " +
+                "Will retry later. memberDeviceRegister:${response.memberDeviceRegister}"
+            }
+            Result.retry()
+          }
         },
       )
   }

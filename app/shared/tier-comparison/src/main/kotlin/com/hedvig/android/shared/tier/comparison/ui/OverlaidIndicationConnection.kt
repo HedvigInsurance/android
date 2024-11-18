@@ -6,6 +6,7 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.node.LayoutAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.round
 import kotlinx.coroutines.Job
@@ -26,6 +27,12 @@ private data class OverlaidIndicationConnectionElement(
 
   override fun update(node: OverlaidIndicationConnectionNode) {
     node.update(overlaidIndicationState, interactionSource)
+  }
+
+  override fun InspectorInfo.inspectableProperties() {
+    name = "overlaidIndication"
+    properties["overlaidIndicationState"] = overlaidIndicationState
+    properties["interactionSource"] = interactionSource
   }
 }
 

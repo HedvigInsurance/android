@@ -15,8 +15,8 @@ import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
 import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
-import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopBackStack

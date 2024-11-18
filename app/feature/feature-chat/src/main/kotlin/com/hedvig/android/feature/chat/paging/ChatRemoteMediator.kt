@@ -4,11 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.getOrElse
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -24,7 +24,7 @@ import kotlinx.datetime.Clock
 @OptIn(ExperimentalPagingApi::class)
 internal class ChatRemoteMediator(
   private val conversationId: Uuid,
-  private val database: AppDatabase,
+  private val database: RoomDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val chatRepository: Provider<CbmChatRepository>,

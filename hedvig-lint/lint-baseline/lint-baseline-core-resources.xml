@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.1.4" type="baseline" client="gradle" dependencies="false" name="AGP (8.1.4)" variant="all" version="8.1.4">
+<issues format="6" by="lint 8.8.0-alpha09" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.2)" variant="all" version="8.8.0-alpha09">
 
     <issue
         id="WrongRegion"
@@ -15,7 +15,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="107"
+            line="109"
             column="3"/>
     </issue>
 
@@ -26,7 +26,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="107"
+            line="109"
             column="3"/>
     </issue>
 
@@ -37,7 +37,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="107"
+            line="109"
             column="3"/>
     </issue>
 
@@ -48,7 +48,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="107"
+            line="109"
             column="3"/>
     </issue>
 
@@ -59,7 +59,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="173"
+            line="208"
             column="3"/>
     </issue>
 
@@ -70,7 +70,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="173"
+            line="208"
             column="3"/>
     </issue>
 
@@ -81,7 +81,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="173"
+            line="208"
             column="3"/>
     </issue>
 
@@ -92,7 +92,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="173"
+            line="208"
             column="3"/>
     </issue>
 
@@ -103,7 +103,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="217"
+            line="256"
             column="3"/>
     </issue>
 
@@ -114,7 +114,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="217"
+            line="256"
             column="3"/>
     </issue>
 
@@ -125,7 +125,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="217"
+            line="256"
             column="3"/>
     </issue>
 
@@ -136,7 +136,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="217"
+            line="256"
             column="3"/>
     </issue>
 
@@ -147,7 +147,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="272"
+            line="313"
             column="3"/>
     </issue>
 
@@ -158,7 +158,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="272"
+            line="313"
             column="3"/>
     </issue>
 
@@ -169,7 +169,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="272"
+            line="313"
             column="3"/>
     </issue>
 
@@ -180,7 +180,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="272"
+            line="313"
             column="3"/>
     </issue>
 
@@ -191,7 +191,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="544"
+            line="792"
             column="3"/>
     </issue>
 
@@ -202,7 +202,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="544"
+            line="792"
             column="3"/>
     </issue>
 
@@ -213,7 +213,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="544"
+            line="792"
             column="3"/>
     </issue>
 
@@ -224,7 +224,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="544"
+            line="792"
             column="3"/>
     </issue>
 
@@ -235,7 +235,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="646"
+            line="900"
             column="3"/>
     </issue>
 
@@ -246,7 +246,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="646"
+            line="900"
             column="3"/>
     </issue>
 
@@ -257,7 +257,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="646"
+            line="900"
             column="3"/>
     </issue>
 
@@ -268,7 +268,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="646"
+            line="900"
             column="3"/>
     </issue>
 
@@ -279,7 +279,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="1207"
+            line="1680"
             column="3"/>
     </issue>
 
@@ -290,7 +290,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="1207"
+            line="1680"
             column="3"/>
     </issue>
 
@@ -301,7 +301,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="1207"
+            line="1680"
             column="3"/>
     </issue>
 
@@ -312,7 +312,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="1207"
+            line="1680"
             column="3"/>
     </issue>
 
@@ -323,7 +323,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="1286"
+            line="1765"
             column="3"/>
     </issue>
 
@@ -334,7 +334,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="1286"
+            line="1765"
             column="3"/>
     </issue>
 
@@ -345,7 +345,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="1286"
+            line="1765"
             column="3"/>
     </issue>
 
@@ -356,7 +356,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="1286"
+            line="1765"
             column="3"/>
     </issue>
 
@@ -367,7 +367,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rDK/strings.xml"
-            line="1295"
+            line="1776"
             column="3"/>
     </issue>
 
@@ -378,7 +378,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rNO/strings.xml"
-            line="1295"
+            line="1776"
             column="3"/>
     </issue>
 
@@ -389,7 +389,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en-rSE/strings.xml"
-            line="1295"
+            line="1776"
             column="3"/>
     </issue>
 
@@ -400,133 +400,31 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="1295"
+            line="1776"
             column="3"/>
     </issue>
 
     <issue
         id="StringFormatCount"
-        message="Inconsistent number of arguments in formatting string `GENERAL.DUE`; found both 1 here and 0 in values-da-rDK/strings.xml"
-        errorLine1="  &lt;string name=&quot;GENERAL.DUE&quot;>Due %1$s&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="338"
-            column="3"/>
+        message="Inconsistent number of arguments in formatting string `GENERAL.DUE`; found both 0 here and 1 in values/strings.xml"
+        errorLine1="  &lt;string name=&quot;GENERAL.DUE&quot;>Forfalder [% 1 $ s: activation_date]&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-da-rDK/strings.xml"
-            line="338"
-            column="3"
-            message="Conflicting number of arguments (0) here"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Din forsikring vil blive slettet, hvilket betyder at den ikke vil blive aktiveret den %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-da-rDK/strings.xml"
-            line="741"
+            line="390"
             column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en-rDK/strings.xml"
-            line="741"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en-rNO/strings.xml"
-            line="741"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en-rSE/strings.xml"
-            line="741"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Forsikringen din vil bli slettet, noe som betyr at den ikke vil bli aktivert på %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-nb-rNO/strings.xml"
-            line="741"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Din försäkring kommer att raderas vilket betyder att den inte kommer att aktiveras den %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-sv-rSE/strings.xml"
-            line="741"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
-        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="741"
-            column="3"/>
+            line="390"
+            column="3"
+            message="Conflicting number of arguments (1) here"/>
     </issue>
 
     <issue
-        id="StringFormatCount"
-        message="Inconsistent number of arguments in formatting string `home.claim.multiple.title`; found both 1 here and 0 in values-da-rDK/strings.xml"
-        errorLine1="  &lt;string name=&quot;home.claim.multiple.title&quot;>Hi %1$s, here’s your recent claims.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="IconMissingDensityFolder"
+        message="Missing density variation folders in `src/main/res`: drawable-hdpi, drawable-xhdpi, drawable-xxhdpi">
         <location
-            file="src/main/res/values/strings.xml"
-            line="916"
-            column="3"/>
-        <location
-            file="src/main/res/values-da-rDK/strings.xml"
-            line="916"
-            column="3"
-            message="Conflicting number of arguments (0) here"/>
-    </issue>
-
-    <issue
-        id="StringFormatCount"
-        message="Inconsistent number of arguments in formatting string `info_card_missing_payment.body_with_date`; found both 1 here and 0 in values-sv-rSE/strings.xml"
-        errorLine1="  &lt;string name=&quot;info_card_missing_payment.body_with_date&quot;>For your insurance to stay active, you need to connect a payment method. Make sure you connect before %1$s.&lt;/string>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="962"
-            column="3"/>
-        <location
-            file="src/main/res/values-sv-rSE/strings.xml"
-            line="962"
-            column="3"
-            message="Conflicting number of arguments (0) here"/>
+            file="src/main/res"/>
     </issue>
 
 </issues>

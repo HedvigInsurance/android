@@ -43,11 +43,10 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.feature.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestination
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -65,7 +64,7 @@ fun NavGraphBuilder.claimFlowGraph(
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
-  navgraph<AppDestination.ClaimsFlow>(
+  navgraph<ClaimsFlowGraphDestination>(
     startDestination = ClaimFlowDestination.HonestyPledge::class,
   ) {
     nestedGraphs()
@@ -397,7 +396,7 @@ fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, 
       is ClaimFlowDestination.Failure,
       is ClaimFlowDestination.SingleItemPayout,
       -> {
-        typedPopUpTo<AppDestination.ClaimsFlow> {
+        typedPopUpTo<ClaimsFlowGraphDestination> {
           inclusive = true
         }
       }

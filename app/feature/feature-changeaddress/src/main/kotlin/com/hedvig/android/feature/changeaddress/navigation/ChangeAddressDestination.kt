@@ -4,12 +4,15 @@ import com.hedvig.android.feature.changeaddress.data.AddressId
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.HousingType
-import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object ChangeAddressGraphDestination : Destination
 
 internal sealed interface ChangeAddressDestination {
   @Serializable

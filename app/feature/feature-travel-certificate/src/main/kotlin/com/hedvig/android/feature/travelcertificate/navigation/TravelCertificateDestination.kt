@@ -1,12 +1,15 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object TravelCertificateGraphDestination : Destination
 
 internal sealed interface TravelCertificateDestination {
   @Serializable

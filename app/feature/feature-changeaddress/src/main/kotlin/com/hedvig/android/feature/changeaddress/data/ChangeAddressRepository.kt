@@ -9,7 +9,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.logger.logcat
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation

@@ -1,6 +1,5 @@
 package com.hedvig.android.core.fileupload
 
-import android.content.ContentResolver
 import android.net.Uri
 import arrow.core.Either
 import arrow.core.raise.Raise
@@ -27,7 +26,6 @@ interface UploadFileUseCase {
 internal data class UploadFileUseCaseImpl(
   private val uploadFileService: UploadFileService,
   private val fileService: FileService,
-  private val contentResolver: ContentResolver,
 ) : UploadFileUseCase {
   override suspend fun invoke(url: String, uri: Uri): Either<ErrorMessage, UploadSuccess> = either {
     val claimId = Uri.parse(url).getQueryParameter("claimId") ?: raise(ErrorMessage("No claim id found in url"))

@@ -19,7 +19,6 @@ import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -35,6 +34,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  onNavigateToTravelCertificate: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
@@ -61,9 +61,7 @@ fun NavGraphBuilder.profileGraph(
         navigateToSettings = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
         },
-        navigateToTravelCertificate = {
-          with(navigator) { backStackEntry.navigate(AppDestination.TravelCertificate) }
-        },
+        navigateToTravelCertificate = onNavigateToTravelCertificate,
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToAddMissingInfo = { contractId ->
           navigateToAddMissingInfo(backStackEntry, contractId)
