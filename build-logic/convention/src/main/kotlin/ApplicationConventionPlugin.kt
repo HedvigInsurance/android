@@ -35,6 +35,10 @@ class ApplicationConventionPlugin : Plugin<Project> {
           @Suppress("DEPRECATION")
           applicationVariantBuilder.enableUnitTest = false
         }
+        beforeVariants(selector().withBuildType("staging")) { applicationVariantBuilder ->
+          @Suppress("DEPRECATION")
+          applicationVariantBuilder.enableUnitTest = false
+        }
       }
     }
   }
