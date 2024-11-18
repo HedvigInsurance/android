@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
@@ -87,10 +88,11 @@ fun TopAppBar(
   modifier: Modifier = Modifier,
   topAppBarActions: @Composable (RowScope.() -> Unit)? = null,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  customTopAppBarColors: TopAppBarColors? = null
 ) {
   Surface(
-    color = TopAppBarTokens.ContainerColor.value,
-    contentColor = TopAppBarTokens.ContentColor.value,
+    color = if (customTopAppBarColors!=null) customTopAppBarColors.containerColor else TopAppBarTokens.ContainerColor.value,
+    contentColor = if (customTopAppBarColors!=null) customTopAppBarColors.contentColor else TopAppBarTokens.ContentColor.value,
     modifier = modifier
       .windowInsetsPadding(windowInsets)
       .fillMaxWidth()
@@ -197,3 +199,8 @@ internal object TopAppBarDefaults {
       .union(WindowInsets.displayCutout)
       .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
 }
+
+data class TopAppBarColors(
+  val containerColor: Color,
+  val contentColor: Color
+)

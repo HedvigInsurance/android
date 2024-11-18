@@ -28,6 +28,7 @@ fun HedvigScaffold(
   topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   topAppBarActions: @Composable RowScope.() -> Unit = {},
+  customTopAppBarColors: TopAppBarColors? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(
@@ -42,6 +43,7 @@ fun HedvigScaffold(
         onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = topAppBarActions,
         windowInsets = topAppbarInsets,
+        customTopAppBarColors = customTopAppBarColors
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,

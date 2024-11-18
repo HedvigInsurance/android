@@ -6,24 +6,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.information.HedvigPill
-import com.hedvig.android.core.designsystem.material3.DisabledAlpha
-import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
-import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.discountsPreviewData
 import hedvig.resources.R
@@ -50,25 +47,21 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        HedvigPill(
-          text = discount.code,
-          color = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
-          contentColor = if (discountIsExpired) {
-            MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
-          } else {
-            MaterialTheme.colorScheme.onSecondaryContainedButtonContainer
-          },
-          modifier = Modifier.wrapContentSize(Alignment.CenterStart),
+        HighlightLabel(
+          labelText = discount.code,
+          color = if (discountIsExpired) HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
+          else HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
+          size = HighlightLabelDefaults.HighLightSize.Small
         )
       },
       endSlot = {
-        discount.amount?.let { discount ->
-          Text(
+        discount.amount?.let { discountAmount ->
+          HedvigText(
             text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, discount.toString()),
             color = if (discountIsExpired) {
-              MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+              HedvigTheme.colorScheme.textDisabled
             } else {
-              MaterialTheme.colorScheme.onSurfaceVariant
+              HedvigTheme.colorScheme.textSecondary
             },
             textAlign = TextAlign.End,
             modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
@@ -84,14 +77,14 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
           horizontalAlignment = Alignment.Start,
         ) {
           discount.displayName?.let {
-            Text(
+            HedvigText(
               text = it,
               color = if (discountIsExpired) {
-                MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+                HedvigTheme.colorScheme.textDisabled
               } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
+                HedvigTheme.colorScheme.textSecondary
               },
-              style = MaterialTheme.typography.bodyMedium,
+              style = HedvigTheme.typography.bodySmall,
             )
           }
           val bottomText = if (discount.isReferral) {
@@ -100,14 +93,14 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
             discount.description
           }
           if (bottomText != null) {
-            Text(
+            HedvigText(
               text = bottomText,
               color = if (discountIsExpired) {
-                MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+                HedvigTheme.colorScheme.textDisabled
               } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
+                HedvigTheme.colorScheme.textSecondary
               },
-              style = MaterialTheme.typography.bodyMedium,
+              style = HedvigTheme.typography.bodySmall,
             )
           }
         }
@@ -116,27 +109,27 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
         val dateTimeFormatter = rememberHedvigDateTimeFormatter()
         when (discount.expiredState) {
           is Discount.ExpiredState.AlreadyExpired -> {
-            Text(
+            HedvigText(
               text = stringResource(
                 id = R.string.PAYMENTS_EXPIRED_DATE,
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.error,
+              style = HedvigTheme.typography.bodySmall,
+              color = HedvigTheme.colorScheme.signalRedText,
               modifier = Modifier.fillMaxWidth(),
             )
           }
 
           is Discount.ExpiredState.ExpiringInTheFuture -> {
-            Text(
+            HedvigText(
               text = stringResource(
                 id = R.string.PAYMENTS_VALID_UNTIL,
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              style = HedvigTheme.typography.bodySmall,
+              color = HedvigTheme.colorScheme.textSecondary,
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -153,7 +146,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
 @HedvigPreview
 private fun DiscountRowsPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
         DiscountRows(discounts = discountsPreviewData)
       }
