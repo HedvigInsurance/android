@@ -19,10 +19,10 @@ internal fun Project.configureKotlin() {
     configureKotlinCompilerOptions()
   }
   project.extensions.getByType(JavaPluginExtension::class.java).apply {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
   }
   project.tasks.withType(JavaCompile::class.java).configureEach {
-    options.release.set(17)
+    options.release.set(21)
   }
 }
 

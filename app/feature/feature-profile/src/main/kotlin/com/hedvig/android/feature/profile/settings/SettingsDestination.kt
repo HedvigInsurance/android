@@ -49,6 +49,7 @@ import com.hedvig.android.feature.profile.settings.SettingsUiState.Loaded
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.Language.EN_SE
 import com.hedvig.android.language.Language.SV_SE
+import com.hedvig.android.language.label
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState

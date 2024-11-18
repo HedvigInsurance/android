@@ -21,7 +21,7 @@ googleServices = "4.4.2"
 gradleDevelocity = "3.18.2"
 kotlin = "2.0.21"
 kotlinter = "4.4.1"
-ksp = "2.0.21-1.0.27"
+ksp = "2.0.21-1.0.28"
 ktor = "3.0.1"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -188,6 +188,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "arrow" }
 retrofitKotlinxSerializationConverter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+room-common = { module = "androidx.room:room-common", version.ref = "room" }
 room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }

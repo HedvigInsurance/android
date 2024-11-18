@@ -64,7 +64,12 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
+import com.hedvig.android.language.label
 import com.hedvig.android.market.Market
+import com.hedvig.android.market.Market.DK
+import com.hedvig.android.market.Market.NO
+import com.hedvig.android.market.Market.SE
+import com.hedvig.android.market.label
 import hedvig.resources.R
 
 @Composable

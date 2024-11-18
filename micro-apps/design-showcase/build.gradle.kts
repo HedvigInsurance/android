@@ -61,3 +61,12 @@ dependencies {
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 }
+
+androidComponents {
+  beforeVariants {
+    // Disable the release build type for sample applications because we never need it.
+    if (it.buildType == "release") {
+      it.enable = false
+    }
+  }
+}

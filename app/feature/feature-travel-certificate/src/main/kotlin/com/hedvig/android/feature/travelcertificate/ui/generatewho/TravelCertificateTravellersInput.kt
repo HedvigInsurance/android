@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -136,7 +137,7 @@ private fun TravelCertificateTravellersInput(
                 .padding(horizontal = 16.dp),
             ) {
               Button(
-                onClick = {
+                onClick = dropUnlessResumed {
                   onNavigateToCoInsuredAddInfo()
                 },
                 enabled = true,

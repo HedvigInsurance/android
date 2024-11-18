@@ -58,8 +58,8 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productVariant.android.getStringRes
 import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.android.getStringRes
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs

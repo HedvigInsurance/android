@@ -13,7 +13,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 private typealias EnterTransitionFactory =
   @JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?
@@ -23,6 +26,11 @@ private typealias ExitTransitionFactory =
 
 private typealias SizeTransformFactory =
   AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?
+
+@PublishedApi
+internal val NoOpDestinationNavTypeAware = object : DestinationNavTypeAware {
+  override val typeList: List<KType> = emptyList()
+}
 
 inline fun <reified T : Destination> NavGraphBuilder.navdestination(
   destinationNavTypeAware: DestinationNavTypeAware = NoOpDestinationNavTypeAware,

@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.fromToken
@@ -53,6 +54,7 @@ fun HedvigDatePicker(
           HedvigTextButton(
             text = stringResource(R.string.general_save_button),
             onClick = onConfirmRequest,
+            buttonSize = Medium,
           )
         },
       )

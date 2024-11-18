@@ -62,6 +62,8 @@ import com.hedvig.audio.player.data.ProgressPercentage
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
+import java.text.DecimalFormat
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
@@ -89,6 +91,7 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
     )
+
     is AudioRecordingUiState.PrerecordedWithAudioContent -> PrerecordedPlayback(
       uiState = uiState,
       submitAudioUrl = {
@@ -97,6 +100,7 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
     )
+
     else -> {
       val isRecording = uiState is AudioRecordingUiState.Recording
       val isRecordingTransition = updateTransition(isRecording)
@@ -152,6 +156,7 @@ internal fun AudioRecorder(
             value = uiState.startedAt
           }
         }
+        val twoDigitsFormat = remember { DecimalFormat("00") }
         isRecordingTransition.AnimatedContent(
           transitionSpec = {
             val animationSpec = tween<IntOffset>(MotionTokens.DurationLong1.toInt())
@@ -173,7 +178,8 @@ internal fun AudioRecorder(
         ) { isRecording ->
           if (isRecording) {
             val diff = clock.now() - (startedRecordingAt ?: clock.now())
-            val label = String.format("%02d:%02d", diff.inWholeMinutes, diff.inWholeSeconds % 60)
+            val label =
+              "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
             Text(
               text = label,
               style = MaterialTheme.typography.bodySmall,
@@ -303,7 +309,7 @@ private fun PreviewRecording() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorder(
-        uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now(), ""),
+        uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now().minus(1019.seconds), ""),
         startRecording = { },
         clock = Clock.System,
         stopRecording = { },

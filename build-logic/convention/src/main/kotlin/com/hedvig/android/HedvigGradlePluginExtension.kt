@@ -159,7 +159,7 @@ internal abstract class ComposeHandler {
       if (isAndroidLibrary || isAndroidApp) {
         add("androidTestImplementation", platform(bom))
         add("implementation", libs.androidx.compose.uiToolingPreview)
-        add("debugImplementation", libs.androidx.compose.uiTooling)
+        add("implementation", libs.androidx.compose.uiTooling)
       }
     }
   }

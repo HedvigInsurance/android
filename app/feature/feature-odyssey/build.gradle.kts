@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.dataClaimTriaging)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)

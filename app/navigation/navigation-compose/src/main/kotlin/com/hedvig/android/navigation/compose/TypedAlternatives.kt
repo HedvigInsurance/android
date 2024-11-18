@@ -5,6 +5,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.PopUpToBuilder
+import com.hedvig.android.navigation.common.Destination
 import kotlin.reflect.KClass
 
 inline fun <reified T : Destination> NavController.typedPopBackStack(

@@ -263,7 +263,7 @@ private fun CardNotConnectedWarningCard(
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val text = if (connectedPaymentInfo?.dueDateToConnect != null) {
     stringResource(
-      R.string.info_card_missing_payment_body_with_date,
+      R.string.info_card_missing_payment_missing_payments_body,
       dateTimeFormatter.format(connectedPaymentInfo.dueDateToConnect.toJavaLocalDate()),
     )
   } else {

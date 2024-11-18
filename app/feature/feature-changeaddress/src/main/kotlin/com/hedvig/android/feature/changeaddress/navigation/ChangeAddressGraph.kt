@@ -14,8 +14,6 @@ import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.Se
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.AppDestination
-import com.hedvig.android.navigation.core.AppDestination.ChangeAddress
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -25,7 +23,7 @@ fun NavGraphBuilder.changeAddressGraph(
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navgraph<AppDestination.ChangeAddress>(
+  navgraph<ChangeAddressGraphDestination>(
     startDestination = ChangeAddressDestination.SelectHousingType::class,
   ) {
     navdestination<ChangeAddressDestination.SelectHousingType> { _ ->
@@ -80,7 +78,7 @@ fun NavGraphBuilder.changeAddressGraph(
         navigateUp = navigator::navigateUp,
         onChangeAddressResult = { movingDate ->
           navigator.navigateUnsafe(ChangeAddressDestination.AddressResult(movingDate)) {
-            typedPopUpTo<ChangeAddress> {
+            typedPopUpTo<ChangeAddressGraphDestination> {
               inclusive = true
             }
           }

@@ -11,7 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,17 +30,17 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 
 @Composable
 fun TabsShowcase() {
-  var selectedIndex00 by remember { mutableStateOf(0) }
-  var selectedIndex01 by remember { mutableStateOf(0) }
-  var selectedIndex02 by remember { mutableStateOf(0) }
-  var selectedIndex03 by remember { mutableStateOf(0) }
-  var selectedIndex04 by remember { mutableStateOf(0) }
-  var selectedIndex by remember { mutableStateOf(0) }
-  var selectedIndex2 by remember { mutableStateOf(0) }
-  var selectedIndex3 by remember { mutableStateOf(0) }
-  var selectedIndex4 by remember { mutableStateOf(0) }
-  var selectedIndex5 by remember { mutableStateOf(0) }
-  var selectedIndex6 by remember { mutableStateOf(0) }
+  var selectedIndex00 by remember { mutableIntStateOf(0) }
+  var selectedIndex01 by remember { mutableIntStateOf(0) }
+  var selectedIndex02 by remember { mutableIntStateOf(0) }
+  var selectedIndex03 by remember { mutableIntStateOf(0) }
+  var selectedIndex04 by remember { mutableIntStateOf(0) }
+  var selectedIndex by remember { mutableIntStateOf(0) }
+  var selectedIndex2 by remember { mutableIntStateOf(0) }
+  var selectedIndex3 by remember { mutableIntStateOf(0) }
+  var selectedIndex4 by remember { mutableIntStateOf(0) }
+  var selectedIndex5 by remember { mutableIntStateOf(0) }
+  var selectedIndex6 by remember { mutableIntStateOf(0) }
   Surface(
     modifier = Modifier
       .fillMaxSize(),

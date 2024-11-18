@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.insurances.navigation
 
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import kotlin.reflect.KClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

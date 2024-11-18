@@ -54,7 +54,7 @@ internal data class MovingFlowState(
   )
 
   @Serializable
-  data class NumberCoInsuredState private constructor(
+  data class NumberCoInsuredState(
     @Serializable(with = ClosedRangeSerializer::class)
     val allowedNumberCoInsuredRange: ClosedRange<Int>,
     val selectedNumberCoInsured: Int,

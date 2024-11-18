@@ -1,11 +1,9 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 dependencies {
-  implementation(libs.androidx.other.appCompat)
-  implementation(libs.koin.core)
+  implementation(libs.androidx.annotation)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
 }

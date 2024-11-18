@@ -1,18 +1,14 @@
 package com.hedvig.android.data.claimflow
 
-import android.content.res.Resources
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
-import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
-import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
-import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -296,13 +292,6 @@ data class LocalContractContractOption(
 sealed interface ItemBrand {
   fun asKnown(): Known? = this as? Known
 
-  fun displayName(resources: Resources): String {
-    return when (this) {
-      is Known -> displayName
-      is Unknown -> resources.getString(displayName)
-    }
-  }
-
   @Serializable
   data class Known(
     val displayName: String,
@@ -311,10 +300,7 @@ sealed interface ItemBrand {
   ) : ItemBrand
 
   @Serializable
-  object Unknown : ItemBrand {
-    @StringRes
-    val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
-  }
+  object Unknown : ItemBrand
 }
 
 @Serializable
@@ -322,14 +308,6 @@ sealed interface ItemModel {
   fun asKnown(): Known? = this as? Known
 
   fun asNew(): New? = this as? New
-
-  fun displayName(resources: Resources): String {
-    return when (this) {
-      is Known -> displayName
-      is Unknown -> resources.getString(displayName)
-      is New -> displayName
-    }
-  }
 
   @Serializable
   data class New(
@@ -345,10 +323,7 @@ sealed interface ItemModel {
   ) : ItemModel
 
   @Serializable
-  object Unknown : ItemModel {
-    @StringRes
-    val displayName: Int = hedvig.resources.R.string.claims_item_model_other
-  }
+  object Unknown : ItemModel
 }
 
 @Serializable

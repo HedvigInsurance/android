@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.2.0)" variant="all" version="8.2.0">
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `enableOnBackInvokedCallback` is only used in API level 33 and higher (current min is 23)"
-        errorLine1="    android:enableOnBackInvokedCallback=&quot;false&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="26"
-            column="5"/>
-    </issue>
+<issues format="6" by="lint 8.8.0-alpha09" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.2)" variant="all" version="8.8.0-alpha09">
 
 </issues>
