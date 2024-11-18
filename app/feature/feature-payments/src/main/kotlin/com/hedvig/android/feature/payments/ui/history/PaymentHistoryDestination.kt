@@ -2,6 +2,7 @@ package com.hedvig.android.feature.payments.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -119,10 +120,12 @@ private fun PaymentHistorySuccessScreen(
   ) {
     when (paymentHistory) {
       PaymentHistory.NoHistoryData -> {
+        Spacer(Modifier.weight(1f))
         HedvigInformationSection(
           title = stringResource(R.string.PAYMENTS_NO_HISTORY_DATA),
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.fillMaxSize(),
         )
+        Spacer(Modifier.weight(1f))
       }
 
       is PaymentHistory.PastCharges -> {
