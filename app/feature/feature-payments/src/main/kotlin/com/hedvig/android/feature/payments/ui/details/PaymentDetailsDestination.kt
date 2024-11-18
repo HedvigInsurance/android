@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.details
+package com.hedvig.android.feature.payments.ui.details
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,9 +62,9 @@ import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentDetails
-import com.hedvig.android.feature.payments.discounts.DiscountRows
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
+import com.hedvig.android.feature.payments.ui.discounts.DiscountRows
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 

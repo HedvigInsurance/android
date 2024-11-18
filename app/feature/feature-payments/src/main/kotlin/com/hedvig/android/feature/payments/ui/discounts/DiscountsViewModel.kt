@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.discounts
+package com.hedvig.android.feature.payments.ui.discounts
 
 import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase

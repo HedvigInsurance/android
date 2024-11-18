@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.discounts
+package com.hedvig.android.feature.payments.ui.discounts
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -279,7 +279,7 @@ private fun ForeverSection(
 @HedvigPreview
 private fun PaymentDetailsScreenPreview(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+    BooleanCollectionPreviewParameterProvider::class,
   ) hasForeverAndDiscounts: Boolean,
 ) {
   HedvigTheme {

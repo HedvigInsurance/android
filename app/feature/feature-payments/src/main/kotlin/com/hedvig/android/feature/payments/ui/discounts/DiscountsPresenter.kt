@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.discounts
+package com.hedvig.android.feature.payments.ui.discounts
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

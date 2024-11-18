@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.history
+package com.hedvig.android.feature.payments.ui.history
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

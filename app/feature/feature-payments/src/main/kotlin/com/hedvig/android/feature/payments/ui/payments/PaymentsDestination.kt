@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.payments
+package com.hedvig.android.feature.payments.ui.payments
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -70,11 +70,11 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.UpcomingPayment
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.UpcomingPaymentInfo
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPayment
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPaymentInfo
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
@@ -510,7 +510,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.NoUpcomingPayment,
         upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
-        connectedPaymentInfo = Connected("Card", "****1234", true),
+        connectedPaymentInfo = Connected(
+          "Card",
+          "****1234",
+          true,
+        ),
       ),
     )
     add(
@@ -522,7 +526,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "rdg",
         ),
         upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
-        connectedPaymentInfo = Connected("Card", "****1234", true),
+        connectedPaymentInfo = Connected(
+          "Card",
+          "****1234",
+          true,
+        ),
       ),
     )
     add(
@@ -534,7 +542,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "iky",
         ),
         upcomingPaymentInfo = UpcomingPaymentInfo.InProgress,
-        connectedPaymentInfo = Connected("Card", "****1234", true),
+        connectedPaymentInfo = Connected(
+          "Card",
+          "****1234",
+          true,
+        ),
       ),
     )
     add(
@@ -549,7 +561,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        connectedPaymentInfo = Connected("Card", "****1234", true),
+        connectedPaymentInfo = Connected(
+          "Card",
+          "****1234",
+          true,
+        ),
       ),
     )
     add(
@@ -573,7 +589,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "qrdfgeth",
         ),
         upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
-        connectedPaymentInfo = NotConnected(null, true),
+        connectedPaymentInfo = NotConnected(
+          null,
+          true,
+        ),
       ),
     )
     add(
@@ -585,7 +604,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "qrdfgeth2",
         ),
         upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
-        connectedPaymentInfo = NotConnected(null, false),
+        connectedPaymentInfo = NotConnected(
+          null,
+          false,
+        ),
       ),
     )
     add(
@@ -600,7 +622,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        connectedPaymentInfo = NotConnected(null, true),
+        connectedPaymentInfo = NotConnected(
+          null,
+          true,
+        ),
       ),
     )
     add(

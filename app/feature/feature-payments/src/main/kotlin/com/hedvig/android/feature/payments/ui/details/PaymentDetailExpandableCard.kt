@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.details
+package com.hedvig.android.feature.payments.ui.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

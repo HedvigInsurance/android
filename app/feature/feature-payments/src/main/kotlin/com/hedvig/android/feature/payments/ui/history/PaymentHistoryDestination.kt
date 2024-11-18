@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.history
+package com.hedvig.android.feature.payments.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -206,8 +208,8 @@ private fun PaymentHistory.PastCharges.YearCharges.Charge.color(): Color {
 @HedvigPreview
 internal fun PaymentHistoryScreenPreview(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider::class,
-  ) cases: com.hedvig.android.compose.ui.preview.TripleCase,
+    TripleBooleanCollectionPreviewParameterProvider::class,
+  ) cases: TripleCase,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -223,8 +225,8 @@ internal fun PaymentHistoryScreenPreview(
       }
       PaymentHistorySuccessScreen(
         paymentHistory = when (cases) {
-          com.hedvig.android.compose.ui.preview.TripleCase.FIRST -> PaymentHistory.NoHistoryData
-          com.hedvig.android.compose.ui.preview.TripleCase.SECOND -> PaymentHistory.PastCharges(
+          TripleCase.FIRST -> PaymentHistory.NoHistoryData
+          TripleCase.SECOND -> PaymentHistory.PastCharges(
             listOf(
               PaymentHistory.PastCharges.YearCharges(
                 year = 2021,
@@ -234,7 +236,7 @@ internal fun PaymentHistoryScreenPreview(
             false,
           )
 
-          com.hedvig.android.compose.ui.preview.TripleCase.THIRD -> PaymentHistory.PastCharges(
+          TripleCase.THIRD -> PaymentHistory.PastCharges(
             List(3) {
               PaymentHistory.PastCharges.YearCharges(
                 year = 2021 + it,
