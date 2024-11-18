@@ -169,6 +169,7 @@ private fun EditCoInsuredScreen(
             }
           }
           HedvigBottomSheet(
+            sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
             bottomButtonText = stringResource(id = R.string.general_cancel_button),
             isVisible = uiState.addBottomSheetState.show,
             onVisibleChange = { isVisible ->

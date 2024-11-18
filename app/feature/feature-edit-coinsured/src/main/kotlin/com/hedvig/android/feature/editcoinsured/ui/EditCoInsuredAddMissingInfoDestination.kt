@@ -140,6 +140,7 @@ private fun EditCoInsuredScreen(
               onResetAddBottomSheetState()
             }
           },
+          sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
           bottomButtonText = stringResource(id = R.string.general_cancel_button),
         ) {
           AddCoInsuredBottomSheetContent(
