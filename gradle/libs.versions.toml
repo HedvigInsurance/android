@@ -143,7 +143,7 @@ coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 compose-richtext = { module = "com.halilibo.compose-richtext:richtext-ui", version.ref = "composeRichtext" }
 compose-richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "composeRichtext" }
-compose-richtextUi = { module = "com.halilibo.compose-richtext:richtext-ui-material3", version.ref = "composeRichtext" }
+compose-richtextMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material3", version.ref = "composeRichtext" }
 coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }

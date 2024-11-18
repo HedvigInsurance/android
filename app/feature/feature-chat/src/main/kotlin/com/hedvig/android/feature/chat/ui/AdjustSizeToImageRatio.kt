@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui.layout
+package com.hedvig.android.feature.chat.ui
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
  * With that size, it does the same check and contains the final size to ([MinimumImageHeight]..[MaximumImageHeight]),
  * again adjusting the width to that new height.
  */
-fun Modifier.adjustSizeToImageRatio(getImageSize: () -> IntSize?): Modifier = this.then(
+internal fun Modifier.adjustSizeToImageRatio(getImageSize: () -> IntSize?): Modifier = this.then(
   when {
     getImageSize() == null -> {
       Modifier.size(100.dp)

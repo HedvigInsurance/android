@@ -16,17 +16,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -35,18 +29,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.Header
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
@@ -80,7 +76,7 @@ private fun InboxScreen(
   reload: () -> Unit,
 ) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column {
@@ -148,18 +144,15 @@ private fun ConversationCard(
   onConversationClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(
+  Surface(
     modifier = modifier,
     onClick = { onConversationClick(conversation.conversationId) },
-    shape = RectangleShape,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = if (conversation.hasNewMessages) {
-        HedvigTheme.colorScheme.surfacePrimary
-      } else {
-        HedvigTheme.colorScheme.backgroundPrimary
-      },
-      contentColor = HedvigTheme.colorScheme.textPrimary,
-    ),
+    color = if (conversation.hasNewMessages) {
+      HedvigTheme.colorScheme.surfacePrimary
+    } else {
+      HedvigTheme.colorScheme.backgroundPrimary
+    },
+    contentColor = HedvigTheme.colorScheme.textPrimary,
   ) {
     Column(
       modifier = Modifier
@@ -168,13 +161,13 @@ private fun ConversationCard(
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         {
-          Text(
+          HedvigText(
             text = when (conversation.header) {
               Header.Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
               is Header.ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
               Header.ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
             },
-            style = MaterialTheme.typography.bodyLarge,
+            style = HedvigTheme.typography.bodySmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.wrapContentSize(Alignment.TopStart),
@@ -196,9 +189,9 @@ private fun ConversationCard(
               )
             } else {
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(getLocale())
-              Text(
+              HedvigText(
                 text = formattedLastMessageSent,
-                style = MaterialTheme.typography.labelLarge,
+                style = HedvigTheme.typography.label,
               )
             }
           }
@@ -211,9 +204,9 @@ private fun ConversationCard(
         Header.ServiceConversation -> null
       }
       if (subtitle != null) {
-        Text(
+        HedvigText(
           text = subtitle,
-          style = MaterialTheme.typography.bodyLarge.copy(color = HedvigTheme.colorScheme.textSecondary),
+          style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
           modifier = Modifier.wrapContentSize(Alignment.TopStart),
         )
       }
@@ -231,13 +224,13 @@ private fun ConversationCard(
           is File -> stringResource(R.string.CHAT_SENT_A_FILE)
           is Unknown -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
         }
-        Text(
+        HedvigText(
           text = "$sender: $message",
           style = if (conversation.hasNewMessages) {
-            MaterialTheme.typography.bodyMedium
+            HedvigTheme.typography.label
           } else {
-            MaterialTheme.typography.bodyMedium.copy(
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            HedvigTheme.typography.label.copy(
+              color = HedvigTheme.colorScheme.textSecondary,
             )
           },
           overflow = TextOverflow.Ellipsis,
@@ -252,9 +245,8 @@ private fun ConversationCard(
 @PreviewFontScale
 @Composable
 private fun InboxSuccessScreenPreview() {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
-      Surface(color = MaterialTheme.colorScheme.background) {
+  HedvigTheme {
+      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
         InboxScreen(
           InboxUiState.Success(
             listOf(
@@ -271,7 +263,6 @@ private fun InboxSuccessScreenPreview() {
           {},
         )
       }
-    }
   }
 }
 
@@ -281,9 +272,9 @@ private fun InboxSuccessScreenPreview() {
 private fun ConversationCardPreview(
   @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
 ) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+  HedvigTheme {
     com.hedvig.android.design.system.hedvig.HedvigTheme {
-      Surface(color = MaterialTheme.colorScheme.background) {
+      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
         ConversationCard(
           conversation = when (cases) {
             TripleCase.FIRST -> mockInboxConversation1
