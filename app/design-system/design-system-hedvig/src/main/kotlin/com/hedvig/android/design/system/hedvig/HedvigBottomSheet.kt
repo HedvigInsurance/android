@@ -40,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
+import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import eu.wewox.modalsheet.ExperimentalSheetApi
 import eu.wewox.modalsheet.ModalSheet
 
@@ -272,7 +273,7 @@ internal val bottomSheetColors: BottomSheetColors
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       BottomSheetColors(
-        scrimColor = fromToken(BottomSheetTokens.ScrimColor),
+        scrimColor = fromToken(ScrimTokens.ContainerColor).copy(ScrimTokens.ContainerOpacity),
         bottomSheetBackgroundColor = fromToken(BottomSheetTokens.BottomSheetBackgroundColor),
         contentColor = fromToken(BottomSheetTokens.ContentColor),
         chipColor = fromToken(BottomSheetTokens.UpperChipColor),
