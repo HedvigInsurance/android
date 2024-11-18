@@ -35,7 +35,7 @@ jobs:
         LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
 
     - name: Run android lint
-      run: ./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources
+      run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
 
     - name: Remove unused resources
       run: ./gradlew :app:removeUnusedResourcesDebug
