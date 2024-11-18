@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.hedvig.android.configureKotlinAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -27,6 +28,12 @@ class ApplicationConventionPlugin : Plugin<Project> {
         // Libraries don't build debug so fall back to release.
         buildTypes.getByName("debug") {
           matchingFallbacks += "release"
+        }
+      }
+      extensions.configure<ApplicationAndroidComponentsExtension> {
+        beforeVariants(selector().withBuildType("release")) { applicationVariantBuilder ->
+          @Suppress("DEPRECATION")
+          applicationVariantBuilder.enableUnitTest = false
         }
       }
     }
