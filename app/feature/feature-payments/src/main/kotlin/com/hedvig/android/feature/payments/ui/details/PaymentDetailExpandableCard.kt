@@ -14,13 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,15 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
-import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.icon.ChevronDown
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
@@ -74,7 +73,7 @@ internal fun PaymentDetailExpandableCard(
         ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(displayName) },
+        startSlot = { HedvigText(displayName) },
         spaceBetween = 8.dp,
         endSlot = {
           Row(
@@ -82,23 +81,23 @@ internal fun PaymentDetailExpandableCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
           ) {
-            Text(
+            HedvigText(
               text = totalAmount,
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
             Icon(
-              imageVector = Icons.Hedvig.ChevronDown,
+              imageVector = HedvigIcons.ChevronDown,
               contentDescription = null,
-              tint = MaterialTheme.colorScheme.onSurfaceVariant,
+              tint = HedvigTheme.colorScheme.fillSecondary,
               modifier = Modifier.size(16.dp),
             )
           }
         },
       )
-      Text(
+      HedvigText(
         text = subtitle,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = HedvigTheme.colorScheme.textSecondary,
       )
       AnimatedVisibility(
         visible = isExpanded,
@@ -111,7 +110,7 @@ internal fun PaymentDetailExpandableCard(
 
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
-                Text(
+                HedvigText(
                   text = it.toString(dateTimeFormatter),
                   color = it.toColor(),
                 )
@@ -122,7 +121,7 @@ internal fun PaymentDetailExpandableCard(
                   horizontalArrangement = Arrangement.End,
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
-                  Text(
+                  HedvigText(
                     text = it.amount.toString(),
                     textAlign = TextAlign.End,
                     color = it.toSubtitleColor(),
@@ -131,9 +130,9 @@ internal fun PaymentDetailExpandableCard(
               },
             )
             if (it.isPreviouslyFailedCharge) {
-              Text(
+              HedvigText(
                 text = stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT),
-                style = MaterialTheme.typography.labelMedium,
+                style = HedvigTheme.typography.label, //todo: check here!
                 color = it.toSubtitleColor(),
               )
             }
@@ -145,7 +144,7 @@ internal fun PaymentDetailExpandableCard(
           Row {
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
-                Text(stringResource(id = R.string.PAYMENTS_SUBTOTAL))
+                HedvigText(stringResource(id = R.string.PAYMENTS_SUBTOTAL))
               },
               endSlot = {
                 Row(
@@ -153,7 +152,7 @@ internal fun PaymentDetailExpandableCard(
                   horizontalArrangement = Arrangement.End,
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
-                  Text(
+                  HedvigText(
                     text = totalAmount,
                     textAlign = TextAlign.End,
                   )
@@ -177,7 +176,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: Date
 @Composable
 private fun MemberCharge.ChargeBreakdown.Period.toColor(): Color {
   return if (isPreviouslyFailedCharge) {
-    MaterialTheme.colorScheme.error
+    HedvigTheme.colorScheme.signalRedText //todo: check here!
   } else {
     LocalContentColor.current
   }
@@ -186,9 +185,9 @@ private fun MemberCharge.ChargeBreakdown.Period.toColor(): Color {
 @Composable
 private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
   return if (isPreviouslyFailedCharge) {
-    MaterialTheme.colorScheme.error
+    HedvigTheme.colorScheme.signalRedText //todo: check here!
   } else {
-    MaterialTheme.colorScheme.onSurfaceVariant
+    HedvigTheme.colorScheme.textSecondary
   }
 }
 
@@ -196,7 +195,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
 @HedvigPreview
 private fun PaymentDetailExpandableCardPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
@@ -238,7 +237,7 @@ private fun PaymentDetailExpandableCardPreview() {
 @HedvigPreview
 private fun PaymentDetailExpandableCardExpandedPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
