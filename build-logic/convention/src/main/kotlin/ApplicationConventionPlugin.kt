@@ -24,6 +24,10 @@ class ApplicationConventionPlugin : Plugin<Project> {
         val extension = extensions.getByType<ApplicationExtension>()
         configureKotlinAndroid(extension)
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
+        // Libraries don't build debug so fall back to release.
+        buildTypes.getByName("debug") {
+          matchingFallbacks += "release"
+        }
       }
     }
   }
