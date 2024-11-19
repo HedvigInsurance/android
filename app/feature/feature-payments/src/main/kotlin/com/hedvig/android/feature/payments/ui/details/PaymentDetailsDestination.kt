@@ -352,8 +352,8 @@ private fun MemberChargeDetailsScreen(
 private fun MemberCharge.topAppBarColors(): TopAppBarColors? {
   return if (this.status == MemberCharge.MemberChargeStatus.FAILED) {
     TopAppBarColors(
-      contentColor = HedvigTheme.colorScheme.textWhite,
-      containerColor = HedvigTheme.colorScheme.signalRedText,
+      contentColor = HedvigTheme.colorScheme.signalRedElement,
+      containerColor = HedvigTheme.colorScheme.backgroundPrimary,
     )
   } else {
     null
