@@ -251,7 +251,7 @@ private fun MemberChargeDetailsScreen(
                     dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
                   } ?: "-",
               ),
-              priority = NotificationDefaults.NotificationPriority.Attention,
+              priority = NotificationDefaults.NotificationPriority.Error,
               withIcon = true,
               style = NotificationDefaults.InfoCardStyle.Button(
                 buttonText = stringResource(R.string.PAYMENTS_VIEW_PAYMENT),

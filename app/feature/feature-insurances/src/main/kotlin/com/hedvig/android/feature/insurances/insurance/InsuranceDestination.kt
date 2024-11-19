@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -155,16 +157,21 @@ private fun InsuranceScreen(
       }
       AnimatedContent(
         targetState = uiState,
+        Modifier.weight(1f),
         transitionSpec = {
           fadeIn() togetherWith fadeOut()
         },
         label = "uiState",
       ) { state ->
         if (state.hasError) {
-          HedvigErrorSection(
-            onButtonClick = reload,
-            modifier = Modifier.fillMaxSize(),
-          )
+          Column {
+            Spacer(Modifier.weight(1f))
+            HedvigErrorSection(
+              onButtonClick = reload,
+              modifier = Modifier.fillMaxSize(),
+            )
+            Spacer(Modifier.weight(1f))
+          }
         } else {
           InsuranceScreenContent(
             uiState = state,
@@ -394,6 +401,16 @@ private fun PreviewInsuranceDestinationAnimation() {
 
 private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<InsuranceUiState>(
   listOf(
+    InsuranceUiState(
+      contracts = listOf(),
+      crossSells = listOf(),
+      hasError = true,
+      isLoading = false,
+      isRetrying = false,
+      quantityOfCancelledInsurances = 0,
+      showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
+    ),
     InsuranceUiState(
       contracts = listOf(),
       crossSells = listOf(),
