@@ -168,7 +168,7 @@ private fun InsuranceScreen(
             Spacer(Modifier.weight(1f))
             HedvigErrorSection(
               onButtonClick = reload,
-              modifier = Modifier.fillMaxSize(),
+              modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
             Spacer(Modifier.weight(1f))
           }
