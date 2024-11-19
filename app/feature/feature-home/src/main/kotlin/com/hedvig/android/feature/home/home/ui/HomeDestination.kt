@@ -591,7 +591,7 @@ private fun CrossSellBottomSheet(
         crossSells = crossSells,
         onCrossSellClick = onCrossSellClick,
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     },
   )
