@@ -2,9 +2,12 @@ package com.hedvig.android.feature.payments.ui.discounts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
@@ -25,7 +29,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
-internal fun AddDiscountBottomSheetContent(isLoading: Boolean, errorMessage: String?, onAddDiscount: (String) -> Unit) {
+internal fun AddDiscountBottomSheetContent(
+  isLoading: Boolean,
+  errorMessage: String?,
+  onAddDiscount: (String) -> Unit,
+  onDismiss: () -> Unit) {
   var discountCodeInput by remember { mutableStateOf("") }
   Column(
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -64,7 +72,15 @@ internal fun AddDiscountBottomSheetContent(isLoading: Boolean, errorMessage: Str
       },
       isLoading = isLoading,
     )
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton (
+      text = stringResource(id = R.string.general_cancel_button),
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+      onClick = onDismiss,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -77,6 +93,7 @@ private fun AddDiscountBottomSheetPreview() {
         isLoading = false,
         errorMessage = null,
         onAddDiscount = {},
+        onDismiss = {}
       )
     }
   }

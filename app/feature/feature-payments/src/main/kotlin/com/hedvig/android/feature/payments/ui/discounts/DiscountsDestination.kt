@@ -89,7 +89,6 @@ private fun DiscountsScreen(
     var showInfoBottomSheet by remember { mutableStateOf(false) }
     HedvigBottomSheet(
       isVisible = showInfoBottomSheet,
-      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           showInfoBottomSheet = false
@@ -104,7 +103,6 @@ private fun DiscountsScreen(
     }
     HedvigBottomSheet(
       isVisible = uiState.showAddDiscountBottomSheet,
-      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           onDismissBottomSheet()
@@ -117,6 +115,7 @@ private fun DiscountsScreen(
         },
         errorMessage = uiState.discountError,
         isLoading = uiState.isAddingDiscount,
+        onDismiss = onDismissBottomSheet
       )
     }
 
@@ -184,7 +183,6 @@ private fun ForeverSection(
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     HedvigBottomSheet(
       isVisible = showForeverInfoBottomSheet,
-      sheetPadding = WindowInsets.safeDrawing.asPaddingValues(),
       onVisibleChange = { visible ->
         if (!visible) {
           showForeverInfoBottomSheet = false
