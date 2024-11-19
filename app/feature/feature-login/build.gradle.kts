@@ -28,7 +28,6 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageAndroid)
