@@ -83,7 +83,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun PaymentsDestination(
   viewModel: PaymentsViewModel,
-  onUpcomingPaymentClicked: (memberChargeId: String?) -> Unit,
+  onPaymentClicked: (memberChargeId: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -91,7 +91,7 @@ internal fun PaymentsDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PaymentsScreen(
     uiState = uiState,
-    onUpcomingPaymentClicked = onUpcomingPaymentClicked,
+    onUpcomingPaymentClicked = onPaymentClicked,
     onChangeBankAccount = onChangeBankAccount,
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
@@ -143,7 +143,7 @@ private fun PaymentsScreen(
           style = HedvigTheme.typography.headlineSmall,
         )
       }
-      Spacer(Modifier.height(8.dp)) // todo: maybe 16?
+      Spacer(Modifier.height(8.dp))
       when (uiState) {
         PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
         else -> {
@@ -232,6 +232,7 @@ private fun PaymentsContent(
               buttonStyle = ButtonStyle.Secondary,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
+                .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
             )
@@ -295,7 +296,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
       is UpcomingPaymentInfo.PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
         HedvigNotificationCard(
-          priority = NotificationDefaults.NotificationPriority.Attention,
+          priority = NotificationDefaults.NotificationPriority.Error,
           message = stringResource(
             R.string.PAYMENTS_MISSED_PAYMENT,
             monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
@@ -326,7 +327,7 @@ private fun PaymentsListItems(
         Icon(
           imageVector = HedvigIcons.Campaign,
           contentDescription = null,
-          tint = HedvigTheme.colorScheme.signalGreenElement, // todo: check here!
+          tint = HedvigTheme.colorScheme.signalGreenElement,
           modifier = Modifier.size(24.dp),
         )
       },

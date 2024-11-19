@@ -13,7 +13,6 @@ import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import octopus.InsuranceContractsQuery
@@ -39,7 +38,6 @@ internal class GetInsuranceContractsUseCaseImpl(
       featureManager.isFeatureEnabled(Feature.TIER),
     ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowFlagEnabled, isTierEnabled ->
       either {
-
         val insuranceQueryData = insuranceQueryResponse.bind()
         val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }

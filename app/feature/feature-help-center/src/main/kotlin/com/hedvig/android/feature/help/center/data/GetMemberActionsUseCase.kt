@@ -42,12 +42,12 @@ internal class GetMemberActionsUseCaseImpl(
             .bind().currentMember.memberActions
         },
       ) {
-          isCoInsuredFeatureOn,
-          isMovingFeatureOn,
-          isConnectPaymentFeatureOn,
-          isTierEnabled,
-          market,
-          memberActions,
+        isCoInsuredFeatureOn,
+        isMovingFeatureOn,
+        isConnectPaymentFeatureOn,
+        isTierEnabled,
+        market,
+        memberActions,
         ->
         MemberAction(
           isCancelInsuranceEnabled = memberActions?.isCancelInsuranceEnabled ?: false,

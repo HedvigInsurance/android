@@ -131,7 +131,7 @@ internal fun PaymentDetailExpandableCard(
             if (it.isPreviouslyFailedCharge) {
               HedvigText(
                 text = stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT),
-                style = HedvigTheme.typography.label, // todo: check here!
+                style = HedvigTheme.typography.label,
                 color = it.toSubtitleColor(),
               )
             }
@@ -175,7 +175,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: Date
 @Composable
 private fun MemberCharge.ChargeBreakdown.Period.toColor(): Color {
   return if (isPreviouslyFailedCharge) {
-    HedvigTheme.colorScheme.signalRedText // todo: check here!
+    HedvigTheme.colorScheme.signalRedElement
   } else {
     LocalContentColor.current
   }
@@ -184,7 +184,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toColor(): Color {
 @Composable
 private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
   return if (isPreviouslyFailedCharge) {
-    HedvigTheme.colorScheme.signalRedText // todo: check here!
+    HedvigTheme.colorScheme.signalRedElement
   } else {
     HedvigTheme.colorScheme.textSecondary
   }

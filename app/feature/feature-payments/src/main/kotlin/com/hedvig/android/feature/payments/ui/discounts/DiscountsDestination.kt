@@ -102,9 +102,17 @@ private fun DiscountsScreen(
         text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
         color = HedvigTheme.colorScheme.textSecondary,
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+          showInfoBottomSheet = false
+        },
+      )
+      Spacer(Modifier.height(8.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-
     }
     HedvigBottomSheet(
       isVisible = uiState.showAddDiscountBottomSheet,
@@ -120,7 +128,7 @@ private fun DiscountsScreen(
         },
         errorMessage = uiState.discountError,
         isLoading = uiState.isAddingDiscount,
-        onDismiss = onDismissBottomSheet
+        onDismiss = onDismissBottomSheet,
       )
     }
 
@@ -199,9 +207,17 @@ private fun ForeverSection(
         text = stringResource(R.string.referrals_info_sheet_body, incentive),
         color = HedvigTheme.colorScheme.textSecondary,
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+          showForeverInfoBottomSheet = false
+        },
+      )
+      Spacer(Modifier.height(8.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-
     }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {

@@ -87,7 +87,6 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
   HedvigBottomSheet(
     isVisible = isBottomSheetVisible,
     onVisibleChange = onVisibleChange,
-    bottomButtonText = "Close",
   ) {
     Column(
       Modifier
@@ -127,7 +126,6 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
   HedvigBottomSheet(
     isVisible = isBottomSheetVisible,
     onVisibleChange = onVisibleChange,
-    bottomButtonText = "Close",
   ) {
     Column(
       Modifier
@@ -158,7 +156,6 @@ private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChan
   HedvigBottomSheet(
     isVisible = isBottomSheetVisible,
     onVisibleChange = onVisibleChange,
-    bottomButtonText = "Close",
   ) {
     Column(
       Modifier

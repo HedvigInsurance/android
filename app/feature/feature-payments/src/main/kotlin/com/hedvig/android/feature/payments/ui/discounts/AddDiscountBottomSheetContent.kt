@@ -33,7 +33,8 @@ internal fun AddDiscountBottomSheetContent(
   isLoading: Boolean,
   errorMessage: String?,
   onAddDiscount: (String) -> Unit,
-  onDismiss: () -> Unit) {
+  onDismiss: () -> Unit,
+) {
   var discountCodeInput by remember { mutableStateOf("") }
   Column(
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -73,7 +74,7 @@ internal fun AddDiscountBottomSheetContent(
       isLoading = isLoading,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigTextButton (
+    HedvigTextButton(
       text = stringResource(id = R.string.general_cancel_button),
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -93,7 +94,7 @@ private fun AddDiscountBottomSheetPreview() {
         isLoading = false,
         errorMessage = null,
         onAddDiscount = {},
-        onDismiss = {}
+        onDismiss = {},
       )
     }
   }

@@ -49,7 +49,7 @@ fun NavGraphBuilder.paymentsGraph(
         onDiscountClicked = {
           with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
         },
-        onUpcomingPaymentClicked = { memberChargeId: String? ->
+        onPaymentClicked = { memberChargeId: String? ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
@@ -65,15 +65,6 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
-        onFailedChargeClick = { memberChargeId: String? ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
-          }
-        },
         navigateUp = navigator::navigateUp,
       )
     }

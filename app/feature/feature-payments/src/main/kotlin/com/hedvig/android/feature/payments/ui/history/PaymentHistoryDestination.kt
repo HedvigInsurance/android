@@ -201,7 +201,7 @@ private sealed interface PaymentHistory {
 @Composable
 private fun PaymentHistory.PastCharges.YearCharges.Charge.color(): Color {
   return if (hasFailedCharge) {
-    HedvigTheme.colorScheme.signalRedText
+    HedvigTheme.colorScheme.signalRedElement
   } else {
     HedvigTheme.colorScheme.textSecondary
   }

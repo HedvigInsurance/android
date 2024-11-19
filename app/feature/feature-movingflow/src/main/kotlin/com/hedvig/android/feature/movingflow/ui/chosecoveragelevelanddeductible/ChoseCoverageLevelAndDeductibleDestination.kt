@@ -192,7 +192,6 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       Spacer(Modifier.height(8.dp))
       CoverageCard(content.tiersInfo, onSelectCoverageOption, onSelectDeductibleOption)
       Spacer(Modifier.height(8.dp))
-      // todo Add comparison API results here
       if (content.tiersInfo.coverageOptions.isNotEmpty()) {
         HedvigTextButton(
           text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),

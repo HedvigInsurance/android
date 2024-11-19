@@ -52,7 +52,8 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
         Row {
           HighlightLabel(
             labelText = discount.code,
-            modifier = Modifier.wrapContentWidth(),
+            modifier = Modifier
+              .wrapContentWidth(),
             color = if (discountIsExpired) {
               HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
             } else {
@@ -124,7 +125,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
               ),
               textAlign = TextAlign.End,
               style = HedvigTheme.typography.bodySmall,
-              color = HedvigTheme.colorScheme.signalRedText,
+              color = HedvigTheme.colorScheme.signalRedElement,
               modifier = Modifier.fillMaxWidth(),
             )
           }
