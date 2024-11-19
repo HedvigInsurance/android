@@ -129,12 +129,12 @@ internal fun EditInsuranceBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_cancel_button),
+      text = stringResource(R.string.general_cancel_button),
       buttonSize = Large,
       onClick = onDismiss,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }

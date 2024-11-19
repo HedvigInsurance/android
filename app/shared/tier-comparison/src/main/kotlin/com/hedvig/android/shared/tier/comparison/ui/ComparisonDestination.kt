@@ -132,7 +132,6 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
   HedvigBottomSheet(
-    sheetPadding = PaddingValues(0.dp),
     isVisible = bottomSheetRow != null,
     onVisibleChange = { isVisible ->
       if (!isVisible) {
@@ -157,7 +156,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }

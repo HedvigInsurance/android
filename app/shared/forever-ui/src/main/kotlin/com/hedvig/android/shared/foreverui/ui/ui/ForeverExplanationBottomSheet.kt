@@ -41,7 +41,7 @@ internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<Ui
       onClick = { sheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }

@@ -169,7 +169,6 @@ private fun EditCoInsuredScreen(
             }
           }
           HedvigBottomSheet(
-            bottomButtonText = stringResource(id = R.string.general_cancel_button),
             isVisible = uiState.addBottomSheetState.show,
             onVisibleChange = { isVisible ->
               if (!isVisible) {
@@ -180,6 +179,7 @@ private fun EditCoInsuredScreen(
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetState,
               onContinue = onSave,
+              onDismiss = onResetAddBottomSheetState,
               onSsnChanged = onSsnChanged,
               onFirstNameChanged = onFirstNameChanged,
               onLastNameChanged = onLastNameChanged,
@@ -191,7 +191,6 @@ private fun EditCoInsuredScreen(
           }
 
           HedvigBottomSheet(
-            bottomButtonText = stringResource(R.string.general_cancel_button),
             isVisible = uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null,
             onVisibleChange = { isVisible ->
               if (!isVisible) {
@@ -201,6 +200,7 @@ private fun EditCoInsuredScreen(
           ) {
             if (uiState.removeBottomSheetState.coInsured != null) {
               RemoveCoInsuredBottomSheetContent(
+                onDismiss = onResetRemoveBottomSheetState,
                 onRemove = { onRemoveCoInsured(it) },
                 isLoading = uiState.removeBottomSheetState.isLoading,
                 coInsured = uiState.removeBottomSheetState.coInsured,
@@ -241,7 +241,7 @@ private fun EditCoInsuredScreen(
             Spacer(Modifier.height(8.dp))
             HedvigTextButton(
               onClick = navigateUp,
-              text = stringResource(id = R.string.general_cancel_button),
+              text = stringResource(R.string.general_cancel_button),
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),

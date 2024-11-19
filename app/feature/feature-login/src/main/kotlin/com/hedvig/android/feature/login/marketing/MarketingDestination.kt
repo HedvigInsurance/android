@@ -103,7 +103,6 @@ private fun MarketingScreen(
   HedvigBottomSheet(
     isVisible = (showPreferencesSheet && uiState is MarketingUiState.Success),
     onVisibleChange = { showPreferencesSheet = it },
-    sheetPadding = PaddingValues(0.dp),
     contentPadding = PaddingValues(0.dp),
   ) {
     if (uiState is MarketingUiState.Success) {
@@ -296,7 +295,7 @@ private fun ColumnScope.PreferencesSheetContent(
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
-  Spacer(Modifier.height(16.dp))
+  Spacer(Modifier.height(8.dp))
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
