@@ -71,11 +71,11 @@ internal class GetHomeDataUseCaseImpl(
         featureManager.isFeatureEnabled(Feature.HELP_CENTER),
       ) { isChatDisabled, isHelpCenterEnabled -> isChatDisabled to isHelpCenterEnabled },
     ) {
-        homeQueryDataResult,
-        unreadMessageCountResult,
-        isEligibleToShowTheChatIconResult,
-        memberReminders,
-        (isChatDisabled, isHelpCenterEnabled),
+      homeQueryDataResult,
+      unreadMessageCountResult,
+      isEligibleToShowTheChatIconResult,
+      memberReminders,
+      (isChatDisabled, isHelpCenterEnabled),
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()

@@ -246,23 +246,23 @@ private fun ConversationCard(
 @Composable
 private fun InboxSuccessScreenPreview() {
   HedvigTheme {
-      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-        InboxScreen(
-          InboxUiState.Success(
-            listOf(
-              mockInboxConversation1,
-              mockInboxConversation2,
-              mockInboxConversation3,
-              mockInboxConversation2.copy(conversationId = "100"),
-              mockInboxConversation3.copy(conversationId = "101"),
-              mockInboxConversationLegacy,
-            ),
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      InboxScreen(
+        InboxUiState.Success(
+          listOf(
+            mockInboxConversation1,
+            mockInboxConversation2,
+            mockInboxConversation3,
+            mockInboxConversation2.copy(conversationId = "100"),
+            mockInboxConversation3.copy(conversationId = "101"),
+            mockInboxConversationLegacy,
           ),
-          {},
-          {},
-          {},
-        )
-      }
+        ),
+        {},
+        {},
+        {},
+      )
+    }
   }
 }
 

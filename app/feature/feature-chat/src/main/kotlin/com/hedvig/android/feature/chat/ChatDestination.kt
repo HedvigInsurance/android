@@ -120,9 +120,9 @@ private fun ChatScreen(
       )
       Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
+          .fillMaxWidth()
+          .weight(1f)
+          .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -166,14 +166,14 @@ private fun ChatTopAppBar(
   ) {
     Box(
       Modifier
-          .then(
-              if (uiState is Loaded && uiState.claimId != null) {
-                  Modifier.clickable(onClick = dropUnlessResumed { onNavigateToClaimDetails(uiState.claimId) })
-              } else {
-                  Modifier
-              },
-          )
-          .wrapContentHeight(Alignment.CenterVertically),
+        .then(
+          if (uiState is Loaded && uiState.claimId != null) {
+            Modifier.clickable(onClick = dropUnlessResumed { onNavigateToClaimDetails(uiState.claimId) })
+          } else {
+            Modifier
+          },
+        )
+        .wrapContentHeight(Alignment.CenterVertically),
     ) {
       when (uiState) {
         is Loaded -> {

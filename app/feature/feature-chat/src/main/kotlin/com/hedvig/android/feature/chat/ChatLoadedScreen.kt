@@ -434,7 +434,7 @@ private fun ChatBubble(
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
             CbmChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
             CbmChatMessage.ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
