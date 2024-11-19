@@ -70,6 +70,7 @@ android {
       applicationIdSuffix = ".test.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      matchingFallbacks += "release"
       setProguardFiles(
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
