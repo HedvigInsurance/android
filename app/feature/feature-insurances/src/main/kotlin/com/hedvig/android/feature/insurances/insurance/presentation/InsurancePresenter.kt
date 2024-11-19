@@ -149,8 +149,8 @@ private suspend fun loadInsuranceData(
       { getInsuranceContractsUseCase.invoke(forceNetworkFetch).first().bind() },
       { getCrossSellsUseCase.invoke().bind() },
     ) {
-        contracts: List<InsuranceContract>,
-        crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
+      contracts: List<InsuranceContract>,
+      crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)

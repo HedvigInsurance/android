@@ -215,9 +215,9 @@ private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () 
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-          .heightIn(72.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 10.dp),
+        .heightIn(72.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
       Text(
         text = text,

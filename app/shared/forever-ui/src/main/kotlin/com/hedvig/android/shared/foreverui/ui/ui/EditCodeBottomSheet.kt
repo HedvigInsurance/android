@@ -83,8 +83,8 @@ internal fun EditCodeBottomSheet(
         )
       },
       modifier = Modifier
-          .focusRequester(focusRequester)
-          .fillMaxWidth(),
+        .focusRequester(focusRequester)
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(

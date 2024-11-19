@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,17 +26,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -107,7 +104,7 @@ private fun ChatScreen(
   onRetryLoadingChat: () -> Unit,
 ) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column {
@@ -180,34 +177,31 @@ private fun ChatTopAppBar(
     ) {
       when (uiState) {
         is Loaded -> {
-          val textStyle = HedvigTheme.typography.headlineSmall
-          CompositionLocalProvider(LocalTextStyle provides textStyle) {
-            when (val topAppBarText = uiState.topAppBarText) {
-              Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
-              NewConversation -> {
-                Column {
-                  HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
-                  HedvigText(
-                    stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
-                    color = HedvigTheme.colorScheme.textSecondary,
-                  )
-                }
+          when (val topAppBarText = uiState.topAppBarText) {
+            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+            NewConversation -> {
+              Column {
+                HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                HedvigText(
+                  stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                  color = HedvigTheme.colorScheme.textSecondary,
+                )
               }
+            }
 
-              is ClaimConversation -> {
-                Column {
-                  HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
-                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
-                }
+            is ClaimConversation -> {
+              Column {
+                HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
+                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
               }
+            }
 
-              is ServiceConversation -> {
-                Column {
-                  HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
-                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
-                }
+            is ServiceConversation -> {
+              Column {
+                HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
+                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
               }
             }
           }
@@ -240,27 +234,23 @@ private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
 private fun PreviewChatScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
 ) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
-      androidx.compose.material3.Surface(color = MaterialTheme.colorScheme.background) {
-        com.hedvig.android.design.system.hedvig.Surface(
-          color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
-        ) {
-          ChatScreen(
-            uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
-            imageLoader = rememberPreviewImageLoader(),
-            appPackageId = "",
-            openUrl = {},
-            onNavigateToClaimDetails = {},
-            onNavigateUp = {},
-            onSendMessage = {},
-            onSendPhoto = {},
-            onSendMedia = {},
-            onRetrySendChatMessage = {},
-            onRetryLoadingChat = {},
-          )
-        }
-      }
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.Surface(
+      color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      ChatScreen(
+        uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
+        imageLoader = rememberPreviewImageLoader(),
+        appPackageId = "",
+        openUrl = {},
+        onNavigateToClaimDetails = {},
+        onNavigateUp = {},
+        onSendMessage = {},
+        onSendPhoto = {},
+        onSendMedia = {},
+        onRetrySendChatMessage = {},
+        onRetryLoadingChat = {},
+      )
     }
   }
 }

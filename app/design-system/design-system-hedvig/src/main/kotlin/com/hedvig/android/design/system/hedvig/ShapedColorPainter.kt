@@ -73,11 +73,8 @@ internal class ShapedColorPainter(
 }
 
 @Composable
-internal fun rememberShapedColorPainter(
-  color: Color,
-  squircle: Shape = HedvigTheme.shapes.cornerMedium,
-): ShapedColorPainter {
-  return remember(color, squircle) {
-    ShapedColorPainter(squircle, color)
+fun rememberShapedColorPainter(color: Color, shape: Shape = HedvigTheme.shapes.cornerMedium): Painter {
+  return remember(color, shape) {
+    ShapedColorPainter(shape, color)
   }
 }
