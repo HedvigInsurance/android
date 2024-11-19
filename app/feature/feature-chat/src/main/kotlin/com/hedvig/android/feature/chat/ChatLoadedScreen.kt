@@ -89,6 +89,10 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Refresh
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -115,10 +119,6 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
@@ -399,7 +399,7 @@ private fun ChatBubble(
           Box(
             Modifier
               .clip(shape = HedvigTheme.shapes.cornerLarge)
-              .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
+              .hedvigPlaceholder(true, highlight = PlaceholderHighlight.shimmer()),
           ) {
             HedvigText(
               text = "HHHHHHHHHH",
@@ -648,7 +648,7 @@ private fun ChatAsyncImage(
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
         if (loadedImageIntrinsicSize.value == null) {
-          Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+          Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.fade())
         } else {
           Modifier
         },
@@ -711,7 +711,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.then(
           if (chatMessage == null) {
-            Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.shimmer())
+            Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer())
           } else {
             Modifier
           },
