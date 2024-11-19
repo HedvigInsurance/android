@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -100,6 +102,9 @@ private fun DiscountsScreen(
         text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
         color = HedvigTheme.colorScheme.textSecondary,
       )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+
     }
     HedvigBottomSheet(
       isVisible = uiState.showAddDiscountBottomSheet,
@@ -194,6 +199,9 @@ private fun ForeverSection(
         text = stringResource(R.string.referrals_info_sheet_body, incentive),
         color = HedvigTheme.colorScheme.textSecondary,
       )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+
     }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
