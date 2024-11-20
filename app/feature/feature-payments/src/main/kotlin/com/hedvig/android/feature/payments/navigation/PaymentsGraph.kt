@@ -3,7 +3,7 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.discounts.DiscountsDestination
