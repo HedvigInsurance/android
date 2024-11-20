@@ -9,17 +9,56 @@ import androidx.compose.ui.res.stringResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerDefaults
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextNegative
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.internals.HedvigDatePickerColors
-import com.hedvig.android.design.system.internals.HedvigDatePickerInternal
+import com.hedvig.android.design.system.internals.HedvigDatePicker
 import hedvig.resources.R
 import java.util.Locale
 
-data class HedvigDatePickerState(
+@Composable
+fun rememberHedvigDatePickerState(
+  initialSelectedDateMillis: Long,
+  initialDisplayedMonthMillis: Long,
+  yearRange: IntRange,
+  initialDisplayMode: HedvigDisplayMode,
+  selectableDates: HedvigSelectableDates,
+): HedvigDatePickerState {
+  return com.hedvig.android.design.system.internals.rememberHedvigDatePickerState(
+    initialSelectedDateMillis,
+    initialDisplayedMonthMillis,
+    yearRange,
+    initialDisplayMode,
+    selectableDates,
+  )
+}
+
+fun HedvigDatePickerState(
+  locale: Locale,
+  initialSelectedDateMillis: Long?,
+  initialDisplayedMonthMillis: Long?,
+  yearRange: IntRange = HedvigDatePickerDefaults.YearRange,
+  initialDisplayMode: HedvigDisplayMode = HedvigDatePickerDefaults.displayMode,
+  selectableDates: HedvigSelectableDates = HedvigDatePickerDefaults.AllDates,
+): HedvigDatePickerState {
+  return com.hedvig.android.design.system.internals.HedvigDatePickerState(
+    locale,
+    initialSelectedDateMillis,
+    initialDisplayedMonthMillis,
+    yearRange,
+    initialDisplayMode,
+    selectableDates,
+  )
+}
+
+data class HedvigDatePickerImmutableState(
   val selectedDateMillis: Long?,
   val displayedMonthMillis: Long?,
   val yearRange: IntRange,
@@ -30,6 +69,33 @@ data class HedvigDatePickerState(
 
 @Composable
 fun HedvigDatePicker(
+  datePickerState: HedvigDatePickerState,
+  onDismissRequest: () -> Unit,
+  onConfirmRequest: () -> Unit,
+) {
+  HedvigDatePicker(
+    state = datePickerState,
+    onDismissRequest = onDismissRequest,
+    hedvigDatePickerColors = hedvigDatePickerColors,
+    modifier = Modifier.background(
+      hedvigDatePickerColors.containerColor,
+    ),
+    confirmButton = {
+      HedvigTextButton(
+        text = stringResource(R.string.general_done_button),
+        onClick = onConfirmRequest,
+        buttonSize = Medium,
+      )
+    },
+  )
+}
+
+/**
+ * A version of [HedvigDatePicker] which does not offer internal mutability in the [datePickerState] parameter. Instead
+ * it takes in an immutable data class and it must be re-created again every time something changes
+ */
+@Composable
+fun HedvigDatePicker(
   datePickerState: HedvigDatePickerImmutableState,
   onDismissRequest: () -> Unit,
   onConfirmRequest: () -> Unit,
@@ -38,25 +104,25 @@ fun HedvigDatePicker(
 ) {
   if (isVisible) {
     with(datePickerState) {
-      HedvigDatePickerInternal(
-        selectedDateMillis = selectedDateMillis,
-        displayedMonthMillis = displayedMonthMillis,
-        yearRange = yearRange,
-        minDateInMillis = minDateInMillis,
-        maxDateInMillis = maxDateInMillis,
-        onDismissRequest = onDismissRequest,
-        hedvigDatePickerColors = hedvigDatePickerColors,
-        onSelectedDateChanged = onSelectedDateChanged,
-        modifier = Modifier.background(
-          hedvigDatePickerColors.containerColor,
-        ),
-        confirmButton = {
-          HedvigTextButton(
-            text = stringResource(R.string.general_save_button),
-            onClick = onConfirmRequest,
-            buttonSize = Medium,
-          )
-        },
+      HedvigDatePicker(
+          selectedDateMillis = selectedDateMillis,
+          displayedMonthMillis = displayedMonthMillis,
+          yearRange = yearRange,
+          minDateInMillis = minDateInMillis,
+          maxDateInMillis = maxDateInMillis,
+          onDismissRequest = onDismissRequest,
+          hedvigDatePickerColors = hedvigDatePickerColors,
+          onSelectedDateChanged = onSelectedDateChanged,
+          modifier = Modifier.background(
+            hedvigDatePickerColors.containerColor,
+          ),
+          confirmButton = {
+            HedvigTextButton(
+              text = stringResource(R.string.general_save_button),
+              onClick = onConfirmRequest,
+              buttonSize = Medium,
+            )
+          },
       )
     }
   }

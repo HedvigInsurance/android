@@ -14,4 +14,5 @@ dependencies {
   implementation(libs.androidx.compose.uiGraphics)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
+  implementation(projects.designSystemApi)
 }
