@@ -123,6 +123,7 @@ private fun PaymentsScreen(
       .fillMaxSize()
       .pullRefresh(pullRefreshState),
   ) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(
       Modifier
         .fillMaxSize()
@@ -167,6 +168,7 @@ private fun PaymentsScreen(
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
     )
+  }
   }
 }
 
