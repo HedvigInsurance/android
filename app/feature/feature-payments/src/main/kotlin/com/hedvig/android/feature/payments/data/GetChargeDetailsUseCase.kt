@@ -40,11 +40,14 @@ internal class GetChargeDetailsUseCaseImpl(
       result.currentMember.redeemedCampaigns,
       result.currentMember.referralInformation,
       clock,
-    ).takeIf { it?.id == id }
+    )
+    val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
+
     val pastMemberCharge = pastCharges.firstOrNull { it.id == id }
     PaymentDetails(
-      memberCharge = futureMemberCharge ?: pastMemberCharge ?: raise(ErrorMessage()),
+      memberCharge = futureMemberChargeWithThisId ?: pastMemberCharge ?: raise(ErrorMessage()),
       pastCharges = pastCharges,
+      upComingCharge = futureMemberCharge,
       paymentConnection = run {
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
@@ -73,11 +76,12 @@ internal data class PaymentDetails(
   val memberCharge: MemberCharge,
   val pastCharges: List<MemberCharge>?,
   val paymentConnection: PaymentConnection?,
+  val upComingCharge: MemberCharge?,
 ) {
   fun getNextCharge(selectedMemberCharge: MemberCharge): MemberCharge? {
     val index = (pastCharges?.indexOf(selectedMemberCharge) ?: 0) + 1
     return if (pastCharges != null && index > pastCharges.size - 1) {
-      memberCharge
+      null
     } else {
       pastCharges?.get(index)
     }

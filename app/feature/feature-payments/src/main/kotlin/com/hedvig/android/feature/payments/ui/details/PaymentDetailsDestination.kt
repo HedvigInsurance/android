@@ -247,18 +247,22 @@ private fun MemberChargeDetailsScreen(
               withIcon = true,
             )
 
-            MemberCharge.MemberChargeStatus.FAILED -> HedvigNotificationCard(
-              message = stringResource(
-                id = R.string.PAYMENTS_PAYMENT_FAILED,
-                uiState.paymentDetails.getNextCharge(uiState.paymentDetails.memberCharge)
-                  ?.let {
-                    dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
-                  } ?: "-",
-              ),
-              priority = NotificationDefaults.NotificationPriority.Error,
-              withIcon = true,
-              style = NotificationDefaults.InfoCardStyle.Default,
-            )
+            MemberCharge.MemberChargeStatus.FAILED -> {
+              val nextCharge = uiState.paymentDetails.getNextCharge(uiState.paymentDetails.memberCharge)
+              val nextOrFutureCharge = nextCharge ?: uiState.paymentDetails.upComingCharge
+              HedvigNotificationCard(
+                message = stringResource(
+                  id = R.string.PAYMENTS_PAYMENT_FAILED,
+                  nextOrFutureCharge
+                    ?.let {
+                      dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
+                    } ?: "-",
+                ),
+                priority = NotificationDefaults.NotificationPriority.Error,
+                withIcon = true,
+                style = NotificationDefaults.InfoCardStyle.Default,
+              )
+            }
 
             MemberCharge.MemberChargeStatus.UNKNOWN -> {}
           }
@@ -362,6 +366,7 @@ private fun PaymentDetailsScreenPreview() {
             memberCharge = paymentDetailsPreviewData,
             pastCharges = chargeHistoryPreviewData,
             paymentConnection = paymentOverViewPreviewData.paymentConnection,
+            upComingCharge = paymentDetailsPreviewData,
           ),
         ),
         selectedCharge = null,
