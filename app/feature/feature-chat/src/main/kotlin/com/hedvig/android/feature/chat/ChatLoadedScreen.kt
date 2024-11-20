@@ -32,14 +32,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -55,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -81,43 +74,51 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
-import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
-import com.hedvig.android.core.designsystem.material3.DisabledAlpha
-import com.hedvig.android.core.designsystem.material3.infoElement
-import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
-import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.CircleWithCheckmarkFilled
-import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
-import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
-import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.icon.CheckFilled
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
+import com.hedvig.android.design.system.hedvig.icon.Refresh
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.data.BannerText
 import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
-import com.hedvig.android.feature.chat.data.ConversationInfo
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageGif
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageMedia
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
+import com.hedvig.android.feature.chat.ui.adjustSizeToImageRatio
 import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
@@ -187,6 +188,8 @@ private fun ChatLoadedScreen(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
+  val dividerColor = HedvigTheme.colorScheme.borderSecondary
+  val dividerThickness = 1.dp
   SelectionContainer {
     Column {
       ChatLazyColumn(
@@ -217,24 +220,39 @@ private fun ChatLoadedScreen(
             ),
           ),
         ) {
-          Column {
-            HorizontalDivider(Modifier.fillMaxWidth())
-            ChatBanner(
-              text = when (uiState.bannerText) {
-                ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
-                is BannerText.Text -> uiState.bannerText.text
+          ChatBanner(
+            text = when (uiState.bannerText) {
+              ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+              is BannerText.Text -> uiState.bannerText.text
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .drawWithContent {
+                drawContent()
+                drawLine(
+                  color = dividerColor,
+                  strokeWidth = dividerThickness.toPx(),
+                  start = Offset(0f, dividerThickness.toPx() / 2),
+                  end = Offset(size.width, dividerThickness.toPx() / 2),
+                )
               },
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+          )
         }
       }
-      HorizontalDivider(Modifier.fillMaxWidth())
       Box(
         propagateMinConstraints = true,
         modifier = Modifier
           .fillMaxWidth()
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+          .drawWithContent {
+            drawContent()
+            drawLine(
+              color = dividerColor,
+              strokeWidth = dividerThickness.toPx(),
+              start = Offset(0f, dividerThickness.toPx() / 2),
+              end = Offset(size.width, dividerThickness.toPx() / 2),
+            )
+          },
       ) {
         chatInput()
       }
@@ -380,12 +398,11 @@ private fun ChatBubble(
         null -> {
           Box(
             Modifier
-              .clip(shape = MaterialTheme.shapes.squircleMedium)
-              .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
+              .clip(shape = HedvigTheme.shapes.cornerLarge)
+              .hedvigPlaceholder(true, highlight = PlaceholderHighlight.shimmer()),
           ) {
-            Text(
+            HedvigText(
               text = "HHHHHHHHHH",
-              style = LocalTextStyle.current,
               modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .withoutPlacement(),
@@ -395,7 +412,7 @@ private fun ChatBubble(
 
         is CbmChatMessage.ChatMessageText -> {
           Surface(
-            shape = MaterialTheme.shapes.squircleMedium,
+            shape = HedvigTheme.shapes.cornerLarge,
             color = chatMessage.backgroundColor(),
             contentColor = chatMessage.onBackgroundColor(),
           ) {
@@ -431,9 +448,9 @@ private fun ChatBubble(
           when (chatMessage) {
             is CbmChatMessage.FailedToBeSent.ChatMessageText -> {
               Surface(
-                shape = MaterialTheme.shapes.squircleMedium,
-                color = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                shape = HedvigTheme.shapes.cornerLarge,
+                color = HedvigTheme.colorScheme.signalRedFill,
+                contentColor = HedvigTheme.colorScheme.signalRedText,
                 onClick = {
                   onRetrySendChatMessage(chatMessage.id)
                 },
@@ -444,12 +461,12 @@ private fun ChatBubble(
                   modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
                   Icon(
-                    imageVector = Icons.Hedvig.RestartOneArrow,
+                    imageVector = HedvigIcons.Refresh,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
+                    tint = HedvigTheme.colorScheme.signalRedElement,
                     modifier = Modifier.size(20.dp),
                   )
-                  Text(text = chatMessage.text)
+                  HedvigText(text = chatMessage.text)
                 }
               }
             }
@@ -478,7 +495,7 @@ private fun FailedToBeSentUri(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val image = Icons.Hedvig.RestartOneArrow
+  val image = HedvigIcons.Refresh
   val retryIconPainter = rememberVectorPainter(
     defaultWidth = image.defaultWidth,
     defaultHeight = image.defaultHeight,
@@ -495,11 +512,11 @@ private fun FailedToBeSentUri(
     imageLoader = imageLoader,
     isRetryable = true,
     modifier = Modifier
-      .clip(MaterialTheme.shapes.squircleMedium)
+      .clip(HedvigTheme.shapes.cornerLarge)
       .clickable { onRetrySendChatMessage(messageId) }
       .drawWithContent {
         drawContent()
-        drawRect(color = Color.Black, alpha = DisabledAlpha)
+        drawRect(color = Color.Black, alpha = 0.38f)
         withTransform(
           transformBlock = {
             translate(
@@ -522,7 +539,7 @@ private fun AttachedFileMessage(
   containerColor: Color = Color.Transparent,
   borderColor: Color = LocalContentColor.current,
 ) {
-  val shape = MaterialTheme.shapes.squircleMedium
+  val shape = HedvigTheme.shapes.cornerLarge
   Box(
     Modifier
       .drawWithCache {
@@ -533,7 +550,7 @@ private fun AttachedFileMessage(
           drawOutline(outline, borderColor, style = stroke)
         }
       }
-      .clip(MaterialTheme.shapes.squircleMedium)
+      .clip(HedvigTheme.shapes.cornerLarge)
       .background(containerColor)
       .clickable(onClick = onClick),
   ) {
@@ -541,8 +558,8 @@ private fun AttachedFileMessage(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-      Icon(imageVector = Icons.Hedvig.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
-      Text(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
+      Icon(imageVector = HedvigIcons.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
+      HedvigText(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
     }
   }
 }
@@ -556,15 +573,15 @@ private fun ChatAsyncImage(
   cacheKey: String? = null,
 ) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
-  val placeholderPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
+  val placeholderPainter: Painter = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary)
   val errorPainter: Painter = if (isRetryable) {
-    val errorImage = Icons.Hedvig.RestartOneArrow
+    val errorImage = HedvigIcons.Refresh
     val vectorSize = 50.dp
     rememberVectorPainter(
       defaultWidth = vectorSize,
       defaultHeight = vectorSize,
       name = errorImage.name,
-      tintColor = MaterialTheme.colorScheme.error,
+      tintColor = HedvigTheme.colorScheme.signalRedElement,
       tintBlendMode = errorImage.tintBlendMode,
       autoMirror = errorImage.autoMirror,
       content = { viewportWidth: Float, viewportHeight: Float ->
@@ -589,7 +606,7 @@ private fun ChatAsyncImage(
       },
     )
   } else {
-    rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
+    rememberShapedColorPainter(HedvigTheme.colorScheme.signalRedFill)
   }
   AsyncImage(
     model = ImageRequest
@@ -631,12 +648,12 @@ private fun ChatAsyncImage(
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
         if (loadedImageIntrinsicSize.value == null) {
-          Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+          Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.fade())
         } else {
           Modifier
         },
       )
-      .clip(MaterialTheme.shapes.squircleMedium),
+      .clip(HedvigTheme.shapes.cornerLarge),
   )
 }
 
@@ -660,9 +677,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
       if (failedToBeSent) {
         Spacer(Modifier.width(4.dp))
         Icon(
-          imageVector = Icons.Hedvig.InfoFilled,
+          imageVector = HedvigIcons.InfoFilled,
           contentDescription = null,
-          tint = MaterialTheme.colorScheme.error,
+          tint = HedvigTheme.colorScheme.signalRedElement,
           modifier = Modifier.size(16.dp),
         )
       }
@@ -674,7 +691,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
         .padding(horizontal = 2.dp),
     ) {
-      Text(
+      HedvigText(
         text = buildString {
           if (chatMessage == null) {
             append("HHHH.HH.HH")
@@ -690,11 +707,11 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
             }
           }
         },
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.then(
           if (chatMessage == null) {
-            Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.shimmer())
+            Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer())
           } else {
             Modifier
           },
@@ -703,10 +720,10 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
       if (uiChatMessage?.isLastDeliveredMessage == true) {
         Spacer(Modifier.width(4.dp))
         Icon(
-          Icons.Hedvig.CircleWithCheckmarkFilled,
+          HedvigIcons.CheckFilled,
           null,
           Modifier.size(16.dp),
-          tint = MaterialTheme.colorScheme.infoElement,
+          tint = HedvigTheme.colorScheme.signalBlueElement,
         )
       }
     }
@@ -716,45 +733,39 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 @HedvigPreview
 @Composable
 private fun PreviewChatLoadedScreen() {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
-      androidx.compose.material3.Surface(color = MaterialTheme.colorScheme.background) {
-        com.hedvig.android.design.system.hedvig.Surface(
-          color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
-        ) {
-          val fakeChatMessages: List<CbmUiChatMessage> = listOf(
-            CbmChatMessage.ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-            CbmChatMessage.ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
-            CbmChatMessage.ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-            CbmChatMessage.FailedToBeSent.ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
-            CbmChatMessage.FailedToBeSent.ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
-            CbmChatMessage.FailedToBeSent.ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-            CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
-          )
-            .reversed()
-            .mapIndexed { index, item ->
-              CbmUiChatMessage(item, index == 0)
-            }
-          ChatLoadedScreen(
-            uiState = Loaded(
-              backendConversationInfo = ConversationInfo.Info(
-                "1",
-                ClaimInfo("id", "claimType"),
-                Instant.parse("2024-05-01T00:00:00Z"),
-                false,
-              ),
-              messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
-              latestMessage = null,
-              bannerText = ClosedConversation,
-            ),
-            lazyListState = rememberLazyListState(),
-            imageLoader = rememberPreviewImageLoader(),
-            openUrl = {},
-            onRetrySendChatMessage = {},
-            chatInput = {},
-          )
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
+        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
+        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
+        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
+        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
+      )
+        .reversed()
+        .mapIndexed { index, item ->
+          CbmUiChatMessage(item, index == 0)
         }
-      }
+      ChatLoadedScreen(
+        uiState = Loaded(
+          backendConversationInfo = Info(
+            "1",
+            ClaimInfo("id", "claimType"),
+            Instant.parse("2024-05-01T00:00:00Z"),
+            false,
+          ),
+          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
+          latestMessage = null,
+          bannerText = ClosedConversation,
+        ),
+        lazyListState = rememberLazyListState(),
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+        onRetrySendChatMessage = {},
+        chatInput = {},
+      )
     }
   }
 }

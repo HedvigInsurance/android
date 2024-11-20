@@ -1,12 +1,10 @@
 package com.hedvig.android.feature.chat.ui
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import java.time.temporal.TemporalAdjusters
@@ -23,14 +21,14 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun CbmChatMessage.backgroundColor(): Color = when (sender) {
-  Sender.HEDVIG -> MaterialTheme.colorScheme.surface
-  Sender.MEMBER -> MaterialTheme.colorScheme.infoContainer
+  Sender.HEDVIG -> HedvigTheme.colorScheme.surfacePrimary
+  Sender.MEMBER -> HedvigTheme.colorScheme.signalBlueFill
 }
 
 @Composable
 internal fun CbmChatMessage.onBackgroundColor(): Color = when (sender) {
-  Sender.HEDVIG -> MaterialTheme.colorScheme.onSurface
-  Sender.MEMBER -> MaterialTheme.colorScheme.onInfoContainer
+  Sender.HEDVIG -> HedvigTheme.colorScheme.textPrimary
+  Sender.MEMBER -> HedvigTheme.colorScheme.textBlack
 }
 
 // Align by the sender if present, otherwise alternate between the two

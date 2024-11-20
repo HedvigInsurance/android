@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -17,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -31,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
 import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.R
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -55,17 +59,26 @@ fun ShowcaseBottomSheet() {
           Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(40.dp))
-        HedvigButton(enabled = true, onClick = {
-          isBottomSheetWithListVisible.value = true
-        }) { HedvigText("Open sheet with List") }
+        HedvigButton(
+          enabled = true,
+          onClick = {
+            isBottomSheetWithListVisible.value = true
+          },
+        ) { HedvigText("Open sheet with List") }
         Spacer(Modifier.height(40.dp))
-        HedvigButton(enabled = true, onClick = {
-          isBottomSheetWithLongListVisible.value = true
-        }) { HedvigText("Open sheet with long list") }
+        HedvigButton(
+          enabled = true,
+          onClick = {
+            isBottomSheetWithLongListVisible.value = true
+          },
+        ) { HedvigText("Open sheet with long list") }
         Spacer(Modifier.height(40.dp))
-        HedvigButton(enabled = true, onClick = {
-          isBottomSheetWithEditTextVisible.value = true
-        }) { HedvigText("Open sheet with edit text") }
+        HedvigButton(
+          enabled = true,
+          onClick = {
+            isBottomSheetWithEditTextVisible.value = true
+          },
+        ) { HedvigText("Open sheet with edit text") }
         Spacer(Modifier.height(40.dp))
       }
     }
@@ -89,8 +102,7 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
     onVisibleChange = onVisibleChange,
   ) {
     Column(
-      Modifier
-        .fillMaxWidth(),
+      Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Spacer(Modifier.height(40.dp))
@@ -107,6 +119,15 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
         },
       ) { HedvigText("Save") }
       Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        onClick = { onVisibleChange(false) },
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        buttonStyle = Ghost,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }
@@ -128,8 +149,7 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
     onVisibleChange = onVisibleChange,
   ) {
     Column(
-      Modifier
-        .fillMaxWidth(),
+      Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Spacer(Modifier.height(40.dp))
@@ -145,7 +165,15 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
           onVisibleChange(false)
         },
       ) { HedvigText("Save") }
+      HedvigButton(
+        onClick = { onVisibleChange(false) },
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        buttonStyle = Ghost,
+        modifier = Modifier.fillMaxWidth(),
+      )
       Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }
@@ -158,8 +186,7 @@ private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChan
     onVisibleChange = onVisibleChange,
   ) {
     Column(
-      Modifier
-        .fillMaxWidth(),
+      Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Spacer(Modifier.height(40.dp))
@@ -180,6 +207,15 @@ private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChan
         },
       ) { HedvigText("Save") }
       Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        onClick = { onVisibleChange(false) },
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        buttonStyle = Ghost,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }

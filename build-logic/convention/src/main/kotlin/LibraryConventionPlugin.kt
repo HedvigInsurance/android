@@ -1,4 +1,3 @@
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.hedvig.android.configureKotlinAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -28,13 +27,6 @@ class LibraryConventionPlugin : Plugin<Project> {
         buildFeatures {
           resValues = false
           shaders = false
-        }
-      }
-      extensions.configure<LibraryAndroidComponentsExtension> {
-        beforeVariants { libraryVariantBuilder ->
-          if (libraryVariantBuilder.buildType == "debug") {
-            libraryVariantBuilder.enable = false
-          }
         }
       }
     }
