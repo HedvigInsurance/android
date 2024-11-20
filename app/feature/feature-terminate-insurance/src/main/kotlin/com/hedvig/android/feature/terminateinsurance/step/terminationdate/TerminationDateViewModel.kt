@@ -3,7 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
@@ -53,7 +53,7 @@ private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDat
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val yearRange = minDate.year..maxDate.year
 
-  val datePickerState = HedvigDatePickerState(
+  val datePickerState = HedvigDatePickerImmutableState(
     locale = locale,
     selectedDateMillis = null,
     displayedMonthMillis = null,
@@ -64,7 +64,7 @@ private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDat
 }
 
 internal data class TerminateInsuranceUiState(
-  val datePickerState: HedvigDatePickerState,
+  val datePickerState: HedvigDatePickerImmutableState,
   val isLoading: Boolean,
   val exposureName: String,
   val displayName: String,

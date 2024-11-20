@@ -30,7 +30,7 @@ data class HedvigDatePickerState(
 
 @Composable
 fun HedvigDatePicker(
-  datePickerState: HedvigDatePickerState,
+  datePickerState: HedvigDatePickerImmutableState,
   onDismissRequest: () -> Unit,
   onConfirmRequest: () -> Unit,
   onSelectedDateChanged: (Long?) -> Unit,

@@ -52,7 +52,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
@@ -300,7 +300,7 @@ private fun DatePickerField(
   val selectedDateMillis = input.value?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
   HedvigDatePicker(
     isVisible = showDatePicker,
-    datePickerState = HedvigDatePickerState(
+    datePickerState = HedvigDatePickerImmutableState(
       selectedDateMillis = selectedDateMillis,
       displayedMonthMillis = selectedDateMillis,
       yearRange = IntRange(
