@@ -20,8 +20,8 @@ import hedvig.resources.R
 import java.util.Locale
 
 data class HedvigDatePickerState(
-  var selectedDateMillis: Long?,
-  var displayedMonthMillis: Long?,
+  val selectedDateMillis: Long?,
+  val displayedMonthMillis: Long?,
   val yearRange: IntRange,
   val minDateInMillis: Long,
   val maxDateInMillis: Long,
