@@ -76,7 +76,7 @@ private fun PaymentHistoryScreen(
       val (paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (String) -> Unit) =
         remember(uiState.paymentHistory) {
           if (uiState.paymentHistory.isEmpty()) {
-            PaymentHistory.NoHistoryData to { s: String -> }
+            PaymentHistory.NoHistoryData to { _: String -> }
           } else {
             PaymentHistory.PastCharges(
               chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }

@@ -2,12 +2,10 @@ package com.hedvig.android.feature.payments.ui.details
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +13,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
@@ -271,27 +271,17 @@ private fun MemberChargeDetailsScreen(
                 HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
               },
               endSlot = {
-                Box(
-                  contentAlignment = Alignment.CenterEnd,
+                Icon(
+                  imageVector = HedvigIcons.InfoFilled,
+                  tint = HedvigTheme.colorScheme.fillSecondary,
+                  contentDescription = "Info icon",
                   modifier = Modifier
-                    .fillMaxWidth(),
-                ) {
-                  Box(
-                    modifier = Modifier
-                      .fillMaxHeight()
-                      .width(32.dp)
-                      .clip(HedvigTheme.shapes.cornerMedium)
-                      .clickable { showBottomSheet = true },
-                    contentAlignment = Alignment.Center,
-                  ) {
-                    Icon(
-                      imageVector = HedvigIcons.InfoFilled,
-                      tint = HedvigTheme.colorScheme.fillSecondary,
-                      contentDescription = "Info icon",
-                      modifier = Modifier.size(16.dp),
-                    )
-                  }
-                }
+                    .wrapContentSize(Alignment.CenterEnd)
+                    .size(16.dp)
+                    .clip(HedvigTheme.shapes.cornerXLarge)
+                    .clickable { showBottomSheet = true }
+                    .minimumInteractiveComponentSize(),
+                )
               },
               modifier = Modifier.padding(vertical = 16.dp),
             )

@@ -146,7 +146,7 @@ private fun DiscountsScreen(
             modifier = Modifier
               .wrapContentSize(Alignment.CenterEnd)
               .size(16.dp)
-              .clip(HedvigTheme.shapes.cornerLarge)
+              .clip(HedvigTheme.shapes.cornerXLarge)
               .clickable { showInfoBottomSheet = true }
               .minimumInteractiveComponentSize(),
           )
@@ -234,7 +234,7 @@ private fun ForeverSection(
           modifier = Modifier
             .wrapContentSize(Alignment.CenterEnd)
             .size(16.dp)
-            .clip(HedvigTheme.shapes.cornerLarge)
+            .clip(HedvigTheme.shapes.cornerXLarge)
             .clickable { showForeverInfoBottomSheet = true }
             .minimumInteractiveComponentSize(),
         )

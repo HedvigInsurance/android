@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -109,7 +108,8 @@ private fun PaymentsScreen(
   onPaymentHistoryClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
-  val systemBarInsetTopDp = with(LocalDensity.current) {
+  val density = LocalDensity.current
+  val systemBarInsetTopDp = with(density) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val isRefreshing =
@@ -149,7 +149,8 @@ private fun PaymentsScreen(
           PaymentsUiState.Error -> HedvigErrorSection(
             onButtonClick = onRetry,
             Modifier.weight(1f),
-            windowInsets = WindowInsets.ime)
+            windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+          )
           else -> {
             PaymentsContent(
               uiState = uiState,
