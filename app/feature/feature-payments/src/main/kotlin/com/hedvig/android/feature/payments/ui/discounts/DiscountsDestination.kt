@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.discounts
+package com.hedvig.android.feature.payments.ui.discounts
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,17 +16,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,28 +34,25 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
-import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
-import com.hedvig.android.core.designsystem.material3.squircleLarge
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
-import com.hedvig.android.core.designsystem.material3.squircleSmall
-import com.hedvig.android.core.designsystem.material3.typeContainer
-import com.hedvig.android.core.designsystem.material3.typeElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
-import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
-import com.hedvig.android.core.ui.infocard.InfoCardTextButton
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import hedvig.resources.R
@@ -101,48 +89,64 @@ private fun DiscountsScreen(
     navigateUp = navigateUp,
   ) {
     var showInfoBottomSheet by remember { mutableStateOf(false) }
-    if (showInfoBottomSheet) {
-      HedvigInfoBottomSheet(
-        onDismissed = { showInfoBottomSheet = false },
-        title = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE),
-        body = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
+    HedvigBottomSheet(
+      isVisible = showInfoBottomSheet,
+      onVisibleChange = { visible ->
+        if (!visible) {
+          showInfoBottomSheet = false
+        }
+      },
+    ) {
+      HedvigText(text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
+      HedvigText(
+        text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
+        color = HedvigTheme.colorScheme.textSecondary,
       )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+          showInfoBottomSheet = false
+        },
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
-    if (uiState.showAddDiscountBottomSheet) {
-      val sheetState = rememberModalBottomSheetState(true)
-      ModalBottomSheet(
-        containerColor = MaterialTheme.colorScheme.background,
-        onDismissRequest = onDismissBottomSheet,
-        shape = MaterialTheme.shapes.squircleLargeTop,
-        sheetState = sheetState,
-        tonalElevation = 0.dp,
-        contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
-      ) {
-        AddDiscountBottomSheet(
-          onAddDiscount = { code ->
-            onSubmitDiscountCode(code)
-          },
-          errorMessage = uiState.discountError,
-          isLoading = uiState.isAddingDiscount,
-        )
-      }
+    HedvigBottomSheet(
+      isVisible = uiState.showAddDiscountBottomSheet,
+      onVisibleChange = { visible ->
+        if (!visible) {
+          onDismissBottomSheet()
+        }
+      },
+    ) {
+      AddDiscountBottomSheetContent(
+        onAddDiscount = { code ->
+          onSubmitDiscountCode(code)
+        },
+        errorMessage = uiState.discountError,
+        isLoading = uiState.isAddingDiscount,
+        onDismiss = onDismissBottomSheet,
+      )
     }
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          Text(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
+          HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
         },
         endSlot = {
           Icon(
-            imageVector = Icons.Hedvig.InfoFilled,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            imageVector = HedvigIcons.InfoFilled,
+            tint = HedvigTheme.colorScheme.fillSecondary,
             contentDescription = "Info icon",
             modifier = Modifier
               .wrapContentSize(Alignment.CenterEnd)
               .size(16.dp)
-              .clip(MaterialTheme.shapes.squircleLarge)
+              .clip(HedvigTheme.shapes.cornerXLarge)
               .clickable { showInfoBottomSheet = true }
               .minimumInteractiveComponentSize(),
           )
@@ -152,9 +156,9 @@ private fun DiscountsScreen(
       val discounts = uiState.discounts
       if (discounts.isEmpty()) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
+        HedvigText(
           text = stringResource(id = R.string.PAYMENTS_NO_CAMPAIGN_CODE_ADDED),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       } else {
         Spacer(modifier = Modifier.height(16.dp))
@@ -162,7 +166,10 @@ private fun DiscountsScreen(
       }
 
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigSecondaryContainedButton(
+      HedvigButton(
+        buttonStyle = ButtonStyle.Secondary,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = true,
         text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
         onClick = { onShowBottomSheet() },
       )
@@ -187,29 +194,47 @@ private fun ForeverSection(
   Column(modifier) {
     val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString()
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
-    if (showForeverInfoBottomSheet) {
-      HedvigInfoBottomSheet(
-        onDismissed = { showForeverInfoBottomSheet = false },
-        title = stringResource(R.string.referrals_info_sheet_headline),
-        body = stringResource(R.string.referrals_info_sheet_body, incentive),
+    HedvigBottomSheet(
+      isVisible = showForeverInfoBottomSheet,
+      onVisibleChange = { visible ->
+        if (!visible) {
+          showForeverInfoBottomSheet = false
+        }
+      },
+    ) {
+      HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
+      HedvigText(
+        text = stringResource(R.string.referrals_info_sheet_body, incentive),
+        color = HedvigTheme.colorScheme.textSecondary,
       )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+          showForeverInfoBottomSheet = false
+        },
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        Text(
+        HedvigText(
           stringResource(R.string.PAYMENTS_REFERRALS_INFO_TITLE),
           modifier = Modifier.wrapContentSize(Alignment.CenterStart),
         )
       },
       endSlot = {
         Icon(
-          imageVector = Icons.Hedvig.InfoFilled,
-          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          imageVector = HedvigIcons.InfoFilled,
+          tint = HedvigTheme.colorScheme.fillSecondary,
           contentDescription = null,
           modifier = Modifier
             .wrapContentSize(Alignment.CenterEnd)
             .size(16.dp)
-            .clip(MaterialTheme.shapes.squircleLarge)
+            .clip(HedvigTheme.shapes.cornerXLarge)
             .clickable { showForeverInfoBottomSheet = true }
             .minimumInteractiveComponentSize(),
         )
@@ -220,11 +245,6 @@ private fun ForeverSection(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigCard(
-          colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
-          ),
-          shape = MaterialTheme.shapes.squircleSmall,
           onClick = {
             context.getSystemService<ClipboardManager>()?.setPrimaryClip(
               ClipData.newPlainText(null, foreverInformation.foreverCode),
@@ -232,9 +252,9 @@ private fun ForeverSection(
           },
           modifier = Modifier.wrapContentSize(Alignment.TopStart),
         ) {
-          Text(
+          HedvigText(
             text = foreverInformation.foreverCode,
-            style = MaterialTheme.typography.bodyMedium,
+            style = HedvigTheme.typography.bodySmall,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
           )
         }
@@ -244,7 +264,7 @@ private fun ForeverSection(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.End,
         ) {
-          Text(
+          HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               "-${foreverInformation.currentMonthlyDiscountFromForever}",
@@ -256,21 +276,13 @@ private fun ForeverSection(
       spaceBetween = 8.dp,
     )
     Spacer(modifier = Modifier.height(16.dp))
-    VectorInfoCard(
-      text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
-      iconColor = MaterialTheme.colorScheme.typeElement,
-      icon = Icons.Hedvig.Campaign,
-      colors = CardDefaults.outlinedCardColors(
-        containerColor = MaterialTheme.colorScheme.typeContainer,
-        contentColor = MaterialTheme.colorScheme.onTypeContainer,
+    HedvigNotificationCard(
+      message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+      priority = NotificationDefaults.NotificationPriority.Campaign,
+      style = NotificationDefaults.InfoCardStyle.Button(
+        buttonText = stringResource(R.string.important_message_read_more),
+        onButtonClick = navigateToForever,
       ),
-      underTextContent = {
-        InfoCardTextButton(
-          modifier = Modifier.fillMaxWidth(),
-          text = stringResource(R.string.important_message_read_more),
-          onClick = navigateToForever,
-        )
-      },
     )
   }
 }
@@ -279,11 +291,11 @@ private fun ForeverSection(
 @HedvigPreview
 private fun PaymentDetailsScreenPreview(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+    BooleanCollectionPreviewParameterProvider::class,
   ) hasForeverAndDiscounts: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
           discounts = if (hasForeverAndDiscounts) {

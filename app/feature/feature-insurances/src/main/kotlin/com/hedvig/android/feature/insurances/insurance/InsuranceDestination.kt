@@ -155,16 +155,21 @@ private fun InsuranceScreen(
       }
       AnimatedContent(
         targetState = uiState,
+        Modifier.weight(1f),
         transitionSpec = {
           fadeIn() togetherWith fadeOut()
         },
         label = "uiState",
       ) { state ->
         if (state.hasError) {
-          HedvigErrorSection(
-            onButtonClick = reload,
-            modifier = Modifier.fillMaxSize(),
-          )
+          Column {
+            Spacer(Modifier.weight(1f))
+            HedvigErrorSection(
+              onButtonClick = reload,
+              modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.weight(1f))
+          }
         } else {
           InsuranceScreenContent(
             uiState = state,
@@ -394,6 +399,16 @@ private fun PreviewInsuranceDestinationAnimation() {
 
 private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<InsuranceUiState>(
   listOf(
+    InsuranceUiState(
+      contracts = listOf(),
+      crossSells = listOf(),
+      hasError = true,
+      isLoading = false,
+      isRetrying = false,
+      quantityOfCancelledInsurances = 0,
+      showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
+    ),
     InsuranceUiState(
       contracts = listOf(),
       crossSells = listOf(),

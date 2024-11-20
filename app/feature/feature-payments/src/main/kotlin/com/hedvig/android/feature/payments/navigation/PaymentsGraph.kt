@@ -3,15 +3,15 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
-import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
-import com.hedvig.android.feature.payments.discounts.DiscountsDestination
-import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
-import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
-import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
-import com.hedvig.android.feature.payments.payments.PaymentsDestination
-import com.hedvig.android.feature.payments.payments.PaymentsViewModel
+import com.hedvig.android.design.system.hedvig.MotionDefaults
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
+import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
+import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
+import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
+import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
+import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -49,7 +49,7 @@ fun NavGraphBuilder.paymentsGraph(
         onDiscountClicked = {
           with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
         },
-        onUpcomingPaymentClicked = { memberChargeId: String? ->
+        onPaymentClicked = { memberChargeId: String? ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
@@ -65,15 +65,6 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
-        onFailedChargeClick = { memberChargeId: String? ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
-          }
-        },
         navigateUp = navigator::navigateUp,
       )
     }
