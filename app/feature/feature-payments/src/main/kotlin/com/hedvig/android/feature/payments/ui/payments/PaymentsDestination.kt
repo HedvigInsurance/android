@@ -277,13 +277,18 @@ private fun CardNotConnectedWarningCard(
   } else {
     stringResource(id = R.string.info_card_missing_payment_body)
   }
+  val priority = if (connectedPaymentInfo?.dueDateToConnect != null) {
+    NotificationDefaults.NotificationPriority.Error
+  } else {
+    NotificationDefaults.NotificationPriority.Attention
+  }
   HedvigNotificationCard(
     message = text,
     style = NotificationDefaults.InfoCardStyle.Button(
       buttonText = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
       onButtonClick = onChangeBankAccount,
     ),
-    priority = NotificationDefaults.NotificationPriority.Attention,
+    priority = priority,
     modifier = modifier,
   )
 }

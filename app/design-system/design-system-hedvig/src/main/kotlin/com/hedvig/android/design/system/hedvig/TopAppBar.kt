@@ -131,6 +131,7 @@ fun TopAppBar(
                     TopAppBarActionType.CLOSE -> HedvigIcons.Close
                   },
                   contentDescription = null,
+                  tint = TopAppBarTokens.ContentColor.value,
                 )
               },
             )
