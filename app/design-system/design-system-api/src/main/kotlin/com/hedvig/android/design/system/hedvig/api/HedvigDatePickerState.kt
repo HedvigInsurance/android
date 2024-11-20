@@ -15,13 +15,13 @@ interface HedvigDatePickerState {
 @Stable
 interface HedvigSelectableDates {
   fun isSelectableDate(utcTimeMillis: Long) = true
+
   fun isSelectableYear(year: Int) = true
 }
 
 @Immutable
 @JvmInline
 value class HedvigDisplayMode internal constructor(internal val value: Int) {
-
   companion object {
     /** Date picker mode */
     val Picker = HedvigDisplayMode(0)
@@ -30,12 +30,11 @@ value class HedvigDisplayMode internal constructor(internal val value: Int) {
     val Input = HedvigDisplayMode(1)
   }
 
-  override fun toString() =
-    when (this) {
-      Picker -> "Picker"
-      Input -> "Input"
-      else -> "Unknown"
-    }
+  override fun toString() = when (this) {
+    Picker -> "Picker"
+    Input -> "Input"
+    else -> "Unknown"
+  }
 }
 
 object HedvigDatePickerDefaults {

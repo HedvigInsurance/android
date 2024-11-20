@@ -37,15 +37,15 @@ internal class TravelCertificateDateInputViewModel(
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   languageService: LanguageService,
 ) : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
-  initialState = TravelCertificateDateInputUiState.Loading,
-  presenter = TravelCertificateDateInputPresenter(
-    contractId,
-    getTravelCertificateSpecificationsUseCase,
-    createTravelCertificateUseCase,
-    languageService,
-  ),
-  sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
-)
+    initialState = TravelCertificateDateInputUiState.Loading,
+    presenter = TravelCertificateDateInputPresenter(
+      contractId,
+      getTravelCertificateSpecificationsUseCase,
+      createTravelCertificateUseCase,
+      languageService,
+    ),
+    sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
+  )
 
 internal class TravelCertificateDateInputPresenter(
   private val contractId: String?,

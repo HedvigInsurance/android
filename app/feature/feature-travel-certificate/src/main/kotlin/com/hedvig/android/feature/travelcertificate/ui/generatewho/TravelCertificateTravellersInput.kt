@@ -129,7 +129,7 @@ private fun TravelCertificateTravellersInput(
                 buttonText = stringResource(R.string.travel_certificate_missing_coinsured_button),
                 onButtonClick = dropUnlessResumed { onNavigateToCoInsuredAddInfo() },
               ),
-              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             )
           }
           Spacer(Modifier.height(16.dp))

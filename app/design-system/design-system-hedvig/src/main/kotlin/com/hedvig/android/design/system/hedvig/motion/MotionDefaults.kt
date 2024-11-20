@@ -30,4 +30,3 @@ object MotionDefaults {
 
   val fadeThroughExit: ExitTransition = FadeThroughDefaults.fadeThroughExitTransition
 }
-

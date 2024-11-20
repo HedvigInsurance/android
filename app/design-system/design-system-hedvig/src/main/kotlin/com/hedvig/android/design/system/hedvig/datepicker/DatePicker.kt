@@ -18,8 +18,8 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextNegative
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
-import com.hedvig.android.design.system.internals.HedvigDatePickerColors
 import com.hedvig.android.design.system.internals.HedvigDatePicker
+import com.hedvig.android.design.system.internals.HedvigDatePickerColors
 import hedvig.resources.R
 import java.util.Locale
 
@@ -105,24 +105,24 @@ fun HedvigDatePicker(
   if (isVisible) {
     with(datePickerState) {
       HedvigDatePicker(
-          selectedDateMillis = selectedDateMillis,
-          displayedMonthMillis = displayedMonthMillis,
-          yearRange = yearRange,
-          minDateInMillis = minDateInMillis,
-          maxDateInMillis = maxDateInMillis,
-          onDismissRequest = onDismissRequest,
-          hedvigDatePickerColors = hedvigDatePickerColors,
-          onSelectedDateChanged = onSelectedDateChanged,
-          modifier = Modifier.background(
-            hedvigDatePickerColors.containerColor,
-          ),
-          confirmButton = {
-            HedvigTextButton(
-              text = stringResource(R.string.general_save_button),
-              onClick = onConfirmRequest,
-              buttonSize = Medium,
-            )
-          },
+        selectedDateMillis = selectedDateMillis,
+        displayedMonthMillis = displayedMonthMillis,
+        yearRange = yearRange,
+        minDateInMillis = minDateInMillis,
+        maxDateInMillis = maxDateInMillis,
+        onDismissRequest = onDismissRequest,
+        hedvigDatePickerColors = hedvigDatePickerColors,
+        onSelectedDateChanged = onSelectedDateChanged,
+        modifier = Modifier.background(
+          hedvigDatePickerColors.containerColor,
+        ),
+        confirmButton = {
+          HedvigTextButton(
+            text = stringResource(R.string.general_save_button),
+            onClick = onConfirmRequest,
+            buttonSize = Medium,
+          )
+        },
       )
     }
   }

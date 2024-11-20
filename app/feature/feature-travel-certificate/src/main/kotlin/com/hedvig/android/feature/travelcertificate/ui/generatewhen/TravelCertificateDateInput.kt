@@ -182,7 +182,7 @@ private fun MovingDateButton(
     HedvigDatePicker(
       datePickerState = datePickerState,
       onDismissRequest = { showDatePicker = false },
-      onConfirmRequest = { showDatePicker = false }
+      onConfirmRequest = { showDatePicker = false },
     )
   }
 
