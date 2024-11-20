@@ -4,7 +4,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
@@ -31,10 +30,6 @@ fun NavGraphBuilder.travelCertificateGraph(
 ) {
   navgraph<TravelCertificateGraphDestination>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
-    enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
-    exitTransition = { MotionDefaults.sharedXAxisExit(density) },
-    popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
-    popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     navdestination<TravelCertificateDestination.TravelCertificateHistory> { navBackStackEntry ->
       val viewModel: CertificateHistoryViewModel = koinViewModel()

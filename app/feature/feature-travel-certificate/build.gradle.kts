@@ -12,7 +12,6 @@ hedvig {
 dependencies {
   api(libs.androidx.navigation.common)
 
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
@@ -27,11 +26,8 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.dataContractPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)

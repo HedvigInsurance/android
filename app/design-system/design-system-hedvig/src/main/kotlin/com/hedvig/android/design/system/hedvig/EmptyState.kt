@@ -89,6 +89,7 @@ fun EmptyState(
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.EmptyStateIcon(iconStyle: EmptyStateIconStyle) {
   val sizeModifier = Modifier.size(EmptyStateTokens.IconSize)
