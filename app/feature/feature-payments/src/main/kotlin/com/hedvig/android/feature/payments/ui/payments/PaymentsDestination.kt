@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -124,51 +125,53 @@ private fun PaymentsScreen(
       .pullRefresh(pullRefreshState),
   ) {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-    Column(
-      Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .height(64.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+      Column(
+        Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
-        HedvigText(
-          text = stringResource(R.string.PROFILE_PAYMENT_TITLE),
-          style = HedvigTheme.typography.headlineSmall,
-        )
-      }
-      Spacer(Modifier.height(8.dp))
-      when (uiState) {
-        PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
-        else -> {
-          PaymentsContent(
-            uiState = uiState,
-            onUpcomingPaymentClicked = { upcomingPayment ->
-              onUpcomingPaymentClicked(upcomingPayment.id)
-            },
-            onChangeBankAccount = onChangeBankAccount,
-            onDiscountClicked = onDiscountClicked,
-            onPaymentHistoryClicked = onPaymentHistoryClicked,
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        Row(
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        ) {
+          HedvigText(
+            text = stringResource(R.string.PROFILE_PAYMENT_TITLE),
+            style = HedvigTheme.typography.headlineSmall,
           )
-          Spacer(Modifier.height(16.dp))
         }
+        when (uiState) {
+          PaymentsUiState.Error -> HedvigErrorSection(
+            onButtonClick = onRetry,
+            Modifier.weight(1f),
+            windowInsets = WindowInsets.ime)
+          else -> {
+            PaymentsContent(
+              uiState = uiState,
+              onUpcomingPaymentClicked = { upcomingPayment ->
+                onUpcomingPaymentClicked(upcomingPayment.id)
+              },
+              onChangeBankAccount = onChangeBankAccount,
+              onDiscountClicked = onDiscountClicked,
+              onPaymentHistoryClicked = onPaymentHistoryClicked,
+            )
+            Spacer(Modifier.height(16.dp))
+          }
+        }
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+      PullRefreshIndicator(
+        refreshing = isRefreshing,
+        state = pullRefreshState,
+        scale = true,
+        modifier = Modifier.align(Alignment.TopCenter),
+      )
     }
-    PullRefreshIndicator(
-      refreshing = isRefreshing,
-      state = pullRefreshState,
-      scale = true,
-      modifier = Modifier.align(Alignment.TopCenter),
-    )
-  }
   }
 }
 
@@ -185,6 +188,7 @@ private fun PaymentsContent(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
+    Spacer(Modifier.height(8.dp))
     val upcomingPayment = (uiState as? PaymentsUiState.Content)?.upcomingPayment
     if (upcomingPayment == UpcomingPayment.NoUpcomingPayment) {
       HedvigInformationSection(stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
