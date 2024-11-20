@@ -36,9 +36,7 @@ internal fun AddDiscountBottomSheetContent(
   onDismiss: () -> Unit,
 ) {
   var discountCodeInput by remember { mutableStateOf("") }
-  Column(
-    modifier = Modifier.padding(horizontal = 16.dp),
-  ) {
+  Column {
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
