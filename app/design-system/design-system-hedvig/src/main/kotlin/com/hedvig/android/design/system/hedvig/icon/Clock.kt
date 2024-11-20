@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
+// Icons.Hedvig.Waiting in the old DS
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Clock: ImageVector
   get() {

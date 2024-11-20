@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.payments
+package com.hedvig.android.feature.payments.ui.payments
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,8 +15,6 @@ import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo
-import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -78,13 +76,13 @@ internal class PaymentsPresenter(
               PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
             },
             connectedPaymentInfo = when (val paymentConnection = paymentOverview.paymentConnection) {
-              is Active -> Connected(
+              is Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                 displayName = paymentConnection.displayName,
                 maskedAccountNumber = paymentConnection.displayValue,
                 allowChangingConnectedBankAccount = allowChangingConnectedBankAccount,
               )
 
-              Pending -> ConnectedPaymentInfo.Pending
+              Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
               NeedsSetup,
               Unknown,
               null,
