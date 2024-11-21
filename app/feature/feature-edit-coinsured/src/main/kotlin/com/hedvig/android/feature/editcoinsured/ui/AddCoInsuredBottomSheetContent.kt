@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import android.app.DatePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,13 +19,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,21 +41,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.infocard.VectorWarningCard
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -137,9 +128,9 @@ internal fun AddCoInsuredBottomSheetContent(
             Row(
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              Text(
+              HedvigText(
                 text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = HedvigTheme.colorScheme.textSecondary,
               )
             }
           },
@@ -240,7 +231,7 @@ private fun FetchFromSsnFields(
 ) {
   var ssnInput by remember { mutableStateOf(ssn ?: "") }
   val mask = stringResource(id = R.string.edit_coinsured_ssn_placeholder)
-  val maskColor = MaterialTheme.colorScheme.onSurfaceVariant
+  val maskColor = HedvigTheme.colorScheme.textSecondary
   Column {
     HedvigTextField(
       value = ssnInput,
@@ -393,7 +384,7 @@ private fun ManualInputFields(
 
 @Composable
 internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
-  val datePickerState = rememberDatePickerState()
+  val datePickerState = rememberHedvigDatePickerState()
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis
   val locale = getLocale()
@@ -450,16 +441,16 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         PaddingValues(horizontal = 16.dp)
       }
       if (birthDate != null) {
-        Text(
+        HedvigText(
           text = stringResource(id = R.string.CONTRACT_BIRTH_DATE),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          fontSize = MaterialTheme.typography.labelMedium.fontSize,
+          color = HedvigTheme.colorScheme.textSecondary,
+          fontSize = HedvigTheme.typography.label.fontSize,
           modifier = Modifier.padding(
             horizontal = 16.dp,
           ),
         )
       }
-      Text(
+      HedvigText(
         text = if (birthDate != null) {
           hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
         } else {
@@ -468,7 +459,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         color = if (birthDate != null) {
           Color.Unspecified
         } else {
-          MaterialTheme.colorScheme.onSurfaceVariant
+          HedvigTheme.colorScheme.textSecondary
         },
         modifier = Modifier.padding(
           paddingForBirthDate,
@@ -487,7 +478,7 @@ private fun AddBottomSheetState.SaveButtonLabel.stringRes() = when (this) {
 @HedvigPreview
 private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "Error",
@@ -528,7 +519,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
 @HedvigPreview
 private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "errorMessage",

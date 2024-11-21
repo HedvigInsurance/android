@@ -1,11 +1,13 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.HorizontalDivider
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
+
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
 

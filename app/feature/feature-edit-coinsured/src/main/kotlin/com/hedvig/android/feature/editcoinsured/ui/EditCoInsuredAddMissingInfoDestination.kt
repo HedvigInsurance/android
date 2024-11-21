@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,18 +21,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -113,14 +115,15 @@ private fun EditCoInsuredScreen(
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
-    TopAppBarWithBack(
+    TopAppBar(
       title = stringResource(id = R.string.COINSURED_EDIT_TITLE),
-      onClick = navigateUp,
+      actionType = TopAppBarActionType.BACK,
+      onActionClick = navigateUp,
     )
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
-        ErrorDialog(
+        ErrorDialog( //todo: dialog???
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
@@ -174,10 +177,11 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.height(8.dp))
 
           if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-            VectorWarningCard(
-              text = stringResource(
+            HedvigNotificationCard(
+              message = stringResource(
                 id = R.string.CONTRACT_ADD_COINSURED_REVIEW_INFO,
               ),
+              priority = NotificationDefaults.NotificationPriority.Attention,
               modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             )
           }
@@ -186,12 +190,12 @@ private fun EditCoInsuredScreen(
           Column {
             if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
               Spacer(Modifier.height(8.dp))
-              HedvigContainedButton(
+              HedvigButton(
                 text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
               )
             }
           }
@@ -199,7 +203,7 @@ private fun EditCoInsuredScreen(
           HedvigTextButton(
             onClick = navigateUp,
             text = stringResource(R.string.general_cancel_button),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
