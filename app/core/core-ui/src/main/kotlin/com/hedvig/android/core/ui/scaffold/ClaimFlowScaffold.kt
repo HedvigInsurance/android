@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -26,13 +24,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import hedvig.resources.R
 
 /**
@@ -61,23 +65,33 @@ fun ClaimFlowScaffold(
   }
 
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = modifier.fillMaxSize(),
   ) {
     Box {
-      Column {
-        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        TopAppBarWithBackAndClose(
-          onNavigateUp = navigateUp,
-          onClose = { showCloseClaimsFlowDialog = true },
+      Column(Modifier.matchParentSize()) {
+        TopAppBar(
           title = topAppBarText ?: "",
-          scrollBehavior = topAppBarScrollBehavior,
+          actionType = BACK,
+          onActionClick = navigateUp,
+          modifier = Modifier.fillMaxWidth(),
+          topAppBarActions = {
+            IconButton(
+              modifier = Modifier.size(24.dp),
+              onClick = { showCloseClaimsFlowDialog = true },
+              content = {
+                Icon(
+                  imageVector = HedvigIcons.Close,
+                  contentDescription = null,
+                )
+              },
+            )
+          },
         )
         Column(
           horizontalAlignment = itemsColumnHorizontalAlignment,
           modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
             .verticalScroll(rememberScrollState())
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
