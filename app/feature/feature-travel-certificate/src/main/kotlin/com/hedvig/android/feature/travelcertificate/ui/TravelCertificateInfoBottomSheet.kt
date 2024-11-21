@@ -1,51 +1,62 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
-internal fun TravelCertificateInfoBottomSheet(onDismiss: () -> Unit, sheetState: SheetState) {
-  ModalBottomSheet(
-    containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
-    },
-    shape = MaterialTheme.shapes.squircleLargeTop,
-    sheetState = sheetState,
-    tonalElevation = 0.dp,
-  ) {
-    Text(
-      text = stringResource(id = R.string.travel_certificate_info_title),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+internal fun TravelCertificateInfoBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) {
+    TravelCertificateInfoBottomSheetContent(sheetState::dismiss)
+  }
+}
+
+@Composable
+private fun TravelCertificateInfoBottomSheetContent(onDismiss: () -> Unit) {
+  Column {
+    HedvigText(
+      text = stringResource(R.string.travel_certificate_info_title),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
-    Text(
-      text = stringResource(id = R.string.travel_certificate_info_subtitle),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+    HedvigText(
+      text = stringResource(R.string.travel_certificate_info_subtitle),
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      onClick = { onDismiss() },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+      text = stringResource(R.string.general_close_button),
+      onClick = onDismiss,
+      modifier = Modifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTravelCertificateInfoBottomSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      TravelCertificateInfoBottomSheetContent({})
+    }
   }
 }

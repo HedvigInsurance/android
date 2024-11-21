@@ -1,4 +1,4 @@
-package com.hedvig.android.core.designsystem.material3.motion
+package com.hedvig.android.design.system.hedvig.motion
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -8,14 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.unit.IntOffset
-
-private const val ProgressThreshold = 0.3f
-
-private val Int.ForOutgoing: Int
-  get() = (this * ProgressThreshold).toInt()
-
-private val Int.ForIncoming: Int
-  get() = this - this.ForOutgoing
+import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 
 object SharedAxisDefaults {
   const val SharedAxisOffset = 30.0
@@ -57,3 +50,11 @@ object SharedAxisDefaults {
     return slide + fade
   }
 }
+
+private const val ProgressThreshold = 0.3f
+
+private val Int.ForOutgoing: Int
+  get() = (this * ProgressThreshold).toInt()
+
+private val Int.ForIncoming: Int
+  get() = this - this.ForOutgoing

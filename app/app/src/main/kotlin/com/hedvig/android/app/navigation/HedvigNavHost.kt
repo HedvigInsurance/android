@@ -13,9 +13,9 @@ import coil.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination

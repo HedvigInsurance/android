@@ -10,6 +10,7 @@ hedvig {
 dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.coil.coil)
+  api(projects.designSystemApi)
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundationLayout)

@@ -28,7 +28,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -164,7 +164,7 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
 
 @Composable
 private fun DateButton(
-  datePickerState: HedvigDatePickerState,
+  datePickerState: HedvigDatePickerImmutableState,
   onSelectedDateChange: (Long?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -193,7 +193,7 @@ private fun PreviewTerminationDateScreen() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationDateScreen(
         TerminateInsuranceUiState(
-          HedvigDatePickerState(
+          HedvigDatePickerImmutableState(
             null,
             null,
             2015..2023,
