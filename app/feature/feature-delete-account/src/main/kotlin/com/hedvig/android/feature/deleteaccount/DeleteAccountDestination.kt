@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -107,7 +106,6 @@ private fun DeleteScreenContents(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = title,
-      textAlign = TextAlign.Center,
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier
         .fillMaxWidth()
