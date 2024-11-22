@@ -48,6 +48,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
+  implementation(projects.uiClaimFlow)
   implementation(projects.uiEmergency)
 
   testImplementation(libs.assertK)

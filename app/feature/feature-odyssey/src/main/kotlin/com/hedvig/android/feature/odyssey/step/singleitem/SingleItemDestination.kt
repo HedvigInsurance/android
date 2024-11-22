@@ -47,13 +47,17 @@ import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
+import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
+import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.BothDialogAndCustom
+import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustCustomModel
+import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustModelDialog
 import com.hedvig.android.feature.odyssey.step.summary.displayName
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
@@ -133,13 +137,13 @@ private fun SingleItemScreen(
     }
     Spacer(Modifier.height(2.dp))
     when (uiState.itemModelsUiState.modelUi) {
-      is ModelUi.JustCustomModel -> {
+      is JustCustomModel -> {
         Spacer(Modifier.height(2.dp))
         CustomModelInput(
           initialValue = uiState.itemModelsUiState.initialCustomValue,
           onInput = { input ->
             if (input != null) {
-              selectModel(ItemModel.New(input))
+              selectModel(New(input))
             }
           },
           modifier = sideSpacingModifier.fillMaxWidth(),
@@ -147,7 +151,7 @@ private fun SingleItemScreen(
         Spacer(Modifier.height(2.dp))
       }
 
-      ModelUi.JustModelDialog -> {
+      JustModelDialog -> {
         ModelPicker(
           uiState = uiState,
           selectModel = selectModel,
@@ -155,7 +159,7 @@ private fun SingleItemScreen(
         )
       }
 
-      is ModelUi.BothDialogAndCustom -> {
+      is BothDialogAndCustom -> {
         ModelPicker(
           uiState = uiState,
           selectModel = selectModel,
@@ -166,7 +170,7 @@ private fun SingleItemScreen(
           initialValue = uiState.itemModelsUiState.initialCustomValue,
           onInput = { input ->
             if (input != null) {
-              selectModel(ItemModel.New(input))
+              selectModel(New(input))
             }
           },
           modifier = sideSpacingModifier.fillMaxWidth(),

@@ -24,7 +24,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 import hedvig.resources.R
 

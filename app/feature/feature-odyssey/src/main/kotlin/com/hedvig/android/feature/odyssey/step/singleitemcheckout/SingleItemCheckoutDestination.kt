@@ -55,12 +55,14 @@ import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
+import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation
+import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation
 import hedvig.resources.R
 
 @Composable
@@ -151,11 +153,11 @@ private fun SingleItemCheckoutScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           val explanationText = when (uiState.compensation) {
-            is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> stringResource(
+            is RepairCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT,
             )
 
-            is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> stringResource(
+            is ValueCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT,
             )
           }
@@ -180,7 +182,7 @@ private fun SingleItemCheckoutScreen(
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
       Column(sideSpacingModifier) {
         val pairs = when (uiState.compensation) {
-          is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> listOf(
+          is RepairCompensation -> listOf(
             stringResource(
               R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
               uiState.modelDisplayName,
@@ -188,7 +190,7 @@ private fun SingleItemCheckoutScreen(
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
           )
 
-          is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> listOf(
+          is ValueCompensation -> listOf(
             stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(),
             stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(),
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
@@ -233,12 +235,12 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(16.dp))
     when (uiState.compensation) {
-      is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> {
+      is RepairCompensation -> {
         VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
         Spacer(Modifier.height(16.dp))
       }
 
-      is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> {
+      is ValueCompensation -> {
         HorizontalDivider(sideSpacingModifier, thickness = Dp.Hairline)
         Spacer(Modifier.height(16.dp))
       }
@@ -285,7 +287,7 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
-    if (uiState.compensation is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation) {
+    if (uiState.compensation is ValueCompensation) {
       VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
       Spacer(Modifier.height(16.dp))
     }

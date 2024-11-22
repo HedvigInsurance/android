@@ -27,7 +27,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat

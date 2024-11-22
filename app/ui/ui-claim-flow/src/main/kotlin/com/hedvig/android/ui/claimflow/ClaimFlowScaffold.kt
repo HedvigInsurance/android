@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui.scaffold
+package com.hedvig.android.ui.claimflow
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

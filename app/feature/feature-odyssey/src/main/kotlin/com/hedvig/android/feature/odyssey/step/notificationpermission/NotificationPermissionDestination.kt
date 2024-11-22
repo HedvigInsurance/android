@@ -20,13 +20,15 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.PermissionStatus.Denied
+import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -96,10 +98,10 @@ private fun NotificationPermissionScreen(
       Spacer(Modifier.height(16.dp))
     }
     val bottomButton: Pair<String, () -> Unit> = when (notificationPermissionState.status) {
-      is PermissionStatus.Granted -> {
+      is Granted -> {
         stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
       }
-      is PermissionStatus.Denied -> {
+      is Denied -> {
         Pair(
           stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
           notificationPermissionState::launchPermissionRequest,

@@ -29,9 +29,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.ERROR
+import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.LOADING
 import hedvig.resources.R
 
 @Composable
@@ -75,7 +77,7 @@ private fun PhoneNumberScreen(
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
-      error = uiState.status == PhoneNumberUiState.Status.ERROR,
+      error = uiState.status == ERROR,
       showedError = showedError,
     ),
     modifier = Modifier.clearFocusOnTap(),
@@ -95,7 +97,7 @@ private fun PhoneNumberScreen(
         Text(stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL))
       },
       withNewDesign = true,
-      enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
+      enabled = uiState.status != LOADING,
       keyboardOptions = KeyboardOptions(
         autoCorrectEnabled = false,
         keyboardType = KeyboardType.Phone,
@@ -110,7 +112,7 @@ private fun PhoneNumberScreen(
     HedvigContainedButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = submitPhoneNumber,
-      isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
+      isLoading = uiState.status == LOADING,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )

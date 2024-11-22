@@ -30,12 +30,12 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation.Elevated
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
@@ -107,7 +107,7 @@ private fun AudioRecordingScreen(
     for (question in questions) {
       HedvigCard(
         shape = RoundedCornerShape(12.dp),
-        elevation = HedvigCardElevation.Elevated(),
+        elevation = Elevated(),
         modifier = sideSpacingModifier.padding(end = 16.dp),
       ) {
         Text(

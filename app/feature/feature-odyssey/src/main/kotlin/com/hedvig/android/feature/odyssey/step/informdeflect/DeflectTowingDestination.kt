@@ -44,10 +44,10 @@ import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
-import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -146,12 +146,12 @@ private fun DeflectTowingScreen(
                     ),
                   )
                 } catch (exception: Throwable) {
-                  logcat(LogPriority.ERROR, exception) {
+                  logcat(ERROR, exception) {
                     "Could not open dial activity in deflect towing destination"
                   }
                 }
               } else {
-                logcat(LogPriority.ERROR) {
+                logcat(ERROR) {
                   "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
                 }
               }

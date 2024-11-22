@@ -41,10 +41,10 @@ import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
-import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -139,7 +139,7 @@ private fun DeflectGlassDamageScreen(
               if (url != null) {
                 openUrl(url)
               } else {
-                logcat(LogPriority.ERROR) {
+                logcat(ERROR) {
                   """
                   |Partner URL was null for DeflectGlassDamageDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
