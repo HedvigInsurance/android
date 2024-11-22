@@ -186,12 +186,14 @@ internal fun SelectableCoInsuredList(
   AnimatedVisibility(visible = errorMessage != null) {
     HedvigNotificationCard(
       message = errorMessage ?: "",
+      modifier = Modifier.fillMaxWidth(),
       priority = NotificationDefaults.NotificationPriority.Attention,
     )
   }
   HedvigTextButton(
     text = stringResource(id = R.string.GENERAL_ADD_NEW),
     onClick = { onAddNewCoInsured() },
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -200,6 +202,7 @@ private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () 
   RadioOption(
     chosenState = if (isSelected) ChosenState.Chosen else ChosenState.NotChosen,
     onClick = onClick,
+    modifier = Modifier.fillMaxWidth(),
   )
   {
     HedvigText(

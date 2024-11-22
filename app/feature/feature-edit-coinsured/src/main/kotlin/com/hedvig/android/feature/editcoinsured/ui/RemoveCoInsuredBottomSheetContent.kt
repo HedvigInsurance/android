@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
@@ -34,7 +35,9 @@ internal fun RemoveCoInsuredBottomSheetContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION))
+    HedvigText(
+      stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION),
+      textAlign = TextAlign.Center)
     Spacer(Modifier.height(24.dp))
     HedvigButton(
       text = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
@@ -44,6 +47,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
       enabled = true,
       buttonStyle = ButtonDefaults.ButtonStyle.Red,
       isLoading = isLoading,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
