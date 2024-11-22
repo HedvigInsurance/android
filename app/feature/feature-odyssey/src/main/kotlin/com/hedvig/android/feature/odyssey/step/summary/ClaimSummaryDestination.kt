@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -29,17 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -48,6 +35,20 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
+import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -118,29 +119,29 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
   val resources = LocalContext.current.resources
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
-    Text(stringResource(R.string.moving_summary_scroll_Details))
+    HedvigText(stringResource(R.string.moving_summary_scroll_Details))
     Spacer(Modifier.height(8.dp))
     val detailPairs = uiState.claimSummaryInfoUiState.itemDetailPairs(resources, getLocale())
     CompositionLocalProvider(
-      LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
-        MaterialTheme.colorScheme.onSurfaceVariant,
+      LocalTextStyle provides HedvigTheme.typography.bodySmall.copy(
+        HedvigTheme.colorScheme.textSecondary,
       ),
     ) {
       Column(Modifier.fillMaxWidth()) {
         for ((left, right) in detailPairs) {
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              Text(text = left)
+              HedvigText(text = left)
             },
             endSlot = {
-              Text(text = right, textAlign = TextAlign.End)
+              HedvigText(text = right, textAlign = TextAlign.End)
             },
           )
         }
       }
     }
     Spacer(Modifier.height(24.dp))
-    Text(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
+    HedvigText(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
     when (uiState.claimSummaryInfoUiState.submittedContent) {
       is SubmittedContent.Audio -> {
         val signedAudioUrl =
@@ -162,13 +163,18 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
 private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
-    VectorInfoCard(stringResource(R.string.CLAIMS_COMPLEMENT__CLAIM), Modifier.fillMaxWidth())
+    HedvigNotificationCard(
+      message = stringResource(R.string.CLAIMS_COMPLEMENT__CLAIM),
+      priority = NotificationPriority.Info,
+      modifier = Modifier.fillMaxSize(),
+    )
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
       onClick = submitSummary,
       isLoading = uiState.claimSummaryStatusUiState.isLoading,
       enabled = uiState.canSubmit,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -179,7 +185,7 @@ private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> 
 @Composable
 private fun PreviewClaimSummaryScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimSummaryScreen(
         ClaimSummaryUiState(
           claimSummaryInfoUiState = ClaimSummaryInfoUiState(
