@@ -70,13 +70,13 @@ fun HedvigBigCard(
       HedvigText(
         text = labelText,
         style = labelTextStyle,
-        color = bigCardColors.labelTextColor,
+        color = bigCardColors.labelTextColor(enabled),
       )
       if (inputText != null) {
         HedvigText(
           text = inputText,
           style = textStyle,
-          color = bigCardColors.inputTextColor,
+          color = bigCardColors.inputTextColor(enabled),
         )
       }
     }
@@ -99,19 +99,31 @@ private object BigCardDefaults {
 }
 
 private data class BigCardColors(
-  val labelTextColor: Color,
-  val inputTextColor: Color,
   val containerColor: Color,
-)
+  private val labelTextColor: Color,
+  private val inputTextColor: Color,
+  private val labelDisabledTextColor: Color,
+  private val inputDisabledTextColor: Color,
+) {
+  fun labelTextColor(enabled: Boolean): Color {
+    return if (enabled) labelTextColor else labelDisabledTextColor
+  }
+
+  fun inputTextColor(enabled: Boolean): Color {
+    return if (enabled) inputTextColor else inputDisabledTextColor
+  }
+}
 
 private val bigCardColors: BigCardColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       BigCardColors(
+        containerColor = fromToken(ColorSchemeKeyTokens.SurfacePrimary),
         labelTextColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
         inputTextColor = fromToken(ColorSchemeKeyTokens.TextPrimary),
-        containerColor = fromToken(ColorSchemeKeyTokens.SurfacePrimary),
+        labelDisabledTextColor = fromToken(ColorSchemeKeyTokens.TextTertiary),
+        inputDisabledTextColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
       )
     }
   }
