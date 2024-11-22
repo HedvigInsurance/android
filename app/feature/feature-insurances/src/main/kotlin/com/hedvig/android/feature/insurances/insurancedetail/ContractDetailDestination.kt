@@ -343,7 +343,7 @@ private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier)
       }
     },
     modifier = modifier.fillMaxWidth(),
-    tabSize = TabSize.Medium,
+    tabSize = TabSize.Small,
     tabStyle = Filled,
   )
 }
