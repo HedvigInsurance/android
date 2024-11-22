@@ -8,6 +8,8 @@ import com.apollographql.apollo.api.Operation.Data
 import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
+import com.hedvig.android.apollo.ExtensionErrorType
+import com.hedvig.android.apollo.extensionErrorType
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
@@ -103,20 +105,13 @@ private data class LoggableGraphqlError(
   )
 
   data class Extensions(
-    val errorType: ErrorType?,
+    val errorType: ExtensionErrorType?,
     val uncategorizedExtensions: Map<String, Any?>?,
-  ) {
-    @JvmInline
-    value class ErrorType(val value: String) {
-      companion object {
-        val Unauthenticated = ErrorType("UNAUTHENTICATED")
-      }
-    }
-  }
+  )
 }
 
 private fun List<LoggableGraphqlError>.isUnathenticated(): Boolean {
-  return any { it.extensions.errorType == LoggableGraphqlError.Extensions.ErrorType.Unauthenticated }
+  return any { it.extensions.errorType == ExtensionErrorType.Unauthenticated }
 }
 
 private fun ApolloKotlinError.toGraphqlError(): LoggableGraphqlError {
@@ -125,7 +120,7 @@ private fun ApolloKotlinError.toGraphqlError(): LoggableGraphqlError {
     locations = this.locations?.map { LoggableGraphqlError.Location(it.line, it.column) },
     paths = this.path?.map { LoggableGraphqlError.Path(it.toString()) },
     extensions = LoggableGraphqlError.Extensions(
-      errorType = this.extensions?.get("errorType")?.let { LoggableGraphqlError.Extensions.ErrorType(it.toString()) },
+      errorType = this.extensionErrorType(),
       uncategorizedExtensions = this.extensions?.minus("errorType"),
     ),
   )

@@ -47,14 +47,14 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isFalse()
 
-      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isTrue()
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
 
-      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
     }
   }
@@ -72,7 +72,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
@@ -208,7 +208,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
