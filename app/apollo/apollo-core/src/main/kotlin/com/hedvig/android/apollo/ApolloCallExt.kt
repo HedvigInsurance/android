@@ -39,8 +39,22 @@ sealed interface ApolloOperationError {
     }
   }
 
-  data class OperationError(private val message: String) : ApolloOperationError {
-    override val throwable: Throwable? = null
+  sealed interface OperationError : ApolloOperationError {
+    object Unathenticated : OperationError {
+      override val throwable: Throwable? = null
+
+      override fun toString(): String {
+        return "OperationError.Unathenticated"
+      }
+    }
+
+    data class Other(private val message: String) : OperationError {
+      override val throwable: Throwable? = null
+
+      override fun toString(): String {
+        return "OperationError.Other(message=$message)"
+      }
+    }
   }
 }
 
@@ -103,6 +117,17 @@ fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = obj
   }
 }
 
+@JvmInline
+value class ExtensionErrorType(val value: String) {
+  companion object {
+    val Unauthenticated = ExtensionErrorType("UNAUTHENTICATED")
+  }
+}
+
+fun Error.extensionErrorType(): ExtensionErrorType? {
+  return extensions?.get("errorType")?.let { ExtensionErrorType(it.toString()) }
+}
+
 // https://www.apollographql.com/docs/kotlin/essentials/errors/#truth-table
 private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseResponse(response: ApolloResponse<D>): D {
   val exception = response.exception
@@ -129,14 +154,18 @@ private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseRespon
 private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
   if (this == null) return null
   return map { error ->
-    ApolloOperationError.OperationError(
-      buildString {
-        append(error.message)
-        if (error.extensions != null) {
-          append(error.extensions!!.toList().joinToString(prefix = " ext: [", postfix = "]", separator = ", "))
-        }
-      },
-    )
+    if (error.extensionErrorType() == ExtensionErrorType.Unauthenticated) {
+      ApolloOperationError.OperationError.Unathenticated
+    } else {
+      ApolloOperationError.OperationError.Other(
+        buildString {
+          append(error.message)
+          if (error.extensions != null) {
+            append(error.extensions!!.toList().joinToString(prefix = " ext: [", postfix = "]", separator = ", "))
+          }
+        },
+      )
+    }
   }.toNonEmptyListOrNull()
 }
 
@@ -145,7 +174,7 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
  */
 private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.iorToEither(): Either<ApolloOperationError, D> {
   return mapLeft { errors ->
-    ApolloOperationError.OperationError(
+    ApolloOperationError.OperationError.Other(
       errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
     )
   }.toEither()
