@@ -66,6 +66,7 @@ fun HedvigDatePicker(
   onDismissRequest: () -> Unit,
   hedvigDatePickerColors: HedvigDatePickerColors,
   confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
   HedvigDatePicker(
@@ -73,6 +74,7 @@ fun HedvigDatePicker(
     onDismissRequest = onDismissRequest,
     hedvigDatePickerColors = hedvigDatePickerColors,
     confirmButton = confirmButton,
+    dismissButton = dismissButton,
     modifier = modifier,
   )
 }
@@ -88,6 +90,7 @@ fun HedvigDatePicker(
   onSelectedDateChanged: (Long?) -> Unit,
   hedvigDatePickerColors: HedvigDatePickerColors,
   confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
   val state = rememberDatePickerState(
@@ -112,6 +115,7 @@ fun HedvigDatePicker(
     onDismissRequest = onDismissRequest,
     hedvigDatePickerColors = hedvigDatePickerColors,
     confirmButton = confirmButton,
+    dismissButton = dismissButton,
     modifier = modifier,
   )
 }
@@ -122,6 +126,7 @@ private fun HedvigDatePicker(
   onDismissRequest: () -> Unit,
   hedvigDatePickerColors: HedvigDatePickerColors,
   confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
   val hedvigColors = with(hedvigDatePickerColors) {
@@ -161,6 +166,7 @@ private fun HedvigDatePicker(
     onDismissRequest = onDismissRequest,
     colors = hedvigColors,
     confirmButton = confirmButton,
+    dismissButton = dismissButton,
   ) {
     HedvigDatePicker(
       modifier = modifier,
