@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,11 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.data.claimflow.LocationOption
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
@@ -30,18 +32,23 @@ internal fun LocationWithDialog(
   if (showLocationPickerDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.claims_incident_screen_location),
-      optionsList = locationOptions,
-      onSelected = selectLocationOption,
-      getDisplayText = { it.displayName },
-      getIsSelected = { selectedLocation == it },
-      getId = { it.displayName },
+      optionsList = locationOptions.map { locationOption ->
+        RadioOptionData(
+          locationOption.displayName,
+          locationOption.displayName,
+          if (selectedLocation?.displayName == locationOption.displayName) Chosen else NotChosen,
+        )
+      },
+      onSelected = {radioOptionData ->
+        selectLocationOption(locationOptions.first { it.displayName == radioOptionData.id })
+      },
       onDismissRequest = { showLocationPickerDialog = false },
     )
   }
 
   HedvigBigCard(
     onClick = { showLocationPickerDialog = true },
-    hintText = stringResource(R.string.claims_location_screen_title),
+    labelText = stringResource(R.string.claims_location_screen_title),
     inputText = selectedLocation?.displayName,
     enabled = enabled,
     modifier = modifier,
@@ -51,12 +58,10 @@ internal fun LocationWithDialog(
 @HedvigPreview
 @Composable
 private fun PreviewLocationWithDialog(
-  @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
-  ) hasSelectedLocation: Boolean,
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasSelectedLocation: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       LocationWithDialog(
         emptyList(),
         if (hasSelectedLocation) LocationOption("", "Stockholm") else null,
