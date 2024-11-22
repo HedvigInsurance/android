@@ -9,18 +9,21 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material3.Surface
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.hedvigDateTimeFormatter
+
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -33,12 +36,13 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, popBackstack: () 
     Box(
       modifier = Modifier.weight(1f),
     ) {
-      HedvigSuccessSection(
-        title = stringResource(id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
-        subTitle = stringResource(
+      EmptyState(
+        text = stringResource(id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
+        description = stringResource(
           id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
           date?.toJavaLocalDate()?.format(hedvigDateTimeFormatter(getLocale())) ?: "-",
         ),
+        iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SUCCESS,
         modifier = Modifier.align(Alignment.Center),
       )
     }

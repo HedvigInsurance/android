@@ -1,22 +1,19 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
-import android.app.DatePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -25,8 +22,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -42,25 +39,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDatePickerState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
@@ -79,7 +90,7 @@ internal fun AddCoInsuredBottomSheetContent(
 ) {
   Column {
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
@@ -115,52 +126,33 @@ internal fun AddCoInsuredBottomSheetContent(
         )
       }
       Spacer(Modifier.height(4.dp))
-
-      HedvigCard(
-        onClick = {
-          onManualInputSwitchChanged(!bottomSheetState.showManualInput)
-        },
+      HedvigToggle(
+        turnedOn = bottomSheetState.showManualInput,
+        onClick = onManualInputSwitchChanged,
         modifier = Modifier.fillMaxWidth(),
-      ) {
-        HorizontalItemsWithMaximumSpaceTaken(
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-          startSlot = {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              HedvigText(
-                text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
-                color = HedvigTheme.colorScheme.textSecondary,
-              )
-            }
-          },
-          endSlot = {
-            Switch(
-              checked = bottomSheetState.showManualInput,
-              onCheckedChange = onManualInputSwitchChanged,
-              modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
-            )
-          },
-          spaceBetween = 4.dp,
-        )
-      }
+        toggleStyle = ToggleStyle.Default(Small),
+        labelText = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
+        enabled = true,
+      )
       AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
         Column {
           Spacer(Modifier.height(4.dp))
-          VectorWarningCard(
-            text = stringResource(
+          HedvigNotificationCard(
+            message = stringResource(
               id = R.string.COINSURED_WITHOUT_SSN_INFO,
             ),
+            priority = NotificationDefaults.NotificationPriority.Attention,
           )
         }
       }
     }
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(id = bottomSheetState.getSaveLabel().stringRes()),
       enabled = bottomSheetState.canContinue(),
       onClick = onContinue,
       isLoading = bottomSheetState.isLoading,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
@@ -192,7 +184,10 @@ internal fun SelectableCoInsuredList(
     Spacer(Modifier.height(4.dp))
   }
   AnimatedVisibility(visible = errorMessage != null) {
-    WarningTextWithIconForInput(text = errorMessage ?: "")
+    HedvigNotificationCard(
+      message = errorMessage ?: "",
+      priority = NotificationDefaults.NotificationPriority.Attention,
+    )
   }
   HedvigTextButton(
     text = stringResource(id = R.string.GENERAL_ADD_NEW),
@@ -202,22 +197,14 @@ internal fun SelectableCoInsuredList(
 
 @Composable
 private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () -> Unit) {
-  HedvigCard(onClick = onClick) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .heightIn(72.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
-    ) {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(Modifier.width(8.dp))
-      SelectIndicationCircle(isSelected)
-    }
+  RadioOption(
+    chosenState = if (isSelected) ChosenState.Chosen else ChosenState.NotChosen,
+    onClick = onClick,
+  )
+  {
+    HedvigText(
+      text = text,
+    )
   }
 }
 
@@ -234,17 +221,18 @@ private fun FetchFromSsnFields(
   val maskColor = HedvigTheme.colorScheme.textSecondary
   Column {
     HedvigTextField(
-      value = ssnInput,
-      label = {
-        Text(stringResource(id = R.string.CONTRACT_PERSONAL_IDENTITY))
-      },
-      onValueChange = {
-        if (it.length <= 12) {
-          onSsnChanged(it)
-          ssnInput = it
+      text = ssnInput,
+      labelText = stringResource(id = R.string.CONTRACT_PERSONAL_IDENTITY),
+      onValueChange = { value ->
+        if (value.length <= 12) {
+          onSsnChanged(value)
+          ssnInput = value
         }
       },
-      errorText = errorMessage,
+      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+      errorState = if (errorMessage != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorMessage)
+      else HedvigTextFieldDefaults.ErrorState.NoError,
+
       visualTransformation = PersonalNumberVisualTransformation(mask, maskColor),
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
@@ -262,11 +250,10 @@ private fun FetchFromSsnFields(
       modifier = Modifier.padding(top = 4.dp),
     ) {
       HedvigTextField(
-        value = displayName,
+        text = displayName,
         onValueChange = {},
-        label = {
-          Text(stringResource(id = R.string.FULL_NAME_TEXT))
-        },
+        labelText = stringResource(id = R.string.FULL_NAME_TEXT),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         enabled = false,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -336,14 +323,14 @@ private fun ManualInputFields(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigTextField(
-          value = firstNameInput,
-          label = {
-            Text(stringResource(id = R.string.CONTRACT_FIRST_NAME))
-          },
+          text = firstNameInput,
+          labelText = stringResource(id = R.string.CONTRACT_FIRST_NAME),
+          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           onValueChange = {
             onFirstNameChanged(it)
             firstNameInput = it
           },
+
           keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
             keyboardType = KeyboardType.Text,
@@ -353,10 +340,9 @@ private fun ManualInputFields(
       },
       endSlot = {
         HedvigTextField(
-          value = lastNameInput,
-          label = {
-            Text(stringResource(id = R.string.CONTRACT_LAST_NAME))
-          },
+          text = lastNameInput,
+          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+          labelText = stringResource(id = R.string.CONTRACT_LAST_NAME),
           onValueChange = {
             onLastNameChanged(it)
             lastNameInput = it
@@ -377,59 +363,91 @@ private fun ManualInputFields(
       enter = fadeIn(),
       exit = fadeOut(),
     ) {
-      WarningTextWithIconForInput(text = errorMessage ?: "")
+      HedvigNotificationCard(
+        message = errorMessage ?: "",
+        priority = NotificationDefaults.NotificationPriority.Attention,
+      )
     }
   }
 }
 
 @Composable
-internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
-  val datePickerState = rememberHedvigDatePickerState()
+internal fun DatePickerWithDialog(
+  birthDate: LocalDate?,
+  onSave: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
+) {
 
-  val selectedDateMillis: Long? = datePickerState.selectedDateMillis
+  val selectedDateMillis = birthDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
+    ?: Clock.System.now().toEpochMilliseconds()
   val locale = getLocale()
-  val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val selectedDate = remember(locale, selectedDateMillis) {
-    if (selectedDateMillis == null) {
-      null
-    } else {
-      Instant.fromEpochMilliseconds(selectedDateMillis)
-        .toLocalDateTime(TimeZone.UTC)
-        .date
-    }
+  var showDatePicker by rememberSaveable { mutableStateOf(false) }
+  val rememberHedvigDateTimeFormatter = remember(locale) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale)
+  }
+  val datePickerState by remember {
+    mutableStateOf(
+      HedvigDatePickerState(
+        locale = locale,
+        initialSelectedDateMillis = selectedDateMillis,
+        initialDisplayedMonthMillis = selectedDateMillis,
+        selectableDates = object : HedvigSelectableDates {
+          override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds() //todo: check here
+          }
+
+          override fun isSelectableYear(year: Int): Boolean =
+            year <= Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+        },
+      )
+    )
+  }
+  if (showDatePicker) {
+    HedvigDatePicker(
+      datePickerState = datePickerState,
+      onDismissRequest = { showDatePicker = false },
+      onConfirmRequest = {
+        val selected = datePickerState.selectedDateMillis
+        if (selected != null) {
+          val date = Instant.fromEpochMilliseconds(selected)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+          onSave(date)
+        }
+        showDatePicker = false
+      }
+    )
   }
 
-  var showDatePicker by rememberSaveable { mutableStateOf(false) }
-  if (showDatePicker) {
-    DatePickerDialog(
-      onDismissRequest = { showDatePicker = false },
-      confirmButton = {
-        TextButton(
-          onClick = {
-            showDatePicker = false
-            selectedDate?.let {
-              onSave(selectedDate)
-            }
-          },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.general_save_button))
-        }
-      },
-      dismissButton = {
-        TextButton(
-          onClick = {
-            showDatePicker = false
-          },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.general_cancel_button))
-        }
-      },
-    ) {
-      HedvigDatePicker(datePickerState = datePickerState)
-    }
-  }
+//  if (showDatePicker) {
+//    HedvigDatePicker (
+//      onDismissRequest = { showDatePicker = false },
+//      confirmButton = {
+//        TextButton(
+//          onClick = {
+//            showDatePicker = false
+//            selectedDate?.let {
+//              onSave(selectedDate)
+//            }
+//          },
+//          shape = HedvigTheme.shapes.medium,
+//        ) {
+//          Text(stringResource(R.string.general_save_button))
+//        }
+//      },
+//      dismissButton = {
+//        TextButton(
+//          onClick = {
+//            showDatePicker = false
+//          },
+//          shape = HedvigTheme.shapes.medium,
+//        ) {
+//          Text(stringResource(R.string.general_cancel_button))
+//        }
+//      },
+//    ) {
+//      HedvigDatePicker(datePickerState = datePickerState)
+//    }
+//  }
   HedvigCard(
     onClick = { showDatePicker = true },
     modifier = modifier,
@@ -452,7 +470,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
       }
       HedvigText(
         text = if (birthDate != null) {
-          hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+          rememberHedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
         } else {
           stringResource(id = R.string.CONTRACT_BIRTH_DATE)
         },
@@ -468,6 +486,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
     }
   }
 }
+
 
 private fun AddBottomSheetState.SaveButtonLabel.stringRes() = when (this) {
   AddBottomSheetState.SaveButtonLabel.FETCH_INFO -> R.string.CONTRACT_SSN_FETCH_INFO

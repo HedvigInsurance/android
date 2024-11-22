@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.commonmark.Markdown
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -124,26 +125,18 @@ private fun DeleteScreenContents(
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
-    if (isButtonRed) {
-      HedvigRedTextButton(
-        text = buttonText,
-        onClick = onButtonClick,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    } else {
-      HedvigButton(
-        text = buttonText,
-        onClick = onButtonClick,
-        enabled = true,
-        isLoading = isButtonLoading,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
-
+    val buttonStyle = if (isButtonRed)
+      ButtonDefaults.ButtonStyle.Red else ButtonDefaults.ButtonStyle.Primary
+    HedvigButton(
+      text = buttonText,
+      onClick = onButtonClick,
+      enabled = true,
+      buttonStyle = buttonStyle,
+      isLoading = isButtonLoading,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
