@@ -26,9 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.ErrorSnackbar
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton

@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocalContractContractOption
 import com.hedvig.android.design.system.hedvig.HedvigButton

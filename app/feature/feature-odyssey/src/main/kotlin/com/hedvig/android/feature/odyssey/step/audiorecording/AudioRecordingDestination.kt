@@ -36,9 +36,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import hedvig.resources.R
 import java.io.File

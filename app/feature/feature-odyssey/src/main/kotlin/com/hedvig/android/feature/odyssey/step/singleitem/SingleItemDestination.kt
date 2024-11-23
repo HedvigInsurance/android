@@ -38,7 +38,7 @@ import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
