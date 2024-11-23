@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.odyssey.step.singleitemcheckout
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,18 +13,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,25 +33,42 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
-import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation
 import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LockedState.Locked
+import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Small
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -105,16 +111,8 @@ private fun SingleItemCheckoutScreen(
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  var bottomSheetText by remember { mutableStateOf<Pair<String, String>?>(null) }
-  val explanationSheetState = rememberModalBottomSheetState(true)
-  val bottomSheetTextValue = bottomSheetText
-  if (bottomSheetTextValue != null) {
-    SingleItemCheckoutInfoBottomSheet(
-      onDismiss = { bottomSheetText = null },
-      sheetState = explanationSheetState,
-      explanationTitleAndText = bottomSheetTextValue,
-    )
-  }
+  val hedvigBottomSheetState = rememberHedvigBottomSheetState<Pair<String, String>>()
+  SingleItemCheckoutInfoBottomSheet(hedvigBottomSheetState)
 
   ClaimFlowScaffold(
     topAppBarText = stringResource(R.string.claims_payout_payout_label),
@@ -126,9 +124,9 @@ private fun SingleItemCheckoutScreen(
     HedvigCard(
       modifier = sideSpacingModifier,
     ) {
-      Text(
+      HedvigText(
         text = uiState.compensation.payoutAmount.toString(),
-        style = MaterialTheme.typography.displayMedium,
+        style = HedvigTheme.typography.displaySmall,
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
@@ -139,7 +137,7 @@ private fun SingleItemCheckoutScreen(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          Text(
+          HedvigText(
             text = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE),
             modifier = sideSpacingModifier,
           )
@@ -164,14 +162,14 @@ private fun SingleItemCheckoutScreen(
           val title = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE)
           IconButton(
             onClick = {
-              bottomSheetText = Pair(title, explanationText)
+              hedvigBottomSheetState.show(Pair(title, explanationText))
             },
             modifier = Modifier
               .size(40.dp)
               .padding(end = 8.dp),
           ) {
             Icon(
-              imageVector = Icons.Hedvig.InfoFilled,
+              imageVector = HedvigIcons.InfoFilled,
               contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(16.dp),
             )
@@ -179,7 +177,7 @@ private fun SingleItemCheckoutScreen(
         }
       },
     )
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+    CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
       Column(sideSpacingModifier) {
         val pairs = when (uiState.compensation) {
           is RepairCompensation -> listOf(
@@ -199,11 +197,11 @@ private fun SingleItemCheckoutScreen(
         for ((left, right) in pairs) {
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              Text(left)
+              HedvigText(left)
             },
             spaceBetween = 8.dp,
             endSlot = {
-              Text(right, textAlign = TextAlign.End)
+              HedvigText(right, textAlign = TextAlign.End)
             },
           )
         }
@@ -213,7 +211,7 @@ private fun SingleItemCheckoutScreen(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          Text(
+          HedvigText(
             text = stringResource(R.string.CLAIMS_PAYOUT_HEDVIG_LABEL),
             modifier = sideSpacingModifier,
           )
@@ -225,10 +223,10 @@ private fun SingleItemCheckoutScreen(
             Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          Text(
+          HedvigText(
             text = uiState.compensation.payoutAmount.toString(),
             modifier = Modifier.padding(end = 16.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = HedvigTheme.colorScheme.textSecondary,
           )
         }
       },
@@ -236,7 +234,11 @@ private fun SingleItemCheckoutScreen(
     Spacer(Modifier.height(16.dp))
     when (uiState.compensation) {
       is RepairCompensation -> {
-        VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
+        HedvigNotificationCard(
+          stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT),
+          NotificationPriority.Info,
+          sideSpacingModifier,
+        )
         Spacer(Modifier.height(16.dp))
       }
 
@@ -248,7 +250,7 @@ private fun SingleItemCheckoutScreen(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          Text(
+          HedvigText(
             text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
             modifier = sideSpacingModifier,
           )
@@ -264,14 +266,14 @@ private fun SingleItemCheckoutScreen(
           val explanationTitle = stringResource(id = R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD)
           IconButton(
             onClick = {
-              bottomSheetText = Pair(explanationTitle, explanationText)
+              hedvigBottomSheetState.show(Pair(explanationTitle, explanationText))
             },
             modifier = Modifier
               .size(40.dp)
               .padding(end = 8.dp),
           ) {
             Icon(
-              imageVector = Icons.Hedvig.InfoFilled,
+              imageVector = HedvigIcons.InfoFilled,
               contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(16.dp),
             )
@@ -288,13 +290,18 @@ private fun SingleItemCheckoutScreen(
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     if (uiState.compensation is ValueCompensation) {
-      VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
+      HedvigNotificationCard(
+        stringResource(R.string.CLAIMS_CHECKOUT_NOTICE),
+        NotificationPriority.Info,
+        sideSpacingModifier,
+      )
       Spacer(Modifier.height(16.dp))
     }
-    HedvigContainedButton(
-      onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
+    HedvigButton(
       text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
-      modifier = sideSpacingModifier,
+      onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
+      enabled = true,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -303,42 +310,43 @@ private fun SingleItemCheckoutScreen(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.CheckoutMethods(
+private fun CheckoutMethods(
   availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
   selectedCheckoutMethod: CheckoutMethod.Known,
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
 ) {
-  val allowSelectingCheckoutMethod = availableCheckoutMethods.size > 1
-  for (checkoutMethod in availableCheckoutMethods) {
-    val isSelected = checkoutMethod == selectedCheckoutMethod
+  Column(modifier) {
+    val allowSelectingCheckoutMethod = availableCheckoutMethods.size > 1
     Spacer(Modifier.height(8.dp))
-    HedvigCard(
-      onClick = if (allowSelectingCheckoutMethod) {
-        { selectCheckoutMethod(checkoutMethod) }
-      } else {
-        null
-      },
-      enabled = if (allowSelectingCheckoutMethod) {
-        enabled
-      } else {
-        true
-      },
-      modifier = modifier.fillMaxWidth(),
-    ) {
-      Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = checkoutMethod.displayName,
-          style = MaterialTheme.typography.headlineSmall,
-          modifier = Modifier.weight(1f),
-        )
-        if (allowSelectingCheckoutMethod) {
-          Spacer(Modifier.width(16.dp))
-          SelectIndicationCircle(selected = isSelected)
+    if (allowSelectingCheckoutMethod) {
+      RadioGroup(
+        radioGroupStyle = RadioGroupStyle.Vertical.Default(
+          availableCheckoutMethods.map { checkoutMethod ->
+            RadioOptionGroupDataSimple(
+              RadioOptionData(
+                checkoutMethod.id,
+                checkoutMethod.displayName,
+                if (checkoutMethod == selectedCheckoutMethod) Chosen else NotChosen,
+              ),
+            )
+          },
+        ),
+        radioGroupSize = Small,
+        onOptionClick = { id ->
+          selectCheckoutMethod(availableCheckoutMethods.first { it.id == id })
+        },
+        groupLockedState = if (enabled) NotLocked else Locked,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    } else {
+      HedvigCard(Modifier.fillMaxWidth()) {
+        Box(
+          modifier = Modifier.padding(16.dp),
+          propagateMinConstraints = true,
+        ) {
+          HedvigText(availableCheckoutMethods.head.displayName)
         }
       }
     }
@@ -347,24 +355,21 @@ private fun ColumnScope.CheckoutMethods(
 
 @Composable
 internal fun SingleItemCheckoutInfoBottomSheet(
-  onDismiss: () -> Unit,
-  sheetState: SheetState,
-  explanationTitleAndText: Pair<String, String>,
+  sheetState: HedvigBottomSheetState<Pair<String, String>>,
 ) {
   HedvigBottomSheet(
-    onDismissed = onDismiss,
-    sheetState = sheetState,
-    content = {
-      Text(
+    hedvigBottomSheetState = sheetState,
+    content = { explanationTitleAndText ->
+      HedvigText(
         text = explanationTitleAndText.first,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 24.dp),
       )
       Spacer(Modifier.height(8.dp))
-      Text(
+      HedvigText(
         text = explanationTitleAndText.second,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 24.dp),
@@ -383,7 +388,7 @@ private fun PreviewSingleItemCheckoutScreenWithRepair() {
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemCheckoutScreen(
         uiState = SingleItemCheckoutUiState.Content(
           compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
@@ -424,7 +429,7 @@ private fun PreviewSingleItemCheckoutScreenValueCompensation(
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
           ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
