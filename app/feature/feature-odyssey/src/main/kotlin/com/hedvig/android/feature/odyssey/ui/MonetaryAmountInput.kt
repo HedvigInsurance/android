@@ -52,7 +52,7 @@ internal fun MonetaryAmountInput(
       text = newValue
       onInput(newValue.ifBlank { null })
     },
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     labelText = hintText,
     modifier = modifier.focusRequester(focusRequester),
     enabled = canInteract,
