@@ -53,7 +53,7 @@ private fun AccordionItem(
 ) {
   ExpandablePlusCard(
     modifier = modifier,
-    shrunkContentPadding = size.padding,
+    contentPadding = size.padding,
     content = {
       HedvigText(
         text = title,

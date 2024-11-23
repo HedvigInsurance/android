@@ -26,13 +26,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.EmergencyOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -41,6 +39,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
 import hedvig.resources.R
@@ -153,7 +152,9 @@ private fun ConfirmEmergencyScreen(
       isLoading = uiState.isLoading,
       onClick = onSubmit,
       enabled = !uiState.isLoading,
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
