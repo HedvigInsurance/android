@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,16 +20,18 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Denied
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -73,18 +72,21 @@ private fun NotificationPermissionScreen(
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
 
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(32.dp))
-    Text(
-      text = if (notificationPermissionState.status.isGranted) {
-        stringResource(R.string.CLAIMS_NOTIFICATIONS_ACTIVATED)
-      } else {
-        stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY)
-      },
+    HedvigText(
+      text = stringResource(
+        if (notificationPermissionState.status.isGranted) {
+          R.string.CLAIMS_NOTIFICATIONS_ACTIVATED
+        } else {
+          R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
+        }
+      ),
+      style = HedvigTheme.typography.headlineMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -93,7 +95,7 @@ private fun NotificationPermissionScreen(
       HedvigTextButton(
         onClick = onNotificationPermissionDecided,
         text = stringResource(R.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
-        modifier = sideSpacingModifier,
+        modifier = sideSpacingModifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -101,6 +103,7 @@ private fun NotificationPermissionScreen(
       is Granted -> {
         stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
       }
+
       is Denied -> {
         Pair(
           stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
@@ -108,10 +111,11 @@ private fun NotificationPermissionScreen(
         )
       }
     }
-    HedvigContainedButton(
-      onClick = bottomButton.second,
+    HedvigButton(
       text = bottomButton.first,
-      modifier = sideSpacingModifier,
+      onClick = bottomButton.second,
+      enabled = true,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -125,7 +129,7 @@ private fun PreviewNotificationPermissionScreen(
   previewPermissionState: PreviewPermissionState,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NotificationPermissionScreen(
         WindowSizeClass.calculateForPreview(),
         rememberPreviewNotificationPermissionState(
