@@ -37,6 +37,7 @@ internal fun <T> OptionChipsFlowRow(
   FlowRow(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp)
   ) {
     for (item in items) {
       key(item) {

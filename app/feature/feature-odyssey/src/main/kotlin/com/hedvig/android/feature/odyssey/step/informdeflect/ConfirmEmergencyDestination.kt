@@ -20,29 +20,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.HedvigChip
-import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.EmergencyOption
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.ui.claimflow.HedvigChip
+import com.hedvig.android.ui.claimflow.WarningTextWithIcon
 import hedvig.resources.R
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
@@ -89,9 +89,9 @@ private fun ConfirmEmergencyScreen(
     closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = uiState.title,
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
@@ -114,6 +114,7 @@ private fun ConfirmEmergencyScreen(
     }
     FlowRow(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 2,
       modifier = Modifier
         .padding(horizontal = 16.dp)
@@ -147,11 +148,12 @@ private fun ConfirmEmergencyScreen(
       }
     }
     Spacer(Modifier.height(8.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(id = R.string.general_continue_button),
       isLoading = uiState.isLoading,
       onClick = onSubmit,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      enabled = !uiState.isLoading,
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -162,7 +164,7 @@ private fun ConfirmEmergencyScreen(
 @HedvigPreview
 private fun ConfirmEmergencyScreenPreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ConfirmEmergencyScreen(
         uiState = ConfirmEmergencyUiState(
           "Är du på en resa och behöver akut vård eller assistans?",
@@ -175,9 +177,14 @@ private fun ConfirmEmergencyScreenPreview() {
               displayName = "No",
               value = true,
             ),
+            EmergencyOption(
+              displayName = "Other",
+              value = true,
+            ),
           ),
           selectedOption = null,
           isLoading = false,
+          haveTriedContinuingWithoutSelection = true,
         ),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},

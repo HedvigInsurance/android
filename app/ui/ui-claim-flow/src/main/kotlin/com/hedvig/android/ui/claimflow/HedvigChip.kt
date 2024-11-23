@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui
+package com.hedvig.android.ui.claimflow
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -10,9 +10,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -25,10 +22,12 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.material3.typeContainer
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 
@@ -50,16 +49,16 @@ fun <T> HedvigChip(
   ) {
     val surfaceColor by animateColorAsState(
       if (isSelected) {
-        MaterialTheme.colorScheme.typeContainer.compositeOver(MaterialTheme.colorScheme.background)
+        HedvigTheme.colorScheme.signalGreenFill.compositeOver(HedvigTheme.colorScheme.backgroundPrimary)
       } else {
-        MaterialTheme.colorScheme.surface
+        HedvigTheme.colorScheme.surfacePrimary
       },
     )
     val contentColor by animateColorAsState(
       if (isSelected) {
-        MaterialTheme.colorScheme.onTypeContainer.compositeOver(surfaceColor)
+        HedvigTheme.colorScheme.signalGreenText.compositeOver(surfaceColor)
       } else {
-        MaterialTheme.colorScheme.onSurface
+        HedvigTheme.colorScheme.textPrimary
       },
     )
     val backgroundScale = remember { Animatable(1f) }
@@ -92,8 +91,8 @@ fun <T> HedvigChip(
           scaleX = backgroundScale.value
           scaleY = backgroundScale.value
         }
-        .clip(MaterialTheme.shapes.squircleMedium)
-        .background(surfaceColor, MaterialTheme.shapes.squircleMedium)
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .background(surfaceColor, HedvigTheme.shapes.cornerLarge)
         .clickable(
           interactionSource = interactionSource,
           indication = null,
@@ -101,12 +100,28 @@ fun <T> HedvigChip(
         ),
     )
     CompositionLocalProvider(LocalContentColor provides contentColor) {
-      Text(
+      HedvigText(
         text = itemDisplayName(item),
-        style = MaterialTheme.typography.bodyLarge,
+        style = HedvigTheme.typography.bodySmall,
         maxLines = 1,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigChip() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HedvigChip(
+        item = "Item",
+        itemDisplayName = { it },
+        isSelected = true,
+        onItemClick = {},
+        showChipAnimatable = remember { Animatable(1f) },
       )
     }
   }
