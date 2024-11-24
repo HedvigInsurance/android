@@ -229,7 +229,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
           }
         },
         content = {
-          HedvigText(text = faqItem.first)
+          HedvigText(faqItem.first)
         },
         expandedContent = {
           HedvigText(

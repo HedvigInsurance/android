@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -14,11 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,28 +23,33 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
-import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
-import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.card.ExpandablePlusCard
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
+import com.hedvig.android.design.system.hedvig.ExpandablePlusCard
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -86,12 +87,15 @@ private fun DeflectTowingScreen(
     topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
-    VectorInfoCard(
-      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
-      modifier = Modifier.padding(horizontal = 16.dp),
+    HedvigNotificationCard(
+      message = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
+      priority = Info,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -100,76 +104,77 @@ private fun DeflectTowingScreen(
       if (index > 0) {
         Spacer(Modifier.height(8.dp))
       }
-      HedvigCard(
-        colors = CardDefaults.outlinedCardColors(
-          containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
-          contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-        ),
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
-      ) {
-        Column(Modifier.padding(16.dp)) {
-          AsyncImage(
-            model = partner.imageUrl,
-            contentDescription = null,
-            imageLoader = imageLoader,
-            placeholder = rememberShapedColorPainter(MaterialTheme.colorScheme.surface),
-            modifier = Modifier
-              .padding(16.dp)
-              .fillMaxWidth()
-              .height(40.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(16.dp))
-          val context = LocalContext.current
-          HedvigContainedSmallButton(
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
-            ),
-            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
-            onClick = {
-              val phoneNumber = partner.phoneNumber
-              if (phoneNumber != null) {
-                try {
-                  context.startActivity(
-                    Intent(
-                      Intent.ACTION_DIAL,
-                      Uri.parse("tel:$phoneNumber"),
-                    ),
-                  )
-                } catch (exception: Throwable) {
-                  logcat(ERROR, exception) {
-                    "Could not open dial activity in deflect towing destination"
+      HedvigTheme(darkTheme = true) {
+        HedvigCard(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        ) {
+          Surface(
+            color = HedvigTheme.colorScheme.fillBlack.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
+            contentColor = HedvigTheme.colorScheme.fillNegative,
+          ) {
+            Column(Modifier.padding(16.dp)) {
+              AsyncImage(
+                model = partner.imageUrl,
+                contentDescription = null,
+                imageLoader = imageLoader,
+                placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
+                modifier = Modifier
+                  .padding(16.dp)
+                  .fillMaxWidth()
+                  .height(40.dp),
+              )
+              Spacer(Modifier.height(16.dp))
+              HedvigText(
+                text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+              )
+              Spacer(Modifier.height(16.dp))
+              val context = LocalContext.current
+              HedvigButton(
+                text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
+                enabled = true,
+                buttonSize = Medium,
+                onClick = dropUnlessResumed {
+                  val phoneNumber = partner.phoneNumber
+                  if (phoneNumber != null) {
+                    try {
+                      context.startActivity(
+                        Intent(
+                          Intent.ACTION_DIAL,
+                          Uri.parse("tel:$phoneNumber"),
+                        ),
+                      )
+                    } catch (exception: Throwable) {
+                      logcat(ERROR, exception) {
+                        "Could not open dial activity in deflect towing destination"
+                      }
+                    }
+                  } else {
+                    logcat(ERROR) {
+                      "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
+                    }
                   }
-                }
-              } else {
-                logcat(ERROR) {
-                  "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
-                }
-              }
-            },
-          )
+                },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+          }
         }
       }
     }
     Spacer(Modifier.height(24.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(24.dp))
     QuestionsAndAnswers(
@@ -177,25 +182,27 @@ private fun DeflectTowingScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(32.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
-    Text(
+    HedvigText(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
     Spacer(Modifier.height(24.dp))
-    HedvigContainedSmallButton(
+    HedvigButton(
       text = stringResource(R.string.open_chat),
-      onClick = onNavigateToNewConversation,
+      enabled = true,
+      buttonSize = Small,
+      onClick = dropUnlessResumed { onNavigateToNewConversation() },
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth()
@@ -225,8 +232,17 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
             index
           }
         },
-        titleText = faqItem.first,
-        expandedText = faqItem.second,
+        content = {
+          HedvigText(faqItem.first)
+        },
+        expandedContent = {
+          HedvigText(
+            text = faqItem.second,
+            color = HedvigTheme.colorScheme.textSecondary,
+            modifier = Modifier.padding(end = 24.dp, top = 12.dp),
+          )
+        },
+        contentPadding = PaddingValues(12.dp),
       )
     }
   }
@@ -236,7 +252,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 @Composable
 private fun PreviewDeflectTowingScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DeflectTowingScreen(
         partners = listOf(
           DeflectPartner(
