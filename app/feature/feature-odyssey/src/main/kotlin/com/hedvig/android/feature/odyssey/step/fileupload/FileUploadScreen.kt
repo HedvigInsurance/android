@@ -8,22 +8,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -46,29 +47,34 @@ internal fun FileUploadScreen(
     ),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.CLAIMS_FILE_UPLOAD_TITLE),
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineMedium.copy(
+        lineBreak = LineBreak.Heading,
+      ),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    VectorInfoCard(
-      text = stringResource(id = R.string.CLAIMS_FILE_UPLOAD_INFO),
+    HedvigNotificationCard(
+      message = stringResource(id = R.string.CLAIMS_FILE_UPLOAD_INFO),
+      priority = Info,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.file_upload_upload_files),
       onClick = submitFiles,
       isLoading = uiState.isLoading,
-      modifier = sideSpacingModifier,
+      enabled = !uiState.isLoading,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.claims_skip_button),
+      text = stringResource(R.string.claims_skip_button),
       onClick = onContinue,
-      modifier = sideSpacingModifier,
+      enabled = !uiState.isLoading,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -79,7 +85,7 @@ internal fun FileUploadScreen(
 @Composable
 private fun PreviewFileUploadScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       FileUploadScreen(
         FileUploadUiState(),
         WindowSizeClass.calculateForPreview(),
