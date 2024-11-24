@@ -9,7 +9,6 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.compose)
@@ -22,9 +21,7 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.designSystemHedvig)
