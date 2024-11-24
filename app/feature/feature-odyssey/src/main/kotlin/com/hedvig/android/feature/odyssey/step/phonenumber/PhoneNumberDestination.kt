@@ -20,8 +20,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -31,6 +29,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.ERROR
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.LOADING
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold

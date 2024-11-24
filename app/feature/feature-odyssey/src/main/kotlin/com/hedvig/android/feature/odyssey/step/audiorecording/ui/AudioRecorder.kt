@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.design.system.hedvig.HedvigButton

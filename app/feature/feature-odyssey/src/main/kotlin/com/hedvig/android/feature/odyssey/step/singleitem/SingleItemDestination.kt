@@ -33,26 +33,27 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.MultiSelectDialog
-import com.hedvig.android.core.ui.dialog.SingleSelectDialog
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.MultiSelectDialog
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.BothDialogAndCustom
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustCustomModel
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustModelDialog
@@ -201,15 +202,16 @@ private fun SingleItemScreen(
       Spacer(Modifier.height(2.dp))
     }
     Spacer(Modifier.height(14.dp))
-    VectorInfoCard(
-      stringResource(
+    HedvigNotificationCard(
+      message = stringResource(
         if (uiState.purchasePriceApplicable) {
           R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
         } else {
           R.string.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
         },
       ),
-      sideSpacingModifier.fillMaxWidth(),
+      priority = Info,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -279,15 +281,17 @@ private fun SelectDialogWithFreeTextField(
   SingleSelectDialog(
     title = stringResource(R.string.claims_item_screen_model_button),
     optionsList = uiState.availableItemModels,
+    getDisplayText = { it.displayName(resources) },
+    getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
+    getId = { it.asKnown()?.itemModelId ?: "id" },
+    getItemForId = { id ->
+      uiState.availableItemModels.first { it.asKnown()?.itemModelId ?: "id" == id }
+    },
     onSelected =
       { selectedModel ->
         selectModel(selectedModel)
       },
-    getDisplayText = { it.displayName(resources) },
-    getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
-    getId = { it.asKnown()?.itemModelId ?: "id" },
     onDismissRequest = onDismissRequest,
-    smallSelectionItems = true,
   )
 }
 
@@ -305,12 +309,14 @@ private fun Brands(
     SingleSelectDialog(
       title = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
       optionsList = uiState.availableItemBrands,
-      onSelected = selectBrand,
       getDisplayText = { it.displayName(resources) },
       getId = { it.asKnown()?.itemBrandId ?: "id" },
       getIsSelected = { it: ItemBrand -> it == uiState.selectedItemBrand },
+      getItemForId = { id ->
+        uiState.availableItemBrands.first { it.asKnown()?.itemBrandId ?: "id" == id }
+      },
+      onSelected = selectBrand,
       onDismissRequest = { showDialog = false },
-      smallSelectionItems = true,
     )
   }
 
@@ -390,6 +396,9 @@ private fun ItemProblems(
       getDisplayText = { it.displayName },
       getIsSelected = { uiState.selectedItemProblems.contains(it) },
       getId = { it.itemProblemId },
+      getItemForId = { id ->
+        uiState.availableItemProblems.first { it.itemProblemId == id }
+      }
     ) {
       showDialog = false
     }

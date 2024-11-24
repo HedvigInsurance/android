@@ -22,6 +22,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
@@ -105,6 +107,33 @@ fun HedvigAlertDialog(
 }
 
 @Composable
+fun <T> SingleSelectDialog(
+  title: String,
+  optionsList: List<T>,
+  onSelected: (T) -> Unit,
+  getDisplayText: (T) -> String,
+  getIsSelected: ((T) -> Boolean)?,
+  getId: (T) -> String,
+  getItemForId: (String) -> T,
+  onDismissRequest: () -> Unit,
+) {
+  SingleSelectDialog(
+    title = title,
+    optionsList = optionsList.map {
+      RadioOptionData(
+        id = getId(it),
+        optionText = getDisplayText(it),
+        chosenState = if (getIsSelected?.invoke(it) ?: false) Chosen else NotChosen,
+      )
+    },
+    onSelected = {
+      onSelected(getItemForId(it.id))
+    },
+    onDismissRequest = onDismissRequest,
+  )
+}
+
+@Composable
 fun SingleSelectDialog(
   title: String,
   optionsList: List<RadioOptionData>,
@@ -137,6 +166,34 @@ fun SingleSelectDialog(
       }
     }
   }
+}
+
+
+@Composable
+fun <T> MultiSelectDialog(
+  title: String,
+  optionsList: List<T>,
+  onSelected: (T) -> Unit,
+  getDisplayText: (T) -> String,
+  getIsSelected: ((T) -> Boolean)?,
+  getId: (T) -> String,
+  getItemForId: (String) -> T,
+  onDismissRequest: () -> Unit,
+) {
+  MultiSelectDialog(
+    title = title,
+    optionsList = optionsList.map {
+      RadioOptionData(
+        id = getId(it),
+        optionText = getDisplayText(it),
+        chosenState = if (getIsSelected?.invoke(it) ?: false) Chosen else NotChosen,
+      )
+    },
+    onSelected = {
+      onSelected(getItemForId(it.id))
+    },
+    onDismissRequest = onDismissRequest,
+  )
 }
 
 @Composable
