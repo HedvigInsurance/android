@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui
+package com.hedvig.android.feature.odyssey.step.audiorecording.ui
 
 import android.view.View
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import hedvig.resources.R
  * negate other callers.
  */
 @Composable
-fun ScreenOnFlag() {
+internal fun ScreenOnFlag() {
   val view = LocalView.current
   DisposableEffect(view) {
     val keepScreenOnState = view.keepScreenOnState

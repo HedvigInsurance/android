@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- KeepScreenOnRequest tag to toggle View.keepScreenOn. See KeepScreenOnRequest.kt -->
+    <!-- ScreenOnFlag tag to toggle View.keepScreenOn. See ScreenOnFlag.kt -->
     <item name="keep_screen_on_state" type="id" />
 </resources>

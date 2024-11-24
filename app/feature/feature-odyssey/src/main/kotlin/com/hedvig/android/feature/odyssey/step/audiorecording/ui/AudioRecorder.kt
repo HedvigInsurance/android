@@ -26,10 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,15 +41,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.ScreenOnFlag
 import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
 import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
@@ -136,7 +134,7 @@ internal fun AudioRecorder(
               if (isRecording) 18.dp else 32.dp
             }
             val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
-              if (isRecording) Color.Black else MaterialTheme.colorScheme.error
+              if (isRecording) Color.Black else HedvigTheme.colorScheme.signalRedElement
             }
             val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
               if (isRecording) 2.dp else 16.dp
@@ -180,16 +178,15 @@ internal fun AudioRecorder(
             val diff = clock.now() - (startedRecordingAt ?: clock.now())
             val label =
               "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-            Text(
+            HedvigText(
               text = label,
-              style = MaterialTheme.typography.bodySmall,
+              style = HedvigTheme.typography.bodySmall,
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(bottom = 16.dp),
             )
           } else {
-            Text(
+            HedvigText(
               text = stringResource(R.string.EMBARK_START_RECORDING),
-              style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(bottom = 16.dp),
             )
@@ -212,25 +209,25 @@ private fun Playback(
     modifier = modifier.fillMaxWidth(),
   ) {
     if (!uiState.isPrepared) {
-      CircularProgressIndicator()
+      HedvigCircularProgressIndicator()
     } else {
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
       HedvigAudioPlayer(audioPlayer = audioPlayer)
     }
 
-    HedvigContainedButton(
+    HedvigButton(
       onClick = submit,
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
-      modifier = Modifier.padding(top = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
     )
 
     HedvigTextButton(
       text = stringResource(R.string.EMBARK_RECORD_AGAIN),
       onClick = redo,
       enabled = uiState.canSubmit,
-      modifier = Modifier.padding(top = 8.dp),
+      modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
     )
   }
 }
@@ -259,11 +256,12 @@ private fun PrerecordedPlayback(
     ) {
       Column {
         Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
+        HedvigButton(
           onClick = submitAudioUrl,
           text = stringResource(R.string.general_continue_button),
           isLoading = uiState.isLoading,
           enabled = uiState.canSubmit,
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
@@ -279,6 +277,7 @@ private fun PrerecordedPlayback(
           text = stringResource(R.string.EMBARK_RECORD_AGAIN),
           onClick = redo,
           enabled = uiState.canSubmit,
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
@@ -289,7 +288,7 @@ private fun PrerecordedPlayback(
 @Composable
 private fun PreviewNotRecording() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
         uiState = AudioRecordingUiState.NotRecording,
         startRecording = { },
@@ -307,7 +306,7 @@ private fun PreviewNotRecording() {
 @Composable
 private fun PreviewRecording() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
         uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now().minus(1019.seconds), ""),
         startRecording = { },
@@ -325,7 +324,7 @@ private fun PreviewRecording() {
 @Composable
 private fun PreviewPrerecordedPlayback() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PrerecordedPlayback(
         uiState = AudioRecordingUiState.PrerecordedWithAudioContent(AudioContent(AudioUrl(""), AudioUrl(""))),
         redo = {},
