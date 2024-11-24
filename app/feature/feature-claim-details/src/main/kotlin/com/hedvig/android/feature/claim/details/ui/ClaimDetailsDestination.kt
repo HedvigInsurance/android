@@ -55,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -587,7 +588,7 @@ private fun ClaimTypeAndDatesSection(
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewClaimDetailScreen() {
   HedvigTheme {
@@ -628,50 +629,15 @@ private fun PreviewClaimDetailScreen() {
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
-          files = listOf(
+          files = List(6) { index ->
             UiFile(
-              id = "1",
-              name = "test",
+              id = index.toString(),
+              name = "test#$index".let { if (index == 2) it.repeat(10) else it },
               mimeType = "",
-              url = "1",
+              url = index.toString(),
               localPath = null,
-            ),
-            UiFile(
-              id = "2",
-              name = "test".repeat(10),
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "3",
-              name = "test",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "4",
-              name = "test4",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "5",
-              name = "test5",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "6",
-              name = "test6",
-              mimeType = "",
-              url = "",
-              localPath = null,
-            ),
-          ),
+            )
+          },
           isUploadingFile = false,
           uploadUri = "",
           uploadError = null,

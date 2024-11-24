@@ -27,6 +27,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.designSystemHedvig)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
