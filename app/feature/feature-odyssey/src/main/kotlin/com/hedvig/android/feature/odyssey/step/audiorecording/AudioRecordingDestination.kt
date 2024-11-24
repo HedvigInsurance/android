@@ -103,7 +103,7 @@ private fun AudioRecordingScreen(
     closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
-    Spacer(Modifier.height(20.dp))
+    Spacer(Modifier.height(16.dp))
     for (question in questions) {
       HedvigCard(
         shape = RoundedCornerShape(12.dp),
