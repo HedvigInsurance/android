@@ -355,18 +355,19 @@ private fun ManualInputFields(
         modifier = Modifier.weight(1f),
       )
     }
-
-    Spacer(Modifier.height(4.dp))
     AnimatedVisibility(
       visible = errorMessage != null,
       enter = fadeIn(),
       exit = fadeOut(),
     ) {
-      HedvigNotificationCard(
-        message = errorMessage ?: "",
-        priority = NotificationDefaults.NotificationPriority.Attention,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      Column {
+        Spacer(Modifier.height(4.dp))
+        HedvigNotificationCard(
+          message = errorMessage ?: "",
+          priority = NotificationDefaults.NotificationPriority.Attention,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
     }
   }
 }
@@ -415,10 +416,11 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
   HedvigCard(
     onClick = { showDatePicker = true },
     modifier = modifier,
+    shape = HedvigTheme.shapes.cornerLarge,
   ) {
     Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
       val paddingForBirthDate = if (birthDate == null) {
-        PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)
+        PaddingValues(start = 16.dp, end = 16.dp, top = 15.dp, bottom = 13.dp)
       } else {
         PaddingValues(horizontal = 16.dp)
       }
@@ -441,7 +443,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         color = if (birthDate != null) {
           Color.Unspecified
         } else {
-          HedvigTheme.colorScheme.textSecondary
+          HedvigTheme.colorScheme.textSecondaryTranslucent
         },
         modifier = Modifier.padding(
           paddingForBirthDate,
@@ -509,7 +511,8 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
           showManualInput = true,
           infoFromSsn = InfoFromSsn(),
           manualInfo = ManualInfo(
-            birthDate = LocalDate(2016, 7, 28),
+            birthDate = null,
+            // birthDate = LocalDate(2016, 7, 28),
           ),
         ),
         onSsnChanged = {},

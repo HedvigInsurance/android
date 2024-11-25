@@ -384,7 +384,7 @@ private fun EditCoInsuredScreenEditablePreview() {
 @HedvigMultiScreenPreview
 private fun EditCoInsuredScreenNonEditablePreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
