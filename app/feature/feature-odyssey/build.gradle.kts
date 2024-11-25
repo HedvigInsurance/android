@@ -34,10 +34,8 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
@@ -48,6 +46,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
+  implementation(projects.uiClaimFlow)
   implementation(projects.uiEmergency)
 
   testImplementation(libs.assertK)

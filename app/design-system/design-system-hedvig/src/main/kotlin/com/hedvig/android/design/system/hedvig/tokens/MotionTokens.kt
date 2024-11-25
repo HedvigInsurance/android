@@ -3,7 +3,7 @@ package com.hedvig.android.design.system.hedvig.tokens
 import androidx.compose.animation.core.CubicBezierEasing
 
 @Suppress("unused")
-internal object MotionTokens {
+object MotionTokens {
   const val DurationExtraLong2 = 800.0
   const val DurationExtraLong3 = 900.0
   const val DurationExtraLong4 = 1000.0

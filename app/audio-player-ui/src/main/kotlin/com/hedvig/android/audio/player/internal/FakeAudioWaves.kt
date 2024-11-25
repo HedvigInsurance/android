@@ -2,9 +2,11 @@
 
 package com.hedvig.android.audio.player.internal
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,24 +14,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.hedvig.android.core.designsystem.material3.DisabledAlpha
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.audio.player.data.ProgressPercentage
 import kotlin.math.abs
 import kotlin.math.absoluteValue
@@ -123,11 +124,11 @@ private fun FakeAudioWavePill(
   val hasPlayedThisWave = remember(progressPercentage, numberOfWaves, waveIndex) {
     progressPercentage.value * numberOfWaves > waveIndex
   }
-  Surface(
-    shape = CircleShape,
-    color = if (hasPlayedThisWave) playedColor else notPlayedColor,
-    modifier = modifier.fillMaxHeight(fraction = height),
-  ) {}
+  Box(
+    modifier = modifier.fillMaxHeight(fraction = height)
+      .clip(CircleShape)
+      .background(if (hasPlayedThisWave) playedColor else notPlayedColor),
+  )
 }
 
 @HedvigPreview
@@ -135,13 +136,13 @@ private fun FakeAudioWavePill(
 private fun PreviewFakeAudioWaves() {
   HedvigTheme {
     Surface(
-      color = MaterialTheme.colorScheme.surface,
+      color = HedvigTheme.colorScheme.surfacePrimary,
       modifier = Modifier.height(150.dp),
     ) {
       FakeAudioWaves(
         ProgressPercentage(0.2f),
         LocalContentColor.current,
-        LocalContentColor.current.copy(DisabledAlpha).compositeOver(MaterialTheme.colorScheme.surface),
+        LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.surfacePrimary),
         {},
       )
     }

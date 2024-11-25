@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.odyssey.step.success
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,22 +11,20 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
@@ -38,7 +35,7 @@ internal fun ClaimSuccessDestination(closeSuccessScreen: () -> Unit) {
 @Composable
 private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(
@@ -47,33 +44,16 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Box(
-        contentAlignment = BiasAlignment(horizontalBias = 0f, verticalBias = 0.2f),
-        modifier = Modifier
+      Spacer(Modifier.height(16.dp))
+      EmptyState(
+        stringResource(R.string.CLAIMS_SUCCESS_TITLE),
+        stringResource(R.string.CLAIMS_SUCCESS_LABEL),
+        Modifier
+          .fillMaxSize()
           .weight(1f)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      ) {
-        Column(Modifier.fillMaxWidth()) {
-          Text(
-            text = stringResource(R.string.CLAIMS_SUCCESS_TITLE),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = stringResource(R.string.CLAIMS_SUCCESS_LABEL),
-            style = MaterialTheme.typography.bodyLarge.copy(
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              textAlign = TextAlign.Center,
-              lineBreak = LineBreak.Heading,
-            ),
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-        }
-      }
+          .wrapContentSize(Alignment.Center),
+        SUCCESS,
+      )
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         onClick = closeSuccessScreen,
@@ -92,7 +72,7 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
 @Composable
 fun PreviewClaimSuccessScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimSuccessScreen({})
     }
   }

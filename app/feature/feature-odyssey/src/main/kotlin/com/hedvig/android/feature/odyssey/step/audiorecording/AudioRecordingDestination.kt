@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,17 +25,18 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.permission.PermissionDialog
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.PermissionDialog
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.Clock
@@ -103,17 +100,12 @@ private fun AudioRecordingScreen(
     closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
-    Spacer(Modifier.height(20.dp))
+    Spacer(Modifier.height(16.dp))
     for (question in questions) {
-      HedvigCard(
-        shape = RoundedCornerShape(12.dp),
-        elevation = HedvigCardElevation.Elevated(),
-        modifier = sideSpacingModifier.padding(end = 16.dp),
-      ) {
-        Text(
+      HedvigCard(modifier = sideSpacingModifier.padding(end = 16.dp)) {
+        HedvigText(
           text = question,
           modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
-          style = MaterialTheme.typography.bodyLarge,
         )
       }
       Spacer(Modifier.height(8.dp))
@@ -194,7 +186,7 @@ private fun AudioRecordingSection(
 @Composable
 private fun PreviewAudioRecordingScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecordingScreen(
         AudioRecordingUiState.NotRecording,
         WindowSizeClass.calculateForPreview(),

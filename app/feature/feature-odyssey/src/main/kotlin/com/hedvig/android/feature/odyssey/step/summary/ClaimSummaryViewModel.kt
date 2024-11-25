@@ -3,7 +3,6 @@ package com.hedvig.android.feature.odyssey.step.summary
 import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -17,6 +16,7 @@ import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
+import com.hedvig.android.design.system.hedvig.datepicker.hedvigDateTimeFormatter
 import hedvig.resources.R
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds

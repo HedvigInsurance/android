@@ -72,6 +72,7 @@ fun HedvigDatePicker(
   datePickerState: HedvigDatePickerState,
   onDismissRequest: () -> Unit,
   onConfirmRequest: () -> Unit,
+  dismissButton: (@Composable () -> Unit)? = null,
 ) {
   HedvigDatePicker(
     state = datePickerState,
@@ -87,6 +88,7 @@ fun HedvigDatePicker(
         buttonSize = Medium,
       )
     },
+    dismissButton = dismissButton,
   )
 }
 
@@ -123,6 +125,7 @@ fun HedvigDatePicker(
             buttonSize = Medium,
           )
         },
+        dismissButton = null,
       )
     }
   }

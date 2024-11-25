@@ -27,7 +27,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.hedvig.android.core.ui.permission.PermissionDialog
+import com.hedvig.android.design.system.hedvig.PermissionDialog
 import hedvig.resources.R
 
 interface NotificationPermissionState : PermissionState {
@@ -61,6 +61,8 @@ private class NotificationPermissionStateImpl(
 @SuppressLint("InlinedApi")
 @Composable
 fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState {
+  // todo change to LocalActivity when it's part of the stable release
+  //  https://developer.android.com/jetpack/androidx/releases/activity#1.10.0-alpha03
   val context = LocalContext.current
   val permissionState = remember {
     MutablePermissionState(Manifest.permission.POST_NOTIFICATIONS, context, context.findActivity())
