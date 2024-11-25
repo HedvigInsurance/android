@@ -454,10 +454,11 @@ private fun SmallHorizontalPreferringButtons(
       maxOf(confirmButtonPlaceable.height, dismissButtonPlaceable.height)
     }
     layout(layoutWidth, layoutHeight) {
-      dismissButtonPlaceable.place(0, 0)
       if (doNeedSecondLine) {
-        confirmButtonPlaceable.place(0, dismissButtonPlaceable.height + spaceBetween.roundToPx())
+        confirmButtonPlaceable.place(0, 0)
+        dismissButtonPlaceable.place(0, confirmButtonPlaceable.height + spaceBetween.roundToPx())
       } else {
+        dismissButtonPlaceable.place(0, 0)
         confirmButtonPlaceable.place(dismissButtonPlaceable.width + spaceBetween.roundToPx(), 0)
       }
     }
