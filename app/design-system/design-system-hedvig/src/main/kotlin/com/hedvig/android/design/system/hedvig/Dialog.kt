@@ -3,12 +3,10 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,9 +21,13 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -238,50 +240,7 @@ fun HedvigDialog(
     onDismissRequest = onDismissRequest,
     properties = dialogProperties,
   ) {
-    Surface(
-      shape = DialogDefaults.shape,
-      color = DialogDefaults.containerColor,
-      modifier = modifier.then(
-        if (dialogProperties.usePlatformDefaultWidth) {
-          Modifier
-        } else {
-          Modifier.padding(horizontal = 16.dp)
-        },
-      ),
-    ) {
-      val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
-      Column(
-        Modifier.padding(padding),
-      ) {
-        when (style) {
-          is Buttons -> {
-            content()
-            Spacer(Modifier.height(40.dp))
-            when (style.buttonSize) {
-              BIG -> {
-                BigVerticalButtons(
-                  onDismissRequest = style.onDismissRequest,
-                  dismissButtonText = style.dismissButtonText,
-                  onConfirmButtonClick = style.onConfirmButtonClick,
-                  confirmButtonText = style.confirmButtonText,
-                )
-              }
-
-              SMALL -> {
-                SmallHorizontalButtons(
-                  onDismissRequest = style.onDismissRequest,
-                  dismissButtonText = style.dismissButtonText,
-                  onConfirmButtonClick = style.onConfirmButtonClick,
-                  confirmButtonText = style.confirmButtonText,
-                )
-              }
-            }
-          }
-
-          NoButtons -> content()
-        }
-      }
-    }
+    HedvigDialogContent(dialogProperties.usePlatformDefaultWidth, applyDefaultPadding, style, modifier, content)
   }
 }
 
@@ -335,6 +294,60 @@ object DialogDefaults {
 }
 
 @Composable
+private fun HedvigDialogContent(
+  usePlatformDefaultWidth: Boolean,
+  applyDefaultPadding: Boolean,
+  style: DialogStyle,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  Surface(
+    shape = DialogDefaults.shape,
+    color = DialogDefaults.containerColor,
+    modifier = modifier.then(
+      if (usePlatformDefaultWidth) {
+        Modifier
+      } else {
+        Modifier.padding(horizontal = 16.dp)
+      },
+    ),
+  ) {
+    val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
+    Column(
+      Modifier.padding(padding),
+    ) {
+      when (style) {
+        is Buttons -> {
+          content()
+          Spacer(Modifier.height(40.dp))
+          when (style.buttonSize) {
+            BIG -> {
+              BigVerticalButtons(
+                onDismissRequest = style.onDismissRequest,
+                dismissButtonText = style.dismissButtonText,
+                onConfirmButtonClick = style.onConfirmButtonClick,
+                confirmButtonText = style.confirmButtonText,
+              )
+            }
+
+            SMALL -> {
+              SmallHorizontalPreferringButtons(
+                onDismissRequest = style.onDismissRequest,
+                dismissButtonText = style.dismissButtonText,
+                onConfirmButtonClick = style.onConfirmButtonClick,
+                confirmButtonText = style.confirmButtonText,
+              )
+            }
+          }
+        }
+
+        NoButtons -> content()
+      }
+    }
+  }
+}
+
+@Composable
 private fun CoreSelectDialog(
   title: String,
   optionsList: List<RadioOptionData>,
@@ -383,33 +396,71 @@ private fun CoreSelectDialog(
   }
 }
 
+/**
+ * Prefer an horizontal placement if they both fit, otherwise vertical
+ */
 @Composable
-private fun SmallHorizontalButtons(
+private fun SmallHorizontalPreferringButtons(
   onDismissRequest: () -> Unit,
   dismissButtonText: String,
   onConfirmButtonClick: () -> Unit,
   confirmButtonText: String,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    HedvigButton(
-      modifier = Modifier.weight(1f),
-      onClick = onDismissRequest,
-      text = dismissButtonText,
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      buttonSize = ButtonDefaults.ButtonSize.Medium,
-    )
-    Spacer(Modifier.width(8.dp))
-    HedvigButton(
-      modifier = Modifier.weight(1f),
-      onClick = onConfirmButtonClick,
-      text = confirmButtonText,
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-      buttonSize = ButtonDefaults.ButtonSize.Medium,
-    )
+  val textMeasurer = rememberTextMeasurer(cacheSize = 2)
+  val textStyle = LocalTextStyle.current
+  Layout(
+    {
+      HedvigButton(
+        onClick = onDismissRequest,
+        text = dismissButtonText,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
+      )
+      HedvigButton(
+        onClick = onConfirmButtonClick,
+        text = confirmButtonText,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
+      )
+    },
+  ) { measurables, constraints ->
+    val spaceBetween = 8.dp
+    val innerButtonHorizontalPadding = 16.dp
+    val spaceAvailableForEachTextWhenPlacedHorizontallyInsideButton = constraints.maxWidth / 2 -
+      (innerButtonHorizontalPadding * 2).toPx() -
+      (spaceBetween / 2).toPx()
+    val doNeedSecondLine = listOf(dismissButtonText, confirmButtonText).any { text ->
+      textMeasurer.measure(
+        text = text,
+        style = textStyle,
+        constraints = Constraints(maxWidth = spaceAvailableForEachTextWhenPlacedHorizontallyInsideButton.toInt()),
+      ).lineCount > 1
+    }
+    val buttonConstraints = if (doNeedSecondLine) {
+      constraints.copy(minHeight = 0)
+    } else {
+      val fixedWidth = constraints.maxWidth / 2 - (spaceBetween / 2).toPx().toInt()
+      constraints.copy(minHeight = 0, minWidth = fixedWidth, maxWidth = fixedWidth)
+    }
+    val (dismissButton, confirmButton) = measurables
+    val dismissButtonPlaceable = dismissButton.measure(buttonConstraints)
+    val confirmButtonPlaceable = confirmButton.measure(buttonConstraints)
+    val layoutWidth = constraints.maxWidth
+    val layoutHeight = if (doNeedSecondLine) {
+      confirmButtonPlaceable.height + spaceBetween.roundToPx() + dismissButtonPlaceable.height
+    } else {
+      maxOf(confirmButtonPlaceable.height, dismissButtonPlaceable.height)
+    }
+    layout(layoutWidth, layoutHeight) {
+      dismissButtonPlaceable.place(0, 0)
+      if (doNeedSecondLine) {
+        confirmButtonPlaceable.place(0, dismissButtonPlaceable.height + spaceBetween.roundToPx())
+      } else {
+        confirmButtonPlaceable.place(dismissButtonPlaceable.width + spaceBetween.roundToPx(), 0)
+      }
+    }
   }
 }
 
@@ -438,5 +489,40 @@ private fun BigVerticalButtons(
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       buttonSize = ButtonDefaults.ButtonSize.Large,
     )
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigDialogContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HedvigDialogContent(
+        usePlatformDefaultWidth = false,
+        applyDefaultPadding = false,
+        style = Buttons({}, "Cancel", {}, "Confirm text"),
+        content = {
+          HedvigText("Some varying content")
+        },
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Preview(widthDp = 150, heightDp = 150)
+@Preview(widthDp = 200, heightDp = 150)
+@Preview(widthDp = 250, heightDp = 150)
+@Preview(widthDp = 280, heightDp = 150)
+@Preview(widthDp = 300, heightDp = 150)
+@Preview(widthDp = 400, heightDp = 150)
+@Composable
+private fun PreviewSmallHorizontalPreferringButtons() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SmallHorizontalPreferringButtons(
+        {}, "Cancel", {}, "Confirm text",
+      )
+    }
   }
 }
