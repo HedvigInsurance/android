@@ -439,7 +439,7 @@ private fun SmallHorizontalPreferringButtons(
       ).lineCount > 1
     }
     val buttonConstraints = if (doNeedSecondLine) {
-      constraints.copy(minHeight = 0)
+      constraints.copy(minHeight = 0, minWidth = constraints.maxWidth)
     } else {
       val fixedWidth = constraints.maxWidth / 2 - (spaceBetween / 2).toPx().toInt()
       constraints.copy(minHeight = 0, minWidth = fixedWidth, maxWidth = fixedWidth)
