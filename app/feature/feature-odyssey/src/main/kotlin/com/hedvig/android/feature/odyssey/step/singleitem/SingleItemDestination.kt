@@ -398,10 +398,11 @@ private fun ItemProblems(
       getId = { it.itemProblemId },
       getItemForId = { id ->
         uiState.availableItemProblems.first { it.itemProblemId == id }
+      },
+      onDismissRequest = {
+        showDialog = false
       }
-    ) {
-      showDialog = false
-    }
+    )
   }
 
   HedvigBigCard(

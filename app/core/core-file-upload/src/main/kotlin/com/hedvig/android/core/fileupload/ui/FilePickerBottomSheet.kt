@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,24 +65,28 @@ private fun FilePickerBottomSheetContent(
 ) {
   Column(
     modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    ClickableOption(
-      text = stringResource(R.string.file_upload_photo_library),
-      icon = HedvigIcons.Image,
-      onClick = onPickPhoto,
-    )
-    ClickableOption(
-      text = stringResource(R.string.file_upload_take_photo),
-      icon = HedvigIcons.Camera,
-      onClick = onTakePhoto,
-    )
-    ClickableOption(
-      text = stringResource(R.string.file_upload_choose_files),
-      icon = HedvigIcons.Document,
-      onClick = onPickFile,
-    )
-    Spacer(Modifier.height(16.dp))
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      ClickableOption(
+        text = stringResource(R.string.file_upload_photo_library),
+        icon = HedvigIcons.Image,
+        onClick = onPickPhoto,
+      )
+      ClickableOption(
+        text = stringResource(R.string.file_upload_take_photo),
+        icon = HedvigIcons.Camera,
+        onClick = onTakePhoto,
+      )
+      ClickableOption(
+        text = stringResource(R.string.file_upload_choose_files),
+        icon = HedvigIcons.Document,
+        onClick = onPickFile,
+      )
+    }
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

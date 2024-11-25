@@ -89,7 +89,7 @@ private fun NotificationPermissionScreen(
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     Spacer(Modifier.weight(1f))
     if (notificationPermissionState.status.isGranted.not()) {
       HedvigTextButton(

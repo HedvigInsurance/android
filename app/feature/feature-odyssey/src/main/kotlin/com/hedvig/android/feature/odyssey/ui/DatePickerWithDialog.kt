@@ -44,12 +44,13 @@ internal fun DatePickerWithDialog(
     HedvigDatePicker(
       datePickerState = uiState.datePickerState,
       onDismissRequest = { showDatePicker = false },
-      onConfirmRequest = { showDatePicker = true},
+      onConfirmRequest = { showDatePicker = false },
       dismissButton = {
         HedvigTextButton(
           text = stringResource(R.string.GENERAL_NOT_SURE),
           onClick = {
             uiState.clearDateSelection()
+            showDatePicker = false
           },
           buttonSize = Medium,
         )
