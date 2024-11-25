@@ -108,12 +108,13 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       url = document.url,
       type = @Suppress("ktlint:standard:max-line-length")
       when (document.type) {
-        InsuranceDocumentType.TERMS_AND_CONDITIONS -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS
-        InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD
-        InsuranceDocumentType.PRE_SALE_INFO -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO
-        InsuranceDocumentType.GENERAL_TERMS -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
-        InsuranceDocumentType.PRIVACY_POLICY -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
-        InsuranceDocumentType.UNKNOWN__ -> com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+        InsuranceDocumentType.TERMS_AND_CONDITIONS -> InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS
+        InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD
+        InsuranceDocumentType.PRE_SALE_INFO -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO
+        InsuranceDocumentType.GENERAL_TERMS -> InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
+        InsuranceDocumentType.PRIVACY_POLICY -> InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
+        InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+        InsuranceDocumentType.SCAR_TABLE -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
       },
     )
   },
