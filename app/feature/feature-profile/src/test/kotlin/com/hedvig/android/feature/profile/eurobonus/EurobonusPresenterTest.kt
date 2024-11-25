@@ -73,7 +73,7 @@ class EurobonusPresenterTest {
       ),
     ) {
       awaitItem()
-      getEurobonusDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("msg").left())
+      getEurobonusDataUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("msg").left())
       assertThat(awaitItem()).isEqualTo(
         EurobonusUiState(
           canSubmit = false,
@@ -151,7 +151,7 @@ class EurobonusPresenterTest {
       awaitItem()
       sendEvent(EurobonusEvent.SubmitEditedEurobonus)
       awaitItem()
-      updateEurobonusNumberUseCase.responseTurbine.add(ApolloOperationError.OperationError("msg").left())
+      updateEurobonusNumberUseCase.responseTurbine.add(ApolloOperationError.OperationError.Other("msg").left())
       assertThat(awaitItem().hasError).isEqualTo(true)
     }
   }
