@@ -60,7 +60,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
-import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetContentState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
@@ -74,7 +74,7 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
-  bottomSheetState: AddBottomSheetState,
+  bottomSheetState: AddBottomSheetContentState,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
   onDismiss: () -> Unit,
@@ -453,9 +453,9 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
   }
 }
 
-private fun AddBottomSheetState.SaveButtonLabel.stringRes() = when (this) {
-  AddBottomSheetState.SaveButtonLabel.FETCH_INFO -> R.string.CONTRACT_SSN_FETCH_INFO
-  AddBottomSheetState.SaveButtonLabel.ADD -> R.string.CONTRACT_ADD_COINSURED
+private fun AddBottomSheetContentState.SaveButtonLabel.stringRes() = when (this) {
+  AddBottomSheetContentState.SaveButtonLabel.FETCH_INFO -> R.string.CONTRACT_SSN_FETCH_INFO
+  AddBottomSheetContentState.SaveButtonLabel.ADD -> R.string.CONTRACT_ADD_COINSURED
 }
 
 @Composable
@@ -464,7 +464,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddCoInsuredBottomSheetContent(
-        bottomSheetState = AddBottomSheetState(
+        bottomSheetState = AddBottomSheetContentState(
           errorMessage = "Error",
           manualInfo = ManualInfo(),
           infoFromSsn = InfoFromSsn(),
@@ -505,7 +505,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddCoInsuredBottomSheetContent(
-        bottomSheetState = AddBottomSheetState(
+        bottomSheetState = AddBottomSheetContentState(
           errorMessage = "errorMessage",
           showUnderAgedInfo = true,
           showManualInput = true,

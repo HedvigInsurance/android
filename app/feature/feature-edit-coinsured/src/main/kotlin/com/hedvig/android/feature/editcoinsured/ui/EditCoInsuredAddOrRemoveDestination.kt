@@ -45,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -167,18 +168,17 @@ private fun EditCoInsuredScreen(
               onCompleted(uiState.contractUpdateDate)
             }
           }
+          val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
           HedvigBottomSheet(
-            isVisible = uiState.addBottomSheetState.show,
-            onVisibleChange = { isVisible ->
-              if (!isVisible) {
-                onResetAddBottomSheetState()
-              }
-            },
+            hedvigBottomSheetState = hedvigBottomSheetState
           ) {
             AddCoInsuredBottomSheetContent(
-              bottomSheetState = uiState.addBottomSheetState,
+              bottomSheetState = uiState.addBottomSheetContentState,
               onContinue = onSave,
-              onDismiss = onResetAddBottomSheetState,
+              onDismiss = {
+                hedvigBottomSheetState.dismiss()
+                onResetAddBottomSheetState()
+              },
               onSsnChanged = onSsnChanged,
               onFirstNameChanged = onFirstNameChanged,
               onLastNameChanged = onLastNameChanged,
@@ -219,7 +219,10 @@ private fun EditCoInsuredScreen(
           if (uiState.listState.noCoInsuredHaveMissingInfo()) {
             HedvigButton(
               text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
-              onClick = onAddCoInsuredClicked,
+              onClick = {
+                hedvigBottomSheetState.show(uiState.addBottomSheetContentState)
+                onAddCoInsuredClicked()
+              },
               enabled = true,
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
               modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
@@ -352,7 +355,7 @@ private fun EditCoInsuredScreenEditablePreview() {
             ),
             allCoInsured = listOf(),
           ),
-          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
@@ -412,7 +415,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
             ),
             allCoInsured = listOf(),
           ),
-          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),

@@ -57,6 +57,7 @@ private fun Module.provideGetContractsUseCase() {
       demoManager = get<DemoManager>(),
       prodImpl = get<GetInsuranceContractsUseCaseImpl>(),
       demoImpl = get<GetInsuranceContractsUseCaseDemo>(),
+
     )
   }
 }
@@ -73,8 +74,9 @@ private fun Module.provideGetCrossSellsUseCase() {
   single {
     GetCrossSellsUseCaseProvider(
       demoManager = get<DemoManager>(),
-      prodImpl = get<GetCrossSellsUseCaseImpl>(),
+     // prodImpl = get<GetCrossSellsUseCaseImpl>(),  //todo: REMOVEEEEEEEE
       demoImpl = get<GetCrossSellsUseCaseDemo>(),
+      prodImpl = get<GetCrossSellsUseCaseDemo>(),  //todo: REMOVEEEEEEEE
     )
   }
 }
