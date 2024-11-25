@@ -158,7 +158,7 @@ internal class EditCoInsuredPresenter(
           addBottomSheetState = addBottomSheetState.copy(
             showManualInput = event.show,
             errorMessage = null,
-            showUnderAgedInfo = false,
+            showUnderAgedInfo = if (!event.show) false else addBottomSheetState.showUnderAgedInfo,
           )
         }
 
