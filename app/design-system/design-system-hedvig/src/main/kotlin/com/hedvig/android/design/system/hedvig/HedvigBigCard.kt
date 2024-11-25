@@ -83,7 +83,7 @@ fun HedvigBigCard(
           HedvigText(
             text = labelText,
             style = textStyle,
-            color = bigCardColors.inputTextColor(enabled),
+            color = bigCardColors.labelTextColor(enabled),
             modifier = Modifier.align(Alignment.CenterStart),
           )
         }
