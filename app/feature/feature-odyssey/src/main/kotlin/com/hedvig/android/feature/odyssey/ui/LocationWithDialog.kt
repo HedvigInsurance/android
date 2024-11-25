@@ -39,7 +39,7 @@ internal fun LocationWithDialog(
           if (selectedLocation?.displayName == locationOption.displayName) Chosen else NotChosen,
         )
       },
-      onSelected = {radioOptionData ->
+      onSelected = { radioOptionData ->
         selectLocationOption(locationOptions.first { it.displayName == radioOptionData.id })
       },
       onDismissRequest = { showLocationPickerDialog = false },

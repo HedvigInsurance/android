@@ -175,7 +175,6 @@ fun SingleSelectDialog(
   }
 }
 
-
 @Composable
 fun <T> MultiSelectDialog(
   title: String,
@@ -522,7 +521,10 @@ private fun PreviewSmallHorizontalPreferringButtons() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SmallHorizontalPreferringButtons(
-        {}, "Cancel", {}, "Confirm text",
+        {},
+        "Cancel",
+        {},
+        "Confirm text",
       )
     }
   }

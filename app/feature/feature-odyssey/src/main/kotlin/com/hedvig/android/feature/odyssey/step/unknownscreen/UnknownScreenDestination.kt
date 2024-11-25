@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -55,7 +54,7 @@ private fun UnknownScreenScreen(openPlayStore: () -> Unit, closeUnknownScreenDes
         modifier = Modifier
           .weight(1f)
           .fillMaxWidth()
-          .wrapContentSize(Alignment.Center)
+          .wrapContentSize(Alignment.Center),
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(

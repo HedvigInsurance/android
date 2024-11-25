@@ -106,8 +106,8 @@ private fun ClaimEntryPointsScreen(
       text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
@@ -119,9 +119,9 @@ private fun ClaimEntryPointsScreen(
       Column {
         WarningTextWithIcon(
           modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .wrapContentWidth(),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .wrapContentWidth(),
           text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
@@ -133,8 +133,8 @@ private fun ClaimEntryPointsScreen(
       selectedItem = uiState.selectedEntryPoint,
       onItemClick = { entryPoint -> onSelectEntryPoint(entryPoint) },
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(

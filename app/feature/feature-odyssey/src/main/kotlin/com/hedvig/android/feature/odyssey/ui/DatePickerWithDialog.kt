@@ -54,7 +54,7 @@ internal fun DatePickerWithDialog(
           },
           buttonSize = Medium,
         )
-      }
+      },
     )
   }
 

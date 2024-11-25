@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
@@ -37,6 +36,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
 import hedvig.resources.R
 

@@ -125,7 +125,7 @@ private fun FakeWaveAudioPlayerContent(
 
       AudioPlayerState.Preparing,
       is AudioPlayerState.Ready,
-        -> {
+      -> {
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier

@@ -20,8 +20,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText

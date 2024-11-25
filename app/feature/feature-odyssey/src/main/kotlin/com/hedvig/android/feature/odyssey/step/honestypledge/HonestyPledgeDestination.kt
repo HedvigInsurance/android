@@ -23,8 +23,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
-import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable

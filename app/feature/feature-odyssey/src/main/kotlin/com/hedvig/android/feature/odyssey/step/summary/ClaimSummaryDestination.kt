@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -36,6 +35,7 @@ import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
 import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard

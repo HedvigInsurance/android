@@ -41,17 +41,17 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.height(16.dp))
       EmptyState(
         stringResource(R.string.CLAIMS_SUCCESS_TITLE),
         stringResource(R.string.CLAIMS_SUCCESS_LABEL),
         Modifier
-            .fillMaxSize()
-            .weight(1f)
-            .wrapContentSize(Alignment.Center),
+          .fillMaxSize()
+          .weight(1f)
+          .wrapContentSize(Alignment.Center),
         SUCCESS,
       )
       Spacer(Modifier.height(16.dp))
@@ -59,8 +59,8 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
         onClick = closeSuccessScreen,
         text = stringResource(R.string.general_close_button),
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))

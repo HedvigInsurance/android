@@ -83,7 +83,7 @@ private fun NotificationPermissionScreen(
           R.string.CLAIMS_NOTIFICATIONS_ACTIVATED
         } else {
           R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
-        }
+        },
       ),
       style = HedvigTheme.typography.headlineMedium,
       color = HedvigTheme.colorScheme.textSecondary,

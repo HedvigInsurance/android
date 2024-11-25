@@ -354,9 +354,7 @@ private fun CheckoutMethods(
 }
 
 @Composable
-internal fun SingleItemCheckoutInfoBottomSheet(
-  sheetState: HedvigBottomSheetState<Pair<String, String>>,
-) {
+internal fun SingleItemCheckoutInfoBottomSheet(sheetState: HedvigBottomSheetState<Pair<String, String>>) {
   HedvigBottomSheet(
     hedvigBottomSheetState = sheetState,
     content = { explanationTitleAndText ->

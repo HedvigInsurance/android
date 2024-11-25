@@ -148,7 +148,7 @@ private fun DeflectGlassDamageScreen(
                       """
                   |Partner URL was null for DeflectGlassDamageDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
-                  """.trimMargin()
+                      """.trimMargin()
                     }
                   }
                 },
