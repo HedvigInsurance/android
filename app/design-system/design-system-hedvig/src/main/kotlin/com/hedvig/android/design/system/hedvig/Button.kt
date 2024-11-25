@@ -182,7 +182,7 @@ object ButtonDefaults {
     Secondary,
     SecondaryAlt,
     Ghost,
-    Red
+    Red,
   }
 
   enum class ButtonSize {

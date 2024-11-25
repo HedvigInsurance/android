@@ -65,9 +65,9 @@ internal object RedStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextWhite
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
-  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.TextWhite //todo: check it in action
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.TextWhite
   val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SignalRedText
-  val RedContentColor = ColorSchemeKeyTokens.SignalRedElement //should not be used ever
+  val RedContentColor = ColorSchemeKeyTokens.SignalRedElement // should not be used ever
 }
 
 internal object LargeSizeButtonTokens {

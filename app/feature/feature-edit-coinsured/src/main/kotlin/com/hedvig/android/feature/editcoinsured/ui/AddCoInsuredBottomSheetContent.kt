@@ -3,16 +3,16 @@ package com.hedvig.android.feature.editcoinsured.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -50,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigToggle
-import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
@@ -58,7 +56,6 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -128,7 +125,9 @@ internal fun AddCoInsuredBottomSheetContent(
       Spacer(Modifier.height(4.dp))
       HedvigToggle(
         turnedOn = bottomSheetState.showManualInput,
-        onClick = onManualInputSwitchChanged,
+        onClick = {
+          onManualInputSwitchChanged(it)
+        },
         modifier = Modifier.fillMaxWidth(),
         toggleStyle = ToggleStyle.Default(Small),
         labelText = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
@@ -203,8 +202,7 @@ private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () 
     chosenState = if (isSelected) ChosenState.Chosen else ChosenState.NotChosen,
     onClick = onClick,
     modifier = Modifier.fillMaxWidth(),
-  )
-  {
+  ) {
     HedvigText(
       text = text,
     )
@@ -233,9 +231,11 @@ private fun FetchFromSsnFields(
         }
       },
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-      errorState = if (errorMessage != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorMessage)
-      else HedvigTextFieldDefaults.ErrorState.NoError,
-
+      errorState = if (errorMessage != null) {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorMessage)
+      } else {
+        HedvigTextFieldDefaults.ErrorState.NoError
+      },
       visualTransformation = PersonalNumberVisualTransformation(mask, maskColor),
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
@@ -323,42 +323,38 @@ private fun ManualInputFields(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(4.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigTextField(
-          text = firstNameInput,
-          labelText = stringResource(id = R.string.CONTRACT_FIRST_NAME),
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          onValueChange = {
-            onFirstNameChanged(it)
-            firstNameInput = it
-          },
 
-          keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
-            keyboardType = KeyboardType.Text,
-          ),
-          modifier = Modifier.fillMaxWidth(),
-        )
-      },
-      endSlot = {
-        HedvigTextField(
-          text = lastNameInput,
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          labelText = stringResource(id = R.string.CONTRACT_LAST_NAME),
-          onValueChange = {
-            onLastNameChanged(it)
-            lastNameInput = it
-          },
-          keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
-            keyboardType = KeyboardType.Text,
-          ),
-          modifier = Modifier.fillMaxWidth(),
-        )
-      },
-      spaceBetween = 4.dp,
-    )
+    Row {
+      HedvigTextField(
+        text = firstNameInput,
+        labelText = stringResource(id = R.string.CONTRACT_FIRST_NAME),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        onValueChange = {
+          onFirstNameChanged(it)
+          firstNameInput = it
+        },
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.Words,
+          keyboardType = KeyboardType.Text,
+        ),
+        modifier = Modifier.weight(1f),
+      )
+      Spacer(Modifier.width(4.dp))
+      HedvigTextField(
+        text = lastNameInput,
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        labelText = stringResource(id = R.string.CONTRACT_LAST_NAME),
+        onValueChange = {
+          onLastNameChanged(it)
+          lastNameInput = it
+        },
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.Words,
+          keyboardType = KeyboardType.Text,
+        ),
+        modifier = Modifier.weight(1f),
+      )
+    }
 
     Spacer(Modifier.height(4.dp))
     AnimatedVisibility(
@@ -369,18 +365,14 @@ private fun ManualInputFields(
       HedvigNotificationCard(
         message = errorMessage ?: "",
         priority = NotificationDefaults.NotificationPriority.Attention,
+        modifier = Modifier.fillMaxWidth(),
       )
     }
   }
 }
 
 @Composable
-internal fun DatePickerWithDialog(
-  birthDate: LocalDate?,
-  onSave: (LocalDate) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-
+internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
   val selectedDateMillis = birthDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
     ?: Clock.System.now().toEpochMilliseconds()
   val locale = getLocale()
@@ -396,13 +388,13 @@ internal fun DatePickerWithDialog(
         initialDisplayedMonthMillis = selectedDateMillis,
         selectableDates = object : HedvigSelectableDates {
           override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds() //todo: check here
+            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds() // todo: check here
           }
 
           override fun isSelectableYear(year: Int): Boolean =
             year <= Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
         },
-      )
+      ),
     )
   }
   if (showDatePicker) {
@@ -417,40 +409,9 @@ internal fun DatePickerWithDialog(
           onSave(date)
         }
         showDatePicker = false
-      }
+      },
     )
   }
-
-//  if (showDatePicker) {
-//    HedvigDatePicker (
-//      onDismissRequest = { showDatePicker = false },
-//      confirmButton = {
-//        TextButton(
-//          onClick = {
-//            showDatePicker = false
-//            selectedDate?.let {
-//              onSave(selectedDate)
-//            }
-//          },
-//          shape = HedvigTheme.shapes.medium,
-//        ) {
-//          Text(stringResource(R.string.general_save_button))
-//        }
-//      },
-//      dismissButton = {
-//        TextButton(
-//          onClick = {
-//            showDatePicker = false
-//          },
-//          shape = HedvigTheme.shapes.medium,
-//        ) {
-//          Text(stringResource(R.string.general_cancel_button))
-//        }
-//      },
-//    ) {
-//      HedvigDatePicker(datePickerState = datePickerState)
-//    }
-//  }
   HedvigCard(
     onClick = { showDatePicker = true },
     modifier = modifier,
@@ -489,7 +450,6 @@ internal fun DatePickerWithDialog(
     }
   }
 }
-
 
 private fun AddBottomSheetState.SaveButtonLabel.stringRes() = when (this) {
   AddBottomSheetState.SaveButtonLabel.FETCH_INFO -> R.string.CONTRACT_SSN_FETCH_INFO

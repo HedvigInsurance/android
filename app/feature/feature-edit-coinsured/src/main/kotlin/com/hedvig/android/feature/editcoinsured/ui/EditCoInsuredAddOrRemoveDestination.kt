@@ -144,7 +144,7 @@ private fun EditCoInsuredScreen(
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
-        ErrorDialog( //todo: check here, what is going on??
+        ErrorDialog( // todo: check here, what is going on??
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
@@ -222,7 +222,7 @@ private fun EditCoInsuredScreen(
               onClick = onAddCoInsuredClicked,
               enabled = true,
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-              modifier = Modifier.padding(horizontal = 16.dp),
+              modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             )
           }
 
@@ -236,7 +236,7 @@ private fun EditCoInsuredScreen(
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
               )
             }
 
@@ -286,7 +286,9 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
             style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
           )
           Spacer(modifier = Modifier.width(8.dp))
-          HedvigText(text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()))
+          HedvigText(
+            text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()),
+          )
         }
       },
       spaceBetween = 8.dp,

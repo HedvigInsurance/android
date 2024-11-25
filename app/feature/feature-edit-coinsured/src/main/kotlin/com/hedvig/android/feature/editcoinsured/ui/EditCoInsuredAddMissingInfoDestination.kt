@@ -123,7 +123,7 @@ private fun EditCoInsuredScreen(
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
-        ErrorDialog( //todo: dialog???
+        ErrorDialog( // todo: dialog???
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,

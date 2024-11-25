@@ -20,7 +20,6 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -125,8 +124,11 @@ private fun DeleteScreenContents(
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
-    val buttonStyle = if (isButtonRed)
-      ButtonDefaults.ButtonStyle.Red else ButtonDefaults.ButtonStyle.Primary
+    val buttonStyle = if (isButtonRed) {
+      ButtonDefaults.ButtonStyle.Red
+    } else {
+      ButtonDefaults.ButtonStyle.Primary
+    }
     HedvigButton(
       text = buttonText,
       onClick = onButtonClick,

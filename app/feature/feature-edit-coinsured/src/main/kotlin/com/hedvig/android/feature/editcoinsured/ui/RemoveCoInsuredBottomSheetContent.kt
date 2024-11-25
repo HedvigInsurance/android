@@ -28,7 +28,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
   onDismiss: () -> Unit,
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
-  errorMessage: String?, //todo: this one is not used?
+  errorMessage: String?, // todo: this one is not used?
   coInsured: CoInsured,
 ) {
   Column(
@@ -37,7 +37,8 @@ internal fun RemoveCoInsuredBottomSheetContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION),
-      textAlign = TextAlign.Center)
+      textAlign = TextAlign.Center,
+    )
     Spacer(Modifier.height(24.dp))
     HedvigButton(
       text = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
