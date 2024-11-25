@@ -17,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -42,6 +45,8 @@ import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -138,14 +143,8 @@ private fun EditCoInsuredScreen(
           }
         }
         val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
-        LaunchedEffect() {
-          hedvigBottomSheetState.dismiss()
-        }
-        LaunchedEffect(hedvigBottomSheetState.isVisible) { //todo: not sure here!!!
-          if (!hedvigBottomSheetState.isVisible) {
-            onResetAddBottomSheetState()
-          }
-        }
+        DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
+        ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
         HedvigBottomSheet(
           hedvigBottomSheetState = hedvigBottomSheetState
         ) {
@@ -222,6 +221,43 @@ private fun EditCoInsuredScreen(
 
       EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
     }
+  }
+}
+
+
+@Composable
+private fun DismissSheetOnSuccessfulInfoChangeEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
+  infoSuccessfullyChanged: Boolean,
+) {
+  val updatedInfoSuccessfullyChanged by rememberUpdatedState(infoSuccessfullyChanged)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { updatedInfoSuccessfullyChanged }
+      .drop(1)
+      .collect {
+        if (it) {
+          sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+private fun ClearBottomSheetContentStateOnSheetDismissedEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
+  clearBottomSheetState: () -> Unit,
+) {
+  //TODO: add delay here probably!
+  val updatedClearBottomSheetState by rememberUpdatedState(clearBottomSheetState)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }
+      .drop(1)
+      .collect {
+        if (!it) {
+          delay(500) //todo: see here
+          updatedClearBottomSheetState()
+        }
+      }
   }
 }
 

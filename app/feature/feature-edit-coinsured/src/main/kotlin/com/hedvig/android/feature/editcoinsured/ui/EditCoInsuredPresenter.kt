@@ -61,6 +61,8 @@ internal class EditCoInsuredPresenter(
       mutableStateOf(lastBottomSheetState ?: Loaded.RemoveBottomSheetState())
     }
 
+    var finishedAdding by remember { mutableStateOf(false) }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var fetchInfoFromSsn by remember { mutableIntStateOf(0) }
@@ -163,6 +165,7 @@ internal class EditCoInsuredPresenter(
         }
 
         is EditCoInsuredEvent.OnEditCoInsuredClicked -> {
+          finishedAdding = false
           selectedCoInsuredId = event.coInsured.internalId
           addBottomSheetContentState = Loaded.AddBottomSheetContentState(
             manualInfo = ManualInfo(
@@ -285,6 +288,7 @@ internal class EditCoInsuredPresenter(
                 )
                 removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
                 editedCoInsuredList = null
+                finishedAdding = true
               }
             },
           )
@@ -324,6 +328,7 @@ internal class EditCoInsuredPresenter(
         addBottomSheetContentState = addBottomSheetContentState,
         removeBottomSheetState = removeBottomSheetState,
         contractUpdateDate = contractUpdateDate,
+        finishedAdding = finishedAdding
       )
     } else if (isLoading) {
       Loading
@@ -419,6 +424,7 @@ internal sealed interface EditCoInsuredState {
     val addBottomSheetContentState: AddBottomSheetContentState,
     val removeBottomSheetState: RemoveBottomSheetState,
     val contractUpdateDate: LocalDate? = null,
+    val finishedAdding: Boolean = false
   ) : EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: List<CoInsured>? = null,

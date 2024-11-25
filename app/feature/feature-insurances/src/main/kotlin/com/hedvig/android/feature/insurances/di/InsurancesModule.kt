@@ -74,9 +74,8 @@ private fun Module.provideGetCrossSellsUseCase() {
   single {
     GetCrossSellsUseCaseProvider(
       demoManager = get<DemoManager>(),
-     // prodImpl = get<GetCrossSellsUseCaseImpl>(),  //todo: REMOVEEEEEEEE
+      prodImpl = get<GetCrossSellsUseCaseImpl>(),
       demoImpl = get<GetCrossSellsUseCaseDemo>(),
-      prodImpl = get<GetCrossSellsUseCaseDemo>(),  //todo: REMOVEEEEEEEE
     )
   }
 }
