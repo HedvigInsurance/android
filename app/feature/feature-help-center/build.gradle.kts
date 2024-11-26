@@ -4,9 +4,10 @@ plugins {
 }
 
 hedvig {
+  androidResources()
   apollo("octopus")
-  serialization()
   compose()
+  serialization()
 }
 
 dependencies {

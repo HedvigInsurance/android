@@ -4,8 +4,9 @@ plugins {
 }
 
 hedvig {
-  serialization()
+  androidResources()
   compose()
+  serialization()
 }
 
 android {

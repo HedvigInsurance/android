@@ -4,6 +4,7 @@ plugins {
 }
 
 hedvig {
+  androidResources()
   compose()
 }
 
