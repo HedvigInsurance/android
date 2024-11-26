@@ -62,6 +62,7 @@ internal class EditCoInsuredPresenter(
     }
 
     var finishedAdding by remember { mutableStateOf(false) }
+    var finishedRemoving by remember { mutableStateOf(false) }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -182,10 +183,12 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        is OnRemoveCoInsuredClicked -> removeBottomSheetState = Loaded.RemoveBottomSheetState(
-          coInsured = event.coInsured,
-          show = true,
-        )
+        is OnRemoveCoInsuredClicked ->{
+          removeBottomSheetState = Loaded.RemoveBottomSheetState(
+            coInsured = event.coInsured,
+          )
+          //todo: add show in the caller
+        }
 
         OnAddCoInsuredClicked -> addBottomSheetContentState = Loaded.AddBottomSheetContentState(
           selectableCoInsured = listState.allCoInsured,
@@ -286,9 +289,10 @@ internal class EditCoInsuredPresenter(
                   manualInfo = ManualInfo(),
                   infoFromSsn = InfoFromSsn(),
                 )
-                removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
+                removeBottomSheetState = Loaded.RemoveBottomSheetState()
                 editedCoInsuredList = null
                 finishedAdding = true
+                finishedRemoving = true
               }
             },
           )
@@ -328,7 +332,8 @@ internal class EditCoInsuredPresenter(
         addBottomSheetContentState = addBottomSheetContentState,
         removeBottomSheetState = removeBottomSheetState,
         contractUpdateDate = contractUpdateDate,
-        finishedAdding = finishedAdding
+        finishedAdding = finishedAdding,
+          finishedRemoving = finishedRemoving
       )
     } else if (isLoading) {
       Loading
@@ -424,7 +429,8 @@ internal sealed interface EditCoInsuredState {
     val addBottomSheetContentState: AddBottomSheetContentState,
     val removeBottomSheetState: RemoveBottomSheetState,
     val contractUpdateDate: LocalDate? = null,
-    val finishedAdding: Boolean = false
+    val finishedAdding: Boolean = false,
+    val finishedRemoving: Boolean = false
   ) : EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: List<CoInsured>? = null,
@@ -512,7 +518,6 @@ internal sealed interface EditCoInsuredState {
       val coInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
-      val show: Boolean = false,
     )
   }
 }

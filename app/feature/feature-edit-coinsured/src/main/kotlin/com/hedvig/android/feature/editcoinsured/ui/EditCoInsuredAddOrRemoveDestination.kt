@@ -50,6 +50,7 @@ import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -188,18 +189,16 @@ private fun EditCoInsuredScreen(
               onCoInsuredSelected = onCoInsuredSelected,
             )
           }
-
+          val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetState>()
           HedvigBottomSheet(
-            isVisible = uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null,
-            onVisibleChange = { isVisible ->
-              if (!isVisible) {
-                onResetRemoveBottomSheetState()
-              }
-            },
+            removeHedvigBottomSheetState
           ) {
             if (uiState.removeBottomSheetState.coInsured != null) {
               RemoveCoInsuredBottomSheetContent(
-                onDismiss = onResetRemoveBottomSheetState,
+                onDismiss = {
+                  removeHedvigBottomSheetState.dismiss()
+                  onResetRemoveBottomSheetState() //todo: effect here
+                },
                 onRemove = { onRemoveCoInsured(it) },
                 isLoading = uiState.removeBottomSheetState.isLoading,
                 coInsured = uiState.removeBottomSheetState.coInsured,
@@ -209,7 +208,10 @@ private fun EditCoInsuredScreen(
           }
           CoInsuredList(
             uiState = uiState.listState,
-            onRemove = onRemoveCoInsuredClicked,
+            onRemove = { insured ->
+              onRemoveCoInsuredClicked(insured)
+              removeHedvigBottomSheetState.show(uiState.removeBottomSheetState)
+            },
             onEdit = {},
             allowEdit = false,
             modifier = Modifier.padding(horizontal = 16.dp),
