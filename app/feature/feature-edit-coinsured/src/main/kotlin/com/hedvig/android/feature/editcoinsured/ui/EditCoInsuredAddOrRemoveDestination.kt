@@ -170,6 +170,9 @@ private fun EditCoInsuredScreen(
             }
           }
           val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+          //todo: does not dismiss on manual input succesfully adding smth
+          DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
+          ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
           HedvigBottomSheet(
             hedvigBottomSheetState = hedvigBottomSheetState
           ) {
@@ -190,6 +193,7 @@ private fun EditCoInsuredScreen(
             )
           }
           val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetState>()
+          DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(removeHedvigBottomSheetState, uiState.finishedRemoving)
           HedvigBottomSheet(
             removeHedvigBottomSheetState
           ) {
@@ -197,7 +201,7 @@ private fun EditCoInsuredScreen(
               RemoveCoInsuredBottomSheetContent(
                 onDismiss = {
                   removeHedvigBottomSheetState.dismiss()
-                  onResetRemoveBottomSheetState() //todo: effect here
+                  onResetRemoveBottomSheetState()
                 },
                 onRemove = { onRemoveCoInsured(it) },
                 isLoading = uiState.removeBottomSheetState.isLoading,

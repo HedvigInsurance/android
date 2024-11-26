@@ -226,7 +226,7 @@ private fun EditCoInsuredScreen(
 
 
 @Composable
-private fun DismissSheetOnSuccessfulInfoChangeEffect(
+internal fun DismissSheetOnSuccessfulInfoChangeEffect(
   sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
   infoSuccessfullyChanged: Boolean,
 ) {
@@ -243,7 +243,24 @@ private fun DismissSheetOnSuccessfulInfoChangeEffect(
 }
 
 @Composable
-private fun ClearBottomSheetContentStateOnSheetDismissedEffect(
+internal fun DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetState>,
+  coInsuredSuccessfullyRemoved: Boolean,
+) {
+  val updatedCoInsuredSuccessfullyRemoved by rememberUpdatedState(coInsuredSuccessfullyRemoved)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { updatedCoInsuredSuccessfullyRemoved }
+      .drop(1)
+      .collect {
+        if (it) {
+          sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+internal fun ClearBottomSheetContentStateOnSheetDismissedEffect(
   sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
   clearBottomSheetState: () -> Unit,
 ) {
