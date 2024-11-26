@@ -27,6 +27,7 @@ class LibraryConventionPlugin : Plugin<Project> {
         buildFeatures {
           resValues = false
           shaders = false
+          androidResources = false
         }
       }
     }
