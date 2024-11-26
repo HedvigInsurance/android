@@ -247,14 +247,12 @@ private fun ClearBottomSheetContentStateOnSheetDismissedEffect(
   sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
   clearBottomSheetState: () -> Unit,
 ) {
-  //TODO: add delay here probably!
   val updatedClearBottomSheetState by rememberUpdatedState(clearBottomSheetState)
   LaunchedEffect(sheetState) {
     snapshotFlow { sheetState.isVisible }
       .drop(1)
       .collect {
         if (!it) {
-          delay(500) //todo: see here
           updatedClearBottomSheetState()
         }
       }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -32,7 +33,7 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, popBackstack: () 
   ) {
     Spacer(Modifier.height(8.dp))
     Box(
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).fillMaxWidth(),
     ) {
       EmptyState(
         text = stringResource(id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
@@ -50,7 +51,7 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, popBackstack: () 
       text = stringResource(id = hedvig.resources.R.string.general_done_button),
       onClick = popBackstack,
       modifier = Modifier
-        .padding(padding),
+        .padding(padding).fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
   }
