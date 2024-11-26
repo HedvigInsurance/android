@@ -59,7 +59,7 @@ sealed interface ApolloOperationError {
 }
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
-  return iorNel<ApolloOperationError, D> { parseResponse(execute()) }.iorToEither()
+  return iorNel<ApolloOperationError, D> { parseResponse(execute()) }.dropPartialResponses()
 }
 
 suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
@@ -68,7 +68,15 @@ suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
   return safeExecute().mapLeft(mapError)
 }
 
+fun <D : Operation.Data> ApolloCall<D>.safeFlowAllowingPartialResponses(): Flow<Ior<ApolloOperationError, D>> {
+  return internalSafeFlow().map { it.mergeApolloErrors() }
+}
+
 fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationError, D>> {
+  return internalSafeFlow().map { it.dropPartialResponses() }
+}
+
+private fun <D : Operation.Data> ApolloCall<D>.internalSafeFlow(): Flow<IorNel<ApolloOperationError, D>> {
   return flow<ApolloResponse<D>> {
     var hasEmitted = false
     var errorResponse: ApolloResponse<D>? = null
@@ -87,7 +95,7 @@ fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationEr
       // Flow has terminated without a valid response, emit the error one if it exists.
       emit(errorResponseValue)
     }
-  }.map { iorNel { parseResponse(it) }.iorToEither() }
+  }.map { iorNel { parseResponse(it) } }
 }
 
 fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
@@ -97,7 +105,7 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
 }
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
-  return this.watch().map { iorNel { parseResponse(it) }.iorToEither() }
+  return this.watch().map { iorNel { parseResponse(it) }.dropPartialResponses() }
 }
 
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {
@@ -169,15 +177,20 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
   }.toNonEmptyListOrNull()
 }
 
-/**
- * Turn it all back into the `Either<ApolloOperationError, D>` return type as all call-sites expect it this way for now
- */
-private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.iorToEither(): Either<ApolloOperationError, D> {
+private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.mergeApolloErrors(): Ior<ApolloOperationError, D> {
   return mapLeft { errors ->
     ApolloOperationError.OperationError.Other(
       errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
     )
-  }.toEither()
+  }
+}
+
+/**
+ * Turn it all back into `Either<ApolloOperationError, D>`, which drops all information where we may have had both
+ * errors and data. This only is [Either.Right] if everything went well and we got no responses.
+ */
+private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.dropPartialResponses(): Either<ApolloOperationError, D> {
+  return mergeApolloErrors().toEither()
 }
 
 private fun <D : Operation.Data> iorFromErrorsAndData(
