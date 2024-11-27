@@ -184,10 +184,10 @@ internal class EditCoInsuredPresenter(
         }
 
         is OnRemoveCoInsuredClicked ->{
+          finishedRemoving = false
           removeBottomSheetState = Loaded.RemoveBottomSheetState(
             coInsured = event.coInsured,
           )
-          //todo: add show in the caller
         }
 
         OnAddCoInsuredClicked -> addBottomSheetContentState = Loaded.AddBottomSheetContentState(

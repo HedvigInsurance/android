@@ -170,7 +170,6 @@ private fun EditCoInsuredScreen(
             }
           }
           val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
-          //todo: does not dismiss on manual input succesfully adding smth
           DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
           ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
           HedvigBottomSheet(
