@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -323,7 +325,6 @@ private fun ManualInputFields(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(4.dp))
-
     Row {
       HedvigTextField(
         text = firstNameInput,
@@ -337,7 +338,7 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f).requiredHeight(64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -352,7 +353,7 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f).requiredHeight(64.dp),
       )
     }
     AnimatedVisibility(
