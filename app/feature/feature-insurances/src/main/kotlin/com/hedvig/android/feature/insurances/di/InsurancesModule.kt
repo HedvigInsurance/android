@@ -57,7 +57,6 @@ private fun Module.provideGetContractsUseCase() {
       demoManager = get<DemoManager>(),
       prodImpl = get<GetInsuranceContractsUseCaseImpl>(),
       demoImpl = get<GetInsuranceContractsUseCaseDemo>(),
-
     )
   }
 }

@@ -21,11 +21,9 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
@@ -57,7 +55,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
           text = stringResource(R.string.something_went_wrong),
           modifier = Modifier.fillMaxWidth(),
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
-          description = null
+          description = null,
         )
       }
     }

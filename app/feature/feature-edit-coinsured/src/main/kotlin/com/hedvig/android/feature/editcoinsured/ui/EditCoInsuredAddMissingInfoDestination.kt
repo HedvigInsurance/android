@@ -141,11 +141,11 @@ private fun EditCoInsuredScreen(
             onCompleted(uiState.contractUpdateDate)
           }
         }
-        val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+        val hedvigBottomSheetState = rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
         DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
         ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
         HedvigBottomSheet(
-          hedvigBottomSheetState = hedvigBottomSheetState
+          hedvigBottomSheetState = hedvigBottomSheetState,
         ) {
           AddCoInsuredBottomSheetContent(
             bottomSheetState = uiState.addBottomSheetContentState,
@@ -222,7 +222,6 @@ private fun EditCoInsuredScreen(
     }
   }
 }
-
 
 @Composable
 internal fun DismissSheetOnSuccessfulInfoChangeEffect(

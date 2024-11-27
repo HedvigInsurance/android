@@ -191,11 +191,14 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        OnAddCoInsuredClicked -> addBottomSheetContentState = Loaded.AddBottomSheetContentState(
-          selectableCoInsured = listState.allCoInsured,
-          manualInfo = ManualInfo(),
-          infoFromSsn = InfoFromSsn(),
-        )
+        OnAddCoInsuredClicked -> {
+          finishedAdding = false
+          addBottomSheetContentState = Loaded.AddBottomSheetContentState(
+            selectableCoInsured = listState.allCoInsured,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
+          )
+        }
 
         EditCoInsuredEvent.OnAddNewCoInsured ->
           addBottomSheetContentState =

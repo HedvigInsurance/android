@@ -146,7 +146,8 @@ private fun EditCoInsuredScreen(
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
-        ErrorDialog( // todo: check here, what is going on??
+        ErrorDialog(
+          // todo: check here, what is going on??
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
@@ -159,7 +160,9 @@ private fun EditCoInsuredScreen(
             .fillMaxSize()
             .padding(
               WindowInsets
-                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+                .safeDrawing
+                .only(WindowInsetsSides.Horizontal)
+                .asPaddingValues(),
             )
             .nestedScroll(remember { object : NestedScrollConnection {} })
             .verticalScroll(state = rememberScrollState()),
@@ -169,17 +172,24 @@ private fun EditCoInsuredScreen(
               onCompleted(uiState.contractUpdateDate)
             }
           }
-          val hedvigBottomSheetState = rememberHedvigBottomSheetState< EditCoInsuredState.Loaded.AddBottomSheetContentState>()
-          DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
-          ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
+          val addHedvigBottomSheetState =
+            rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+          DismissSheetOnSuccessfulInfoChangeEffect(
+            sheetState = addHedvigBottomSheetState,
+            infoSuccessfullyChanged = uiState.finishedAdding,
+          )
+          ClearBottomSheetContentStateOnSheetDismissedEffect(
+            sheetState = addHedvigBottomSheetState,
+            clearBottomSheetState = onResetAddBottomSheetState,
+          )
           HedvigBottomSheet(
-            hedvigBottomSheetState = hedvigBottomSheetState
+            hedvigBottomSheetState = addHedvigBottomSheetState,
           ) {
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetContentState,
               onContinue = onSave,
               onDismiss = {
-                hedvigBottomSheetState.dismiss()
+                addHedvigBottomSheetState.dismiss()
                 onResetAddBottomSheetState()
               },
               onSsnChanged = onSsnChanged,
@@ -193,9 +203,12 @@ private fun EditCoInsuredScreen(
           }
           val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetContentState>()
           DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(removeHedvigBottomSheetState, uiState.finishedRemoving)
-          ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(removeHedvigBottomSheetState, onResetRemoveBottomSheetState)
+          ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(
+            removeHedvigBottomSheetState,
+            onResetRemoveBottomSheetState,
+          )
           HedvigBottomSheet(
-            removeHedvigBottomSheetState
+            removeHedvigBottomSheetState,
           ) {
             if (uiState.removeBottomSheetContentState.coInsured != null) {
               RemoveCoInsuredBottomSheetContent(
@@ -226,12 +239,14 @@ private fun EditCoInsuredScreen(
             HedvigButton(
               text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
               onClick = {
-                hedvigBottomSheetState.show(uiState.addBottomSheetContentState)
+                addHedvigBottomSheetState.show(uiState.addBottomSheetContentState)
                 onAddCoInsuredClicked()
               },
               enabled = true,
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-              modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
             )
           }
 
@@ -245,7 +260,9 @@ private fun EditCoInsuredScreen(
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp)
+                  .fillMaxWidth(),
               )
             }
 
