@@ -232,7 +232,7 @@ private fun FetchFromSsnFields(
       },
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (errorMessage != null) {
-        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorMessage)
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(R.string.something_went_wrong))
       } else {
         HedvigTextFieldDefaults.ErrorState.NoError
       },
@@ -363,7 +363,7 @@ private fun ManualInputFields(
       Column {
         Spacer(Modifier.height(4.dp))
         HedvigNotificationCard(
-          message = errorMessage ?: "",
+          message = stringResource(R.string.something_went_wrong),
           priority = NotificationDefaults.NotificationPriority.Attention,
           modifier = Modifier.fillMaxWidth(),
         )

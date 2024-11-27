@@ -82,7 +82,7 @@ internal class EditCoInsuredPresenterTest {
           infoFromSsn = InfoFromSsn(),
           manualInfo = ManualInfo(),
         ),
-        removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
       ),
     ) {
       skipItems(1)
@@ -128,7 +128,7 @@ internal class EditCoInsuredPresenterTest {
           infoFromSsn = InfoFromSsn(),
           manualInfo = ManualInfo(),
         ),
-        removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
       ),
     ) {
       skipItems(1)

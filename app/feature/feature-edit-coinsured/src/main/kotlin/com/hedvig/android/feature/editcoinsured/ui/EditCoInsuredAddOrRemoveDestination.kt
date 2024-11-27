@@ -50,7 +50,7 @@ import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
-import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetState
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -191,21 +191,21 @@ private fun EditCoInsuredScreen(
               onCoInsuredSelected = onCoInsuredSelected,
             )
           }
-          val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetState>()
+          val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetContentState>()
           DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(removeHedvigBottomSheetState, uiState.finishedRemoving)
           HedvigBottomSheet(
             removeHedvigBottomSheetState
           ) {
-            if (uiState.removeBottomSheetState.coInsured != null) {
+            if (uiState.removeBottomSheetContentState.coInsured != null) {
               RemoveCoInsuredBottomSheetContent(
                 onDismiss = {
                   removeHedvigBottomSheetState.dismiss()
                   onResetRemoveBottomSheetState()
                 },
                 onRemove = { onRemoveCoInsured(it) },
-                isLoading = uiState.removeBottomSheetState.isLoading,
-                coInsured = uiState.removeBottomSheetState.coInsured,
-                errorMessage = uiState.removeBottomSheetState.errorMessage,
+                isLoading = uiState.removeBottomSheetContentState.isLoading,
+                coInsured = uiState.removeBottomSheetContentState.coInsured,
+                errorMessage = uiState.removeBottomSheetContentState.errorMessage,
               )
             }
           }
@@ -213,7 +213,7 @@ private fun EditCoInsuredScreen(
             uiState = uiState.listState,
             onRemove = { insured ->
               onRemoveCoInsuredClicked(insured)
-              removeHedvigBottomSheetState.show(uiState.removeBottomSheetState)
+              removeHedvigBottomSheetState.show(uiState.removeBottomSheetContentState)
             },
             onEdit = {},
             allowEdit = false,
@@ -365,7 +365,7 @@ private fun EditCoInsuredScreenEditablePreview() {
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onSave = {},
         onSsnChanged = {},
@@ -425,7 +425,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onSave = {},
         onSsnChanged = {},

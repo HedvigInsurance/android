@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,10 +18,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
@@ -28,7 +35,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
   onDismiss: () -> Unit,
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
-  errorMessage: String?, // todo: this one is not used?
+  errorMessage: String?,
   coInsured: CoInsured,
 ) {
   Column(
@@ -39,6 +46,21 @@ internal fun RemoveCoInsuredBottomSheetContent(
       stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION),
       textAlign = TextAlign.Center,
     )
+    AnimatedVisibility(
+      visible = errorMessage != null,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
+      Column {
+        Spacer(Modifier.height(16.dp))
+        EmptyState(
+          text = stringResource(R.string.something_went_wrong),
+          modifier = Modifier.fillMaxWidth(),
+          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
+          description = null
+        )
+      }
+    }
     Spacer(Modifier.height(24.dp))
     HedvigButton(
       text = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),

@@ -45,7 +45,6 @@ import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 
@@ -244,7 +243,7 @@ internal fun DismissSheetOnSuccessfulInfoChangeEffect(
 
 @Composable
 internal fun DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(
-  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetState>,
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetContentState>,
   coInsuredSuccessfullyRemoved: Boolean,
 ) {
   val updatedCoInsuredSuccessfullyRemoved by rememberUpdatedState(coInsuredSuccessfullyRemoved)
@@ -341,7 +340,7 @@ private fun EditCoInsuredScreenEditablePreview() {
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onCoInsuredClicked = {},
         onSsnChanged = {},
@@ -398,7 +397,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
             infoFromSsn = InfoFromSsn(),
             manualInfo = ManualInfo(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onCoInsuredClicked = {},
         onSsnChanged = {},

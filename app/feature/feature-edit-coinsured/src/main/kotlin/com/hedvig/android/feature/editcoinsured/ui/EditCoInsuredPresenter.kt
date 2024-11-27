@@ -56,9 +56,9 @@ internal class EditCoInsuredPresenter(
         ),
       )
     }
-    var removeBottomSheetState by remember {
-      val lastBottomSheetState = lastState.safeCast<Loaded>()?.removeBottomSheetState
-      mutableStateOf(lastBottomSheetState ?: Loaded.RemoveBottomSheetState())
+    var removeBottomSheetContentState by remember {
+      val lastBottomSheetState = lastState.safeCast<Loaded>()?.removeBottomSheetContentState
+      mutableStateOf(lastBottomSheetState ?: Loaded.RemoveBottomSheetContentState())
     }
 
     var finishedAdding by remember { mutableStateOf(false) }
@@ -109,7 +109,8 @@ internal class EditCoInsuredPresenter(
           } else if (addBottomSheetContentState.shouldFetchInfo()) {
             fetchInfoFromSsn++
           } else {
-            editedCoInsuredList = addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetContentState, listState)
+            editedCoInsuredList =
+              addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetContentState, listState)
           }
         }
 
@@ -183,9 +184,9 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        is OnRemoveCoInsuredClicked ->{
+        is OnRemoveCoInsuredClicked -> {
           finishedRemoving = false
-          removeBottomSheetState = Loaded.RemoveBottomSheetState(
+          removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState(
             coInsured = event.coInsured,
           )
         }
@@ -211,7 +212,7 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        ResetRemoveBottomSheetState -> removeBottomSheetState = Loaded.RemoveBottomSheetState()
+        ResetRemoveBottomSheetState -> removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
         OnDismissError -> errorMessage = null
         EditCoInsuredEvent.OnCommitChanges -> commit = true
       }
@@ -255,7 +256,7 @@ internal class EditCoInsuredPresenter(
       editedCoInsuredList?.let { list ->
         Snapshot.withMutableSnapshot {
           addBottomSheetContentState = addBottomSheetContentState.copy(isLoading = true)
-          removeBottomSheetState = removeBottomSheetState.copy(isLoading = true)
+          removeBottomSheetContentState = removeBottomSheetContentState.copy(isLoading = true)
         }
 
         createMidtermChangeUseCase
@@ -263,7 +264,7 @@ internal class EditCoInsuredPresenter(
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
-                removeBottomSheetState = removeBottomSheetState.copy(
+                removeBottomSheetContentState = removeBottomSheetContentState.copy(
                   errorMessage = it.message,
                   isLoading = false,
                 )
@@ -289,7 +290,7 @@ internal class EditCoInsuredPresenter(
                   manualInfo = ManualInfo(),
                   infoFromSsn = InfoFromSsn(),
                 )
-                removeBottomSheetState = Loaded.RemoveBottomSheetState()
+                removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
                 editedCoInsuredList = null
                 finishedAdding = true
                 finishedRemoving = true
@@ -330,10 +331,10 @@ internal class EditCoInsuredPresenter(
       Loaded(
         listState = listState,
         addBottomSheetContentState = addBottomSheetContentState,
-        removeBottomSheetState = removeBottomSheetState,
+        removeBottomSheetContentState = removeBottomSheetContentState,
         contractUpdateDate = contractUpdateDate,
         finishedAdding = finishedAdding,
-          finishedRemoving = finishedRemoving
+        finishedRemoving = finishedRemoving,
       )
     } else if (isLoading) {
       Loading
@@ -427,10 +428,10 @@ internal sealed interface EditCoInsuredState {
   data class Loaded(
     val listState: CoInsuredListState,
     val addBottomSheetContentState: AddBottomSheetContentState,
-    val removeBottomSheetState: RemoveBottomSheetState,
+    val removeBottomSheetContentState: RemoveBottomSheetContentState,
     val contractUpdateDate: LocalDate? = null,
     val finishedAdding: Boolean = false,
-    val finishedRemoving: Boolean = false
+    val finishedRemoving: Boolean = false,
   ) : EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: List<CoInsured>? = null,
@@ -514,7 +515,7 @@ internal sealed interface EditCoInsuredState {
       }
     }
 
-    data class RemoveBottomSheetState(
+    data class RemoveBottomSheetContentState(
       val coInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
