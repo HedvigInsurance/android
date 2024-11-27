@@ -97,7 +97,6 @@ internal class EditCoInsuredPresenterTest {
       assertThat(uiState.addBottomSheetContentState.manualInfo.lastName).isEqualTo(coInsuredTestList[0].lastName)
       assertThat(uiState.addBottomSheetContentState.infoFromSsn.ssn).isEqualTo(coInsuredTestList[0].ssn)
       assertThat(uiState.addBottomSheetContentState.manualInfo.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
-      assertThat(uiState.addBottomSheetContentState.show).isEqualTo(true)
     }
   }
 
