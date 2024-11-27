@@ -193,6 +193,7 @@ private fun EditCoInsuredScreen(
           }
           val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetContentState>()
           DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(removeHedvigBottomSheetState, uiState.finishedRemoving)
+          ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(removeHedvigBottomSheetState, onResetRemoveBottomSheetState)
           HedvigBottomSheet(
             removeHedvigBottomSheetState
           ) {

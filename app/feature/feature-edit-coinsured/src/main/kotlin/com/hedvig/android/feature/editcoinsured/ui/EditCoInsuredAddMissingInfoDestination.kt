@@ -259,6 +259,23 @@ internal fun DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(
 }
 
 @Composable
+internal fun ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetContentState>,
+  clearBottomSheetState: () -> Unit,
+) {
+  val updatedClearBottomSheetState by rememberUpdatedState(clearBottomSheetState)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }
+      .drop(1)
+      .collect {
+        if (!it) {
+          updatedClearBottomSheetState()
+        }
+      }
+  }
+}
+
+@Composable
 internal fun ClearBottomSheetContentStateOnSheetDismissedEffect(
   sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
   clearBottomSheetState: () -> Unit,
