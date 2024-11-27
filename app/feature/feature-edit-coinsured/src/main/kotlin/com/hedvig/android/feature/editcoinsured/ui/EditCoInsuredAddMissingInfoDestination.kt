@@ -128,7 +128,7 @@ private fun EditCoInsuredScreen(
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
-        ErrorDialog( // todo: dialog???
+        ErrorDialog(
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
@@ -288,6 +288,32 @@ internal fun ClearBottomSheetContentStateOnSheetDismissedEffect(
           updatedClearBottomSheetState()
         }
       }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenErrorPreview() {
+  HedvigTheme {
+    Surface {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Error("Something"),
+        onCoInsuredClicked = {},
+        onSsnChanged = {},
+        onBottomSheetContinue = {},
+        onCommitChanges = {},
+        onCompleted = {},
+        onDismissError = {},
+        onResetAddBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
+        )
+    }
   }
 }
 

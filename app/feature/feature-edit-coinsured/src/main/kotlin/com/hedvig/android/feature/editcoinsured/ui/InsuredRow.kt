@@ -77,7 +77,7 @@ internal fun InsuredRow(
           }
 
           !allowEdit -> Icon(
-            imageVector = HedvigIcons.Close, // todo: check here
+            imageVector = HedvigIcons.Close,
             contentDescription = "Remove",
             modifier = Modifier.size(16.dp),
           )
