@@ -150,7 +150,7 @@ private fun EditCoInsuredScreen(
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
       }
 

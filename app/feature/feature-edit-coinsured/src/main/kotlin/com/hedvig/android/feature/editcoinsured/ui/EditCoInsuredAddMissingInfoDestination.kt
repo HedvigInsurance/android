@@ -312,7 +312,7 @@ private fun EditCoInsuredScreenErrorPreview() {
         onManualInputSwitchChanged = {},
         onAddNewCoInsured = {},
         onCoInsuredSelected = {},
-        )
+      )
     }
   }
 }
