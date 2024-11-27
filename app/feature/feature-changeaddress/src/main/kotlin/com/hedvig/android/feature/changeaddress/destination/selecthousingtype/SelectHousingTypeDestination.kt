@@ -113,7 +113,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
     RadioButton(VILLA, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
-      text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
+      text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,30),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(16.dp))

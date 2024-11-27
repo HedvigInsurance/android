@@ -274,7 +274,7 @@ private fun EnterNewAddressScreen(
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT), NotificationPriority.Info)
+      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,30), NotificationPriority.Info)
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         onClick = submitInput,
