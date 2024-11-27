@@ -147,10 +147,10 @@ private fun EditCoInsuredScreen(
     when (uiState) {
       is EditCoInsuredState.Error -> {
         ErrorDialog(
-          // todo: check here, what is going on??
           title = stringResource(id = R.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
+          modifier = Modifier.fillMaxWidth()
         )
       }
 
@@ -329,6 +329,35 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       textAlign = TextAlign.End,
       modifier = Modifier.fillMaxWidth(),
     )
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenErrorPreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Error("Something happened"),
+        onSave = {},
+        onSsnChanged = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onAddCoInsuredClicked = {},
+        onCommitChanges = {},
+        onCompleted = {},
+        onDismissError = {},
+        onResetAddBottomSheetState = {},
+        onResetRemoveBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onCoInsuredSelected = {},
+        onAddNewCoInsured = {},
+      )
+    }
   }
 }
 
