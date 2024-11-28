@@ -15,8 +15,7 @@ android {
 
 dependencies {
   api(libs.androidx.navigation.common)
-
-  implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
@@ -31,10 +30,7 @@ dependencies {
   implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)

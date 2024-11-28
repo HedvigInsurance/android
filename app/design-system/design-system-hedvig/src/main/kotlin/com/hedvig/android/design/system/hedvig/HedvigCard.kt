@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -46,11 +47,12 @@ fun HedvigCard(
   onClick: (() -> Unit)? = null,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
+  shape: Shape = HedvigTheme.shapes.cornerXLarge,
   content: @Composable () -> Unit,
 ) {
   if (onClick != null) {
     Surface(
-      shape = HedvigTheme.shapes.cornerXLarge,
+      shape = shape,
       onClick = onClick,
       interactionSource = interactionSource,
       indication = indication,
@@ -60,7 +62,7 @@ fun HedvigCard(
     }
   } else {
     Surface(
-      shape = HedvigTheme.shapes.cornerXLarge,
+      shape = shape,
       modifier = modifier,
     ) {
       content()

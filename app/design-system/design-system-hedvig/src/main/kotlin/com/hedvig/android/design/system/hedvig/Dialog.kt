@@ -68,6 +68,7 @@ fun ErrorDialog(
       text = title,
       description = message,
       iconStyle = ERROR,
+      modifier = Modifier.fillMaxWidth(),
       buttonStyle = EmptyStateButtonStyle.Button(
         buttonText = buttonText,
         onButtonClick = onButtonClick ?: onDismiss,

@@ -129,6 +129,7 @@ internal fun YourInfoTab(
           daysUntil(upcomingChangesInsuranceAgreement.activeFrom)
         }
         HedvigNotificationCard(
+          modifier = Modifier.padding(horizontal = 16.dp),
           message = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
           priority = Info,
           style = Button(
@@ -138,6 +139,7 @@ internal fun YourInfoTab(
         )
       } else {
         HedvigNotificationCard(
+          modifier = Modifier.padding(horizontal = 16.dp),
           message = stringResource(
             R.string.insurances_tab_your_insurance_will_be_updated,
             dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
