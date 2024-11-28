@@ -47,6 +47,7 @@ internal class EnterNewAddressViewModel(
       maxNumberCoInsured = previousParameters.maxNumberCoInsured,
       maxSquareMeters = previousParameters.maxSquareMeters,
       numberInsured = ValidatedInput(previousParameters.suggestedNumberInsured),
+      oldAddressCoverageDurationDays = previousParameters.oldAddressCoverageDurationDays
     ),
     presenter = EnterNewAddressPresenter(
       previousParameters,
@@ -165,6 +166,7 @@ internal data class EnterNewAddressUiState(
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val maxNumberCoInsured: Int? = null,
   val maxSquareMeters: Int? = null,
+  val oldAddressCoverageDurationDays : Int? = null,
   val navParamsForVillaDestination: MovingParameters? = null,
   val navParamsForOfferDestination: MovingParameters? = null,
 ) {

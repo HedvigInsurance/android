@@ -431,7 +431,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
     navigateToChoseCoverage = false,
     navigateToAddHouseInformation = false,
 
-    oldAddressCoverageDurationDays  = TODO()
+    oldAddressCoverageDurationDays  = oldAddressCoverageDurationDays
   )
 }
 
