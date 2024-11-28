@@ -186,7 +186,7 @@ private fun ChangeAddressEnterVillaInformationScreen(
     )
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,30),
+      text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, 30),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(16.dp))

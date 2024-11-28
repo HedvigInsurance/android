@@ -18,13 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
@@ -42,6 +47,8 @@ import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError.GenericError
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError.UserPresentable
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import octopus.feature.movingflow.MoveIntentV2CreateMutation
 
 @Composable
 internal fun StartDestination(
@@ -51,10 +58,12 @@ internal fun StartDestination(
   onNavigateToNextStep: (String) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is Content && uiState.initiatedMovingFlowId != null) {
-    LaunchedEffect(uiState.initiatedMovingFlowId) {
-      viewModel.emit(StartEvent.NavigatedToNextStep)
-      onNavigateToNextStep(uiState.initiatedMovingFlowId)
+  if (uiState is Content) {
+    LaunchedEffect(uiState.navigateToNextStep) {
+      if (uiState.navigateToNextStep != false) {
+        viewModel.emit(StartEvent.NavigatedToNextStep)
+        onNavigateToNextStep(uiState.initiatedMovingIntent.id)
+      }
     }
   }
   StartScreen(
@@ -102,8 +111,10 @@ private fun StartScreen(
           }
 
           is Content -> {
-            StartScreen(uiState, onSelectHousingType, onSubmitHousingType)
+            StartContentScreen(uiState, onSelectHousingType, onSubmitHousingType)
           }
+
+          StartUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
         }
       }
     }
@@ -111,7 +122,7 @@ private fun StartScreen(
 }
 
 @Composable
-private fun StartScreen(
+private fun StartContentScreen(
   uiState: Content,
   onSelectHousingType: (HousingType) -> Unit,
   onSubmitHousingType: () -> Unit,
@@ -148,13 +159,18 @@ private fun StartScreen(
         radioGroupSize = Medium,
       )
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,30), Info)
-      Spacer(Modifier.height(16.dp))
+      if (uiState.oldHomeInsuranceDuration != null) {
+        HedvigNotificationCard(
+          stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldHomeInsuranceDuration),
+          Info,
+        )
+        Spacer(Modifier.height(16.dp))
+      }
       HedvigButton(
         text = stringResource(R.string.general_continue_button),
         onClick = onSubmitHousingType,
-        enabled = !uiState.isLoading,
-        isLoading = uiState.isLoading,
+        enabled = !uiState.buttonLoading,
+        isLoading = uiState.buttonLoading,
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
@@ -168,3 +184,91 @@ internal fun HousingType.stringResource() = when (this) {
   HousingType.ApartmentOwn -> R.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
   HousingType.Villa -> R.string.CHANGE_ADDRESS_VILLA_LABEL
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceDestinationAnimation(
+  @PreviewParameter(StartUiStateProvider::class) state: StartUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      StartScreen(
+        uiState = state,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class StartUiStateProvider : CollectionPreviewParameterProvider<StartUiState>(
+  listOf(
+    GenericError(ErrorMessage("Unknown MoveIntentV2CreateMutation error")),
+    StartUiState.Loading,
+    Content(
+      possibleHousingTypes = HousingType.entries,
+      selectedHousingType = HousingType.entries.first(),
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
+      oldHomeInsuranceDuration = 30,
+      navigateToNextStep = false,
+    ),
+    Content(
+      possibleHousingTypes = HousingType.entries,
+      selectedHousingType = HousingType.entries[1],
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
+      oldHomeInsuranceDuration = null,
+      navigateToNextStep = false,
+      buttonLoading = false,
+    ),
+    Content(
+      possibleHousingTypes = HousingType.entries,
+      selectedHousingType = HousingType.entries.first(),
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
+      oldHomeInsuranceDuration = null,
+      navigateToNextStep = false,
+      buttonLoading = true,
+    ),
+  ),
+)
