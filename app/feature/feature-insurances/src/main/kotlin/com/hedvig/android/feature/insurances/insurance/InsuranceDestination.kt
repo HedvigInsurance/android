@@ -51,6 +51,7 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -70,6 +71,7 @@ import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
@@ -134,24 +136,7 @@ private fun InsuranceScreen(
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Box(Modifier.fillMaxSize()) {
-    Column(
-      Modifier
-        .fillMaxSize()
-        .pullRefresh(pullRefreshState)
-        .windowInsetsPadding(WindowInsets.safeDrawing),
-    ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .height(64.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      ) {
-        HedvigText(
-          text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
-          style = HedvigTheme.typography.headlineSmall,
-        )
-      }
+    Column {
       AnimatedContent(
         targetState = uiState,
         Modifier.weight(1f),
@@ -165,7 +150,9 @@ private fun InsuranceScreen(
             Spacer(Modifier.weight(1f))
             HedvigErrorSection(
               onButtonClick = reload,
-              modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+              modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
             )
             Spacer(Modifier.weight(1f))
           }
@@ -180,6 +167,7 @@ private fun InsuranceScreen(
             navigateToCancelledInsurances = navigateToCancelledInsurances,
             onNavigateToMovingFlow = onNavigateToMovingFlow,
             modifier = Modifier.fillMaxSize(),
+            pullRefreshState = pullRefreshState,
           )
         }
       }
@@ -200,6 +188,7 @@ private fun InsuranceScreen(
 private fun InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
+  pullRefreshState: PullRefreshState,
   showNotificationBadge: Boolean,
   quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
@@ -209,46 +198,63 @@ private fun InsuranceScreenContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.padding(top = 16.dp)
+    modifier = modifier
+      .fillMaxSize()
+      .pullRefresh(pullRefreshState)
+      .windowInsetsPadding(WindowInsets.safeDrawing)
       .verticalScroll(rememberScrollState()),
-    verticalArrangement = Arrangement.spacedBy(24.dp),
   ) {
-    if (uiState.isLoading) {
-      InsuranceCardPlaceholder(
-        imageLoader = imageLoader,
-        modifier = Modifier.padding(horizontal = 16.dp),
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    ) {
+      HedvigText(
+        text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
+        style = HedvigTheme.typography.headlineSmall,
       )
-      CrossSellItemPlaceholder(Modifier.padding(horizontal = 16.dp))
-    } else {
-      ContractsSection(
-        imageLoader = imageLoader,
-        onInsuranceCardClick = onInsuranceCardClick,
-        contracts = uiState.contracts,
-      )
-      if (uiState.shouldSuggestMovingFlow) {
-        MovingFlowSuggestionSection(
-          onNavigateToMovingFlow = onNavigateToMovingFlow,
+    }
+    Spacer(Modifier.height(16.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+      if (uiState.isLoading) {
+        InsuranceCardPlaceholder(
+          imageLoader = imageLoader,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
-      }
-      if (uiState.crossSells.isNotEmpty()) {
-        CrossSellsSection(
-          showNotificationBadge = showNotificationBadge,
-          crossSells = uiState.crossSells,
-          onCrossSellClick = onCrossSellClick,
-          modifier = Modifier.padding(horizontal = 16.dp),
+        CrossSellItemPlaceholder(Modifier.padding(horizontal = 16.dp))
+      } else {
+        ContractsSection(
+          imageLoader = imageLoader,
+          onInsuranceCardClick = onInsuranceCardClick,
+          contracts = uiState.contracts,
         )
-      }
-      if (quantityOfCancelledInsurances > 0) {
-        TerminatedContractsButton(
-          text = pluralStringResource(
-            R.plurals.insurances_tab_terminated_insurance_subtitile,
-            quantityOfCancelledInsurances,
-            quantityOfCancelledInsurances,
-          ),
-          onClick = navigateToCancelledInsurances,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
+        if (uiState.shouldSuggestMovingFlow) {
+          MovingFlowSuggestionSection(
+            onNavigateToMovingFlow = onNavigateToMovingFlow,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+        if (uiState.crossSells.isNotEmpty()) {
+          CrossSellsSection(
+            showNotificationBadge = showNotificationBadge,
+            crossSells = uiState.crossSells,
+            onCrossSellClick = onCrossSellClick,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+        if (quantityOfCancelledInsurances > 0) {
+          TerminatedContractsButton(
+            text = pluralStringResource(
+              R.plurals.insurances_tab_terminated_insurance_subtitile,
+              quantityOfCancelledInsurances,
+              quantityOfCancelledInsurances,
+            ),
+            onClick = navigateToCancelledInsurances,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
       }
     }
   }
@@ -294,7 +300,8 @@ private fun InsuranceCard(
     topText = contract.currentInsuranceAgreement.productVariant.displayName,
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
-    modifier = modifier.padding(horizontal = 16.dp)
+    modifier = modifier
+      .padding(horizontal = 16.dp)
       .clip(HedvigTheme.shapes.cornerXLarge)
       .clickable {
         onInsuranceCardClick(contract.id)
@@ -332,7 +339,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewInsuranceScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
