@@ -138,7 +138,6 @@ private fun InsuranceScreen(
       Modifier
         .fillMaxSize()
         .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
       Row(
@@ -210,7 +209,8 @@ private fun InsuranceScreenContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.padding(top = 16.dp),
+    modifier = modifier.padding(top = 16.dp)
+      .verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.spacedBy(24.dp),
   ) {
     if (uiState.isLoading) {
@@ -347,6 +347,69 @@ private fun PreviewInsuranceScreen(
             listOf()
           },
           crossSells = listOf(
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+            CrossSell(
+              id = "1",
+              title = "Pet",
+              subtitle = "Unlimited FirstVet calls",
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
             CrossSell(
               id = "1",
               title = "Pet",
