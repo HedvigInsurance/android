@@ -148,7 +148,7 @@ private fun StartScreen(
         radioGroupSize = Medium,
       )
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,30), Info)
+      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, 30), Info)
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(R.string.general_continue_button),
