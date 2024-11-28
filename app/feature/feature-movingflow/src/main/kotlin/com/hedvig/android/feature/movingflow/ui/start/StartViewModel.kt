@@ -111,7 +111,8 @@ private class StartPresenter(
         currentState = state.copy(buttonLoading = true)
         val moveIntent = state.initiatedMovingIntent
         movingFlowRepository.initiateNewMovingFlow(moveIntent, submittingHousingTypeValue)
-        currentState = state.copy(navigateToNextStep = true, buttonLoading = true)
+        submittingHousingType = null
+        currentState = state.copy(navigateToNextStep = true, buttonLoading = false)
       }
     }
     return currentState
