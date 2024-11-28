@@ -11,14 +11,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsetsSides.Companion
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -135,26 +140,28 @@ private fun InsuranceScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Box(Modifier.fillMaxSize()) {
-    Column {
+  Surface(Modifier.fillMaxSize(), color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Box(propagateMinConstraints = true) {
       AnimatedContent(
         targetState = uiState,
-        Modifier.weight(1f),
         transitionSpec = {
           fadeIn() togetherWith fadeOut()
         },
         label = "uiState",
       ) { state ->
         if (state.hasError) {
-          Column {
+          Column(Modifier.fillMaxSize()) {
+            Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
             Spacer(Modifier.weight(1f))
             HedvigErrorSection(
               onButtonClick = reload,
               modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             )
             Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
           }
         } else {
           InsuranceScreenContent(
@@ -171,15 +178,13 @@ private fun InsuranceScreen(
           )
         }
       }
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      PullRefreshIndicator(
+        refreshing = isRetrying,
+        state = pullRefreshState,
+        scale = true,
+        modifier = Modifier.wrapContentSize(Alignment.TopCenter),
+      )
     }
-    PullRefreshIndicator(
-      refreshing = isRetrying,
-      state = pullRefreshState,
-      scale = true,
-      modifier = Modifier.align(Alignment.TopCenter),
-    )
   }
 }
 
@@ -201,9 +206,10 @@ private fun InsuranceScreenContent(
     modifier = modifier
       .fillMaxSize()
       .pullRefresh(pullRefreshState)
-      .windowInsetsPadding(WindowInsets.safeDrawing)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
       .verticalScroll(rememberScrollState()),
   ) {
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
@@ -257,6 +263,8 @@ private fun InsuranceScreenContent(
         }
       }
     }
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
