@@ -138,7 +138,7 @@ private fun SelectHousingTypeContentScreen(
     Spacer(modifier = Modifier.height(16.dp))
     if (uiState.oldHomeInsuranceDuration != null) {
       VectorInfoCard(
-        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, 30),
+        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldHomeInsuranceDuration),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(modifier = Modifier.height(16.dp))
