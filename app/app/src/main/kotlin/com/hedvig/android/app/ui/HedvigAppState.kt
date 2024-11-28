@@ -37,6 +37,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedHasRoute
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -194,19 +195,30 @@ internal class HedvigAppState(
    * @param topLevelGraph: The destination the app needs to navigate to.
    */
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
-    val topLevelNavOptions = navOptions {
-      popUpTo(navController.graph.findStartDestination().id) {
-        saveState = true
+    val popToStartOfGraph = navController.currentDestination?.isTopLevelGraphInHierarchy(topLevelGraph) == true
+    if (popToStartOfGraph) {
+      when (topLevelGraph) {
+        TopLevelGraph.Home -> navController.typedPopBackStack<HomeDestination.Home>(false)
+        TopLevelGraph.Insurances -> navController.typedPopBackStack<InsurancesDestination.Insurances>(false)
+        TopLevelGraph.Forever -> navController.typedPopBackStack<ForeverDestination.Forever>(false)
+        TopLevelGraph.Payments -> navController.typedPopBackStack<PaymentsDestination.Payments>(false)
+        TopLevelGraph.Profile -> navController.typedPopBackStack<ProfileDestination.Profile>(false)
       }
-      launchSingleTop = true
-      restoreState = true
-    }
-    when (topLevelGraph) {
-      TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
+    } else {
+      val topLevelNavOptions = navOptions {
+        popUpTo(navController.graph.findStartDestination().id) {
+          saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+      }
+      when (topLevelGraph) {
+        TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
+        TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
+        TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
+        TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
+        TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
+      }
     }
   }
 
