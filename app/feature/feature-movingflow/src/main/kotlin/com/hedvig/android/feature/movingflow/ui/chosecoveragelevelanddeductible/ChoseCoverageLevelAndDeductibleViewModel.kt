@@ -24,18 +24,20 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
 internal class ChoseCoverageLevelAndDeductibleViewModel(
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
-    ChoseCoverageLevelAndDeductibleUiState.Loading,
-    ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
-  )
+  ChoseCoverageLevelAndDeductibleUiState.Loading,
+  ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
+)
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val movingFlowRepository: MovingFlowRepository,
@@ -44,6 +46,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
   override fun MoleculePresenterScope<ChoseCoverageLevelAndDeductibleEvent>.present(
     lastState: ChoseCoverageLevelAndDeductibleUiState,
   ): ChoseCoverageLevelAndDeductibleUiState {
+    logcat { "Stelios: lastState:$lastState" }
     var tiersInfo: Option<TiersInfo?> by remember {
       mutableStateOf(
         (lastState as? ChoseCoverageLevelAndDeductibleUiState.Content)?.tiersInfo?.some() ?: None,
@@ -94,49 +97,60 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
 
     LaunchedEffect(Unit) {
-      movingFlowRepository.movingFlowState().collectLatest { movingFlowState ->
-        if (movingFlowState?.movingFlowQuotes == null) {
-          tiersInfo = null.some()
-          return@collectLatest
-        }
-        val homeQuotes = movingFlowState.movingFlowQuotes.homeQuotes
-        if (homeQuotes.isEmpty()) {
-          tiersInfo = null.some()
-          return@collectLatest
-        }
-        val initiallySelectedHomeQuote = run {
-          val previouslySelected = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
-            val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.lastSelectedHomeQuoteId
-            if (wasPreviouslySelectedInTheFlow) moveHomeQuote else null
-          }
-          if (previouslySelected != null) return@run previouslySelected
-          homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
-            if (moveHomeQuote.defaultChoice) moveHomeQuote else null
+      movingFlowRepository
+        .movingFlowState()
+        .run {
+          if (lastState is ChoseCoverageLevelAndDeductibleUiState.Content) {
+            // if we had some temporary input not persisted to disk when we last left this screen, we want that to still
+            //  be presented. Otherwise the disk value, which is the initial state will override any uncomitted input
+            this.drop(1)
+          } else {
+            this
           }
         }
-        val uniqueCoverageOptions = homeQuotes
-          .groupBy { it.tierName }
-          .mapNotNull { (_, moveHomeQuotes) ->
-            val alreadySelectedCoverage = moveHomeQuotes.firstOrNull { it.id == initiallySelectedHomeQuote?.id }
-            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.premium.amount }
-            val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
-            if (moveHomeQuote == null) return@mapNotNull null
-            CoverageInfo(
-              moveHomeQuote.id,
-              moveHomeQuote.tierDisplayName,
-              moveHomeQuote.tierDescription,
-              minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
-            )
+        .collectLatest { movingFlowState ->
+          if (movingFlowState?.movingFlowQuotes == null) {
+            tiersInfo = null.some()
+            return@collectLatest
           }
-          .toList()
-        val selectedCoverage = initiallySelectedHomeQuote ?: homeQuotes.first()
-        tiersInfo = TiersInfo(
-          allOptions = homeQuotes,
-          coverageOptions = uniqueCoverageOptions,
-          selectedCoverage = selectedCoverage,
-          selectedDeductible = selectedCoverage,
-        ).some()
-      }
+          val homeQuotes = movingFlowState.movingFlowQuotes.homeQuotes
+          if (homeQuotes.isEmpty()) {
+            tiersInfo = null.some()
+            return@collectLatest
+          }
+          val initiallySelectedHomeQuote = run {
+            val previouslySelected = homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
+              val wasPreviouslySelectedInTheFlow = moveHomeQuote.id == movingFlowState.lastSelectedHomeQuoteId
+              if (wasPreviouslySelectedInTheFlow) moveHomeQuote else null
+            }
+            if (previouslySelected != null) return@run previouslySelected
+            homeQuotes.firstNotNullOfOrNull { moveHomeQuote ->
+              if (moveHomeQuote.defaultChoice) moveHomeQuote else null
+            }
+          }
+          val uniqueCoverageOptions = homeQuotes
+            .groupBy { it.tierName }
+            .mapNotNull { (_, moveHomeQuotes) ->
+              val alreadySelectedCoverage = moveHomeQuotes.firstOrNull { it.id == initiallySelectedHomeQuote?.id }
+              val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.premium.amount }
+              val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
+              if (moveHomeQuote == null) return@mapNotNull null
+              CoverageInfo(
+                moveHomeQuote.id,
+                moveHomeQuote.tierDisplayName,
+                moveHomeQuote.tierDescription,
+                minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
+              )
+            }
+            .toList()
+          val selectedCoverage = initiallySelectedHomeQuote ?: homeQuotes.first()
+          tiersInfo = TiersInfo(
+            allOptions = homeQuotes,
+            coverageOptions = uniqueCoverageOptions,
+            selectedCoverage = selectedCoverage,
+            selectedDeductible = selectedCoverage,
+          ).some()
+        }
     }
 
     LaunchedEffect(submittingSelectedHomeQuoteId) {
