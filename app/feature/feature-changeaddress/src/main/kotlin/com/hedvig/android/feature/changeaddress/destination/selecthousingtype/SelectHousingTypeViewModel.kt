@@ -122,7 +122,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
             null -> null
           },
           housingType = state.housingType.input,
-          oldAddressCoverageDurationDays = state.oldHomeInsuranceDuration
+          oldAddressCoverageDurationDays = state.oldHomeInsuranceDuration,
         )
         currentState = state.copy(
           navigationParameters = parameters,

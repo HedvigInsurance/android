@@ -207,7 +207,7 @@ private fun ChangeAddressEnterNewAddressScreen(
       )
     }
     Spacer(modifier = Modifier.height(16.dp))
-    if (uiState.oldAddressCoverageDurationDays!=null) {
+    if (uiState.oldAddressCoverageDurationDays != null) {
       VectorInfoCard(
         text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldAddressCoverageDurationDays),
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -284,7 +284,8 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
       ChangeAddressEnterNewAddressScreen(
         EnterNewAddressUiState(
           datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),
-          oldAddressCoverageDurationDays = 30),
+          oldAddressCoverageDurationDays = 30,
+        ),
         {},
         {},
         {},
