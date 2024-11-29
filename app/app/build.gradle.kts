@@ -176,6 +176,7 @@ dependencies {
   implementation(projects.dataTermination)
   implementation(projects.databaseAndroid)
   implementation(projects.databaseCore)
+  implementation(projects.featureAddonPurchase)
   implementation(projects.datadogAndroid)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
