@@ -36,6 +36,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.typedClearBackStack
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
@@ -197,28 +198,18 @@ internal class HedvigAppState(
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
     val popToStartOfGraph = navController.currentDestination?.isTopLevelGraphInHierarchy(topLevelGraph) == true
     if (popToStartOfGraph) {
-      when (topLevelGraph) {
-        TopLevelGraph.Home -> navController.typedPopBackStack<HomeDestination.Home>(false)
-        TopLevelGraph.Insurances -> navController.typedPopBackStack<InsurancesDestination.Insurances>(false)
-        TopLevelGraph.Forever -> navController.typedPopBackStack<ForeverDestination.Forever>(false)
-        TopLevelGraph.Payments -> navController.typedPopBackStack<PaymentsDestination.Payments>(false)
-        TopLevelGraph.Profile -> navController.typedPopBackStack<ProfileDestination.Profile>(false)
-      }
+      navController.typedPopBackStack(topLevelGraph.destination::class, false)
     } else {
-      val topLevelNavOptions = navOptions {
-        popUpTo(navController.graph.findStartDestination().id) {
-          saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-      }
-      when (topLevelGraph) {
-        TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
-        TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
-        TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
-        TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
-        TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
-      }
+      navController.navigate(
+          route = topLevelGraph.destination,
+          navOptions = navOptions {
+              popUpTo(navController.graph.findStartDestination().id) {
+                  saveState = true
+              }
+              launchSingleTop = true
+              restoreState = true
+          },
+      )
     }
   }
 
@@ -228,6 +219,7 @@ internal class HedvigAppState(
    * only happen in scenarios where the logout was due to token expiration. The most common scenario there would be
    * when coming into the app from a deep link while not having valid cretentials lying around already.
    * https://issuetracker.google.com/issues/334413738
+   * todo: Now that we clear the backstack of all graphs on logout manually perhaps we can make this work properly
    */
   fun navigateToLoggedIn() {
     navController.navigate(RootGraph) {
@@ -238,6 +230,9 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
+    for (entry in TopLevelGraph.entries) {
+      navController.typedClearBackStack(entry.destination)
+    }
     navController.navigate(LoginDestination) {
       typedPopUpTo<RootGraph> {
         inclusive = true

@@ -13,6 +13,12 @@ inline fun <reified T : Destination> NavController.typedPopBackStack(
   saveState: Boolean = false,
 ): Boolean = popBackStack<T>(inclusive, saveState)
 
+fun <T : Destination> NavController.typedPopBackStack(
+  destination: KClass<T>,
+  inclusive: Boolean,
+  saveState: Boolean = false,
+): Boolean = popBackStack(destination, inclusive, saveState)
+
 inline fun <reified T : Destination> NavOptionsBuilder.typedPopUpTo(
   noinline popUpToBuilder: PopUpToBuilder.() -> Unit = {},
 ) = popUpTo<T>(popUpToBuilder)
@@ -20,3 +26,7 @@ inline fun <reified T : Destination> NavOptionsBuilder.typedPopUpTo(
 inline fun <reified T : Destination> NavDestination.typedHasRoute() = hasRoute<T>()
 
 fun <T : Destination> NavDestination.typedHasRoute(route: KClass<T>) = hasRoute(route)
+
+fun <T : Destination> NavController.typedClearBackStack(route: T): Boolean = clearBackStack(route)
+
+
