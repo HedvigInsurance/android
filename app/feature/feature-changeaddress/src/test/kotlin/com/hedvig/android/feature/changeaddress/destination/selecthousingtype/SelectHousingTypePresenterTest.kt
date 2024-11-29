@@ -53,34 +53,31 @@ class SelectHousingTypePresenterTest {
         repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
         skipItems(2)
         sendEvent(SelectHousingTypeEvent.SubmitHousingType)
-        assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::errorMessageRes)
+        assertThat(
+          awaitItem(),
+        ).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::errorMessageRes)
           .isEqualTo(R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR)
         sendEvent(SelectHousingTypeEvent.DismissHousingTypeErrorDialog)
-        assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::errorMessageRes)
+        assertThat(
+          awaitItem(),
+        ).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::errorMessageRes)
           .isNull()
       }
     }
 
   @Test
-  fun `when moveIntent is successfully received from BE the correct navigation parameters go to uiState`() = runTest {
+  fun `when press continue the correct navigation parameters go to uiState`() = runTest {
     val repository = FakeChangeAddressRepository()
     val presenter = SelectHousingTypePresenter(repository)
 
     presenter.test(SelectHousingTypeUiState.Loading) {
+      repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
       sendEvent(SelectHousingTypeEvent.SelectHousingType(VILLA))
       sendEvent(SelectHousingTypeEvent.SubmitHousingType)
       skipItems(3)
-      repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
       assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>()
         .prop(SelectHousingTypeUiState.Content::navigationParameters)
         .isEqualTo(fakeSelectHousingTypeParametersForVilla)
-      sendEvent(SelectHousingTypeEvent.SelectHousingType(APARTMENT_OWN))
-      sendEvent(SelectHousingTypeEvent.SubmitHousingType)
-      skipItems(2)
-      repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
-      assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>()
-        .prop(SelectHousingTypeUiState.Content::navigationParameters)
-        .isEqualTo(fakeSelectHousingTypeParametersForApartment)
     }
   }
 
@@ -90,10 +87,10 @@ class SelectHousingTypePresenterTest {
     val presenter = SelectHousingTypePresenter(repository)
 
     presenter.test(SelectHousingTypeUiState.Loading) {
+      repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
       sendEvent(SelectHousingTypeEvent.SelectHousingType(VILLA))
       sendEvent(SelectHousingTypeEvent.SubmitHousingType)
       skipItems(3)
-      repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
       assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>()
         .prop(SelectHousingTypeUiState.Content::navigationParameters)
         .isNotNull()
@@ -111,19 +108,24 @@ class SelectHousingTypePresenterTest {
       val presenter = SelectHousingTypePresenter(repository)
 
       presenter.test(SelectHousingTypeUiState.Loading) {
-        skipItems(1)
+        repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
+        skipItems(2)
         sendEvent(SelectHousingTypeEvent.SelectHousingType(VILLA))
-        assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
+        assertThat(
+          awaitItem(),
+        ).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
           .isEqualTo(ValidatedInput(VILLA))
         sendEvent(SelectHousingTypeEvent.SelectHousingType(APARTMENT_RENT))
-        assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
+        assertThat(
+          awaitItem(),
+        ).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
           .isEqualTo(ValidatedInput(APARTMENT_RENT))
         sendEvent(SelectHousingTypeEvent.SelectHousingType(APARTMENT_OWN))
-        assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
+        assertThat(
+          awaitItem(),
+        ).isInstanceOf<SelectHousingTypeUiState.Content>().prop(SelectHousingTypeUiState.Content::housingType)
           .isEqualTo(ValidatedInput(APARTMENT_OWN))
         sendEvent(SelectHousingTypeEvent.SubmitHousingType)
-        skipItems(1)
-        repository.createMoveResponseTurbine.add(fakeMoveIntent.right())
         assertThat(awaitItem()).isInstanceOf<SelectHousingTypeUiState.Content>()
           .prop(SelectHousingTypeUiState.Content::navigationParameters)
           .isEqualTo(fakeSelectHousingTypeParametersForApartment)
