@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
+
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -37,4 +39,5 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.coreUiData)
 }
