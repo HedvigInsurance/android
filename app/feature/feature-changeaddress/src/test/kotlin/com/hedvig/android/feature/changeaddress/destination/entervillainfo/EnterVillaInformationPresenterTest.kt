@@ -90,7 +90,7 @@ class EnterVillaInformationPresenterTest {
             hasWaterConnected = false,
           ),
         ),
-        oldAddressCoverageDurationDays = null
+        oldAddressCoverageDurationDays = null,
       ),
     ) {
       skipItems(1)
@@ -119,7 +119,7 @@ class EnterVillaInformationPresenterTest {
     runTest {
       val presenter = EnterVillaInformationPresenter(fakeMovingParametersForVilla)
       presenter.test(
-        EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA),oldAddressCoverageDurationDays = null),
+        EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA), oldAddressCoverageDurationDays = null),
       ) {
         sendEvent(EnterVillaInformationEvent.ChangeIsSublet(true))
         sendEvent(EnterVillaInformationEvent.ChangeAncillaryArea("15"))
