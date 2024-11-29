@@ -47,15 +47,17 @@ private class StartPresenter(
     var loadIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents { event ->
-      val state = currentState as? StartUiState.Content ?: return@CollectEvents
       when (event) {
         is SelectHousingType -> {
+          val state = currentState as? StartUiState.Content ?: return@CollectEvents
           currentState = state.copy(selectedHousingType = event.housingType)
         }
         SubmitHousingType -> {
+          val state = currentState as? StartUiState.Content ?: return@CollectEvents
           submittingHousingType = state.selectedHousingType
         }
         NavigatedToNextStep -> {
+          val state = currentState as? StartUiState.Content ?: return@CollectEvents
           currentState = state.copy(navigateToNextStep = false)
         }
         DismissStartError -> {

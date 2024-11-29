@@ -44,19 +44,24 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
     var submittingHousingType by remember { mutableStateOf<HousingType?>(null) }
 
     CollectEvents { event ->
-      val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+
       when (event) {
         DismissErrorDialog -> {
           createMoveIntentIteration++
         }
 
-        DismissHousingTypeErrorDialog -> currentState = state.copy(errorMessageRes = null)
+        DismissHousingTypeErrorDialog -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+          currentState = state.copy(errorMessageRes = null)
+        }
 
         is SelectHousingType -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
           currentState = state.copy(housingType = ValidatedInput(input = event.housingType))
         }
 
         SubmitHousingType -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
           if (!state.housingType.isPresent) {
             currentState = state.copy(
               errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
@@ -67,6 +72,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
         }
 
         ClearNavigationParameters -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
           currentState = state.copy(navigationParameters = null)
         }
       }
