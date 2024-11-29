@@ -29,13 +29,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 internal class ChoseCoverageLevelAndDeductibleViewModel(
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
-    ChoseCoverageLevelAndDeductibleUiState.Loading,
-    ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
-  )
+  ChoseCoverageLevelAndDeductibleUiState.Loading,
+  ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
+)
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val movingFlowRepository: MovingFlowRepository,
@@ -60,17 +61,18 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           val newSelectedCoverage =
             currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId } ?: return@CollectEvents
           if (newSelectedCoverage == currentContent.selectedCoverage) return@CollectEvents
-          tiersInfo = currentContent.copy(
-            selectedCoverage = newSelectedCoverage,
-            selectedDeductible = null,
-          ).some()
+          launch {
+            movingFlowRepository.updatePreselectedHomeQuoteId(newSelectedCoverage.id)
+          }
         }
 
         is SelectDeductible -> {
           val currentContent = tiersInfo.getOrNull() ?: return@CollectEvents
           val newSelectedDeductible =
             currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId } ?: return@CollectEvents
-          tiersInfo = currentContent.copy(selectedDeductible = newSelectedDeductible).some()
+          launch {
+            movingFlowRepository.updatePreselectedHomeQuoteId(newSelectedDeductible.id)
+          }
         }
 
         is SubmitSelectedHomeQuoteId -> {
