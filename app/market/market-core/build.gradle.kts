@@ -1,6 +1,6 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 dependencies {
@@ -11,5 +11,4 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
 }

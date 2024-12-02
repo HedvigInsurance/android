@@ -8,7 +8,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.changeaddress.data.Address
 import com.hedvig.android.feature.changeaddress.data.AddressId
@@ -39,6 +38,7 @@ internal val fakeMoveIntent = MoveIntent(
   maxHouseSquareMeters = 500,
   extraBuildingTypes = listOf(),
   maxApartmentNumberCoInsured = 4,
+  oldAddressCoverageDurationDays = null,
 )
 
 internal val fakeSelectHousingTypeParametersForVilla = SelectHousingTypeParameters(
@@ -52,6 +52,7 @@ internal val fakeSelectHousingTypeParametersForVilla = SelectHousingTypeParamete
   maxSquareMeters = 500,
   moveIntentId = "moveintentid",
   moveFromAddressId = AddressId("address"),
+  oldAddressCoverageDurationDays = null,
 )
 
 internal val fakeSelectHousingTypeParametersForApartment = SelectHousingTypeParameters(
@@ -65,6 +66,7 @@ internal val fakeSelectHousingTypeParametersForApartment = SelectHousingTypePara
   maxSquareMeters = 300,
   moveIntentId = "moveintentid",
   moveFromAddressId = AddressId("address"),
+  oldAddressCoverageDurationDays = null,
 )
 
 private val fakeEnterNewAddressParameters = NewAddressParameters(
@@ -115,7 +117,6 @@ internal val fakeMoveQuote = MoveQuote(
         label = "test",
         description = "long".repeat(10),
         limit = "long".repeat(10),
-        type = BIKE,
       ),
     ),
     documents = listOf(),

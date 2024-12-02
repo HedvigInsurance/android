@@ -12,7 +12,8 @@ import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
-import com.hedvig.android.data.claimtriaging.toEntryPointOptions
+import com.hedvig.android.data.claimtriaging.EntryPointOption
+import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import octopus.EntryPointGroupsQuery
 
 internal class GetEntryPointGroupsUseCase(
@@ -43,6 +44,15 @@ private fun List<octopus.fragment.EntryPoint>.toEntryPoints(): List<EntryPoint> 
       EntryPointId(entryPoint.id),
       entryPoint.displayName,
       entryPoint.options?.toEntryPointOptions(),
+    )
+  }
+}
+
+private fun List<octopus.fragment.EntryPoint.Option>.toEntryPointOptions(): List<EntryPointOption> {
+  return map { option ->
+    EntryPointOption(
+      EntryPointOptionId(option.id),
+      option.displayName,
     )
   }
 }

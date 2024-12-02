@@ -22,10 +22,12 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   private val libs: LibrariesForLibs,
   private val pluginManager: PluginManager,
 ) {
-  internal val apolloSchemaHandler: ApolloSchemaHandler =
+  private val apolloSchemaHandler: ApolloSchemaHandler =
     project.objects.newInstance<ApolloSchemaHandler>()
-  internal val composeHandler: ComposeHandler =
+  private val composeHandler: ComposeHandler =
     project.objects.newInstance<ComposeHandler>()
+  private val androidResHandler: AndroidResHandler =
+    project.objects.newInstance<AndroidResHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -54,6 +56,10 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     pluginManager.apply(libs.plugins.serialization.get().pluginId)
   }
 
+  fun androidResources() {
+    androidResHandler.configure(project)
+  }
+
   companion object {
     internal fun Project.configureHedvigPlugin(): HedvigGradlePluginExtension {
       return extensions.create<HedvigGradlePluginExtension>(
@@ -66,7 +72,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   }
 }
 
-internal abstract class ApolloSchemaHandler {
+private abstract class ApolloSchemaHandler {
   fun configure(project: Project, apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     with(project) {
       pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
@@ -134,7 +140,7 @@ internal abstract class ApolloSchemaHandler {
   }
 }
 
-internal abstract class ComposeHandler {
+private abstract class ComposeHandler {
   fun configure(project: Project) {
     val libs = project.the<LibrariesForLibs>()
     project.pluginManager.apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
@@ -159,7 +165,7 @@ internal abstract class ComposeHandler {
       if (isAndroidLibrary || isAndroidApp) {
         add("androidTestImplementation", platform(bom))
         add("implementation", libs.androidx.compose.uiToolingPreview)
-        add("debugImplementation", libs.androidx.compose.uiTooling)
+        add("implementation", libs.androidx.compose.uiTooling)
       }
     }
   }
@@ -167,6 +173,16 @@ internal abstract class ComposeHandler {
   private fun AndroidCommonExtension.configureComposeAndroidBuildFeature() {
     buildFeatures {
       compose = true
+    }
+  }
+}
+
+private abstract class AndroidResHandler {
+  fun configure(project: Project) {
+    project.extensions.configure<LibraryExtension> {
+      buildFeatures {
+        androidResources = true
+      }
     }
   }
 }

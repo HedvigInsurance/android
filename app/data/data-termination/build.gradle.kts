@@ -1,6 +1,6 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 hedvig {
@@ -8,7 +8,6 @@ hedvig {
 }
 
 dependencies {
-
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)

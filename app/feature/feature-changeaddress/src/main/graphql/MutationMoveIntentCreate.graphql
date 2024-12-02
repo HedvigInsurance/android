@@ -15,6 +15,7 @@ mutation MoveIntentCreate {
         id
         street
         postalCode
+        oldAddressCoverageDurationDays
       }
     }
     userError {

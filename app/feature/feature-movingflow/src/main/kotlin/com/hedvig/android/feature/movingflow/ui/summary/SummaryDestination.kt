@@ -42,7 +42,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.CERTIFICATE
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -362,7 +361,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         label = "insurable limit label",
         limit = "insurable limit limit",
         description = "insurable limit description",
-        type = BIKE,
       ),
     ),
     documents = listOf(

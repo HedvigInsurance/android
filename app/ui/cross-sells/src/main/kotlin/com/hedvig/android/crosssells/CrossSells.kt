@@ -10,13 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -32,18 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.material3.lightTypeContainer
-import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
-import com.hedvig.android.core.designsystem.material3.squircleLarge
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import hedvig.resources.R
 
 @Composable
@@ -56,7 +53,7 @@ fun CrossSellsSection(
   Column(modifier) {
     CrossSellsSubHeaderWithDivider(showNotificationBadge)
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, Modifier.padding(horizontal = 16.dp))
+      CrossSellItem(crossSell, onCrossSellClick)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -65,8 +62,8 @@ fun CrossSellsSection(
 }
 
 @Composable
-fun CrossSellItemPlaceholder() {
-  Column {
+fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
+  Column(modifier) {
     CrossSellsSubHeaderWithDivider(false)
     CrossSellItem(
       crossSellTitle = "HHHH",
@@ -75,7 +72,7 @@ fun CrossSellItemPlaceholder() {
       type = CrossSell.CrossSellType.HOME,
       onCrossSellClick = {},
       isLoading = true,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier,
     )
   }
 }
@@ -86,7 +83,7 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
     NotificationSubheading(
       text = stringResource(R.string.insurance_tab_cross_sells_title),
       showNotification = showNotificationBadge,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier,
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -124,46 +121,39 @@ private fun CrossSellItem(
       contentDescription = null,
       modifier = Modifier
         .size(48.dp)
-        .placeholder(
-          visible = isLoading,
-          highlight = PlaceholderHighlight.fade(),
-          shape = MaterialTheme.shapes.squircleLarge,
-        ),
+        .hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
     )
     Spacer(Modifier.width(16.dp))
     Column(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.Center,
     ) {
-      Text(
+      HedvigText(
         text = crossSellTitle,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        style = HedvigTheme.typography.bodySmall,
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+          shape = HedvigTheme.shapes.cornerXSmall,
+        ),
       )
       Spacer(Modifier.height(4.dp))
-      Text(
+      HedvigText(
         text = crossSellSubtitle,
-        style = MaterialTheme.typography.bodyMedium.copy(
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
     }
     Spacer(Modifier.width(16.dp))
-    HedvigContainedSmallButton(
+    HedvigButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
       },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.lightTypeContainer,
-        contentColor = MaterialTheme.colorScheme.onLightTypeContainer,
-      ),
-      modifier = Modifier.placeholder(
-        visible = isLoading,
-        highlight = PlaceholderHighlight.shimmer(),
-        shape = MaterialTheme.shapes.squircleLarge,
-      ),
+      buttonSize = Small,
+      buttonStyle = PrimaryAlt,
+      modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       enabled = !isLoading,
     )
   }
@@ -197,7 +187,7 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
         Spacer(Modifier.width(8.dp))
       }
     }
-    Text(text = text)
+    HedvigText(text = text)
   }
 }
 
@@ -205,12 +195,22 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
 @Composable
 private fun PreviewCrossSellsSection() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellsSection(
         true,
-        List(2) { CrossSell("id", "title", "subtitle", "storeUrl", CrossSell.CrossSellType.HOME) },
+        List(2) { CrossSell("id", "title", "subtitle", "storeUrl", HOME) },
         {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellItemPlaceholder() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellItemPlaceholder()
     }
   }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.fastSumBy
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -207,8 +208,8 @@ private fun PreviewHomeLayoutCenteredContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox { HedvigText("claim status card") }
@@ -227,8 +228,8 @@ private fun PreviewHomeLayoutCenteredContentWithSomeBottomAttachedContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           memberReminderCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               repeat(1) { index ->
@@ -249,8 +250,8 @@ private fun PreviewHomeLayoutNonCenteredNonScrollableContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           veryImportantMessages = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox(0) { HedvigText("Important message") }
@@ -276,8 +277,8 @@ private fun PreviewHomeLayoutScrollingContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
       BoxWithConstraints {
         PreviewHomeLayout(
-          maxWidth = constraints.maxWidth,
-          maxHeight = constraints.maxHeight,
+          maxWidth = this.constraints.maxWidth,
+          maxHeight = this.constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
               PreviewBox { HedvigText("claim status card") }
@@ -330,7 +331,8 @@ private fun PreviewHomeLayout(
       HedvigTextButton(
         text = "Other services",
         onClick = {},
-        modifier = Modifier.padding(horizontal = 16.dp),
+        buttonSize = Large,
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       )
     },
     topSpacer = {

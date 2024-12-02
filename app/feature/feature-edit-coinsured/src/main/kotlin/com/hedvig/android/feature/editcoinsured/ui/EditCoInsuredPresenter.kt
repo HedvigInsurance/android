@@ -47,19 +47,22 @@ internal class EditCoInsuredPresenter(
       val lastListState = lastState.safeCast<Loaded>()?.listState
       mutableStateOf(lastListState ?: Loaded.CoInsuredListState())
     }
-    var addBottomSheetState by remember {
-      val lastBottomSheetState = lastState.safeCast<Loaded>()?.addBottomSheetState
+    var addBottomSheetContentState by remember {
+      val lastBottomSheetState = lastState.safeCast<Loaded>()?.addBottomSheetContentState
       mutableStateOf(
-        lastBottomSheetState ?: Loaded.AddBottomSheetState(
+        lastBottomSheetState ?: Loaded.AddBottomSheetContentState(
           manualInfo = ManualInfo(),
           infoFromSsn = InfoFromSsn(),
         ),
       )
     }
-    var removeBottomSheetState by remember {
-      val lastBottomSheetState = lastState.safeCast<Loaded>()?.removeBottomSheetState
-      mutableStateOf(lastBottomSheetState ?: Loaded.RemoveBottomSheetState())
+    var removeBottomSheetContentState by remember {
+      val lastBottomSheetState = lastState.safeCast<Loaded>()?.removeBottomSheetContentState
+      mutableStateOf(lastBottomSheetState ?: Loaded.RemoveBottomSheetContentState())
     }
+
+    var finishedAdding by remember { mutableStateOf(false) }
+    var finishedRemoving by remember { mutableStateOf(false) }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -100,18 +103,19 @@ internal class EditCoInsuredPresenter(
     CollectEvents { event ->
       when (event) {
         EditCoInsuredEvent.OnBottomSheetContinue -> {
-          val selectedCoInsured = addBottomSheetState.selectedCoInsured
+          val selectedCoInsured = addBottomSheetContentState.selectedCoInsured
           if (selectedCoInsured != null) {
             editedCoInsuredList = addCoInsured(selectedCoInsuredId, selectedCoInsured, listState)
-          } else if (addBottomSheetState.shouldFetchInfo()) {
+          } else if (addBottomSheetContentState.shouldFetchInfo()) {
             fetchInfoFromSsn++
           } else {
-            editedCoInsuredList = addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetState, listState)
+            editedCoInsuredList =
+              addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetContentState, listState)
           }
         }
 
         is EditCoInsuredEvent.OnCoInsuredSelected ->
-          addBottomSheetState = addBottomSheetState.copy(
+          addBottomSheetContentState = addBottomSheetContentState.copy(
             selectedCoInsured = event.coInsured,
             errorMessage = null,
           )
@@ -122,7 +126,7 @@ internal class EditCoInsuredPresenter(
 
         is EditCoInsuredEvent.OnSsnChanged ->
           if (event.ssn.length <= 12) {
-            addBottomSheetState = addBottomSheetState.copy(
+            addBottomSheetContentState = addBottomSheetContentState.copy(
               manualInfo = ManualInfo(),
               infoFromSsn = InfoFromSsn(
                 ssn = event.ssn,
@@ -134,37 +138,38 @@ internal class EditCoInsuredPresenter(
           }
 
         is EditCoInsuredEvent.OnBirthDateChanged ->
-          addBottomSheetState =
-            addBottomSheetState.copy(
-              manualInfo = addBottomSheetState.manualInfo.copy(birthDate = event.birthDate),
+          addBottomSheetContentState =
+            addBottomSheetContentState.copy(
+              manualInfo = addBottomSheetContentState.manualInfo.copy(birthDate = event.birthDate),
               errorMessage = null,
             )
 
         is EditCoInsuredEvent.OnFirstNameChanged ->
-          addBottomSheetState =
-            addBottomSheetState.copy(
-              manualInfo = addBottomSheetState.manualInfo.copy(firstName = event.firstName),
+          addBottomSheetContentState =
+            addBottomSheetContentState.copy(
+              manualInfo = addBottomSheetContentState.manualInfo.copy(firstName = event.firstName),
               errorMessage = null,
             )
 
         is EditCoInsuredEvent.OnLastNameChanged ->
-          addBottomSheetState =
-            addBottomSheetState.copy(
-              manualInfo = addBottomSheetState.manualInfo.copy(lastName = event.lastName),
+          addBottomSheetContentState =
+            addBottomSheetContentState.copy(
+              manualInfo = addBottomSheetContentState.manualInfo.copy(lastName = event.lastName),
               errorMessage = null,
             )
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
-          addBottomSheetState = addBottomSheetState.copy(
+          addBottomSheetContentState = addBottomSheetContentState.copy(
             showManualInput = event.show,
             errorMessage = null,
-            showUnderAgedInfo = false,
+            showUnderAgedInfo = if (!event.show) false else addBottomSheetContentState.showUnderAgedInfo,
           )
         }
 
         is EditCoInsuredEvent.OnEditCoInsuredClicked -> {
+          finishedAdding = false
           selectedCoInsuredId = event.coInsured.internalId
-          addBottomSheetState = Loaded.AddBottomSheetState(
+          addBottomSheetContentState = Loaded.AddBottomSheetContentState(
             manualInfo = ManualInfo(
               firstName = event.coInsured.firstName,
               lastName = event.coInsured.lastName,
@@ -176,52 +181,55 @@ internal class EditCoInsuredPresenter(
               ssn = event.coInsured.ssn,
             ),
             selectableCoInsured = listState.allCoInsured,
-            show = true,
           )
         }
 
-        is OnRemoveCoInsuredClicked -> removeBottomSheetState = Loaded.RemoveBottomSheetState(
-          coInsured = event.coInsured,
-          show = true,
-        )
+        is OnRemoveCoInsuredClicked -> {
+          finishedRemoving = false
+          removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState(
+            coInsured = event.coInsured,
+          )
+        }
 
-        OnAddCoInsuredClicked -> addBottomSheetState = Loaded.AddBottomSheetState(
-          show = true,
-          selectableCoInsured = listState.allCoInsured,
-          manualInfo = ManualInfo(),
-          infoFromSsn = InfoFromSsn(),
-        )
+        OnAddCoInsuredClicked -> {
+          finishedAdding = false
+          addBottomSheetContentState = Loaded.AddBottomSheetContentState(
+            selectableCoInsured = listState.allCoInsured,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
+          )
+        }
 
         EditCoInsuredEvent.OnAddNewCoInsured ->
-          addBottomSheetState =
-            addBottomSheetState.copy(
+          addBottomSheetContentState =
+            addBottomSheetContentState.copy(
               selectableCoInsured = null,
               selectedCoInsured = null,
               errorMessage = null,
             )
 
         ResetAddBottomSheetState -> {
-          addBottomSheetState = Loaded.AddBottomSheetState(
+          addBottomSheetContentState = Loaded.AddBottomSheetContentState(
             infoFromSsn = InfoFromSsn(),
             manualInfo = ManualInfo(),
           )
         }
 
-        ResetRemoveBottomSheetState -> removeBottomSheetState = Loaded.RemoveBottomSheetState()
+        ResetRemoveBottomSheetState -> removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
         OnDismissError -> errorMessage = null
         EditCoInsuredEvent.OnCommitChanges -> commit = true
       }
     }
 
     LaunchedEffect(fetchInfoFromSsn) {
-      addBottomSheetState = addBottomSheetState.copy(errorMessage = null)
-      val ssn = addBottomSheetState.infoFromSsn.ssn
-      if (ssn != null && !addBottomSheetState.showManualInput) {
+      addBottomSheetContentState = addBottomSheetContentState.copy(errorMessage = null)
+      val ssn = addBottomSheetContentState.infoFromSsn.ssn
+      if (ssn != null && !addBottomSheetContentState.showManualInput) {
         either {
           val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()
           when (result) {
             is CoInsuredPersonalInformation.FullInfo -> {
-              addBottomSheetState = addBottomSheetState.copy(
+              addBottomSheetContentState = addBottomSheetContentState.copy(
                 infoFromSsn = InfoFromSsn(
                   firstName = result.firstName,
                   lastName = result.lastName,
@@ -232,10 +240,9 @@ internal class EditCoInsuredPresenter(
             }
 
             is CoInsuredPersonalInformation.EmptyInfo -> {
-              addBottomSheetState =
-                Loaded.AddBottomSheetState(
+              addBottomSheetContentState =
+                Loaded.AddBottomSheetContentState(
                   showManualInput = true,
-                  show = true,
                   manualInfo = ManualInfo(null, null, birthDate = result.dateOfBirth),
                   infoFromSsn = InfoFromSsn(),
                   showUnderAgedInfo = true,
@@ -243,7 +250,7 @@ internal class EditCoInsuredPresenter(
             }
           }
         }.onLeft {
-          addBottomSheetState = addBottomSheetState.copy(errorMessage = it.message)
+          addBottomSheetContentState = addBottomSheetContentState.copy(errorMessage = it.message)
         }
       }
     }
@@ -251,8 +258,8 @@ internal class EditCoInsuredPresenter(
     LaunchedEffect(editedCoInsuredList) {
       editedCoInsuredList?.let { list ->
         Snapshot.withMutableSnapshot {
-          addBottomSheetState = addBottomSheetState.copy(isLoading = true)
-          removeBottomSheetState = removeBottomSheetState.copy(isLoading = true)
+          addBottomSheetContentState = addBottomSheetContentState.copy(isLoading = true)
+          removeBottomSheetContentState = removeBottomSheetContentState.copy(isLoading = true)
         }
 
         createMidtermChangeUseCase
@@ -260,11 +267,11 @@ internal class EditCoInsuredPresenter(
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
-                removeBottomSheetState = removeBottomSheetState.copy(
+                removeBottomSheetContentState = removeBottomSheetContentState.copy(
                   errorMessage = it.message,
                   isLoading = false,
                 )
-                addBottomSheetState = addBottomSheetState.copy(
+                addBottomSheetContentState = addBottomSheetContentState.copy(
                   errorMessage = it.message,
                   isLoading = false,
                 )
@@ -282,13 +289,14 @@ internal class EditCoInsuredPresenter(
                   ),
                 )
                 selectedCoInsuredId = null
-                addBottomSheetState = Loaded.AddBottomSheetState(
-                  show = false,
-                  manualInfo = ManualInfo(null, null, birthDate = null),
-                  infoFromSsn = InfoFromSsn(null, null, null),
+                addBottomSheetContentState = Loaded.AddBottomSheetContentState(
+                  manualInfo = ManualInfo(),
+                  infoFromSsn = InfoFromSsn(),
                 )
-                removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
+                removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
                 editedCoInsuredList = null
+                finishedAdding = true
+                finishedRemoving = true
               }
             },
           )
@@ -325,9 +333,11 @@ internal class EditCoInsuredPresenter(
     } else if (listState.member != null) {
       Loaded(
         listState = listState,
-        addBottomSheetState = addBottomSheetState,
-        removeBottomSheetState = removeBottomSheetState,
+        addBottomSheetContentState = addBottomSheetContentState,
+        removeBottomSheetContentState = removeBottomSheetContentState,
         contractUpdateDate = contractUpdateDate,
+        finishedAdding = finishedAdding,
+        finishedRemoving = finishedRemoving,
       )
     } else if (isLoading) {
       Loading
@@ -338,10 +348,10 @@ internal class EditCoInsuredPresenter(
 
   private fun addCoInsuredFromBottomSheet(
     selectedCoInsuredId: String?,
-    addBottomSheetState: Loaded.AddBottomSheetState,
+    addBottomSheetContentState: Loaded.AddBottomSheetContentState,
     listState: Loaded.CoInsuredListState,
   ): List<CoInsured> {
-    with(addBottomSheetState) {
+    with(addBottomSheetContentState) {
       val firstName = if (showManualInput) manualInfo.firstName else infoFromSsn.firstName
       val lastName = if (showManualInput) manualInfo.lastName else infoFromSsn.lastName
       val ssn = if (showManualInput) null else infoFromSsn.ssn
@@ -420,9 +430,11 @@ internal sealed interface EditCoInsuredState {
 
   data class Loaded(
     val listState: CoInsuredListState,
-    val addBottomSheetState: AddBottomSheetState,
-    val removeBottomSheetState: RemoveBottomSheetState,
+    val addBottomSheetContentState: AddBottomSheetContentState,
+    val removeBottomSheetContentState: RemoveBottomSheetContentState,
     val contractUpdateDate: LocalDate? = null,
+    val finishedAdding: Boolean = false,
+    val finishedRemoving: Boolean = false,
   ) : EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: List<CoInsured>? = null,
@@ -460,7 +472,7 @@ internal sealed interface EditCoInsuredState {
       val ssn: String? = null,
     )
 
-    data class AddBottomSheetState(
+    data class AddBottomSheetContentState(
       val infoFromSsn: InfoFromSsn,
       val manualInfo: ManualInfo,
       val showManualInput: Boolean = false,
@@ -468,7 +480,6 @@ internal sealed interface EditCoInsuredState {
       val selectedCoInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
-      val show: Boolean = false,
       val showUnderAgedInfo: Boolean = false,
     ) {
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
@@ -507,11 +518,10 @@ internal sealed interface EditCoInsuredState {
       }
     }
 
-    data class RemoveBottomSheetState(
+    data class RemoveBottomSheetContentState(
       val coInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
-      val show: Boolean = false,
     )
   }
 }

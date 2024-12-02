@@ -103,5 +103,6 @@ internal enum class ColorSchemeKeyTokens {
   HighlightPurpleFill1,
   HighlightPurpleFill2,
   HighlightPurpleFill3,
+  Scrim,
   Transparent,
 }

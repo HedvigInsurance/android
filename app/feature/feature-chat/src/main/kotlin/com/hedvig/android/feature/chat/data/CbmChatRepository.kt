@@ -3,6 +3,7 @@ package com.hedvig.android.feature.chat.data
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
+import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
 import arrow.core.Either.Left
@@ -22,7 +23,6 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
-import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
@@ -77,7 +77,7 @@ internal interface CbmChatRepository {
 
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
-  private val database: AppDatabase,
+  private val database: RoomDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,

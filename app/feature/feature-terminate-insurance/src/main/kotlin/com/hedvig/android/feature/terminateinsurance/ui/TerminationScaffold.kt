@@ -2,11 +2,14 @@ package com.hedvig.android.feature.terminateinsurance.ui
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -126,7 +131,6 @@ private fun ExplanationBottomSheet(onDismiss: () -> Unit, text: String, isVisibl
         onDismiss()
       }
     },
-    bottomButtonText = stringResource(id = R.string.general_close_button),
     isVisible = isVisible,
   ) {
     HedvigText(
@@ -143,7 +147,15 @@ private fun ExplanationBottomSheet(onDismiss: () -> Unit, text: String, isVisibl
         .fillMaxWidth()
         .padding(horizontal = 24.dp),
     )
-    Spacer(Modifier.height(32.dp))
+    HedvigButton(
+      onClick = onDismiss,
+      text = stringResource(id = R.string.general_close_button),
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

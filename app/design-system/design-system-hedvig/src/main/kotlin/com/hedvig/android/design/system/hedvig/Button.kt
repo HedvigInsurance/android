@@ -33,13 +33,13 @@ import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryStyleButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.RedStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeButtonTokens
@@ -138,7 +138,7 @@ fun HedvigTextButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
-  buttonSize: ButtonSize = Medium,
+  buttonSize: ButtonSize = ButtonDefaults.ButtonSize.Large,
   onClick: () -> Unit,
 ) {
   HedvigButton(
@@ -182,6 +182,7 @@ object ButtonDefaults {
     Secondary,
     SecondaryAlt,
     Ghost,
+    Red,
   }
 
   enum class ButtonSize {
@@ -199,6 +200,7 @@ private val ButtonDefaults.ButtonStyle.style: Style
     ButtonDefaults.ButtonStyle.Secondary -> Style.Secondary
     ButtonDefaults.ButtonStyle.SecondaryAlt -> Style.SecondaryAlt
     ButtonDefaults.ButtonStyle.Ghost -> Style.Ghost
+    ButtonDefaults.ButtonStyle.Red -> Style.Red
   }
 
 private val ButtonDefaults.ButtonSize.size: Size
@@ -424,6 +426,26 @@ private sealed interface Style {
             activeLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.InactiveLoadingIndicatorColor),
             redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
+          )
+        }
+      }
+  }
+
+  data object Red : Style {
+    override val buttonColors: ButtonColors
+      @Composable
+      get() = with(HedvigTheme.colorScheme) {
+        remember(this) {
+          ButtonColors(
+            containerColor = fromToken(RedStyleButtonTokens.ContainerColor),
+            contentColor = fromToken(RedStyleButtonTokens.ContentColor),
+            disabledContainerColor = fromToken(RedStyleButtonTokens.DisabledContainerColor),
+            disabledContentColor = fromToken(RedStyleButtonTokens.DisabledContentColor),
+            hoverContainerColor = fromToken(RedStyleButtonTokens.HoverContainerColor),
+            hoverContentColor = fromToken(RedStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(RedStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(RedStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(RedStyleButtonTokens.RedContentColor),
           )
         }
       }

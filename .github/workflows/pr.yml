@@ -22,25 +22,20 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
-      - uses: test-summary/action@v2
-        with:
-          paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
-        if: always()
+        run: ./gradlew test
   lint:
     runs-on: ubuntu-latest-8-vcpu
     steps:
@@ -56,14 +51,13 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -89,14 +83,13 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -125,14 +118,13 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-          gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:

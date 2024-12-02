@@ -39,6 +39,7 @@ internal data class MovingFlowState(
   // If in the flow there was a quote selected once, we persist that selection so that it's pre-selected when going
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
+  val oldAddressCoverageDurationDays: Int?,
 ) {
   @Serializable
   data class AddressInfo(
@@ -54,7 +55,7 @@ internal data class MovingFlowState(
   )
 
   @Serializable
-  data class NumberCoInsuredState private constructor(
+  data class NumberCoInsuredState(
     @Serializable(with = ClosedRangeSerializer::class)
     val allowedNumberCoInsuredRange: ClosedRange<Int>,
     val selectedNumberCoInsured: Int,
@@ -218,6 +219,7 @@ internal fun MovingFlowState.Companion.fromFragments(
     propertyState = propertyState,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
     lastSelectedHomeQuoteId = null,
+    oldAddressCoverageDurationDays = moveIntentFragment.currentHomeAddresses.first().oldAddressCoverageDurationDays,
   )
 }
 

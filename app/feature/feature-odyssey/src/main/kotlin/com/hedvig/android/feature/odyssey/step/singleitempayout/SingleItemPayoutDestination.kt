@@ -13,19 +13,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -38,13 +32,18 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigLinearProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -75,7 +74,7 @@ private fun SingleItemPayoutScreen(
   closePayoutScreen: () -> Unit,
 ) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier
       .fillMaxSize()
       .safeDrawingPadding(),
@@ -110,22 +109,11 @@ private fun BoxScope.ErrorContent(
     show = show,
     modifier = Modifier.align(Alignment.Center),
   ) {
-    Column(
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(16.dp),
-    ) {
-      Text(
-        text = stringResource(hedvig.resources.R.string.something_went_wrong),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.headlineSmall,
-      )
-      Text(
-        text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-      )
-    }
+    EmptyState(
+      text = stringResource(hedvig.resources.R.string.something_went_wrong),
+      description = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
 
   AnimatedVisibility(
@@ -136,34 +124,31 @@ private fun BoxScope.ErrorContent(
       .align(Alignment.BottomCenter)
       .padding(16.dp),
   ) {
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(2),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      item {
-        HedvigOutlinedButton(
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        HedvigButton(
+          text = stringResource(hedvig.resources.R.string.open_chat),
           onClick = onNavigateToNewConversation,
           enabled = allowInteraction,
-        ) {
-          Text(stringResource(hedvig.resources.R.string.open_chat))
-        }
-      }
-      item {
-        HedvigOutlinedButton(
+          buttonStyle = Secondary,
+          buttonSize = Medium,
+          modifier = Modifier.weight(1f),
+        )
+        HedvigButton(
+          text = stringResource(hedvig.resources.R.string.general_close_button),
           onClick = exitFlow,
           enabled = allowInteraction,
-        ) {
-          Text(stringResource(hedvig.resources.R.string.general_close_button))
-        }
-      }
-      item(span = { GridItemSpan(2) }) {
-        HedvigContainedButton(
-          text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
-          onClick = retryPayout,
-          enabled = allowInteraction,
+          buttonStyle = Secondary,
+          buttonSize = Medium,
+          modifier = Modifier.weight(1f),
         )
       }
+      HedvigButton(
+        text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
+        onClick = retryPayout,
+        enabled = allowInteraction,
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
   }
 }
@@ -178,14 +163,14 @@ private fun BoxScope.LoadingContent(show: Boolean) {
       verticalArrangement = Arrangement.Center,
       modifier = Modifier.padding(16.dp),
     ) {
-      Text(
+      HedvigText(
         text = stringResource(hedvig.resources.R.string.claims_payout_progress_title),
-        style = MaterialTheme.typography.headlineSmall,
+        style = HedvigTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(24.dp))
-      LinearProgressIndicator(
+      HedvigLinearProgressIndicator(
         Modifier
           .fillMaxWidth()
           .padding(horizontal = 48.dp),
@@ -208,16 +193,16 @@ private fun BoxScope.PaidOutContent(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier.padding(16.dp),
     ) {
-      Text(
+      HedvigText(
         text = paidOutAmount.toString(),
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.displayMedium,
+        style = HedvigTheme.typography.displaySmall,
       )
       Spacer(Modifier.height(16.dp))
-      Text(
+      HedvigText(
         text = stringResource(hedvig.resources.R.string.CLAIMS_PAYOUT_SUCCESS_LABEL),
-        style = MaterialTheme.typography.bodyLarge.copy(
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = HedvigTheme.typography.bodySmall.copy(
+          color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
           lineBreak = LineBreak.Heading,
         ),
@@ -237,6 +222,7 @@ private fun BoxScope.PaidOutContent(
       text = stringResource(hedvig.resources.R.string.general_close_button),
       onClick = onDoneAfterPayout,
       enabled = status is PayoutUiState.Status.PaidOut,
+      modifier = Modifier.fillMaxWidth(),
     )
   }
 }
@@ -270,7 +256,7 @@ private fun PreviewPayoutScreenLoading(
   @PreviewParameter(PayoutUiStatePreviewProvider::class) payoutUiState: PayoutUiState,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemPayoutScreen(
         payoutUiState,
         {},
@@ -284,7 +270,6 @@ private fun PreviewPayoutScreenLoading(
 
 private class PayoutUiStatePreviewProvider() : CollectionPreviewParameterProvider<PayoutUiState>(
   listOf(
-    PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.NotStarted),
     PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.Loading),
     PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.Error),
     PayoutUiState(
@@ -310,7 +295,7 @@ private fun PreviewPayoutScreenAnimations() {
     }
   }
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemPayoutScreen(uiState, {}, {}, {}, {})
     }
   }

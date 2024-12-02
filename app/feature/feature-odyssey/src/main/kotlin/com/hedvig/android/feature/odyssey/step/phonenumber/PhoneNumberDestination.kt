@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,15 +20,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.ERROR
+import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.LOADING
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -75,27 +77,25 @@ private fun PhoneNumberScreen(
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
-      error = uiState.status == PhoneNumberUiState.Status.ERROR,
+      error = uiState.status == ERROR,
       showedError = showedError,
     ),
     modifier = Modifier.clearFocusOnTap(),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.CLAIMS_CONFIRM_NUMBER_TITLE),
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
     HedvigTextField(
-      value = uiState.phoneNumber,
+      text = uiState.phoneNumber,
       onValueChange = updatePhoneNumber,
-      label = {
-        Text(stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL))
-      },
-      withNewDesign = true,
-      enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
+      textFieldSize = Medium,
+      labelText = stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL),
+      enabled = uiState.status != LOADING,
       keyboardOptions = KeyboardOptions(
         autoCorrectEnabled = false,
         keyboardType = KeyboardType.Phone,
@@ -107,12 +107,12 @@ private fun PhoneNumberScreen(
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = submitPhoneNumber,
-      isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
+      isLoading = uiState.status == LOADING,
       enabled = uiState.canSubmit,
-      modifier = sideSpacingModifier,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -123,7 +123,7 @@ private fun PhoneNumberScreen(
 @Composable
 private fun PreviewPhoneNumberScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PhoneNumberScreen(
         uiState = PhoneNumberUiState(
           phoneNumber = "24670",

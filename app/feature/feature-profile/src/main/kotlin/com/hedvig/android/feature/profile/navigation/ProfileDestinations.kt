@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.profile.navigation
 
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 

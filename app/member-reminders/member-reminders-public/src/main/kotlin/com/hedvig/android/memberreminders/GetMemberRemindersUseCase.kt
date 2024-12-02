@@ -50,10 +50,10 @@ internal class GetMemberRemindersUseCaseImpl(
         emit(coInsuredInfo)
       },
     ) {
-        enableNotifications: MemberReminder.EnableNotifications?,
-        connectPayment: MemberReminder.PaymentReminder?,
-        upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
-        coInsuredInfo: NonEmptyList<MemberReminder.CoInsuredInfo>?,
+      enableNotifications: MemberReminder.EnableNotifications?,
+      connectPayment: MemberReminder.PaymentReminder?,
+      upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
+      coInsuredInfo: NonEmptyList<MemberReminder.CoInsuredInfo>?,
       ->
       MemberReminders(
         connectPayment = connectPayment,

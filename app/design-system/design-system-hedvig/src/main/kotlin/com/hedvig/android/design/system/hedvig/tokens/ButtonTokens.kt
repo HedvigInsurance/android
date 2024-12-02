@@ -58,6 +58,18 @@ internal object GhostStyleButtonTokens {
   val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
+internal object RedStyleButtonTokens {
+  val ContainerColor = ColorSchemeKeyTokens.SignalRedElement
+  val ContentColor = ColorSchemeKeyTokens.TextWhite
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonPrimaryHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextWhite
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.TextWhite
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SignalRedText
+  val RedContentColor = ColorSchemeKeyTokens.SignalRedElement // should not be used ever
+}
+
 internal object LargeSizeButtonTokens {
   val HorizontalPadding = 32.dp
   val TopPadding = 15.dp

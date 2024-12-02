@@ -261,12 +261,14 @@ private fun AddHouseInformationScreen(
         )
       }
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(
-        message = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
-        priority = Info,
-        modifier = Modifier.fillMaxWidth(),
-      )
-      Spacer(Modifier.height(16.dp))
+      if (content.oldAddressCoverageDurationDays != null) {
+        HedvigNotificationCard(
+          message = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, content.oldAddressCoverageDurationDays),
+          priority = Info,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
       HedvigButton(
         text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         onClick = onSubmit,
@@ -506,6 +508,7 @@ private fun PreviewAddHouseInformationScreen() {
           isLoadingNextStep = false,
           submittingInfoFailure = null,
           navigateToChoseCoverage = false,
+          oldAddressCoverageDurationDays = 10000,
         ),
         navigateUp = {},
         popBackStack = {},

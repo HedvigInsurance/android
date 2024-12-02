@@ -3,7 +3,6 @@ package com.hedvig.android.feature.chat.ui
 import android.net.Uri
 import android.util.Patterns
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -15,7 +14,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withAnnotation
 import androidx.compose.ui.text.withStyle
-import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -29,7 +28,7 @@ internal fun TextWithClickableUrls(
   maxLines: Int = Int.MAX_VALUE,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   linkStyle: SpanStyle = SpanStyle(
-    color = MaterialTheme.colorScheme.infoElement,
+    color = HedvigTheme.colorScheme.signalBlueElement,
     textDecoration = TextDecoration.Underline,
   ),
   linkMatcher: Regex = Patterns.WEB_URL.toRegex(),

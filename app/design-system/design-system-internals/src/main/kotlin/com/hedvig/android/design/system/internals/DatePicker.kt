@@ -6,6 +6,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
@@ -16,10 +17,70 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import java.util.Locale
 import kotlinx.coroutines.flow.drop
 
 @Composable
-fun HedvigDatePickerInternal(
+fun rememberHedvigDatePickerState(
+  initialSelectedDateMillis: Long,
+  initialDisplayedMonthMillis: Long,
+  yearRange: IntRange,
+  initialDisplayMode: HedvigDisplayMode,
+  selectableDates: HedvigSelectableDates,
+): HedvigDatePickerState {
+  val materialState = rememberDatePickerState(
+    initialSelectedDateMillis,
+    initialDisplayedMonthMillis,
+    yearRange,
+    initialDisplayMode.toMaterialDisplayMode(),
+    selectableDates.toMaterialSelectableDates(),
+  )
+  return remember(materialState) { HedvigDatePickerStateImpl(materialState) }
+}
+
+fun HedvigDatePickerState(
+  locale: Locale,
+  initialSelectedDateMillis: Long?,
+  initialDisplayedMonthMillis: Long?,
+  yearRange: IntRange,
+  initialDisplayMode: HedvigDisplayMode,
+  selectableDates: HedvigSelectableDates,
+): HedvigDatePickerState {
+  val materialState = DatePickerState(
+    locale = locale,
+    initialSelectedDateMillis = initialSelectedDateMillis,
+    initialDisplayedMonthMillis = initialDisplayedMonthMillis,
+    yearRange = yearRange,
+    initialDisplayMode = initialDisplayMode.toMaterialDisplayMode(),
+    selectableDates = selectableDates.toMaterialSelectableDates(),
+  )
+  return HedvigDatePickerStateImpl(materialState)
+}
+
+@Composable
+fun HedvigDatePicker(
+  state: HedvigDatePickerState,
+  onDismissRequest: () -> Unit,
+  hedvigDatePickerColors: HedvigDatePickerColors,
+  confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
+  modifier: Modifier = Modifier,
+) {
+  HedvigDatePicker(
+    state = MaterialDatePickerStateImpl(state),
+    onDismissRequest = onDismissRequest,
+    hedvigDatePickerColors = hedvigDatePickerColors,
+    confirmButton = confirmButton,
+    dismissButton = dismissButton,
+    modifier = modifier,
+  )
+}
+
+@Composable
+fun HedvigDatePicker(
   selectedDateMillis: Long?,
   displayedMonthMillis: Long?,
   yearRange: IntRange,
@@ -29,6 +90,43 @@ fun HedvigDatePickerInternal(
   onSelectedDateChanged: (Long?) -> Unit,
   hedvigDatePickerColors: HedvigDatePickerColors,
   confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
+  modifier: Modifier = Modifier,
+) {
+  val state = rememberDatePickerState(
+    initialSelectedDateMillis = selectedDateMillis,
+    initialDisplayedMonthMillis = displayedMonthMillis,
+    yearRange = yearRange,
+    selectableDates = SelectableDatesImmutableImpl(
+      minDateInMillis = minDateInMillis,
+      maxDateInMillis = maxDateInMillis,
+      yearRange = yearRange,
+    ),
+  )
+  LaunchedEffect(state) {
+    snapshotFlow { state.selectedDateMillis }
+      .drop(1)
+      .collect {
+        onSelectedDateChanged(it)
+      }
+  }
+  HedvigDatePicker(
+    state = state,
+    onDismissRequest = onDismissRequest,
+    hedvigDatePickerColors = hedvigDatePickerColors,
+    confirmButton = confirmButton,
+    dismissButton = dismissButton,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun HedvigDatePicker(
+  state: DatePickerState,
+  onDismissRequest: () -> Unit,
+  hedvigDatePickerColors: HedvigDatePickerColors,
+  confirmButton: @Composable () -> Unit,
+  dismissButton: (@Composable () -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
   val hedvigColors = with(hedvigDatePickerColors) {
@@ -64,27 +162,11 @@ fun HedvigDatePickerInternal(
       ),
     )
   }
-  val state = rememberDatePickerState(
-    initialSelectedDateMillis = selectedDateMillis,
-    initialDisplayedMonthMillis = displayedMonthMillis,
-    yearRange = yearRange,
-    selectableDates = SelectableDatesImpl(
-      minDateInMillis = minDateInMillis,
-      maxDateInMillis = maxDateInMillis,
-      yearRange = yearRange,
-    ),
-  )
-  LaunchedEffect(state) {
-    snapshotFlow { state.selectedDateMillis }
-      .drop(1)
-      .collect {
-        onSelectedDateChanged(it)
-      }
-  }
   DatePickerDialog(
     onDismissRequest = onDismissRequest,
     colors = hedvigColors,
     confirmButton = confirmButton,
+    dismissButton = dismissButton,
   ) {
     HedvigDatePicker(
       modifier = modifier,
@@ -95,7 +177,7 @@ fun HedvigDatePickerInternal(
 }
 
 @Composable
-fun HedvigDatePicker(
+private fun HedvigDatePicker(
   datePickerState: DatePickerState,
   colors: DatePickerColors,
   modifier: Modifier = Modifier,
@@ -107,17 +189,6 @@ fun HedvigDatePicker(
     colors = colors,
     modifier = modifier,
   )
-}
-
-@Stable
-data class SelectableDatesImpl(
-  val minDateInMillis: Long,
-  val maxDateInMillis: Long,
-  val yearRange: IntRange,
-) : SelectableDates {
-  override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
-
-  override fun isSelectableYear(year: Int): Boolean = year in yearRange
 }
 
 data class HedvigDatePickerColors(
@@ -145,3 +216,101 @@ data class HedvigDatePickerColors(
   val dateTextColor: Color,
   val dateTextContainerColor: Color,
 )
+
+@Stable
+private data class SelectableDatesImmutableImpl(
+  val minDateInMillis: Long,
+  val maxDateInMillis: Long,
+  val yearRange: IntRange,
+) : SelectableDates {
+  override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
+
+  override fun isSelectableYear(year: Int): Boolean = year in yearRange
+}
+
+private class HedvigDatePickerStateImpl(
+  val materialState: DatePickerState,
+) : HedvigDatePickerState {
+  override var selectedDateMillis: Long?
+    set(value) {
+      materialState.selectedDateMillis = value
+    }
+    get() = materialState.selectedDateMillis
+
+  override var displayedMonthMillis: Long
+    get() = materialState.displayedMonthMillis
+    set(value) {
+      materialState.displayedMonthMillis = value
+    }
+
+  override var displayMode: HedvigDisplayMode
+    get() = materialState.displayMode.toHedvigDisplayMode()
+    set(value) {
+      materialState.displayMode = value.toMaterialDisplayMode()
+    }
+
+  override val yearRange: IntRange
+    get() = materialState.yearRange
+
+  override val selectableDates: HedvigSelectableDates = materialState.selectableDates.toHedvigSelectableDates()
+}
+
+private class MaterialDatePickerStateImpl(
+  val hedvigState: HedvigDatePickerState,
+) : DatePickerState {
+  override var selectedDateMillis: Long?
+    get() = hedvigState.selectedDateMillis
+    set(value) {
+      hedvigState.selectedDateMillis = value
+    }
+  override var displayedMonthMillis: Long
+    get() = hedvigState.displayedMonthMillis
+    set(value) {
+      hedvigState.displayedMonthMillis = value
+    }
+  override var displayMode: DisplayMode
+    get() = hedvigState.displayMode.toMaterialDisplayMode()
+    set(value) {
+      hedvigState.displayMode = value.toHedvigDisplayMode()
+    }
+  override val yearRange: IntRange
+    get() = hedvigState.yearRange
+  override val selectableDates: SelectableDates
+    get() = hedvigState.selectableDates.toMaterialSelectableDates()
+}
+
+private fun HedvigDisplayMode.toMaterialDisplayMode() = when (this) {
+  HedvigDisplayMode.Picker -> DisplayMode.Picker
+  HedvigDisplayMode.Input -> DisplayMode.Input
+  else -> DisplayMode.Picker
+}
+
+private fun DisplayMode.toHedvigDisplayMode() = when (this) {
+  DisplayMode.Picker -> HedvigDisplayMode.Picker
+  DisplayMode.Input -> HedvigDisplayMode.Input
+  else -> HedvigDisplayMode.Picker
+}
+
+private fun HedvigSelectableDates.toMaterialSelectableDates(): SelectableDates {
+  return object : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+      return this@toMaterialSelectableDates.isSelectableDate(utcTimeMillis)
+    }
+
+    override fun isSelectableYear(year: Int): Boolean {
+      return this@toMaterialSelectableDates.isSelectableYear(year)
+    }
+  }
+}
+
+private fun SelectableDates.toHedvigSelectableDates(): HedvigSelectableDates {
+  return object : HedvigSelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+      return this@toHedvigSelectableDates.isSelectableDate(utcTimeMillis)
+    }
+
+    override fun isSelectableYear(year: Int): Boolean {
+      return this@toHedvigSelectableDates.isSelectableYear(year)
+    }
+  }
+}

@@ -9,20 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,22 +19,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Info
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
+import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
+import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.FailureDownloadingHistory
+import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.Loading
+import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.SuccessDownloadingHistory
 import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.LocalDate
@@ -87,14 +90,8 @@ private fun TravelCertificateHistoryScreen(
   onShareTravelCertificate: (File) -> Unit,
   uiState: CertificateHistoryUiState,
 ) {
-  var showBottomSheet by remember { mutableStateOf(false) }
-  val explanationSheetState = rememberModalBottomSheetState(true)
-  if (showBottomSheet) {
-    TravelCertificateInfoBottomSheet(
-      onDismiss = { showBottomSheet = false },
-      sheetState = explanationSheetState,
-    )
-  }
+  val explanationSheetState = rememberHedvigBottomSheetState<Unit>()
+  TravelCertificateInfoBottomSheet(explanationSheetState)
 
   when (uiState) {
     CertificateHistoryUiState.FailureDownloadingHistory -> {
@@ -104,11 +101,11 @@ private fun TravelCertificateHistoryScreen(
         topAppBarText = stringResource(id = R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
         topAppBarActions = {
           IconButton(
-            onClick = { showBottomSheet = true },
+            onClick = { explanationSheetState.show() },
             modifier = Modifier.size(40.dp),
           ) {
             Icon(
-              imageVector = Icons.Hedvig.Info,
+              imageVector = HedvigIcons.InfoOutline,
               contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(24.dp),
             )
@@ -133,7 +130,7 @@ private fun TravelCertificateHistoryScreen(
         HedvigFullScreenCenterAlignedProgress()
       } else {
         TravelCertificateSuccessScreen(
-          onIconClick = { showBottomSheet = true },
+          onIconClick = { explanationSheetState.show() },
           onCertificateClick = onCertificateClick,
           onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
           navigateUp = navigateUp,
@@ -172,7 +169,7 @@ private fun TravelCertificateSuccessScreen(
         modifier = Modifier.size(40.dp),
       ) {
         Icon(
-          imageVector = Icons.Hedvig.Info,
+          imageVector = HedvigIcons.InfoOutline,
           contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
           modifier = Modifier.size(24.dp),
         )
@@ -181,9 +178,9 @@ private fun TravelCertificateSuccessScreen(
   ) {
     if (historyList.isEmpty()) {
       Spacer(modifier = Modifier.weight(1f))
-      ShowInitialInfo()
+      EmptyTravelCertificatesScreen()
     } else {
-      ShowNotEmptyList(
+      TravelCertificatesList(
         list = historyList,
         onCertificateClick = onCertificateClick,
         showErrorDialog = showErrorDialog,
@@ -191,17 +188,21 @@ private fun TravelCertificateSuccessScreen(
       )
     }
     Spacer(modifier = Modifier.weight(1f))
-    VectorInfoCard(
-      text = String.format(stringResource(id = R.string.travel_certificate_start_date_info), 45),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp, 16.dp, 16.dp, 8.dp),
+    HedvigNotificationCard(
+      message = stringResource(R.string.travel_certificate_start_date_info, 45),
+      priority = NotificationPriority.Info,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
     if (showGenerationButton) {
-      HedvigSecondaryContainedButton(
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
         text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-        onClick = if (hasChooseOption) onGoToChooseContract else onStartGenerateTravelCertificateFlow,
-        modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
+        onClick = dropUnlessResumed {
+          if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
+        },
+        buttonStyle = Secondary,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -209,20 +210,22 @@ private fun TravelCertificateSuccessScreen(
 }
 
 @Composable
-private fun ShowInitialInfo() {
+private fun EmptyTravelCertificatesScreen() {
   Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
-    HedvigInformationSection(
-      stringResource(id = R.string.travel_certificate_empty_list_message),
+    EmptyState(
+      text = stringResource(R.string.travel_certificate_empty_list_message),
+      description = null,
+      iconStyle = INFO,
     )
   }
 }
 
 @Composable
-private fun ShowNotEmptyList(
+private fun TravelCertificatesList(
   list: List<TravelCertificate>,
   onCertificateClick: (String) -> Unit,
   showErrorDialog: Boolean,
@@ -244,12 +247,12 @@ private fun ShowNotEmptyList(
     val year = it.key
     val travelCertificates = it.value
 
-    Text(text = year.toString(), modifier = Modifier.padding(horizontal = 16.dp))
+    HedvigText(text = year.toString(), modifier = Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(4.dp))
 
     travelCertificates.forEachIndexed { index, certificate ->
       val isExpired = certificate.isExpiredNow
-      val color = if (isExpired) MaterialTheme.colorScheme.error else Color.Unspecified
+      val color = if (isExpired) HedvigTheme.colorScheme.signalRedElement else Color.Unspecified
       val endText = if (isExpired) {
         stringResource(id = R.string.travel_certificate_expired)
       } else {
@@ -258,13 +261,13 @@ private fun ShowNotEmptyList(
 
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          Text(
+          HedvigText(
             text = dateTimeFormatter.format(certificate.startDate.toJavaLocalDate()),
             color = color,
           )
         },
         endSlot = {
-          Text(
+          HedvigText(
             text = endText,
             color = color,
             textAlign = TextAlign.End,
@@ -291,7 +294,7 @@ private fun ShowNotEmptyList(
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -300,7 +303,7 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(),
           false,
           true,
@@ -317,7 +320,7 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -326,7 +329,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
               startDate = LocalDate(2024, 6, 2),
@@ -372,7 +375,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
 @Composable
 private fun PreviewErrorWithDownloadingCertificate() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -381,7 +384,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
               startDate = LocalDate(2024, 6, 2),
@@ -427,7 +430,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -436,7 +439,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
               startDate = LocalDate(2024, 1, 6),
@@ -472,7 +475,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButton() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -481,7 +484,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
               startDate = LocalDate(2024, 1, 6),
@@ -517,7 +520,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
 @Composable
 private fun PreviewCertificateHistoryLoading() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -526,7 +529,7 @@ private fun PreviewCertificateHistoryLoading() {
         {},
         {},
         {},
-        CertificateHistoryUiState.Loading,
+        Loading,
       )
     }
   }
@@ -536,7 +539,7 @@ private fun PreviewCertificateHistoryLoading() {
 @Composable
 private fun PreviewErrorWithHistory() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -545,7 +548,7 @@ private fun PreviewErrorWithHistory() {
         {},
         {},
         {},
-        CertificateHistoryUiState.FailureDownloadingHistory,
+        FailureDownloadingHistory,
       )
     }
   }
@@ -555,7 +558,7 @@ private fun PreviewErrorWithHistory() {
 @Composable
 private fun PreviewLoadingCertificate() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
         {},
         {},
@@ -564,7 +567,7 @@ private fun PreviewLoadingCertificate() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(
+        SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
               startDate = LocalDate(2024, 6, 2),

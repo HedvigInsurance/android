@@ -4,7 +4,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
@@ -19,18 +18,18 @@ import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificat
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigator, applicationId: String) {
-  navgraph<AppDestination.TravelCertificate>(
+fun NavGraphBuilder.travelCertificateGraph(
+  density: Density,
+  navigator: Navigator,
+  applicationId: String,
+  onNavigateToCoInsuredAddInfo: (String) -> Unit,
+) {
+  navgraph<TravelCertificateGraphDestination>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
-    enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
-    exitTransition = { MotionDefaults.sharedXAxisExit(density) },
-    popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
-    popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     navdestination<TravelCertificateDestination.TravelCertificateHistory> { navBackStackEntry ->
       val viewModel: CertificateHistoryViewModel = koinViewModel()
@@ -116,11 +115,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
             }
           }
         },
-        onNavigateToCoInsuredAddInfo = {
-          with(navigator) {
-            navBackStackEntry.navigate(AppDestination.CoInsuredAddInfo(primaryInput.contractId))
-          }
-        },
+        onNavigateToCoInsuredAddInfo = { onNavigateToCoInsuredAddInfo(primaryInput.contractId) },
       )
     }
 

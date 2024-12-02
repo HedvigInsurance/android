@@ -27,6 +27,7 @@ internal class EnterVillaInformationViewModel(
 ) : MoleculeViewModel<EnterVillaInformationEvent, EnterVillaInformationUiState>(
     initialState = EnterVillaInformationUiState(
       extraBuildingTypes = previousParameters.selectHousingTypeParameters.extraBuildingTypes,
+      oldAddressCoverageDurationDays = previousParameters.selectHousingTypeParameters.oldAddressCoverageDurationDays,
     ),
     presenter = EnterVillaInformationPresenter(previousParameters = previousParameters),
   )
@@ -103,6 +104,7 @@ internal data class EnterVillaInformationUiState(
   val extraBuildings: List<ExtraBuilding> = listOf(),
   val isLoading: Boolean = false,
   val movingParameters: MovingParameters? = null,
+  val oldAddressCoverageDurationDays: Int?,
 ) {
   val isHouseInputValid: Boolean
     get() {

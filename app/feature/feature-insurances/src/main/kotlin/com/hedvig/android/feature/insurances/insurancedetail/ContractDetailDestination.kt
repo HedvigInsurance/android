@@ -2,58 +2,63 @@ package com.hedvig.android.feature.insurances.insurancedetail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.animateContentHeight
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
+import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
@@ -99,7 +104,7 @@ internal fun ContractDetailDestination(
   )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ContractDetailScreen(
   uiState: ContractDetailsUiState,
@@ -172,14 +177,22 @@ private fun ContractDetailScreen(
         }
 
         is ContractDetailsUiState.Success -> {
+          val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
               .safeDrawing
               .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+              .exclude(consumedWindowInsets)
               .asPaddingValues()
               .plus(PaddingValues(top = 16.dp)),
             modifier = Modifier
               .fillMaxSize()
+              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
+              .windowInsetsPadding(
+                WindowInsets
+                  .safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              )
               .consumeWindowInsets(
                 WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
               ),
@@ -200,7 +213,16 @@ private fun ContractDetailScreen(
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
-            stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
+            stickyHeader(key = 3, contentType = "PagerSelector") {
+              Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+                PagerSelector(
+                  pagerState = pagerState,
+                  modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                )
+              }
+            }
             item(
               key = 4,
               contentType = "Pager",
@@ -208,8 +230,14 @@ private fun ContractDetailScreen(
               HorizontalPager(
                 state = pagerState,
                 key = { it },
+                flingBehavior = PagerDefaults.flingBehavior(
+                  state = pagerState,
+                  snapAnimationSpec = horizontalPagerSpringSpec(),
+                ),
                 verticalAlignment = Alignment.Top,
-                modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
+                modifier = Modifier
+                  .padding(top = 8.dp)
+                  .animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
@@ -280,6 +308,11 @@ private fun ContractDetailScreen(
   }
 }
 
+private fun <T> horizontalPagerSpringSpec(visibilityThreshhold: T? = null) = spring<T>(
+  stiffness = Spring.StiffnessMediumLow,
+  visibilityThreshold = visibilityThreshhold,
+)
+
 @Composable
 private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
   addAll(currentInsuranceAgreement.productVariant.documents)
@@ -293,45 +326,33 @@ private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> 
   }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PagerSelector(pagerState: PagerState) {
-  LocalConfiguration.current
-  val resources = LocalContext.current.resources
+private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier) {
   val couroutineScope = rememberCoroutineScope()
-  TabRow(
+  HedvigTabRowMaxSixTabs(
+    tabTitles = listOf(
+      stringResource(R.string.insurance_details_view_tab_1_title),
+      stringResource(R.string.insurance_details_view_tab_2_title),
+      stringResource(R.string.insurance_details_view_tab_3_title),
+    ),
     selectedTabIndex = pagerState.currentPage,
-    containerColor = MaterialTheme.colorScheme.background,
-    contentColor = MaterialTheme.colorScheme.onBackground,
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    remember {
-      listOf(
-        resources.getString(R.string.insurance_details_view_tab_1_title),
-        resources.getString(R.string.insurance_details_view_tab_2_title),
-        resources.getString(R.string.insurance_details_view_tab_3_title),
-      )
-    }.mapIndexed { index, tabTitle ->
-      Tab(
-        selected = pagerState.currentPage == index,
-        onClick = {
-          couroutineScope.launch {
-            pagerState.animateScrollToPage(index)
-          }
-        },
-        text = {
-          Text(text = tabTitle, style = MaterialTheme.typography.bodyMedium)
-        },
-      )
-    }
-  }
+    selectIndicatorAnimationSpec = horizontalPagerSpringSpec(IntOffset.VisibilityThreshold),
+    onTabChosen = { index ->
+      couroutineScope.launch {
+        pagerState.animateScrollToPage(index)
+      }
+    },
+    modifier = modifier.fillMaxWidth(),
+    tabSize = TabSize.Small,
+    tabStyle = Filled,
+  )
 }
 
 @HedvigPreview
 @Composable
 private fun PreviewContractDetailScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ContractDetailScreen(
         uiState = Success(
           InsuranceContract(

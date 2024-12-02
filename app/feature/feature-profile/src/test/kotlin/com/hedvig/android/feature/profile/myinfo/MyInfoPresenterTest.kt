@@ -15,7 +15,6 @@ import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 

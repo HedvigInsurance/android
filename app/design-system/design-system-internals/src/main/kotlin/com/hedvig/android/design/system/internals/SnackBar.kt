@@ -31,7 +31,7 @@ fun InternalSnackBar(
   snackbarText: String,
   showSnackbar: Boolean,
   showedSnackbar: () -> Unit,
-  colors: NotificationColors,
+  colors: SnackBarColors,
   shape: Shape,
   textStyle: TextStyle,
   icon: @Composable () -> Unit,
@@ -126,7 +126,7 @@ private fun SnackContent(
   }
 }
 
-data class NotificationColors(
+data class SnackBarColors(
   val containerColor: Color,
   val textColor: Color,
   val iconColor: Color,

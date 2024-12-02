@@ -38,7 +38,6 @@ import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.ContractType.SE_HOUSE
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -282,7 +281,6 @@ private fun PreviewQuoteCard(
               label = "label#$it",
               limit = "limit#$it",
               description = "description#$it",
-              type = BIKE,
             )
           },
           documents = List(3) {

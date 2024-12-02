@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.9.2"
+    versionName = "12.9.3"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -68,9 +68,9 @@ android {
 
     val staging by creating {
       applicationIdSuffix = ".test.app"
-      matchingFallbacks.add("release")
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      matchingFallbacks += "release"
       setProguardFiles(
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
@@ -174,6 +174,9 @@ dependencies {
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
+  implementation(projects.databaseAndroid)
+  implementation(projects.databaseCore)
+  implementation(projects.datadogAndroid)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
@@ -201,6 +204,7 @@ dependencies {
   implementation(projects.featureTravelCertificate)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
+  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
@@ -210,9 +214,9 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-  implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)

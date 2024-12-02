@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.HousingType
+import com.hedvig.android.feature.changeaddress.data.MoveIntent
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.ClearNavigationParameters
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.DismissErrorDialog
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.DismissHousingTypeErrorDialog
@@ -23,7 +24,7 @@ import hedvig.resources.R
 
 internal class SelectHousingTypeViewModel(changeAddressRepository: ChangeAddressRepository) :
   MoleculeViewModel<SelectHousingTypeEvent, SelectHousingTypeUiState>(
-    initialState = SelectHousingTypeUiState(),
+    initialState = SelectHousingTypeUiState.Loading,
     presenter = SelectHousingTypePresenter(changeAddressRepository),
   )
 
@@ -40,88 +41,121 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
     var currentState by remember {
       mutableStateOf(lastState)
     }
+    var submittingHousingType by remember { mutableStateOf<HousingType?>(null) }
 
     CollectEvents { event ->
-      when (event) {
-        DismissErrorDialog -> currentState = currentState.copy(errorMessage = null)
 
-        DismissHousingTypeErrorDialog -> currentState = currentState.copy(errorMessageRes = null)
+      when (event) {
+        DismissErrorDialog -> {
+          createMoveIntentIteration++
+        }
+
+        DismissHousingTypeErrorDialog -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+          currentState = state.copy(errorMessageRes = null)
+        }
 
         is SelectHousingType -> {
-          currentState = currentState.copy(housingType = ValidatedInput(input = event.housingType))
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+          currentState = state.copy(housingType = ValidatedInput(input = event.housingType))
         }
 
         SubmitHousingType -> {
-          if (!currentState.housingType.isPresent) {
-            currentState = currentState.copy(
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+          if (!state.housingType.isPresent) {
+            currentState = state.copy(
               errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
             )
           } else {
-            createMoveIntentIteration++
+            submittingHousingType = state.housingType.input
           }
         }
 
-        ClearNavigationParameters -> currentState = currentState.copy(navigationParameters = null)
+        ClearNavigationParameters -> {
+          val state = currentState as? SelectHousingTypeUiState.Content ?: return@CollectEvents
+          currentState = state.copy(navigationParameters = null)
+        }
       }
     }
 
     LaunchedEffect(createMoveIntentIteration) {
-      if (createMoveIntentIteration > 0) {
-        currentState = currentState.copy(isLoading = true)
-        changeAddressRepository.createMoveIntent().fold(
-          ifLeft = { error ->
-            currentState = currentState.copy(
-              isLoading = false,
-              errorMessage = error.message,
-            )
-          },
-          ifRight = { moveIntent ->
-            val parameters = SelectHousingTypeParameters(
-              minDate = moveIntent.movingDateRange.start,
-              maxDate = moveIntent.movingDateRange.endInclusive,
-              moveIntentId = moveIntent.id.id,
-              suggestedNumberInsured = moveIntent.suggestedNumberInsured.toString(),
-              moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
-              extraBuildingTypes = moveIntent.extraBuildingTypes,
-              isEligibleForStudent = moveIntent.isApartmentAvailableforStudent == true &&
-                currentState.housingType.input != HousingType.VILLA,
-              maxSquareMeters = when (currentState.housingType.input) {
-                HousingType.APARTMENT_RENT,
-                HousingType.APARTMENT_OWN,
-                -> moveIntent.maxApartmentSquareMeters
+      currentState = SelectHousingTypeUiState.Loading
+      changeAddressRepository.createMoveIntent().fold(
+        ifLeft = { error ->
+          currentState = SelectHousingTypeUiState.Error(error.message)
+        },
+        ifRight = { moveIntent ->
+          currentState = SelectHousingTypeUiState.Content(
+            moveIntent = moveIntent,
+            oldHomeInsuranceDuration = moveIntent.oldAddressCoverageDurationDays,
+            housingType = ValidatedInput(null),
+            errorMessageRes = null,
+            navigationParameters = null,
+            isButtonLoading = false,
+          )
+        },
+      )
+    }
 
-                HousingType.VILLA -> moveIntent.maxHouseSquareMeters
-                null -> null
-              },
-              maxNumberCoInsured = when (currentState.housingType.input) {
-                HousingType.APARTMENT_RENT,
-                HousingType.APARTMENT_OWN,
-                -> moveIntent.maxApartmentNumberCoInsured
+    LaunchedEffect(submittingHousingType) {
+      if (submittingHousingType != null) {
+        val state = currentState as? SelectHousingTypeUiState.Content ?: return@LaunchedEffect
+        currentState = state.copy(isButtonLoading = true)
+        val moveIntent = state.moveIntent
+        val parameters = SelectHousingTypeParameters(
+          minDate = moveIntent.movingDateRange.start,
+          maxDate = moveIntent.movingDateRange.endInclusive,
+          moveIntentId = moveIntent.id.id,
+          suggestedNumberInsured = moveIntent.suggestedNumberInsured.toString(),
+          moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
+          extraBuildingTypes = moveIntent.extraBuildingTypes,
+          isEligibleForStudent = moveIntent.isApartmentAvailableforStudent == true &&
+            state.housingType.input != HousingType.VILLA,
+          maxSquareMeters = when (state.housingType.input) {
+            HousingType.APARTMENT_RENT,
+            HousingType.APARTMENT_OWN,
+            -> moveIntent.maxApartmentSquareMeters
 
-                HousingType.VILLA -> moveIntent.maxHouseNumberCoInsured
-                null -> null
-              },
-              housingType = currentState.housingType.input,
-            )
-            currentState = currentState.copy(
-              isLoading = false,
-              navigationParameters = parameters,
-            )
+            HousingType.VILLA -> moveIntent.maxHouseSquareMeters
+            null -> null
           },
+          maxNumberCoInsured = when (state.housingType.input) {
+            HousingType.APARTMENT_RENT,
+            HousingType.APARTMENT_OWN,
+            -> moveIntent.maxApartmentNumberCoInsured
+
+            HousingType.VILLA -> moveIntent.maxHouseNumberCoInsured
+            null -> null
+          },
+          housingType = state.housingType.input,
+          oldAddressCoverageDurationDays = state.oldHomeInsuranceDuration,
         )
+        currentState = state.copy(
+          navigationParameters = parameters,
+          isButtonLoading = false,
+        )
+        submittingHousingType = null
       }
     }
+
     return currentState
   }
 }
 
-internal data class SelectHousingTypeUiState(
-  val isLoading: Boolean = false,
-  val errorMessage: String? = null,
-  val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
-  val errorMessageRes: Int? = null,
-  val navigationParameters: SelectHousingTypeParameters? = null,
-)
+internal sealed interface SelectHousingTypeUiState {
+  data object Loading : SelectHousingTypeUiState
+
+  data class Error(val errorMessage: String?) : SelectHousingTypeUiState
+
+  data class Content(
+    val moveIntent: MoveIntent,
+    val oldHomeInsuranceDuration: Int?,
+    val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
+    val errorMessageRes: Int? = null,
+    val navigationParameters: SelectHousingTypeParameters? = null,
+    val isButtonLoading: Boolean = false,
+  ) : SelectHousingTypeUiState
+}
 
 internal sealed interface SelectHousingTypeEvent {
   data class SelectHousingType(val housingType: HousingType) : SelectHousingTypeEvent

@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -37,7 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -335,6 +338,7 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
@@ -353,16 +357,28 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
+  val consumedWindowInsets = remember { MutableWindowInsets() }
   Box(
     modifier = modifier
       .fillMaxSize()
-      .onSizeChanged { fullScreenSize = it }
+      .layout { measurable, constraints ->
+        fullScreenSize = IntSize(constraints.maxWidth, constraints.maxHeight)
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) {
+          placeable.place(0, 0)
+        }
+      }
+      .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState)
       .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
     if (fullScreenSizeValue != null) {
+      val horizontalInsets = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Horizontal)
+        .exclude(consumedWindowInsets)
+        .asPaddingValues()
       HomeLayout(
         fullScreenSize = fullScreenSizeValue,
         welcomeMessage = {
@@ -376,15 +392,10 @@ private fun HomeScreenSuccess(
         },
         claimStatusCards = {
           if (uiState.claimStatusCardsData != null) {
-            var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
             ClaimStatusCards(
               onClick = onClaimDetailCardClicked,
               claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
-              contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-                .exclude(consumedWindowInsets)
-                .only(WindowInsetsSides.Horizontal)
-                .asPaddingValues(),
-              modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+              contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
           }
         },
@@ -393,24 +404,19 @@ private fun HomeScreenSuccess(
             list = uiState.veryImportantMessages,
             openUrl = openUrl,
             hideImportantMessage = markMessageAsSeen,
+            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
           )
         },
         memberReminderCards = {
           val memberReminders =
             uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-
           MemberReminderCardsWithoutNotification(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
-            contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-              .exclude(consumedWindowInsets)
-              .only(WindowInsetsSides.Horizontal)
-              .asPaddingValues(),
-            modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
           )
         },
         startClaimButton = {
@@ -462,17 +468,13 @@ private fun ImportantMessages(
   list: List<HomeData.VeryImportantMessage>,
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
   AnimatedContent(
     targetState = list,
-    modifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+    modifier = modifier,
   ) { animatedList ->
-    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-      .exclude(consumedWindowInsets)
-      .only(WindowInsetsSides.Horizontal)
-      .asPaddingValues()
     if (animatedList.size == 1) {
       VeryImportantMessageCard(
         openUrl = openUrl,
@@ -584,14 +586,13 @@ private fun CrossSellBottomSheet(
     isVisible = true,
     onVisibleChange = { onDismissed() },
     content = {
-      Column {
-        Spacer(Modifier.height(32.dp))
-        CrossSellsSection(
-          showNotificationBadge = false,
-          crossSells = crossSells,
-          onCrossSellClick = onCrossSellClick,
-        )
-      }
+      CrossSellsSection(
+        showNotificationBadge = false,
+        crossSells = crossSells,
+        onCrossSellClick = onCrossSellClick,
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     },
   )
 }

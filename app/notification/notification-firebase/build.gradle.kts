@@ -3,6 +3,10 @@ plugins {
   id("hedvig.android.library")
 }
 
+hedvig {
+  apollo("octopus")
+}
+
 dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.datastore.core)

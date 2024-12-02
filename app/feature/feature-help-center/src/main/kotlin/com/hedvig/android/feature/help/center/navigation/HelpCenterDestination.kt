@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf

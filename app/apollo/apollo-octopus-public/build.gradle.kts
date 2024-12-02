@@ -1,6 +1,6 @@
 plugins {
   id("hedvig.gradle.plugin")
-  id("hedvig.android.library")
+  id("hedvig.kotlin.library")
 }
 
 hedvig {
@@ -25,11 +25,6 @@ hedvig {
     failOnWarnings = true
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables = false
-    outputDirConnection {
-      // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
-      // connectToKotlinSourceSet("main")
-      connectToAllAndroidVariants()
-    }
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")

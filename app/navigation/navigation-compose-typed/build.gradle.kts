@@ -14,5 +14,6 @@ dependencies {
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
 }

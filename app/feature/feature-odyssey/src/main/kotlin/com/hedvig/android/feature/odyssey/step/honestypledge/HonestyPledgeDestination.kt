@@ -11,21 +11,20 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.systemGestureExclusion
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -60,14 +59,15 @@ private fun HonestyPledgeScreen(
     closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.HONESTY_PLEDGE_TITLE),
-      style = MaterialTheme.typography.headlineMedium,
-      modifier = Modifier.fillMaxWidth(),
+      style = HedvigTheme.typography.headlineMedium,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(32.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.HONESTY_PLEDGE_DESCRIPTION),
+      style = HedvigTheme.typography.headlineMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -103,7 +103,7 @@ private fun HonestyPledgeScreen(
 @Composable
 private fun PreviewHonestyPledgeScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HonestyPledgeScreen(WindowSizeClass.calculateForPreview(), {}, {}, {}, {})
     }
   }

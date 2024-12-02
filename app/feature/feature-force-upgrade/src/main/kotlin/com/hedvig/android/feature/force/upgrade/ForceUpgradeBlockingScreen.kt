@@ -3,12 +3,14 @@ package com.hedvig.android.feature.force.upgrade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,9 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
@@ -33,33 +39,38 @@ private fun UpgradeApp(goToPlayStore: () -> Unit) {
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier
       .fillMaxSize()
-      .padding(16.dp),
+      .wrapContentWidth(Alignment.CenterHorizontally)
+      .padding(16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing)
+      .widthIn(max = 400.dp),
   ) {
-    Text(
+    HedvigText(
       text = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineLarge,
     )
-    Spacer(Modifier.height(16.dp))
-    Text(
+    Spacer(Modifier.height(8.dp))
+    HedvigText(
       text = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodyLarge.copy(
+      style = HedvigTheme.typography.bodySmall.copy(
         lineBreak = LineBreak.Heading,
       ),
     )
     Spacer(Modifier.height(16.dp))
-    HedvigContainedSmallButton(
+    HedvigButton(
       text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
-      onClick = goToPlayStore,
+      onClick = dropUnlessResumed { goToPlayStore() },
+      enabled = true,
+      buttonSize = Medium,
     )
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewUpgradeApp() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       UpgradeApp(goToPlayStore = {})
     }
   }

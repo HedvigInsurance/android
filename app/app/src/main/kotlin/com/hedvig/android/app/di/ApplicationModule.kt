@@ -42,12 +42,13 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.changetier.di.dataChangeTierModule
-import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
+import com.hedvig.android.database.di.databaseAndroidModule
+import com.hedvig.android.database.di.databaseModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
@@ -310,12 +311,13 @@ val applicationModule = module {
       connectPaymentTrustlyModule,
       coreAppReviewModule,
       coreCommonModule,
-      dataChatModule,
       dataChangeTierModule,
       dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,
+      databaseAndroidModule,
       databaseChatAndroidModule,
+      databaseModule,
       datadogDemoTrackingModule,
       datadogModule,
       datastoreAndroidModule,

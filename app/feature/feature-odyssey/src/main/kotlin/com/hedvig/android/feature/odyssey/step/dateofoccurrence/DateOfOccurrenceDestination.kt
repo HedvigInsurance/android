@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,16 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
+import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 import java.util.Locale
 
@@ -76,9 +76,9 @@ private fun DateOfOccurrenceScreen(
     ),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.claims_incident_screen_date_of_incident),
-      style = MaterialTheme.typography.headlineMedium,
+      style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
@@ -90,17 +90,18 @@ private fun DateOfOccurrenceScreen(
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
-    VectorInfoCard(
-      text = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+    HedvigNotificationCard(
+      message = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      priority = Info,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitSelectedDate,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
-      modifier = sideSpacingModifier,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -111,7 +112,7 @@ private fun DateOfOccurrenceScreen(
 @Composable
 private fun PreviewDateOfOccurrenceScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DateOfOccurrenceScreen(
         uiState = DateOfOccurrenceUiState(
           datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),

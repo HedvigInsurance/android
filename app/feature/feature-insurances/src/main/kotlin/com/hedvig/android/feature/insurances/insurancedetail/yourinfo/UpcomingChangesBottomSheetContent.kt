@@ -2,22 +2,26 @@ package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
 
 @Composable
@@ -28,12 +32,9 @@ internal fun UpcomingChangesBottomSheetContent(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier,
-  ) {
-    Text(
+  Column(modifier = modifier) {
+    HedvigText(
       text = stringResource(id = R.string.insurance_details_update_details_sheet_title),
-      style = MaterialTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -42,21 +43,27 @@ internal fun UpcomingChangesBottomSheetContent(
     Spacer(modifier = Modifier.height(32.dp))
     CoverageRows(coverageRowItems = sections)
     Spacer(modifier = Modifier.height(16.dp))
-    VectorInfoCard(
-      text = infoText,
+    HedvigNotificationCard(
+      message = infoText,
+      priority = NotificationPriority.Info,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(id = R.string.open_chat),
+      enabled = true,
       onClick = onNavigateToNewConversation,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
+      buttonSize = Large,
       onClick = onDismiss,
+      modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -64,7 +71,7 @@ internal fun UpcomingChangesBottomSheetContent(
 @HedvigPreview
 private fun PreviewUpcomingChangesBottomSheetContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       UpcomingChangesBottomSheetContent(
         infoText = "Test",
         sections = listOf(

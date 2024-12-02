@@ -144,5 +144,6 @@ internal object PaletteTokens {
   val Purple800 = Color(0xFF54446A)
   val Purple900 = Color(0xFF3D2D53)
 
+  val Neutral = Color(0xFF000000)
   val Transparent = Color.Transparent
 }

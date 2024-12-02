@@ -42,13 +42,10 @@ fun <T> HedvigChip(
   showChipAnimatable: Animatable<Float, AnimationVector1D>,
 ) {
   Box(
-    // TODO replace with space on the flow row itself https://kotlinlang.slack.com/archives/CJLTWPH7S/p1687442185827989?thread_ts=1679515354.462029&cid=CJLTWPH7S
-    modifier = modifier
-      .padding(bottom = 8.dp)
-      .graphicsLayer {
-        scaleX = showChipAnimatable.value
-        scaleY = showChipAnimatable.value
-      },
+    modifier = modifier.graphicsLayer {
+      scaleX = showChipAnimatable.value
+      scaleY = showChipAnimatable.value
+    },
     contentAlignment = Alignment.Center,
   ) {
     val surfaceColor by animateColorAsState(

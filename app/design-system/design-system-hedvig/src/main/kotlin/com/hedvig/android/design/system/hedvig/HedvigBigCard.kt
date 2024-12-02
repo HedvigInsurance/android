@@ -1,16 +1,20 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.BigCardDefaults.inputTextStyle
 import com.hedvig.android.design.system.hedvig.BigCardDefaults.labelTextStyle
 import com.hedvig.android.design.system.hedvig.BigCardDefaults.padding
@@ -21,6 +25,30 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
  * The card which looks like a TextField, but functions as a button which has the text in the positions of a button.
  * https://www.figma.com/file/qUhLjrKl98PAzHov9ilaDH/New-Web-UI-Kit?type=design&node-id=114-2605&t=NMbwHBp5OhuKjgZ4-4
  */
+
+@Composable
+fun HedvigBigCard(
+// todo: rename after complete migration to new DS to ButtonWithLabelTextField
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  shape: Shape = HedvigTheme.shapes.cornerLarge,
+  content: @Composable () -> Unit,
+) {
+  Surface(
+    shape = shape,
+    color = bigCardColors.containerColor,
+    modifier = modifier
+      .clip(shape)
+      .clickable(
+        onClick = onClick,
+        enabled = enabled,
+      ),
+  ) {
+    content()
+  }
+}
+
 @Composable
 fun HedvigBigCard(
 // todo: rename after complete migration to new DS to ButtonWithLabelTextField
@@ -41,18 +69,37 @@ fun HedvigBigCard(
         enabled = enabled,
       ),
   ) {
-    Column(Modifier.padding(padding)) {
-      HedvigText(
-        text = labelText,
-        style = labelTextStyle,
-        color = bigCardColors.labelTextColor,
-      )
-      if (inputText != null) {
-        HedvigText(
-          text = inputText,
-          style = textStyle,
-          color = bigCardColors.inputTextColor,
-        )
+    LayoutWithoutPlacement(
+      sizeAdjustingContent = {
+        // Always take up the space that the two texts would take
+        Column(Modifier.padding(padding)) {
+          HedvigText(text = labelText, style = labelTextStyle)
+          HedvigText(text = "H", style = textStyle)
+        }
+      },
+    ) {
+      if (inputText == null) {
+        Box(Modifier.padding(padding)) {
+          HedvigText(
+            text = labelText,
+            style = textStyle,
+            color = bigCardColors.labelTextColor(enabled),
+            modifier = Modifier.align(Alignment.CenterStart),
+          )
+        }
+      } else {
+        Column(Modifier.padding(padding)) {
+          HedvigText(
+            text = labelText,
+            style = labelTextStyle,
+            color = bigCardColors.labelTextColor(enabled),
+          )
+          HedvigText(
+            text = inputText,
+            style = textStyle,
+            color = bigCardColors.inputTextColor(enabled),
+          )
+        }
       }
     }
   }
@@ -74,19 +121,31 @@ private object BigCardDefaults {
 }
 
 private data class BigCardColors(
-  val labelTextColor: Color,
-  val inputTextColor: Color,
   val containerColor: Color,
-)
+  private val labelTextColor: Color,
+  private val inputTextColor: Color,
+  private val labelDisabledTextColor: Color,
+  private val inputDisabledTextColor: Color,
+) {
+  fun labelTextColor(enabled: Boolean): Color {
+    return if (enabled) labelTextColor else labelDisabledTextColor
+  }
+
+  fun inputTextColor(enabled: Boolean): Color {
+    return if (enabled) inputTextColor else inputDisabledTextColor
+  }
+}
 
 private val bigCardColors: BigCardColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       BigCardColors(
+        containerColor = fromToken(ColorSchemeKeyTokens.SurfacePrimary),
         labelTextColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
         inputTextColor = fromToken(ColorSchemeKeyTokens.TextPrimary),
-        containerColor = fromToken(ColorSchemeKeyTokens.SurfacePrimary),
+        labelDisabledTextColor = fromToken(ColorSchemeKeyTokens.TextTertiary),
+        inputDisabledTextColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
       )
     }
   }

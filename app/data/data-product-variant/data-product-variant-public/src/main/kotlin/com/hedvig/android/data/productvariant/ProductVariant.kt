@@ -2,7 +2,11 @@ package com.hedvig.android.data.productvariant
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.toContractGroup
+import com.hedvig.android.data.contract.toContractType
 import kotlinx.serialization.Serializable
+import octopus.fragment.ProductVariantFragment
+import octopus.type.InsuranceDocumentType
 
 @Serializable
 data class ProductVariant(
@@ -33,7 +37,6 @@ data class InsurableLimit(
   val label: String,
   val limit: String,
   val description: String,
-  val type: InsurableLimitType,
 ) {
   enum class InsurableLimitType {
     DEDUCTIBLE,
@@ -73,3 +76,46 @@ data class InsuranceVariantDocument(
     UNKNOWN__,
   }
 }
+
+fun ProductVariantFragment.toProductVariant() = ProductVariant(
+  tierDescription = tierDescription,
+  displayTierName = displayNameTier,
+  termsVersion = termsVersion,
+  displayName = this.displayName,
+  contractGroup = this.typeOfContract.toContractGroup(),
+  contractType = this.typeOfContract.toContractType(),
+  partner = this.partner,
+  perils = this.perils.map { peril ->
+    ProductVariantPeril(
+      id = peril.id,
+      title = peril.title,
+      description = peril.description,
+      covered = peril.covered,
+      exceptions = peril.exceptions,
+      colorCode = peril.colorCode,
+    )
+  },
+  insurableLimits = this.insurableLimits.map { insurableLimit ->
+    InsurableLimit(
+      label = insurableLimit.label,
+      limit = insurableLimit.limit,
+      description = insurableLimit.description,
+    )
+  },
+  documents = this.documents.map { document ->
+    InsuranceVariantDocument(
+      displayName = document.displayName,
+      url = document.url,
+      type = @Suppress("ktlint:standard:max-line-length")
+      when (document.type) {
+        InsuranceDocumentType.TERMS_AND_CONDITIONS -> InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS
+        InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD
+        InsuranceDocumentType.PRE_SALE_INFO -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO
+        InsuranceDocumentType.GENERAL_TERMS -> InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
+        InsuranceDocumentType.PRIVACY_POLICY -> InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
+        InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+        InsuranceDocumentType.SCAR_TABLE -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+      },
+    )
+  },
+)

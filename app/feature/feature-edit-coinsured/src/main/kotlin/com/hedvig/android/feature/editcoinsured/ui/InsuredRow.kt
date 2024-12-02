@@ -6,23 +6,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.X
-import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
-import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Lock
 import hedvig.resources.R
 
 @Composable
@@ -42,18 +40,18 @@ internal fun InsuredRow(
         modifier = Modifier.padding(vertical = 16.dp),
       ) {
         Column {
-          Text(
+          HedvigText(
             text = displayName,
             color = if (isMember) {
-              MaterialTheme.colorScheme.onSurfaceVariant
+              HedvigTheme.colorScheme.textSecondary
             } else {
               Color.Unspecified
             },
           )
 
-          Text(
+          HedvigText(
             text = identifier,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = HedvigTheme.colorScheme.textSecondary,
           )
         }
       }
@@ -67,19 +65,19 @@ internal fun InsuredRow(
         when {
           isMember -> {
             Icon(
-              imageVector = Icons.Hedvig.Lock,
+              imageVector = HedvigIcons.Lock,
               contentDescription = "Locked",
-              tint = MaterialTheme.colorScheme.onSurfaceVariant,
+              tint = HedvigTheme.colorScheme.fillSecondary,
               modifier = Modifier.size(16.dp),
             )
           }
 
           allowEdit && hasMissingInfo -> {
-            Text(stringResource(id = R.string.CONTRACT_EDIT_INFO))
+            HedvigText(stringResource(id = R.string.CONTRACT_EDIT_INFO))
           }
 
           !allowEdit -> Icon(
-            imageVector = Icons.Hedvig.X,
+            imageVector = HedvigIcons.Close,
             contentDescription = "Remove",
             modifier = Modifier.size(16.dp),
           )
@@ -140,7 +138,7 @@ private fun InsuredRowPreviewMissingInfo() {
 @HedvigPreview
 private fun InsuredRowPreviewMember() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InsuredRow(
         displayName = "Test testersson",
         identifier = "182312041933",

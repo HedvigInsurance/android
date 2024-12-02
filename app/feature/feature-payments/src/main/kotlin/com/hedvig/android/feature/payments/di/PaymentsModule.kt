@@ -12,9 +12,6 @@ import com.hedvig.android.feature.payments.data.GetDiscountsUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
-import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
-import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
-import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
@@ -23,7 +20,10 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseDemo
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseProvider
-import com.hedvig.android.feature.payments.payments.PaymentsViewModel
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
+import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
+import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.market.MarketManager
 import kotlinx.datetime.Clock
 import org.koin.core.module.dsl.viewModel
