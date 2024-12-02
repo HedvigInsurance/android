@@ -17,12 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -30,8 +34,11 @@ import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_RENT
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
+import com.hedvig.android.feature.changeaddress.data.MoveIntent
+import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.displayNameResource
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun SelectHousingTypeDestination(
@@ -40,15 +47,16 @@ internal fun SelectHousingTypeDestination(
   navigateToEnterNewAddressDestination: (SelectHousingTypeParameters) -> Unit,
 ) {
   val uiState: SelectHousingTypeUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-  LaunchedEffect(uiState.navigationParameters) {
-    val params = uiState.navigationParameters
-    if (params != null) {
-      viewModel.emit(SelectHousingTypeEvent.ClearNavigationParameters)
-      navigateToEnterNewAddressDestination(params)
+  val state = uiState
+  if (state is SelectHousingTypeUiState.Content) {
+    LaunchedEffect(state.navigationParameters) {
+      val params = state.navigationParameters
+      if (params != null) {
+        viewModel.emit(SelectHousingTypeEvent.ClearNavigationParameters)
+        navigateToEnterNewAddressDestination(params)
+      }
     }
   }
-
   ChangeAddressSelectHousingTypeScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -76,6 +84,31 @@ private fun ChangeAddressSelectHousingTypeScreen(
   onHousingTypeErrorDialogDismissed: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
 ) {
+  when (uiState) {
+    is SelectHousingTypeUiState.Content -> SelectHousingTypeContentScreen(
+      uiState = uiState,
+      navigateUp = navigateUp,
+      onHousingTypeSelected = onHousingTypeSelected,
+      onHousingTypeSubmitted = onHousingTypeSubmitted,
+      onHousingTypeErrorDialogDismissed = onHousingTypeErrorDialogDismissed,
+    )
+    is SelectHousingTypeUiState.Error -> ErrorDialog(
+      title = stringResource(hedvig.resources.R.string.general_error),
+      message = uiState.errorMessage,
+      onDismiss = { onErrorDialogDismissed() },
+    )
+    SelectHousingTypeUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+  }
+}
+
+@Composable
+private fun SelectHousingTypeContentScreen(
+  uiState: SelectHousingTypeUiState.Content,
+  navigateUp: () -> Unit,
+  onHousingTypeSelected: (HousingType) -> Unit,
+  onHousingTypeSubmitted: () -> Unit,
+  onHousingTypeErrorDialogDismissed: () -> Unit,
+) {
   uiState.errorMessageRes?.let {
     ErrorDialog(
       title = stringResource(hedvig.resources.R.string.general_error),
@@ -83,15 +116,6 @@ private fun ChangeAddressSelectHousingTypeScreen(
       onDismiss = { onHousingTypeErrorDialogDismissed() },
     )
   }
-
-  uiState.errorMessage?.let {
-    ErrorDialog(
-      title = stringResource(hedvig.resources.R.string.general_error),
-      message = it,
-      onDismiss = { onErrorDialogDismissed() },
-    )
-  }
-
   HedvigScaffold(
     navigateUp = navigateUp,
   ) {
@@ -112,15 +136,20 @@ private fun ChangeAddressSelectHousingTypeScreen(
     Spacer(modifier = Modifier.height(8.dp))
     RadioButton(VILLA, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(16.dp))
-    VectorInfoCard(
-      text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, 30),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(16.dp))
+    if (uiState.oldHomeInsuranceDuration != null) {
+      VectorInfoCard(
+        text = stringResource(
+          id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT,
+          uiState.oldHomeInsuranceDuration,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+    }
     HedvigContainedButton(
       text = stringResource(id = hedvig.resources.R.string.general_continue_button),
       onClick = onHousingTypeSubmitted,
-      isLoading = uiState.isLoading,
+      isLoading = uiState.isButtonLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -162,11 +191,13 @@ private fun RadioButton(
 
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressSelectHousingTypeScreen() {
+private fun PreviewChangeAddressSelectHousingTypeScreen(
+  @PreviewParameter(SelectHousingTypeUiStateProvider::class) state: SelectHousingTypeUiState,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressSelectHousingTypeScreen(
-        SelectHousingTypeUiState(),
+        state,
         {},
         {},
         {},
@@ -176,3 +207,46 @@ private fun PreviewChangeAddressSelectHousingTypeScreen() {
     }
   }
 }
+
+private class SelectHousingTypeUiStateProvider : CollectionPreviewParameterProvider<SelectHousingTypeUiState>(
+  listOf(
+    SelectHousingTypeUiState.Error("Unknown"),
+    SelectHousingTypeUiState.Loading,
+    SelectHousingTypeUiState.Content(
+      housingType = ValidatedInput(APARTMENT_OWN),
+      moveIntent = MoveIntent(
+        id = MoveIntentId("id"),
+        movingDateRange = LocalDate(2024, 11, 5)..LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        currentHomeAddresses = listOf(),
+        suggestedNumberInsured = 2,
+        oldAddressCoverageDurationDays = 30,
+      ),
+      oldHomeInsuranceDuration = 30,
+      navigationParameters = null,
+    ),
+    SelectHousingTypeUiState.Content(
+      housingType = ValidatedInput(APARTMENT_OWN),
+      moveIntent = MoveIntent(
+        id = MoveIntentId("id"),
+        movingDateRange = LocalDate(2024, 11, 5)..LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        currentHomeAddresses = listOf(),
+        suggestedNumberInsured = 2,
+        oldAddressCoverageDurationDays = null,
+      ),
+      oldHomeInsuranceDuration = null,
+      navigationParameters = null,
+    ),
+  ),
+)

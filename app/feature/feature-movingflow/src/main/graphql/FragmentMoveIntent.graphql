@@ -12,5 +12,6 @@ fragment MoveIntentFragment on MoveIntent {
   suggestedNumberCoInsured
   currentHomeAddresses {
     id
+    oldAddressCoverageDurationDays
   }
 }

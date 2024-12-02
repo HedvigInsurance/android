@@ -109,6 +109,7 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
   maxApartmentNumberCoInsured = maxApartmentNumberCoInsured,
   maxHouseNumberCoInsured = maxHouseNumberCoInsured,
   extraBuildingTypes = extraBuildingTypes.map { it.toExtraBuildingType() },
+  oldAddressCoverageDurationDays = this.currentHomeAddresses.firstNotNullOfOrNull { it.oldAddressCoverageDurationDays },
 )
 
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes(): List<MoveQuote> {
