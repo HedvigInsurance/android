@@ -279,7 +279,7 @@ private fun CustomizeTravelAddonCard(
           ExpandedRadioOptionData(
             chosenState = if (uiState.currentlyChosenOption == option) Chosen else NotChosen,
             title = option.optionName,
-            premium = stringResource(R.string.ADDON_FLOW_SUCCESS_SUBTITLE, option.extraAmount.amount.toInt()),
+            premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.extraAmount.amount.toInt()),
             onRadioOptionClick = {
               onChooseOptionInDialog(option)
             },
@@ -406,7 +406,7 @@ private fun DropdownContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(R.string.ADDON_FLOW_SELECT_BUTTON),
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
