@@ -2,7 +2,6 @@ package com.hedvig.android.feature.addon.purchase.di
 
 import org.koin.dsl.module
 
-
 val addonPurchaseModule = module {
 //  viewModel<SelectCoverageViewModel> { params ->
 //    SelectCoverageViewModel(
@@ -18,5 +17,4 @@ val addonPurchaseModule = module {
 //      featureManager = get<FeatureManager>(),
 //    )
 //  }
-
 }

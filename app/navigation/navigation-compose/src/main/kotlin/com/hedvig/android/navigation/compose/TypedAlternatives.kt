@@ -28,5 +28,3 @@ inline fun <reified T : Destination> NavDestination.typedHasRoute() = hasRoute<T
 fun <T : Destination> NavDestination.typedHasRoute(route: KClass<T>) = hasRoute(route)
 
 fun <T : Destination> NavController.typedClearBackStack(route: T): Boolean = clearBackStack(route)
-
-

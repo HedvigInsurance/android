@@ -201,14 +201,14 @@ internal class HedvigAppState(
       navController.typedPopBackStack(topLevelGraph.destination::class, false)
     } else {
       navController.navigate(
-          route = topLevelGraph.destination,
-          navOptions = navOptions {
-              popUpTo(navController.graph.findStartDestination().id) {
-                  saveState = true
-              }
-              launchSingleTop = true
-              restoreState = true
-          },
+        route = topLevelGraph.destination,
+        navOptions = navOptions {
+          popUpTo(navController.graph.findStartDestination().id) {
+            saveState = true
+          }
+          launchSingleTop = true
+          restoreState = true
+        },
       )
     }
   }

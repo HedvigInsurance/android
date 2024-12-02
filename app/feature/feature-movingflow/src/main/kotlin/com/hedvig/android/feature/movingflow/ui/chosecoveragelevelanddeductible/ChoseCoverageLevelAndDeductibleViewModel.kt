@@ -34,9 +34,9 @@ import kotlinx.coroutines.launch
 internal class ChoseCoverageLevelAndDeductibleViewModel(
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
-  ChoseCoverageLevelAndDeductibleUiState.Loading,
-  ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
-)
+    ChoseCoverageLevelAndDeductibleUiState.Loading,
+    ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
+  )
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val movingFlowRepository: MovingFlowRepository,
