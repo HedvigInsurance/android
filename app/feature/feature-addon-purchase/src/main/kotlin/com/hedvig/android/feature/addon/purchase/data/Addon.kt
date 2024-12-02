@@ -8,6 +8,7 @@ sealed interface Addon {
     val addonOptions: List<TravelAddonOption>,
     val exposureName: String,
     val description: String,
+    val additionalInfo: String?,
     val activationDate: LocalDate,
   ) : Addon
 }

@@ -17,6 +17,13 @@ internal class CustomizeTravelAddonPresenter(): MoleculePresenter<CustomizeTrave
   override fun MoleculePresenterScope<CustomizeTravelAddonEvent>.present(
     lastState: CustomizeTravelAddonState,
   ): CustomizeTravelAddonState {
+
+    CollectEvents { event ->
+      when (event) {
+        CustomizeTravelAddonEvent.Reload -> TODO()
+      }
+    }
+
     TODO("Not yet implemented")
   }
 }
@@ -32,4 +39,5 @@ internal sealed interface CustomizeTravelAddonState {
 }
 
 internal sealed interface CustomizeTravelAddonEvent {
+  data object Reload: CustomizeTravelAddonEvent
 }
