@@ -5,24 +5,24 @@ import kotlinx.datetime.LocalDate
 
 sealed interface Addon {
   data class TravelPlusAddon(
-    val addonOptions: List<TravelAddon>,
+    val addonOptions: List<TravelAddonOption>,
     val exposureName: String,
     val description: String,
     val activationDate: LocalDate,
   ) : Addon
 }
 
-sealed interface TravelAddon {
+sealed interface TravelAddonOption {
   val optionName: String
   val extraAmount: UiMoney
 
-  data class Travel45(
+  data class TravelOption45(
     override val optionName: String,
     override val extraAmount: UiMoney,
-  ) : TravelAddon
+  ) : TravelAddonOption
 
-  data class Travel60(
+  data class TravelOption60(
     override val optionName: String,
     override val extraAmount: UiMoney,
-  ) : TravelAddon
+  ) : TravelAddonOption
 }
