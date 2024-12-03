@@ -3,8 +3,8 @@ package com.hedvig.android.placeholder
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 /**
  * Creates a [PlaceholderHighlight] which fades in an appropriate color, using the
@@ -41,7 +41,7 @@ fun PlaceholderHighlight.Companion.shimmer(
   @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,
 ): PlaceholderHighlight = PlaceholderHighlight.shimmer(
   highlightColor = PlaceholderDefaults.shimmerHighlightColor(
-    backgroundColor = MaterialTheme.colorScheme.surface,
+    backgroundColor = HedvigTheme.colorScheme.surfacePrimary,
   ),
   animationSpec = animationSpec,
   progressForMaxAlpha = progressForMaxAlpha,
