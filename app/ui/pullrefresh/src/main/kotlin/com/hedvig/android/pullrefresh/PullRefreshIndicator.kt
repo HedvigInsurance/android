@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
@@ -33,6 +30,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.contentColorFor
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -55,7 +55,7 @@ fun PullRefreshIndicator(
   refreshing: Boolean,
   state: PullRefreshState,
   modifier: Modifier = Modifier,
-  backgroundColor: Color = MaterialTheme.colorScheme.surface,
+  backgroundColor: Color = HedvigTheme.colorScheme.surfacePrimary,
   contentColor: Color = contentColorFor(backgroundColor),
   scale: Boolean = false,
 ) {
@@ -79,13 +79,8 @@ fun PullRefreshIndicator(
         contentAlignment = Alignment.Center,
       ) {
         val spinnerSize = (ArcRadius + StrokeWidth).times(2)
-
         if (refreshing) {
-          CircularProgressIndicator(
-            color = contentColor,
-            strokeWidth = StrokeWidth,
-            modifier = Modifier.size(spinnerSize),
-          )
+          HedvigCircularProgressIndicator(Modifier.size(spinnerSize))
         } else {
           CircularArrowIndicator(state, contentColor, Modifier.size(spinnerSize))
         }
