@@ -174,7 +174,6 @@ private fun CustomizeTravelAddonScreenContent(
   navigateToSummary: (travelAddonOption: TravelAddonOption) -> Unit,
 ) {
   val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<String>()
-  TravelPlusExplanationBottomSheet(referralExplanationBottomSheetState)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -191,6 +190,7 @@ private fun CustomizeTravelAddonScreenContent(
       )
     },
   ) {
+    TravelPlusExplanationBottomSheet(referralExplanationBottomSheetState)
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
       text = stringResource(R.string.ADDON_FLOW_TITLE),
@@ -224,7 +224,7 @@ private fun CustomizeTravelAddonScreenContent(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(R.string.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON),
       enabled = true,
       onClick = dropUnlessResumed { navigateToSummary(uiState.currentlyChosenOption) },
       modifier = Modifier
@@ -263,11 +263,14 @@ private fun CustomizeTravelAddonCard(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = uiState.travelPlusAddon.addonOptions.size > 1,
         style = Label(
-          label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER), // todo: check here
+          label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+          // todo: check here
           items = addonSimpleItems,
         ),
         size = Small,
-        hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER), // todo: check here
+        containerColor = HedvigTheme.colorScheme.fillNegative,
+        hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+        // todo: check here
         chosenItemIndex = uiState.travelPlusAddon.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onSelectorClick = {
@@ -293,9 +296,11 @@ private fun CustomizeTravelAddonCard(
           onCancelButtonClick = {
             onDismissRequest()
           },
-          title = "Select number of covered days", // TODO
+          title = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_TITLE),
+          // todo: or maybe dynamic??
           data = listOfOptions,
-          subTitle = "Pick the right fit for your travel needs", // TODO
+          subTitle = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE),
+          // todo: or maybe dynamic??
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -349,11 +354,11 @@ private fun HeaderInfoWithCurrentPrice(
 
 @Composable
 private fun TravelPlusInfoCard(onButtonClick: () -> Unit, modifier: Modifier = Modifier) {
-  // todo: add another color for notification priority!
   HedvigNotificationCard(
     modifier = modifier,
-    message = "Click to learn more about our extended travel coverage Travel Insurance Plus", // todo: here: from BE or not?
-    priority = NotificationDefaults.NotificationPriority.NeutralToast, // todo: CHANGE here
+    message = "Click to learn more about our extended travel coverage Travel Insurance Plus",
+    // todo: here: from BE or not?
+    priority = NotificationDefaults.NotificationPriority.InfoInline,
     style = NotificationDefaults.InfoCardStyle.Button(
       onButtonClick = onButtonClick,
       buttonText = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
@@ -447,7 +452,8 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
 internal fun TravelPlusExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
   HedvigBottomSheet(sheetState) { explanation ->
     HedvigText(
-      text = "What is Travel Plus?", // todo: here, from BE or static?
+      text = "What is Travel Plus?",
+      // todo: here, from BE or static?
       modifier = Modifier
         .fillMaxWidth(),
     )
@@ -465,21 +471,11 @@ internal fun TravelPlusExplanationBottomSheet(sheetState: HedvigBottomSheetState
       onClick = { sheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+// todo: here, check the padding!
   }
 }
-
-// @HedvigMultiScreenPreview
-// @Composable
-// private fun SelectTierScreenPreview(
-//  @PreviewParameter(CustomizeTravelAddonProvider::class) uiState: CustomizeTravelAddonState,
-// ) {
-//  HedvigTheme {
-//    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-//    }
-//  }
-// }
 
 @HedvigMultiScreenPreview
 @Composable
@@ -530,7 +526,10 @@ private val fakeTravelAddonOption2 = TravelAddonOption.TravelOption60(
   ),
 )
 private val fakeTravelAddon = TravelPlusAddon(
-  addonOptions = nonEmptyListOf(fakeTravelAddonOption1, fakeTravelAddonOption2),
+  addonOptions = nonEmptyListOf(
+    fakeTravelAddonOption1,
+    fakeTravelAddonOption2,
+  ),
   exposureName = "Travel Plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   additionalInfo = "Lorem ipsum dolor sit amet consectetur.",
