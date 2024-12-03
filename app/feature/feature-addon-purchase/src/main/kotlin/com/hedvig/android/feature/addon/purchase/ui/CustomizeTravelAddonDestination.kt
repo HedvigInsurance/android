@@ -70,7 +70,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelPlusAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonOption
-import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonProvider
 import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonState.Loading
 import hedvig.resources.R
@@ -138,14 +137,14 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(
-          WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Horizontal +
-              WindowInsetsSides.Bottom,
+          .fillMaxSize()
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(
+                  WindowInsetsSides.Horizontal +
+                          WindowInsetsSides.Bottom,
+              ),
           ),
-        ),
     ) {
       Spacer(Modifier.weight(1f))
       HedvigErrorSection(
@@ -228,8 +227,8 @@ private fun CustomizeTravelAddonScreenContent(
       enabled = true,
       onClick = dropUnlessResumed { navigateToSummary(uiState.currentlyChosenOption) },
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -262,6 +261,7 @@ private fun CustomizeTravelAddonCard(
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = uiState.travelPlusAddon.addonOptions.size > 1,
+        //todo: or always enabled? design not finished here yet
         style = Label(
           label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
           // todo: check here
@@ -376,9 +376,9 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier
-      .padding(16.dp)
-      .verticalScroll(rememberScrollState()),
+      modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
