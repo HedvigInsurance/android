@@ -15,7 +15,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
-  implementation(projects.coreDesignSystem)
+  implementation(projects.designSystemHedvig)
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
