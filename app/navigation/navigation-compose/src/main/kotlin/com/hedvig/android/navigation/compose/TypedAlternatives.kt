@@ -14,7 +14,7 @@ inline fun <reified T : Destination> NavController.typedPopBackStack(
 ): Boolean = popBackStack<T>(inclusive, saveState)
 
 fun <T : Destination> NavController.typedPopBackStack(
-  destination: KClass<T>,
+  destination: T,
   inclusive: Boolean,
   saveState: Boolean = false,
 ): Boolean = popBackStack(destination, inclusive, saveState)

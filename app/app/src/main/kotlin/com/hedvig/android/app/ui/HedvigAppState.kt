@@ -198,17 +198,17 @@ internal class HedvigAppState(
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
     val popToStartOfGraph = navController.currentDestination?.isTopLevelGraphInHierarchy(topLevelGraph) == true
     if (popToStartOfGraph) {
-      navController.typedPopBackStack(topLevelGraph.destination::class, false)
+      navController.typedPopBackStack(destination = topLevelGraph.startDestination, inclusive = false)
     } else {
       navController.navigate(
-          route = topLevelGraph.destination,
-          navOptions = navOptions {
-              popUpTo(navController.graph.findStartDestination().id) {
-                  saveState = true
-              }
-              launchSingleTop = true
-              restoreState = true
-          },
+        route = topLevelGraph.destination,
+        navOptions = navOptions {
+          popUpTo(navController.graph.findStartDestination().id) {
+            saveState = true
+          }
+          launchSingleTop = true
+          restoreState = true
+        },
       )
     }
   }
