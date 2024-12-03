@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
