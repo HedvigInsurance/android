@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.9.2"
+    versionName = "12.9.4"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -68,9 +68,9 @@ android {
 
     val staging by creating {
       applicationIdSuffix = ".test.app"
-      matchingFallbacks.add("release")
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      matchingFallbacks += "release"
       setProguardFiles(
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
@@ -109,7 +109,6 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
@@ -164,7 +163,6 @@ dependencies {
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.crossSells)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
@@ -174,6 +172,9 @@ dependencies {
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
+  implementation(projects.databaseAndroid)
+  implementation(projects.databaseCore)
+  implementation(projects.datadogAndroid)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
@@ -201,6 +202,7 @@ dependencies {
   implementation(projects.featureTravelCertificate)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
+  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
@@ -210,9 +212,9 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-  implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)

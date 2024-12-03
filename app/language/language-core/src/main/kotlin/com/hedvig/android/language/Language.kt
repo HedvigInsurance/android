@@ -1,6 +1,5 @@
 package com.hedvig.android.language
 
-import androidx.annotation.StringRes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 
@@ -12,17 +11,6 @@ enum class Language {
   DA_DK,
   EN_DK,
   ;
-
-  val label: Int
-    @StringRes
-    get() = when (this) {
-      SV_SE -> hedvig.resources.R.string.swedish
-      EN_SE -> hedvig.resources.R.string.english_swedish
-      NB_NO -> hedvig.resources.R.string.norwegian
-      EN_NO -> hedvig.resources.R.string.english_norwegian
-      DA_DK -> hedvig.resources.R.string.danish
-      EN_DK -> hedvig.resources.R.string.english_danish
-    }
 
   fun toBcp47Format(): String {
     return when (this) {

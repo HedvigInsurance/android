@@ -23,7 +23,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import java.util.Locale
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -36,7 +36,7 @@ fun DatePickerShowcase() {
   val locale = getLocale()
   var state by remember {
     mutableStateOf(
-      HedvigDatePickerState(
+      HedvigDatePickerImmutableState(
         selectedDateMillis = null,
         displayedMonthMillis = null,
         yearRange = 2024..2025,

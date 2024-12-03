@@ -4,9 +4,10 @@ plugins {
 }
 
 hedvig {
+  androidResources()
   apollo("octopus")
-  serialization()
   compose()
+  serialization()
 }
 
 dependencies {
@@ -39,10 +40,10 @@ dependencies {
   implementation(projects.marketCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.placeholder)
   implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)

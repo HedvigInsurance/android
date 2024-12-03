@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -59,13 +62,13 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -106,6 +109,7 @@ internal fun ProfileDestination(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ProfileScreen(
   uiState: ProfileUiState,
@@ -177,7 +181,7 @@ private fun ProfileScreen(
       val notificationPermissionState = rememberNotificationPermissionState()
 
       NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-      var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+      val consumedWindowInsets = remember { MutableWindowInsets() }
       if (uiState is ProfileUiState.Success) {
         val memberReminders =
           uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
@@ -193,7 +197,7 @@ private fun ProfileScreen(
           notificationPermissionState = notificationPermissionState,
           snoozeNotificationPermissionReminder = snoozeNotificationPermission,
           contentPadding = padding,
-          modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+          modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
         )
         if (memberReminders.isNotEmpty()) {
@@ -304,7 +308,7 @@ private fun ColumnScope.ProfileItemRows(
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
       icon = HedvigIcons.MultipleDocuments,
-      onClick = navigateToTravelCertificate,
+      onClick = dropUnlessResumed { navigateToTravelCertificate() },
       isLoading = false,
     )
   }
@@ -350,7 +354,7 @@ private fun ProfileRow(
       contentDescription = null,
       modifier = Modifier
         .size(24.dp)
-        .placeholder(
+        .hedvigPlaceholder(
           isLoading,
           highlight = PlaceholderHighlight.shimmer(),
         ),
@@ -359,7 +363,7 @@ private fun ProfileRow(
     HedvigText(
       text = title,
       modifier = Modifier
-        .placeholder(
+        .hedvigPlaceholder(
           isLoading,
           highlight = PlaceholderHighlight.shimmer(),
         ),

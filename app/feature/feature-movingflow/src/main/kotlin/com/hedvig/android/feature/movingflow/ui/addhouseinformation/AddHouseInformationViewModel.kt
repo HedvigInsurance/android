@@ -106,6 +106,7 @@ internal class AddHouseInformationPresenter(
         },
       )
     }
+    var oldAddressCoverageDurationDays by remember { mutableStateOf<Int?>(null) }
     var submittingInfoFailure: SubmittingInfoFailure? by remember { mutableStateOf(null) }
     var navigateToChoseCoverage by remember { mutableStateOf(false) }
     var inputForSubmission: InputForSubmission? by remember { mutableStateOf(null) }
@@ -113,6 +114,7 @@ internal class AddHouseInformationPresenter(
     LaunchedEffect(Unit) {
       movingFlowRepository.movingFlowState().collect {
         addressInput = Option(it?.toAddressInputOrNull())
+        oldAddressCoverageDurationDays = it?.oldAddressCoverageDurationDays
       }
     }
 
@@ -191,6 +193,7 @@ internal class AddHouseInformationPresenter(
             isLoadingNextStep = inputForSubmission != null,
             submittingInfoFailure = submittingInfoFailure,
             navigateToChoseCoverage = navigateToChoseCoverage,
+            oldAddressCoverageDurationDays = oldAddressCoverageDurationDays,
           )
         }
       }
@@ -266,6 +269,7 @@ internal sealed interface AddHouseInformationUiState {
     val isLoadingNextStep: Boolean,
     val submittingInfoFailure: SubmittingInfoFailure?,
     val navigateToChoseCoverage: Boolean,
+    val oldAddressCoverageDurationDays: Int?,
   ) : AddHouseInformationUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
       isLoadingNextStep == true ||

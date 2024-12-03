@@ -1,13 +1,5 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -19,12 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
-import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
 import java.util.Locale
 import kotlinx.datetime.Instant
@@ -43,30 +41,21 @@ internal fun DatePickerWithDialog(
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   if (showDatePicker) {
-    DatePickerDialog(
+    HedvigDatePicker(
+      datePickerState = uiState.datePickerState,
       onDismissRequest = { showDatePicker = false },
-      confirmButton = {
-        TextButton(
-          onClick = { showDatePicker = false },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.general_save_button))
-        }
-      },
+      onConfirmRequest = { showDatePicker = false },
       dismissButton = {
-        TextButton(
+        HedvigTextButton(
+          text = stringResource(R.string.GENERAL_NOT_SURE),
           onClick = {
             uiState.clearDateSelection()
             showDatePicker = false
           },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.GENERAL_NOT_SURE))
-        }
+          buttonSize = Medium,
+        )
       },
-    ) {
-      HedvigDatePicker(datePickerState = uiState.datePickerState)
-    }
+    )
   }
 
   val selectedDateMillis: Long? = uiState.datePickerState.selectedDateMillis
@@ -85,7 +74,7 @@ internal fun DatePickerWithDialog(
   }
   HedvigBigCard(
     onClick = { showDatePicker = true },
-    hintText = startText,
+    labelText = startText,
     inputText = selectedDateText,
     enabled = canInteract,
     modifier = modifier,
@@ -103,13 +92,13 @@ internal class DatePickerUiState(
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val yearRange = minDate.year..maxDate.year
 
-  val datePickerState = DatePickerState(
+  val datePickerState = HedvigDatePickerState(
     locale = locale,
     initialSelectedDateMillis = initiallySelectedDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
     initialDisplayedMonthMillis = null,
     yearRange = yearRange,
-    initialDisplayMode = DisplayMode.Picker,
-    selectableDates = object : SelectableDates {
+    initialDisplayMode = HedvigDisplayMode.Picker,
+    selectableDates = object : HedvigSelectableDates {
       override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
 
       override fun isSelectableYear(year: Int): Boolean = year in yearRange
@@ -124,12 +113,10 @@ internal class DatePickerUiState(
 @HedvigPreview
 @Composable
 private fun PreviewDatePickerWithDialog(
-  @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
-  ) hasSelectedDate: Boolean,
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasSelectedDate: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DatePickerWithDialog(
         uiState = DatePickerUiState(
           locale = Locale.ENGLISH,

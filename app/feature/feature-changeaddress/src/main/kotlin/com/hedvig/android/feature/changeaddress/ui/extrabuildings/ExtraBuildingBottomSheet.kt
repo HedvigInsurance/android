@@ -2,8 +2,11 @@ package com.hedvig.android.feature.changeaddress.ui.extrabuildings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,7 +24,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType.CARPORT
@@ -45,10 +50,6 @@ internal fun ExtraBuildingBottomSheet(
   HedvigBottomSheet(
     isVisible = isVisible,
     onVisibleChange = onVisibleChange,
-    bottomButtonText = stringResource(id = R.string.general_cancel_button),
-    onBottomButtonClick = {
-      onDismiss()
-    },
   ) {
     Column(
       modifier = Modifier.clearFocusOnTap(),
@@ -106,7 +107,15 @@ internal fun ExtraBuildingBottomSheet(
           }
         },
       )
+      HedvigButton(
+        onClick = onDismiss,
+        text = stringResource(R.string.general_cancel_button),
+        enabled = true,
+        buttonStyle = Ghost,
+        modifier = Modifier.fillMaxWidth(),
+      )
       Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
 }

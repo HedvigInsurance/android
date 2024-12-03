@@ -207,11 +207,13 @@ private fun ChangeAddressEnterNewAddressScreen(
       )
     }
     Spacer(modifier = Modifier.height(16.dp))
-    VectorInfoCard(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(16.dp))
+    if (uiState.oldAddressCoverageDurationDays != null) {
+      VectorInfoCard(
+        text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldAddressCoverageDurationDays),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+    }
     HedvigContainedButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = onSaveNewAddress,
@@ -280,7 +282,10 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewAddressScreen(
-        EnterNewAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
+        EnterNewAddressUiState(
+          datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),
+          oldAddressCoverageDurationDays = 30,
+        ),
         {},
         {},
         {},

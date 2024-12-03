@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,10 +33,13 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ChevronRight
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.ChevronRight
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -58,12 +56,12 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
     modifier
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
-      .background(MaterialTheme.colorScheme.outlineVariant, CircleShape)
+      .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
       .animatingSliderModifier(offsetX, LocalDensity.current, onAccepted),
   ) {
-    Text(
+    HedvigText(
       text = text,
-      style = MaterialTheme.typography.bodyLarge.copy(MaterialTheme.colorScheme.onSurfaceVariant),
+      color = HedvigTheme.colorScheme.textTertiary,
       modifier = Modifier
         .align(Alignment.Center)
         .graphicsLayer {
@@ -79,12 +77,12 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
         .padding(4.dp)
         .size(circleDiameter - 8.dp)
         .clip(CircleShape)
-        .background(MaterialTheme.colorScheme.primary),
+        .background(HedvigTheme.colorScheme.fillPrimary),
     ) {
       Icon(
-        imageVector = Icons.Hedvig.ChevronRight,
+        imageVector = HedvigIcons.ChevronRight,
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.onPrimary,
+        tint = HedvigTheme.colorScheme.fillNegative,
         modifier = Modifier.align(Alignment.Center),
       )
     }
@@ -173,7 +171,7 @@ private fun Modifier.animatingSliderModifier(
 @Composable
 private fun PreviewPledgeAcceptingSlider() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PledgeAcceptingSlider(
         {},
         "Slide to start",

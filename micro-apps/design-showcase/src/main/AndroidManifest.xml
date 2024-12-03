@@ -9,7 +9,8 @@
       android:exported="true"
       android:label="@string/title_activity_design_showcase_activity.kt"
       android:theme="@style/Theme.Hedvigandroid"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      tools:targetApi="33">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />

@@ -13,7 +13,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -132,7 +131,6 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
   HedvigBottomSheet(
-    sheetPadding = PaddingValues(0.dp),
     isVisible = bottomSheetRow != null,
     onVisibleChange = { isVisible ->
       if (!isVisible) {
@@ -157,7 +155,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }

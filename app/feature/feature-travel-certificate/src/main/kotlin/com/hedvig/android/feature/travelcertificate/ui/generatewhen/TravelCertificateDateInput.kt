@@ -1,19 +1,11 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,29 +13,33 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
 import hedvig.resources.R
 import java.util.Locale
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun TravelCertificateDateInputDestination(
@@ -57,7 +53,6 @@ internal fun TravelCertificateDateInputDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateDateInput(
     uiState = uiState,
-    onDateChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeDateInput(it)) },
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
     onNavigateToFellowTravellers = onNavigateToFellowTravellers,
@@ -71,7 +66,6 @@ internal fun TravelCertificateDateInputDestination(
 @Composable
 private fun TravelCertificateDateInput(
   uiState: TravelCertificateDateInputUiState,
-  onDateChanged: (LocalDate) -> Unit,
   onEmailChanged: (String) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
@@ -116,11 +110,10 @@ private fun TravelCertificateDateInput(
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
-        Spacer(Modifier.height(24.dp))
-        Text(
-          text = stringResource(id = R.string.travel_certificate_when_is_your_trip),
-          style = MaterialTheme.typography.headlineMedium,
-          textAlign = TextAlign.Center,
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = stringResource(R.string.travel_certificate_when_is_your_trip),
+          style = HedvigTheme.typography.headlineMedium,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -128,7 +121,6 @@ private fun TravelCertificateDateInput(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         MovingDateButton(
-          onDateSelected = onDateChanged,
           datePickerState = uiState.datePickerState,
           travelDate = uiState.travelDate,
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -144,17 +136,12 @@ private fun TravelCertificateDateInput(
           errorText = uiState.errorMessageRes?.let { stringResource(id = it) },
         )
         Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
+        HedvigButton(
+          stringResource(id = R.string.general_continue_button),
           onClick = submitInput,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        ) {
-          Text(
-            text = stringResource(id = R.string.general_continue_button),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
+          enabled = true,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -168,89 +155,55 @@ private fun EmailTextField(
   onEmailChanged: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-//  var errorMessage by remember { mutableStateOf(errorText)}
   HedvigTextField(
-    value = email,
-    errorText = errorText,
-    withNewDesign = true,
+    text = email,
     onValueChange = {
       onEmailChanged(it)
     },
-    label = {
-      Text("Email")
+    errorState = if (errorText != null) {
+      ErrorState.Error.WithMessage(errorText)
+    } else {
+      ErrorState.NoError
     },
+    textFieldSize = Medium,
+    labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
     modifier = modifier.fillMaxWidth(),
   )
 }
 
 @Composable
 private fun MovingDateButton(
-  onDateSelected: (LocalDate) -> Unit,
-  datePickerState: DatePickerState,
+  datePickerState: HedvigDatePickerState,
   travelDate: LocalDate,
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   if (showDatePicker) {
-    DatePickerDialog(
+    HedvigDatePicker(
+      datePickerState = datePickerState,
       onDismissRequest = { showDatePicker = false },
-      confirmButton = {
-        TextButton(
-          onClick = {
-            datePickerState.selectedDateMillis?.let {
-              val selectedDate = Instant.fromEpochMilliseconds(it)
-                .toLocalDateTime(TimeZone.UTC)
-                .date
-              onDateSelected(selectedDate)
-            }
-            showDatePicker = false
-          },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.ALERT_OK))
-        }
-      },
-      dismissButton = {
-        TextButton(
-          onClick = {
-            showDatePicker = false
-          },
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(stringResource(R.string.general_close_button))
-        }
-      },
-    ) {
-      HedvigDatePicker(datePickerState = datePickerState)
-    }
+      onConfirmRequest = { showDatePicker = false },
+    )
   }
 
-  Column(modifier) {
-    HedvigCard(
-      onClick = { showDatePicker = true },
-      colors = CardDefaults.outlinedCardColors(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-      ),
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column(Modifier.weight(1f)) {
-          Text(
-            text = stringResource(id = R.string.travel_certificate_start_date_title),
-            style = MaterialTheme.typography.bodySmall,
-          )
-          Spacer(modifier = Modifier.height(4.dp))
-          Text(
-            text = travelDate.toString(),
-            style = MaterialTheme.typography.headlineSmall,
-          )
-        }
-      }
-    }
+  // Workaround to get the layout of the hedvigTextField, without the functionality of it. Perhaps room for another
+  //  component here
+  Box(modifier) {
+    HedvigTextField(
+      text = travelDate.toString(),
+      onValueChange = {},
+      readOnly = true,
+      enabled = true,
+      labelText = stringResource(R.string.travel_certificate_start_date_title),
+      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+      trailingContent = {},
+    )
+    Box(
+      Modifier
+        .matchParentSize()
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .clickable { showDatePicker = true },
+    )
   }
 }
 
@@ -258,19 +211,18 @@ private fun MovingDateButton(
 @Composable
 private fun PreviewTravelCertificateDateInput() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateDateInput(
-        TravelCertificateDateInputUiState.Success(
+        Success(
           "id",
           "emaild",
           hasCoInsured = false,
-          datePickerState = DatePickerState(Locale.ENGLISH, null, null, 2020..2024, DisplayMode.Picker),
+          datePickerState = HedvigDatePickerState(Locale.ENGLISH, null, null, 2020..2024, HedvigDisplayMode.Picker),
           travelDate = LocalDate(2023, 1, 1),
           daysValid = 40,
           errorMessageRes = null,
           primaryInput = null,
         ),
-        {},
         {},
         {},
         {},

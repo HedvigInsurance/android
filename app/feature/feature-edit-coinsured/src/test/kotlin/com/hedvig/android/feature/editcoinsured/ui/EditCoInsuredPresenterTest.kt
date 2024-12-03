@@ -78,11 +78,11 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           allCoInsured = listOf(),
         ),
-        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+        addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           infoFromSsn = InfoFromSsn(),
           manualInfo = ManualInfo(),
         ),
-        removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
       ),
     ) {
       skipItems(1)
@@ -93,11 +93,10 @@ internal class EditCoInsuredPresenterTest {
       assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
       val uiState = item as EditCoInsuredState.Loaded
 
-      assertThat(uiState.addBottomSheetState.manualInfo.firstName).isEqualTo(coInsuredTestList[0].firstName)
-      assertThat(uiState.addBottomSheetState.manualInfo.lastName).isEqualTo(coInsuredTestList[0].lastName)
-      assertThat(uiState.addBottomSheetState.infoFromSsn.ssn).isEqualTo(coInsuredTestList[0].ssn)
-      assertThat(uiState.addBottomSheetState.manualInfo.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
-      assertThat(uiState.addBottomSheetState.show).isEqualTo(true)
+      assertThat(uiState.addBottomSheetContentState.manualInfo.firstName).isEqualTo(coInsuredTestList[0].firstName)
+      assertThat(uiState.addBottomSheetContentState.manualInfo.lastName).isEqualTo(coInsuredTestList[0].lastName)
+      assertThat(uiState.addBottomSheetContentState.infoFromSsn.ssn).isEqualTo(coInsuredTestList[0].ssn)
+      assertThat(uiState.addBottomSheetContentState.manualInfo.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
     }
   }
 
@@ -123,12 +122,12 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           allCoInsured = listOf(),
         ),
-        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+        addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           showManualInput = false,
           infoFromSsn = InfoFromSsn(),
           manualInfo = ManualInfo(),
         ),
-        removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
       ),
     ) {
       skipItems(1)
@@ -141,7 +140,7 @@ internal class EditCoInsuredPresenterTest {
       sendEvent(EditCoInsuredEvent.OnLastNameChanged("New last name manual"))
       val state2 = awaitItem()
       assertThat(
-        (state2 as EditCoInsuredState.Loaded).addBottomSheetState.manualInfo.lastName,
+        (state2 as EditCoInsuredState.Loaded).addBottomSheetContentState.manualInfo.lastName,
       ).isEqualTo("New last name manual")
       sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
       skipItems(1)
@@ -154,7 +153,7 @@ internal class EditCoInsuredPresenterTest {
       val item = awaitItem()
       assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
       val uiState = item as EditCoInsuredState.Loaded
-      assertThat(uiState.addBottomSheetState.manualInfo).isEqualTo(ManualInfo())
+      assertThat(uiState.addBottomSheetContentState.manualInfo).isEqualTo(ManualInfo())
       assertThat(uiState.listState.coInsured[2].ssn).isEqualTo(null)
       assertThat(uiState.listState.coInsured[2].lastName).isEqualTo("New last name manual")
     }

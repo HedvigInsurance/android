@@ -7,21 +7,20 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestinati
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator) {
-  navgraph<AppDestination.EditCoInsured>(
-    startDestination = AppDestination.CoInsuredAddOrRemove::class,
+  navgraph<EditCoInsuredGraphDestination>(
+    startDestination = EditCoInsuredDestination.CoInsuredAddOrRemove::class,
   ) {
-    navdestination<AppDestination.CoInsuredAddInfo> {
+    navdestination<EditCoInsuredDestination.CoInsuredAddInfo> {
       EditCoInsuredAddMissingInfoDestination(
         viewModel = koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
           navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
-            typedPopUpTo<AppDestination.EditCoInsured> {
+            typedPopUpTo<EditCoInsuredGraphDestination> {
               inclusive = true
             }
           }
@@ -29,12 +28,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator) {
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<AppDestination.CoInsuredAddOrRemove> {
+    navdestination<EditCoInsuredDestination.CoInsuredAddOrRemove> {
       EditCoInsuredAddOrRemoveDestination(
         koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
           navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
-            typedPopUpTo<AppDestination.EditCoInsured> {
+            typedPopUpTo<EditCoInsuredGraphDestination> {
               inclusive = true
             }
           }

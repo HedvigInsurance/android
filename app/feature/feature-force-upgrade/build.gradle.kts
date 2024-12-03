@@ -8,6 +8,6 @@ hedvig {
 }
 
 dependencies {
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.designSystemHedvig)
 }

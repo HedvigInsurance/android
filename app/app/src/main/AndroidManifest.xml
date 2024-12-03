@@ -30,7 +30,8 @@
     android:largeHeap="true"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
-    android:theme="@style/Hedvig.Theme">
+    android:theme="@style/Hedvig.Theme"
+    tools:targetApi="33">
     <activity
       android:name="com.hedvig.android.app.MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"

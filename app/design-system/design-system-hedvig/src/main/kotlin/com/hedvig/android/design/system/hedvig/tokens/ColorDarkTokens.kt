@@ -104,5 +104,6 @@ internal object ColorDarkTokens {
   val HighlightPurpleFill1: Color = PaletteTokens.Purple200
   val HighlightPurpleFill2: Color = PaletteTokens.Purple300
   val HighlightPurpleFill3: Color = PaletteTokens.Purple500
+  val Scrim: Color = PaletteTokens.G100
   val Transparent: Color = PaletteTokens.Transparent
 }

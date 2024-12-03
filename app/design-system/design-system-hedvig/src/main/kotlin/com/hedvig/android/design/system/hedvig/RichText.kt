@@ -38,7 +38,7 @@ public fun RichText(
  * to not apply Material Theming if it already exists in the current composition.
  */
 @Composable
-internal fun RichTextHedvigTheme(child: @Composable () -> Unit) {
+private fun RichTextHedvigTheme(child: @Composable () -> Unit) {
   val isApplied = LocalThemingApplied.current
 
   if (!isApplied) {

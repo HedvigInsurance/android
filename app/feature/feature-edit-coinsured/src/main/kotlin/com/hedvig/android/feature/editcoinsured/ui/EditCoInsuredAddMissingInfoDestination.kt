@@ -14,31 +14,38 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
+import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -113,9 +120,10 @@ private fun EditCoInsuredScreen(
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
-    TopAppBarWithBack(
+    TopAppBar(
       title = stringResource(id = R.string.COINSURED_EDIT_TITLE),
-      onClick = navigateUp,
+      actionType = TopAppBarActionType.BACK,
+      onActionClick = navigateUp,
     )
 
     when (uiState) {
@@ -133,18 +141,18 @@ private fun EditCoInsuredScreen(
             onCompleted(uiState.contractUpdateDate)
           }
         }
+        val hedvigBottomSheetState = rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+        DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
+        ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
         HedvigBottomSheet(
-          isVisible = uiState.addBottomSheetState.show,
-          onVisibleChange = { isVisible ->
-            if (!isVisible) {
-              onResetAddBottomSheetState()
-            }
-          },
-          bottomButtonText = stringResource(id = R.string.general_cancel_button),
+          hedvigBottomSheetState = hedvigBottomSheetState,
         ) {
           AddCoInsuredBottomSheetContent(
-            bottomSheetState = uiState.addBottomSheetState,
+            bottomSheetState = uiState.addBottomSheetContentState,
             onContinue = onBottomSheetContinue,
+            onDismiss = {
+              hedvigBottomSheetState.dismiss()
+            },
             onSsnChanged = onSsnChanged,
             onFirstNameChanged = onFirstNameChanged,
             onLastNameChanged = onLastNameChanged,
@@ -167,17 +175,21 @@ private fun EditCoInsuredScreen(
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = {},
-            onEdit = onCoInsuredClicked,
+            onEdit = { insured ->
+              hedvigBottomSheetState.show(uiState.addBottomSheetContentState)
+              onCoInsuredClicked(insured)
+            },
             allowEdit = true,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
 
           if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-            VectorWarningCard(
-              text = stringResource(
+            HedvigNotificationCard(
+              message = stringResource(
                 id = R.string.CONTRACT_ADD_COINSURED_REVIEW_INFO,
               ),
+              priority = NotificationDefaults.NotificationPriority.Attention,
               modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             )
           }
@@ -186,20 +198,20 @@ private fun EditCoInsuredScreen(
           Column {
             if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
               Spacer(Modifier.height(8.dp))
-              HedvigContainedButton(
+              HedvigButton(
                 text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
               )
             }
           }
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(
             onClick = navigateUp,
-            text = stringResource(id = R.string.general_cancel_button),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.general_cancel_button),
+            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -207,6 +219,100 @@ private fun EditCoInsuredScreen(
       }
 
       EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+    }
+  }
+}
+
+@Composable
+internal fun DismissSheetOnSuccessfulInfoChangeEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
+  infoSuccessfullyChanged: Boolean,
+) {
+  val updatedInfoSuccessfullyChanged by rememberUpdatedState(infoSuccessfullyChanged)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { updatedInfoSuccessfullyChanged }
+      .drop(1)
+      .collect {
+        if (it) {
+          sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+internal fun DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetContentState>,
+  coInsuredSuccessfullyRemoved: Boolean,
+) {
+  val updatedCoInsuredSuccessfullyRemoved by rememberUpdatedState(coInsuredSuccessfullyRemoved)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { updatedCoInsuredSuccessfullyRemoved }
+      .drop(1)
+      .collect {
+        if (it) {
+          sheetState.dismiss()
+        }
+      }
+  }
+}
+
+@Composable
+internal fun ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.RemoveBottomSheetContentState>,
+  clearBottomSheetState: () -> Unit,
+) {
+  val updatedClearBottomSheetState by rememberUpdatedState(clearBottomSheetState)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }
+      .drop(1)
+      .collect {
+        if (!it) {
+          updatedClearBottomSheetState()
+        }
+      }
+  }
+}
+
+@Composable
+internal fun ClearBottomSheetContentStateOnSheetDismissedEffect(
+  sheetState: HedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>,
+  clearBottomSheetState: () -> Unit,
+) {
+  val updatedClearBottomSheetState by rememberUpdatedState(clearBottomSheetState)
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }
+      .drop(1)
+      .collect {
+        if (!it) {
+          updatedClearBottomSheetState()
+        }
+      }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenErrorPreview() {
+  HedvigTheme {
+    Surface {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Error("Something"),
+        onCoInsuredClicked = {},
+        onSsnChanged = {},
+        onBottomSheetContinue = {},
+        onCommitChanges = {},
+        onCompleted = {},
+        onDismissError = {},
+        onResetAddBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
+      )
     }
   }
 }
@@ -271,12 +377,12 @@ private fun EditCoInsuredScreenEditablePreview() {
             ),
             allCoInsured = listOf(),
           ),
-          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onCoInsuredClicked = {},
         onSsnChanged = {},
@@ -328,12 +434,12 @@ private fun EditCoInsuredScreenNonEditablePreview() {
             ),
             allCoInsured = listOf(),
           ),
-          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
             infoFromSsn = InfoFromSsn(),
             manualInfo = ManualInfo(),
           ),
-          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
+          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
         ),
         onCoInsuredClicked = {},
         onSsnChanged = {},

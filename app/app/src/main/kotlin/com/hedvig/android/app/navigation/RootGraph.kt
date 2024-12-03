@@ -1,6 +1,6 @@
 package com.hedvig.android.app.navigation
 
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

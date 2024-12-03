@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -36,9 +37,9 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 
 @Composable
 fun HedvigCard(
@@ -46,11 +47,12 @@ fun HedvigCard(
   onClick: (() -> Unit)? = null,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
+  shape: Shape = HedvigTheme.shapes.cornerXLarge,
   content: @Composable () -> Unit,
 ) {
   if (onClick != null) {
     Surface(
-      shape = HedvigTheme.shapes.cornerXLarge,
+      shape = shape,
       onClick = onClick,
       interactionSource = interactionSource,
       indication = indication,
@@ -60,7 +62,7 @@ fun HedvigCard(
     }
   } else {
     Surface(
-      shape = HedvigTheme.shapes.cornerXLarge,
+      shape = shape,
       modifier = modifier,
     ) {
       content()
@@ -86,7 +88,7 @@ fun InsuranceCard(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
           .matchParentSize()
-          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+          .hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
         contentDescription = null,
       )
     } else {
@@ -127,14 +129,14 @@ fun InsuranceCard(
       HedvigText(
         topText,
         color = HedvigTheme.colorScheme.textWhite,
-        modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
       Spacer(Modifier.height(4.dp))
       HedvigTheme(darkTheme = true) {
         HedvigText(
           text = bottomText,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+          modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
       }
     }

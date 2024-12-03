@@ -1,36 +1,36 @@
 package com.hedvig.android.feature.travelcertificate.ui.choose
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
+import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractUiState.Success
 import hedvig.resources.R
 
 @Composable
@@ -55,9 +55,7 @@ private fun ChooseContractForCertificate(
   onContinue: (String) -> Unit,
   reload: () -> Unit,
 ) {
-  var selectedContractId by remember {
-    mutableStateOf<String?>(null)
-  }
+  var selectedContractId by remember { mutableStateOf<String?>(null) }
   when (uiState) {
     ChooseContractUiState.Failure -> {
       FailureScreen(
@@ -75,54 +73,42 @@ private fun ChooseContractForCertificate(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
       ) {
-        Spacer(Modifier.height(24.dp))
-        Text(
-          text = stringResource(id = R.string.travel_certificate_select_contract_title),
-          style = MaterialTheme.typography.headlineMedium,
-          textAlign = TextAlign.Center,
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = stringResource(R.string.travel_certificate_select_contract_title),
+          style = HedvigTheme.typography.headlineMedium.copy(
+            lineBreak = LineBreak.Heading,
+          ),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(16.dp))
+        RadioGroup(
+          radioGroupStyle = RadioGroupStyle.Vertical.Default(
+            uiState.eligibleContracts.map {
+              RadioOptionGroupDataSimple(
+                radioOptionData = RadioOptionData(
+                  id = it.contractId,
+                  optionText = it.address,
+                  chosenState = if (it.contractId == selectedContractId) Chosen else NotChosen,
+                ),
+              )
+            },
+          ),
+          onOptionClick = { contractId ->
+            selectedContractId = contractId
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(id = R.string.general_continue_button),
+          onClick = { selectedContractId?.let { onContinue(it) } },
+          enabled = selectedContractId != null,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        for (contract in uiState.eligibleContracts) {
-          HedvigCard(
-            onClick = { selectedContractId = contract.contractId },
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .heightIn(72.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-              Text(
-                text = contract.address,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.weight(1f),
-              )
-              Spacer(Modifier.width(8.dp))
-              SelectIndicationCircle(selectedContractId == contract.contractId)
-            }
-          }
-          Spacer(modifier = (Modifier.height(4.dp)))
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        HedvigContainedButton(
-          onClick = { selectedContractId?.let { onContinue(it) } },
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        ) {
-          Text(
-            text = stringResource(id = R.string.general_continue_button),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -142,9 +128,9 @@ private fun FailureScreen(navigateUp: () -> Unit, reload: () -> Unit) {
 @Composable
 private fun PreviewChooseContractForCertificate() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ChooseContractForCertificate(
-        ChooseContractUiState.Success(
+        Success(
           listOf(
             ContractEligibleWithAddress("Morbydalen 12", "keuwhwkjfhjkeharfj"),
             ContractEligibleWithAddress("Akerbyvagen 257", "sesjhfhakerfhlwkeija"),

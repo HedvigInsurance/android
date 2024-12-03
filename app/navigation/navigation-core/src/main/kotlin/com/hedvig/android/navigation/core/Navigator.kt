@@ -2,7 +2,7 @@ package com.hedvig.android.navigation.core
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavOptionsBuilder
-import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.common.Destination
 
 interface Navigator {
   fun NavBackStackEntry.navigate(destination: Destination, builder: NavOptionsBuilder.() -> Unit = {})

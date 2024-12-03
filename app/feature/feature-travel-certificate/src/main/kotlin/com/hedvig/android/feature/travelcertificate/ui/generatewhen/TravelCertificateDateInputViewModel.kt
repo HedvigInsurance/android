@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,6 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.android.validation.validateEmail
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -68,12 +68,12 @@ internal class TravelCertificateDateInputPresenter(
             DateInputScreenContent.Success.SpecificationsDetails(
               contractId = lastState.contractId,
               email = lastState.email,
-              travelDate = lastState.travelDate,
               datePickerState = lastState.datePickerState,
               daysValid = lastState.daysValid,
               hasCoInsured = lastState.hasCoInsured,
             ),
           )
+
           TravelCertificateDateInputUiState.Failure -> DateInputScreenContent.Failure
           TravelCertificateDateInputUiState.Loading -> DateInputScreenContent.Loading
           is TravelCertificateDateInputUiState.UrlFetched -> {
@@ -135,15 +135,6 @@ internal class TravelCertificateDateInputPresenter(
           )
         }
 
-        is TravelCertificateDateInputEvent.ChangeDateInput -> {
-          val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return@CollectEvents
-          screenContent = successScreenContent.copy(
-            details = successScreenContent.details.copy(
-              travelDate = event.localDate,
-            ),
-          )
-        }
-
         TravelCertificateDateInputEvent.RetryLoadData -> {
           loadIteration++
         }
@@ -192,13 +183,12 @@ internal class TravelCertificateDateInputPresenter(
           ifRight = { travelCertificateData ->
             val travelSpecification = travelCertificateData.travelCertificateSpecification
             val yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year
-            val datePickerState = DatePickerState(
+            val datePickerState = HedvigDatePickerState(
               locale = languageService.getLocale(),
               initialSelectedDateMillis = null,
               initialDisplayedMonthMillis = null,
               yearRange = yearRange,
-              initialDisplayMode = DisplayMode.Picker,
-              selectableDates = object : SelectableDates {
+              selectableDates = object : HedvigSelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                   val selectedDate =
                     Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -215,7 +205,6 @@ internal class TravelCertificateDateInputPresenter(
                 email = travelSpecification.email,
                 contractId = travelSpecification.contractId,
                 hasCoInsured = travelSpecification.numberOfCoInsured > 0,
-                travelDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
               ),
             )
           },
@@ -253,11 +242,17 @@ private sealed interface DateInputScreenContent {
     data class SpecificationsDetails(
       val contractId: String,
       val email: String?,
-      val travelDate: LocalDate,
-      val datePickerState: DatePickerState,
+      val datePickerState: HedvigDatePickerState,
       val daysValid: Int,
       val hasCoInsured: Boolean,
-    )
+    ) {
+      val travelDate: LocalDate
+        get() = datePickerState.selectedDateMillis?.let {
+          Instant.fromEpochMilliseconds(it)
+            .toLocalDateTime(TimeZone.UTC)
+            .date
+        } ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    }
   }
 
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : DateInputScreenContent
@@ -265,8 +260,6 @@ private sealed interface DateInputScreenContent {
 
 internal sealed interface TravelCertificateDateInputEvent {
   data object RetryLoadData : TravelCertificateDateInputEvent
-
-  data class ChangeDateInput(val localDate: LocalDate) : TravelCertificateDateInputEvent
 
   data class ChangeEmailInput(val email: String) : TravelCertificateDateInputEvent
 
@@ -287,7 +280,7 @@ internal sealed interface TravelCertificateDateInputUiState {
     val email: String?,
     val travelDate: LocalDate,
     val hasCoInsured: Boolean,
-    val datePickerState: DatePickerState,
+    val datePickerState: HedvigDatePickerState,
     val daysValid: Int,
     val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?,
     val errorMessageRes: Int?,

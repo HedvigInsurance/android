@@ -9,7 +9,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.logger.logcat
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
@@ -109,6 +109,7 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
   maxApartmentNumberCoInsured = maxApartmentNumberCoInsured,
   maxHouseNumberCoInsured = maxHouseNumberCoInsured,
   extraBuildingTypes = extraBuildingTypes.map { it.toExtraBuildingType() },
+  oldAddressCoverageDurationDays = this.currentHomeAddresses.firstNotNullOfOrNull { it.oldAddressCoverageDurationDays },
 )
 
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes(): List<MoveQuote> {

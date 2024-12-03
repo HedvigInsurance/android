@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
@@ -51,7 +52,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
@@ -194,6 +195,9 @@ private fun EnterNewAddressScreen(
             uiState.address.updateValue(it)
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
+          keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+          ),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = when (val validationError = uiState.address.validationError) {
             null -> HedvigTextFieldDefaults.ErrorState.NoError
@@ -270,8 +274,14 @@ private fun EnterNewAddressScreen(
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT), NotificationPriority.Info)
-      Spacer(Modifier.height(16.dp))
+      if (uiState.oldAddressCoverageDurationDays != null) {
+        HedvigNotificationCard(
+          stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldAddressCoverageDurationDays),
+          NotificationPriority.Info,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
       HedvigButton(
         onClick = submitInput,
         text = stringResource(R.string.general_continue_button),
@@ -296,7 +306,7 @@ private fun DatePickerField(
   val selectedDateMillis = input.value?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
   HedvigDatePicker(
     isVisible = showDatePicker,
-    datePickerState = HedvigDatePickerState(
+    datePickerState = HedvigDatePickerImmutableState(
       selectedDateMillis = selectedDateMillis,
       displayedMonthMillis = selectedDateMillis,
       yearRange = IntRange(
@@ -404,6 +414,7 @@ fun PreviewEnterNewAddressScreen() {
       isLoadingNextStep = false,
       navigateToChoseCoverage = false,
       navigateToAddHouseInformation = false,
+      oldAddressCoverageDurationDays = 30,
     ),
     submitInput = {},
     dismissSubmissionError = {},

@@ -184,11 +184,13 @@ private fun ChangeAddressEnterVillaInformationScreen(
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
-    Spacer(modifier = Modifier.height(16.dp))
-    VectorInfoCard(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+    if (uiState.oldAddressCoverageDurationDays != null) {
+      Spacer(modifier = Modifier.height(16.dp))
+      VectorInfoCard(
+        text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldAddressCoverageDurationDays),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
@@ -208,6 +210,7 @@ private fun PreviewChangeAddressEnterVillaInformationScreen() {
       ChangeAddressEnterVillaInformationScreen(
         EnterVillaInformationUiState(
           extraBuildingTypes = listOf(),
+          oldAddressCoverageDurationDays = 45,
         ),
         {},
         {},

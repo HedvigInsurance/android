@@ -12,5 +12,5 @@ dependencies {
 
   implementation(libs.androidx.activity.compose)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
+  implementation(projects.designSystemHedvig)
 }

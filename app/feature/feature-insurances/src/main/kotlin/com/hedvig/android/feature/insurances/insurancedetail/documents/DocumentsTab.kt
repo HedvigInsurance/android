@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail.documents
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,25 +12,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Composable
 internal fun DocumentsTab(
@@ -40,7 +38,6 @@ internal fun DocumentsTab(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    Spacer(Modifier.height(16.dp))
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url) },
@@ -71,31 +68,31 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) 
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Column {
-            Text(
+            HedvigText(
               text = stringWithShiftedLabel(
                 text = title,
                 labelText = "PDF",
-                labelFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                labelFontSize = HedvigTheme.typography.bodySmall.fontSize,
                 textColor = LocalContentColor.current,
                 textFontSize = LocalTextStyle.current.fontSize,
               ),
             )
             if (!subtitle.isNullOrBlank()) {
-              Text(
+              HedvigText(
                 text = subtitle,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = HedvigTheme.colorScheme.textSecondary,
               )
             }
           }
         },
         endSlot = {
-          Row(horizontalArrangement = Arrangement.End) {
-            Icon(
-              imageVector = Icons.Hedvig.ArrowNorthEast,
-              contentDescription = null,
-              modifier = Modifier.size(16.dp),
-            )
-          }
+          Icon(
+            imageVector = HedvigIcons.ArrowNorthEast,
+            contentDescription = null,
+            modifier = Modifier
+              .wrapContentSize(Alignment.CenterEnd)
+              .size(24.dp),
+          )
         },
         spaceBetween = 8.dp,
       )
@@ -107,7 +104,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) 
 @Composable
 private fun PreviewDocumentsScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DocumentsTab(
         documents = listOf(
           InsuranceVariantDocument("", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),

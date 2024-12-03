@@ -269,6 +269,7 @@ internal sealed interface EnterNewAddressUiState {
     val isLoadingNextStep: Boolean,
     val navigateToChoseCoverage: Boolean,
     val navigateToAddHouseInformation: Boolean,
+    val oldAddressCoverageDurationDays: Int?,
   ) : EnterNewAddressUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
       isLoadingNextStep == true ||
@@ -429,6 +430,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
     isLoadingNextStep = false,
     navigateToChoseCoverage = false,
     navigateToAddHouseInformation = false,
+    oldAddressCoverageDurationDays = oldAddressCoverageDurationDays,
   )
 }
 

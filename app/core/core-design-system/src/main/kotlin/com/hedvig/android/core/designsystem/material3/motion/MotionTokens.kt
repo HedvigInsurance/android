@@ -2,10 +2,11 @@ package com.hedvig.android.core.designsystem.material3.motion
 
 import androidx.compose.animation.core.CubicBezierEasing
 
+const val DurationExtraLong1 = 700.0
+
 // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/MotionTokens.kt
 @Suppress("unused")
 object MotionTokens {
-  const val DurationExtraLong1 = 700.0
   const val DurationExtraLong2 = 800.0
   const val DurationExtraLong3 = 900.0
   const val DurationExtraLong4 = 1000.0

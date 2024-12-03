@@ -5,12 +5,19 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.PopUpToBuilder
+import com.hedvig.android.navigation.common.Destination
 import kotlin.reflect.KClass
 
 inline fun <reified T : Destination> NavController.typedPopBackStack(
   inclusive: Boolean,
   saveState: Boolean = false,
 ): Boolean = popBackStack<T>(inclusive, saveState)
+
+fun <T : Destination> NavController.typedPopBackStack(
+  destination: T,
+  inclusive: Boolean,
+  saveState: Boolean = false,
+): Boolean = popBackStack(destination, inclusive, saveState)
 
 inline fun <reified T : Destination> NavOptionsBuilder.typedPopUpTo(
   noinline popUpToBuilder: PopUpToBuilder.() -> Unit = {},
@@ -19,3 +26,7 @@ inline fun <reified T : Destination> NavOptionsBuilder.typedPopUpTo(
 inline fun <reified T : Destination> NavDestination.typedHasRoute() = hasRoute<T>()
 
 fun <T : Destination> NavDestination.typedHasRoute(route: KClass<T>) = hasRoute(route)
+
+fun <T : Destination> NavController.typedClearBackStack(route: T): Boolean = clearBackStack(route)
+
+

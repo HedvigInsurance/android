@@ -10,5 +10,5 @@ internal object EmptyStateTokens {
   val ErrorIconColor = ColorSchemeKeyTokens.SignalAmberElement
   val InfoIconColor = ColorSchemeKeyTokens.SignalBlueElement
   val SuccessIconColor = ColorSchemeKeyTokens.SignalGreenElement
-  val IconSize = 40.dp
+  val IconSize = 32.dp
 }

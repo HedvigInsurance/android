@@ -4,8 +4,9 @@ plugins {
 }
 
 hedvig {
-  serialization()
+  androidResources()
   compose()
+  serialization()
 }
 
 android {
@@ -28,20 +29,21 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
+  implementation(projects.marketAndroid)
   implementation(projects.marketCore)
   implementation(projects.marketSet)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.junit)
-  testImplementation(libs.androidx.test)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

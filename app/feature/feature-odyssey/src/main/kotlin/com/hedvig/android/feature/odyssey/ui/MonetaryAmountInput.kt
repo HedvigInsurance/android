@@ -2,9 +2,6 @@ package com.hedvig.android.feature.odyssey.ui
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -24,11 +21,13 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.text.isDigitsOnly
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
 
 /**
  * [onInput] guarantees that it either returns a valid [Int], or null
@@ -53,7 +52,7 @@ internal fun MonetaryAmountInput(
       text = newValue
       onInput(newValue.ifBlank { null })
     },
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     labelText = hintText,
     modifier = modifier.focusRequester(focusRequester),
     enabled = canInteract,
@@ -91,14 +90,12 @@ internal fun MonetaryAmountInput(
 @HedvigPreview
 @Composable
 private fun PreviewMonetaryAmountInput(
-  @PreviewParameter(
-    DoubleBooleanCollectionPreviewParameterProvider::class,
-  ) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
 ) {
   val (hasInput: Boolean, canInteract: Boolean) = input
   HedvigTheme {
-    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.headlineSmall) {
-      Surface(color = MaterialTheme.colorScheme.background) {
+    CompositionLocalProvider(LocalTextStyle provides HedvigTheme.typography.headlineSmall) {
+      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
         MonetaryAmountInput(
           value = if (hasInput) "1234" else "",
           hintText = "Purchase price",

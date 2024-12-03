@@ -22,12 +22,3 @@ data class EntryPointOption(
 @Serializable
 @JvmInline
 value class EntryPointOptionId(val id: String)
-
-fun List<octopus.fragment.EntryPoint.Option>.toEntryPointOptions(): List<EntryPointOption> {
-  return map { option ->
-    EntryPointOption(
-      EntryPointOptionId(option.id),
-      option.displayName,
-    )
-  }
-}
