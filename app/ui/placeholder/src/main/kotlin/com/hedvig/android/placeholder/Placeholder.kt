@@ -35,7 +35,7 @@ object PlaceholderDefaults {
   /**
    * The default [InfiniteRepeatableSpec] to use for [fade].
    */
-  public val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+  val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
     infiniteRepeatable(
       animation = tween(delayMillis = 200, durationMillis = 600),
       repeatMode = RepeatMode.Reverse,
@@ -45,7 +45,7 @@ object PlaceholderDefaults {
   /**
    * The default [InfiniteRepeatableSpec] to use for [shimmer].
    */
-  public val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+  val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
     infiniteRepeatable(
       animation = tween(durationMillis = 1700, delayMillis = 200),
       repeatMode = RepeatMode.Restart,
@@ -53,7 +53,7 @@ object PlaceholderDefaults {
   }
 }
 
-internal fun Modifier.placeholder(
+fun Modifier.placeholder(
   visible: Boolean,
   color: Color,
   shape: Shape = RectangleShape,
