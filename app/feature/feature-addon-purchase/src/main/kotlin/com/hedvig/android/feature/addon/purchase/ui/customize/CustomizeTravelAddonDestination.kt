@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.addon.purchase.ui
+package com.hedvig.android.feature.addon.purchase.ui.customize
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,8 +70,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelPlusAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonOption
-import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonState.Failure
-import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonState.Loading
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -118,8 +116,8 @@ private fun CustomizeTravelAddonScreen(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      Failure -> FailureScreen(reload, popBackStack)
-      Loading -> HedvigFullScreenCenterAlignedProgress()
+      CustomizeTravelAddonState.Failure -> FailureScreen(reload, popBackStack)
+      CustomizeTravelAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
       is CustomizeTravelAddonState.Success -> CustomizeTravelAddonScreenContent(
         uiState = state,
         navigateUp = navigateUp,
@@ -501,13 +499,13 @@ private fun SelectTierScreenPreview(
 internal class CustomizeTravelAddonProvider :
   CollectionPreviewParameterProvider<CustomizeTravelAddonState>(
     listOf(
-      Loading,
+      CustomizeTravelAddonState.Loading,
       CustomizeTravelAddonState.Success(
         travelPlusAddon = fakeTravelAddon,
         currentlyChosenOption = fakeTravelAddonOption1,
         currentlyChosenOptionInDialog = fakeTravelAddonOption1,
       ),
-      Failure,
+      CustomizeTravelAddonState.Failure,
     ),
   )
 

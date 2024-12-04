@@ -1,15 +1,14 @@
-package com.hedvig.android.feature.addon.purchase.ui
+package com.hedvig.android.feature.addon.purchase.ui.customize
 
 import androidx.compose.runtime.Composable
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelPlusAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonOption
-import com.hedvig.android.feature.addon.purchase.ui.CustomizeTravelAddonState.Loading
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class CustomizeTravelAddonViewModel() : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeTravelAddonState>(
-  initialState = Loading,
+  initialState = CustomizeTravelAddonState.Loading,
   presenter = CustomizeTravelAddonPresenter(),
 )
 
