@@ -14,8 +14,8 @@ android {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
@@ -57,6 +57,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+
   testImplementation(libs.coroutines.test)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
