@@ -2,29 +2,28 @@ package com.hedvig.android.feature.addon.purchase.data
 
 import arrow.core.NonEmptyList
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import kotlinx.datetime.LocalDate
 
-sealed interface Addon {
-  data class TravelPlusAddon(
-    val addonOptions: NonEmptyList<TravelAddonOption>,
-    val exposureName: String,
+internal sealed interface Addon {
+  data class TravelAddonOffer(
+    val addonOptions: NonEmptyList<TravelAddonQuote>,
+    val title: String,
     val description: String,
-    val additionalInfo: String,
     val activationDate: LocalDate,
   ) : Addon
 }
 
-sealed interface TravelAddonOption {
-  val optionName: String
-  val extraAmount: UiMoney
+internal data class TravelAddonQuote (
+  val quoteId: String,
+  val addonId: String,
+  val displayName: String,
+  val price: UiMoney,
+  val addonVariant: AddonVariant
+)
 
-  data class TravelOption45(
-    override val optionName: String,
-    override val extraAmount: UiMoney,
-  ) : TravelAddonOption
 
-  data class TravelOption60(
-    override val optionName: String,
-    override val extraAmount: UiMoney,
-  ) : TravelAddonOption
-}
+internal data class AddonVariant(
+  val documents: List<InsuranceVariantDocument>,
+  val termsVersion: String
+)

@@ -16,7 +16,10 @@ android {
 }
 
 dependencies {
+  api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
   implementation(libs.arrow.core)
@@ -40,4 +43,5 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.coreUiData)
+  implementation(projects.dataProductVariantPublic)
 }

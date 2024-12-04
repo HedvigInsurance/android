@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonOption
+import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -10,14 +10,14 @@ import kotlinx.datetime.LocalDate
 
 
 @Serializable
-data object AddonPurchaseGraphDestination: Destination
+data class AddonPurchaseGraphDestination(val insuranceIds: List<String>) : Destination
 
 internal sealed interface AddonPurchaseDestination {
   /**
    * The start of the flow, where we initiate the flow and choose insurance to add addon to
    */
   @Serializable
-  data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
+  data object ChooseInsuranceToAddAddonDestination: AddonPurchaseDestination, Destination
 
   @Serializable
   data class CustomizeAddon(val insuranceId: String) : AddonPurchaseDestination, Destination
@@ -46,9 +46,6 @@ internal sealed interface AddonPurchaseDestination {
 
 @Serializable
 internal data class SummaryParameters(
-  val quoteId: String,
-  val addonId: String,
-  val activationDate: LocalDate,
-  val displayName: String,
-  val chosenTravelAddonOption: TravelAddonOption,
+  val quote:  TravelAddonQuote,
+  val activationDate: LocalDate
 )
