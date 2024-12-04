@@ -89,7 +89,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Refresh
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -119,6 +118,7 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
@@ -397,9 +397,11 @@ private fun ChatBubble(
       when (chatMessage) {
         null -> {
           Box(
-            Modifier
-              .clip(shape = HedvigTheme.shapes.cornerLarge)
-              .hedvigPlaceholder(true, highlight = PlaceholderHighlight.shimmer()),
+            Modifier.hedvigPlaceholder(
+              true,
+              shape = HedvigTheme.shapes.cornerLarge,
+              highlight = PlaceholderHighlight.shimmer(),
+            ),
           ) {
             HedvigText(
               text = "HHHHHHHHHH",
@@ -434,7 +436,7 @@ private fun ChatBubble(
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
             CbmChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
             CbmChatMessage.ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
@@ -648,7 +650,11 @@ private fun ChatAsyncImage(
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
         if (loadedImageIntrinsicSize.value == null) {
-          Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.fade())
+          Modifier.hedvigPlaceholder(
+            visible = true,
+            shape = HedvigTheme.shapes.cornerLarge,
+            highlight = PlaceholderHighlight.fade(),
+          )
         } else {
           Modifier
         },
@@ -711,7 +717,11 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.then(
           if (chatMessage == null) {
-            Modifier.hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer())
+            Modifier.hedvigPlaceholder(
+              visible = true,
+              shape = HedvigTheme.shapes.cornerSmall,
+              highlight = PlaceholderHighlight.shimmer(),
+            )
           } else {
             Modifier
           },

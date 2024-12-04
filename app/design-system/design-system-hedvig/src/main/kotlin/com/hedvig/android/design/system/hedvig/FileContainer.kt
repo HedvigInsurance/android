@@ -15,9 +15,9 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.placeholder.PlaceholderHighlight
 
 @Composable
 internal fun FileContainer(
@@ -62,7 +62,11 @@ internal fun FileContainer(
     },
     modifier = modifier
       .height(109.dp)
-      .hedvigPlaceholder(visible = loadedImageIntrinsicSize.value == null, highlight = PlaceholderHighlight.fade())
+      .hedvigPlaceholder(
+        visible = loadedImageIntrinsicSize.value == null,
+        shape = HedvigTheme.shapes.cornerMedium,
+        highlight = PlaceholderHighlight.fade(),
+      )
       .clip(HedvigTheme.shapes.cornerMedium),
   )
 }

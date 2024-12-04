@@ -37,10 +37,10 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 
 @Composable
@@ -120,8 +120,12 @@ private fun CrossSellItem(
       painter = painterResource(id = type.iconRes()),
       contentDescription = null,
       modifier = Modifier
-        .size(48.dp)
-        .hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.fade()),
+          .size(48.dp)
+          .hedvigPlaceholder(
+              visible = isLoading,
+              shape = HedvigTheme.shapes.cornerSmall,
+              highlight = PlaceholderHighlight.fade(),
+          ),
     )
     Spacer(Modifier.width(16.dp))
     Column(
@@ -142,7 +146,11 @@ private fun CrossSellItem(
         text = crossSellSubtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
       )
     }
     Spacer(Modifier.width(16.dp))
@@ -153,7 +161,11 @@ private fun CrossSellItem(
       },
       buttonSize = Small,
       buttonStyle = PrimaryAlt,
-      modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+      modifier = Modifier.hedvigPlaceholder(
+        visible = isLoading,
+        shape = HedvigTheme.shapes.cornerSmall,
+        highlight = PlaceholderHighlight.shimmer(),
+      ),
       enabled = !isLoading,
     )
   }

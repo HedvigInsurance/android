@@ -24,5 +24,4 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
-  implementation(projects.placeholder)
 }
