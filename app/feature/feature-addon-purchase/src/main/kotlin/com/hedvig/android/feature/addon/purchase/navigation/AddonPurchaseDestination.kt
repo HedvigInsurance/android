@@ -42,6 +42,7 @@ internal sealed interface AddonPurchaseDestination {
 
 @Serializable
 internal data class SummaryParameters(
+  val offerDisplayName: String,
   val quote: TravelAddonQuote,
   val activationDate: LocalDate,
 )

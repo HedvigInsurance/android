@@ -87,11 +87,7 @@ internal fun CustomizeTravelAddonDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     popBackStack = popBackStack,
-    navigateToSummary = { quote, date ->
-      val summaryParams = SummaryParameters(
-        quote = quote,
-        activationDate = date,
-      )
+    navigateToSummary = { summaryParams ->
       navigateToSummary(summaryParams)
     },
     reload = {
@@ -114,7 +110,7 @@ private fun CustomizeTravelAddonScreen(
   uiState: CustomizeTravelAddonState,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
-  navigateToSummary: (travelAddonQuote: TravelAddonQuote, activationDate: LocalDate) -> Unit,
+  navigateToSummary: (SummaryParameters) -> Unit,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
@@ -130,7 +126,13 @@ private fun CustomizeTravelAddonScreen(
         uiState = state,
         navigateUp = navigateUp,
         navigateToSummary = { quote ->
-          navigateToSummary(quote, state.travelAddonOffer.activationDate)
+          navigateToSummary(
+            SummaryParameters(
+              state.travelAddonOffer.title,
+              quote,
+              state.travelAddonOffer.activationDate,
+            ),
+          )
         },
         onChooseSelectedOption = onChooseSelectedOption,
         onChooseOptionInDialog = onChooseOptionInDialog,
@@ -491,7 +493,7 @@ private fun SelectTierScreenPreview(
         uiState = uiState,
         {},
         {},
-        { _, _ -> },
+        { _ -> },
         {},
         {},
         {},

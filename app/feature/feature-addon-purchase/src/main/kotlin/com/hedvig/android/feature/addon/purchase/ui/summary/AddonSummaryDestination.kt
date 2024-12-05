@@ -25,6 +25,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
+import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -117,9 +118,13 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         title = stringResource(R.string.ADDON_FLOW_CONFIRMATION_TITLE),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
+        buttonSize = DialogDefaults.ButtonSize.BIG,
         confirmButtonLabel = stringResource(R.string.ADDON_FLOW_CONFIRMATION_BUTTON),
         dismissButtonLabel = stringResource(R.string.general_close_button),
-        text = stringResource(R.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION),
+        text = stringResource(
+          R.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
+          uiState.summaryParameters.activationDate,
+        ),
       )
     }
     SummaryCard(
@@ -189,7 +194,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, uiState.summaryParameters.activationDate),
-    premium = uiState.summaryParameters.quote.price.amount.toString(), // todo: check here
+    premium = uiState.summaryParameters.quote.price.toString(),
     displayItems = uiState.summaryParameters.quote.addonVariant.displayDetails.map {
       QuoteDisplayItem(
         it.first,
@@ -201,8 +206,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       // todo: check here!
     },
     modifier = modifier,
-    displayName = uiState.summaryParameters.quote.displayName,
-    //todo: it should be AddonOffer display name!!!
+    displayName = uiState.summaryParameters.offerDisplayName,
     contractGroup = null,
     insurableLimits = emptyList(),
     documents = uiState.summaryParameters.quote.addonVariant.documents,
@@ -235,6 +239,7 @@ private class ChooseInsuranceForAddonUiStateProvider :
       Loading,
       Content(
         SummaryParameters(
+          offerDisplayName = "TravelPlus",
           activationDate = LocalDate(2025, 1, 1),
           quote = TravelAddonQuote(
             displayName = "45 days",
