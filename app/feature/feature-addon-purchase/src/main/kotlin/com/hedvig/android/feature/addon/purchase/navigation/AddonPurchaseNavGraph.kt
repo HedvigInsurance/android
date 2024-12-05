@@ -13,7 +13,7 @@ import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsura
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonFailureScreen
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonSuccessScreen
-import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryScreen
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryDestination
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -74,10 +74,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
       val viewModel: AddonSummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
-      AddonSummaryScreen(
+      AddonSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        popBackStack = navigator::popBackStack,
         onFailure = {
           navigator.navigateUnsafe(SubmitFailure)
         },

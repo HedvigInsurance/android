@@ -518,7 +518,11 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
   quoteId = "id",
   addonId = "addonId1",
   displayName = "45 days",
-  addonVariant = AddonVariant(termsVersion = "terms", documents = listOf()),
+  addonVariant = AddonVariant(
+    termsVersion = "terms",
+    documents = listOf(),
+    displayDetails = listOf(),
+  ),
   price = UiMoney(
     49.0,
     UiCurrencyCode.SEK,
@@ -528,7 +532,11 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
   displayName = "60 days",
   addonId = "addonId1",
   quoteId = "id",
-  addonVariant = AddonVariant(termsVersion = "terms", documents = listOf()),
+  addonVariant = AddonVariant(
+    termsVersion = "terms",
+    documents = listOf(),
+    displayDetails = listOf(),
+  ),
   price = UiMoney(
     60.0,
     UiCurrencyCode.SEK,

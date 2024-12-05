@@ -28,4 +28,5 @@ internal data class TravelAddonQuote(
 internal data class AddonVariant(
   val documents: List<InsuranceVariantDocument>,
   val termsVersion: String,
+  val displayDetails: List<Pair<String, String>>,
 )
