@@ -18,15 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
+internal fun SubmitAddonFailureScreen(popBackStack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -40,19 +39,21 @@ internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
   ) {
     Spacer(Modifier.weight(1f))
     EmptyState(
-      modifier = Modifier.fillMaxWidth(),
-      text = stringResource(R.string.ADDON_FLOW_SUCCESS_TITLE),
+      text = stringResource(R.string.something_went_wrong),
       description = stringResource(
-        R.string.ADDON_FLOW_SUCCESS_SUBTITLE,
-        activationDate,
+        R.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION,
+        // todo!!! change copy!
       ),
-      iconStyle = SUCCESS,
-      buttonStyle = NoButton,
+      iconStyle = ERROR,
+      buttonStyle = Button(
+        buttonText = stringResource(R.string.GENERAL_RETRY),
+        onButtonClick = dropUnlessResumed { popBackStack() },
+      ),
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(R.string.general_close_button),
-      onClick = dropUnlessResumed { popBackStack() },
+      onClick = popBackStack,
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -62,6 +63,6 @@ internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
 
 @HedvigPreview
 @Composable
-private fun SubmitTierSuccessScreenPreview() {
-  SubmitAddonSuccessScreen(LocalDate(2024, 9, 23), {})
+private fun SubmitTierFailureScreenPreview() {
+  SubmitAddonFailureScreen({})
 }

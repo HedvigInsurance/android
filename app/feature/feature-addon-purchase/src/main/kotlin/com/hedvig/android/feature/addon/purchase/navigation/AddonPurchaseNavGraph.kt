@@ -7,12 +7,19 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestina
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitFailure
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitSuccess
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.Summary
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonDestination
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonDestination
+import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonFailureScreen
+import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonSuccessScreen
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryScreen
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
-
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
-
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -20,6 +27,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
   navgraph<AddonPurchaseGraphDestination>(
     startDestination = ChooseInsuranceToAddAddonDestination::class,
   ) {
+    /**
+     * Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
+     */
     navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
@@ -30,27 +40,64 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         popBackStack = navigator::popBackStack,
-        navigateToCustomizeAddon = {
-          TODO()
-        }
+        navigateToCustomizeAddon = { chosenInsuranceId: String ->
+          navigator.navigateUnsafe(CustomizeAddon(chosenInsuranceId))
+        },
       )
     }
+
+    /**
+     * Choose addon option (e.g. 45/60 days)
+     */
     navdestination<CustomizeAddon> { backStackEntry ->
-      TODO()
-//      navigateToSummary = { summaryParameters: SummaryParameters ->
-//        navigator.navigateUnsafe(Summary(summaryParameters))
-//      },
+      val viewModel: CustomizeTravelAddonViewModel = koinViewModel {
+        parametersOf(this.insuranceId)
+      }
+      CustomizeTravelAddonDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        popBackStack = navigator::popBackStack,
+        navigateToSummary = { summaryParameters: SummaryParameters ->
+          navigator.navigateUnsafe(Summary(summaryParameters))
+        },
+      )
     }
+
+    /**
+     * Summary for the purchase addon flow (not upgrade 45->60)
+     */
     navdestination<Summary> { backStackEntry ->
-      TODO()
+      val viewModel: AddonSummaryViewModel = koinViewModel {
+        parametersOf(this.params)
+      }
+      AddonSummaryScreen(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        popBackStack = navigator::popBackStack,
+        onFailure = {
+          navigator.navigateUnsafe(SubmitFailure)
+        },
+        onSuccess = {
+          navigator.navigateUnsafe(SubmitSuccess(this.params.activationDate)) {
+            typedPopUpTo<ChooseInsuranceToAddAddonDestination> {
+              inclusive = true
+            }
+          }
+        },
+      )
     }
 
     navdestination<SubmitSuccess> { backStackEntry ->
-      TODO()
+      SubmitAddonSuccessScreen(
+        activationDate = this.activationDate,
+        popBackStack = navigator::popBackStack,
+      )
     }
 
     navdestination<SubmitFailure> { backStackEntry ->
-      TODO()
+      SubmitAddonFailureScreen(
+        popBackStack = navigator::popBackStack,
+      )
     }
   }
 }
