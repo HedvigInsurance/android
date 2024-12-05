@@ -2,6 +2,7 @@ package com.hedvig.android.feature.addon.purchase.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -19,14 +20,14 @@ import kotlinx.coroutines.flow.combine
 import octopus.InsurancesForTravelAddonQuery
 
 interface GetInsuranceForTravelAddonUseCase {
-  suspend fun invoke(): Flow<Either<ErrorMessage, List<InsuranceForAddon>>>
+  suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>>
 }
 
 internal class GetInsuranceForTravelAddonUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceForTravelAddonUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, List<InsuranceForAddon>>> {
+  override suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
       apolloClient
@@ -40,7 +41,12 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
           { "Tried to get list of insurances for addon purchase but the addon feature flag id off!" }
           raise(ErrorMessage())
         } else {
-          memberResponse.bind().currentMember.toInsurancesForAddon()
+          val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
+          ensure(result.isNotEmpty()) {
+            { "Tried to get list of insurances for addon purchase but the list is empty!" }
+            ErrorMessage()
+          }
+          result
         }
       }
     }
@@ -54,8 +60,9 @@ data class InsuranceForAddon(
   val contractGroup: ContractGroup,
 )
 
-private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddon(): List<InsuranceForAddon> {
+private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddon(ids: List<String>): List<InsuranceForAddon> {
   return activeContracts
+    .filter { ids.contains(it.id) }
     .map {
       InsuranceForAddon(
         id = it.id,
