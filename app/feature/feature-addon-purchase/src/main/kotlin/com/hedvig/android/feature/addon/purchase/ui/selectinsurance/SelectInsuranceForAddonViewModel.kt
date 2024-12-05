@@ -59,6 +59,7 @@ internal class SelectInsuranceForAddonPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      currentState = SelectInsuranceForAddonState.Loading
       if (ids.isEmpty()) {
         // should be impossible btw
         currentState = SelectInsuranceForAddonState.Failure

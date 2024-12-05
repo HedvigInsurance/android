@@ -3,6 +3,7 @@ package com.hedvig.android.feature.addon.purchase.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
+import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
@@ -20,8 +21,10 @@ val addonPurchaseModule = module {
   }
 
   viewModel<CustomizeTravelAddonViewModel> { params ->
-    CustomizeTravelAddonViewModel()
-    // todo: add params
+    CustomizeTravelAddonViewModel(
+      insuranceId = params.get<String>(),
+      getTravelAddonOfferUseCase = get<GetTravelAddonOfferUseCase>(),
+    )
   }
 
   viewModel<AddonSummaryViewModel> { params ->
@@ -35,5 +38,14 @@ val addonPurchaseModule = module {
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
     )
+  }
+
+  // todo: add use case impl
+  single<GetTravelAddonOfferUseCase> {
+    TODO()
+//    GetTravelAddonOfferUseCaseImpl(
+//      apolloClient = get<ApolloClient>(),
+//      featureManager = get<FeatureManager>(),
+//    )
   }
 }
