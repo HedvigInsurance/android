@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

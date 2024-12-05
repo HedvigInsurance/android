@@ -152,6 +152,7 @@ private sealed interface ScreenContentState {
     val certificateHistoryList: List<TravelCertificate>,
     val eligibleToCreateCertificate: Boolean,
     val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
+    val travelAddonBannerInfo: TravelAddonBannerInfo?
   ) :
     ScreenContentState
 }
