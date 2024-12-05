@@ -33,7 +33,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
     navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
-      if (addonPurchaseGraphDestination.insuranceIds.size==1) {
+      if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
         navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0]))
       } else {
         val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {

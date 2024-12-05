@@ -37,8 +37,9 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
     ) { isEnabled, memberResponse ->
       either {
         if (!isEnabled) {
-          logcat(LogPriority.ERROR)
-          { "Tried to get list of insurances for addon purchase but the addon feature flag id off!" }
+          logcat(LogPriority.ERROR) {
+            "Tried to get list of insurances for addon purchase but the addon feature flag id off!"
+          }
           raise(ErrorMessage())
         } else {
           val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
@@ -60,7 +61,9 @@ data class InsuranceForAddon(
   val contractGroup: ContractGroup,
 )
 
-private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddon(ids: List<String>): List<InsuranceForAddon> {
+private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddon(
+  ids: List<String>,
+): List<InsuranceForAddon> {
   return activeContracts
     .filter { ids.contains(it.id) }
     .map {

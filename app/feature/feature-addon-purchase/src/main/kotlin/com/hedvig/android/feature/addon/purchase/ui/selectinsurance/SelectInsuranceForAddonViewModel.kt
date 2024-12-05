@@ -17,12 +17,12 @@ internal class SelectInsuranceForAddonViewModel(
   ids: List<String>,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
 ) : MoleculeViewModel<SelectInsuranceForAddonEvent, SelectInsuranceForAddonState>(
-  initialState = SelectInsuranceForAddonState.Loading,
-  presenter = SelectInsuranceForAddonPresenter(
-    ids = ids,
-    getInsuranceForTravelAddonUseCase = getInsuranceForTravelAddonUseCase,
-  ),
-)
+    initialState = SelectInsuranceForAddonState.Loading,
+    presenter = SelectInsuranceForAddonPresenter(
+      ids = ids,
+      getInsuranceForTravelAddonUseCase = getInsuranceForTravelAddonUseCase,
+    ),
+  )
 
 internal class SelectInsuranceForAddonPresenter(
   private val ids: List<String>,
@@ -39,22 +39,35 @@ internal class SelectInsuranceForAddonPresenter(
         SelectInsuranceForAddonEvent.Reload -> {
           loadIteration++
         }
+        is SelectInsuranceForAddonEvent.SelectInsurance -> {
+          val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
+          currentState = state.copy(currentlySelected = event.selected)
+        }
+        is SelectInsuranceForAddonEvent.SubmitSelected -> {
+          val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
+          currentState = state.copy(
+            currentlySelected = event.selected,
+            insuranceIdToContinue = event.selected.id,
+          )
+        }
 
-        is SelectInsuranceForAddonEvent.SelectInsurance -> TODO()
-        is SelectInsuranceForAddonEvent.SubmitSelected -> TODO()
+        SelectInsuranceForAddonEvent.ClearNavigation -> {
+          val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
+          currentState = state.copy(insuranceIdToContinue = null)
+        }
       }
     }
 
     LaunchedEffect(loadIteration) {
       if (ids.isEmpty()) {
-        //should be impossible btw
+        // should be impossible btw
         currentState = SelectInsuranceForAddonState.Failure
       } else if (ids.size == 1) {
-        //should be impossible: we reroute earlier in the navGraph
+        // should be impossible: we reroute earlier in the navGraph
         currentState = SelectInsuranceForAddonState.Success(
-          emptyList(),
-          null,
-          ids[0],
+          listOfInsurances = emptyList(),
+          insuranceIdToContinue = ids[0],
+          currentlySelected = null,
         )
       } else {
         getInsuranceForTravelAddonUseCase.invoke(ids).collect { result ->
@@ -91,6 +104,10 @@ internal sealed interface SelectInsuranceForAddonState {
 
 internal sealed interface SelectInsuranceForAddonEvent {
   data object Reload : SelectInsuranceForAddonEvent
+
   data class SelectInsurance(val selected: InsuranceForAddon) : SelectInsuranceForAddonEvent
+
   data class SubmitSelected(val selected: InsuranceForAddon) : SelectInsuranceForAddonEvent
+
+  data object ClearNavigation : SelectInsuranceForAddonEvent
 }
