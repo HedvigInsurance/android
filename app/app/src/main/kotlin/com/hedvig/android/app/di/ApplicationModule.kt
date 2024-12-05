@@ -52,6 +52,7 @@ import com.hedvig.android.database.di.databaseModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
+import com.hedvig.android.feature.addon.purchase.di.addonPurchaseModule
 import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.di.chatModule
@@ -295,6 +296,7 @@ private val coilModule = module {
 val applicationModule = module {
   includes(
     listOf(
+      addonPurchaseModule,
       apolloAuthListenersModule,
       appModule,
       authModule,
