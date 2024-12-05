@@ -33,17 +33,21 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
     navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
-      val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {
-        parametersOf(addonPurchaseGraphDestination.insuranceIds)
+      if (addonPurchaseGraphDestination.insuranceIds.size==1) {
+        navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0]))
+      } else {
+        val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {
+          parametersOf(addonPurchaseGraphDestination.insuranceIds)
+        }
+        SelectInsuranceForAddonDestination(
+          viewModel = viewModel,
+          navigateUp = navigator::navigateUp,
+          popBackStack = navigator::popBackStack,
+          navigateToCustomizeAddon = { chosenInsuranceId: String ->
+            navigator.navigateUnsafe(CustomizeAddon(chosenInsuranceId))
+          },
+        )
       }
-      SelectInsuranceForAddonDestination(
-        viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
-        popBackStack = navigator::popBackStack,
-        navigateToCustomizeAddon = { chosenInsuranceId: String ->
-          navigator.navigateUnsafe(CustomizeAddon(chosenInsuranceId))
-        },
-      )
     }
 
     /**
