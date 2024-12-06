@@ -26,6 +26,7 @@ internal class CertificateHistoryViewModel(
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
+  getTravelAddonBannerInfoUseCase: com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
@@ -33,6 +34,7 @@ internal class CertificateHistoryViewModel(
       downloadPdfUseCase,
       getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
+      getTravelAddonBannerInfoUseCase
     ),
   )
 
@@ -42,6 +44,7 @@ internal class CertificateHistoryPresenter(
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+  private val getTravelAddonBannerInfoUseCase: com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable
@@ -112,15 +115,20 @@ internal class CertificateHistoryPresenter(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
         { getEligibleContractsWithAddressUseCase.invoke() },
-      ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult ->
+        { com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase.invoke() }
+      ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
         val eligibleContracts = eligibleContractsResult.getOrNull()
-
+        val travelAddonBanner = travelAddonBannerResult.getOrNull()
         screenContentState = if (history != null && eligibility != null && eligibleContracts != null) {
           val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
-          ScreenContentState.Success(history, eligibility, hasChooseOption)
+          ScreenContentState.Success(
+            history,
+            eligibility,
+            hasChooseOption,
+            travelAddonBannerInfo = travelAddonBanner)
         } else {
           logcat { "Could not fetch travel certificates history and eligibility" }
           ScreenContentState.Failed
@@ -138,6 +146,7 @@ internal class CertificateHistoryPresenter(
         savedFileUri,
         isLoadingCertificate,
         screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
+        screenContentStateValue.travelAddonBannerInfo
       )
     }
   }
@@ -152,7 +161,7 @@ private sealed interface ScreenContentState {
     val certificateHistoryList: List<TravelCertificate>,
     val eligibleToCreateCertificate: Boolean,
     val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
-    val travelAddonBannerInfo: TravelAddonBannerInfo?
+    val travelAddonBannerInfo: com.hedvig.android.data.addons.data.TravelAddonBannerInfo?
   ) :
     ScreenContentState
 }
@@ -175,6 +184,7 @@ internal sealed interface CertificateHistoryUiState {
     val travelCertificateUri: File?,
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
+    val travelAddonBannerInfo: com.hedvig.android.data.addons.data.TravelAddonBannerInfo?
   ) : CertificateHistoryUiState
 
   data object FailureDownloadingHistory : CertificateHistoryUiState

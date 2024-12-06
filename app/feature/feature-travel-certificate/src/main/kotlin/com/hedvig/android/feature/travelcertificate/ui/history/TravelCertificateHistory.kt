@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
@@ -27,7 +28,6 @@ import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -36,7 +36,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
@@ -94,7 +93,7 @@ private fun TravelCertificateHistoryScreen(
   TravelCertificateInfoBottomSheet(explanationSheetState)
 
   when (uiState) {
-    CertificateHistoryUiState.FailureDownloadingHistory -> {
+    FailureDownloadingHistory -> {
       HedvigScaffold(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
@@ -116,11 +115,11 @@ private fun TravelCertificateHistoryScreen(
       }
     }
 
-    CertificateHistoryUiState.Loading -> {
+    Loading -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 
-    is CertificateHistoryUiState.SuccessDownloadingHistory -> {
+    is SuccessDownloadingHistory -> {
       if (uiState.travelCertificateUri != null) {
         LaunchedEffect(uiState.travelCertificateUri) {
           onShareTravelCertificate(uiState.travelCertificateUri)
@@ -140,6 +139,7 @@ private fun TravelCertificateHistoryScreen(
           showGenerationButton = uiState.showGenerateButton,
           onGoToChooseContract = onGoToChooseContract,
           hasChooseOption = uiState.hasChooseOption,
+          travelAddonBannerInfo = uiState.travelAddonBannerInfo,
         )
       }
     }
@@ -158,6 +158,7 @@ private fun TravelCertificateSuccessScreen(
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
   hasChooseOption: Boolean,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -188,11 +189,9 @@ private fun TravelCertificateSuccessScreen(
       )
     }
     Spacer(modifier = Modifier.weight(1f))
-    HedvigNotificationCard(
-      message = stringResource(R.string.travel_certificate_start_date_info, 45),
-      priority = NotificationPriority.Info,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-    )
+    if (travelAddonBannerInfo != null) {
+      TravelAddonBanner(travelAddonBannerInfo)
+    }
     if (showGenerationButton) {
       Spacer(Modifier.height(8.dp))
       HedvigButton(
@@ -202,11 +201,114 @@ private fun TravelCertificateSuccessScreen(
         },
         buttonStyle = Secondary,
         enabled = true,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
     }
     Spacer(Modifier.height(16.dp))
   }
+}
+
+@Composable
+private fun TravelAddonBanner(
+  travelAddonBannerInfo: TravelAddonBannerInfo,
+  modifier: Modifier = Modifier,
+) {
+  val containerColor = HedvigTheme.colorScheme.fillNegative
+  val borderColor = HedvigTheme.colorScheme.borderPrimary
+
+
+//  Surface(
+//    modifier = modifier,
+//    shape = NotificationDefaults.shape,
+//    color = priority.colors.containerColor,
+//    border = priority.colors.borderColor,
+//  ) {
+//    val buttonDarkTheme = if (priority is NotificationPriority.InfoInline) isSystemInDarkTheme() else false
+//    ProvideTextStyle(textStyle) {
+//      Row(Modifier.padding(padding)) {
+//        if (withIcon) {
+//          LayoutWithoutPlacement(
+//            sizeAdjustingContent = { HedvigText("H") },
+//          ) {
+//            Icon(
+//              imageVector = priority.icon,
+//              contentDescription = null,
+//              tint = priority.colors.iconColor,
+//              modifier = Modifier.size(18.dp),
+//            )
+//          }
+//          Spacer(Modifier.width(6.dp))
+//        }
+//        Column {
+//          ProvideTextStyle(LocalTextStyle.current.copy(color = priority.colors.textColor)) {
+//            content()
+//          }
+//          when (style) {
+//            is Buttons -> {
+//              Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
+//              Row {
+//                HedvigTheme(darkTheme = buttonDarkTheme) {
+//                  HedvigButton(
+//                    enabled = true,
+//                    onClick = style.onLeftButtonClick,
+//                    buttonStyle = priority.buttonStyle,
+//                    buttonSize = Small,
+//                    modifier = Modifier.weight(1f),
+//                  ) {
+//                    HedvigText(style.leftButtonText, style = textStyle)
+//                  }
+//                  Spacer(Modifier.width(4.dp))
+//                  HedvigButton(
+//                    enabled = true,
+//                    onClick = style.onRightButtonClick,
+//                    buttonStyle = priority.buttonStyle,
+//                    buttonSize = Small,
+//                    modifier = Modifier.weight(1f),
+//                  ) {
+//                    HedvigText(style.rightButtonText, style = textStyle)
+//                  }
+//                }
+//              }
+//            }
+//
+//            is Button -> {
+//              Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
+//              HedvigTheme(darkTheme = buttonDarkTheme) {
+//                HedvigButton(
+//                  enabled = true,
+//                  onClick = style.onButtonClick,
+//                  buttonStyle = priority.buttonStyle,
+//                  buttonSize = Small,
+//                  modifier = Modifier.fillMaxWidth(),
+//                ) {
+//                  LayoutWithoutPlacement(
+//                    sizeAdjustingContent = {
+//                      HedvigText(style.buttonText, style = textStyle)
+//                    },
+//                  ) {
+//                    if (!buttonLoading) {
+//                      HedvigText(style.buttonText, style = textStyle)
+//                    } else {
+//                      Box(
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentAlignment = Alignment.Center,
+//                      ) {
+//                        ThreeDotsLoading()
+//                      }
+//                    }
+//                  }
+//                }
+//              }
+//            }
+//
+//            Default -> {}
+//          }
+//        }
+//      }
+//    }
+  //}
 }
 
 @Composable
@@ -310,6 +412,7 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
           null,
           false,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }
@@ -365,6 +468,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
           null,
           false,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }
@@ -420,6 +524,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
           null,
           false,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }
@@ -465,6 +570,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
           null,
           false,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }
@@ -510,6 +616,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
           null,
           false,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }
@@ -603,6 +710,7 @@ private fun PreviewLoadingCertificate() {
           null,
           true,
           false,
+          travelAddonBannerInfo = null,
         ),
       )
     }

@@ -225,6 +225,7 @@ dependencies {
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.dataAddons)
 
   debugImplementation(libs.androidx.compose.uiTooling)
 

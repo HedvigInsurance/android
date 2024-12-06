@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.data
+package com.hedvig.android.data.addons.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -18,22 +18,22 @@ interface GetTravelAddonBannerInfoUseCase {
 internal class GetTravelAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-) {
-  suspend fun invoke(): Either<ErrorMessage, TravelAddonBannerInfo?> {
+): GetTravelAddonBannerInfoUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, TravelAddonBannerInfo?> {
     return either {
       val isAddonOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isAddonOn) {
         logcat(LogPriority.INFO) {
           "Tried to get TravelAddonBannerInfo but addon feature flag is off"
         }
-        raise(ErrorMessage())
+        null
       } else {
         //TODO: actual impl here!!!!
         //TODO:  and null if eligibleInsurancesIds is empty
         TravelAddonBannerInfo(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
-          labelText = "Popular",
+          labels = listOf("Popular"),
           eligibleInsurancesIds = listOf(),
         )
       }
@@ -46,6 +46,6 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
 data class TravelAddonBannerInfo(
   val title: String,
   val description: String,
-  val labelText: String?,
+  val labels: List<String>,
   val eligibleInsurancesIds: List<String>,
 )
