@@ -68,7 +68,11 @@ fun Modifier.hedvigPlaceholder(
 private fun PreviewFade() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      Box(Modifier.size(200.dp).hedvigPlaceholder(true, HedvigTheme.shapes.cornerMedium, highlight = PlaceholderHighlight.fade()))
+      Box(
+        Modifier.size(
+          200.dp,
+        ).hedvigPlaceholder(true, HedvigTheme.shapes.cornerMedium, highlight = PlaceholderHighlight.fade()),
+      )
     }
   }
 }
@@ -78,7 +82,11 @@ private fun PreviewFade() {
 private fun PreviewShimmer() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      Box(Modifier.size(200.dp).hedvigPlaceholder(true, HedvigTheme.shapes.cornerMedium, highlight = PlaceholderHighlight.shimmer()))
+      Box(
+        Modifier.size(
+          200.dp,
+        ).hedvigPlaceholder(true, HedvigTheme.shapes.cornerMedium, highlight = PlaceholderHighlight.shimmer()),
+      )
     }
   }
 }
