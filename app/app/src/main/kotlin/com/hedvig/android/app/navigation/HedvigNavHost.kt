@@ -16,6 +16,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
@@ -262,9 +263,9 @@ internal fun HedvigNavHost(
         with(navigator) {
           backStackEntry.navigate(
             destination =
-              StartTierFlowDestination(
-                insuranceId = contractId,
-              ),
+            StartTierFlowDestination(
+              insuranceId = contractId,
+            ),
           )
         }
       },
@@ -414,6 +415,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appId,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+    },
+    onNavigateToAddonPurchaseFlow = { ids ->
+      navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
     },
   )
   claimFlowGraph(

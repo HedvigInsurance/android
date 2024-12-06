@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHistoryUseCase
@@ -26,7 +28,7 @@ internal class CertificateHistoryViewModel(
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  getTravelAddonBannerInfoUseCase: com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
@@ -44,7 +46,7 @@ internal class CertificateHistoryPresenter(
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
-  private val getTravelAddonBannerInfoUseCase: com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable
@@ -59,6 +61,10 @@ internal class CertificateHistoryPresenter(
 
     var savedFileUri by remember {
       mutableStateOf<File?>(null)
+    }
+
+    var idsToNavigateToAddons by remember {
+      mutableStateOf<List<String>?>(null)
     }
 
     var screenContentState by remember {
@@ -82,6 +88,14 @@ internal class CertificateHistoryPresenter(
 
         CertificateHistoryEvent.HaveProcessedCertificateUri -> {
           savedFileUri = null
+        }
+
+        is CertificateHistoryEvent.LaunchAddonPurchaseFlow -> {
+          idsToNavigateToAddons = event.ids
+        }
+
+        CertificateHistoryEvent.ClearNavigation -> {
+          idsToNavigateToAddons = null
         }
       }
     }
@@ -115,7 +129,7 @@ internal class CertificateHistoryPresenter(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
         { getEligibleContractsWithAddressUseCase.invoke() },
-        { com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase.invoke() }
+        { getTravelAddonBannerInfoUseCase.invoke() }
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
@@ -146,7 +160,8 @@ internal class CertificateHistoryPresenter(
         savedFileUri,
         isLoadingCertificate,
         screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
-        screenContentStateValue.travelAddonBannerInfo
+        screenContentStateValue.travelAddonBannerInfo,
+        idsToNavigateToAddonPurchase = idsToNavigateToAddons
       )
     }
   }
@@ -161,7 +176,7 @@ private sealed interface ScreenContentState {
     val certificateHistoryList: List<TravelCertificate>,
     val eligibleToCreateCertificate: Boolean,
     val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
-    val travelAddonBannerInfo: com.hedvig.android.data.addons.data.TravelAddonBannerInfo?
+    val travelAddonBannerInfo: TravelAddonBannerInfo?,
   ) :
     ScreenContentState
 }
@@ -174,6 +189,10 @@ sealed interface CertificateHistoryEvent {
   data object HaveProcessedCertificateUri : CertificateHistoryEvent
 
   data object DismissDownloadCertificateError : CertificateHistoryEvent
+
+  data class LaunchAddonPurchaseFlow (val ids: List<String>): CertificateHistoryEvent
+
+  data object ClearNavigation: CertificateHistoryEvent
 }
 
 internal sealed interface CertificateHistoryUiState {
@@ -184,7 +203,8 @@ internal sealed interface CertificateHistoryUiState {
     val travelCertificateUri: File?,
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
-    val travelAddonBannerInfo: com.hedvig.android.data.addons.data.TravelAddonBannerInfo?
+    val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val idsToNavigateToAddonPurchase: List<String>? = null
   ) : CertificateHistoryUiState
 
   data object FailureDownloadingHistory : CertificateHistoryUiState

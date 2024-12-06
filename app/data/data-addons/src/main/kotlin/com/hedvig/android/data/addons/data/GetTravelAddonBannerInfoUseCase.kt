@@ -34,7 +34,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
-          eligibleInsurancesIds = listOf(),
+          eligibleInsurancesIds = listOf("id1"),
         )
       }
     }

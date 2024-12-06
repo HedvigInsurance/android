@@ -70,7 +70,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
     /**
      * Summary for the purchase addon flow (not upgrade 45->60)
      */
-    navdestination<Summary> { backStackEntry ->
+    navdestination<Summary> (Summary){ backStackEntry ->
       val viewModel: AddonSummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
@@ -90,7 +90,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
       )
     }
 
-    navdestination<SubmitSuccess> { backStackEntry ->
+    navdestination<SubmitSuccess>(SubmitSuccess) { backStackEntry ->
       SubmitAddonSuccessScreen(
         activationDate = this.activationDate,
         popBackStack = navigator::popBackStack,

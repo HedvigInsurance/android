@@ -42,12 +42,19 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
           }
           raise(ErrorMessage())
         } else {
-          val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
-          ensure(result.isNotEmpty()) {
-            { "Tried to get list of insurances for addon purchase but the list is empty!" }
-            ErrorMessage()
-          }
-          result
+          //TODO: remove mock!
+//          val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
+//          ensure(result.isNotEmpty()) {
+//            { "Tried to get list of insurances for addon purchase but the list is empty!" }
+//            ErrorMessage()
+//          }
+//          result
+          listOf<InsuranceForAddon>(InsuranceForAddon(
+            id = "id",
+            displayName = "Rent Bas",
+            "Tulegatan 1",
+            ContractGroup.RENTAL
+          )) //TODO: remove mock!!
         }
       }
     }
