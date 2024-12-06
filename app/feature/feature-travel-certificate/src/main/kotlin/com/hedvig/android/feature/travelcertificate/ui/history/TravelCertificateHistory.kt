@@ -210,16 +210,16 @@ private fun TravelCertificateSuccessScreen(
       )
     }
     Spacer(modifier = Modifier.weight(1f))
-    if (travelAddonBannerInfo != null) {
-      TravelAddonBanner(
-        travelAddonBannerInfo = travelAddonBannerInfo,
-        launchAddonPurchaseFlow = launchAddonPurchaseFlow,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-    }
+//    if (travelAddonBannerInfo != null) {
+//      TravelAddonBanner(
+//        travelAddonBannerInfo = travelAddonBannerInfo,
+//        launchAddonPurchaseFlow = launchAddonPurchaseFlow,
+//        modifier = Modifier
+//          .fillMaxWidth()
+//          .padding(horizontal = 16.dp),
+//      )
+//      Spacer(Modifier.height(8.dp))
+//    }
     if (showGenerationButton) {
       Spacer(Modifier.height(8.dp))
       HedvigButton(

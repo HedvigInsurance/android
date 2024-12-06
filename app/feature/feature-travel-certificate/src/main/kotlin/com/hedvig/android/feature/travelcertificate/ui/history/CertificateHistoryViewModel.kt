@@ -139,9 +139,9 @@ internal class CertificateHistoryPresenter(
           val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
           ScreenContentState.Success(
-            history,
-            eligibility,
-            hasChooseOption,
+            certificateHistoryList =  history,
+            eligibleToCreateCertificate = eligibility,
+            mustChooseContractBeforeGeneratingTravelCertificate = hasChooseOption,
             travelAddonBannerInfo = travelAddonBanner)
         } else {
           logcat { "Could not fetch travel certificates history and eligibility" }
@@ -154,13 +154,13 @@ internal class CertificateHistoryPresenter(
       ScreenContentState.Failed -> CertificateHistoryUiState.FailureDownloadingHistory
       ScreenContentState.Loading -> CertificateHistoryUiState.Loading
       is ScreenContentState.Success -> CertificateHistoryUiState.SuccessDownloadingHistory(
-        screenContentStateValue.certificateHistoryList,
-        showErrorDialog,
-        screenContentStateValue.eligibleToCreateCertificate,
-        savedFileUri,
-        isLoadingCertificate,
-        screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
-        screenContentStateValue.travelAddonBannerInfo,
+        certificateHistoryList = screenContentStateValue.certificateHistoryList,
+        showDownloadCertificateError = showErrorDialog,
+        showGenerateButton = screenContentStateValue.eligibleToCreateCertificate,
+        travelCertificateUri = savedFileUri,
+        isLoadingCertificate = isLoadingCertificate,
+        hasChooseOption = screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
+        travelAddonBannerInfo = screenContentStateValue.travelAddonBannerInfo,
         idsToNavigateToAddonPurchase = idsToNavigateToAddons
       )
     }
