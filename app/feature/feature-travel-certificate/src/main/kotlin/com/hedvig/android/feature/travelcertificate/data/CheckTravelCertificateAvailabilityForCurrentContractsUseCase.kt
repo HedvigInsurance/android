@@ -5,8 +5,6 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.contract.supportsTravelCertificate
-import com.hedvig.android.data.contract.toContractType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.CurrentContractsQuery
@@ -32,8 +30,7 @@ internal class CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl(
         }
         .bind()
       val hasContractWhichSupportsTravelCertificates: Boolean = contracts
-        .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
-        .any { it.supportsTravelCertificate() }
+        .any { it.supportsTravelCertificate }
 
       hasContractWhichSupportsTravelCertificates
     }

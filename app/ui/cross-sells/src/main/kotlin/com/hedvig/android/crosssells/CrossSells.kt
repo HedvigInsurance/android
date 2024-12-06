@@ -120,12 +120,12 @@ private fun CrossSellItem(
       painter = painterResource(id = type.iconRes()),
       contentDescription = null,
       modifier = Modifier
-          .size(48.dp)
-          .hedvigPlaceholder(
-              visible = isLoading,
-              shape = HedvigTheme.shapes.cornerSmall,
-              highlight = PlaceholderHighlight.fade(),
-          ),
+        .size(48.dp)
+        .hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.fade(),
+        ),
     )
     Spacer(Modifier.width(16.dp))
     Column(
