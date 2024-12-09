@@ -40,7 +40,11 @@ sealed interface ApolloOperationError {
   }
 
   sealed interface OperationError : ApolloOperationError {
+    val containsUnauthenticatedError: Boolean
+
     object Unathenticated : OperationError {
+      override val containsUnauthenticatedError: Boolean = true
+
       override val throwable: Throwable? = null
 
       override fun toString(): String {
@@ -48,7 +52,10 @@ sealed interface ApolloOperationError {
       }
     }
 
-    data class Other(private val message: String) : OperationError {
+    data class Other(
+      private val message: String,
+      override val containsUnauthenticatedError: Boolean = false,
+    ) : OperationError {
       override val throwable: Throwable? = null
 
       override fun toString(): String {
@@ -179,9 +186,14 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
 
 private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.mergeApolloErrors(): Ior<ApolloOperationError, D> {
   return mapLeft { errors ->
-    ApolloOperationError.OperationError.Other(
-      errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
-    )
+    if (errors.size == 1 && errors.head is ApolloOperationError.OperationError.Unathenticated) {
+      errors.head
+    } else {
+      ApolloOperationError.OperationError.Other(
+        message = errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
+        containsUnauthenticatedError = errors.any { it is ApolloOperationError.OperationError.Unathenticated },
+      )
+    }
   }
 }
 

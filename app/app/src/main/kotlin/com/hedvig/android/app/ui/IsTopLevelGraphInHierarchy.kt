@@ -29,3 +29,12 @@ internal val TopLevelGraph.destination: Destination
     TopLevelGraph.Payments -> PaymentsDestination.Graph
     TopLevelGraph.Profile -> ProfileDestination.Graph
   }
+
+internal val TopLevelGraph.startDestination: Destination
+  get() = when (this) {
+    TopLevelGraph.Home -> HomeDestination.Home
+    TopLevelGraph.Insurances -> InsurancesDestination.Insurances
+    TopLevelGraph.Forever -> ForeverDestination.Forever
+    TopLevelGraph.Payments -> PaymentsDestination.Payments
+    TopLevelGraph.Profile -> ProfileDestination.Profile
+  }

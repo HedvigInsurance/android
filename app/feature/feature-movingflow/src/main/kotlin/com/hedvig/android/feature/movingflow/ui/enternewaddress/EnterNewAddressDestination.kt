@@ -274,8 +274,14 @@ private fun EnterNewAddressScreen(
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, 30), NotificationPriority.Info)
-      Spacer(Modifier.height(16.dp))
+      if (uiState.oldAddressCoverageDurationDays != null) {
+        HedvigNotificationCard(
+          stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldAddressCoverageDurationDays),
+          NotificationPriority.Info,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
       HedvigButton(
         onClick = submitInput,
         text = stringResource(R.string.general_continue_button),
@@ -408,6 +414,7 @@ fun PreviewEnterNewAddressScreen() {
       isLoadingNextStep = false,
       navigateToChoseCoverage = false,
       navigateToAddHouseInformation = false,
+      oldAddressCoverageDurationDays = 30,
     ),
     submitInput = {},
     dismissSubmissionError = {},

@@ -25,10 +25,12 @@ class HasAnyActiveConversationUseCase(
       .map { result ->
         either {
           val data = result
-            .onLeft { apolloOperationError ->
-              if (apolloOperationError is ApolloOperationError.OperationError.Unathenticated) return@onLeft
-              logcat(LogPriority.ERROR, apolloOperationError.throwable) {
-                "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
+            .onLeft { error ->
+              if ((error as? ApolloOperationError.OperationError)?.containsUnauthenticatedError == true) {
+                return@onLeft
+              }
+              logcat(LogPriority.ERROR, error.throwable) {
+                "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $error"
               }
             }
             .bind()

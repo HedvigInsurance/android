@@ -83,6 +83,7 @@ internal data class SelectHousingTypeParameters(
   val suggestedNumberInsured: String,
   val moveIntentId: String,
   val housingType: HousingType?,
+  val oldAddressCoverageDurationDays: Int?,
 )
 
 @Serializable

@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -62,13 +63,13 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -356,6 +357,7 @@ private fun ProfileRow(
         .size(24.dp)
         .hedvigPlaceholder(
           isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
           highlight = PlaceholderHighlight.shimmer(),
         ),
     )
@@ -365,12 +367,14 @@ private fun ProfileRow(
       modifier = Modifier
         .hedvigPlaceholder(
           isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
           highlight = PlaceholderHighlight.shimmer(),
         ),
     )
   }
 }
 
+@HedvigPreview
 @Composable
 private fun PreviewProfileItemRows() {
   HedvigTheme {

@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,9 +16,11 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation.NavDestination
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NavigationBar
 import com.hedvig.android.design.system.hedvig.NavigationRail
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.navigation.core.TopLevelGraph
 
 @Composable
@@ -79,7 +78,7 @@ private fun PreviewNavigationSuite(
   ) showBottomBar: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationSuite(
         navigationSuiteType = if (showBottomBar) {
           NavigationSuiteType.NavigationBar
@@ -91,7 +90,7 @@ private fun PreviewNavigationSuite(
         currentDestination = null,
         onNavigateToTopLevelGraph = {},
       ) {
-        Text("Content")
+        HedvigText("Content")
       }
     }
   }

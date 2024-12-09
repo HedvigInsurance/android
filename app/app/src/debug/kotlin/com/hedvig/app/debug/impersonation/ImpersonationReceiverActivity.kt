@@ -5,8 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
@@ -64,7 +63,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
 
       HedvigTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-          Text(
+          HedvigText(
             text = when (val viewState = state) {
               is ImpersonationReceiverViewModel.ViewState.Error -> "Error: ${viewState.message}"
               ImpersonationReceiverViewModel.ViewState.Loading -> "Loading..."
@@ -72,7 +71,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
             },
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
+            style = HedvigTheme.typography.headlineMedium,
           )
         }
       }

@@ -16,4 +16,5 @@ internal data class MoveIntent(
   val maxApartmentSquareMeters: Int?,
   val maxHouseSquareMeters: Int?,
   val extraBuildingTypes: List<ExtraBuildingType>,
+  val oldAddressCoverageDurationDays: Int?,
 )

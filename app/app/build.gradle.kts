@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.9.2"
+    versionName = "12.9.4"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -109,7 +109,6 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
@@ -164,7 +163,6 @@ dependencies {
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.crossSells)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)

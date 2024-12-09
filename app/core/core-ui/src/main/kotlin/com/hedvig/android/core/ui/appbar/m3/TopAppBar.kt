@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -18,29 +17,6 @@ import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-
-@Composable
-fun TopAppBarWithBack(
-  title: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-  ),
-  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-  TopAppBar(
-    title = title,
-    onClick = onClick,
-    actionType = TopAppBarActionType.BACK,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-    modifier = modifier,
-    windowInsets = windowInsets,
-  )
-}
 
 enum class TopAppBarActionType {
   BACK,

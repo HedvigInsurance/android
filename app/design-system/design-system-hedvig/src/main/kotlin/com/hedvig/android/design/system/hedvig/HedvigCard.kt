@@ -37,9 +37,9 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.placeholder.PlaceholderHighlight
 
 @Composable
 fun HedvigCard(
@@ -88,7 +88,11 @@ fun InsuranceCard(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
           .matchParentSize()
-          .hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+          .hedvigPlaceholder(
+            visible = true,
+            shape = HedvigTheme.shapes.cornerXLarge,
+            highlight = PlaceholderHighlight.shimmer(),
+          ),
         contentDescription = null,
       )
     } else {
@@ -129,14 +133,22 @@ fun InsuranceCard(
       HedvigText(
         topText,
         color = HedvigTheme.colorScheme.textWhite,
-        modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
       )
       Spacer(Modifier.height(4.dp))
       HedvigTheme(darkTheme = true) {
         HedvigText(
           text = bottomText,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          modifier = Modifier.hedvigPlaceholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+          modifier = Modifier.hedvigPlaceholder(
+            visible = isLoading,
+            shape = HedvigTheme.shapes.cornerSmall,
+            highlight = PlaceholderHighlight.shimmer(),
+          ),
         )
       }
     }

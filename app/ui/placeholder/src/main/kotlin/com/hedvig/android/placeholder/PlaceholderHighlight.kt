@@ -52,7 +52,7 @@ interface PlaceholderHighlight {
  * @param highlightColor the color of the highlight which is faded in/out.
  * @param animationSpec the [AnimationSpec] to configure the animation.
  */
-internal fun PlaceholderHighlight.Companion.fade(
+fun PlaceholderHighlight.Companion.fade(
   highlightColor: Color,
   animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.fadeAnimationSpec,
 ): PlaceholderHighlight = Fade(
@@ -74,7 +74,7 @@ internal fun PlaceholderHighlight.Companion.fade(
  * @param progressForMaxAlpha The progress where the shimmer should be at it's peak opacity.
  * Defaults to 0.6f.
  */
-internal fun PlaceholderHighlight.Companion.shimmer(
+fun PlaceholderHighlight.Companion.shimmer(
   highlightColor: Color,
   animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec,
   @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,

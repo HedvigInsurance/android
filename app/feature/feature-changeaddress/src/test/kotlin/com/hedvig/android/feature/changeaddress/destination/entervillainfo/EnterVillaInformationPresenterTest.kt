@@ -23,7 +23,7 @@ class EnterVillaInformationPresenterTest {
   fun `when the values are changed by the user it shows in the uiState`() = runTest {
     val presenter = EnterVillaInformationPresenter(fakeMovingParametersForVilla)
     presenter.test(
-      EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA)),
+      EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA), oldAddressCoverageDurationDays = null),
     ) {
       assertk.assertThat(awaitItem())
         .isInstanceOf<EnterVillaInformationUiState>()
@@ -90,6 +90,7 @@ class EnterVillaInformationPresenterTest {
             hasWaterConnected = false,
           ),
         ),
+        oldAddressCoverageDurationDays = null,
       ),
     ) {
       skipItems(1)
@@ -118,7 +119,7 @@ class EnterVillaInformationPresenterTest {
     runTest {
       val presenter = EnterVillaInformationPresenter(fakeMovingParametersForVilla)
       presenter.test(
-        EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA)),
+        EnterVillaInformationUiState(extraBuildingTypes = listOf(GARAGE, SAUNA), oldAddressCoverageDurationDays = null),
       ) {
         sendEvent(EnterVillaInformationEvent.ChangeIsSublet(true))
         sendEvent(EnterVillaInformationEvent.ChangeAncillaryArea("15"))
