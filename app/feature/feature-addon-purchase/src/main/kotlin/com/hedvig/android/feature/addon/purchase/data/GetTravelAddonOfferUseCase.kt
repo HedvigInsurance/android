@@ -32,9 +32,13 @@ internal class GetTravelAddonOfferUseCaseImpl(
             displayName = "45 days",
             addonVariant = AddonVariant(
               termsVersion = "terms",
-              documents = listOf(InsuranceVariantDocument("Terms and conditions",
-                "www.url.com",
-                InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS)),
+              documents = listOf(
+                InsuranceVariantDocument(
+                  "Terms and conditions",
+                  "www.url.com",
+                  InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+                ),
+              ),
               displayDetails = listOf(),
             ),
             price = UiMoney(

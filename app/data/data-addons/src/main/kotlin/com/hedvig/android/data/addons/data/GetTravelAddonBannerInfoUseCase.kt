@@ -12,17 +12,17 @@ import kotlin.String
 import kotlinx.coroutines.flow.first
 
 interface GetTravelAddonBannerInfoUseCase {
-  suspend fun invoke(): Either<ErrorMessage, TravelAddonBannerInfo?>
+  suspend fun invoke(source: TravelAddonBannerSource): Either<ErrorMessage, TravelAddonBannerInfo?>
 }
 
 internal class GetTravelAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetTravelAddonBannerInfoUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, TravelAddonBannerInfo?> {
+  override suspend fun invoke(source: TravelAddonBannerSource): Either<ErrorMessage, TravelAddonBannerInfo?> {
     return either {
-      val isAddonOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
-      if (!isAddonOn) {
+      val isAddonFlagOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
+      if (!isAddonFlagOn) {
         logcat(LogPriority.INFO) {
           "Tried to get TravelAddonBannerInfo but addon feature flag is off"
         }
@@ -49,3 +49,8 @@ data class TravelAddonBannerInfo(
   val labels: List<String>,
   val eligibleInsurancesIds: List<String>,
 )
+
+enum class TravelAddonBannerSource {
+  TRAVEL_CERTIFICATES,
+  INSURANCES_TAB,
+}

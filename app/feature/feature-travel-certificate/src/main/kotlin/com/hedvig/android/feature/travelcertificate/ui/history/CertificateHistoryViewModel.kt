@@ -11,6 +11,7 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHistoryUseCase
@@ -129,7 +130,7 @@ internal class CertificateHistoryPresenter(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
         { getEligibleContractsWithAddressUseCase.invoke() },
-        { getTravelAddonBannerInfoUseCase.invoke() },
+        { getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES) },
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()

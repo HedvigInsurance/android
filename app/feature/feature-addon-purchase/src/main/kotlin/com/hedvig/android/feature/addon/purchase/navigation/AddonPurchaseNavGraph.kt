@@ -95,7 +95,6 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
       )
     }
 
-
     navdestination<SubmitFailure> { backStackEntry ->
       SubmitAddonFailureScreen(
         popBackStack = navigator::popBackStack,

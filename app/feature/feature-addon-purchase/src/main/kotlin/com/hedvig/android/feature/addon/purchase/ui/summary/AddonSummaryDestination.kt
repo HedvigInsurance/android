@@ -39,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -118,7 +117,9 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
   ) {
     val locale = getLocale()
     val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
-      HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+      HedvigDateTimeFormatterDefaults.dateMonthAndYear(
+        locale,
+      ).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
     }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
@@ -202,7 +203,9 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   val locale = getLocale()
   val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
+      locale,
+    ).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
   }
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
