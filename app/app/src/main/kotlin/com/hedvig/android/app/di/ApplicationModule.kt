@@ -356,7 +356,7 @@ val applicationModule = module {
       terminationDataModule,
       trackingDatadogModule,
       travelCertificateModule,
-      dataAddonsModule
+      dataAddonsModule,
     ),
   )
 }

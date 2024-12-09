@@ -18,7 +18,7 @@ interface GetTravelAddonBannerInfoUseCase {
 internal class GetTravelAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-): GetTravelAddonBannerInfoUseCase {
+) : GetTravelAddonBannerInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, TravelAddonBannerInfo?> {
     return either {
       val isAddonOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
@@ -28,8 +28,8 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
         }
         null
       } else {
-        //TODO: actual impl here!!!!
-        //TODO:  and null if eligibleInsurancesIds is empty
+        // TODO: actual impl here!!!!
+        // TODO:  and null if eligibleInsurancesIds is empty
         TravelAddonBannerInfo(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
@@ -41,7 +41,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
   }
 }
 
-//todo: add IMPL
+// todo: add IMPL
 
 data class TravelAddonBannerInfo(
   val title: String,

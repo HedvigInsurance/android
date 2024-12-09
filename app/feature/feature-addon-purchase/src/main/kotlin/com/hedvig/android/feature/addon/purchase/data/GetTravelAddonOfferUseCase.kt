@@ -18,47 +18,46 @@ internal interface GetTravelAddonOfferUseCase {
 internal class GetTravelAddonOfferUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-): GetTravelAddonOfferUseCase {
+) : GetTravelAddonOfferUseCase {
   override suspend fun invoke(id: String): Either<ErrorMessage, TravelAddonOffer> {
+    // todo: REMOVE MOCK!
 
-    //todo: REMOVE MOCK!
-
-    return either {TravelAddonOffer(
-      addonOptions = nonEmptyListOf(
-        TravelAddonQuote(
-          quoteId = "id",
-          addonId = "addonId1",
-          displayName = "45 days",
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            displayDetails = listOf(),
+    return either {
+      TravelAddonOffer(
+        addonOptions = nonEmptyListOf(
+          TravelAddonQuote(
+            quoteId = "id",
+            addonId = "addonId1",
+            displayName = "45 days",
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              displayDetails = listOf(),
+            ),
+            price = UiMoney(
+              49.0,
+              UiCurrencyCode.SEK,
+            ),
           ),
-          price = UiMoney(
-            49.0,
-            UiCurrencyCode.SEK,
+          TravelAddonQuote(
+            displayName = "60 days",
+            addonId = "addonId1",
+            quoteId = "id",
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              displayDetails = listOf(),
+            ),
+            price = UiMoney(
+              60.0,
+              UiCurrencyCode.SEK,
+            ),
           ),
         ),
-        TravelAddonQuote(
-          displayName = "60 days",
-          addonId = "addonId1",
-          quoteId = "id",
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            displayDetails = listOf(),
-          ),
-          price = UiMoney(
-            60.0,
-            UiCurrencyCode.SEK,
-          ),
-        )
-      ),
-      title = "Travel plus",
-      description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
-      activationDate = LocalDate(2025,1,1)
-
-    )}
+        title = "Travel plus",
+        description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
+        activationDate = LocalDate(2025, 1, 1),
+      )
+    }
   }
-
 }

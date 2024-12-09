@@ -2,7 +2,6 @@ package com.hedvig.android.feature.addon.purchase.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -42,19 +41,21 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
           }
           raise(ErrorMessage())
         } else {
-          //TODO: remove mock!
+          // TODO: remove mock!
 //          val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
 //          ensure(result.isNotEmpty()) {
 //            { "Tried to get list of insurances for addon purchase but the list is empty!" }
 //            ErrorMessage()
 //          }
 //          result
-          listOf<InsuranceForAddon>(InsuranceForAddon(
-            id = "id",
-            displayName = "Rent Bas",
-            "Tulegatan 1",
-            ContractGroup.RENTAL
-          )) //TODO: remove mock!!
+          listOf<InsuranceForAddon>(
+            InsuranceForAddon(
+              id = "id",
+              displayName = "Rent Bas",
+              "Tulegatan 1",
+              ContractGroup.RENTAL,
+            ),
+          ) // TODO: remove mock!!
         }
       }
     }

@@ -33,7 +33,7 @@ val travelCertificateModule = module {
       get<DownloadPdfUseCase>(),
       get<CheckTravelCertificateAvailabilityForCurrentContractsUseCase>(),
       get<GetEligibleContractsWithAddressUseCase>(),
-      get<GetTravelAddonBannerInfoUseCase>()
+      get<GetTravelAddonBannerInfoUseCase>(),
     )
   }
   viewModel<ChooseContractForCertificateViewModel> {
@@ -79,4 +79,4 @@ val travelCertificateModule = module {
   single<GetCoInsuredForContractUseCase> {
     GetCoInsuredForContractUseCaseImpl(get<ApolloClient>())
   }
- }
+}

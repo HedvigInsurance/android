@@ -34,10 +34,12 @@ fun FeatureAddonBanner(
     color = containerColor,
     border = borderColor,
   ) {
-    Column(Modifier.padding(
-      vertical = 16.dp,
-      horizontal = 12.dp,
-    )) {
+    Column(
+      Modifier.padding(
+        vertical = 16.dp,
+        horizontal = 12.dp,
+      ),
+    ) {
       Row {
         HedvigText(title)
         Spacer(Modifier.width(8.dp))
@@ -48,8 +50,9 @@ fun FeatureAddonBanner(
         text = description,
         color = HedvigTheme.colorScheme.textSecondary,
         style = HedvigTheme.typography.label.copy(
-          lineBreak = LineBreak.Heading
-        ))
+          lineBreak = LineBreak.Heading,
+        ),
+      )
       Spacer(Modifier.height(8.dp))
       HedvigButton(
         text = buttonText,
@@ -65,10 +68,7 @@ fun FeatureAddonBanner(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LabelRow(
-  labels: List<String>,
-  modifier: Modifier = Modifier,
-) {
+private fun LabelRow(labels: List<String>, modifier: Modifier = Modifier) {
   FlowRow(
     horizontalArrangement = Arrangement.End,
     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -86,7 +86,6 @@ private fun LabelRow(
     }
   }
 }
-
 
 @HedvigPreview
 @Composable

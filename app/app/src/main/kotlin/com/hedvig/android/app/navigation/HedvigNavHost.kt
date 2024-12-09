@@ -263,9 +263,9 @@ internal fun HedvigNavHost(
         with(navigator) {
           backStackEntry.navigate(
             destination =
-            StartTierFlowDestination(
-              insuranceId = contractId,
-            ),
+              StartTierFlowDestination(
+                insuranceId = contractId,
+              ),
           )
         }
       },

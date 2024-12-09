@@ -14,15 +14,11 @@ internal interface SubmitAddonPurchaseUseCase {
 internal class SubmitAddonPurchaseUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-): SubmitAddonPurchaseUseCase {
-  override suspend fun invoke(
-    quoteId: String,
-    addonId: String,
-  ): Either<ErrorMessage, LocalDate> {
-    //TODO: REMOVE MOCK!
+) : SubmitAddonPurchaseUseCase {
+  override suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, LocalDate> {
+    // TODO: REMOVE MOCK!
     return either {
-      LocalDate(2025,1,1)
+      LocalDate(2025, 1, 1)
     }
   }
-
 }

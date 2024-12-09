@@ -7,10 +7,10 @@ import com.hedvig.android.featureflags.FeatureManager
 import org.koin.dsl.module
 
 val dataAddonsModule = module {
-  single<GetTravelAddonBannerInfoUseCase>{
+  single<GetTravelAddonBannerInfoUseCase> {
     GetTravelAddonBannerInfoUseCaseImpl(
       get<ApolloClient>(),
-      get<FeatureManager>()
+      get<FeatureManager>(),
     )
   }
 }

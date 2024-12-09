@@ -28,7 +28,7 @@ internal class CertificateHistoryViewModel(
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
+  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
@@ -36,7 +36,7 @@ internal class CertificateHistoryViewModel(
       downloadPdfUseCase,
       getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
-      getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase,
     ),
   )
 
@@ -46,7 +46,7 @@ internal class CertificateHistoryPresenter(
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
-  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
+  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable
@@ -129,7 +129,7 @@ internal class CertificateHistoryPresenter(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
         { getEligibleContractsWithAddressUseCase.invoke() },
-        { getTravelAddonBannerInfoUseCase.invoke() }
+        { getTravelAddonBannerInfoUseCase.invoke() },
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
@@ -139,10 +139,11 @@ internal class CertificateHistoryPresenter(
           val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
           ScreenContentState.Success(
-            certificateHistoryList =  history,
+            certificateHistoryList = history,
             eligibleToCreateCertificate = eligibility,
             mustChooseContractBeforeGeneratingTravelCertificate = hasChooseOption,
-            travelAddonBannerInfo = travelAddonBanner)
+            travelAddonBannerInfo = travelAddonBanner,
+          )
         } else {
           logcat { "Could not fetch travel certificates history and eligibility" }
           ScreenContentState.Failed
@@ -161,7 +162,7 @@ internal class CertificateHistoryPresenter(
         isLoadingCertificate = isLoadingCertificate,
         hasChooseOption = screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
         travelAddonBannerInfo = screenContentStateValue.travelAddonBannerInfo,
-        idsToNavigateToAddonPurchase = idsToNavigateToAddons
+        idsToNavigateToAddonPurchase = idsToNavigateToAddons,
       )
     }
   }
@@ -190,9 +191,9 @@ sealed interface CertificateHistoryEvent {
 
   data object DismissDownloadCertificateError : CertificateHistoryEvent
 
-  data class LaunchAddonPurchaseFlow (val ids: List<String>): CertificateHistoryEvent
+  data class LaunchAddonPurchaseFlow(val ids: List<String>) : CertificateHistoryEvent
 
-  data object ClearNavigation: CertificateHistoryEvent
+  data object ClearNavigation : CertificateHistoryEvent
 }
 
 internal sealed interface CertificateHistoryUiState {
@@ -204,7 +205,7 @@ internal sealed interface CertificateHistoryUiState {
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
     val travelAddonBannerInfo: TravelAddonBannerInfo?,
-    val idsToNavigateToAddonPurchase: List<String>? = null
+    val idsToNavigateToAddonPurchase: List<String>? = null,
   ) : CertificateHistoryUiState
 
   data object FailureDownloadingHistory : CertificateHistoryUiState
