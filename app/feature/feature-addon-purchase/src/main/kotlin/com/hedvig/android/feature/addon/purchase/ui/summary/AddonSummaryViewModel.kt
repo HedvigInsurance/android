@@ -20,7 +20,7 @@ internal class AddonSummaryViewModel(
   summaryParameters: SummaryParameters,
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
-    initialState = Loading,
+    initialState = Content(summaryParameters),
     presenter = AddonSummaryPresenter(summaryParameters, submitAddonPurchaseUseCase),
   )
 
@@ -43,13 +43,9 @@ internal class AddonSummaryPresenter(
       }
     }
 
-    LaunchedEffect(Unit) {
-      currentState = initialState
-    }
-
     LaunchedEffect(submitIteration) {
-      currentState = Loading
       if (submitIteration > 0) {
+        currentState = Loading
         submitAddonPurchaseUseCase.invoke(
           quoteId = summaryParameters.quote.quoteId,
           addonId = summaryParameters.quote.addonId,

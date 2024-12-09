@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
@@ -82,7 +83,7 @@ fun HedvigButton(
           )
         }
       } else {
-        HedvigText(text = text)
+        HedvigText(text = text, textAlign = TextAlign.Center)
       }
     }
   }

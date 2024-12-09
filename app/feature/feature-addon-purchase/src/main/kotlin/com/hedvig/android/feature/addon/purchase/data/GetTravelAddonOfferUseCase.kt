@@ -7,6 +7,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.featureflags.FeatureManager
 import kotlinx.datetime.LocalDate
@@ -31,7 +32,9 @@ internal class GetTravelAddonOfferUseCaseImpl(
             displayName = "45 days",
             addonVariant = AddonVariant(
               termsVersion = "terms",
-              documents = listOf(),
+              documents = listOf(InsuranceVariantDocument("Terms and conditions",
+                "www.url.com",
+                InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS)),
               displayDetails = listOf(),
             ),
             price = UiMoney(

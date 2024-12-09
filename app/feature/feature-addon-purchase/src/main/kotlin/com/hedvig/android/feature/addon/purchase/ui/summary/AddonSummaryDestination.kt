@@ -37,6 +37,9 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -46,6 +49,7 @@ import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun AddonSummaryDestination(
@@ -112,6 +116,10 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
     navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE), // todo: change copy here mb?
   ) {
+    val locale = getLocale()
+    val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
+      HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+    }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
       HedvigAlertDialog(
@@ -123,7 +131,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         dismissButtonLabel = stringResource(R.string.general_close_button),
         text = stringResource(
           R.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
-          uiState.summaryParameters.activationDate,
+          formattedDate,
         ),
       )
     }
@@ -192,8 +200,12 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 
 @Composable
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
+  val locale = getLocale()
+  val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+  }
   QuoteCard(
-    subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, uiState.summaryParameters.activationDate),
+    subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = uiState.summaryParameters.quote.price.toString(),
     displayItems = uiState.summaryParameters.quote.addonVariant.displayDetails.map {
       QuoteDisplayItem(
