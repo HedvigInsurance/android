@@ -3,7 +3,6 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -334,7 +333,7 @@ private fun ToggleTop(backgroundColor: Color, modifier: Modifier = Modifier) {
       .clip(CircleShape),
     color = toggleColors.toggleTopColor,
     shape = CircleShape,
-    border = BorderStroke(1.dp, backgroundColor),
+    border = backgroundColor,
   ) {}
 }
 

@@ -17,17 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -36,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
@@ -51,6 +53,7 @@ import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistor
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.SuccessDownloadingHistory
 import hedvig.resources.R
 import java.io.File
+import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -59,6 +62,7 @@ internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
   onStartGenerateTravelCertificateFlow: () -> Unit,
   onNavigateToChooseContract: () -> Unit,
+  onNavigateToAddonPurchaseFlow: (ids: List<String>) -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (File) -> Unit,
 ) {
@@ -76,6 +80,13 @@ internal fun TravelCertificateHistoryDestination(
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
+    launchAddonPurchaseFlow = { ids ->
+      viewModel.emit(CertificateHistoryEvent.LaunchAddonPurchaseFlow(ids))
+    },
+    onNavigateToAddonPurchaseFlow = { ids ->
+      viewModel.emit(CertificateHistoryEvent.ClearNavigation)
+      onNavigateToAddonPurchaseFlow(ids)
+    },
   )
 }
 
@@ -84,6 +95,8 @@ private fun TravelCertificateHistoryScreen(
   reload: () -> Unit,
   onCertificateClick: (String) -> Unit,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (ids: List<String>) -> Unit,
   onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onDismissDownloadCertificateError: () -> Unit,
@@ -94,7 +107,7 @@ private fun TravelCertificateHistoryScreen(
   TravelCertificateInfoBottomSheet(explanationSheetState)
 
   when (uiState) {
-    CertificateHistoryUiState.FailureDownloadingHistory -> {
+    FailureDownloadingHistory -> {
       HedvigScaffold(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
@@ -116,14 +129,19 @@ private fun TravelCertificateHistoryScreen(
       }
     }
 
-    CertificateHistoryUiState.Loading -> {
+    Loading -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 
-    is CertificateHistoryUiState.SuccessDownloadingHistory -> {
+    is SuccessDownloadingHistory -> {
       if (uiState.travelCertificateUri != null) {
         LaunchedEffect(uiState.travelCertificateUri) {
           onShareTravelCertificate(uiState.travelCertificateUri)
+        }
+      }
+      if (uiState.idsToNavigateToAddonPurchase != null) {
+        LaunchedEffect(uiState.idsToNavigateToAddonPurchase) {
+          onNavigateToAddonPurchaseFlow(uiState.idsToNavigateToAddonPurchase)
         }
       }
       if (uiState.isLoadingCertificate) {
@@ -140,6 +158,8 @@ private fun TravelCertificateHistoryScreen(
           showGenerationButton = uiState.showGenerateButton,
           onGoToChooseContract = onGoToChooseContract,
           hasChooseOption = uiState.hasChooseOption,
+          travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+          launchAddonPurchaseFlow = launchAddonPurchaseFlow,
         )
       }
     }
@@ -158,6 +178,8 @@ private fun TravelCertificateSuccessScreen(
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
   hasChooseOption: Boolean,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -188,11 +210,16 @@ private fun TravelCertificateSuccessScreen(
       )
     }
     Spacer(modifier = Modifier.weight(1f))
-    HedvigNotificationCard(
-      message = stringResource(R.string.travel_certificate_start_date_info, 45),
-      priority = NotificationPriority.Info,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-    )
+    if (travelAddonBannerInfo != null) {
+      TravelAddonBanner(
+        travelAddonBannerInfo = travelAddonBannerInfo,
+        launchAddonPurchaseFlow = launchAddonPurchaseFlow,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+    }
     if (showGenerationButton) {
       Spacer(Modifier.height(8.dp))
       HedvigButton(
@@ -202,11 +229,31 @@ private fun TravelCertificateSuccessScreen(
         },
         buttonStyle = Secondary,
         enabled = true,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
     }
     Spacer(Modifier.height(16.dp))
   }
+}
+
+@Composable
+private fun TravelAddonBanner(
+  travelAddonBannerInfo: TravelAddonBannerInfo,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  FeatureAddonBanner(
+    modifier = modifier,
+    title = travelAddonBannerInfo.title,
+    description = travelAddonBannerInfo.description,
+    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    labels = travelAddonBannerInfo.labels,
+    onButtonClick = {
+      launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
+    },
+  )
 }
 
 @Composable
@@ -292,319 +339,215 @@ private fun TravelCertificatesList(
 
 @HedvigPreview
 @Composable
-private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
+private fun PreviewTravelCertificateHistoryScreenWithEmptyList(
+  @PreviewParameter(TravelCertificateHistoryUiStatePreviewProvider::class) uiState: CertificateHistoryUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(),
-          false,
-          true,
-          null,
-          false,
-          false,
-        ),
+        reload = {},
+        onCertificateClick = {},
+        onStartGenerateTravelCertificateFlow = {},
+        launchAddonPurchaseFlow = {},
+        onNavigateToAddonPurchaseFlow = {},
+        onGoToChooseContract = {},
+        navigateUp = {},
+        onDismissDownloadCertificateError = {},
+        onShareTravelCertificate = {},
+        uiState = uiState,
       )
     }
   }
 }
 
-@HedvigPreview
-@Composable
-private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(
-            TravelCertificate(
-              startDate = LocalDate(2024, 6, 2),
-              expiryDate = LocalDate(2024, 7, 9),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2024, 1, 6),
-              expiryDate = LocalDate(2024, 9, 10),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2023, 12, 9),
-              expiryDate = LocalDate(2024, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = true,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2022, 12, 9),
-              expiryDate = LocalDate(2023, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = true,
-            ),
+private class TravelCertificateHistoryUiStatePreviewProvider :
+  CollectionPreviewParameterProvider<CertificateHistoryUiState>(
+    listOf(
+      SuccessDownloadingHistory(
+        listOf(),
+        false,
+        true,
+        null,
+        false,
+        false,
+        travelAddonBannerInfo = TravelAddonBannerInfo(
+          title = "Travel Plus",
+          description = "Extended travel insurance with extra coverage for your travels",
+          labels = listOf("Popular"),
+          eligibleInsurancesIds = listOf(),
+        ),
+      ),
+      SuccessDownloadingHistory(
+        listOf(
+          TravelCertificate(
+            startDate = LocalDate(2024, 6, 2),
+            expiryDate = LocalDate(2024, 7, 9),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
           ),
-          false,
-          false,
-          null,
-          false,
-          false,
-        ),
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewErrorWithDownloadingCertificate() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(
-            TravelCertificate(
-              startDate = LocalDate(2024, 6, 2),
-              expiryDate = LocalDate(2024, 7, 9),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2024, 1, 6),
-              expiryDate = LocalDate(2024, 9, 10),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2023, 12, 9),
-              expiryDate = LocalDate(2024, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2022, 12, 9),
-              expiryDate = LocalDate(2023, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
+          TravelCertificate(
+            startDate = LocalDate(2024, 1, 6),
+            expiryDate = LocalDate(2024, 9, 10),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
           ),
-          true,
-          true,
-          null,
-          false,
-          false,
-        ),
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(
-            TravelCertificate(
-              startDate = LocalDate(2024, 1, 6),
-              expiryDate = LocalDate(2024, 9, 10),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2023, 11, 25),
-              expiryDate = LocalDate(
-                java.time.LocalDate.now().year,
-                java.time.LocalDate.now().month,
-                java.time.LocalDate.now().dayOfMonth,
-              ),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = true,
-            ),
+          TravelCertificate(
+            startDate = LocalDate(2023, 12, 9),
+            expiryDate = LocalDate(2024, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = true,
           ),
-          false,
-          true,
-          null,
-          false,
-          false,
-        ),
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButton() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(
-            TravelCertificate(
-              startDate = LocalDate(2024, 1, 6),
-              expiryDate = LocalDate(2024, 9, 10),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2023, 11, 25),
-              expiryDate = LocalDate(
-                java.time.LocalDate.now().year,
-                java.time.LocalDate.now().month,
-                java.time.LocalDate.now().dayOfMonth,
-              ),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = true,
-            ),
+          TravelCertificate(
+            startDate = LocalDate(2022, 12, 9),
+            expiryDate = LocalDate(2023, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = true,
           ),
-          false,
-          false,
-          null,
-          false,
-          false,
         ),
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewCertificateHistoryLoading() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        Loading,
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewErrorWithHistory() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        FailureDownloadingHistory,
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewLoadingCertificate() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateHistoryScreen(
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        SuccessDownloadingHistory(
-          listOf(
-            TravelCertificate(
-              startDate = LocalDate(2024, 6, 2),
-              expiryDate = LocalDate(2024, 7, 9),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2024, 1, 6),
-              expiryDate = LocalDate(2024, 9, 10),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2023, 12, 9),
-              expiryDate = LocalDate(2024, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
-            TravelCertificate(
-              startDate = LocalDate(2022, 12, 9),
-              expiryDate = LocalDate(2023, 1, 31),
-              id = "13213",
-              signedUrl = "wkehdkwed",
-              isExpiredNow = false,
-            ),
+        false,
+        false,
+        null,
+        false,
+        false,
+        travelAddonBannerInfo = null,
+      ),
+      SuccessDownloadingHistory(
+        listOf(
+          TravelCertificate(
+            startDate = LocalDate(2024, 6, 2),
+            expiryDate = LocalDate(2024, 7, 9),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
           ),
-          false,
-          true,
-          null,
-          true,
-          false,
+          TravelCertificate(
+            startDate = LocalDate(2024, 1, 6),
+            expiryDate = LocalDate(2024, 9, 10),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2023, 12, 9),
+            expiryDate = LocalDate(2024, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2022, 12, 9),
+            expiryDate = LocalDate(2023, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
         ),
-      )
-    }
-  }
-}
+        true,
+        true,
+        null,
+        false,
+        false,
+        travelAddonBannerInfo = null,
+      ),
+      SuccessDownloadingHistory(
+        listOf(
+          TravelCertificate(
+            startDate = LocalDate(2024, 1, 6),
+            expiryDate = LocalDate(2024, 9, 10),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2023, 11, 25),
+            expiryDate = LocalDate(
+              java.time.LocalDate.now().year,
+              java.time.LocalDate.now().month,
+              java.time.LocalDate.now().dayOfMonth,
+            ),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = true,
+          ),
+        ),
+        false,
+        true,
+        null,
+        false,
+        false,
+        travelAddonBannerInfo = null,
+      ),
+      SuccessDownloadingHistory(
+        listOf(
+          TravelCertificate(
+            startDate = LocalDate(2024, 1, 6),
+            expiryDate = LocalDate(2024, 9, 10),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2023, 11, 25),
+            expiryDate = LocalDate(
+              java.time.LocalDate.now().year,
+              java.time.LocalDate.now().month,
+              java.time.LocalDate.now().dayOfMonth,
+            ),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = true,
+          ),
+        ),
+        false,
+        false,
+        null,
+        false,
+        false,
+        travelAddonBannerInfo = null,
+      ),
+      Loading,
+      FailureDownloadingHistory,
+      SuccessDownloadingHistory(
+        listOf(
+          TravelCertificate(
+            startDate = LocalDate(2024, 6, 2),
+            expiryDate = LocalDate(2024, 7, 9),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2024, 1, 6),
+            expiryDate = LocalDate(2024, 9, 10),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2023, 12, 9),
+            expiryDate = LocalDate(2024, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+          TravelCertificate(
+            startDate = LocalDate(2022, 12, 9),
+            expiryDate = LocalDate(2023, 1, 31),
+            id = "13213",
+            signedUrl = "wkehdkwed",
+            isExpiredNow = false,
+          ),
+        ),
+        false,
+        true,
+        null,
+        true,
+        false,
+        travelAddonBannerInfo = null,
+      ),
+    ),
+  )

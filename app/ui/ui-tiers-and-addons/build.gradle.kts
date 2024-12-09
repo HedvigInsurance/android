@@ -5,6 +5,7 @@ plugins {
 
 hedvig {
   compose()
+  serialization()
 }
 
 dependencies {
@@ -25,4 +26,5 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
+  implementation(libs.kotlinx.serialization.core)
 }
