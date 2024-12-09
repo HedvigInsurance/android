@@ -87,7 +87,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
         },
         onSuccess = {
           navigator.navigateUnsafe(SubmitSuccess(this.params.activationDate)) {
-            typedPopUpTo<ChooseInsuranceToAddAddonDestination> {
+            typedPopUpTo<AddonPurchaseGraphDestination> {
               inclusive = true
             }
           }
@@ -95,17 +95,18 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
       )
     }
 
-    navdestination<SubmitSuccess>(SubmitSuccess) { backStackEntry ->
-      SubmitAddonSuccessScreen(
-        activationDate = this.activationDate,
-        popBackStack = navigator::popBackStack,
-      )
-    }
 
     navdestination<SubmitFailure> { backStackEntry ->
       SubmitAddonFailureScreen(
         popBackStack = navigator::popBackStack,
       )
     }
+  }
+
+  navdestination<SubmitSuccess>(SubmitSuccess) { backStackEntry ->
+    SubmitAddonSuccessScreen(
+      activationDate = this.activationDate,
+      popBackStack = navigator::popBackStack,
+    )
   }
 }
