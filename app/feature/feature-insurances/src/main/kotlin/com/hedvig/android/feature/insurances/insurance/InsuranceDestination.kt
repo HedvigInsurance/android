@@ -48,11 +48,13 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -235,6 +237,16 @@ private fun InsuranceScreenContent(
           onInsuranceCardClick = onInsuranceCardClick,
           contracts = uiState.contracts,
         )
+        if (uiState.travelAddonBannerInfo != null) {
+          TravelAddonBanner(
+            travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+            launchAddonPurchaseFlow = {
+              TODO()
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          ) }
         if (uiState.shouldSuggestMovingFlow) {
           MovingFlowSuggestionSection(
             onNavigateToMovingFlow = onNavigateToMovingFlow,
@@ -330,11 +342,7 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 
 @Composable
 private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
-  Column(modifier, Arrangement.spacedBy(8.dp)) {
-    HedvigText(
-      text = stringResource(R.string.insurances_tab_moving_flow_section_title),
-      style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
-    )
+  Column(modifier) {
     HedvigNotificationCard(
       message = stringResource(R.string.insurances_tab_moving_flow_info_title),
       priority = NotificationPriority.Campaign,
@@ -344,6 +352,24 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
       ),
     )
   }
+}
+
+@Composable
+private fun TravelAddonBanner(
+  travelAddonBannerInfo: TravelAddonBannerInfo,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  FeatureAddonBanner(
+    modifier = modifier,
+    title = travelAddonBannerInfo.title,
+    description = travelAddonBannerInfo.description,
+    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    labels = travelAddonBannerInfo.labels,
+    onButtonClick = {
+      launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
+    },
+  )
 }
 
 @HedvigMultiScreenPreview
@@ -375,6 +401,7 @@ private fun PreviewInsuranceScreen(
           hasError = false,
           isLoading = false,
           isRetrying = false,
+          travelAddonBannerInfo = null
         ),
         {},
         {},
@@ -422,6 +449,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -432,6 +460,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
     InsuranceUiState(
       contracts =
@@ -451,6 +480,12 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo =  TravelAddonBannerInfo(
+        title = "Travel Plus",
+        description = "Extended travel insurance with extra coverage for your travels",
+        labels = listOf("Popular"),
+        eligibleInsurancesIds = listOf(),
+      ),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -461,6 +496,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -486,6 +522,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -496,6 +533,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -506,6 +544,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
+      travelAddonBannerInfo = null
     ),
   ),
 )

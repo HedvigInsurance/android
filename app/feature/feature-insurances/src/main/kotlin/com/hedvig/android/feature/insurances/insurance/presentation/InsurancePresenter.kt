@@ -14,6 +14,9 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -39,6 +42,7 @@ internal sealed interface InsuranceScreenEvent {
 internal data class InsuranceUiState(
   val contracts: List<InsuranceContract>,
   val crossSells: List<CrossSell>,
+  val travelAddonBannerInfo: TravelAddonBannerInfo?,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
   val shouldSuggestMovingFlow: Boolean,
@@ -56,6 +60,7 @@ internal data class InsuranceUiState(
       hasError = false,
       isLoading = true,
       isRetrying = false,
+      travelAddonBannerInfo = null
     )
   }
 }
@@ -65,6 +70,7 @@ internal class InsurancePresenter(
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   private val applicationScope: CoroutineScope,
+  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -106,6 +112,7 @@ internal class InsurancePresenter(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
         forceNetworkFetch = true,
+        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -135,6 +142,7 @@ internal class InsurancePresenter(
       hasError = didFailToLoad && !isLoading && !isRetrying,
       isLoading = isLoading,
       isRetrying = isRetrying,
+      travelAddonBannerInfo = insuranceData.travelAddonBannerInfo
     )
   }
 }
@@ -143,14 +151,17 @@ private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
   forceNetworkFetch: Boolean,
+  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
       { getInsuranceContractsUseCase.invoke(forceNetworkFetch).first().bind() },
       { getCrossSellsUseCase.invoke().bind() },
+      {getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).bind()}
     ) {
       contracts: List<InsuranceContract>,
       crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
+      travelAddonBannerInfo: TravelAddonBannerInfo?
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)
@@ -177,6 +188,7 @@ private suspend fun loadInsuranceData(
         isEligibleToPerformMovingFlow = contracts.any {
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
+        travelAddonBannerInfo = travelAddonBannerInfo
       )
     }
   }.onLeft {
@@ -191,6 +203,7 @@ private data class InsuranceData(
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
+  val travelAddonBannerInfo: TravelAddonBannerInfo?
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -199,6 +212,7 @@ private data class InsuranceData(
         crossSells = uiState.crossSells,
         quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
+        travelAddonBannerInfo = uiState.travelAddonBannerInfo
       )
     }
 
@@ -207,6 +221,7 @@ private data class InsuranceData(
       crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,
+      travelAddonBannerInfo = null
     )
   }
 }

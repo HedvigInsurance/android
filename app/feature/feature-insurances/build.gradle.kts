@@ -46,6 +46,7 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
+  implementation(projects.dataAddons)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
