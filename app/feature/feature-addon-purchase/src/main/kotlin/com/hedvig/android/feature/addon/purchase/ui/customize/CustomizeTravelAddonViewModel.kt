@@ -79,10 +79,11 @@ internal class CustomizeTravelAddonPresenter(
           currentState = CustomizeTravelAddonState.Failure(error.message)
         },
         ifRight = { offer ->
+          selectedOptionInDialog = offer.addonOptions[0]
           currentState = CustomizeTravelAddonState.Success(
             travelAddonOffer = offer,
             currentlyChosenOption = offer.addonOptions[0],
-            currentlyChosenOptionInDialog = offer.addonOptions[0],
+            currentlyChosenOptionInDialog = selectedOptionInDialog,
           )
         },
       )

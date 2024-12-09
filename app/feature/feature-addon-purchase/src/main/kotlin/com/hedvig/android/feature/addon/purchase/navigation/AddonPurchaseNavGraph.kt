@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
@@ -34,7 +35,11 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
       if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
-        navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0]))
+        LaunchedEffect(Unit) {
+          navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0]), {
+            typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
+          })
+        }
       } else {
         val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {
           parametersOf(addonPurchaseGraphDestination.insuranceIds)
@@ -70,7 +75,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
     /**
      * Summary for the purchase addon flow (not upgrade 45->60)
      */
-    navdestination<Summary> (Summary){ backStackEntry ->
+    navdestination<Summary>(Summary) { backStackEntry ->
       val viewModel: AddonSummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }

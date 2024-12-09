@@ -283,13 +283,13 @@ private fun CustomizeTravelAddonCard(
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onSelectorClick = {
-          // todo: check here!
+          // todo: check here! should be empty
         },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = uiState.travelAddonOffer.addonOptions.map { option ->
           ExpandedRadioOptionData(
-            chosenState = if (uiState.currentlyChosenOption == option) Chosen else NotChosen,
+            chosenState = if (uiState.currentlyChosenOptionInDialog == option) Chosen else NotChosen,
             title = option.displayName,
             premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price.amount.toInt()),
             onRadioOptionClick = {
