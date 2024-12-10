@@ -210,7 +210,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -221,7 +221,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertAll {
           assertThat(uiState.hasError).isFalse()
@@ -247,7 +247,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -273,7 +273,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -299,14 +299,14 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
 
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -324,7 +324,7 @@ internal class InsurancePresenterTest {
 
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       getInsuranceContractsUseCase.contracts.add(validContracts)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
         assertThat(uiState.isLoading).isFalse()
@@ -345,7 +345,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -353,7 +353,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(allContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertAll {
           assertThat(uiState.contracts.map(InsuranceContract::id))
@@ -377,7 +377,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
     presenter.test(InsuranceUiState.initialState) {
@@ -385,7 +385,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(contracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       assertThat(awaitItem().shouldSuggestMovingFlow).isEqualTo(supportsAddressChange)
     }
   }
@@ -401,14 +401,14 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
 
       crossSellCardNotificationBadgeService.showNotification.add(true)
@@ -430,13 +430,13 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{null})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { null })
       assertThat(awaitItem().travelAddonBannerInfo).isEqualTo(null)
     }
   }
@@ -452,13 +452,13 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       assertThat(awaitItem().travelAddonBannerInfo).isEqualTo(fakeTravelAddon)
     }
   }
@@ -474,7 +474,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),
@@ -485,7 +485,7 @@ internal class InsurancePresenterTest {
       hasError = false,
       isLoading = false,
       isRetrying = false,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     )
     presenter.test(initialState) {
       awaitItem().also { uiState ->
@@ -495,7 +495,7 @@ internal class InsurancePresenterTest {
       }
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
-      getTravelAddonBannerInfoUseCase.turbine.add(either{fakeTravelAddon})
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       expectNoEvents()
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       assertThat(awaitItem().isLoading).isEqualTo(false)
@@ -530,14 +530,18 @@ internal class InsurancePresenterTest {
     }
   }
 
-  private class FakeGetTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase {
+  private class FakeGetTravelAddonBannerInfoUseCase : GetTravelAddonBannerInfoUseCase {
     val turbine = Turbine<Either<ErrorMessage, TravelAddonBannerInfo?>>()
+
     override suspend fun invoke(source: TravelAddonBannerSource): Either<ErrorMessage, TravelAddonBannerInfo?> {
       return turbine.awaitItem()
     }
   }
 
-  private val fakeTravelAddon= TravelAddonBannerInfo("Travel", "desc", listOf(),
-    nonEmptyListOf("id")
+  private val fakeTravelAddon = TravelAddonBannerInfo(
+    "Travel",
+    "desc",
+    listOf(),
+    nonEmptyListOf("id"),
   )
 }

@@ -36,4 +36,3 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
       .isEqualTo(either { null })
   }
 }
-
