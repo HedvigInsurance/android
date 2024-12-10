@@ -91,7 +91,7 @@ internal fun InsuranceDestination(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val lifecycleOwner = LocalLifecycleOwner.current
@@ -120,7 +120,7 @@ internal fun InsuranceDestination(
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow
+    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
 }
 
@@ -133,7 +133,7 @@ private fun InsuranceScreen(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val isRetrying = uiState.isRetrying
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -179,7 +179,7 @@ private fun InsuranceScreen(
             onNavigateToMovingFlow = onNavigateToMovingFlow,
             modifier = Modifier.fillMaxSize(),
             pullRefreshState = pullRefreshState,
-            onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow
+            onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
           )
         }
       }
@@ -251,7 +251,8 @@ private fun InsuranceScreenContent(
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-          ) }
+          )
+        }
         if (uiState.shouldSuggestMovingFlow) {
           MovingFlowSuggestionSection(
             onNavigateToMovingFlow = onNavigateToMovingFlow,
@@ -404,7 +405,7 @@ private fun PreviewInsuranceScreen(
           hasError = false,
           isLoading = false,
           isRetrying = false,
-          travelAddonBannerInfo = null
+          travelAddonBannerInfo = null,
         ),
         {},
         {},
@@ -412,7 +413,7 @@ private fun PreviewInsuranceScreen(
         {},
         {},
         rememberPreviewImageLoader(),
-        {}
+        {},
       )
     }
   }
@@ -435,7 +436,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
             onNavigateToMovingFlow = {},
-            onNavigateToAddonPurchaseFlow =  {}
+            onNavigateToAddonPurchaseFlow = {},
           )
         },
       )
@@ -454,7 +455,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -465,7 +466,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
     InsuranceUiState(
       contracts =
@@ -485,7 +486,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo =  TravelAddonBannerInfo(
+      travelAddonBannerInfo = TravelAddonBannerInfo(
         title = "Travel Plus",
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
@@ -501,7 +502,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -527,7 +528,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -538,7 +539,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -549,7 +550,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     ),
   ),
 )

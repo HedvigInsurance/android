@@ -26,7 +26,7 @@ val insurancesModule = module {
       get<GetCrossSellsUseCaseProvider>(),
       get<CrossSellCardNotificationBadgeServiceProvider>(),
       get<ApplicationScope>(),
-      getTravelAddonBannerInfoUseCase = get<GetTravelAddonBannerInfoUseCase>()
+      getTravelAddonBannerInfoUseCase = get<GetTravelAddonBannerInfoUseCase>(),
     )
   }
   viewModel<TerminatedContractsViewModel> {

@@ -45,14 +45,12 @@ import hedvig.resources.R
 internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
   navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
     navigateToCustomizeAddon = { id ->
       navigateToCustomizeAddon(id)
       viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
@@ -73,7 +71,6 @@ internal fun SelectInsuranceForAddonDestination(
 private fun SelectInsuranceForAddonScreen(
   uiState: SelectInsuranceForAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,

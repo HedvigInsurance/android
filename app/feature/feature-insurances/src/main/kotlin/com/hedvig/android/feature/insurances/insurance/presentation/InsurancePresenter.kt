@@ -60,7 +60,7 @@ internal data class InsuranceUiState(
       hasError = false,
       isLoading = true,
       isRetrying = false,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     )
   }
 }
@@ -70,7 +70,7 @@ internal class InsurancePresenter(
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   private val applicationScope: CoroutineScope,
-  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
+  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -112,7 +112,7 @@ internal class InsurancePresenter(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
         forceNetworkFetch = true,
-        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase
+        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -142,7 +142,7 @@ internal class InsurancePresenter(
       hasError = didFailToLoad && !isLoading && !isRetrying,
       isLoading = isLoading,
       isRetrying = isRetrying,
-      travelAddonBannerInfo = insuranceData.travelAddonBannerInfo
+      travelAddonBannerInfo = insuranceData.travelAddonBannerInfo,
     )
   }
 }
@@ -151,17 +151,17 @@ private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
   forceNetworkFetch: Boolean,
-  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase
+  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
       { getInsuranceContractsUseCase.invoke(forceNetworkFetch).first().bind() },
       { getCrossSellsUseCase.invoke().bind() },
-      {getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).bind()}
+      { getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).bind() },
     ) {
       contracts: List<InsuranceContract>,
       crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
-      travelAddonBannerInfo: TravelAddonBannerInfo?
+      travelAddonBannerInfo: TravelAddonBannerInfo?,
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)
@@ -188,7 +188,7 @@ private suspend fun loadInsuranceData(
         isEligibleToPerformMovingFlow = contracts.any {
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
-        travelAddonBannerInfo = travelAddonBannerInfo
+        travelAddonBannerInfo = travelAddonBannerInfo,
       )
     }
   }.onLeft {
@@ -203,7 +203,7 @@ private data class InsuranceData(
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
-  val travelAddonBannerInfo: TravelAddonBannerInfo?
+  val travelAddonBannerInfo: TravelAddonBannerInfo?,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -212,7 +212,7 @@ private data class InsuranceData(
         crossSells = uiState.crossSells,
         quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
-        travelAddonBannerInfo = uiState.travelAddonBannerInfo
+        travelAddonBannerInfo = uiState.travelAddonBannerInfo,
       )
     }
 
@@ -221,7 +221,7 @@ private data class InsuranceData(
       crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,
-      travelAddonBannerInfo = null
+      travelAddonBannerInfo = null,
     )
   }
 }

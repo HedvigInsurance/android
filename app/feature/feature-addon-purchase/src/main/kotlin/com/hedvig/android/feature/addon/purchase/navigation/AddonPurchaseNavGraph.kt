@@ -47,7 +47,6 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
         SelectInsuranceForAddonDestination(
           viewModel = viewModel,
           navigateUp = navigator::navigateUp,
-          popBackStack = navigator::popBackStack,
           navigateToCustomizeAddon = { chosenInsuranceId: String ->
             navigator.navigateUnsafe(CustomizeAddon(chosenInsuranceId))
           },
