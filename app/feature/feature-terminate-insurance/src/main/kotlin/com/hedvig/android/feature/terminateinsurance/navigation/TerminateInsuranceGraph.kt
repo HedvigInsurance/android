@@ -233,7 +233,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateUp = navigator::navigateUp,
-        closeTerminationFlow = closeTerminationFlow
+        closeTerminationFlow = closeTerminationFlow,
       )
     }
   }

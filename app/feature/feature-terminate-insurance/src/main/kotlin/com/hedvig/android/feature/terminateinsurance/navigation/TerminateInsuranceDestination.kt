@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.Destination

@@ -308,7 +308,9 @@ private fun PreviewTerminationConfirmationScreen(
         uiState = OverviewUiState(
           terminationType = type,
           insuranceInfo = TerminationGraphParameters(
-            insuranceDisplayName = "insuranceDisplayName", exposureName = "exposureName", HOMEOWNER,
+            insuranceDisplayName = "insuranceDisplayName",
+            exposureName = "exposureName",
+            HOMEOWNER,
           ),
           extraCoverageItems = List(if (withExtraCoverage) 2 else 0) {
             ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
