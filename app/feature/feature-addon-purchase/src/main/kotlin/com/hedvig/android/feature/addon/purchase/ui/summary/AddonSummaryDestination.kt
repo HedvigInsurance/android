@@ -163,14 +163,14 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val text = if (uiState.totalPriceChange.amount>0)
-            //with +
+          val text = if (uiState.totalPriceChange.amount > 0)
+          //with +
             stringResource(
               R.string.ADDON_FLOW_PRICE_LABEL,
               uiState.totalPriceChange,
             )
-            //without + (supposedly with minus)
-            else stringResource(
+          //without + (supposedly with minus)
+          else stringResource(
             R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, //todo: mb better to have a separate key?
             uiState.totalPriceChange,
           )
@@ -218,19 +218,25 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   }
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
-    premium = uiState.quote.price.toString(),
-    displayItems = uiState.quote.addonVariant.displayDetails.map {
-      QuoteDisplayItem(
-        it.first,
-        null,
-        it.second,
-      )
+    premium = @Composable {
+      TODO()
+      uiState.quote.price.toString()
+    },
+    displayItems = @Composable {
+      TODO()
+      uiState.quote.addonVariant.displayDetails.map {
+        QuoteDisplayItem(
+          it.first,
+          null,
+          it.second,
+        )
+      }
     },
     underTitleContent = {},
     modifier = modifier,
     displayName = uiState.offerDisplayName,
     contractGroup = null,
-    insurableLimits = emptyList(),
+    insurableLimits = null,
     documents = uiState.quote.addonVariant.documents,
   )
 }
@@ -260,38 +266,38 @@ private class ChooseInsuranceForAddonUiStateProvider :
     listOf(
       Loading,
       Content(
-        currentTravelAddon =  CurrentTravelAddon(
+        currentTravelAddon = CurrentTravelAddon(
           UiMoney(49.0, UiCurrencyCode.SEK),
-          listOf("Coverage" to "45 days", "Insured people" to "You+1")
+          listOf("Coverage" to "45 days", "Insured people" to "You+1"),
         ),
-          offerDisplayName = "TravelPlus",
-          activationDate = LocalDate(2025, 1, 1),
-          quote = TravelAddonQuote(
-            displayName = "60 days",
-            addonId = "addonId1",
-            quoteId = "id",
-            addonVariant = AddonVariant(
-              termsVersion = "terms",
-              displayDetails = listOf(
-                "Amount of insured people" to "You +1",
-                "Coverage" to "60 days",
-              ),
-              documents = listOf(
-                InsuranceVariantDocument(
-                  "Terms and Conditions",
-                  "url",
-                  InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
-                ),
-              ),
+        offerDisplayName = "TravelPlus",
+        activationDate = LocalDate(2025, 1, 1),
+        quote = TravelAddonQuote(
+          displayName = "60 days",
+          addonId = "addonId1",
+          quoteId = "id",
+          addonVariant = AddonVariant(
+            termsVersion = "terms",
+            displayDetails = listOf(
+              "Amount of insured people" to "You +1",
+              "Coverage" to "60 days",
             ),
-            price = UiMoney(
-              60.0,
-              UiCurrencyCode.SEK,
+            documents = listOf(
+              InsuranceVariantDocument(
+                "Terms and Conditions",
+                "url",
+                InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+              ),
             ),
           ),
+          price = UiMoney(
+            60.0,
+            UiCurrencyCode.SEK,
+          ),
+        ),
         activationDateForSuccessfullyPurchasedAddon = null,
         navigateToFailure = false,
-        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK)
+        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
       ),
     ),
   )
