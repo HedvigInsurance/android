@@ -456,7 +456,7 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
 
 @Composable
 internal fun TravelPlusExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
-  HedvigBottomSheet(sheetState) { _ ->
+  HedvigBottomSheet(sheetState) {
     HedvigText(
       text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
       modifier = Modifier
