@@ -102,6 +102,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           val commonParams = TerminationGraphParameters(
             insuranceForCancellation.displayName,
             insuranceForCancellation.contractExposure,
+            insuranceForCancellation.contractGroup,
           )
           navigator.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
@@ -218,6 +219,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val viewModel: TerminationConfirmationViewModel = koinViewModel {
         parametersOf(
           terminationType,
+          commonParams,
           extraCoverageItems,
         )
       }
@@ -231,6 +233,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow
       )
     }
   }

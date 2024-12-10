@@ -213,7 +213,7 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
 
     is TerminateInsuranceStep.InsuranceDeletion -> TerminateInsuranceDestination.InsuranceDeletion(
       commonParams = commonParams,
-        extraCoverageItems = extraCoverageItems,
+      extraCoverageItems = extraCoverageItems,
     )
 
     is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminateInsuranceDestination.TerminationSuccess(
