@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
+import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
@@ -52,11 +53,13 @@ internal sealed interface TerminateInsuranceDestination {
   data class TerminationDate(
     val minDate: LocalDate,
     val maxDate: LocalDate,
+    val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
+        typeOf<List<ExtraCoverageItem>>(),
         typeOf<TerminationGraphParameters>(),
       )
     }
@@ -68,6 +71,7 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class TerminationConfirmation(
     val terminationType: TerminationType,
+    val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     @Serializable
@@ -82,6 +86,7 @@ internal sealed interface TerminateInsuranceDestination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<TerminationType>(),
+        typeOf<List<ExtraCoverageItem>>(),
         typeOf<TerminationGraphParameters>(),
       )
     }
@@ -99,9 +104,13 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class InsuranceDeletion(
     val commonParams: TerminationGraphParameters,
+    val extraCoverageItems: List<ExtraCoverageItem>,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<TerminationGraphParameters>())
+      override val typeList: List<KType> = listOf(
+        typeOf<TerminationGraphParameters>(),
+        typeOf<List<ExtraCoverageItem>>(),
+      )
     }
   }
 

@@ -33,8 +33,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -71,6 +73,7 @@ private fun TerminationConfirmationScreen(uiState: OverviewUiState, onContinue: 
   } else {
     AreYouSureScreen(
       type = uiState.terminationType,
+      extraCoverageItems = uiState.extraCoverageItems,
       modifier = Modifier.fillMaxSize(),
       navigateUp = navigateBack,
       onContinue = onContinue,
@@ -80,7 +83,8 @@ private fun TerminationConfirmationScreen(uiState: OverviewUiState, onContinue: 
 
 @Composable
 private fun AreYouSureScreen(
-  type: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  type: TerminationType,
+  extraCoverageItems: List<ExtraCoverageItem>,
   modifier: Modifier = Modifier,
   navigateUp: () -> Unit,
   onContinue: () -> Unit,
@@ -155,6 +159,9 @@ private fun OverviewScreenPreviewDeletion(
       TerminationConfirmationScreen(
         uiState = OverviewUiState(
           terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
+          extraCoverageItems = List(2) {
+            ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
+          },
           nextStep = null,
           errorMessage = null,
           isSubmittingContractTermination = isLoading,
@@ -180,6 +187,9 @@ private fun OverviewScreenPreview(
           terminationType = Termination(
             LocalDate(2024, 8, 9),
           ),
+          extraCoverageItems = List(2) {
+            ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
+          },
           nextStep = null,
           errorMessage = null,
           isSubmittingContractTermination = isLoading,

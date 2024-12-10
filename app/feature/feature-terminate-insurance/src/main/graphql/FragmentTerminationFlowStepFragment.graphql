@@ -62,10 +62,16 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
   id
   minDate
   maxDate
+  extraCoverage {
+    ...ExtraCoverageItemFragment
+  }
 }
 
 fragment FlowTerminationDeletionStepFragment on FlowTerminationDeletionStep {
   id
+  extraCoverage {
+    ...ExtraCoverageItemFragment
+  }
 }
 
 fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
@@ -75,4 +81,9 @@ fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
 fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
   id
   terminationDate
+}
+
+fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
+  displayName
+  displayValue
 }

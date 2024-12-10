@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.step.terminationreview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
@@ -13,11 +14,13 @@ import kotlinx.coroutines.launch
 
 internal class TerminationConfirmationViewModel(
   private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  private val extraCoverageItems: List<ExtraCoverageItem>,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
     OverviewUiState(
       terminationType = terminationType,
+      extraCoverageItems = extraCoverageItems,
       nextStep = null,
       errorMessage = null,
       isSubmittingContractTermination = false,
@@ -64,6 +67,7 @@ internal class TerminationConfirmationViewModel(
 
 internal data class OverviewUiState(
   val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  val extraCoverageItems: List<ExtraCoverageItem>,
   val nextStep: TerminateInsuranceStep?,
   val errorMessage: String?,
   val isSubmittingContractTermination: Boolean,

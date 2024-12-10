@@ -7,6 +7,8 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
+import octopus.fragment.ExtraCoverageItemFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment
@@ -17,13 +19,16 @@ internal sealed interface TerminateInsuranceStep {
   data class TerminateInsuranceDate(
     val minDate: LocalDate,
     val maxDate: LocalDate,
+    val extraCoverageItems: List<ExtraCoverageItem>,
   ) : TerminateInsuranceStep
 
   data class TerminateInsuranceSuccess(
     val terminationDate: LocalDate?,
   ) : TerminateInsuranceStep
 
-  data object InsuranceDeletion : TerminateInsuranceStep
+  data class InsuranceDeletion(
+    val extraCoverageItems: List<ExtraCoverageItem>,
+  ) : TerminateInsuranceStep
 
   data class Survey(
     val options: List<TerminationSurveyOption>,
@@ -47,12 +52,12 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
 ): TerminateInsuranceStep {
   return when (this) {
     is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
-      TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate)
+      TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate, extraCoverage.toExtraCoverageItems())
     }
 
     is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
     is TerminationFlowStepFragment.FlowTerminationDeletionStepCurrentStep -> {
-      TerminateInsuranceStep.InsuranceDeletion
+      TerminateInsuranceStep.InsuranceDeletion(extraCoverage.toExtraCoverageItems())
     }
 
     is TerminationFlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
@@ -201,12 +206,14 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       TerminateInsuranceDestination.TerminationDate(
         minDate = minDate,
         maxDate = maxDate,
+        extraCoverageItems = extraCoverageItems,
         commonParams = commonParams,
       )
     }
 
     is TerminateInsuranceStep.InsuranceDeletion -> TerminateInsuranceDestination.InsuranceDeletion(
       commonParams = commonParams,
+        extraCoverageItems = extraCoverageItems,
     )
 
     is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminateInsuranceDestination.TerminationSuccess(
@@ -221,3 +228,15 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
     )
   }
 }
+
+private fun List<ExtraCoverageItemFragment>.toExtraCoverageItems(): List<ExtraCoverageItem> {
+  return map {
+    ExtraCoverageItem(it.displayName, it.displayValue)
+  }
+}
+
+@Serializable
+internal data class ExtraCoverageItem(
+  val displayName: String,
+  val displayValue: String?,
+)

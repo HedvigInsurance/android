@@ -182,7 +182,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(
                 localDate,
               ),
-              commonParams,
+              extraCoverageItems = extraCoverageItems,
+              commonParams = commonParams,
             ),
           )
         },
@@ -201,7 +202,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           navController.navigate(
             TerminateInsuranceDestination.TerminationConfirmation(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
-              commonParams,
+              extraCoverageItems = extraCoverageItems,
+              commonParams = commonParams,
             ),
           )
         },
@@ -216,6 +218,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val viewModel: TerminationConfirmationViewModel = koinViewModel {
         parametersOf(
           terminationType,
+          extraCoverageItems,
         )
       }
       TerminationConfirmationDestination(
