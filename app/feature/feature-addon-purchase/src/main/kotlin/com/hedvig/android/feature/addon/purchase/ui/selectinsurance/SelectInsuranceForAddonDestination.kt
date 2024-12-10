@@ -195,7 +195,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
-        {},
       )
     }
   }
