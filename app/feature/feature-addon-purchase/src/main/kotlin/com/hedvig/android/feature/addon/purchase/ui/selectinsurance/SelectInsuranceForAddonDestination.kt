@@ -45,14 +45,12 @@ import hedvig.resources.R
 internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
   navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
     navigateToCustomizeAddon = { id ->
       navigateToCustomizeAddon(id)
       viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
@@ -73,7 +71,6 @@ internal fun SelectInsuranceForAddonDestination(
 private fun SelectInsuranceForAddonScreen(
   uiState: SelectInsuranceForAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
@@ -139,7 +136,7 @@ private fun SelectInsuranceForAddonContentScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.TIER_FLOW_SELECT_INSURANCE_SUBTITLE), // todo: change string!
+      text = stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -193,7 +190,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SelectInsuranceForAddonScreen(
         uiState,
-        {},
         {},
         {},
         {},

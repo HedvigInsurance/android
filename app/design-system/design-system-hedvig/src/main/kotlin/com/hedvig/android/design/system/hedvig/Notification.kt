@@ -1,8 +1,5 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -470,29 +467,6 @@ private fun PreviewNotificationCard(
           withIcon = true,
           style = Buttons("Left", "Right", {}, {}),
         )
-      }
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun TestPreview() {
-  val G200TLight = Color(0x12121212)
-  val White = Color(0xFFFAFAFA)
-  HedvigTheme {
-    Surface(
-      Modifier.size(200.dp),
-      color = HedvigTheme.colorScheme.backgroundPrimary,
-    ) {
-      Column {
-        Box(Modifier.size(100.dp).background(White)) {
-          HedvigText(
-            "AAA",
-            color = G200TLight,
-            modifier = Modifier.border(BorderStroke(1.dp, G200TLight)),
-          )
-        }
       }
     }
   }

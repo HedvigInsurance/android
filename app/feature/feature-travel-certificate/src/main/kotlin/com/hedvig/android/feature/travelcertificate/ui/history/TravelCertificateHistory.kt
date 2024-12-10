@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import arrow.core.nonEmptyListOf
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -374,7 +375,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
-          eligibleInsurancesIds = listOf(),
+          eligibleInsurancesIds = nonEmptyListOf("id"),
         ),
       ),
       SuccessDownloadingHistory(

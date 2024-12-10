@@ -389,7 +389,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         initialDisplayedMonthMillis = selectedDateMillis,
         selectableDates = object : HedvigSelectableDates {
           override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds() // todo: check here pls
+            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds()
           }
 
           override fun isSelectableYear(year: Int): Boolean =

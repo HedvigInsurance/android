@@ -80,6 +80,7 @@ internal fun CustomizeTravelAddonDestination(
   viewModel: CustomizeTravelAddonViewModel,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
+  popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
 ) {
   val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -87,6 +88,7 @@ internal fun CustomizeTravelAddonDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     popBackStack = popBackStack,
+    popAddonFlow = popAddonFlow,
     navigateToSummary = { summaryParams ->
       navigateToSummary(summaryParams)
     },
@@ -115,6 +117,7 @@ private fun CustomizeTravelAddonScreen(
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   reload: () -> Unit,
+  popAddonFlow: () -> Unit,
 ) {
   Box(
     Modifier.fillMaxSize(),
@@ -137,6 +140,7 @@ private fun CustomizeTravelAddonScreen(
         onChooseSelectedOption = onChooseSelectedOption,
         onChooseOptionInDialog = onChooseOptionInDialog,
         onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+        popAddonFlow = popAddonFlow,
       )
     }
   }
@@ -178,6 +182,7 @@ private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStac
 private fun CustomizeTravelAddonScreenContent(
   uiState: CustomizeTravelAddonState.Success,
   navigateUp: () -> Unit,
+  popAddonFlow: () -> Unit,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
@@ -190,7 +195,7 @@ private fun CustomizeTravelAddonScreenContent(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = { navigateUp() },
+        onClick = { popAddonFlow() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
@@ -282,9 +287,6 @@ private fun CustomizeTravelAddonCard(
         hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER), // there is always one option chosen, should never be shown anyway
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
-        onSelectorClick = {
-          // todo: check here! should be empty
-        },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = uiState.travelAddonOffer.addonOptions.map { option ->
@@ -493,6 +495,7 @@ private fun SelectTierScreenPreview(
         {},
         {},
         { _ -> },
+        {},
         {},
         {},
         {},

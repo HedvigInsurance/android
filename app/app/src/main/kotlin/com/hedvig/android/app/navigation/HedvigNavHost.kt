@@ -274,6 +274,9 @@ internal fun HedvigNavHost(
           backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
         }
       },
+      onNavigateToAddonPurchaseFlow = { ids ->
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
