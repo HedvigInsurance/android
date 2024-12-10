@@ -40,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.AddonVariant
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
@@ -116,10 +117,10 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE), // todo: change copy here mb?
   ) {
     val locale = getLocale()
-    val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
+    val formattedDate = remember(uiState.activationDate, locale) {
       HedvigDateTimeFormatterDefaults.dateMonthAndYear(
         locale,
-      ).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+      ).format(uiState.activationDate.toJavaLocalDate())
     }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
@@ -162,11 +163,19 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         },
         spaceBetween = 8.dp,
         endSlot = {
-          HedvigText(
-            text = stringResource(
+          val text = if (uiState.totalPriceChange.amount>0)
+            //with +
+            stringResource(
               R.string.ADDON_FLOW_PRICE_LABEL,
-              uiState.summaryParameters.quote.price.amount.toInt(),
-            ),
+              uiState.totalPriceChange,
+            )
+            //without + (supposedly with minus)
+            else stringResource(
+            R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, //todo: mb better to have a separate key?
+            uiState.totalPriceChange,
+          )
+          HedvigText(
+            text = text,
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -202,15 +211,15 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 @Composable
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   val locale = getLocale()
-  val formattedDate = remember(uiState.summaryParameters.activationDate, locale) {
+  val formattedDate = remember(uiState.activationDate, locale) {
     HedvigDateTimeFormatterDefaults.dateMonthAndYear(
       locale,
-    ).format(uiState.summaryParameters.activationDate.toJavaLocalDate())
+    ).format(uiState.activationDate.toJavaLocalDate())
   }
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
-    premium = uiState.summaryParameters.quote.price.toString(),
-    displayItems = uiState.summaryParameters.quote.addonVariant.displayDetails.map {
+    premium = uiState.quote.price.toString(),
+    displayItems = uiState.quote.addonVariant.displayDetails.map {
       QuoteDisplayItem(
         it.first,
         null,
@@ -219,10 +228,10 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     },
     underTitleContent = {},
     modifier = modifier,
-    displayName = uiState.summaryParameters.offerDisplayName,
+    displayName = uiState.offerDisplayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    documents = uiState.summaryParameters.quote.addonVariant.documents,
+    documents = uiState.quote.addonVariant.documents,
   )
 }
 
@@ -251,18 +260,21 @@ private class ChooseInsuranceForAddonUiStateProvider :
     listOf(
       Loading,
       Content(
-        SummaryParameters(
+        currentTravelAddon =  CurrentTravelAddon(
+          UiMoney(49.0, UiCurrencyCode.SEK),
+          listOf("Coverage" to "45 days", "Insured people" to "You+1")
+        ),
           offerDisplayName = "TravelPlus",
           activationDate = LocalDate(2025, 1, 1),
           quote = TravelAddonQuote(
-            displayName = "45 days",
+            displayName = "60 days",
             addonId = "addonId1",
             quoteId = "id",
             addonVariant = AddonVariant(
               termsVersion = "terms",
               displayDetails = listOf(
                 "Amount of insured people" to "You +1",
-                "Coverage" to "45 days",
+                "Coverage" to "60 days",
               ),
               documents = listOf(
                 InsuranceVariantDocument(
@@ -277,9 +289,9 @@ private class ChooseInsuranceForAddonUiStateProvider :
               UiCurrencyCode.SEK,
             ),
           ),
-        ),
-        null,
-        false,
+        activationDateForSuccessfullyPurchasedAddon = null,
+        navigateToFailure = false,
+        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK)
       ),
     ),
   )

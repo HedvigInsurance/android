@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
+import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
@@ -20,7 +23,7 @@ internal class AddonSummaryViewModel(
   summaryParameters: SummaryParameters,
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
-    initialState = Content(summaryParameters),
+    initialState = getInitialState(summaryParameters),
     presenter = AddonSummaryPresenter(summaryParameters, submitAddonPurchaseUseCase),
   )
 
@@ -34,7 +37,7 @@ internal class AddonSummaryPresenter(
     var submitIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
 
-    val initialState = Content(summaryParameters)
+    val initialState = getInitialState(summaryParameters)
 
     CollectEvents { event ->
       when (event) {
@@ -63,11 +66,29 @@ internal class AddonSummaryPresenter(
   }
 }
 
+private fun getInitialState(summaryParameters: SummaryParameters): Content {
+  val total = if (summaryParameters.currentTravelAddon==null) summaryParameters.quote.price else {
+    val amountDiff = summaryParameters.quote.price.amount - summaryParameters.currentTravelAddon.price.amount
+    UiMoney(amountDiff, summaryParameters.quote.price.currencyCode)
+  }
+    return Content(
+      offerDisplayName = summaryParameters.offerDisplayName,
+      quote = summaryParameters.quote,
+      activationDate = summaryParameters.activationDate,
+      currentTravelAddon = summaryParameters.currentTravelAddon,
+      totalPriceChange = total
+    )
+}
+
 internal sealed interface AddonSummaryState {
   data object Loading : AddonSummaryState
 
   data class Content(
-    val summaryParameters: SummaryParameters,
+    val offerDisplayName: String,
+    val quote: TravelAddonQuote,
+    val activationDate: LocalDate,
+    val currentTravelAddon: CurrentTravelAddon?,
+    val totalPriceChange: UiMoney,
     val activationDateForSuccessfullyPurchasedAddon: LocalDate? = null,
     val navigateToFailure: Boolean = false,
   ) : AddonSummaryState

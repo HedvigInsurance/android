@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
@@ -45,4 +46,5 @@ internal data class SummaryParameters(
   val offerDisplayName: String,
   val quote: TravelAddonQuote,
   val activationDate: LocalDate,
+  val currentTravelAddon: CurrentTravelAddon?
 )

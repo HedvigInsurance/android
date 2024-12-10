@@ -79,11 +79,13 @@ internal class CustomizeTravelAddonPresenter(
           currentState = CustomizeTravelAddonState.Failure(error.message)
         },
         ifRight = { offer ->
+          val quoteToNavigateFurther = if (offer.addonOptions.size==1) offer.addonOptions[0] else null
           selectedOptionInDialog = offer.addonOptions[0]
           currentState = CustomizeTravelAddonState.Success(
             travelAddonOffer = offer,
             currentlyChosenOption = offer.addonOptions[0],
             currentlyChosenOptionInDialog = selectedOptionInDialog,
+            quoteToNavigateFurther = quoteToNavigateFurther
           )
         },
       )
