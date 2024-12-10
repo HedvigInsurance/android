@@ -321,7 +321,6 @@ private fun CustomizationCard(
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         chosenItemIndex = chosenTierIndex,
-        onSelectorClick = {},
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
@@ -376,7 +375,6 @@ private fun CustomizationCard(
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           chosenItemIndex = chosenQuoteIndex,
-          onSelectorClick = {},
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
         ) { onDismissRequest ->
           val listOfOptions = buildList {

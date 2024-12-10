@@ -282,9 +282,6 @@ private fun CustomizeTravelAddonCard(
         hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER), // there is always one option chosen, should never be shown anyway
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
-        onSelectorClick = {
-          // todo: check here! should be empty
-        },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
       ) { onDismissRequest ->
         val listOfOptions = uiState.travelAddonOffer.addonOptions.map { option ->
