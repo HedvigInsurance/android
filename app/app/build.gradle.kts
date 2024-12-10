@@ -174,6 +174,7 @@ dependencies {
   implementation(projects.dataTermination)
   implementation(projects.databaseAndroid)
   implementation(projects.databaseCore)
+  implementation(projects.featureAddonPurchase)
   implementation(projects.datadogAndroid)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
@@ -222,6 +223,7 @@ dependencies {
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.dataAddons)
 
   debugImplementation(libs.androidx.compose.uiTooling)
 

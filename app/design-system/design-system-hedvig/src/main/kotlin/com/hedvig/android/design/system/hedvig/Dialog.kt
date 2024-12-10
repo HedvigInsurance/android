@@ -501,7 +501,7 @@ private fun PreviewHedvigDialogContent() {
       HedvigDialogContent(
         usePlatformDefaultWidth = false,
         applyDefaultPadding = false,
-        style = Buttons({}, "Cancel", {}, "Confirm text"),
+        style = Buttons({}, "Cancel", {}, "Confirm text with upgrade and everything"),
         content = {
           HedvigText("Some varying content")
         },

@@ -27,6 +27,7 @@ fun NavGraphBuilder.travelCertificateGraph(
   navigator: Navigator,
   applicationId: String,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   navgraph<TravelCertificateGraphDestination>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
@@ -51,6 +52,7 @@ fun NavGraphBuilder.travelCertificateGraph(
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
           localContext.sharePDF(it, applicationId)
         },
+        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
       )
     }
 

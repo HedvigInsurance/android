@@ -1,0 +1,14 @@
+query InsurancesForTravelAddon {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+          typeOfContract
+        }
+      }
+    }
+  }
+}
