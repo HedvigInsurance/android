@@ -1,6 +1,8 @@
 package com.hedvig.android.data.addons.data
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ErrorMessage
@@ -34,20 +36,18 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
-          eligibleInsurancesIds = listOf("id1"),
+          eligibleInsurancesIds = nonEmptyListOf("id1"),
         )
       }
     }
   }
 }
 
-// todo: add IMPL
-
 data class TravelAddonBannerInfo(
   val title: String,
   val description: String,
   val labels: List<String>,
-  val eligibleInsurancesIds: List<String>,
+  val eligibleInsurancesIds: NonEmptyList<String>,
 )
 
 enum class TravelAddonBannerSource {

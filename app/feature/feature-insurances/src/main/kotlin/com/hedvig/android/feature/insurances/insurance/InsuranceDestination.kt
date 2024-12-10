@@ -43,6 +43,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import arrow.core.nonEmptyListOf
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -490,7 +491,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         title = "Travel Plus",
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
-        eligibleInsurancesIds = listOf(),
+        eligibleInsurancesIds = nonEmptyListOf("id"),
       ),
     ),
     InsuranceUiState(

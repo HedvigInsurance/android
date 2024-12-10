@@ -19,6 +19,7 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewMode
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -65,6 +66,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         popBackStack = navigator::popBackStack,
+        popAddonFlow = {
+          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
+        },
         navigateToSummary = { summaryParameters: SummaryParameters ->
           navigator.navigateUnsafe(Summary(summaryParameters))
         },

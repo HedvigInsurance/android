@@ -217,9 +217,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
         it.second,
       )
     },
-    underTitleContent = {
-      // todo: check here!
-    },
+    underTitleContent = {},
     modifier = modifier,
     displayName = uiState.summaryParameters.offerDisplayName,
     contractGroup = null,
