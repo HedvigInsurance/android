@@ -475,29 +475,6 @@ private fun PreviewNotificationCard(
   }
 }
 
-@HedvigPreview
-@Composable
-private fun TestPreview() {
-  val G200TLight = Color(0x12121212)
-  val White = Color(0xFFFAFAFA)
-  HedvigTheme {
-    Surface(
-      Modifier.size(200.dp),
-      color = HedvigTheme.colorScheme.backgroundPrimary,
-    ) {
-      Column {
-        Box(Modifier.size(100.dp).background(White)) {
-          HedvigText(
-            "AAA",
-            color = G200TLight,
-            modifier = Modifier.border(BorderStroke(1.dp, G200TLight)),
-          )
-        }
-      }
-    }
-  }
-}
-
 private class NotificationCardPriorityProvider :
   CollectionPreviewParameterProvider<NotificationPriority>(
     listOf(

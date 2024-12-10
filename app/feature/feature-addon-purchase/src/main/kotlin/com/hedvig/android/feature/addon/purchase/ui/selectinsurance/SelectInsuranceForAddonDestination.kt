@@ -139,7 +139,7 @@ private fun SelectInsuranceForAddonContentScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.TIER_FLOW_SELECT_INSURANCE_SUBTITLE), // todo: change string!
+      text = stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))

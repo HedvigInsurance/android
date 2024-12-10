@@ -31,6 +31,7 @@ fun NavGraphBuilder.insuranceGraph(
   startEditCoInsuredAddMissingInfo: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -56,6 +57,7 @@ fun NavGraphBuilder.insuranceGraph(
         },
         onNavigateToMovingFlow = startMovingFlow,
         imageLoader = imageLoader,
+        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow
       )
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(

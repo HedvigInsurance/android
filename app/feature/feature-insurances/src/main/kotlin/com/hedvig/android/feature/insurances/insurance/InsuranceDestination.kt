@@ -91,6 +91,7 @@ internal fun InsuranceDestination(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val lifecycleOwner = LocalLifecycleOwner.current
@@ -119,6 +120,7 @@ internal fun InsuranceDestination(
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
+    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow
   )
 }
 
@@ -131,6 +133,7 @@ private fun InsuranceScreen(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit
 ) {
   val isRetrying = uiState.isRetrying
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -176,6 +179,7 @@ private fun InsuranceScreen(
             onNavigateToMovingFlow = onNavigateToMovingFlow,
             modifier = Modifier.fillMaxSize(),
             pullRefreshState = pullRefreshState,
+            onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow
           )
         }
       }
@@ -201,6 +205,7 @@ private fun InsuranceScreenContent(
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -241,7 +246,7 @@ private fun InsuranceScreenContent(
           TravelAddonBanner(
             travelAddonBannerInfo = uiState.travelAddonBannerInfo,
             launchAddonPurchaseFlow = {
-              TODO()
+              onNavigateToAddonPurchaseFlow(uiState.travelAddonBannerInfo.eligibleInsurancesIds)
             },
             modifier = Modifier
               .fillMaxWidth()
@@ -366,9 +371,7 @@ private fun TravelAddonBanner(
     description = travelAddonBannerInfo.description,
     buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
     labels = travelAddonBannerInfo.labels,
-    onButtonClick = {
-      launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
-    },
+    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds) },
   )
 }
 
@@ -409,6 +412,7 @@ private fun PreviewInsuranceScreen(
         {},
         {},
         rememberPreviewImageLoader(),
+        {}
       )
     }
   }
@@ -431,6 +435,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
             onNavigateToMovingFlow = {},
+            onNavigateToAddonPurchaseFlow =  {}
           )
         },
       )
