@@ -31,6 +31,8 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
@@ -40,7 +42,5 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.coreUiData)
-  implementation(projects.dataProductVariantPublic)
   implementation(projects.uiTiersAndAddons)
 }

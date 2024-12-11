@@ -5,12 +5,14 @@ import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
+import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
@@ -43,9 +45,12 @@ val terminateInsuranceModule = module {
   }
   viewModel<TerminationConfirmationViewModel> { params ->
     val terminationType = params.get<TerminateInsuranceDestination.TerminationConfirmation.TerminationType>()
-
+    val insuranceInfo: TerminationGraphParameters = params.get<TerminationGraphParameters>()
+    val extraCoverageItems: List<ExtraCoverageItem> = params.get<List<ExtraCoverageItem>>()
     TerminationConfirmationViewModel(
       terminationType = terminationType,
+      insuranceInfo = insuranceInfo,
+      extraCoverageItems = extraCoverageItems,
       terminateInsuranceRepository = get(),
     )
   }
