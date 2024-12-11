@@ -112,8 +112,8 @@ private fun DeflectGlassDamageScreen(
             .fillMaxWidth(),
         ) {
           Surface(
-            color = HedvigTheme.colorScheme.fillBlack.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
-            contentColor = HedvigTheme.colorScheme.fillNegative,
+            color = HedvigTheme.colorScheme.backgroundPrimary.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
+            contentColor = HedvigTheme.colorScheme.fillPrimary,
           ) {
             Column(Modifier.padding(16.dp)) {
               AsyncImage(
@@ -130,7 +130,6 @@ private fun DeflectGlassDamageScreen(
               HedvigText(
                 text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL),
                 textAlign = TextAlign.Center,
-                color = HedvigTheme.colorScheme.textWhite,
                 modifier = Modifier.fillMaxWidth(),
               )
               Spacer(Modifier.height(16.dp))
