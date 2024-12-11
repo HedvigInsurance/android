@@ -23,7 +23,7 @@ internal class GetTravelAddonOfferUseCaseImpl(
   override suspend fun invoke(id: String): Either<ErrorMessage, TravelAddonOffer> {
     // todo: REMOVE MOCK!
     return either {
-      mockWithoutUpgrade
+      mockWithUpgrade
     }
   }
 }
@@ -56,7 +56,13 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       quoteId = "id",
       addonVariant = AddonVariant(
         termsVersion = "terms",
-        documents = listOf(),
+        documents = listOf(
+          InsuranceVariantDocument(
+            "Terms and conditions",
+            "www.url.com",
+            InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+          ),
+        ),
         displayDetails = listOf(),
       ),
       price = UiMoney(
@@ -99,7 +105,13 @@ private val mockWithUpgrade = TravelAddonOffer(
       quoteId = "id",
       addonVariant = AddonVariant(
         termsVersion = "terms",
-        documents = listOf(),
+        documents = listOf(
+          InsuranceVariantDocument(
+            "Terms and conditions",
+            "www.url.com",
+            InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+          ),
+        ),
         displayDetails = listOf("Coverage" to "60 days", "Insured people" to "You+1"),
       ),
       price = UiMoney(

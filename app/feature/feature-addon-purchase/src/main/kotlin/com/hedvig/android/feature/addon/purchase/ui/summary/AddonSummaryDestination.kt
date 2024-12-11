@@ -167,13 +167,13 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
             // with +
             stringResource(
               R.string.ADDON_FLOW_PRICE_LABEL,
-              uiState.totalPriceChange,
+              uiState.totalPriceChange.amount.toInt(),
             )
           } // without + (supposedly with minus)
           else {
             stringResource(
               R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, // todo: mb better to have a separate key?
-              uiState.totalPriceChange,
+              uiState.totalPriceChange.amount.toInt(),
             )
           }
           HedvigText(
@@ -250,9 +250,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
         }
       }
     },
-    displayItems = {
-      DetailsWithStrikeThrough(uiState)
-    },
+    displayItems = if (uiState.quote.addonVariant.displayDetails.isNotEmpty()) {
+      {DetailsWithStrikeThrough(uiState)}
+    } else {null},
     underTitleContent = {},
     modifier = modifier,
     displayName = uiState.offerDisplayName,
@@ -268,15 +268,16 @@ private fun DetailsWithStrikeThrough(uiState: Content) {
     val currentAddonValue = uiState.currentTravelAddon?.displayDetails?.firstOrNull { currentAddonItem ->
       currentAddonItem.first == quoteItem.first
     }?.second
+    val valueToStrikeThrough = if (currentAddonValue!=null &&currentAddonValue!=quoteItem.second) currentAddonValue else null
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(quoteItem.first, color = HedvigTheme.colorScheme.textSecondary)
       },
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
-          if (currentAddonValue != null) {
+          if (valueToStrikeThrough != null) {
             HedvigText(
-              currentAddonValue,
+              valueToStrikeThrough,
               style = HedvigTheme.typography.bodySmall.copy(
                 textDecoration = TextDecoration.LineThrough,
                 color = HedvigTheme.colorScheme.textSecondary,
