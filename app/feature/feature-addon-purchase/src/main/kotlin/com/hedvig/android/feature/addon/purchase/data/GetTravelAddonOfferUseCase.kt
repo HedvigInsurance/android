@@ -43,7 +43,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
             InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
           ),
         ),
-        displayDetails = listOf(),
+        displayDetails = listOf("Coverage" to "45 days", "Insured people" to "You+1"),
       ),
       price = UiMoney(
         49.0,
@@ -63,7 +63,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
             InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
           ),
         ),
-        displayDetails = listOf(),
+        displayDetails = listOf("Coverage" to "60 days", "Insured people" to "You+1"),
       ),
       price = UiMoney(
         60.0,
@@ -79,26 +79,6 @@ private val mockWithoutUpgrade = TravelAddonOffer(
 
 private val mockWithUpgrade = TravelAddonOffer(
   addonOptions = nonEmptyListOf(
-    TravelAddonQuote(
-      quoteId = "id",
-      addonId = "addonId1",
-      displayName = "45 days",
-      addonVariant = AddonVariant(
-        termsVersion = "terms",
-        documents = listOf(
-          InsuranceVariantDocument(
-            "Terms and conditions",
-            "www.url.com",
-            InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
-          ),
-        ),
-        displayDetails = listOf("Coverage" to "45 days", "Insured people" to "You+1"),
-      ),
-      price = UiMoney(
-        49.0,
-        UiCurrencyCode.SEK,
-      ),
-    ),
     TravelAddonQuote(
       displayName = "60 days",
       addonId = "addonId1",

@@ -47,4 +47,5 @@ internal data class SummaryParameters(
   val quote: TravelAddonQuote,
   val activationDate: LocalDate,
   val currentTravelAddon: CurrentTravelAddon?,
+  val popCustomizeDestination: Boolean = false,
 )

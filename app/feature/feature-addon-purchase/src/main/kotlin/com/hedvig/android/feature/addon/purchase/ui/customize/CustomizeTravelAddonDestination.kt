@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,8 +90,8 @@ internal fun CustomizeTravelAddonDestination(
     navigateUp = navigateUp,
     popBackStack = popBackStack,
     popAddonFlow = popAddonFlow,
-    navigateToSummary = { summaryParams ->
-      navigateToSummary(summaryParams)
+    submitToSummary = {
+      viewModel.emit(CustomizeTravelAddonEvent.SubmitSelected)
     },
     reload = {
       viewModel.emit(CustomizeTravelAddonEvent.Reload)
@@ -104,6 +105,10 @@ internal fun CustomizeTravelAddonDestination(
     onSetOptionBackToPreviouslyChosen = {
       viewModel.emit(CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen)
     },
+    navigateToSummary = { params ->
+      viewModel.emit(CustomizeTravelAddonEvent.ClearNavigation)
+      navigateToSummary(params)
+    },
   )
 }
 
@@ -112,7 +117,8 @@ private fun CustomizeTravelAddonScreen(
   uiState: CustomizeTravelAddonState,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
-  navigateToSummary: (SummaryParameters) -> Unit,
+  submitToSummary: () -> Unit,
+  navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
@@ -124,25 +130,29 @@ private fun CustomizeTravelAddonScreen(
   ) {
     when (val state = uiState) {
       is CustomizeTravelAddonState.Failure -> FailureScreen(state.errorMessage, reload, popBackStack)
-      CustomizeTravelAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
-      is CustomizeTravelAddonState.Success -> CustomizeTravelAddonScreenContent(
-        uiState = state,
-        navigateUp = navigateUp,
-        navigateToSummary = { quote ->
-          navigateToSummary(
-            SummaryParameters(
-              state.travelAddonOffer.title,
-              quote,
-              state.travelAddonOffer.activationDate,
-              currentTravelAddon = state.travelAddonOffer.currentTravelAddon,
-            ),
+      is CustomizeTravelAddonState.Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
+      is CustomizeTravelAddonState.Success -> {
+        LaunchedEffect(state.summaryParamsToNavigateFurther) {
+          if (state.summaryParamsToNavigateFurther != null) {
+            navigateToSummary(state.summaryParamsToNavigateFurther)
+          }
+        }
+        if (state.summaryParamsToNavigateFurther == null) {
+          // todo: Stelios pls check here. This is bc I wanted to escape the brief flickering if we only use this to
+          //   load data and skip without showing the CustomizeTravelAddonScreenContent
+          CustomizeTravelAddonScreenContent(
+            uiState = state,
+            navigateUp = navigateUp,
+            submitToSummary = submitToSummary,
+            onChooseSelectedOption = onChooseSelectedOption,
+            onChooseOptionInDialog = onChooseOptionInDialog,
+            onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+            popAddonFlow = popAddonFlow,
           )
-        },
-        onChooseSelectedOption = onChooseSelectedOption,
-        onChooseOptionInDialog = onChooseOptionInDialog,
-        onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
-        popAddonFlow = popAddonFlow,
-      )
+        }
+      }
     }
   }
 }
@@ -187,7 +197,7 @@ private fun CustomizeTravelAddonScreenContent(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  navigateToSummary: (travelAddonQuote: TravelAddonQuote) -> Unit,
+  submitToSummary: () -> Unit,
 ) {
   val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   HedvigScaffold(
@@ -242,7 +252,9 @@ private fun CustomizeTravelAddonScreenContent(
       buttonSize = Large,
       text = stringResource(R.string.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON),
       enabled = true,
-      onClick = dropUnlessResumed { navigateToSummary(uiState.currentlyChosenOption) },
+      onClick = dropUnlessResumed {
+        submitToSummary()
+      },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -495,7 +507,8 @@ private fun SelectTierScreenPreview(
         uiState = uiState,
         {},
         {},
-        { _ -> },
+        { },
+        {},
         {},
         {},
         {},
