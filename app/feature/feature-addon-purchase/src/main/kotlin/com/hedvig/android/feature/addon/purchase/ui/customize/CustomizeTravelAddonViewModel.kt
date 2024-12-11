@@ -73,6 +73,7 @@ internal class CustomizeTravelAddonPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      if (currentState is CustomizeTravelAddonState.Success) return@LaunchedEffect
       currentState = CustomizeTravelAddonState.Loading
       getTravelAddonOfferUseCase.invoke(insuranceId).fold(
         ifLeft = { error ->

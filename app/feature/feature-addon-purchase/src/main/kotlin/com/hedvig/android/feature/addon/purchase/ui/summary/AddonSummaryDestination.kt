@@ -251,8 +251,10 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       }
     },
     displayItems = if (uiState.quote.addonVariant.displayDetails.isNotEmpty()) {
-      {DetailsWithStrikeThrough(uiState)}
-    } else {null},
+      { DetailsWithStrikeThrough(uiState) }
+    } else {
+      null
+    },
     underTitleContent = {},
     modifier = modifier,
     displayName = uiState.offerDisplayName,
@@ -268,7 +270,13 @@ private fun DetailsWithStrikeThrough(uiState: Content) {
     val currentAddonValue = uiState.currentTravelAddon?.displayDetails?.firstOrNull { currentAddonItem ->
       currentAddonItem.first == quoteItem.first
     }?.second
-    val valueToStrikeThrough = if (currentAddonValue!=null &&currentAddonValue!=quoteItem.second) currentAddonValue else null
+    val valueToStrikeThrough = if (currentAddonValue != null &&
+      currentAddonValue != quoteItem.second
+    ) {
+      currentAddonValue
+    } else {
+      null
+    }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(quoteItem.first, color = HedvigTheme.colorScheme.textSecondary)
