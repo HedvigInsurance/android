@@ -112,7 +112,7 @@ private fun DeflectTowingScreen(
         ) {
           Surface(
             color = HedvigTheme.colorScheme.fillBlack.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
-            contentColor = HedvigTheme.colorScheme.fillNegative,
+            contentColor = HedvigTheme.colorScheme.fillPrimary,
           ) {
             Column(Modifier.padding(16.dp)) {
               AsyncImage(
