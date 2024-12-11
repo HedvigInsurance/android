@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -21,6 +22,7 @@ import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -58,8 +60,10 @@ fun EmergencyScreen(
         priority = NotificationDefaults.NotificationPriority.Attention,
       )
       Spacer(Modifier.height(8.dp))
-      HedvigTheme(true) {
+      HedvigTheme(darkTheme = true) {
         Surface(
+          color = HedvigTheme.colorScheme.backgroundPrimary.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
+          contentColor = HedvigTheme.colorScheme.fillPrimary,
           shape = HedvigTheme.shapes.cornerXLarge,
           modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -85,7 +89,7 @@ fun EmergencyScreen(
             HedvigText(
               text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL),
               textAlign = TextAlign.Center,
-              color = HedvigTheme.colorScheme.textTertiary,
+              color = HedvigTheme.colorScheme.textSecondary,
               style = HedvigTheme.typography.bodySmall.copy(
                 lineBreak = LineBreak.Heading,
               ),
@@ -144,7 +148,7 @@ fun EmergencyScreen(
               text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
               textAlign = TextAlign.Center,
               modifier = Modifier.fillMaxWidth(),
-              color = HedvigTheme.colorScheme.textTertiary,
+              color = HedvigTheme.colorScheme.textSecondary,
               style = HedvigTheme.typography.finePrint,
             )
             Spacer(Modifier.height(8.dp))
@@ -201,7 +205,7 @@ private fun mapToAccordionData(list: List<Pair<String, String>>): List<Accordion
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
 private fun PreviewEmergencyScreen() {
   HedvigTheme {
