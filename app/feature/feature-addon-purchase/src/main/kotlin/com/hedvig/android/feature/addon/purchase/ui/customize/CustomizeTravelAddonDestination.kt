@@ -82,6 +82,7 @@ internal fun CustomizeTravelAddonDestination(
   popBackStack: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -104,6 +105,7 @@ internal fun CustomizeTravelAddonDestination(
     onSetOptionBackToPreviouslyChosen = {
       viewModel.emit(CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen)
     },
+    navigateToChat = onNavigateToNewConversation,
   )
 }
 
@@ -118,12 +120,19 @@ private fun CustomizeTravelAddonScreen(
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
+  navigateToChat: () -> Unit,
 ) {
   Box(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is CustomizeTravelAddonState.Failure -> FailureScreen(state.errorMessage, reload, popBackStack)
+      is CustomizeTravelAddonState.Failure -> FailureScreen(
+        errorMessage = state.errorMessage,
+        reload = reload,
+        popBackStack = popBackStack,
+        navigateToChat = navigateToChat,
+      )
+
       CustomizeTravelAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
       is CustomizeTravelAddonState.Success -> CustomizeTravelAddonScreenContent(
         uiState = state,
@@ -147,7 +156,12 @@ private fun CustomizeTravelAddonScreen(
 }
 
 @Composable
-private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStack: () -> Unit) {
+private fun FailureScreen(
+  errorMessage: String?,
+  reload: () -> Unit,
+  popBackStack: () -> Unit,
+  navigateToChat: () -> Unit,
+) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -161,10 +175,16 @@ private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStac
         ),
     ) {
       Spacer(Modifier.weight(1f))
+      val buttonText = if (errorMessage == null) {
+        stringResource(R.string.GENERAL_RETRY)
+      } else {
+        stringResource(R.string.open_chat)
+      }
       HedvigErrorSection(
-        onButtonClick = reload,
+        onButtonClick = if (errorMessage == null) reload else navigateToChat,
         subTitle = errorMessage ?: stringResource(R.string.GENERAL_ERROR_BODY),
         modifier = Modifier.fillMaxSize(),
+        buttonText = buttonText,
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
@@ -495,6 +515,7 @@ private fun SelectTierScreenPreview(
         {},
         {},
         { _ -> },
+        {},
         {},
         {},
         {},

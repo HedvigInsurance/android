@@ -112,7 +112,7 @@ private fun DeflectTowingScreen(
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-          ) {
+        ) {
           Column(Modifier.padding(16.dp)) {
             AsyncImage(
               model = partner.imageUrl,
