@@ -354,13 +354,13 @@ private fun QuoteCard(
           Spacer(Modifier.height(16.dp))
           Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             HorizontalDivider()
-            if (displayItems!=null) {
+            if (displayItems != null) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
                 displayItems()
               }
             }
-            if (insurableLimits!=null) {
+            if (insurableLimits != null) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
                 insurableLimits()

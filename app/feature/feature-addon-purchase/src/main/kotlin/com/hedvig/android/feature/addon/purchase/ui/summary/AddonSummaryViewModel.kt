@@ -67,17 +67,19 @@ internal class AddonSummaryPresenter(
 }
 
 private fun getInitialState(summaryParameters: SummaryParameters): Content {
-  val total = if (summaryParameters.currentTravelAddon==null) summaryParameters.quote.price else {
+  val total = if (summaryParameters.currentTravelAddon == null) {
+    summaryParameters.quote.price
+  } else {
     val amountDiff = summaryParameters.quote.price.amount - summaryParameters.currentTravelAddon.price.amount
     UiMoney(amountDiff, summaryParameters.quote.price.currencyCode)
   }
-    return Content(
-      offerDisplayName = summaryParameters.offerDisplayName,
-      quote = summaryParameters.quote,
-      activationDate = summaryParameters.activationDate,
-      currentTravelAddon = summaryParameters.currentTravelAddon,
-      totalPriceChange = total
-    )
+  return Content(
+    offerDisplayName = summaryParameters.offerDisplayName,
+    quote = summaryParameters.quote,
+    activationDate = summaryParameters.activationDate,
+    currentTravelAddon = summaryParameters.currentTravelAddon,
+    totalPriceChange = total,
+  )
 }
 
 internal sealed interface AddonSummaryState {

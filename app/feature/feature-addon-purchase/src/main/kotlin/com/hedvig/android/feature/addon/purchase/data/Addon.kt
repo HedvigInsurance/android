@@ -12,7 +12,7 @@ internal sealed interface Addon {
     val title: String,
     val description: String,
     val activationDate: LocalDate,
-    val currentTravelAddon: CurrentTravelAddon?
+    val currentTravelAddon: CurrentTravelAddon?,
   ) : Addon
 }
 
@@ -35,5 +35,5 @@ internal data class AddonVariant(
 @Serializable
 internal data class CurrentTravelAddon(
   val price: UiMoney,
-  val displayDetails: List<Pair<String, String>>
+  val displayDetails: List<Pair<String, String>>,
 )

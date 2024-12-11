@@ -134,7 +134,7 @@ private fun CustomizeTravelAddonScreen(
               state.travelAddonOffer.title,
               quote,
               state.travelAddonOffer.activationDate,
-              currentTravelAddon = state.travelAddonOffer.currentTravelAddon
+              currentTravelAddon = state.travelAddonOffer.currentTravelAddon,
             ),
           )
         },
@@ -555,5 +555,5 @@ private val fakeTravelAddon = TravelAddonOffer(
   title = "Travel Plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   activationDate = LocalDate(2024, 12, 30),
-  currentTravelAddon = null
+  currentTravelAddon = null,
 )

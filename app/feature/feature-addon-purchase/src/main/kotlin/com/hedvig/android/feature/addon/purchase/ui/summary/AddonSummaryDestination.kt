@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -42,11 +44,9 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
-import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
 import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -163,17 +163,19 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val text = if (uiState.totalPriceChange.amount > 0)
-          //with +
+          val text = if (uiState.totalPriceChange.amount > 0) {
+            // with +
             stringResource(
               R.string.ADDON_FLOW_PRICE_LABEL,
               uiState.totalPriceChange,
             )
-          //without + (supposedly with minus)
-          else stringResource(
-            R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, //todo: mb better to have a separate key?
-            uiState.totalPriceChange,
-          )
+          } // without + (supposedly with minus)
+          else {
+            stringResource(
+              R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, // todo: mb better to have a separate key?
+              uiState.totalPriceChange,
+            )
+          }
           HedvigText(
             text = text,
             textAlign = TextAlign.End,
@@ -219,18 +221,37 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = @Composable {
-      TODO()
-      uiState.quote.price.toString()
-    },
-    displayItems = @Composable {
-      TODO()
-      uiState.quote.addonVariant.displayDetails.map {
-        QuoteDisplayItem(
-          it.first,
-          null,
-          it.second,
-        )
+      Row(horizontalArrangement = Arrangement.End) {
+        if (uiState.currentTravelAddon != null) {
+          HedvigText(
+            stringResource(
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              uiState.currentTravelAddon.price,
+            ),
+            style = HedvigTheme.typography.bodySmall.copy(
+              textDecoration = TextDecoration.LineThrough,
+              color = HedvigTheme.colorScheme.textSecondary,
+            ),
+          )
+          Spacer(Modifier.width(8.dp))
+          HedvigText(
+            stringResource(
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              uiState.quote.price,
+            ),
+          )
+        } else {
+          HedvigText(
+            stringResource(
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              uiState.quote.price,
+            ),
+          )
+        }
       }
+    },
+    displayItems = {
+      DetailsWithStrikeThrough(uiState)
     },
     underTitleContent = {},
     modifier = modifier,
@@ -239,6 +260,39 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     insurableLimits = null,
     documents = uiState.quote.addonVariant.documents,
   )
+}
+
+@Composable
+private fun DetailsWithStrikeThrough(uiState: Content) {
+  uiState.quote.addonVariant.displayDetails.forEach { quoteItem ->
+    val currentAddonValue = uiState.currentTravelAddon?.displayDetails?.firstOrNull { currentAddonItem ->
+      currentAddonItem.first == quoteItem.first
+    }?.second
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        HedvigText(quoteItem.first, color = HedvigTheme.colorScheme.textSecondary)
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          if (currentAddonValue != null) {
+            HedvigText(
+              currentAddonValue,
+              style = HedvigTheme.typography.bodySmall.copy(
+                textDecoration = TextDecoration.LineThrough,
+                color = HedvigTheme.colorScheme.textSecondary,
+              ),
+            )
+            Spacer(Modifier.width(8.dp))
+          }
+          HedvigText(
+            quoteItem.second,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+  }
 }
 
 @HedvigPreview

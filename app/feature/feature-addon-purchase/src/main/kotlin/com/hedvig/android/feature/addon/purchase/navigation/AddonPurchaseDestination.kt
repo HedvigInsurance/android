@@ -46,5 +46,5 @@ internal data class SummaryParameters(
   val offerDisplayName: String,
   val quote: TravelAddonQuote,
   val activationDate: LocalDate,
-  val currentTravelAddon: CurrentTravelAddon?
+  val currentTravelAddon: CurrentTravelAddon?,
 )

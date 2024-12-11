@@ -68,7 +68,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
   title = "Travel plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   activationDate = LocalDate(2025, 1, 1),
-  currentTravelAddon = null
+  currentTravelAddon = null,
 )
 
 private val mockWithUpgrade = TravelAddonOffer(
@@ -111,9 +111,8 @@ private val mockWithUpgrade = TravelAddonOffer(
   title = "Travel plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   activationDate = LocalDate(2025, 1, 1),
-  currentTravelAddon =  CurrentTravelAddon(
+  currentTravelAddon = CurrentTravelAddon(
     UiMoney(49.0, UiCurrencyCode.SEK),
-    listOf("Coverage" to "45 days", "Insured people" to "You+1")
-    )
-
+    listOf("Coverage" to "45 days", "Insured people" to "You+1"),
+  ),
 )
