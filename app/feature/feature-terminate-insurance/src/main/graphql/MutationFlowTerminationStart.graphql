@@ -1,4 +1,4 @@
-mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartInput!) {
+mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartInput!, $tiersEnabled: Boolean!) {
   flowTerminationStart(input: $flowTerminationStartInput, context: null) {
     id
     context

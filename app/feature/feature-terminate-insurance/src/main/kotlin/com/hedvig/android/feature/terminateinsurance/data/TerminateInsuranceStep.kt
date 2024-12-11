@@ -229,10 +229,10 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   }
 }
 
-private fun List<ExtraCoverageItemFragment>.toExtraCoverageItems(): List<ExtraCoverageItem> {
-  return map {
+private fun List<ExtraCoverageItemFragment>?.toExtraCoverageItems(): List<ExtraCoverageItem> {
+  return this?.map {
     ExtraCoverageItem(it.displayName, it.displayValue)
-  }
+  } ?: emptyList()
 }
 
 @Serializable

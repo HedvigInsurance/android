@@ -42,7 +42,7 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
-        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
+        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id), isTierEnabled))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationStart
@@ -60,6 +60,7 @@ internal class TerminateInsuranceRepositoryImpl(
           FlowTerminationDateNextMutation(
             context = terminationFlowContextStorage.getContext(),
             input = FlowTerminationDateInput(terminationDate),
+            tiersEnabled = isTierEnabled,
           ),
         )
         .safeExecute(::ErrorMessage)
@@ -85,6 +86,7 @@ internal class TerminateInsuranceRepositoryImpl(
                 text = Optional.presentIfNotNull(reason.feedBack),
               ),
             ),
+            tiersEnabled = isTierEnabled,
           ),
         )
         .safeExecute(::ErrorMessage)
@@ -99,7 +101,7 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
-        .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext()))
+        .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext(), isTierEnabled))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationDeletionNext
