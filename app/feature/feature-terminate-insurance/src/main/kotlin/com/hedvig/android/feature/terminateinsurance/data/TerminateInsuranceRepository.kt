@@ -10,6 +10,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature.TIER
+import com.hedvig.android.featureflags.flags.Feature.TRAVEL_ADDON
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import octopus.FlowTerminationDateNextMutation
@@ -41,8 +42,9 @@ internal class TerminateInsuranceRepositoryImpl(
   override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
       val result = apolloClient
-        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id), isTierEnabled))
+        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id), isAddonsEnabled))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationStart
@@ -55,12 +57,13 @@ internal class TerminateInsuranceRepositoryImpl(
   override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
       val result = apolloClient
         .mutation(
           FlowTerminationDateNextMutation(
             context = terminationFlowContextStorage.getContext(),
             input = FlowTerminationDateInput(terminationDate),
-            tiersEnabled = isTierEnabled,
+            addonsEnabled = isAddonsEnabled,
           ),
         )
         .safeExecute(::ErrorMessage)
@@ -76,6 +79,7 @@ internal class TerminateInsuranceRepositoryImpl(
   ): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
       val result = apolloClient
         .mutation(
           FlowTerminationSurveyNextMutation(
@@ -86,7 +90,7 @@ internal class TerminateInsuranceRepositoryImpl(
                 text = Optional.presentIfNotNull(reason.feedBack),
               ),
             ),
-            tiersEnabled = isTierEnabled,
+            addonsEnabled = isAddonsEnabled,
           ),
         )
         .safeExecute(::ErrorMessage)
@@ -100,8 +104,9 @@ internal class TerminateInsuranceRepositoryImpl(
   override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
       val result = apolloClient
-        .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext(), isTierEnabled))
+        .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext(), isAddonsEnabled))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationDeletionNext

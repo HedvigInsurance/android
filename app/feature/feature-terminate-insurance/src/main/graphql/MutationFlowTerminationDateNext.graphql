@@ -1,4 +1,4 @@
-mutation FlowTerminationDateNext($context: FlowContext!, $input: FlowTerminationDateInput!, $tiersEnabled: Boolean!) {
+mutation FlowTerminationDateNext($context: FlowContext!, $input: FlowTerminationDateInput!, $addonsEnabled: Boolean!) {
   flowTerminationDateNext(context: $context, input: $input) {
     id
     context

@@ -62,14 +62,14 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
   id
   minDate
   maxDate
-  extraCoverage @include(if: $tiersEnabled) {
+  extraCoverage @include(if: $addonsEnabled) {
     ...ExtraCoverageItemFragment
   }
 }
 
 fragment FlowTerminationDeletionStepFragment on FlowTerminationDeletionStep {
   id
-  extraCoverage @include(if: $tiersEnabled) {
+  extraCoverage @include(if: $addonsEnabled) {
     ...ExtraCoverageItemFragment
   }
 }
