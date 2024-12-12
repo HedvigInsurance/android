@@ -38,6 +38,7 @@ internal data class MovingFlowQuotes(
     val tierDescription: String?,
     val deductible: Deductible?,
     val defaultChoice: Boolean,
+    val relatedAddonQuotes: List<AddonQuote>,
   ) : Quote {
     val tierDisplayName = productVariant.displayTierName ?: tierName
 
@@ -56,6 +57,15 @@ internal data class MovingFlowQuotes(
     override val productVariant: ProductVariant,
     override val startDate: LocalDate,
     override val displayItems: List<DisplayItem>,
+  ) : Quote
+
+  @Serializable
+  data class AddonQuote(
+    override val premium: UiMoney,
+    override val startDate: LocalDate,
+    override val displayItems: List<DisplayItem>,
+    override val exposureName: String,
+    override val productVariant: ProductVariant,
   ) : Quote
 
   @Serializable
@@ -87,6 +97,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
           )
         },
         defaultChoice = houseQuote.defaultChoice,
+        relatedAddonQuotes = emptyList(), // todo tier & addons: populate the related addons when backend returns them
       )
     },
     mtaQuotes = (mtaQuotes ?: emptyList()).map { mtaQuote ->

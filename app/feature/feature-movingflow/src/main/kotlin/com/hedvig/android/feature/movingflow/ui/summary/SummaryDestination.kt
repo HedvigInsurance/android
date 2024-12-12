@@ -60,10 +60,12 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -126,7 +128,9 @@ private fun SummaryScreen(
         topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
       Box(
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -193,6 +197,9 @@ private fun SummaryScreen(
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
+        for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
+          AddonQuoteCard(addonQuote)
+        }
         for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
           QuoteCard(mtaQuote)
         }
@@ -228,9 +235,11 @@ private fun SummaryScreen(
     }
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = Modifier.wrapContentHeight(Alignment.Bottom).onPlaced {
-        bottomAttachedContentHeightPx = it.size.height
-      },
+      modifier = Modifier
+        .wrapContentHeight(Alignment.Bottom)
+        .onPlaced {
+          bottomAttachedContentHeightPx = it.size.height
+        },
     ) {
       Column(
         Modifier
@@ -271,13 +280,12 @@ private fun SummaryScreen(
 }
 
 @Composable
-private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
-  val locale = getLocale()
-  val startDate = remember(quote.startDate) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
-      locale,
-    ).format(quote.startDate.toJavaLocalDate())
-  }
+private fun QuoteCard(
+  quote: MovingFlowQuotes.Quote,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  val startDate = formatStartDate(quote.startDate)
   val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
     productVariant = quote.productVariant,
@@ -291,7 +299,47 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
       )
     },
     modifier = modifier,
+    underTitleContent = underTitleContent,
   )
+}
+
+@Composable
+private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifier = Modifier) {
+  val startDate = formatStartDate(quote.startDate)
+  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  QuoteCard(
+    displayName = quote.productVariant.displayName,
+    contractGroup = null,
+    insurableLimits = quote.productVariant.insurableLimits,
+    documents = quote.productVariant.documents,
+    subtitle = subtitle,
+    premium = quote.premium.toString(),
+    displayItems = quote.displayItems.map {
+      QuoteDisplayItem(
+        title = it.title,
+        subtitle = it.subtitle,
+        value = it.value,
+      )
+    },
+    modifier = modifier,
+    underTitleContent = {
+      Column {
+        Spacer(Modifier.height(16.dp))
+        HedvigNotificationCard(
+          "This addon can be removed by contacting support", // todo l10n
+          InfoInline,
+        )
+      }
+    },
+  )
+}
+
+@Composable
+private fun formatStartDate(startDate: LocalDate): String {
+  val locale = getLocale()
+  return remember(startDate) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
+  }
 }
 
 @Composable
@@ -399,6 +447,21 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           tierDescription = "tierDescription",
           deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
           defaultChoice = false,
+          relatedAddonQuotes = List(1) {
+            AddonQuote(
+              premium = UiMoney(129.0, SEK),
+              startDate = startDate,
+              displayItems = listOf(
+                DisplayItem(
+                  title = "display title",
+                  subtitle = "display subtitle",
+                  value = "display value",
+                ),
+              ),
+              exposureName = "exposureName",
+              productVariant = productVariant,
+            )
+          },
         ),
         moveMtaQuotes = listOf(
           MoveMtaQuote(
