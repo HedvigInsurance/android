@@ -330,6 +330,7 @@ internal fun HedvigNavHost(
     addonPurchaseNavGraph(
       navigator = navigator,
       navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { navigateToNewConversation() },
     )
     changeTierGraph(
       navigator = navigator,

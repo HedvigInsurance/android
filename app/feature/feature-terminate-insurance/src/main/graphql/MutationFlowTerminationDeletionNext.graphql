@@ -1,4 +1,4 @@
-mutation FlowTerminationDeletionNext($context: FlowContext!) {
+mutation FlowTerminationDeletionNext($context: FlowContext!, $addonsEnabled: Boolean!) {
   flowTerminationDeletionNext(input: {confirmed: true}, context: $context) {
     id
     context

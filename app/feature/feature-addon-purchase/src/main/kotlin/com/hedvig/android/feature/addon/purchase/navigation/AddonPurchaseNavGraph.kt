@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
@@ -25,7 +26,11 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: NavController) {
+fun NavGraphBuilder.addonPurchaseNavGraph(
+  navigator: Navigator,
+  navController: NavController,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+) {
   navgraph<AddonPurchaseGraphDestination>(
     startDestination = ChooseInsuranceToAddAddonDestination::class,
   ) {
@@ -79,6 +84,10 @@ fun NavGraphBuilder.addonPurchaseNavGraph(navigator: Navigator, navController: N
           } else {
             navigator.navigateUnsafe(Summary(summaryParameters))
           }
+        },
+        onNavigateToNewConversation = {
+          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true) // todo: is this the right thing?
+          onNavigateToNewConversation(backStackEntry)
         },
       )
     }

@@ -1,4 +1,4 @@
-mutation FlowTerminationSurveyNext($context: FlowContext!, $input:  FlowTerminationSurveyInput!) {
+mutation FlowTerminationSurveyNext($context: FlowContext!, $input:  FlowTerminationSurveyInput!, $addonsEnabled: Boolean!) {
   flowTerminationSurveyNext(context: $context, input: $input) {
     id
     context

@@ -37,7 +37,6 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ExpandablePlusCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -105,62 +104,61 @@ private fun DeflectTowingScreen(
         Spacer(Modifier.height(8.dp))
       }
       HedvigTheme(darkTheme = true) {
-        HedvigCard(
+        Surface(
+          color = HedvigTheme.colorScheme.backgroundPrimary.copy(0.95f)
+            .compositeOver(HedvigTheme.colorScheme.fillWhite),
+          contentColor = HedvigTheme.colorScheme.fillPrimary,
+          shape = HedvigTheme.shapes.cornerXLarge,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         ) {
-          Surface(
-            color = HedvigTheme.colorScheme.fillBlack.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
-            contentColor = HedvigTheme.colorScheme.fillNegative,
-          ) {
-            Column(Modifier.padding(16.dp)) {
-              AsyncImage(
-                model = partner.imageUrl,
-                contentDescription = null,
-                imageLoader = imageLoader,
-                placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
-                modifier = Modifier
-                  .padding(16.dp)
-                  .fillMaxWidth()
-                  .height(40.dp),
-              )
-              Spacer(Modifier.height(16.dp))
-              HedvigText(
-                text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-              )
-              Spacer(Modifier.height(16.dp))
-              val context = LocalContext.current
-              HedvigButton(
-                text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
-                enabled = true,
-                buttonSize = Medium,
-                onClick = dropUnlessResumed {
-                  val phoneNumber = partner.phoneNumber
-                  if (phoneNumber != null) {
-                    try {
-                      context.startActivity(
-                        Intent(
-                          Intent.ACTION_DIAL,
-                          Uri.parse("tel:$phoneNumber"),
-                        ),
-                      )
-                    } catch (exception: Throwable) {
-                      logcat(ERROR, exception) {
-                        "Could not open dial activity in deflect towing destination"
-                      }
-                    }
-                  } else {
-                    logcat(ERROR) {
-                      "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
+          Column(Modifier.padding(16.dp)) {
+            AsyncImage(
+              model = partner.imageUrl,
+              contentDescription = null,
+              imageLoader = imageLoader,
+              placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
+              modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(40.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            HedvigText(
+              text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
+              textAlign = TextAlign.Center,
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(16.dp))
+            val context = LocalContext.current
+            HedvigButton(
+              text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
+              enabled = true,
+              buttonSize = Medium,
+              onClick = dropUnlessResumed {
+                val phoneNumber = partner.phoneNumber
+                if (phoneNumber != null) {
+                  try {
+                    context.startActivity(
+                      Intent(
+                        Intent.ACTION_DIAL,
+                        Uri.parse("tel:$phoneNumber"),
+                      ),
+                    )
+                  } catch (exception: Throwable) {
+                    logcat(ERROR, exception) {
+                      "Could not open dial activity in deflect towing destination"
                     }
                   }
-                },
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
+                } else {
+                  logcat(ERROR) {
+                    "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
+                  }
+                }
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
         }
       }

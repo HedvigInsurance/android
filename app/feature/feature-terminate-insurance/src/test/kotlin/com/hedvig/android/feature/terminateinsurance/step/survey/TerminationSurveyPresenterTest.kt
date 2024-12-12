@@ -178,6 +178,7 @@ class TerminationSurveyPresenterTest {
     val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
       LocalDate(2024, 6, 1),
       LocalDate(2024, 6, 29),
+      emptyList(),
     )
     presenter.test(initialState = TerminationSurveyState()) {
       skipItems(1)
@@ -194,7 +195,7 @@ class TerminationSurveyPresenterTest {
   }
 
   @Test
-  fun `when survey is submitted for option with no subOptions navigate to nex termination step`() = runTest {
+  fun `when survey is submitted for option with no subOptions navigate to next termination step`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
@@ -205,6 +206,7 @@ class TerminationSurveyPresenterTest {
     val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
       LocalDate(2024, 6, 1),
       LocalDate(2024, 6, 29),
+      emptyList(),
     )
     presenter.test(initialState = TerminationSurveyState()) {
       skipItems(1)

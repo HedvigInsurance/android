@@ -83,6 +83,7 @@ internal fun CustomizeTravelAddonDestination(
   popBackStack: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -109,6 +110,7 @@ internal fun CustomizeTravelAddonDestination(
       viewModel.emit(CustomizeTravelAddonEvent.ClearNavigation)
       navigateToSummary(params)
     },
+    navigateToChat = onNavigateToNewConversation,
   )
 }
 
@@ -124,12 +126,18 @@ private fun CustomizeTravelAddonScreen(
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
+  navigateToChat: () -> Unit,
 ) {
   Box(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is CustomizeTravelAddonState.Failure -> FailureScreen(state.errorMessage, reload, popBackStack)
+      is CustomizeTravelAddonState.Failure -> FailureScreen(
+        errorMessage = state.errorMessage,
+        reload = reload,
+        popBackStack = popBackStack,
+        navigateToChat = navigateToChat
+      )
       is CustomizeTravelAddonState.Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
@@ -140,8 +148,6 @@ private fun CustomizeTravelAddonScreen(
           }
         }
         if (state.summaryParamsToNavigateFurther == null) {
-          // todo: Stelios pls check here. This is bc I wanted to escape the brief flickering if we only use this to
-          //   load data and skip without showing the CustomizeTravelAddonScreenContent
           CustomizeTravelAddonScreenContent(
             uiState = state,
             navigateUp = navigateUp,
@@ -158,7 +164,12 @@ private fun CustomizeTravelAddonScreen(
 }
 
 @Composable
-private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStack: () -> Unit) {
+private fun FailureScreen(
+  errorMessage: String?,
+  reload: () -> Unit,
+  popBackStack: () -> Unit,
+  navigateToChat: () -> Unit,
+) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -172,10 +183,16 @@ private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStac
         ),
     ) {
       Spacer(Modifier.weight(1f))
+      val buttonText = if (errorMessage == null) {
+        stringResource(R.string.GENERAL_RETRY)
+      } else {
+        stringResource(R.string.open_chat)
+      }
       HedvigErrorSection(
-        onButtonClick = reload,
+        onButtonClick = if (errorMessage == null) reload else navigateToChat,
         subTitle = errorMessage ?: stringResource(R.string.GENERAL_ERROR_BODY),
         modifier = Modifier.fillMaxSize(),
+        buttonText = buttonText,
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
@@ -471,7 +488,7 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
 
 @Composable
 internal fun TravelPlusExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
-  HedvigBottomSheet(sheetState) { _ ->
+  HedvigBottomSheet(sheetState) {
     HedvigText(
       text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
       modifier = Modifier
@@ -508,6 +525,7 @@ private fun SelectTierScreenPreview(
         {},
         {},
         { },
+        {},
         {},
         {},
         {},
