@@ -20,7 +20,7 @@ internal object ColorLightTokens {
   val TextBlackTranslucent: Color = PaletteTokens.BlackTransparent
   val TextWhiteTranslucent: Color = PaletteTokens.WhiteTransparent
   val Action: Color = PaletteTokens.Red600
-  val Link: Color = PaletteTokens.Blue600
+  val Link: Color = PaletteTokens.Blue800
   val ButtonPrimaryResting: Color = PaletteTokens.Black
   val ButtonPrimaryHover: Color = PaletteTokens.G900TDark
   val ButtonPrimaryDisabled: Color = PaletteTokens.G100
