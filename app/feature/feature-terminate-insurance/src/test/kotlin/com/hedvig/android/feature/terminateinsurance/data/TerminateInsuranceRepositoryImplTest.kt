@@ -140,7 +140,7 @@ class TerminateInsuranceRepositoryImplTest {
         fixedMap = mapOf(
           Feature.TIER to false,
           Feature.TRAVEL_ADDON to false,
-        )
+        ),
       )
 
       val repo = TerminateInsuranceRepositoryImpl(
@@ -185,7 +185,7 @@ class TerminateInsuranceRepositoryImplTest {
         fixedMap = mapOf(
           Feature.TIER to true,
           Feature.TRAVEL_ADDON to false,
-        )
+        ),
       )
 
       val repo = TerminateInsuranceRepositoryImpl(
@@ -230,7 +230,7 @@ class TerminateInsuranceRepositoryImplTest {
         fixedMap = mapOf(
           Feature.TIER to false,
           Feature.TRAVEL_ADDON to false,
-        )
+        ),
       )
 
       val repo = TerminateInsuranceRepositoryImpl(
@@ -261,7 +261,7 @@ class TerminateInsuranceRepositoryImplTest {
         fixedMap = mapOf(
           Feature.TIER to true,
           Feature.TRAVEL_ADDON to false,
-        )
+        ),
       )
 
       val repo = TerminateInsuranceRepositoryImpl(
