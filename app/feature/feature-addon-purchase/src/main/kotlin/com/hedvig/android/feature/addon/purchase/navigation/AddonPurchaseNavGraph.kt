@@ -75,10 +75,18 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
         },
         navigateToSummary = { summaryParameters: SummaryParameters ->
-          navigator.navigateUnsafe(Summary(summaryParameters))
+          if (summaryParameters.popCustomizeDestination) {
+            navigator.navigateUnsafe(Summary(summaryParameters)) {
+              typedPopUpTo<CustomizeAddon> {
+                inclusive = true
+              }
+            }
+          } else {
+            navigator.navigateUnsafe(Summary(summaryParameters))
+          }
         },
         onNavigateToNewConversation = {
-          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true) // todo: is this the right thing?
+          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
           onNavigateToNewConversation(backStackEntry)
         },
       )
