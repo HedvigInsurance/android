@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -60,30 +61,47 @@ internal class CustomizeTravelAddonPresenter(
 
         CustomizeTravelAddonEvent.ClearNavigation -> {
           val state = currentState as? CustomizeTravelAddonState.Success ?: return@CollectEvents
-          currentState = state.copy(quoteToNavigateFurther = null)
+          currentState = state.copy(summaryParamsToNavigateFurther = null)
         }
-
         CustomizeTravelAddonEvent.SubmitSelected -> {
           val state = currentState as? CustomizeTravelAddonState.Success ?: return@CollectEvents
           currentState = state.copy(
-            quoteToNavigateFurther = state.currentlyChosenOption,
+            summaryParamsToNavigateFurther = SummaryParameters(
+              offerDisplayName = state.travelAddonOffer.title,
+              quote = state.currentlyChosenOption,
+              activationDate = state.travelAddonOffer.activationDate,
+              currentTravelAddon = state.travelAddonOffer.currentTravelAddon,
+            ),
           )
         }
       }
     }
 
     LaunchedEffect(loadIteration) {
+      if (currentState is CustomizeTravelAddonState.Success) return@LaunchedEffect
       currentState = CustomizeTravelAddonState.Loading
       getTravelAddonOfferUseCase.invoke(insuranceId).fold(
         ifLeft = { error ->
           currentState = CustomizeTravelAddonState.Failure(error.message)
         },
         ifRight = { offer ->
+          val summaryParams = if (offer.addonOptions.size == 1) {
+            SummaryParameters(
+              offer.title,
+              offer.addonOptions[0],
+              offer.activationDate,
+              currentTravelAddon = offer.currentTravelAddon,
+              popCustomizeDestination = true,
+            )
+          } else {
+            null
+          }
           selectedOptionInDialog = offer.addonOptions[0]
           currentState = CustomizeTravelAddonState.Success(
             travelAddonOffer = offer,
             currentlyChosenOption = offer.addonOptions[0],
             currentlyChosenOptionInDialog = selectedOptionInDialog,
+            summaryParamsToNavigateFurther = summaryParams,
           )
         },
       )
@@ -91,7 +109,7 @@ internal class CustomizeTravelAddonPresenter(
 
     val state = currentState
     return when (state) {
-      is CustomizeTravelAddonState.Failure, CustomizeTravelAddonState.Loading -> state
+      is CustomizeTravelAddonState.Failure, is CustomizeTravelAddonState.Loading -> state
       is CustomizeTravelAddonState.Success -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,
       )
@@ -106,7 +124,7 @@ internal sealed interface CustomizeTravelAddonState {
     val travelAddonOffer: TravelAddonOffer,
     val currentlyChosenOption: TravelAddonQuote,
     val currentlyChosenOptionInDialog: TravelAddonQuote?,
-    val quoteToNavigateFurther: TravelAddonQuote? = null,
+    val summaryParamsToNavigateFurther: SummaryParameters? = null,
   ) : CustomizeTravelAddonState
 
   data class Failure(val errorMessage: String? = null) : CustomizeTravelAddonState

@@ -1,16 +1,11 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import com.halilibo.richtext.ui.BasicRichText
 import com.halilibo.richtext.ui.LinkClickHandler
 import com.halilibo.richtext.ui.RichTextScope

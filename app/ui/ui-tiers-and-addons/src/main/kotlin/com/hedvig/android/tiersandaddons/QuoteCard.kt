@@ -270,6 +270,169 @@ private fun QuoteCard(
 }
 
 @Composable
+fun QuoteCard(
+  subtitle: String,
+  premium: @Composable () -> Unit,
+  displayItems: (@Composable () -> Unit)?,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: (@Composable () -> Unit)?,
+  documents: List<InsuranceVariantDocument>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  var showDetails by rememberSaveable { mutableStateOf(false) }
+  QuoteCard(
+    showDetails = showDetails,
+    setShowDetails = { showDetails = it },
+    subtitle = subtitle,
+    premium = premium,
+    displayItems = displayItems,
+    underTitleContent = underTitleContent,
+    modifier = modifier,
+    displayName = displayName,
+    contractGroup = contractGroup,
+    insurableLimits = insurableLimits,
+    documents = documents,
+  )
+}
+
+@Composable
+private fun QuoteCard(
+  showDetails: Boolean,
+  setShowDetails: (Boolean) -> Unit,
+  subtitle: String,
+  premium: @Composable () -> Unit,
+  displayItems: (@Composable () -> Unit)?,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: (@Composable () -> Unit)?,
+  documents: List<InsuranceVariantDocument>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  HedvigCard(
+    modifier = modifier,
+    onClick = { setShowDetails(!showDetails) },
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Row {
+        if (contractGroup != null) {
+          Image(
+            painter = painterResource(contractGroup.toPillow()),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(modifier = Modifier.width(12.dp))
+        }
+        Column {
+          HedvigText(
+            text = displayName,
+          )
+          HedvigText(
+            text = subtitle,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+        },
+        endSlot = premium,
+      )
+      underTitleContent()
+      AnimatedVisibility(
+        visible = showDetails,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+      ) {
+        Column {
+          Spacer(Modifier.height(16.dp))
+          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            HorizontalDivider()
+            if (displayItems != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
+                displayItems()
+              }
+            }
+            if (insurableLimits != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
+                insurableLimits()
+              }
+            }
+            if (documents.isNotEmpty()) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+                Column(
+                  verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                  for (document in documents) {
+                    val uriHandler = LocalUriHandler.current
+                    Row(
+                      modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(HedvigTheme.shapes.cornerXSmall)
+                        .clickable {
+                          uriHandler.openUri(document.url)
+                        },
+                    ) {
+                      HedvigText(
+                        text = document.displayName,
+                        style = HedvigTheme.typography.bodySmall,
+                        color = HedvigTheme.colorScheme.textSecondary,
+                        modifier = Modifier.weight(1f),
+                      )
+                      Spacer(Modifier.width(8.dp))
+                      LayoutWithoutPlacement(
+                        sizeAdjustingContent = {
+                          HedvigText(
+                            "H",
+                            style = HedvigTheme.typography.bodySmall,
+                          )
+                        },
+                      ) {
+                        val density = LocalDensity.current
+                        Icon(
+                          imageVector = HedvigIcons.ArrowNorthEast,
+                          contentDescription = null,
+                          tint = HedvigTheme.colorScheme.fillPrimary,
+                          modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
+                        )
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = if (showDetails) {
+          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+        } else {
+          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+        },
+        onClick = { setShowDetails(!showDetails) },
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
+
+@Composable
 private fun InfoRow(leftText: String, rightText: String, modifier: Modifier = Modifier) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {

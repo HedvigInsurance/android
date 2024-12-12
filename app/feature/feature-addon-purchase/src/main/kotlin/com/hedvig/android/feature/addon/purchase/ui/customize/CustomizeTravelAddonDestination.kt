@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +83,7 @@ internal fun CustomizeTravelAddonDestination(
   popBackStack: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -89,8 +91,8 @@ internal fun CustomizeTravelAddonDestination(
     navigateUp = navigateUp,
     popBackStack = popBackStack,
     popAddonFlow = popAddonFlow,
-    navigateToSummary = { summaryParams ->
-      navigateToSummary(summaryParams)
+    submitToSummary = {
+      viewModel.emit(CustomizeTravelAddonEvent.SubmitSelected)
     },
     reload = {
       viewModel.emit(CustomizeTravelAddonEvent.Reload)
@@ -104,6 +106,11 @@ internal fun CustomizeTravelAddonDestination(
     onSetOptionBackToPreviouslyChosen = {
       viewModel.emit(CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen)
     },
+    navigateToSummary = { params ->
+      viewModel.emit(CustomizeTravelAddonEvent.ClearNavigation)
+      navigateToSummary(params)
+    },
+    navigateToChat = onNavigateToNewConversation,
   )
 }
 
@@ -112,42 +119,57 @@ private fun CustomizeTravelAddonScreen(
   uiState: CustomizeTravelAddonState,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
-  navigateToSummary: (SummaryParameters) -> Unit,
+  submitToSummary: () -> Unit,
+  navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
+  navigateToChat: () -> Unit,
 ) {
   Box(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is CustomizeTravelAddonState.Failure -> FailureScreen(state.errorMessage, reload, popBackStack)
-      CustomizeTravelAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
-      is CustomizeTravelAddonState.Success -> CustomizeTravelAddonScreenContent(
-        uiState = state,
-        navigateUp = navigateUp,
-        navigateToSummary = { quote ->
-          navigateToSummary(
-            SummaryParameters(
-              state.travelAddonOffer.title,
-              quote,
-              state.travelAddonOffer.activationDate,
-            ),
-          )
-        },
-        onChooseSelectedOption = onChooseSelectedOption,
-        onChooseOptionInDialog = onChooseOptionInDialog,
-        onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
-        popAddonFlow = popAddonFlow,
+      is CustomizeTravelAddonState.Failure -> FailureScreen(
+        errorMessage = state.errorMessage,
+        reload = reload,
+        popBackStack = popBackStack,
+        navigateToChat = navigateToChat,
       )
+      CustomizeTravelAddonState.Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
+      is CustomizeTravelAddonState.Success -> {
+        LaunchedEffect(state.summaryParamsToNavigateFurther) {
+          if (state.summaryParamsToNavigateFurther != null) {
+            navigateToSummary(state.summaryParamsToNavigateFurther)
+          }
+        }
+        if (state.summaryParamsToNavigateFurther == null) {
+          CustomizeTravelAddonScreenContent(
+            uiState = state,
+            navigateUp = navigateUp,
+            submitToSummary = submitToSummary,
+            onChooseSelectedOption = onChooseSelectedOption,
+            onChooseOptionInDialog = onChooseOptionInDialog,
+            onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+            popAddonFlow = popAddonFlow,
+          )
+        }
+      }
     }
   }
 }
 
 @Composable
-private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStack: () -> Unit) {
+private fun FailureScreen(
+  errorMessage: String?,
+  reload: () -> Unit,
+  popBackStack: () -> Unit,
+  navigateToChat: () -> Unit,
+) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -161,10 +183,16 @@ private fun FailureScreen(errorMessage: String?, reload: () -> Unit, popBackStac
         ),
     ) {
       Spacer(Modifier.weight(1f))
+      val buttonText = if (errorMessage == null) {
+        stringResource(R.string.GENERAL_RETRY)
+      } else {
+        stringResource(R.string.open_chat)
+      }
       HedvigErrorSection(
-        onButtonClick = reload,
+        onButtonClick = if (errorMessage == null) reload else navigateToChat,
         subTitle = errorMessage ?: stringResource(R.string.GENERAL_ERROR_BODY),
         modifier = Modifier.fillMaxSize(),
+        buttonText = buttonText,
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
@@ -186,7 +214,7 @@ private fun CustomizeTravelAddonScreenContent(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  navigateToSummary: (travelAddonQuote: TravelAddonQuote) -> Unit,
+  submitToSummary: () -> Unit,
 ) {
   val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   HedvigScaffold(
@@ -241,7 +269,9 @@ private fun CustomizeTravelAddonScreenContent(
       buttonSize = Large,
       text = stringResource(R.string.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON),
       enabled = true,
-      onClick = dropUnlessResumed { navigateToSummary(uiState.currentlyChosenOption) },
+      onClick = dropUnlessResumed {
+        submitToSummary()
+      },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -494,7 +524,9 @@ private fun SelectTierScreenPreview(
         uiState = uiState,
         {},
         {},
-        { _ -> },
+        { },
+        {},
+        {},
         {},
         {},
         {},
@@ -554,4 +586,5 @@ private val fakeTravelAddon = TravelAddonOffer(
   title = "Travel Plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   activationDate = LocalDate(2024, 12, 30),
+  currentTravelAddon = null,
 )

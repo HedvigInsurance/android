@@ -42,7 +42,6 @@ internal fun SubmitAddonFailureScreen(popBackStack: () -> Unit) {
       text = stringResource(R.string.something_went_wrong),
       description = stringResource(
         R.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION,
-        // todo!!! change copy!
       ),
       iconStyle = ERROR,
       buttonStyle = Button(

@@ -136,7 +136,7 @@ private fun DeflectPestsScreen(
                     """
                   |Partner URL was null for DeflectPestsDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
-                      """.trimMargin()
+                    """.trimMargin()
                   }
                 }
               },
