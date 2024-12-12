@@ -136,9 +136,9 @@ private fun CustomizeTravelAddonScreen(
         errorMessage = state.errorMessage,
         reload = reload,
         popBackStack = popBackStack,
-        navigateToChat = navigateToChat
+        navigateToChat = navigateToChat,
       )
-      is CustomizeTravelAddonState.Loading -> {
+      CustomizeTravelAddonState.Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
       is CustomizeTravelAddonState.Success -> {

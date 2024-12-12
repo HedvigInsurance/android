@@ -86,7 +86,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           }
         },
         onNavigateToNewConversation = {
-          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true) // todo: is this the right thing?
+          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
           onNavigateToNewConversation(backStackEntry)
         },
       )

@@ -220,7 +220,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   }
   QuoteCard(
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
-    premium = @Composable {
+    premium = {
       Row(horizontalArrangement = Arrangement.End) {
         if (uiState.currentTravelAddon != null) {
           HedvigText(
