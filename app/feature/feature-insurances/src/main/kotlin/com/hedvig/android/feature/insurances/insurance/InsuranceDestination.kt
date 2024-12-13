@@ -83,6 +83,7 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
+import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun InsuranceDestination(
@@ -471,7 +472,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
     ),
     InsuranceUiState(
       contracts =
-        listOf(previewInsurance),
+      listOf(previewInsurance),
       crossSells = listOf(
         CrossSell(
           id = "1",
@@ -492,6 +493,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
         eligibleInsurancesIds = nonEmptyListOf("id"),
+        bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
       ),
     ),
     InsuranceUiState(
