@@ -82,8 +82,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       displayName = it.displayName,
       price = UiMoney.fromMoneyFragment(it.premium),
       addonVariant = AddonVariant(
-        documents = listOf(), //todo: Addons - populate!
-        termsVersion = "", //todo: Addons - populate!
+        documents = listOf(), //todo: Addons - populate when api changes!
+        termsVersion = "", //todo: Addons - populate when api changes!
         displayDetails = it.displayItems.map { item ->
           item.displayTitle to item.displayValue
         },
