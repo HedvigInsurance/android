@@ -55,9 +55,12 @@ internal class AddonSummaryPresenter(
         ).fold(
           ifLeft = {
             currentState = initialState.copy(navigateToFailure = true)
+            // todo: not really passing UserError message here. Should we? Or should we maybe redirect to chat in
+            // the case of final failure?
           },
           ifRight = { date ->
-            currentState = initialState.copy(activationDateForSuccessfullyPurchasedAddon = date)
+            currentState =
+              initialState.copy(activationDateForSuccessfullyPurchasedAddon = summaryParameters.activationDate)
           },
         )
       }
