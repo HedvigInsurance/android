@@ -1,0 +1,10 @@
+query TravelAddonBanner($flow: UpsellTravelAddonFlow!) {
+  currentMember {
+    upsellTravelAddonBanner (flow: $flow) {
+      badges
+      contractIds
+      descriptionDisplayName
+      titleDisplayName
+    }
+  }
+}
