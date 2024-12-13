@@ -56,7 +56,7 @@ internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: ()
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
   }
 }
 
