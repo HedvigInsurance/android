@@ -39,13 +39,13 @@ internal class GetTravelAddonOfferUseCaseImpl(
         apolloClient.mutation(UpsellAddonOfferMutation(id)).safeExecute().fold(
           ifLeft = { error ->
             logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but got error: $error" }
-            //not passing error message to the member here, as we want to redirect member to chat if there is a message
+            // not passing error message to the member here, as we want to redirect member to chat if there is a message
             raise(ErrorMessage())
           },
           ifRight = { result ->
             if (result.upsellTravelAddonOffer.userError != null) {
               raise(ErrorMessage(result.upsellTravelAddonOffer.userError.message))
-              //the only case where we want to redirect to chat
+              // the only case where we want to redirect to chat
             }
             val data = result.upsellTravelAddonOffer.offer
             if (data == null) {
@@ -68,13 +68,11 @@ internal class GetTravelAddonOfferUseCaseImpl(
           },
         )
       }
-
     }
   }
 }
 
-private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes()
-  : NonEmptyList<TravelAddonQuote> {
+private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes(): NonEmptyList<TravelAddonQuote> {
   return this.map {
     TravelAddonQuote(
       quoteId = it.quoteId,
@@ -82,8 +80,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       displayName = it.displayName,
       price = UiMoney.fromMoneyFragment(it.premium),
       addonVariant = AddonVariant(
-        documents = listOf(), //todo: Addons - populate when api changes!
-        termsVersion = "", //todo: Addons - populate when api changes!
+        documents = listOf(), // todo: Addons - populate when api changes!
+        termsVersion = "", // todo: Addons - populate when api changes!
         displayDetails = it.displayItems.map { item ->
           item.displayTitle to item.displayValue
         },
@@ -103,7 +101,7 @@ private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAd
   }
 }
 
-//todo: remove mocks when not needed
+// todo: remove mocks when not needed
 private val mockWithoutUpgrade = TravelAddonOffer(
   addonOptions = nonEmptyListOf(
     TravelAddonQuote(

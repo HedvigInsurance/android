@@ -377,7 +377,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
-          bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
+          bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
         ),
       ),
       SuccessDownloadingHistory(

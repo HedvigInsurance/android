@@ -53,7 +53,7 @@ val addonPurchaseModule = module {
 
   single<SubmitAddonPurchaseUseCase> {
     SubmitAddonPurchaseUseCaseImpl(
-      apolloClient = get<ApolloClient>()
+      apolloClient = get<ApolloClient>(),
     )
   }
 }

@@ -472,7 +472,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
     ),
     InsuranceUiState(
       contracts =
-      listOf(previewInsurance),
+        listOf(previewInsurance),
       crossSells = listOf(
         CrossSell(
           id = "1",

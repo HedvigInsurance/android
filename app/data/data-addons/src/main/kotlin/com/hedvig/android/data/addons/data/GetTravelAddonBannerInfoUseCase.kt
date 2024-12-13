@@ -33,12 +33,6 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
         }
         null
       } else {
-//        TravelAddonBannerInfo(
-//          title = "Travel Plus",
-//          description = "Extended travel insurance with extra coverage for your travels",
-//          labels = listOf("Popular"),
-//          eligibleInsurancesIds = nonEmptyListOf("id1"),
-//        ) //todo: remove mock
         val mappedSource = when (source) {
           TravelAddonBannerSource.TRAVEL_CERTIFICATES -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
           TravelAddonBannerSource.INSURANCES_TAB -> UpsellTravelAddonFlow.APP_ONLY_UPSALE

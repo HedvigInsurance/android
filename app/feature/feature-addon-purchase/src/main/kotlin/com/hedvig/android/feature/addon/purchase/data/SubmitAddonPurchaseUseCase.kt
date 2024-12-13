@@ -5,12 +5,9 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.datetime.LocalDate
 import octopus.UpsellTravelAddonActivateMutation
-import octopus.UpsellTravelAddonActivateMutation.Data.UpsellTravelAddonActivate
 
 internal interface SubmitAddonPurchaseUseCase {
   suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, Unit>
@@ -27,10 +24,11 @@ internal class SubmitAddonPurchaseUseCaseImpl(
           raise(ErrorMessage())
         },
         ifRight = { result ->
-          if (result.upsellTravelAddonActivate.userError!=null) {
+          if (result.upsellTravelAddonActivate.userError != null) {
             raise(ErrorMessage(result.upsellTravelAddonActivate.userError.message))
           }
-        })
+        },
+      )
     }
   }
 }
