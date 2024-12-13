@@ -44,7 +44,7 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
         } else {
           val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
           ensure(result.isNotEmpty()) {
-            { "Tried to get list of insurances for addon purchase but the list is empty!" }
+            logcat { "Tried to get list of insurances for addon purchase but the list is empty!" }
             ErrorMessage()
           }
           result
