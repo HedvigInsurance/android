@@ -35,39 +35,38 @@ internal class GetTravelAddonOfferUseCaseImpl(
       if (!isAddonFlagOn) {
         logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but addon feature flag is off" }
         raise(ErrorMessage())
-      } else {
-        apolloClient.mutation(UpsellAddonOfferMutation(id)).safeExecute().fold(
-          ifLeft = { error ->
-            logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but got error: $error" }
-            // not passing error message to the member here, as we want to redirect member to chat if there is a message
-            raise(ErrorMessage())
-          },
-          ifRight = { result ->
-            if (result.upsellTravelAddonOffer.userError != null) {
-              raise(ErrorMessage(result.upsellTravelAddonOffer.userError.message))
-              // the only case where we want to redirect to chat
-            }
-            val data = result.upsellTravelAddonOffer.offer
-            if (data == null) {
-              logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got null offer" }
-              raise(ErrorMessage())
-            }
-            val nonEmptyQuotes = data.quotes.toNonEmptyListOrNull()
-            if (nonEmptyQuotes.isNullOrEmpty()) {
-              logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got empty quotes" }
-              raise(ErrorMessage())
-            }
-
-            TravelAddonOffer(
-              addonOptions = nonEmptyQuotes.toTravelAddonQuotes(),
-              title = data.titleDisplayName,
-              description = data.descriptionDisplayName,
-              activationDate = data.activationDate,
-              currentTravelAddon = data.currentAddon.toCurrentAddon(),
-            )
-          },
-        )
       }
+      apolloClient.mutation(UpsellAddonOfferMutation(id)).safeExecute().fold(
+        ifLeft = { error ->
+          logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but got error: $error" }
+          // not passing error message to the member here, as we want to redirect member to chat if there is a message
+          raise(ErrorMessage())
+        },
+        ifRight = { result ->
+          if (result.upsellTravelAddonOffer.userError != null) {
+            raise(ErrorMessage(result.upsellTravelAddonOffer.userError.message))
+            // the only case where we want to redirect to chat
+          }
+          val data = result.upsellTravelAddonOffer.offer
+          if (data == null) {
+            logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got null offer" }
+            raise(ErrorMessage())
+          }
+          val nonEmptyQuotes = data.quotes.toNonEmptyListOrNull()
+          if (nonEmptyQuotes.isNullOrEmpty()) {
+            logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got empty quotes" }
+            raise(ErrorMessage())
+          }
+
+          TravelAddonOffer(
+            addonOptions = nonEmptyQuotes.toTravelAddonQuotes(),
+            title = data.titleDisplayName,
+            description = data.descriptionDisplayName,
+            activationDate = data.activationDate,
+            currentTravelAddon = data.currentAddon.toCurrentAddon(),
+          )
+        },
+      )
     }
   }
 }

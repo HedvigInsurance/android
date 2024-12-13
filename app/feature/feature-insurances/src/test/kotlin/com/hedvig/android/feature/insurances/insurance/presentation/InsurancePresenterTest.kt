@@ -544,6 +544,6 @@ internal class InsurancePresenterTest {
     "desc",
     listOf(),
     nonEmptyListOf("id"),
-    bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE
+    bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
   )
 }
