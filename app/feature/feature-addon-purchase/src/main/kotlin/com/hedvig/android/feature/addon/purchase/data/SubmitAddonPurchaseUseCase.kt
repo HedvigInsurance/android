@@ -6,7 +6,10 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
+import octopus.UpsellTravelAddonActivateMutation
 import octopus.UpsellTravelAddonActivateMutation.Data.UpsellTravelAddonActivate
 
 internal interface SubmitAddonPurchaseUseCase {
@@ -18,13 +21,16 @@ internal class SubmitAddonPurchaseUseCaseImpl(
 ) : SubmitAddonPurchaseUseCase {
   override suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, Unit> {
     return either {
-      apolloClient.mutation(UpsellTravelAddonActivate(addonId = addonId, quoteId = quoteId)).safeExecute().fold(
+      apolloClient.mutation(UpsellTravelAddonActivateMutation(addonId = addonId, quoteId = quoteId)).safeExecute().fold(
         ifLeft = { error ->
-          raise(ErrorMessage(error.message))
+          logcat(LogPriority.ERROR) { "Tried to do UpsellTravelAddonActivateMutation but got error: $error" }
+          raise(ErrorMessage())
         },
-        ifRight = {
-          return Unit
-        }
+        ifRight = { result ->
+          if (result.upsellTravelAddonActivate.userError!=null) {
+            raise(ErrorMessage(result.upsellTravelAddonActivate.userError.message))
+          }
+        })
     }
   }
 }
