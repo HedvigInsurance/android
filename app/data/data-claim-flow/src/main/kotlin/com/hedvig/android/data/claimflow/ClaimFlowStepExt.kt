@@ -189,8 +189,8 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
   ClaimFlowDestination.SingleItemCheckout.Compensation {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
-    .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
-      -> {
+      .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
+    -> {
       ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
         repairCost = UiMoney.fromMoneyFragment(repairCost),
         deductible = UiMoney.fromMoneyFragment(deductible),
@@ -199,8 +199,8 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
     }
 
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
-    .FlowClaimSingleItemCheckoutValueCompensationCompensation,
-      -> {
+      .FlowClaimSingleItemCheckoutValueCompensationCompensation,
+    -> {
       ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
         price = UiMoney.fromMoneyFragment(price),
         deductible = UiMoney.fromMoneyFragment(deductible),

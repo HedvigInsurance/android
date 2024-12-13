@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
@@ -169,7 +168,7 @@ private fun DeflectIdProtectionScreen(
     }
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    Surface() {
+    Surface {
       Column {
         Spacer(Modifier.height(16.dp))
         HedvigText(
@@ -201,7 +200,7 @@ private fun DeflectIdProtectionScreen(
 }
 
 @Composable
-private fun PartnerTitleAndDescription(title:  String?, description: String?) {
+private fun PartnerTitleAndDescription(title: String?, description: String?) {
   if (title != null || description != null) {
     Column {
       if (title != null) {
@@ -283,7 +282,8 @@ private fun PreviewDeflectIdProtectionScreen() {
         partners = List(2) { index ->
           IdProtectionDeflectPartner(
             title = "ID Protection".takeIf { index == 0 },
-            description = "Lorem ipsum dolor sit amet consectetur. Id vel lectus venenatis nunc. In arcu non ut sed.".takeIf { index == 0 },
+            description = "Lorem ipsum dolor sit amet consectetur. Id vel lectus venenatis nunc. In arcu non ut sed."
+              .takeIf { index == 0 },
             info = "info",
             urlButtonTitle = "Go to ID Protection Portal",
             partner = DeflectPartner(
@@ -303,4 +303,3 @@ private fun PreviewDeflectIdProtectionScreen() {
     }
   }
 }
-

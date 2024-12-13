@@ -134,7 +134,7 @@ sealed interface ClaimFlowStep {
     override val flowId: FlowId,
     val title: String,
     val description: String?,
-    val partners: List<FlowClaimDeflectIdProtectionStepFragment.Partner>
+    val partners: List<FlowClaimDeflectIdProtectionStepFragment.Partner>,
   ) : ClaimFlowStep
 
   data class ClaimFileUploadStep(

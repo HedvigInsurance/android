@@ -402,8 +402,11 @@ data class IdProtectionDeflectPartner(
 
   sealed interface ButtonsState {
     data class Both(val urlButtonTitle: String, val url: String, val phoneNumber: String) : ButtonsState
+
     data class Url(val urlButtonTitle: String, val url: String) : ButtonsState
+
     data class PhoneNumber(val phoneNumber: String) : ButtonsState
+
     data object None : ButtonsState
   }
 }
