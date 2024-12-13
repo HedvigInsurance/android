@@ -1,0 +1,7 @@
+mutation UpsellTravelAddonActivate($addonId: ID!, $quoteId: ID!) {
+    upsellTravelAddonActivate(addonId: $addonId, quoteId: $quoteId) {
+        userError {
+            message
+        }
+    }
+}
