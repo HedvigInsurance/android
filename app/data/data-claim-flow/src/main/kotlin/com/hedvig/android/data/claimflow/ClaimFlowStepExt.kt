@@ -12,6 +12,7 @@ import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
+import octopus.fragment.FlowClaimDeflectIdProtectionStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
@@ -145,6 +146,12 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
       targetUploadUrl,
       uploads.map { it.toLocalUpload() },
     )
+
+    is ClaimFlowStep.ClaimDeflectIdProtectionStep -> ClaimFlowDestination.DeflectIdProtection(
+      title,
+      description,
+      partners.map { it.toLocalIdProtectionPartner() },
+    )
   }
 }
 
@@ -182,8 +189,8 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
   ClaimFlowDestination.SingleItemCheckout.Compensation {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
-      .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
-    -> {
+    .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
+      -> {
       ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
         repairCost = UiMoney.fromMoneyFragment(repairCost),
         deductible = UiMoney.fromMoneyFragment(deductible),
@@ -192,8 +199,8 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
     }
 
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
-      .FlowClaimSingleItemCheckoutValueCompensationCompensation,
-    -> {
+    .FlowClaimSingleItemCheckoutValueCompensationCompensation,
+      -> {
       ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
         price = UiMoney.fromMoneyFragment(price),
         deductible = UiMoney.fromMoneyFragment(deductible),
@@ -208,6 +215,16 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
 
 private fun AudioContentFragment.toAudioContent(): AudioContent {
   return AudioContent(AudioUrl(signedUrl), AudioUrl(audioUrl))
+}
+
+private fun FlowClaimDeflectIdProtectionStepFragment.Partner.toLocalIdProtectionPartner(): IdProtectionDeflectPartner {
+  return IdProtectionDeflectPartner(
+    title = title,
+    description = description,
+    info = info,
+    urlButtonTitle = urlButtonTitle,
+    partner = deflectPartner.toLocalPartner(),
+  )
 }
 
 private fun FlowClaimDeflectPartnerFragment.toLocalPartner(): DeflectPartner {

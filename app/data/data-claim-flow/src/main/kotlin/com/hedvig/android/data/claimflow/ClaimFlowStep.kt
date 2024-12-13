@@ -5,7 +5,9 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.fragment.ClaimFlowStepFragment.FlowClaimDeflectIDProtectionStepCurrentStep.Partner
 import octopus.fragment.FlowClaimContractSelectStepFragment
+import octopus.fragment.FlowClaimDeflectIdProtectionStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
@@ -126,6 +128,13 @@ sealed interface ClaimFlowStep {
   data class ClaimDeflectPestsStep(
     override val flowId: FlowId,
     val partners: List<FlowClaimDeflectPartnerFragment>,
+  ) : ClaimFlowStep
+
+  data class ClaimDeflectIdProtectionStep(
+    override val flowId: FlowId,
+    val title: String,
+    val description: String?,
+    val partners: List<FlowClaimDeflectIdProtectionStepFragment.Partner>
   ) : ClaimFlowStep
 
   data class ClaimFileUploadStep(

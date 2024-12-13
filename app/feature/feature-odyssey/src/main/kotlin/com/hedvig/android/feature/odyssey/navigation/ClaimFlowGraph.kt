@@ -23,6 +23,7 @@ import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyVie
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectCarOtherDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectGlassDamageDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectIdProtectionDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectPestsDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectTowingDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationDestination
@@ -320,6 +321,20 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+        windowSizeClass = windowSizeClass,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
+    navdestination<ClaimFlowDestination.DeflectIdProtection>(
+      ClaimFlowDestination.DeflectIdProtection,
+    ) { navBackStackEntry ->
+      DeflectIdProtectionDestination(
+        deflectIdProtection = this,
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(navBackStackEntry)
+        },
+        navigateUp = navigator::navigateUp,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
