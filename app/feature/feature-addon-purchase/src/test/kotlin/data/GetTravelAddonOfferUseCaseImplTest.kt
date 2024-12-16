@@ -1,14 +1,19 @@
+package data
+
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
+import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -48,7 +53,7 @@ class GetTravelAddonOfferUseCaseImplTest {
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
         operation = UpsellAddonOfferMutation(testId),
-        errors = listOf(com.apollographql.apollo.api.Error.Builder(message = "Bad message").build()),
+        errors = listOf(Error.Builder(message = "Bad message").build()),
       )
     }
 
@@ -219,9 +224,8 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to false))
     val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
     val result = sut.invoke(testId)
-    assertk.assertThat(result)
-      .isLeft().prop(com.hedvig.android.core.common.ErrorMessage::message).isNull()
-
+    assertThat(result)
+      .isLeft().prop(ErrorMessage::message).isNull()
   }
 
   @Test
@@ -229,9 +233,9 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseEmptyQuotes, featureManager)
     val result = sut.invoke(testId)
-    assertk.assertThat(result)
+    assertThat(result)
       .isLeft()
-      .prop(com.hedvig.android.core.common.ErrorMessage::message).isEqualTo(null)
+      .prop(ErrorMessage::message).isEqualTo(null)
   }
 
   @Test
@@ -239,8 +243,8 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithError, featureManager)
     val result = sut.invoke(testId)
-    assertk.assertThat(result)
-      .isLeft().prop(com.hedvig.android.core.common.ErrorMessage::message).isEqualTo(null)
+    assertThat(result)
+      .isLeft().prop(ErrorMessage::message).isEqualTo(null)
   }
 
   @Test
@@ -248,8 +252,8 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithUserError, featureManager)
     val result = sut.invoke(testId)
-    assertk.assertThat(result)
-      .isLeft().prop(com.hedvig.android.core.common.ErrorMessage::message).isEqualTo("You have 2 insurances")
+    assertThat(result)
+      .isLeft().prop(ErrorMessage::message).isEqualTo("You have 2 insurances")
   }
 
   @Test
@@ -257,7 +261,7 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithNullData, featureManager)
     val result = sut.invoke(testId).leftOrNull().toString()
-    assertk.assertThat(result)
+    assertThat(result)
       .isEqualTo("ErrorMessage(message=null, throwable=null)")
   }
 
@@ -266,15 +270,14 @@ class GetTravelAddonOfferUseCaseImplTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut1 = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseNoCurrentAddon, featureManager)
     val result1 = sut1.invoke(testId)
-    assertk.assertThat(result1)
+    assertThat(result1)
       .isEqualTo(either { mockWithoutUpgrade })
     val sut2 = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
     val result2 = sut2.invoke(testId)
-    assertk.assertThat(result2)
+    assertThat(result2)
       .isEqualTo(either { mockWithUpgrade })
   }
 }
-
 
 private val mockWithoutUpgrade = TravelAddonOffer(
   addonOptions = nonEmptyListOf(
@@ -338,4 +341,3 @@ private val mockWithUpgrade = TravelAddonOffer(
     listOf("Coverage" to "45 days"),
   ),
 )
-
