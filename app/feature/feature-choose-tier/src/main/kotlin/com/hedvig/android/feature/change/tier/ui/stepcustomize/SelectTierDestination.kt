@@ -657,7 +657,7 @@ private fun SelectTierScreenPreview() {
             tierDisplayName = "Standard",
           ) to UiMoney(155.0, SEK),
         ),
-        quotesForChosenTier = quotesForPreview,
+        quotesForChosenTier = listOf(quotesForPreview[0]),
         isCurrentChosen = false,
         isTierChoiceEnabled = true,
         chosenTier = Tier(

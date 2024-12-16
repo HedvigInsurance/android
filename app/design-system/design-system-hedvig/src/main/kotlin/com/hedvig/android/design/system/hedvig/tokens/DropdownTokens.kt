@@ -8,9 +8,17 @@ internal object DropdownTokens {
   //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1729261859881029?thread_ts=1729253107.272419&cid=C03U9C6Q7TP
   val ContainerColor = ColorSchemeKeyTokens.ButtonSecondaryResting
   val EnabledChevronColor = ColorSchemeKeyTokens.FillPrimary
-  val DisabledChevronColor = ColorSchemeKeyTokens.FillDisabled
+
+  // todo: disabled - temp color while this is still figured out (bc of ContainerColor above)
+  val DisabledChevronColor = ColorSchemeKeyTokens.TextSecondary
+
+  // val DisabledChevronColor = ColorSchemeKeyTokens.FillDisabled
   val TextColor = ColorSchemeKeyTokens.TextPrimary
-  val DisabledTextColor = ColorSchemeKeyTokens.TextDisabled
+
+  // todo: Temp while this is still figured out (bc of ContainerColor above)
+  val DisabledTextColor = ColorSchemeKeyTokens.TextSecondary
+
+  // val DisabledTextColor = ColorSchemeKeyTokens.TextDisabled
   val LabelColor = ColorSchemeKeyTokens.TextSecondary
   val HintColor = ColorSchemeKeyTokens.TextSecondary
   val PulsatingContainerColor = ColorSchemeKeyTokens.SignalAmberFill
