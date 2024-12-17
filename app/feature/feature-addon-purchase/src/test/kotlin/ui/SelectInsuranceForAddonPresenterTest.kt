@@ -1,6 +1,5 @@
 package ui
 
-
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.left
@@ -61,7 +60,6 @@ class SelectInsuranceForAddonPresenterTest {
       assertThat(state).isInstanceOf(SelectInsuranceForAddonState.Failure::class)
     }
   }
-
 
   @Test
   fun `if id list have only 1 item navigate further without loading anything`() = runTest {
