@@ -15,22 +15,24 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    val areAddonsEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
     return combine(
       apolloClient
-        .query(InsuranceContractsQuery())
+        .query(InsuranceContractsQuery(areAddonsEnabled))
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
         .safeFlow(::ErrorMessage),
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
@@ -106,6 +108,9 @@ private fun ContractFragment.toContract(
       certificateUrl = currentAgreement.certificateUrl,
       coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
+      addons = currentAgreement.addons?.map {
+        Addon(it.addonVariant.toAddonVariant())
+      },
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -121,6 +126,9 @@ private fun ContractFragment.toContract(
         certificateUrl = it.certificateUrl,
         coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
         creationCause = it.creationCause.toCreationCause(),
+        addons = it.addons?.map { addon ->
+          Addon(addon.addonVariant.toAddonVariant())
+        },
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,

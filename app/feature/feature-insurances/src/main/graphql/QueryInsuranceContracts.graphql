@@ -1,4 +1,4 @@
-query InsuranceContracts {
+query InsuranceContracts($addonsEnabled: Boolean!) {
   currentMember {
     memberActions {
       isMovingEnabled
@@ -51,6 +51,11 @@ fragment AgreementFragment on Agreement {
   }
   productVariant {
     ...ProductVariantFragment
+  }
+  addons @include(if: $addonsEnabled) {
+    addonVariant {
+      ...AddonVariantFragment
+    }
   }
 }
 

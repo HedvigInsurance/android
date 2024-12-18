@@ -59,6 +59,8 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.data.Addon
+import com.hedvig.android.feature.insurances.data.AddonVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
@@ -381,6 +383,24 @@ private fun PreviewContractDetailScreen() {
               certificateUrl = null,
               coInsured = listOf(),
               creationCause = NEW_CONTRACT,
+              addons = listOf(
+                Addon(
+                  AddonVariant(
+                    termsVersion = "TRAVEL PLUS 60",
+                    displayName = "Travel Plus 60",
+                    product = "product",
+                    documents = listOf(
+                      InsuranceVariantDocument(
+                        "Terms and conditions",
+                        url = "irl",
+                        type = InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
+                      ),
+                    ),
+                    perils = listOf(),
+                    insurableLimits = listOf(),
+                  ),
+                ),
+              ),
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

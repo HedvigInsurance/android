@@ -2,10 +2,17 @@ package com.hedvig.android.feature.insurances.data
 
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.ProductVariantPeril
+import com.hedvig.android.data.productvariant.toDocumentType
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement.DisplayItem
 import java.time.format.DateTimeFormatter
+import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import octopus.fragment.AddonVariantFragment
 
 data class InsuranceContract(
   val id: String,
@@ -25,6 +32,49 @@ data class InsuranceContract(
   val tierName: String?,
 )
 
+data class Addon(
+  val addonVariant: AddonVariant,
+)
+
+data class AddonVariant(
+  val termsVersion: String,
+  val displayName: String,
+  val product: String,
+  val documents: List<InsuranceVariantDocument>,
+  val perils: List<ProductVariantPeril>,
+  val insurableLimits: List<InsurableLimit>,
+)
+
+fun AddonVariantFragment.toAddonVariant() = AddonVariant(
+  termsVersion = this.termsVersion,
+  displayName = this.displayName,
+  product = this.product,
+  documents = this.documents.map {
+    InsuranceVariantDocument(
+      displayName = it.displayName,
+      url = it.url,
+      type = it.type.toDocumentType(),
+    )
+  },
+  perils = this.perils.map { peril ->
+    ProductVariantPeril(
+      id = peril.id,
+      title = peril.title,
+      description = peril.description,
+      covered = peril.covered,
+      exceptions = peril.exceptions,
+      colorCode = peril.colorCode,
+    )
+  },
+  insurableLimits = this.insurableLimits.map { insurableLimit ->
+    InsurableLimit(
+      label = insurableLimit.label,
+      limit = insurableLimit.limit,
+      description = insurableLimit.description,
+    )
+  },
+)
+
 data class InsuranceAgreement(
   val activeFrom: LocalDate,
   val activeTo: LocalDate,
@@ -33,6 +83,7 @@ data class InsuranceAgreement(
   val certificateUrl: String?,
   val coInsured: List<CoInsured>,
   val creationCause: CreationCause,
+  val addons: List<Addon>?,
 ) {
   data class DisplayItem(
     val title: String,
