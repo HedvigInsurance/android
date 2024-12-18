@@ -71,7 +71,6 @@ class CustomizeTravelAddonPresenterTest {
     }
   }
 
-
   @Test
   fun `if receive good response but only one addon redirect to next screen and pop this destination`() = runTest {
     val useCase = FakeGetTravelAddonOfferUseCase()
@@ -98,7 +97,6 @@ class CustomizeTravelAddonPresenterTest {
               ),
             )
         }
-
     }
   }
 
@@ -120,10 +118,13 @@ class CustomizeTravelAddonPresenterTest {
           prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
             .isNull()
           prop(CustomizeTravelAddonState.Success::travelAddonOffer).isEqualTo(fakeTravelOfferTwoOptions)
-          prop(CustomizeTravelAddonState.Success::currentlyChosenOption).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[0])
-          prop(CustomizeTravelAddonState.Success::currentlyChosenOptionInDialog).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[0])
+          prop(
+            CustomizeTravelAddonState.Success::currentlyChosenOption,
+          ).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[0])
+          prop(
+            CustomizeTravelAddonState.Success::currentlyChosenOptionInDialog,
+          ).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[0])
         }
-
     }
   }
 
@@ -156,56 +157,54 @@ class CustomizeTravelAddonPresenterTest {
     }
 
   @Test
-  fun `if reload trigger new data load`() =
-    runTest {
-      val useCase = FakeGetTravelAddonOfferUseCase()
-      val presenter = CustomizeTravelAddonPresenter(
-        getTravelAddonOfferUseCase = useCase,
-        insuranceId = insuranceId,
-      )
-      presenter.test(
-        CustomizeTravelAddonState.Loading,
-      ) {
-        skipItems(1)
-        useCase.turbine.add(ErrorMessage().left())
-        assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Failure::class)
-        sendEvent(CustomizeTravelAddonEvent.Reload)
-        useCase.turbine.add(fakeTravelOfferTwoOptions.right())
-        skipItems(1)
-        assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
-      }
+  fun `if reload trigger new data load`() = runTest {
+    val useCase = FakeGetTravelAddonOfferUseCase()
+    val presenter = CustomizeTravelAddonPresenter(
+      getTravelAddonOfferUseCase = useCase,
+      insuranceId = insuranceId,
+    )
+    presenter.test(
+      CustomizeTravelAddonState.Loading,
+    ) {
+      skipItems(1)
+      useCase.turbine.add(ErrorMessage().left())
+      assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Failure::class)
+      sendEvent(CustomizeTravelAddonEvent.Reload)
+      useCase.turbine.add(fakeTravelOfferTwoOptions.right())
+      skipItems(1)
+      assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
     }
+  }
 
   @Test
-  fun `on submit navigate further with currently chosen option and do not pop this destination`() =
-    runTest {
-      val useCase = FakeGetTravelAddonOfferUseCase()
-      val presenter = CustomizeTravelAddonPresenter(
-        getTravelAddonOfferUseCase = useCase,
-        insuranceId = insuranceId,
-      )
-      presenter.test(
-        CustomizeTravelAddonState.Loading,
-      ) {
-        useCase.turbine.add(fakeTravelOfferTwoOptions.right())
-        skipItems(2)
-        sendEvent(CustomizeTravelAddonEvent.ChooseOptionInDialog(fakeTravelOfferTwoOptions.addonOptions[1]))
-        sendEvent(CustomizeTravelAddonEvent.ChooseSelectedOption)
-        skipItems(2)
-        sendEvent(CustomizeTravelAddonEvent.SubmitSelected)
-        assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
-          .apply {
-            prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
-              .isNotNull().apply {
-                prop(SummaryParameters::popCustomizeDestination).isFalse()
-                prop(SummaryParameters::quote).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[1])
-                prop(SummaryParameters::currentTravelAddon).isEqualTo(fakeTravelOfferTwoOptions.currentTravelAddon)
-                prop(SummaryParameters::activationDate).isEqualTo(fakeTravelOfferTwoOptions.activationDate)
-                prop(SummaryParameters::offerDisplayName).isEqualTo(fakeTravelOfferTwoOptions.title)
-              }
-          }
-      }
+  fun `on submit navigate further with currently chosen option and do not pop this destination`() = runTest {
+    val useCase = FakeGetTravelAddonOfferUseCase()
+    val presenter = CustomizeTravelAddonPresenter(
+      getTravelAddonOfferUseCase = useCase,
+      insuranceId = insuranceId,
+    )
+    presenter.test(
+      CustomizeTravelAddonState.Loading,
+    ) {
+      useCase.turbine.add(fakeTravelOfferTwoOptions.right())
+      skipItems(2)
+      sendEvent(CustomizeTravelAddonEvent.ChooseOptionInDialog(fakeTravelOfferTwoOptions.addonOptions[1]))
+      sendEvent(CustomizeTravelAddonEvent.ChooseSelectedOption)
+      skipItems(2)
+      sendEvent(CustomizeTravelAddonEvent.SubmitSelected)
+      assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
+        .apply {
+          prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
+            .isNotNull().apply {
+              prop(SummaryParameters::popCustomizeDestination).isFalse()
+              prop(SummaryParameters::quote).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[1])
+              prop(SummaryParameters::currentTravelAddon).isEqualTo(fakeTravelOfferTwoOptions.currentTravelAddon)
+              prop(SummaryParameters::activationDate).isEqualTo(fakeTravelOfferTwoOptions.activationDate)
+              prop(SummaryParameters::offerDisplayName).isEqualTo(fakeTravelOfferTwoOptions.title)
+            }
+        }
     }
+  }
 }
 
 private class FakeGetTravelAddonOfferUseCase() : GetTravelAddonOfferUseCase {
