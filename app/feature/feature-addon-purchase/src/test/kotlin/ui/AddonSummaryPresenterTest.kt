@@ -13,8 +13,8 @@ import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
@@ -102,12 +102,16 @@ private val newQuote = TravelAddonQuote(
   displayName = "60 days",
   addonId = "addonId1",
   quoteId = "id",
+  displayDetails = listOf(
+    "Amount of insured people" to "You +1",
+    "Coverage" to "60 days",
+  ),
   addonVariant = AddonVariant(
     termsVersion = "terms",
-    displayDetails = listOf(
-      "Amount of insured people" to "You +1",
-      "Coverage" to "60 days",
-    ),
+    displayName = "45 days",
+    product = "",
+    perils = listOf(),
+    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",
@@ -126,12 +130,16 @@ private val newQuote2 = TravelAddonQuote(
   displayName = "60 days",
   addonId = "addonId1",
   quoteId = "id",
+  displayDetails = listOf(
+    "Amount of insured people" to "You +1",
+    "Coverage" to "60 days",
+  ),
   addonVariant = AddonVariant(
     termsVersion = "terms",
-    displayDetails = listOf(
-      "Amount of insured people" to "You +1",
-      "Coverage" to "60 days",
-    ),
+    displayName = "60 days",
+    product = "",
+    perils = listOf(),
+    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",
