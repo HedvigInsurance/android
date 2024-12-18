@@ -583,6 +583,7 @@ private val previewInsurance = InsuranceContract(
     certificateUrl = null,
     coInsured = listOf(),
     creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+    addons = null,
   ),
   upcomingInsuranceAgreement = null,
   renewalDate = LocalDate.fromEpochDays(500),

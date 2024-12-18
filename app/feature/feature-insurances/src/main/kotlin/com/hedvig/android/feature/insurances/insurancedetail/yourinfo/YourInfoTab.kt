@@ -464,6 +464,7 @@ private fun PreviewYourInfoTab() {
             ),
           ),
           creationCause = InsuranceAgreement.CreationCause.UNKNOWN,
+          addons = null,
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},

@@ -35,7 +35,7 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseThatSupportsTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(),
+        operation = InsuranceContractsQuery(false),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -83,7 +83,7 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseWithoutTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(),
+        operation = InsuranceContractsQuery(false),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -136,6 +136,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -157,6 +158,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -178,6 +180,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -199,6 +202,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
