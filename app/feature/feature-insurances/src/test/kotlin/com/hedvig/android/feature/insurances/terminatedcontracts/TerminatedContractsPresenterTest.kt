@@ -155,7 +155,7 @@ class TerminatedContractsPresenterTest {
   internal class FakeGetInsuranceContractsUseCase() : GetInsuranceContractsUseCase {
     private val responseTurbine = Turbine<Either<ErrorMessage, List<InsuranceContract>>>()
 
-    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    override suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
       return responseTurbine.asChannel().receiveAsFlow()
     }
 
@@ -209,6 +209,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+          addons = null
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -245,6 +246,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+          addons = null
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -283,6 +285,7 @@ class TerminatedContractsPresenterTest {
         certificateUrl = null,
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+        addons = null
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -321,6 +324,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+          addons = null
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -357,6 +361,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+          addons = null
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
