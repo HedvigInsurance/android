@@ -293,12 +293,11 @@ private fun ContractDetailScreen(
                   }
 
                   2 -> {
-
                     DocumentsTab(
                       documents = state.insuranceContract.getAllDocuments(),
                       onDocumentClicked = openUrl,
                       addons = state.insuranceContract.currentInsuranceAgreement.addons,
-                      mainInsuranceTitle = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName
+                      mainInsuranceTitle = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                     )
                   }
 

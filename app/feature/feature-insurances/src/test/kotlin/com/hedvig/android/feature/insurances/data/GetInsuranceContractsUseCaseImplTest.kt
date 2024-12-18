@@ -136,7 +136,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -158,7 +158,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -180,7 +180,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
@@ -202,7 +202,7 @@ class GetInsuranceContractsUseCaseImplTest {
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false
+          Feature.TRAVEL_ADDON to false,
         ),
       )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(

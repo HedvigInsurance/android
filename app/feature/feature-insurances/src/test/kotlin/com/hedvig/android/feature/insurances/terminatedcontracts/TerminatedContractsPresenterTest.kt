@@ -209,7 +209,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-          addons = null
+          addons = null,
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -246,7 +246,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-          addons = null
+          addons = null,
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -285,7 +285,7 @@ class TerminatedContractsPresenterTest {
         certificateUrl = null,
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-        addons = null
+        addons = null,
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -324,7 +324,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-          addons = null
+          addons = null,
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -361,7 +361,7 @@ class TerminatedContractsPresenterTest {
           certificateUrl = null,
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-          addons = null
+          addons = null,
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),

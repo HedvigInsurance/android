@@ -46,7 +46,7 @@ internal fun DocumentsTab(
       HedvigText(
         mainInsuranceTitle,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(8.dp))
     }
@@ -66,7 +66,7 @@ internal fun DocumentsTab(
         HedvigText(
           it.addonVariant.displayName,
           color = HedvigTheme.colorScheme.textSecondary,
-          modifier = Modifier.padding(horizontal = 16.dp)
+          modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(8.dp))
         it.addonVariant.documents.forEachIndexed { index, doc ->
