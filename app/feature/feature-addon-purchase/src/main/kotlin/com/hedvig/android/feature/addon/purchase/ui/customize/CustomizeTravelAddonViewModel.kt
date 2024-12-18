@@ -38,7 +38,15 @@ internal class CustomizeTravelAddonPresenter(
   ): CustomizeTravelAddonState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var selectedOptionInDialog by remember { mutableStateOf<TravelAddonQuote?>(null) }
+    var selectedOptionInDialog by remember {
+      mutableStateOf<TravelAddonQuote?>(
+        if (lastState is CustomizeTravelAddonState.Success) {
+          lastState.currentlyChosenOptionInDialog
+        } else {
+          null
+        },
+      )
+    }
     CollectEvents { event ->
       when (event) {
         CustomizeTravelAddonEvent.Reload -> loadIteration++

@@ -69,7 +69,7 @@ internal class AddonSummaryPresenter(
   }
 }
 
-private fun getInitialState(summaryParameters: SummaryParameters): Content {
+internal fun getInitialState(summaryParameters: SummaryParameters): Content {
   val total = if (summaryParameters.currentTravelAddon == null) {
     summaryParameters.quote.price
   } else {
