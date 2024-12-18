@@ -327,6 +327,8 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifie
         Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           "This addon can be removed by contacting support", // todo l10n
+          // stringResource(R.string.MOVING_FLOW_REMOVE_ADDON_INFO, deepLinkToNewChat),
+          // todo: add deep link to new conversation!
           InfoInline,
         )
       }
