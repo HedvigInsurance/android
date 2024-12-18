@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -70,7 +71,6 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import hedvig.resources.R
@@ -554,10 +554,14 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
   quoteId = "id",
   addonId = "addonId1",
   displayName = "45 days",
+  displayDetails = listOf(),
   addonVariant = AddonVariant(
     termsVersion = "terms",
     documents = listOf(),
-    displayDetails = listOf(),
+    perils = listOf(),
+    displayName = "45 days",
+    product = "",
+    insurableLimits = listOf(),
   ),
   price = UiMoney(
     49.0,
@@ -568,10 +572,14 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
   displayName = "60 days",
   addonId = "addonId1",
   quoteId = "id",
+  displayDetails = listOf(),
   addonVariant = AddonVariant(
     termsVersion = "terms",
     documents = listOf(),
-    displayDetails = listOf(),
+    perils = listOf(),
+    displayName = "60 days",
+    product = "",
+    insurableLimits = listOf(),
   ),
   price = UiMoney(
     60.0,

@@ -8,6 +8,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -74,13 +75,10 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       addonId = it.addonId,
       displayName = it.displayName,
       price = UiMoney.fromMoneyFragment(it.premium),
-      addonVariant = AddonVariant(
-        documents = listOf(), // todo: Addons - populate when api changes!
-        termsVersion = "", // todo: Addons - populate when api changes!
-        displayDetails = it.displayItems.map { item ->
-          item.displayTitle to item.displayValue
-        },
-      ),
+      displayDetails = it.displayItems.map { item ->
+        item.displayTitle to item.displayValue
+      },
+      addonVariant = it.addonVariant.toAddonVariant(),
     )
   }
 }
