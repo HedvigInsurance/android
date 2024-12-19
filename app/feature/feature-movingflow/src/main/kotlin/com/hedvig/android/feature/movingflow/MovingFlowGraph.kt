@@ -74,7 +74,7 @@ internal sealed interface MovingFlowDestinations {
   }
 }
 
-fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNewConversation: () -> Unit) {
+fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
   navgraph<MovingFlowGraphDestination>(
     startDestination = MovingFlowDestinations.Start::class,
   ) {
@@ -148,7 +148,6 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController, onNavigateToNe
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
         exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
-        onNavigateToNewConversation = onNavigateToNewConversation,
         onNavigateToFinishedScreen = { moveDate ->
           navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
             typedPopUpTo<MovingFlowGraphDestination> {
