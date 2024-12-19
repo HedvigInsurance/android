@@ -17,8 +17,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.UpsellAddonOfferMutation
 import octopus.type.CurrencyCode
+import octopus.type.buildAddonVariant
 import octopus.type.buildMoney
 import octopus.type.buildUpsellTravelAddonCurrentAddon
 import octopus.type.buildUpsellTravelAddonDisplayItem
@@ -127,14 +128,22 @@ class GetTravelAddonOfferUseCaseImplTest {
                     displayItems = buildList {
                       add(
                         buildUpsellTravelAddonDisplayItem {
-                          displayTitle = mockWithoutUpgrade.addonOptions[0].addonVariant.displayDetails[0].first
-                          displayValue = mockWithoutUpgrade.addonOptions[0].addonVariant.displayDetails[0].second
+                          displayTitle = mockWithoutUpgrade.addonOptions[0].displayDetails[0].first
+                          displayValue = mockWithoutUpgrade.addonOptions[0].displayDetails[0].second
                         },
                       )
                     }
                     premium = buildMoney {
                       amount = mockWithoutUpgrade.addonOptions[0].price.amount
                       currencyCode = CurrencyCode.SEK
+                    }
+                    addonVariant = buildAddonVariant {
+                      termsVersion = ""
+                      documents = listOf()
+                      displayName = "45 days"
+                      product = ""
+                      perils = listOf()
+                      insurableLimits = listOf()
                     }
                   },
                 )
@@ -147,14 +156,22 @@ class GetTravelAddonOfferUseCaseImplTest {
                     displayItems = buildList {
                       add(
                         buildUpsellTravelAddonDisplayItem {
-                          displayTitle = mockWithoutUpgrade.addonOptions[1].addonVariant.displayDetails[0].first
-                          displayValue = mockWithoutUpgrade.addonOptions[1].addonVariant.displayDetails[0].second
+                          displayTitle = mockWithoutUpgrade.addonOptions[1].displayDetails[0].first
+                          displayValue = mockWithoutUpgrade.addonOptions[1].displayDetails[0].second
                         },
                       )
                     }
                     premium = buildMoney {
                       amount = mockWithoutUpgrade.addonOptions[1].price.amount
                       currencyCode = CurrencyCode.SEK
+                    }
+                    addonVariant = buildAddonVariant {
+                      termsVersion = ""
+                      documents = listOf()
+                      displayName = "60 days"
+                      product = ""
+                      perils = listOf()
+                      insurableLimits = listOf()
                     }
                   },
                 )
@@ -200,14 +217,22 @@ class GetTravelAddonOfferUseCaseImplTest {
                     displayItems = buildList {
                       add(
                         buildUpsellTravelAddonDisplayItem {
-                          displayTitle = mockWithUpgrade.addonOptions[0].addonVariant.displayDetails[0].first
-                          displayValue = mockWithUpgrade.addonOptions[0].addonVariant.displayDetails[0].second
+                          displayTitle = mockWithUpgrade.addonOptions[0].displayDetails[0].first
+                          displayValue = mockWithUpgrade.addonOptions[0].displayDetails[0].second
                         },
                       )
                     }
                     premium = buildMoney {
                       amount = mockWithUpgrade.addonOptions[0].price.amount
                       currencyCode = CurrencyCode.SEK
+                    }
+                    addonVariant = buildAddonVariant {
+                      termsVersion = ""
+                      documents = listOf()
+                      displayName = "45 days"
+                      product = ""
+                      perils = listOf()
+                      insurableLimits = listOf()
                     }
                   },
                 )
@@ -285,10 +310,14 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       quoteId = "id",
       addonId = "addonId1",
       displayName = "45 days",
+      displayDetails = listOf("Coverage" to "45 days"),
       addonVariant = AddonVariant(
         termsVersion = "",
         documents = listOf(),
-        displayDetails = listOf("Coverage" to "45 days"),
+        displayName = "45 days",
+        product = "",
+        perils = listOf(),
+        insurableLimits = listOf(),
       ),
       price = UiMoney(
         49.0,
@@ -299,10 +328,14 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       displayName = "60 days",
       addonId = "addonId1",
       quoteId = "id",
+      displayDetails = listOf("Coverage" to "60 days"),
       addonVariant = AddonVariant(
         termsVersion = "",
         documents = listOf(),
-        displayDetails = listOf("Coverage" to "60 days"),
+        displayName = "60 days",
+        product = "",
+        perils = listOf(),
+        insurableLimits = listOf(),
       ),
       price = UiMoney(
         60.0,
@@ -322,10 +355,14 @@ private val mockWithUpgrade = TravelAddonOffer(
       displayName = "60 days",
       addonId = "addonId1",
       quoteId = "id",
+      displayDetails = listOf("Coverage" to "60 days"),
       addonVariant = AddonVariant(
         termsVersion = "",
         documents = listOf(),
-        displayDetails = listOf("Coverage" to "60 days"),
+        displayName = "45 days",
+        product = "",
+        perils = listOf(),
+        insurableLimits = listOf(),
       ),
       price = UiMoney(
         60.0,

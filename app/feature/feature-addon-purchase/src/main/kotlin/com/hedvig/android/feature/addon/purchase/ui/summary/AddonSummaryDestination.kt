@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.DialogDefaults
@@ -41,7 +41,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
@@ -250,7 +249,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
         }
       }
     },
-    displayItems = if (uiState.quote.addonVariant.displayDetails.isNotEmpty()) {
+    displayItems = if (uiState.quote.displayDetails.isNotEmpty()) {
       { DetailsWithStrikeThrough(uiState) }
     } else {
       null
@@ -266,7 +265,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DetailsWithStrikeThrough(uiState: Content) {
-  uiState.quote.addonVariant.displayDetails.forEach { quoteItem ->
+  uiState.quote.displayDetails.forEach { quoteItem ->
     val currentAddonValue = uiState.currentTravelAddon?.displayDetails?.firstOrNull { currentAddonItem ->
       currentAddonItem.first == quoteItem.first
     }?.second
@@ -339,19 +338,17 @@ private class ChooseInsuranceForAddonUiStateProvider :
           displayName = "60 days",
           addonId = "addonId1",
           quoteId = "id",
+          displayDetails = listOf(
+            "Amount of insured people" to "You +1",
+            "Coverage" to "60 days",
+          ),
           addonVariant = AddonVariant(
             termsVersion = "terms",
-            displayDetails = listOf(
-              "Amount of insured people" to "You +1",
-              "Coverage" to "60 days",
-            ),
-            documents = listOf(
-              InsuranceVariantDocument(
-                "Terms and Conditions",
-                "url",
-                InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
-              ),
-            ),
+            documents = listOf(),
+            perils = listOf(),
+            displayName = "45 days",
+            product = "",
+            insurableLimits = listOf(),
           ),
           price = UiMoney(
             60.0,

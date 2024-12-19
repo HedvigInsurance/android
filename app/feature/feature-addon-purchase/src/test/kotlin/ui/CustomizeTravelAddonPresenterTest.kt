@@ -15,8 +15,9 @@ import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.AddonVariant
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -219,10 +220,20 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
   quoteId = "id",
   addonId = "addonId1",
   displayName = "45 days",
+  displayDetails = listOf(),
   addonVariant = AddonVariant(
     termsVersion = "terms",
-    documents = listOf(),
-    displayDetails = listOf(),
+    displayName = "45 days",
+    product = "",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(
+      InsuranceVariantDocument(
+        "Terms and Conditions",
+        "url",
+        InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+      ),
+    ),
   ),
   price = UiMoney(
     49.0,
@@ -235,9 +246,19 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
   quoteId = "id",
   addonVariant = AddonVariant(
     termsVersion = "terms",
-    documents = listOf(),
-    displayDetails = listOf(),
+    displayName = "60 days",
+    product = "",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(
+      InsuranceVariantDocument(
+        "Terms and Conditions",
+        "url",
+        InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+      ),
+    ),
   ),
+  displayDetails = listOf(),
   price = UiMoney(
     60.0,
     UiCurrencyCode.SEK,
