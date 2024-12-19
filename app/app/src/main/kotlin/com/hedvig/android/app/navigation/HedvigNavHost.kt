@@ -338,7 +338,6 @@ internal fun HedvigNavHost(
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
-      onNavigateToNewConversation = { navigateToNewConversation() },
     )
     connectPaymentGraph(
       navigator = navigator,

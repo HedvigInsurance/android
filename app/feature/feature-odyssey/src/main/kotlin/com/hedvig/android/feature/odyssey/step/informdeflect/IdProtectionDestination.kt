@@ -172,7 +172,7 @@ private fun DeflectIdProtectionScreen(
       Column {
         Spacer(Modifier.height(16.dp))
         HedvigText(
-          text = stringResource(R.string.HC_CHAT_QUESTION),
+          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
           textAlign = TextAlign.Center,
           modifier = sideSpacingModifier.fillMaxWidth(),
         )

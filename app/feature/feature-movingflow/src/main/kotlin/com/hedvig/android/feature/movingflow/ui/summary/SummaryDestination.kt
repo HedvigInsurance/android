@@ -48,14 +48,13 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
@@ -87,7 +86,6 @@ internal fun SummaryDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNewConversation: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -101,7 +99,6 @@ internal fun SummaryDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     exitFlow = exitFlow,
-    onNavigateToNewConversation = onNavigateToNewConversation,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
   )
@@ -113,7 +110,6 @@ private fun SummaryScreen(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
@@ -145,7 +141,6 @@ private fun SummaryScreen(
           is Content -> {
             SummaryScreen(
               content = uiState,
-              onNavigateToNewConversation = onNavigateToNewConversation,
               onConfirmChanges = onConfirmChanges,
               onDismissSubmissionError = onDismissSubmissionError,
             )
@@ -159,7 +154,6 @@ private fun SummaryScreen(
 @Composable
 private fun SummaryScreen(
   content: SummaryUiState.Content,
-  onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
@@ -206,27 +200,6 @@ private fun SummaryScreen(
       }
       Spacer(Modifier.height(16.dp))
       HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
-      Spacer(Modifier.height(40.dp))
-      QuestionsAndAnswers()
-      Spacer(Modifier.height(40.dp))
-      Column {
-        HedvigText(
-          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
-          modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
-        Spacer(Modifier.height(12.dp))
-        HedvigButton(
-          text = stringResource(R.string.open_chat),
-          enabled = true,
-          onClick = onNavigateToNewConversation,
-          buttonSize = Small,
-          modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
-      }
       Spacer(Modifier.height(16.dp))
       with(LocalDensity.current) {
         Spacer(Modifier.height(bottomAttachedContentHeightPx.toDp()))
@@ -369,7 +342,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
 private fun PreviewSummaryScreen(
@@ -382,7 +355,6 @@ private fun PreviewSummaryScreen(
         navigateUp = {},
         navigateBack = {},
         exitFlow = {},
-        onNavigateToNewConversation = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
       )
