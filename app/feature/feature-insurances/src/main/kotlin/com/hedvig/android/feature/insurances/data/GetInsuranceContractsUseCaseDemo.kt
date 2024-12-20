@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(
       listOf(
         InsuranceContract(
@@ -67,6 +67,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
                 hasMissingInfo = true,
               ),
             ),
+            addons = null,
           ),
           upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),

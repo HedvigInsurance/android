@@ -502,6 +502,13 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       uploads,
     )
 
+    is ClaimFlowStepFragment.FlowClaimDeflectIDProtectionStepCurrentStep -> ClaimFlowStep.ClaimDeflectIdProtectionStep(
+      flowId,
+      title,
+      description,
+      partners,
+    )
+
     else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }

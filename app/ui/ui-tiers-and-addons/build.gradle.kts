@@ -5,6 +5,7 @@ plugins {
 
 hedvig {
   compose()
+  serialization()
 }
 
 dependencies {
@@ -19,6 +20,7 @@ dependencies {
   implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.compose.uiText)
   implementation(libs.androidx.compose.uiUnit)
+  implementation(libs.kotlinx.serialization.core)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.dataContractAndroid)

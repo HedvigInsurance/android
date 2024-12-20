@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
 import com.halilibo.richtext.ui.BasicRichText
 import com.halilibo.richtext.ui.LinkClickHandler
 import com.halilibo.richtext.ui.RichTextScope
 import com.halilibo.richtext.ui.RichTextStyle
 import com.halilibo.richtext.ui.RichTextThemeProvider
+import com.halilibo.richtext.ui.merge
+import com.halilibo.richtext.ui.string.RichTextStringStyle
 
 /**
  * RichText implementation that integrates with HedvigTheme.
@@ -21,10 +25,19 @@ public fun RichText(
   linkClickHandler: LinkClickHandler? = null,
   children: @Composable RichTextScope.() -> Unit,
 ) {
+  val linkColor = HedvigTheme.colorScheme.link
+  val linkStyle = RichTextStyle.Default.copy(
+    stringStyle = RichTextStringStyle(
+      linkStyle = SpanStyle(
+        textDecoration = TextDecoration.Underline,
+        color = linkColor,
+      ),
+    ),
+  )
   RichTextHedvigTheme {
     BasicRichText(
       modifier = modifier,
-      style = style,
+      style = linkStyle.merge(style),
       linkClickHandler = linkClickHandler,
       children = children,
     )

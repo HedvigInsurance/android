@@ -19,6 +19,7 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimFileUploadFragment
     ...FlowClaimDeflectTowingStepFragment
     ...FlowClaimDeflectEirStepFragment
+    ...FlowClaimDeflectIdProtectionStepFragment
   }
 }
 
@@ -205,6 +206,21 @@ fragment FlowClaimDeflectEirStepFragment on FlowClaimDeflectEirStep {
   id
   partners {
     ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectIdProtectionStepFragment on FlowClaimDeflectIDProtectionStep {
+  id
+  title
+  description
+  partners {
+    title
+    description
+    info
+    urlButtonTitle
+    deflectPartner {
+      ...FlowClaimDeflectPartnerFragment
+    }
   }
 }
 

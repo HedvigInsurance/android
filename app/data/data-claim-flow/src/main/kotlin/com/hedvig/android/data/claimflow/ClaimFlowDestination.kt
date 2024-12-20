@@ -172,6 +172,17 @@ sealed interface ClaimFlowDestination {
   }
 
   @Serializable
+  data class DeflectIdProtection(
+    val title: String,
+    val description: String?,
+    val partners: List<IdProtectionDeflectPartner>,
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<IdProtectionDeflectPartner>>())
+    }
+  }
+
+  @Serializable
   data class Summary(
     val claimTypeTitle: String,
     val selectedLocation: String?,
@@ -363,6 +374,42 @@ data class AudioContent(
    */
   val audioUrl: AudioUrl,
 )
+
+@Serializable
+data class IdProtectionDeflectPartner(
+  val title: String?,
+  val description: String?,
+  val info: String?,
+  private val urlButtonTitle: String?,
+  private val partner: DeflectPartner,
+) {
+  val id: String = partner.id
+  val imageUrl: String = partner.imageUrl
+  private val phoneNumber: String? = partner.phoneNumber
+  private val url: String? = partner.url
+
+  val buttonsState: ButtonsState = when {
+    urlButtonTitle != null && url != null && phoneNumber != null -> ButtonsState.Both(
+      phoneNumber = phoneNumber,
+      url = url,
+      urlButtonTitle = urlButtonTitle,
+    )
+
+    urlButtonTitle != null && url != null -> ButtonsState.Url(url = url, urlButtonTitle = urlButtonTitle)
+    phoneNumber != null -> ButtonsState.PhoneNumber(phoneNumber)
+    else -> ButtonsState.None
+  }
+
+  sealed interface ButtonsState {
+    data class Both(val urlButtonTitle: String, val url: String, val phoneNumber: String) : ButtonsState
+
+    data class Url(val urlButtonTitle: String, val url: String) : ButtonsState
+
+    data class PhoneNumber(val phoneNumber: String) : ButtonsState
+
+    data object None : ButtonsState
+  }
+}
 
 @Serializable
 data class DeflectPartner(

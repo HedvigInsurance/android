@@ -23,7 +23,6 @@ import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -94,57 +93,55 @@ private fun DeflectPestsScreen(
         Spacer(Modifier.height(8.dp))
       }
       HedvigTheme(darkTheme = true) {
-        HedvigCard(
+        Surface(
+          color = HedvigTheme.colorScheme.backgroundPrimary.copy(0.95f)
+            .compositeOver(HedvigTheme.colorScheme.fillWhite),
+          contentColor = HedvigTheme.colorScheme.fillPrimary,
+          shape = HedvigTheme.shapes.cornerXLarge,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         ) {
-          Surface(
-            color = HedvigTheme.colorScheme.fillBlack.copy(0.95f).compositeOver(HedvigTheme.colorScheme.fillWhite),
-            contentColor = HedvigTheme.colorScheme.fillNegative,
-          ) {
-            Column(Modifier.padding(16.dp)) {
-              AsyncImage(
-                model = partner.imageUrl,
-                contentDescription = null,
-                imageLoader = imageLoader,
-                placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
-                modifier = Modifier
-                  .padding(16.dp)
-                  .fillMaxWidth()
-                  .height(40.dp),
-              )
-              Spacer(Modifier.height(8.dp))
-              HedvigText(
-                text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL),
-                textAlign = TextAlign.Center,
-                style = LocalTextStyle.current.copy(
-                  lineBreak = LineBreak.Heading,
-                ),
-                color = HedvigTheme.colorScheme.textWhite,
-                modifier = Modifier.fillMaxWidth(),
-              )
-              Spacer(Modifier.height(16.dp))
-              HedvigButton(
-                text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON),
-                enabled = true,
-                buttonSize = Medium,
-                onClick = dropUnlessResumed {
-                  val url = partner.url
-                  if (url != null) {
-                    openUrl(url)
-                  } else {
-                    logcat(ERROR) {
-                      """
+          Column(Modifier.padding(16.dp)) {
+            AsyncImage(
+              model = partner.imageUrl,
+              contentDescription = null,
+              imageLoader = imageLoader,
+              placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
+              modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(40.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+            HedvigText(
+              text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL),
+              textAlign = TextAlign.Center,
+              style = LocalTextStyle.current.copy(
+                lineBreak = LineBreak.Heading,
+              ),
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(16.dp))
+            HedvigButton(
+              text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON),
+              enabled = true,
+              buttonSize = Medium,
+              onClick = dropUnlessResumed {
+                val url = partner.url
+                if (url != null) {
+                  openUrl(url)
+                } else {
+                  logcat(ERROR) {
+                    """
                   |Partner URL was null for DeflectPestsDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
-                      """.trimMargin()
-                    }
+                    """.trimMargin()
                   }
-                },
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
+                }
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
         }
       }

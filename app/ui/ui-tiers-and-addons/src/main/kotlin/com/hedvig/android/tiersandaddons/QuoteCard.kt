@@ -34,14 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
-import com.hedvig.android.data.contract.ContractType.SE_HOUSE
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -57,7 +56,9 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
 import hedvig.resources.R
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class QuoteDisplayItem(
   val title: String,
   val subtitle: String?,
@@ -77,12 +78,43 @@ fun QuoteCard(
   QuoteCard(
     showDetails = showDetails,
     setShowDetails = { showDetails = it },
-    productVariant = productVariant,
     subtitle = subtitle,
     premium = premium,
     displayItems = displayItems,
     underTitleContent = underTitleContent,
     modifier = modifier,
+    displayName = productVariant.displayName,
+    contractGroup = productVariant.contractGroup,
+    insurableLimits = productVariant.insurableLimits,
+    documents = productVariant.documents,
+  )
+}
+
+@Composable
+fun QuoteCard(
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: List<InsurableLimit>,
+  documents: List<InsuranceVariantDocument>,
+  subtitle: String,
+  premium: String,
+  displayItems: List<QuoteDisplayItem>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  var showDetails by rememberSaveable { mutableStateOf(false) }
+  QuoteCard(
+    showDetails = showDetails,
+    setShowDetails = { showDetails = it },
+    subtitle = subtitle,
+    premium = premium,
+    displayItems = displayItems,
+    underTitleContent = underTitleContent,
+    modifier = modifier,
+    displayName = displayName,
+    contractGroup = contractGroup,
+    insurableLimits = insurableLimits,
+    documents = documents,
   )
 }
 
@@ -90,10 +122,13 @@ fun QuoteCard(
 private fun QuoteCard(
   showDetails: Boolean,
   setShowDetails: (Boolean) -> Unit,
-  productVariant: ProductVariant,
   subtitle: String,
   premium: String,
   displayItems: List<QuoteDisplayItem>,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: List<InsurableLimit>,
+  documents: List<InsuranceVariantDocument>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
 ) {
@@ -105,15 +140,17 @@ private fun QuoteCard(
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
       Row {
-        Image(
-          painter = painterResource(productVariant.contractGroup.toPillow()),
-          contentDescription = null,
-          modifier = Modifier.size(48.dp),
-        )
-        Spacer(modifier = Modifier.width(12.dp))
+        if (contractGroup != null) {
+          Image(
+            painter = painterResource(contractGroup.toPillow()),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(modifier = Modifier.width(12.dp))
+        }
         Column {
           HedvigText(
-            text = productVariant.displayName,
+            text = displayName,
           )
           HedvigText(
             text = subtitle,
@@ -155,10 +192,10 @@ private fun QuoteCard(
                 }
               }
             }
-            if (productVariant.insurableLimits.isNotEmpty()) {
+            if (insurableLimits.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                for (insurableLimit in productVariant.insurableLimits) {
+                for (insurableLimit in insurableLimits) {
                   InfoRow(
                     insurableLimit.label,
                     insurableLimit.limit,
@@ -166,13 +203,176 @@ private fun QuoteCard(
                 }
               }
             }
-            if (productVariant.documents.isNotEmpty()) {
+            if (documents.isNotEmpty()) {
               Column {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
                 Column(
                   verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                  for (document in productVariant.documents) {
+                  for (document in documents) {
+                    val uriHandler = LocalUriHandler.current
+                    Row(
+                      modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(HedvigTheme.shapes.cornerXSmall)
+                        .clickable {
+                          uriHandler.openUri(document.url)
+                        },
+                    ) {
+                      HedvigText(
+                        text = document.displayName,
+                        style = HedvigTheme.typography.bodySmall,
+                        color = HedvigTheme.colorScheme.textSecondary,
+                        modifier = Modifier.weight(1f),
+                      )
+                      Spacer(Modifier.width(8.dp))
+                      LayoutWithoutPlacement(
+                        sizeAdjustingContent = {
+                          HedvigText(
+                            "H",
+                            style = HedvigTheme.typography.bodySmall,
+                          )
+                        },
+                      ) {
+                        val density = LocalDensity.current
+                        Icon(
+                          imageVector = HedvigIcons.ArrowNorthEast,
+                          contentDescription = null,
+                          tint = HedvigTheme.colorScheme.fillPrimary,
+                          modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
+                        )
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = if (showDetails) {
+          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+        } else {
+          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+        },
+        onClick = { setShowDetails(!showDetails) },
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
+
+@Composable
+fun QuoteCard(
+  subtitle: String,
+  premium: @Composable () -> Unit,
+  displayItems: (@Composable () -> Unit)?,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: (@Composable () -> Unit)?,
+  documents: List<InsuranceVariantDocument>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  var showDetails by rememberSaveable { mutableStateOf(false) }
+  QuoteCard(
+    showDetails = showDetails,
+    setShowDetails = { showDetails = it },
+    subtitle = subtitle,
+    premium = premium,
+    displayItems = displayItems,
+    underTitleContent = underTitleContent,
+    modifier = modifier,
+    displayName = displayName,
+    contractGroup = contractGroup,
+    insurableLimits = insurableLimits,
+    documents = documents,
+  )
+}
+
+@Composable
+private fun QuoteCard(
+  showDetails: Boolean,
+  setShowDetails: (Boolean) -> Unit,
+  subtitle: String,
+  premium: @Composable () -> Unit,
+  displayItems: (@Composable () -> Unit)?,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: (@Composable () -> Unit)?,
+  documents: List<InsuranceVariantDocument>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  HedvigCard(
+    modifier = modifier,
+    onClick = { setShowDetails(!showDetails) },
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Row {
+        if (contractGroup != null) {
+          Image(
+            painter = painterResource(contractGroup.toPillow()),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(modifier = Modifier.width(12.dp))
+        }
+        Column {
+          HedvigText(
+            text = displayName,
+          )
+          HedvigText(
+            text = subtitle,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+        },
+        endSlot = premium,
+      )
+      underTitleContent()
+      AnimatedVisibility(
+        visible = showDetails,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+      ) {
+        Column {
+          Spacer(Modifier.height(16.dp))
+          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            HorizontalDivider()
+            if (displayItems != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
+                displayItems()
+              }
+            }
+            if (insurableLimits != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
+                insurableLimits()
+              }
+            }
+            if (documents.isNotEmpty()) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+                Column(
+                  verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                  for (document in documents) {
                     val uriHandler = LocalUriHandler.current
                     Row(
                       modifier = Modifier
@@ -261,39 +461,22 @@ private fun PreviewQuoteCard(
       QuoteCard(
         showDetails = showDetails,
         setShowDetails = {},
-        productVariant = ProductVariant(
-          displayName = "displayName",
-          contractGroup = DOG,
-          contractType = SE_HOUSE,
-          partner = "partner",
-          perils = List(3) {
-            ProductVariantPeril(
-              id = it.toString(),
-              title = "title#$it",
-              description = "description#$it",
-              covered = emptyList(),
-              exceptions = emptyList(),
-              colorCode = "colorCode#$it",
-            )
-          },
-          insurableLimits = List(3) {
-            InsurableLimit(
-              label = "label#$it",
-              limit = "limit#$it",
-              description = "description#$it",
-            )
-          },
-          documents = List(3) {
-            InsuranceVariantDocument(
-              displayName = "displayName#$it",
-              url = "url#$it",
-              type = GENERAL_TERMS,
-            )
-          },
-          displayTierName = "displayTierName",
-          tierDescription = "tierDescription",
-          termsVersion = "termsVersion",
-        ),
+        displayName = "displayName",
+        contractGroup = DOG,
+        insurableLimits = List(3) {
+          InsurableLimit(
+            label = "label#$it",
+            limit = "limit#$it",
+            description = "description#$it",
+          )
+        },
+        documents = List(3) {
+          InsuranceVariantDocument(
+            displayName = "displayName#$it",
+            url = "url#$it",
+            type = GENERAL_TERMS,
+          )
+        },
         subtitle = "subtitle",
         premium = "premium",
         displayItems = List(5) {

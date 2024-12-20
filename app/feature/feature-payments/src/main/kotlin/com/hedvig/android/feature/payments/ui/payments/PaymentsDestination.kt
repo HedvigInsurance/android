@@ -61,7 +61,6 @@ import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
@@ -69,6 +68,7 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.C
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPayment
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPaymentInfo
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -151,6 +151,7 @@ private fun PaymentsScreen(
             Modifier.weight(1f),
             windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           )
+
           else -> {
             PaymentsContent(
               uiState = uiState,
@@ -241,7 +242,11 @@ private fun PaymentsContent(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+                .hedvigPlaceholder(
+                  uiState.isRetrying,
+                  shape = HedvigTheme.shapes.cornerSmall,
+                  highlight = PlaceholderHighlight.shimmer(),
+                ),
             )
           }
         }
@@ -387,7 +392,11 @@ private fun PaymentsListItems(
           modifier = listItemsSideSpacingModifier
             .padding(vertical = 16.dp)
             .fillMaxWidth()
-            .hedvigPlaceholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+            .hedvigPlaceholder(
+              uiState.isRetrying,
+              shape = HedvigTheme.shapes.cornerSmall,
+              highlight = PlaceholderHighlight.shimmer(),
+            ),
         )
       }
     }
@@ -420,6 +429,7 @@ private fun PaymentAmountCard(
             stringResource(R.string.PAYMENTS_UPCOMING_PAYMENT),
             Modifier.hedvigPlaceholder(
               visible = upcomingPayment == null,
+              shape = HedvigTheme.shapes.cornerSmall,
               highlight = PlaceholderHighlight.shimmer(),
             ),
           )
@@ -432,6 +442,7 @@ private fun PaymentAmountCard(
               .wrapContentWidth(Alignment.End)
               .hedvigPlaceholder(
                 visible = upcomingPayment == null,
+                shape = HedvigTheme.shapes.cornerSmall,
                 highlight = PlaceholderHighlight.shimmer(),
               ),
           ) {
@@ -464,6 +475,7 @@ private fun PaymentAmountCard(
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.hedvigPlaceholder(
           visible = upcomingPayment == null,
+          shape = HedvigTheme.shapes.cornerSmall,
           highlight = PlaceholderHighlight.shimmer(),
         ),
       )

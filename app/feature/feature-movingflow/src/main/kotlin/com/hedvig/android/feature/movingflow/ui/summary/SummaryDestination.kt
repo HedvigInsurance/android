@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -48,22 +49,24 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
+import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -85,7 +88,6 @@ internal fun SummaryDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNewConversation: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -99,7 +101,6 @@ internal fun SummaryDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     exitFlow = exitFlow,
-    onNavigateToNewConversation = onNavigateToNewConversation,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
   )
@@ -111,7 +112,6 @@ private fun SummaryScreen(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
@@ -126,7 +126,9 @@ private fun SummaryScreen(
         topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
       Box(
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -141,7 +143,6 @@ private fun SummaryScreen(
           is Content -> {
             SummaryScreen(
               content = uiState,
-              onNavigateToNewConversation = onNavigateToNewConversation,
               onConfirmChanges = onConfirmChanges,
               onDismissSubmissionError = onDismissSubmissionError,
             )
@@ -155,7 +156,6 @@ private fun SummaryScreen(
 @Composable
 private fun SummaryScreen(
   content: SummaryUiState.Content,
-  onNavigateToNewConversation: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
@@ -193,33 +193,15 @@ private fun SummaryScreen(
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
+        for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
+          AddonQuoteCard(addonQuote)
+        }
         for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
           QuoteCard(mtaQuote)
         }
       }
       Spacer(Modifier.height(16.dp))
       HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
-      Spacer(Modifier.height(40.dp))
-      QuestionsAndAnswers()
-      Spacer(Modifier.height(40.dp))
-      Column {
-        HedvigText(
-          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
-          modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
-        Spacer(Modifier.height(12.dp))
-        HedvigButton(
-          text = stringResource(R.string.open_chat),
-          enabled = true,
-          onClick = onNavigateToNewConversation,
-          buttonSize = Small,
-          modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
-      }
       Spacer(Modifier.height(16.dp))
       with(LocalDensity.current) {
         Spacer(Modifier.height(bottomAttachedContentHeightPx.toDp()))
@@ -228,9 +210,11 @@ private fun SummaryScreen(
     }
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = Modifier.wrapContentHeight(Alignment.Bottom).onPlaced {
-        bottomAttachedContentHeightPx = it.size.height
-      },
+      modifier = Modifier
+        .wrapContentHeight(Alignment.Bottom)
+        .onPlaced {
+          bottomAttachedContentHeightPx = it.size.height
+        },
     ) {
       Column(
         Modifier
@@ -271,13 +255,12 @@ private fun SummaryScreen(
 }
 
 @Composable
-private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
-  val locale = getLocale()
-  val startDate = remember(quote.startDate) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
-      locale,
-    ).format(quote.startDate.toJavaLocalDate())
-  }
+private fun QuoteCard(
+  quote: MovingFlowQuotes.Quote,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+) {
+  val startDate = formatStartDate(quote.startDate)
   val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
     productVariant = quote.productVariant,
@@ -291,7 +274,54 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
       )
     },
     modifier = modifier,
+    underTitleContent = underTitleContent,
   )
+}
+
+@Composable
+private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifier = Modifier) {
+  val startDate = formatStartDate(quote.startDate)
+  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  QuoteCard(
+    displayName = quote.productVariant.displayName,
+    contractGroup = null,
+    insurableLimits = quote.productVariant.insurableLimits,
+    documents = quote.productVariant.documents,
+    subtitle = subtitle,
+    premium = quote.premium.toString(),
+    displayItems = quote.displayItems.map {
+      QuoteDisplayItem(
+        title = it.title,
+        subtitle = it.subtitle,
+        value = it.value,
+      )
+    },
+    modifier = modifier,
+    underTitleContent = {
+      Column {
+        Spacer(Modifier.height(16.dp))
+        HedvigNotificationCard(
+          content = {
+            RichText {
+              Markdown(
+                content = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION),
+              )
+            }
+          },
+          // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
+          InfoInline,
+        )
+      }
+    },
+  )
+}
+
+@Composable
+private fun formatStartDate(startDate: LocalDate): String {
+  val locale = getLocale()
+  return remember(startDate) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
+  }
 }
 
 @Composable
@@ -319,7 +349,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
 private fun PreviewSummaryScreen(
@@ -332,7 +362,6 @@ private fun PreviewSummaryScreen(
         navigateUp = {},
         navigateBack = {},
         exitFlow = {},
-        onNavigateToNewConversation = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
       )
@@ -399,6 +428,21 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           tierDescription = "tierDescription",
           deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
           defaultChoice = false,
+          relatedAddonQuotes = List(1) {
+            AddonQuote(
+              premium = UiMoney(129.0, SEK),
+              startDate = startDate,
+              displayItems = listOf(
+                DisplayItem(
+                  title = "display title",
+                  subtitle = "display subtitle",
+                  value = "display value",
+                ),
+              ),
+              exposureName = "exposureName",
+              productVariant = productVariant,
+            )
+          },
         ),
         moveMtaQuotes = listOf(
           MoveMtaQuote(

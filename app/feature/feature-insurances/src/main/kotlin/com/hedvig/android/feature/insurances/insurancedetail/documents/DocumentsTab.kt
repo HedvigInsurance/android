@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -30,14 +31,25 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.insurances.data.Addon
 
 @Composable
 internal fun DocumentsTab(
+  mainInsuranceTitle: String,
   documents: List<InsuranceVariantDocument>,
+  addons: List<Addon>?,
   onDocumentClicked: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
+    if (!addons.isNullOrEmpty()) {
+      HedvigText(
+        mainInsuranceTitle,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+    }
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url) },
@@ -49,6 +61,27 @@ internal fun DocumentsTab(
       }
     }
     Spacer(Modifier.height(16.dp))
+    if (!addons.isNullOrEmpty()) {
+      addons.forEach {
+        HedvigText(
+          it.addonVariant.displayName,
+          color = HedvigTheme.colorScheme.textSecondary,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        it.addonVariant.documents.forEachIndexed { index, doc ->
+          DocumentCard(
+            onClick = { onDocumentClicked(doc.url) },
+            title = doc.displayName,
+            subtitle = null,
+          )
+          if (index != documents.lastIndex) {
+            Spacer(Modifier.height(4.dp))
+          }
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+    }
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
@@ -59,11 +92,11 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) 
     onClick = onClick,
     modifier = Modifier
       .padding(horizontal = 16.dp)
-      .heightIn(min = 72.dp),
+      .heightIn(min = 56.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+      modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 15.dp, bottom = 17.dp),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -71,7 +104,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) 
             HedvigText(
               text = stringWithShiftedLabel(
                 text = title,
-                labelText = "PDF",
+                labelText = " PDF",
                 labelFontSize = HedvigTheme.typography.bodySmall.fontSize,
                 textColor = LocalContentColor.current,
                 textFontSize = LocalTextStyle.current.fontSize,
@@ -107,10 +140,29 @@ private fun PreviewDocumentsScreen() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DocumentsTab(
         documents = listOf(
-          InsuranceVariantDocument("", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),
-          InsuranceVariantDocument("", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
+          InsuranceVariantDocument("terms", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),
+          InsuranceVariantDocument("other doc", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
         ),
         onDocumentClicked = {},
+        mainInsuranceTitle = "Main insurance",
+        addons = listOf(
+          Addon(
+            AddonVariant(
+              perils = listOf(),
+              termsVersion = "",
+              displayName = "Travel plus 60",
+              product = "Product",
+              documents = listOf(
+                InsuranceVariantDocument(
+                  "terms",
+                  "test",
+                  InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
+                ),
+              ),
+              insurableLimits = listOf(),
+            ),
+          ),
+        ),
       )
     }
   }

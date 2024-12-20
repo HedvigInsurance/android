@@ -45,6 +45,7 @@ import coil.ImageLoader
 import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -59,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
@@ -294,6 +296,8 @@ private fun ContractDetailScreen(
                     DocumentsTab(
                       documents = state.insuranceContract.getAllDocuments(),
                       onDocumentClicked = openUrl,
+                      addons = state.insuranceContract.currentInsuranceAgreement.addons,
+                      mainInsuranceTitle = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                     )
                   }
 
@@ -381,6 +385,24 @@ private fun PreviewContractDetailScreen() {
               certificateUrl = null,
               coInsured = listOf(),
               creationCause = NEW_CONTRACT,
+              addons = listOf(
+                Addon(
+                  AddonVariant(
+                    termsVersion = "TRAVEL PLUS 60",
+                    displayName = "Travel Plus 60",
+                    product = "product",
+                    documents = listOf(
+                      InsuranceVariantDocument(
+                        "Terms and conditions",
+                        url = "irl",
+                        type = InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
+                      ),
+                    ),
+                    perils = listOf(),
+                    insurableLimits = listOf(),
+                  ),
+                ),
+              ),
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

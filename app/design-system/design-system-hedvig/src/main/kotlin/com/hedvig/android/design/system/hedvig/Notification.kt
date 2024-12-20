@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.FillSecondary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberElement
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberFill
@@ -99,7 +101,9 @@ fun HedvigNotificationCard(
     modifier = modifier,
     shape = NotificationDefaults.shape,
     color = priority.colors.containerColor,
+    border = priority.colors.borderColor,
   ) {
+    val buttonDarkTheme = if (priority is NotificationPriority.InfoInline) isSystemInDarkTheme() else false
     ProvideTextStyle(textStyle) {
       Row(Modifier.padding(padding)) {
         if (withIcon) {
@@ -123,11 +127,11 @@ fun HedvigNotificationCard(
             is Buttons -> {
               Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
               Row {
-                HedvigTheme(darkTheme = false) {
+                HedvigTheme(darkTheme = buttonDarkTheme) {
                   HedvigButton(
                     enabled = true,
                     onClick = style.onLeftButtonClick,
-                    buttonStyle = SecondaryAlt,
+                    buttonStyle = priority.buttonStyle,
                     buttonSize = Small,
                     modifier = Modifier.weight(1f),
                   ) {
@@ -137,7 +141,7 @@ fun HedvigNotificationCard(
                   HedvigButton(
                     enabled = true,
                     onClick = style.onRightButtonClick,
-                    buttonStyle = SecondaryAlt,
+                    buttonStyle = priority.buttonStyle,
                     buttonSize = Small,
                     modifier = Modifier.weight(1f),
                   ) {
@@ -149,11 +153,11 @@ fun HedvigNotificationCard(
 
             is Button -> {
               Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
-              HedvigTheme(darkTheme = false) {
+              HedvigTheme(darkTheme = buttonDarkTheme) {
                 HedvigButton(
                   enabled = true,
                   onClick = style.onButtonClick,
-                  buttonStyle = SecondaryAlt,
+                  buttonStyle = priority.buttonStyle,
                   buttonSize = Small,
                   modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -258,6 +262,30 @@ object NotificationDefaults {
     @get:Composable
     val icon: ImageVector
 
+    val buttonStyle: ButtonDefaults.ButtonStyle
+
+    data object InfoInline : NotificationPriority {
+      override val colors: NotificationColors
+        @Composable
+        get() = with(HedvigTheme.colorScheme) {
+          remember(this) {
+            NotificationColors(
+              containerColor = fromToken(ColorSchemeKeyTokens.FillNegative),
+              borderColor = fromToken(ColorSchemeKeyTokens.BorderPrimary),
+              textColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
+              iconColor = fromToken(FillSecondary),
+            )
+          }
+        }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.InfoFilled
+
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = ButtonDefaults.ButtonStyle.Secondary
+    }
+
     data object Attention : NotificationPriority {
       override val colors: NotificationColors
         @Composable
@@ -265,6 +293,7 @@ object NotificationDefaults {
           remember(this) {
             NotificationColors(
               containerColor = fromToken(SignalAmberFill),
+              borderColor = fromToken(SignalAmberFill),
               textColor = fromToken(SignalAmberText),
               iconColor = fromToken(SignalAmberElement),
             )
@@ -274,6 +303,9 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.WarningFilled
+
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
     }
 
     data object Error : NotificationPriority {
@@ -283,6 +315,7 @@ object NotificationDefaults {
           remember(this) {
             NotificationColors(
               containerColor = fromToken(SignalRedFill),
+              borderColor = fromToken(SignalRedFill),
               textColor = fromToken(SignalRedText),
               iconColor = fromToken(SignalRedElement),
             )
@@ -292,6 +325,8 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.WarningFilled
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
     }
 
     data object Info : NotificationPriority {
@@ -301,6 +336,7 @@ object NotificationDefaults {
           remember(this) {
             NotificationColors(
               containerColor = fromToken(SignalBlueFill),
+              borderColor = fromToken(SignalBlueFill),
               textColor = fromToken(SignalBlueText),
               iconColor = fromToken(SignalBlueElement),
             )
@@ -310,6 +346,8 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.InfoFilled
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
     }
 
     data object Campaign : NotificationPriority {
@@ -319,6 +357,7 @@ object NotificationDefaults {
           remember(this) {
             NotificationColors(
               containerColor = fromToken(SignalGreenFill),
+              borderColor = fromToken(SignalGreenFill),
               textColor = fromToken(SignalGreenText),
               iconColor = fromToken(SignalGreenElement),
             )
@@ -328,6 +367,8 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.Campaign
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
     }
 
     data object NeutralToast : NotificationPriority {
@@ -337,6 +378,7 @@ object NotificationDefaults {
           remember(this) {
             NotificationColors(
               containerColor = fromToken(SurfacePrimary),
+              borderColor = fromToken(SurfacePrimary),
               textColor = fromToken(TextSecondaryTranslucent),
               iconColor = fromToken(FillSecondary),
             )
@@ -346,6 +388,8 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.InfoFilled
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
     }
   }
 
@@ -369,6 +413,7 @@ object NotificationDefaults {
 @Immutable
 data class NotificationColors(
   val containerColor: Color,
+  val borderColor: Color,
   val textColor: Color,
   val iconColor: Color,
 )
@@ -378,8 +423,8 @@ data class NotificationColors(
 private fun PreviewNotificationCard(
   @PreviewParameter(NotificationCardPriorityProvider::class) priority: NotificationPriority,
 ) {
-  HedvigTheme(darkTheme = true) {
-    Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
         Modifier
           .width(330.dp)
@@ -434,5 +479,6 @@ private class NotificationCardPriorityProvider :
       Error,
       Campaign,
       Attention,
+      NotificationPriority.InfoInline,
     ),
   )

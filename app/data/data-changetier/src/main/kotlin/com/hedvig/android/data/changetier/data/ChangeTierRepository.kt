@@ -37,9 +37,13 @@ internal class ChangeTierRepositoryImpl(
     source: ChangeTierCreateSource,
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     changeTierQuoteStorage.clearAllQuotes()
-    return createChangeTierDeductibleIntentUseCase.invoke(insuranceId, source).onRight { intent ->
-      changeTierQuoteStorage.insertAll(intent.quotes)
-    }
+    return createChangeTierDeductibleIntentUseCase.invoke(insuranceId, source)
+      .onLeft { left ->
+        logcat { "createChangeTierDeductibleIntentUseCase error: $left" }
+      }
+      .onRight { intent ->
+        changeTierQuoteStorage.insertAll(intent.quotes)
+      }
   }
 
   override suspend fun getQuoteById(id: String): Either<ErrorMessage, TierDeductibleQuote> {

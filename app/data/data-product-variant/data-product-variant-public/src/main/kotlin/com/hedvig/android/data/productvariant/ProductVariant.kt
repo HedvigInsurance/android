@@ -106,16 +106,20 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
     InsuranceVariantDocument(
       displayName = document.displayName,
       url = document.url,
-      type = @Suppress("ktlint:standard:max-line-length")
-      when (document.type) {
-        InsuranceDocumentType.TERMS_AND_CONDITIONS -> InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS
-        InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD
-        InsuranceDocumentType.PRE_SALE_INFO -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO
-        InsuranceDocumentType.GENERAL_TERMS -> InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
-        InsuranceDocumentType.PRIVACY_POLICY -> InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
-        InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
-        InsuranceDocumentType.SCAR_TABLE -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
-      },
+      type = document.type.toDocumentType(),
     )
   },
 )
+
+@Suppress("ktlint:standard:max-line-length")
+fun InsuranceDocumentType.toDocumentType(): InsuranceVariantDocument.InsuranceDocumentType {
+  return when (this) {
+    InsuranceDocumentType.TERMS_AND_CONDITIONS -> InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS
+    InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD
+    InsuranceDocumentType.PRE_SALE_INFO -> InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO
+    InsuranceDocumentType.GENERAL_TERMS -> InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
+    InsuranceDocumentType.PRIVACY_POLICY -> InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
+    InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+    InsuranceDocumentType.SCAR_TABLE -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+  }
+}

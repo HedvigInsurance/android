@@ -1,0 +1,23 @@
+fragment AddonVariantFragment on AddonVariant {
+  termsVersion
+  displayName
+  product
+  perils {
+    id
+    title
+    description
+    covered
+    exceptions
+    colorCode
+  }
+  insurableLimits {
+    label
+    limit
+    description
+  }
+  documents {
+    displayName
+    url
+    type
+  }
+}

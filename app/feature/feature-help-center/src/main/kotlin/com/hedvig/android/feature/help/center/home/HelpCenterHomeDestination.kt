@@ -92,7 +92,6 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Search
-import com.hedvig.android.design.system.hedvig.placeholder.PlaceholderHighlight
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.plus
@@ -109,6 +108,7 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 
 @Composable
@@ -712,7 +712,11 @@ private fun PlaceholderQuickLinks() {
           HedvigText(
             text = "HHHHHH",
             modifier = Modifier
-              .hedvigPlaceholder(visible = true, highlight = PlaceholderHighlight.fade()),
+              .hedvigPlaceholder(
+                visible = true,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.fade(),
+              ),
           )
         },
         bottomText = {
@@ -720,7 +724,11 @@ private fun PlaceholderQuickLinks() {
             text = "HHHHHHHHHHHHHHHHHH",
             style = HedvigTheme.typography.label,
             modifier = Modifier
-              .hedvigPlaceholder(true, highlight = PlaceholderHighlight.fade()),
+              .hedvigPlaceholder(
+                true,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.fade(),
+              ),
           )
         },
       )

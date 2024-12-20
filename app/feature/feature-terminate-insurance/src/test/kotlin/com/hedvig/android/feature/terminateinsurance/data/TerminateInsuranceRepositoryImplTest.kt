@@ -59,7 +59,7 @@ class TerminateInsuranceRepositoryImplTest {
   private val apolloClientWithGoodResponse: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = FlowTerminationStartMutation(FlowTerminationStartInput(testId)),
+        operation = FlowTerminationStartMutation(FlowTerminationStartInput(testId), false),
         data = FlowTerminationStartMutation.Data(OctopusFakeResolver) {
           flowTerminationStart = buildFlow {
             id = "flowId"
@@ -136,7 +136,12 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok but FF is off options with tier-related subOptions should be mapped without subOptions but with required feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to false))
+      val featureManager = FakeFeatureManager2(
+        fixedMap = mapOf(
+          Feature.TIER to false,
+          Feature.TRAVEL_ADDON to false,
+        ),
+      )
 
       val repo = TerminateInsuranceRepositoryImpl(
         apolloClient = apolloClientWithGoodResponse,
@@ -176,7 +181,12 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok and FF is on options with tier-related subOptions should have subOptions and no required feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
+      val featureManager = FakeFeatureManager2(
+        fixedMap = mapOf(
+          Feature.TIER to true,
+          Feature.TRAVEL_ADDON to false,
+        ),
+      )
 
       val repo = TerminateInsuranceRepositoryImpl(
         apolloClient = apolloClientWithGoodResponse,
@@ -216,7 +226,12 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok but FF is off options with tier actions should have their action mapped to UnknownAction and have required feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to false))
+      val featureManager = FakeFeatureManager2(
+        fixedMap = mapOf(
+          Feature.TIER to false,
+          Feature.TRAVEL_ADDON to false,
+        ),
+      )
 
       val repo = TerminateInsuranceRepositoryImpl(
         apolloClient = apolloClientWithGoodResponse,
@@ -242,7 +257,12 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok and FF is on options with tier actions should have corresponding action and have no feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
+      val featureManager = FakeFeatureManager2(
+        fixedMap = mapOf(
+          Feature.TIER to true,
+          Feature.TRAVEL_ADDON to false,
+        ),
+      )
 
       val repo = TerminateInsuranceRepositoryImpl(
         apolloClient = apolloClientWithGoodResponse,

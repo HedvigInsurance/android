@@ -31,11 +31,11 @@ import kotlinx.coroutines.launch
 /**
  * Contains default values used by [Modifier.placeholder] and [PlaceholderHighlight].
  */
-internal object PlaceholderDefaults {
+object PlaceholderDefaults {
   /**
    * The default [InfiniteRepeatableSpec] to use for [fade].
    */
-  public val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+  val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
     infiniteRepeatable(
       animation = tween(delayMillis = 200, durationMillis = 600),
       repeatMode = RepeatMode.Reverse,
@@ -45,7 +45,7 @@ internal object PlaceholderDefaults {
   /**
    * The default [InfiniteRepeatableSpec] to use for [shimmer].
    */
-  public val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+  val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
     infiniteRepeatable(
       animation = tween(durationMillis = 1700, delayMillis = 200),
       repeatMode = RepeatMode.Restart,
@@ -53,36 +53,7 @@ internal object PlaceholderDefaults {
   }
 }
 
-/**
- * Draws some skeleton UI which is typically used whilst content is 'loading'.
- *
- * A version of this modifier which uses appropriate values for Material themed apps is available
- * in the 'Placeholder Material' library.
- *
- * You can provide a [PlaceholderHighlight] which runs an highlight animation on the placeholder.
- * The [shimmer] and [fade] implementations are provided for easy usage.
- *
- * A cross-fade transition will be applied to the content and placeholder UI when the [visible]
- * value changes. The transition can be customized via the [contentFadeAnimationSpec] and
- * [placeholderFadeAnimationSpec] parameters.
- *
- * You can find more information on the pattern at the Material Theming
- * [Placeholder UI](https://material.io/design/communication/launch-screen.html#placeholder-ui)
- * guidelines.
- *
- * @sample com.google.accompanist.sample.placeholder.DocSample_Foundation_Placeholder
- *
- * @param visible whether the placeholder should be visible or not.
- * @param color the color used to draw the placeholder UI.
- * @param shape desired shape of the placeholder. Defaults to [RectangleShape].
- * @param highlight optional highlight animation.
- * @param placeholderFadeAnimationSpec The transition spec to use when fading the placeholder
- * on/off screen. The boolean parameter defined for the transition is [visible].
- * @param contentFadeAnimationSpec The transition spec to use when fading the content
- * on/off screen. The boolean parameter defined for the transition is [visible].
- */
-
-internal fun Modifier.placeholder(
+fun Modifier.placeholder(
   visible: Boolean,
   color: Color,
   shape: Shape = RectangleShape,

@@ -136,16 +136,14 @@ private fun ExplanationBottomSheet(onDismiss: () -> Unit, text: String, isVisibl
     HedvigText(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
       text = text,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+        .fillMaxWidth(),
     )
     HedvigButton(
       onClick = onDismiss,

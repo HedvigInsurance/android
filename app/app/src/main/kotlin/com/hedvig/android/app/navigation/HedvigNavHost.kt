@@ -16,6 +16,8 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
+import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
@@ -272,6 +274,9 @@ internal fun HedvigNavHost(
           backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
         }
       },
+      onNavigateToAddonPurchaseFlow = { ids ->
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -322,13 +327,17 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
     )
+    addonPurchaseNavGraph(
+      navigator = navigator,
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { navigateToNewConversation() },
+    )
     changeTierGraph(
       navigator = navigator,
       navController = hedvigAppState.navController,
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
-      onNavigateToNewConversation = { navigateToNewConversation() },
     )
     connectPaymentGraph(
       navigator = navigator,
@@ -409,6 +418,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appId,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+    },
+    onNavigateToAddonPurchaseFlow = { ids ->
+      navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
     },
   )
   claimFlowGraph(
