@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -60,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
+import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -299,9 +301,14 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifie
       Column {
         Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
-          "This addon can be removed by contacting support", // todo l10n
-          // stringResource(R.string.MOVING_FLOW_REMOVE_ADDON_INFO, deepLinkToNewChat),
-          // todo: add deep link to new conversation!
+          content = {
+            RichText {
+              Markdown(
+                content = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION),
+              )
+            }
+          },
+          // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
           InfoInline,
         )
       }

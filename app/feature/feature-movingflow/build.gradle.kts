@@ -37,4 +37,6 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.tierComparison)
   implementation(projects.uiTiersAndAddons)
+  implementation(libs.compose.richtext)
+  implementation(libs.compose.richtextCommonmark)
 }
