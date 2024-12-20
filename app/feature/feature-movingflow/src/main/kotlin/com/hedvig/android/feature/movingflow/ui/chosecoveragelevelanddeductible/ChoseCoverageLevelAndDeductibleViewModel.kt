@@ -58,8 +58,13 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
       when (event) {
         is SelectCoverage -> {
           val currentContent = tiersInfo.getOrNull() ?: return@CollectEvents
-          val newSelectedCoverage =
-            currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId } ?: return@CollectEvents
+          val currentDeductible = currentContent.selectedDeductible?.deductible
+          val newlySelectedQuote = currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId }
+          val newlySelectedTier = newlySelectedQuote?.tierName
+          val quoteWithSameDeductibleAndNewTier = currentContent.allOptions.firstOrNull {
+            it.tierName == newlySelectedTier && it.deductible == currentDeductible
+          }
+          val newSelectedCoverage = quoteWithSameDeductibleAndNewTier ?: newlySelectedQuote ?: return@CollectEvents
           if (newSelectedCoverage == currentContent.selectedCoverage) return@CollectEvents
           launch {
             movingFlowRepository.updatePreselectedHomeQuoteId(newSelectedCoverage.id)
