@@ -118,15 +118,10 @@ private class SummaryPresenter(
                   contractDisplayName = currentQuoteToChange.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 )
-                var total = rightQuote.premium.amount
-                rightQuote.addons.forEach {
-                  total += it.premium.amount
-                }
                 currentState = Success(
                   quote = rightQuote,
                   currentContractData = currentContract,
                   activationDate = params.activationDate,
-                  total = UiMoney(total, rightQuote.premium.currencyCode)
                 )
               }
             },
@@ -149,9 +144,14 @@ internal sealed interface SummaryState {
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
     val activationDate: LocalDate,
-    val total: UiMoney,
     val navigateToFail: Boolean = false,
-  ) : SummaryState
+  ) : SummaryState {
+    val total: UiMoney = quote.addons.map { it.premium }.plus(quote.premium)
+      .sumOf { it.amount }
+      .let { sum ->
+        UiMoney(sum, quote.premium.currencyCode)
+      }
+  }
 
   data object Failure : SummaryState
 }

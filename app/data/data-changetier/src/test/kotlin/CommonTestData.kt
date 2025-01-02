@@ -29,6 +29,7 @@ internal val oldTestQuote = TierDeductibleQuote(
     tierDescription = "Vårt paket med grundläggande villkor.",
     tierDisplayName = "Bas",
   ),
+  addons = emptyList(),
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,
@@ -64,6 +65,7 @@ internal val testQuote = TierDeductibleQuote(
     tierDescription = "Vårt paket med grundläggande villkor.",
     tierDisplayName = "Bas",
   ),
+  addons = emptyList(),
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = ContractGroup.RENTAL,

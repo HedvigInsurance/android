@@ -188,8 +188,8 @@ private fun SummarySuccessScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
-    for (addon in uiState.quote.addons) {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      for (addon in uiState.quote.addons) {
         AddonCard(
           addonQuote = addon,
           activationDate = uiState.activationDate,
@@ -215,8 +215,10 @@ private fun SummarySuccessScreen(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
-              uiState.total.amount.toInt()),
+            text = stringResource(
+              R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
+              uiState.total.amount.toInt(),
+            ),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -394,7 +396,6 @@ private class ChooseInsuranceUiStateProvider :
           activeDisplayPremium = "449 kr",
         ),
         activationDate = LocalDate(2024, 5, 1),
-        total = UiMoney(685.0, SEK),
         quote = TierDeductibleQuote(
           id = "id4",
           deductible = Deductible(
@@ -422,7 +423,7 @@ private class ChooseInsuranceUiStateProvider :
             tierDescription = "Our most standard coverage",
             termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
-          addons = listOf(
+          addons = List(2) {
             ChangeTierDeductibleAddonQuote(
               addonId = "addonId",
               displayName = "Addon Quote Name",
@@ -434,7 +435,7 @@ private class ChooseInsuranceUiStateProvider :
                 ),
               ),
               previousPremium = UiMoney(29.0, SEK),
-              premium = UiMoney(30.0, SEK),
+              premium = UiMoney(45.0, SEK),
               addonVariant = AddonVariant(
                 displayName = "Addon Name",
                 perils = listOf(),
@@ -449,8 +450,8 @@ private class ChooseInsuranceUiStateProvider :
                 termsVersion = "RESESKYDD-20230330-HEDVIG-null",
                 product = "product",
               ),
-            ),
-          ),
+            )
+          },
         ),
       ),
       Failure,

@@ -526,6 +526,28 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
             displayItems = emptyList(),
             relatedAddonQuotes = emptyList(),
           ),
+          MoveMtaQuote(
+            premium = UiMoney(23.0, SEK),
+            exposureName = "exposureName",
+            productVariant = productVariant,
+            startDate = startDate,
+            displayItems = emptyList(),
+            relatedAddonQuotes = listOf(
+              AddonQuote(
+                premium = UiMoney(30.0, SEK),
+                startDate = startDate,
+                displayItems = listOf(
+                  DisplayItem(
+                    title = "display title",
+                    subtitle = "display subtitle",
+                    value = "display value",
+                  ),
+                ),
+                exposureName = "exposureName",
+                addonVariant = addonVariant,
+              ),
+            ),
+          ),
         ),
       ),
       false,
