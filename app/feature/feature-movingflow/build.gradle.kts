@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
+
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -39,4 +41,5 @@ dependencies {
   implementation(projects.uiTiersAndAddons)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
+  implementation(projects.featureFlagsPublic)
 }

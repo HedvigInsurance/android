@@ -1,4 +1,6 @@
-mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierDeductibleSource!) {
+mutation ChangeTierDeductibleCreateIntent($contractId: ID!,
+  $source: ChangeTierDeductibleSource!,
+$addonsFlagOn: Boolean!) {
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
     intent {
       activationDate
@@ -34,7 +36,7 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
         }
         tierLevel
         tierName
-        addons {
+        addons @include(if: $addonsFlagOn) {
           addonId
           displayName
           displayItems {

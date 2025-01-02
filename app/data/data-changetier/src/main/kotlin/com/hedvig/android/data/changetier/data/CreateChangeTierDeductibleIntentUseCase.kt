@@ -36,6 +36,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(Feature.TIER).first()
+      val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isTierEnabled) {
         logcat(ERROR) { "Tried to get changeTierQuotes when feature flag is disabled!" }
         raise(ErrorMessage())
@@ -45,6 +46,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
             ChangeTierDeductibleCreateIntentMutation(
               contractId = insuranceId,
               source = source.toSource(),
+              addonsFlagOn = isAddonFlagEnabled,
             ),
           )
           .safeExecute()
@@ -92,7 +94,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                   tierDescription = it.productVariant.tierDescription,
                   tierDisplayName = it.productVariant.displayNameTier,
                 ),
-                addons = it.addons.map { addon ->
+                addons = it.addons?.map { addon ->
                   ChangeTierDeductibleAddonQuote(
                     addonId = addon.addonId,
                     displayName = addon.displayName,
@@ -101,7 +103,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                     premium = UiMoney.fromMoneyFragment(addon.premium),
                     addonVariant = addon.addonVariant.toAddonVariant(),
                   )
-                },
+                } ?: emptyList(),
               )
             }
             val intentResult = ChangeTierDeductibleIntent(

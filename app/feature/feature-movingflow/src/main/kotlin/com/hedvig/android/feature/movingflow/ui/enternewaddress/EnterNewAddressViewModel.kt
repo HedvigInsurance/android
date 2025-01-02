@@ -52,10 +52,13 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
@@ -70,12 +73,14 @@ internal class EnterNewAddressViewModel(
   savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
     EnterNewAddressUiState.Loading,
     EnterNewAddressPresenter(
       savedStateHandle.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId,
       movingFlowRepository,
       apolloClient,
+      featureManager,
     ),
   )
 
@@ -83,6 +88,7 @@ private class EnterNewAddressPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<EnterNewAddressEvent, EnterNewAddressUiState> {
   @Composable
   override fun MoleculePresenterScope<EnterNewAddressEvent>.present(
@@ -157,8 +163,15 @@ private class EnterNewAddressPresenter(
       LaunchedEffect(inputForSubmission) {
         @Suppress("NAME_SHADOWING")
         val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
+        val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
         apolloClient
-          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmissionValue.moveIntentRequestInput))
+          .mutation(
+            MoveIntentV2RequestMutation(
+              intentId = moveIntentId,
+              moveIntentRequestInput = inputForSubmissionValue.moveIntentRequestInput,
+              addonsFlagOn = isAddonFlagEnabled,
+            ),
+          )
           .safeExecute()
           .map { it.moveIntentRequest }
           .fold(
