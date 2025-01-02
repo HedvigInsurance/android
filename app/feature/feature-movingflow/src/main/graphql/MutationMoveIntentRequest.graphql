@@ -32,9 +32,10 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     exposureName
     productVariant {
       ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
+      # todo This is not in the fragment, why? -> displayNameSubtype
+    }
+    addons {
+      ...MoveAddonQuoteFragment
     }
   }
   mtaQuotes {
@@ -48,9 +49,9 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     exposureName
     productVariant {
       ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
+    }
+    addons {
+      ...MoveAddonQuoteFragment
     }
   }
 }
@@ -59,4 +60,21 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
   displayTitle
   displaySubtitle
   displayValue
+}
+
+fragment MoveAddonQuoteFragment on MoveAddonQuote {
+  addonId
+  displayName
+  displayItems {
+    displayTitle
+    displaySubtitle
+    displayValue
+  }
+  premium {
+    ...MoneyFragment
+  }
+  startDate
+  addonVariant {
+    ...AddonVariantFragment
+  }
 }

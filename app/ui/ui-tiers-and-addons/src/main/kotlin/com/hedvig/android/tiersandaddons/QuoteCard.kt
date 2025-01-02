@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
@@ -51,9 +52,12 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.ripple
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
@@ -101,6 +105,7 @@ fun QuoteCard(
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
+  onInfoIconClick: (() -> Unit)? = null,
 ) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
@@ -115,6 +120,7 @@ fun QuoteCard(
     contractGroup = contractGroup,
     insurableLimits = insurableLimits,
     documents = documents,
+    onInfoIconClick = onInfoIconClick,
   )
 }
 
@@ -131,6 +137,7 @@ private fun QuoteCard(
   documents: List<InsuranceVariantDocument>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
+  onInfoIconClick: (() -> Unit)? = null,
 ) {
   HedvigCard(
     modifier = modifier,
@@ -139,25 +146,49 @@ private fun QuoteCard(
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
-      Row {
-        if (contractGroup != null) {
-          Image(
-            painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-          )
-          Spacer(modifier = Modifier.width(12.dp))
-        }
-        Column {
-          HedvigText(
-            text = displayName,
-          )
-          HedvigText(
-            text = subtitle,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-      }
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Row {
+            if (contractGroup != null) {
+              Image(
+                painter = painterResource(contractGroup.toPillow()),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+              )
+              Spacer(modifier = Modifier.width(12.dp))
+            }
+            Column {
+              HedvigText(
+                text = displayName,
+              )
+              HedvigText(
+                text = subtitle,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            }
+          }
+        },
+        endSlot = {
+          if (onInfoIconClick != null) {
+            Row(
+              horizontalArrangement = Arrangement.End,
+              verticalAlignment = Alignment.Top,
+            ) {
+              IconButton(
+                onClick = onInfoIconClick,
+                modifier = Modifier.size(24.dp),
+              ) {
+                Icon(
+                  HedvigIcons.InfoOutline,
+                  null,
+                  modifier = Modifier.size(24.dp),
+                )
+              }
+            }
+          }
+        },
+        spaceBetween = 8.dp,
+      )
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -220,9 +251,14 @@ private fun QuoteCard(
                         },
                     ) {
                       HedvigText(
-                        text = document.displayName,
+                        text = stringWithShiftedLabel(
+                          text = document.displayName,
+                          labelText = "PDF",
+                          labelFontSize = HedvigTheme.typography.label.fontSize,
+                          textColor = HedvigTheme.colorScheme.textSecondary,
+                          textFontSize = LocalTextStyle.current.fontSize,
+                        ),
                         style = HedvigTheme.typography.bodySmall,
-                        color = HedvigTheme.colorScheme.textSecondary,
                         modifier = Modifier.weight(1f),
                       )
                       Spacer(Modifier.width(8.dp))
@@ -459,6 +495,7 @@ private fun PreviewQuoteCard(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       QuoteCard(
+        onInfoIconClick = {},
         showDetails = showDetails,
         setShowDetails = {},
         displayName = "displayName",
