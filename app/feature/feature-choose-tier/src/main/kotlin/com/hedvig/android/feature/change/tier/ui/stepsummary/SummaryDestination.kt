@@ -216,7 +216,7 @@ private fun SummarySuccessScreen(
         endSlot = {
           HedvigText(
             text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
-              uiState.total.amount.toInt()),//todo: here it should be total for all, addons included
+              uiState.total.amount.toInt()),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
