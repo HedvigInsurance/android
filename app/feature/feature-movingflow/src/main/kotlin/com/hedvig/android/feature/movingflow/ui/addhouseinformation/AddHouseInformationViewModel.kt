@@ -50,9 +50,12 @@ import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInfo
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure.NetworkFailure
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Loading
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.MissingOngoingMovingFlow
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveApiVersion
@@ -79,12 +82,14 @@ internal class AddHouseInformationViewModel(
   savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
     AddHouseInformationUiState.Loading,
     AddHouseInformationPresenter(
       savedStateHandle.toRoute<MovingFlowDestinations.AddHouseInformation>().moveIntentId,
       movingFlowRepository,
       apolloClient,
+      featureManager,
     ),
   )
 
@@ -92,6 +97,7 @@ internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<AddHouseInformationEvent, AddHouseInformationUiState> {
   @Composable
   override fun MoleculePresenterScope<AddHouseInformationEvent>.present(
@@ -156,8 +162,15 @@ internal class AddHouseInformationPresenter(
       LaunchedEffect(inputForSubmission) {
         @Suppress("NAME_SHADOWING")
         val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
+        val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
         apolloClient
-          .mutation(MoveIntentV2RequestMutation(moveIntentId, inputForSubmissionValue.moveIntentRequestInput))
+          .mutation(
+            MoveIntentV2RequestMutation(
+              moveIntentId,
+              inputForSubmissionValue.moveIntentRequestInput,
+              isAddonFlagEnabled,
+            ),
+          )
           .safeExecute()
           .map { it.moveIntentRequest }
           .fold(

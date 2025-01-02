@@ -1,4 +1,6 @@
-mutation MoveIntentV2Request($intentId: ID!, $moveIntentRequestInput: MoveIntentRequestInput!) {
+mutation MoveIntentV2Request($intentId: ID!,
+  $moveIntentRequestInput: MoveIntentRequestInput!,
+  $addonsFlagOn: Boolean!) {
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
       ...MoveIntentQuotesFragment
@@ -34,7 +36,7 @@ fragment MoveIntentQuotesFragment on MoveIntent {
       ...ProductVariantFragment
       # todo This is not in the fragment, why? -> displayNameSubtype
     }
-    addons {
+    addons @include(if: $addonsFlagOn) {
       ...MoveAddonQuoteFragment
     }
   }
@@ -50,7 +52,7 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     productVariant {
       ...ProductVariantFragment
     }
-    addons {
+    addons @include(if: $addonsFlagOn)  {
       ...MoveAddonQuoteFragment
     }
   }

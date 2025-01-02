@@ -100,7 +100,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
           )
         },
         defaultChoice = houseQuote.defaultChoice,
-        relatedAddonQuotes = houseQuote.addons.map { addon ->
+        relatedAddonQuotes = houseQuote.addons?.map { addon ->
           MovingFlowQuotes.AddonQuote(
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
@@ -114,7 +114,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
           )
-        },
+        } ?: emptyList(),
       )
     },
     mtaQuotes = (mtaQuotes ?: emptyList()).map { mtaQuote ->
@@ -124,7 +124,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         productVariant = mtaQuote.productVariant.toProductVariant(),
         startDate = mtaQuote.startDate,
         displayItems = mtaQuote.displayItems.map { it.toDisplayItem() },
-        relatedAddonQuotes = mtaQuote.addons.map { addon ->
+        relatedAddonQuotes = mtaQuote.addons?.map { addon ->
           MovingFlowQuotes.AddonQuote(
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
@@ -138,7 +138,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
           )
-        },
+        } ?: emptyList(),
       )
     },
   )

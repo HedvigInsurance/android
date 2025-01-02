@@ -11,6 +11,7 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
 import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -29,13 +30,19 @@ val movingFlowModule = module {
   }
   viewModel<EnterNewAddressViewModel> {
     EnterNewAddressViewModel(
-      get<SavedStateHandle>(),
-      get<MovingFlowRepository>(),
-      get<ApolloClient>(),
+      savedStateHandle = get<SavedStateHandle>(),
+      movingFlowRepository = get<MovingFlowRepository>(),
+      apolloClient = get<ApolloClient>(),
+      featureManager = get<FeatureManager>(),
     )
   }
   viewModel<AddHouseInformationViewModel> {
-    AddHouseInformationViewModel(get(), get(), get())
+    AddHouseInformationViewModel(
+      savedStateHandle = get<SavedStateHandle>(),
+      movingFlowRepository = get<MovingFlowRepository>(),
+      apolloClient = get<ApolloClient>(),
+      featureManager = get<FeatureManager>(),
+    )
   }
   viewModel<ChoseCoverageLevelAndDeductibleViewModel> {
     ChoseCoverageLevelAndDeductibleViewModel(get<MovingFlowRepository>())
