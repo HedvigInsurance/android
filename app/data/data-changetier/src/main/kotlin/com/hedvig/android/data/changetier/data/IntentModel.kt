@@ -4,6 +4,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -22,6 +23,7 @@ data class TierDeductibleQuote(
   val premium: UiMoney,
   val displayItems: List<ChangeTierDeductibleDisplayItem>,
   val productVariant: ProductVariant,
+  val addons: List<ChangeTierDeductibleAddonQuote>,
 )
 
 @Serializable
@@ -29,6 +31,16 @@ data class ChangeTierDeductibleDisplayItem(
   val displayTitle: String,
   val displaySubtitle: String?,
   val displayValue: String,
+)
+
+@Serializable
+data class ChangeTierDeductibleAddonQuote(
+  val addonId: String,
+  val displayName: String,
+  val displayItems: List<ChangeTierDeductibleDisplayItem>,
+  val previousPremium: UiMoney,
+  val premium: UiMoney,
+  val addonVariant: AddonVariant,
 )
 
 @Serializable

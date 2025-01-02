@@ -90,6 +90,7 @@ internal val testQuote = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
   ),
+  addons = emptyList(),
 )
 
 internal val testQuote2 = TierDeductibleQuote(
@@ -120,6 +121,7 @@ internal val testQuote2 = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
   ),
+  addons = emptyList(),
 )
 
 internal val testQuote3 = TierDeductibleQuote(
@@ -150,6 +152,7 @@ internal val testQuote3 = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
   ),
+  addons = emptyList(),
 )
 
 internal val currentQuote = TierDeductibleQuote(
@@ -180,4 +183,5 @@ internal val currentQuote = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
   ),
+  addons = emptyList(),
 )

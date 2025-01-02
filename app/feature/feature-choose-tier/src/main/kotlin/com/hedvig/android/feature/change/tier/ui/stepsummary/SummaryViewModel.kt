@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
@@ -24,6 +25,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.datetime.LocalDate
 
 internal class SummaryViewModel(
   params: SummaryParameters,
@@ -116,9 +118,15 @@ private class SummaryPresenter(
                   contractDisplayName = currentQuoteToChange.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 )
+                var total = rightQuote.premium.amount
+                rightQuote.addons.forEach {
+                  total += it.premium.amount
+                }
                 currentState = Success(
                   quote = rightQuote,
                   currentContractData = currentContract,
+                  activationDate = params.activationDate,
+                  total = UiMoney(total, rightQuote.premium.currencyCode)
                 )
               }
             },
@@ -140,6 +148,8 @@ internal sealed interface SummaryState {
   data class Success(
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
+    val activationDate: LocalDate,
+    val total: UiMoney,
     val navigateToFail: Boolean = false,
   ) : SummaryState
 

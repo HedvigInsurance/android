@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.change.tier.ui.stepsummary
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +26,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.AddonVariant
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
@@ -48,6 +53,8 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
@@ -58,6 +65,8 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Succes
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun ChangeTierSummaryDestination(
@@ -176,8 +185,20 @@ private fun SummarySuccessScreen(
       uiState = uiState,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(16.dp),
+        .padding(horizontal = 16.dp),
     )
+    Spacer(Modifier.height(8.dp))
+    for (addon in uiState.quote.addons) {
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        AddonCard(
+          addonQuote = addon,
+          activationDate = uiState.activationDate,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
+    }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     Column(
@@ -194,7 +215,8 @@ private fun SummarySuccessScreen(
         spaceBetween = 8.dp,
         endSlot = {
           HedvigText(
-            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, uiState.quote.premium.amount.toInt()),
+            text = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
+              uiState.total.amount.toInt()),//todo: here it should be total for all, addons included
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
           )
@@ -254,7 +276,10 @@ private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
 private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
   QuoteCard(
     productVariant = uiState.quote.productVariant,
-    subtitle = uiState.currentContractData.contractDisplaySubtitle,
+    subtitle = stringResource(
+      R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
+      formatStartDate(uiState.activationDate),
+    ),
     premium = uiState.quote.premium.toString(),
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
@@ -265,11 +290,16 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     },
     underTitleContent = {
       HedvigText(
-        modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 2.dp),
         textAlign = TextAlign.End,
         text = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
-          uiState.currentContractData.activeDisplayPremium.toString(),
+          stringResource(
+            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            uiState.currentContractData.activeDisplayPremium.toString(),
+          ),
         ),
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
@@ -277,6 +307,58 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     },
     modifier = modifier,
   )
+}
+
+@Composable
+private fun AddonCard(
+  addonQuote: ChangeTierDeductibleAddonQuote,
+  activationDate: LocalDate,
+  modifier: Modifier = Modifier,
+) {
+  val startDate = formatStartDate(activationDate)
+  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  QuoteCard(
+    displayName = addonQuote.addonVariant.displayName,
+    contractGroup = null,
+    insurableLimits = emptyList(),
+    // todo: here we don't want to show insurable limits for addons, that may change later
+    documents = addonQuote.addonVariant.documents,
+    subtitle = subtitle,
+    premium = addonQuote.premium.toString(),
+    displayItems = addonQuote.displayItems.map {
+      QuoteDisplayItem(
+        title = it.displayTitle,
+        subtitle = it.displaySubtitle,
+        value = it.displayValue,
+      )
+    },
+    modifier = modifier,
+    underTitleContent = {
+      HedvigText(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 2.dp),
+        textAlign = TextAlign.End,
+        text = stringResource(
+          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          stringResource(
+            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            addonQuote.previousPremium.toString(),
+          ),
+        ),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    },
+  )
+}
+
+@Composable
+private fun formatStartDate(startDate: LocalDate): String {
+  val locale = getLocale()
+  return remember(startDate) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
+  }
 }
 
 @HedvigMultiScreenPreview
@@ -311,6 +393,8 @@ private class ChooseInsuranceUiStateProvider :
           contractDisplaySubtitle = "Addressvägen 777",
           activeDisplayPremium = "449 kr",
         ),
+        activationDate = LocalDate(2024, 5, 1),
+        total = UiMoney(685.0, SEK),
         quote = TierDeductibleQuote(
           id = "id4",
           deductible = Deductible(
@@ -337,6 +421,35 @@ private class ChooseInsuranceUiStateProvider :
             displayTierName = "Standard",
             tierDescription = "Our most standard coverage",
             termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
+          ),
+          addons = listOf(
+            ChangeTierDeductibleAddonQuote(
+              addonId = "addonId",
+              displayName = "Addon Quote Name",
+              displayItems = listOf(
+                ChangeTierDeductibleDisplayItem(
+                  displayTitle = "Coinsured",
+                  displayValue = "You + 1",
+                  displaySubtitle = null,
+                ),
+              ),
+              previousPremium = UiMoney(29.0, SEK),
+              premium = UiMoney(30.0, SEK),
+              addonVariant = AddonVariant(
+                displayName = "Addon Name",
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(
+                  InsuranceVariantDocument(
+                    "Document name",
+                    "",
+                    InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+                  ),
+                ),
+                termsVersion = "RESESKYDD-20230330-HEDVIG-null",
+                product = "product",
+              ),
+            ),
           ),
         ),
       ),
