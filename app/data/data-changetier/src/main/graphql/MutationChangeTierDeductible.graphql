@@ -7,9 +7,7 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
           ...DeductibleFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+          ...DisplayItemFragment
         }
         premium {
           ...MoneyFragment
@@ -25,9 +23,7 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
           ...DeductibleFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+          ...DisplayItemFragment
         }
         id
         premium {
@@ -38,7 +34,29 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
         }
         tierLevel
         tierName
+        addons {
+          addonId
+          displayName
+          displayItems {
+            ...DisplayItemFragment
+          }
+          previousPremium {
+            ...MoneyFragment
+          }
+          premium {
+            ...MoneyFragment
+          }
+          addonVariant {
+            ...AddonVariantFragment
+          }
+        }
       }
     }
   }
+}
+
+fragment DisplayItemFragment on ChangeTierDeductibleDisplayItem {
+  displaySubtitle
+  displayTitle
+  displayValue
 }

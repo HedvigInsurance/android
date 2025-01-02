@@ -38,10 +38,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.ui.LinkClickHandler
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.CERTIFICATE
@@ -51,16 +53,18 @@ import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
@@ -89,6 +93,7 @@ internal fun SummaryDestination(
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content && uiState.navigateToFinishedScreenWithDate != null) {
@@ -103,6 +108,7 @@ internal fun SummaryDestination(
     exitFlow = exitFlow,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
+    startNewConversation = startNewConversation,
   )
 }
 
@@ -114,6 +120,7 @@ private fun SummaryScreen(
   exitFlow: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -145,6 +152,7 @@ private fun SummaryScreen(
               content = uiState,
               onConfirmChanges = onConfirmChanges,
               onDismissSubmissionError = onDismissSubmissionError,
+              startNewConversation = startNewConversation,
             )
           }
         }
@@ -158,8 +166,10 @@ private fun SummaryScreen(
   content: SummaryUiState.Content,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
+  var infoFoBottomSheet by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
       title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
@@ -190,14 +200,72 @@ private fun SummaryScreen(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         .verticalScroll(rememberScrollState()),
     ) {
+      HedvigBottomSheet(
+        isVisible = infoFoBottomSheet != null,
+        onVisibleChange = { visible ->
+          if (!visible) {
+            infoFoBottomSheet = null
+          }
+        },
+      ) {
+        infoFoBottomSheet?.let {
+          HedvigText(text = it.first)
+          ProvideTextStyle(
+            HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
+          ) {
+            RichText(
+              linkClickHandler = LinkClickHandler(
+                function = {
+                  infoFoBottomSheet = null
+                  startNewConversation()
+                },
+              ),
+            ) {
+              Markdown(
+                content = it.second,
+              )
+            }
+          }
+        }
+        Spacer(Modifier.height(8.dp))
+        HedvigTextButton(
+          text = stringResource(id = R.string.general_close_button),
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            infoFoBottomSheet = null
+          },
+        )
+        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
+        val description = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION)
+        // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
         for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
-          AddonQuoteCard(addonQuote)
+          val bottomSheetTitle = addonQuote.addonVariant.displayName
+          AddonQuoteCard(
+            quote = addonQuote,
+            onInfoIconClick = {
+              infoFoBottomSheet =
+                bottomSheetTitle to description
+            },
+          )
         }
         for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
           QuoteCard(mtaQuote)
+          for (addon in mtaQuote.relatedAddonQuotes) {
+            val bottomSheetTitle = addon.addonVariant.displayName
+            AddonQuoteCard(
+              quote = addon,
+              onInfoIconClick = {
+                infoFoBottomSheet =
+                  bottomSheetTitle to description
+              },
+            )
+          }
         }
       }
       Spacer(Modifier.height(16.dp))
@@ -279,14 +347,19 @@ private fun QuoteCard(
 }
 
 @Composable
-private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifier = Modifier) {
+private fun AddonQuoteCard(
+  quote: MovingFlowQuotes.AddonQuote,
+  onInfoIconClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   val startDate = formatStartDate(quote.startDate)
   val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
-    displayName = quote.productVariant.displayName,
+    displayName = quote.addonVariant.displayName,
     contractGroup = null,
-    insurableLimits = quote.productVariant.insurableLimits,
-    documents = quote.productVariant.documents,
+    insurableLimits = emptyList(),
+    // todo: here we don't want to show insurable limits for addons, that may change later
+    documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
     displayItems = quote.displayItems.map {
@@ -297,22 +370,7 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifie
       )
     },
     modifier = modifier,
-    underTitleContent = {
-      Column {
-        Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(
-          content = {
-            RichText {
-              Markdown(
-                content = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION),
-              )
-            }
-          },
-          // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
-          InfoInline,
-        )
-      }
-    },
+    onInfoIconClick = onInfoIconClick,
   )
 }
 
@@ -364,6 +422,7 @@ private fun PreviewSummaryScreen(
         exitFlow = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
+        startNewConversation = {},
       )
     }
   }
@@ -403,6 +462,20 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
     tierDescription = "displayNameTier",
     termsVersion = "termsVersion",
   )
+  private val addonVariant = AddonVariant(
+    termsVersion = "terrrms",
+    displayName = "Addon 1",
+    product = "product",
+    documents = listOf(
+      InsuranceVariantDocument(
+        displayName = "displayName",
+        url = "url",
+        type = CERTIFICATE,
+      ),
+    ),
+    perils = listOf(),
+    insurableLimits = listOf(),
+  )
   val startDate = LocalDate.parse("2025-01-01")
 
   override val values: Sequence<SummaryUiState> = sequenceOf(
@@ -440,7 +513,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
                 ),
               ),
               exposureName = "exposureName",
-              productVariant = productVariant,
+              addonVariant = addonVariant,
             )
           },
         ),
@@ -451,6 +524,29 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
             productVariant = productVariant,
             startDate = startDate,
             displayItems = emptyList(),
+            relatedAddonQuotes = emptyList(),
+          ),
+          MoveMtaQuote(
+            premium = UiMoney(23.0, SEK),
+            exposureName = "exposureName",
+            productVariant = productVariant,
+            startDate = startDate,
+            displayItems = emptyList(),
+            relatedAddonQuotes = listOf(
+              AddonQuote(
+                premium = UiMoney(30.0, SEK),
+                startDate = startDate,
+                displayItems = listOf(
+                  DisplayItem(
+                    title = "display title",
+                    subtitle = "display subtitle",
+                    value = "display value",
+                  ),
+                ),
+                exposureName = "exposureName",
+                addonVariant = addonVariant,
+              ),
+            ),
           ),
         ),
       ),

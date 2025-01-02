@@ -183,9 +183,29 @@ internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
   val moveMtaQuotes: List<MoveMtaQuote>,
 ) {
-  val totalPremium: UiMoney = moveMtaQuotes.map { it.premium }.plus(moveHomeQuote.premium)
+  private val homeQuoteWithAddonsPremium = moveHomeQuote.relatedAddonQuotes.map {
+    it.premium
+  }.plus(moveHomeQuote.premium)
     .sumOf { it.amount }
     .let { sum ->
       UiMoney(sum, moveHomeQuote.premium.currencyCode)
     }
+  private val mtaQuotesPremiums = moveMtaQuotes.map {
+    it.premium
+  }.sumOf { it.amount }
+    .let { sum ->
+      UiMoney(sum, moveHomeQuote.premium.currencyCode)
+    }
+  private val mtaQuotesAddonsPremiums = moveMtaQuotes.flatMap { it.relatedAddonQuotes }.map {
+    it.premium
+  }.sumOf { it.amount }
+    .let { sum ->
+      UiMoney(sum, moveHomeQuote.premium.currencyCode)
+    }
+  val totalPremium: UiMoney =
+    UiMoney(
+      listOf(homeQuoteWithAddonsPremium, mtaQuotesPremiums, mtaQuotesAddonsPremiums)
+        .sumOf { it.amount },
+      moveHomeQuote.premium.currencyCode,
+    )
 }

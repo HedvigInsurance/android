@@ -32,6 +32,7 @@ import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -105,7 +106,14 @@ internal fun HedvigApp(
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           externalNavigator = externalNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = deepLinkFirstUriHandler::openUri,
+          openUrl = { uri ->
+            try {
+              deepLinkFirstUriHandler.openUri(uri)
+            } catch (e: IllegalArgumentException) {
+              logcat(LogPriority.ERROR) { "Tried to open uri: $uri but got IllegalArgumentException" }
+              // todo: not sure we need it, it's more for it not to crash while we still not getting proper uri for addon etc
+            }
+          },
           finishApp = finishApp,
           market = marketManager.market.collectAsStateWithLifecycle().value,
           imageLoader = imageLoader,
