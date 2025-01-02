@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.ui.LinkClickHandler
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -92,6 +93,7 @@ internal fun SummaryDestination(
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content && uiState.navigateToFinishedScreenWithDate != null) {
@@ -106,6 +108,7 @@ internal fun SummaryDestination(
     exitFlow = exitFlow,
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
+    startNewConversation = startNewConversation,
   )
 }
 
@@ -117,6 +120,7 @@ private fun SummaryScreen(
   exitFlow: () -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -148,6 +152,7 @@ private fun SummaryScreen(
               content = uiState,
               onConfirmChanges = onConfirmChanges,
               onDismissSubmissionError = onDismissSubmissionError,
+              startNewConversation = startNewConversation,
             )
           }
         }
@@ -161,6 +166,7 @@ private fun SummaryScreen(
   content: SummaryUiState.Content,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
+  startNewConversation: () -> Unit,
 ) {
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   var infoFoBottomSheet by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
@@ -207,7 +213,14 @@ private fun SummaryScreen(
           ProvideTextStyle(
             HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
           ) {
-            RichText {
+            RichText(
+              linkClickHandler = LinkClickHandler(
+                function = {
+                  infoFoBottomSheet = null
+                  startNewConversation()
+                },
+              ),
+            ) {
               Markdown(
                 content = it.second,
               )
@@ -409,6 +422,7 @@ private fun PreviewSummaryScreen(
         exitFlow = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
+        startNewConversation = {},
       )
     }
   }
