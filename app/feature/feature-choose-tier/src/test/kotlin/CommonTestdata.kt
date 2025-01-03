@@ -5,6 +5,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
@@ -13,6 +14,7 @@ import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 
 internal class FakeChangeTierRepository() : ChangeTierRepository {
@@ -153,6 +155,133 @@ internal val testQuote3 = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   addons = emptyList(),
+)
+
+internal val testQuoteWithOneAddon = TierDeductibleQuote(
+  id = "id3",
+  deductible = Deductible(
+    UiMoney(0.0, SEK),
+    deductiblePercentage = 25,
+    description = "Endast en rörlig del om 25% av skadekostnaden.",
+  ),
+  displayItems = listOf(
+    ChangeTierDeductibleDisplayItem(
+      displayValue = "hhh",
+      displaySubtitle = "mmm",
+      displayTitle = "ioi",
+    ),
+  ),
+  premium = UiMoney(205.0, SEK),
+  tier = standardTier,
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = "test",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Bas",
+    tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
+  ),
+  addons = listOf(
+    ChangeTierDeductibleAddonQuote(
+      addonId = "addonId",
+      displayName = "Travel Plus",
+      displayItems = listOf(
+        ChangeTierDeductibleDisplayItem(
+          displayTitle = "Coinsured people",
+          displaySubtitle = null,
+          displayValue = "Only you",
+        ),
+      ),
+      previousPremium = UiMoney(29.0, SEK),
+      premium = UiMoney(30.0, SEK),
+      addonVariant = AddonVariant(
+        termsVersion = "terms",
+        displayName = "addonVariantDisplayName",
+        product = "product",
+        perils = emptyList(),
+        insurableLimits = emptyList(),
+        documents = emptyList(),
+      ),
+    ),
+  ),
+)
+
+internal val testQuoteWithTwoAddons = TierDeductibleQuote(
+  id = "id3",
+  deductible = Deductible(
+    UiMoney(0.0, SEK),
+    deductiblePercentage = 25,
+    description = "Endast en rörlig del om 25% av skadekostnaden.",
+  ),
+  displayItems = listOf(
+    ChangeTierDeductibleDisplayItem(
+      displayValue = "hhh",
+      displaySubtitle = "mmm",
+      displayTitle = "ioi",
+    ),
+  ),
+  premium = UiMoney(205.0, SEK),
+  tier = standardTier,
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = "test",
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Bas",
+    tierDescription = "Our most basic coverage",
+    termsVersion = "termsVersion",
+  ),
+  addons = listOf(
+    ChangeTierDeductibleAddonQuote(
+      addonId = "addonId",
+      displayName = "Travel Plus",
+      displayItems = listOf(
+        ChangeTierDeductibleDisplayItem(
+          displayTitle = "Coinsured people",
+          displaySubtitle = null,
+          displayValue = "Only you",
+        ),
+      ),
+      previousPremium = UiMoney(29.0, SEK),
+      premium = UiMoney(30.0, SEK),
+      addonVariant = AddonVariant(
+        termsVersion = "terms",
+        displayName = "addonVariantDisplayName",
+        product = "product",
+        perils = emptyList(),
+        insurableLimits = emptyList(),
+        documents = emptyList(),
+      ),
+    ),
+    ChangeTierDeductibleAddonQuote(
+      addonId = "addonId2",
+      displayName = "Travel Plus",
+      displayItems = listOf(
+        ChangeTierDeductibleDisplayItem(
+          displayTitle = "Coinsured people",
+          displaySubtitle = null,
+          displayValue = "Only you",
+        ),
+      ),
+      previousPremium = UiMoney(70.0, SEK),
+      premium = UiMoney(80.0, SEK),
+      addonVariant = AddonVariant(
+        termsVersion = "terms",
+        displayName = "addonVariantDisplayName",
+        product = "product",
+        perils = emptyList(),
+        insurableLimits = emptyList(),
+        documents = emptyList(),
+      ),
+    ),
+  ),
 )
 
 internal val currentQuote = TierDeductibleQuote(
