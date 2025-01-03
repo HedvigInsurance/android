@@ -143,11 +143,11 @@ private fun DeductibleFragment.toDeductible(): Deductible {
 }
 
 private fun List<DisplayItemFragment>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
-  return this.map {
+  return this.map { displayItemFragment ->
     ChangeTierDeductibleDisplayItem(
-      displayTitle = it.displayTitle,
-      displaySubtitle = it.displaySubtitle,
-      displayValue = it.displayValue,
+      displayTitle = displayItemFragment.displayTitle,
+      displaySubtitle = displayItemFragment.displaySubtitle,
+      displayValue = displayItemFragment.displayValue,
     )
   }
 }
