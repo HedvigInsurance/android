@@ -84,7 +84,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       )
     }
 
-
   @OptIn(ApolloExperimental::class)
   private val apolloClientWithGoodResponseButNullTierNameInExisting: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
@@ -359,7 +358,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
         },
       )
 
-
       registerTestResponse(
         operation = ChangeTierDeductibleCreateIntentMutation(
           contractId = testId,
@@ -537,7 +535,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       .isNotNull()
       .isRight()
       .prop(ChangeTierDeductibleIntent::quotes)
-      .index(1) //index(0) is agreement to change
+      .index(1) // index(0) is agreement to change
       .prop(TierDeductibleQuote::addons)
       .isEmpty()
   }
@@ -555,7 +553,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       .isNotNull()
       .isRight()
       .prop(ChangeTierDeductibleIntent::quotes)
-      .index(1) //index(0) is agreement to change
+      .index(1) // index(0) is agreement to change
       .prop(TierDeductibleQuote::addons)
       .first()
       .isEqualTo(
