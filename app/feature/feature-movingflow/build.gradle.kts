@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.test
 import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
 
 plugins {
@@ -42,4 +43,18 @@ dependencies {
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
   implementation(projects.featureFlagsPublic)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
