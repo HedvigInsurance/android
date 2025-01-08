@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.SavedStateHandle
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
+import com.hedvig.android.feature.movingflow.storage.MovingFlowRepositoryImpl
 import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
@@ -20,7 +21,7 @@ val movingFlowModule = module {
     MovingFlowStorage(get<DataStore<Preferences>>())
   }
   single<MovingFlowRepository> {
-    MovingFlowRepository(get<MovingFlowStorage>())
+    MovingFlowRepositoryImpl(get<MovingFlowStorage>())
   }
   viewModel<StartViewModel> {
     StartViewModel(

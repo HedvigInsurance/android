@@ -1,6 +1,3 @@
-import org.gradle.kotlin.dsl.test
-import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
-
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -11,7 +8,9 @@ hedvig {
   serialization()
   compose()
 }
-
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
 dependencies {
   api(libs.androidx.navigation.common)
 
