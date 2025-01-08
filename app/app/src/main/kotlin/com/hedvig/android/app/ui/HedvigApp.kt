@@ -106,14 +106,7 @@ internal fun HedvigApp(
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           externalNavigator = externalNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = { uri ->
-            try {
-              deepLinkFirstUriHandler.openUri(uri)
-            } catch (e: IllegalArgumentException) {
-              logcat(LogPriority.ERROR) { "Tried to open uri: $uri but got IllegalArgumentException" }
-              // todo: not sure we need it, it's more for it not to crash while we still not getting proper uri for addon etc
-            }
-          },
+          openUrl = deepLinkFirstUriHandler::openUri,
           finishApp = finishApp,
           market = marketManager.market.collectAsStateWithLifecycle().value,
           imageLoader = imageLoader,
