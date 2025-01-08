@@ -16,26 +16,27 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
-    val areAddonsEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
-      apolloClient
-        .query(InsuranceContractsQuery(areAddonsEnabled))
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-        .safeFlow(::ErrorMessage),
+      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
+        apolloClient
+          .query(InsuranceContractsQuery(areAddonsEnabled))
+          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+          .safeFlow(::ErrorMessage)
+      },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
       featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
       featureManager.isFeatureEnabled(Feature.TIER),
@@ -145,7 +146,7 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
   AgreementCreationCause.MIDTERM_CHANGE -> InsuranceAgreement.CreationCause.MIDTERM_CHANGE
   AgreementCreationCause.UNKNOWN,
   AgreementCreationCause.UNKNOWN__,
-  -> InsuranceAgreement.CreationCause.UNKNOWN
+    -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
 private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
