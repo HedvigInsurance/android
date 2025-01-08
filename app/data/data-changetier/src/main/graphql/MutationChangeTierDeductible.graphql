@@ -1,4 +1,6 @@
-mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierDeductibleSource!) {
+mutation ChangeTierDeductibleCreateIntent($contractId: ID!,
+  $source: ChangeTierDeductibleSource!,
+$addonsFlagOn: Boolean!) {
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
     intent {
       activationDate
@@ -7,9 +9,7 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
           ...DeductibleFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+          ...DisplayItemFragment
         }
         premium {
           ...MoneyFragment
@@ -25,9 +25,7 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
           ...DeductibleFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+          ...DisplayItemFragment
         }
         id
         premium {
@@ -38,7 +36,29 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierD
         }
         tierLevel
         tierName
+        addons @include(if: $addonsFlagOn) {
+          addonId
+          displayName
+          displayItems {
+            ...DisplayItemFragment
+          }
+          previousPremium {
+            ...MoneyFragment
+          }
+          premium {
+            ...MoneyFragment
+          }
+          addonVariant {
+            ...AddonVariantFragment
+          }
+        }
       }
     }
   }
+}
+
+fragment DisplayItemFragment on ChangeTierDeductibleDisplayItem {
+  displaySubtitle
+  displayTitle
+  displayValue
 }

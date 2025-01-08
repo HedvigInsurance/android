@@ -1,4 +1,6 @@
-mutation MoveIntentV2Request($intentId: ID!, $moveIntentRequestInput: MoveIntentRequestInput!) {
+mutation MoveIntentV2Request($intentId: ID!,
+  $moveIntentRequestInput: MoveIntentRequestInput!,
+  $addonsFlagOn: Boolean!) {
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
       ...MoveIntentQuotesFragment
@@ -32,9 +34,10 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     exposureName
     productVariant {
       ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
+      # todo This is not in the fragment, why? -> displayNameSubtype
+    }
+    addons @include(if: $addonsFlagOn) {
+      ...MoveAddonQuoteFragment
     }
   }
   mtaQuotes {
@@ -48,9 +51,9 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     exposureName
     productVariant {
       ...ProductVariantFragment
-      # These are not in the fragment, why?
-      #          termsVersion
-      #          displayNameSubtype
+    }
+    addons @include(if: $addonsFlagOn)  {
+      ...MoveAddonQuoteFragment
     }
   }
 }
@@ -59,4 +62,21 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
   displayTitle
   displaySubtitle
   displayValue
+}
+
+fragment MoveAddonQuoteFragment on MoveAddonQuote {
+  addonId
+  displayName
+  displayItems {
+    displayTitle
+    displaySubtitle
+    displayValue
+  }
+  premium {
+    ...MoneyFragment
+  }
+  startDate
+  addonVariant {
+    ...AddonVariantFragment
+  }
 }

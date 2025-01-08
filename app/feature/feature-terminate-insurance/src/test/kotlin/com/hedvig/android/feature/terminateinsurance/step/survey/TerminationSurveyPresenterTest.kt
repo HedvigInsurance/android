@@ -356,6 +356,7 @@ private val testQuote = TierDeductibleQuote(
     tierDescription = "Vårt paket med grundläggande villkor.",
     tierDisplayName = "Bas",
   ),
+  addons = emptyList(),
   productVariant = ProductVariant(
     displayName = "Test",
     contractGroup = RENTAL,

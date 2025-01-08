@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.movingflow.data
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
@@ -57,16 +59,17 @@ internal data class MovingFlowQuotes(
     override val productVariant: ProductVariant,
     override val startDate: LocalDate,
     override val displayItems: List<DisplayItem>,
+    val relatedAddonQuotes: List<AddonQuote>,
   ) : Quote
 
   @Serializable
   data class AddonQuote(
-    override val premium: UiMoney,
-    override val startDate: LocalDate,
-    override val displayItems: List<DisplayItem>,
-    override val exposureName: String,
-    override val productVariant: ProductVariant,
-  ) : Quote
+    val premium: UiMoney,
+    val startDate: LocalDate,
+    val displayItems: List<DisplayItem>,
+    val exposureName: String,
+    val addonVariant: AddonVariant,
+  )
 
   @Serializable
   data class DisplayItem(
@@ -97,7 +100,21 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
           )
         },
         defaultChoice = houseQuote.defaultChoice,
-        relatedAddonQuotes = emptyList(), // todo tier & addons: populate the related addons when backend returns them
+        relatedAddonQuotes = houseQuote.addons?.map { addon ->
+          MovingFlowQuotes.AddonQuote(
+            premium = UiMoney.fromMoneyFragment(addon.premium),
+            startDate = addon.startDate,
+            exposureName = addon.displayName,
+            displayItems = addon.displayItems.map {
+              DisplayItem(
+                title = it.displayTitle,
+                subtitle = it.displaySubtitle,
+                value = it.displayValue,
+              )
+            },
+            addonVariant = addon.addonVariant.toAddonVariant(),
+          )
+        } ?: emptyList(),
       )
     },
     mtaQuotes = (mtaQuotes ?: emptyList()).map { mtaQuote ->
@@ -107,6 +124,21 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         productVariant = mtaQuote.productVariant.toProductVariant(),
         startDate = mtaQuote.startDate,
         displayItems = mtaQuote.displayItems.map { it.toDisplayItem() },
+        relatedAddonQuotes = mtaQuote.addons?.map { addon ->
+          MovingFlowQuotes.AddonQuote(
+            premium = UiMoney.fromMoneyFragment(addon.premium),
+            startDate = addon.startDate,
+            exposureName = addon.displayName,
+            displayItems = addon.displayItems.map {
+              DisplayItem(
+                title = it.displayTitle,
+                subtitle = it.displaySubtitle,
+                value = it.displayValue,
+              )
+            },
+            addonVariant = addon.addonVariant.toAddonVariant(),
+          )
+        } ?: emptyList(),
       )
     },
   )

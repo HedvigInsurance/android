@@ -725,6 +725,7 @@ private val quotesForPreview = listOf(
       tierDescription = "Our most basic coverage",
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
+    addons = emptyList(),
   ),
   TierDeductibleQuote(
     id = "id1",
@@ -753,6 +754,7 @@ private val quotesForPreview = listOf(
       tierDescription = "Our most basic coverage",
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
+    addons = emptyList(),
   ),
   TierDeductibleQuote(
     id = "id2",
@@ -781,6 +783,7 @@ private val quotesForPreview = listOf(
       tierDescription = "Our most basic coverage",
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
+    addons = emptyList(),
   ),
   TierDeductibleQuote(
     id = "id3",
@@ -809,6 +812,7 @@ private val quotesForPreview = listOf(
       tierDescription = "Our most standard coverage",
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
+    addons = emptyList(),
   ),
   TierDeductibleQuote(
     id = "id4",
@@ -837,5 +841,6 @@ private val quotesForPreview = listOf(
       tierDescription = "Our most standard coverage",
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
+    addons = emptyList(),
   ),
 )

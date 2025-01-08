@@ -7,6 +7,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -16,6 +17,7 @@ import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
 import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.fragment.DeductibleFragment
+import octopus.fragment.DisplayItemFragment
 
 internal interface CreateChangeTierDeductibleIntentUseCase {
   suspend fun invoke(
@@ -34,6 +36,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     return either {
       val isTierEnabled = featureManager.isFeatureEnabled(Feature.TIER).first()
+      val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isTierEnabled) {
         logcat(ERROR) { "Tried to get changeTierQuotes when feature flag is disabled!" }
         raise(ErrorMessage())
@@ -43,6 +46,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
             ChangeTierDeductibleCreateIntentMutation(
               contractId = insuranceId,
               source = source.toSource(),
+              addonsFlagOn = isAddonFlagEnabled,
             ),
           )
           .safeExecute()
@@ -67,13 +71,8 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                   tierDescription = productVariant.tierDescription,
                   tierDisplayName = productVariant.displayNameTier,
                 ),
-                displayItems = displayItems.map {
-                  ChangeTierDeductibleDisplayItem(
-                    displayTitle = it.displayTitle,
-                    displaySubtitle = it.displaySubtitle,
-                    displayValue = it.displayValue,
-                  )
-                },
+                displayItems = displayItems.toDisplayItems(),
+                addons = emptyList(), // todo: we don't show current agreement addon anywhere
               )
             }
             val quotesToOffer = intent.quotes.map {
@@ -95,6 +94,16 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                   tierDescription = it.productVariant.tierDescription,
                   tierDisplayName = it.productVariant.displayNameTier,
                 ),
+                addons = it.addons?.map { addon ->
+                  ChangeTierDeductibleAddonQuote(
+                    addonId = addon.addonId,
+                    displayName = addon.displayName,
+                    displayItems = addon.displayItems.toDisplayItems(),
+                    previousPremium = UiMoney.fromMoneyFragment(addon.previousPremium),
+                    premium = UiMoney.fromMoneyFragment(addon.premium),
+                    addonVariant = addon.addonVariant.toAddonVariant(),
+                  )
+                } ?: emptyList(),
               )
             }
             val intentResult = ChangeTierDeductibleIntent(
@@ -133,7 +142,7 @@ private fun DeductibleFragment.toDeductible(): Deductible {
   )
 }
 
-private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent.Quote.DisplayItem>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
+private fun List<DisplayItemFragment>.toDisplayItems(): List<ChangeTierDeductibleDisplayItem> {
   return this.map {
     ChangeTierDeductibleDisplayItem(
       displayTitle = it.displayTitle,
