@@ -181,7 +181,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
-  implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimDetails)
