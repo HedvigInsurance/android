@@ -134,56 +134,10 @@ class TerminateInsuranceRepositoryImplTest {
     }
 
   @Test
-  fun `when response is ok but FF is off options with tier-related subOptions should be mapped without subOptions but with required feedback`() =
+  fun `when response is ok, options with tier-related subOptions should have subOptions and no required feedback`() =
     runTest {
       val featureManager = FakeFeatureManager2(
         fixedMap = mapOf(
-          Feature.TIER to false,
-          Feature.TRAVEL_ADDON to false,
-        ),
-      )
-
-      val repo = TerminateInsuranceRepositoryImpl(
-        apolloClient = apolloClientWithGoodResponse,
-        featureManager = featureManager,
-        terminationFlowContextStorage = TerminationFlowContextStorage(testDataStore),
-      )
-      val result = repo.startTerminationFlow(InsuranceId(testId))
-
-      assertk.assertThat(result)
-        .isRight()
-        .isInstanceOf(TerminateInsuranceStep.Survey::class)
-        .prop(TerminateInsuranceStep.Survey::options)
-        .transform { list ->
-          list.none { option ->
-            option.subOptions.any { subOption ->
-              subOption.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                subOption.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-            }
-          }
-        }
-        .isTrue()
-
-      assertk.assertThat(result)
-        .isRight()
-        .isInstanceOf(TerminateInsuranceStep.Survey::class)
-        .prop(TerminateInsuranceStep.Survey::options)
-        .transform { list ->
-          list.filter { option ->
-            option.id == "001"
-          }.all {
-            it.feedBackRequired && it.subOptions.isEmpty()
-          }
-        }
-        .isTrue()
-    }
-
-  @Test
-  fun `when response is ok and FF is on options with tier-related subOptions should have subOptions and no required feedback`() =
-    runTest {
-      val featureManager = FakeFeatureManager2(
-        fixedMap = mapOf(
-          Feature.TIER to true,
           Feature.TRAVEL_ADDON to false,
         ),
       )
@@ -224,42 +178,10 @@ class TerminateInsuranceRepositoryImplTest {
     }
 
   @Test
-  fun `when response is ok but FF is off options with tier actions should have their action mapped to UnknownAction and have required feedback`() =
+  fun `when response is ok, options with tier actions should have corresponding action and have no feedback`() =
     runTest {
       val featureManager = FakeFeatureManager2(
         fixedMap = mapOf(
-          Feature.TIER to false,
-          Feature.TRAVEL_ADDON to false,
-        ),
-      )
-
-      val repo = TerminateInsuranceRepositoryImpl(
-        apolloClient = apolloClientWithGoodResponse,
-        featureManager = featureManager,
-        terminationFlowContextStorage = TerminationFlowContextStorage(testDataStore),
-      )
-      val result = repo.startTerminationFlow(InsuranceId(testId))
-
-      assertk.assertThat(result)
-        .isRight()
-        .isInstanceOf(TerminateInsuranceStep.Survey::class)
-        .prop(TerminateInsuranceStep.Survey::options)
-        .transform { list ->
-          list.filter { option ->
-            option.id == "0013"
-          }.all {
-            it.feedBackRequired && it.suggestion is SurveyOptionSuggestion.Action.UnknownAction
-          }
-        }
-        .isTrue()
-    }
-
-  @Test
-  fun `when response is ok and FF is on options with tier actions should have corresponding action and have no feedback`() =
-    runTest {
-      val featureManager = FakeFeatureManager2(
-        fixedMap = mapOf(
-          Feature.TIER to true,
           Feature.TRAVEL_ADDON to false,
         ),
       )

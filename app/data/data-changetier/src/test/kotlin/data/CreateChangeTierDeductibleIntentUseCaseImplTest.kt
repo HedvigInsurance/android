@@ -353,7 +353,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when BE response has empty quotes return intent with empty quotes`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponseButEmptyQuotes,
       featureManager = featureManager,
@@ -368,12 +368,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is fine and tier feature flag is on get a good result`() = runTest {
-    val featureManager = FakeFeatureManager2(
-      fixedMap = mapOf(
-        Feature.TIER to true,
-        Feature.TRAVEL_ADDON to true,
-      ),
-    )
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
@@ -401,7 +396,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is fine but tier feature flag is off the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to false, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
@@ -415,7 +410,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is bad and tier feature flag is on the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithBadResponse,
       featureManager = featureManager,
@@ -429,7 +424,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is otherwise good but the intent is null the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodButNullResponse,
       featureManager = featureManager,
@@ -444,7 +439,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in existing agreement is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInExisting,
         featureManager = featureManager,
@@ -459,7 +454,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in one of the quotes is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInOneQuote,
         featureManager = featureManager,
@@ -473,7 +468,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `in good response one of the quotes should have the current const id`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,

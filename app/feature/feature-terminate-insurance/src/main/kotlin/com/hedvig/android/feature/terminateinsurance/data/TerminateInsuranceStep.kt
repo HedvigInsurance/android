@@ -47,9 +47,7 @@ internal sealed interface TerminateInsuranceStep {
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 }
 
-internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
-  isTierFeatureEnabled: Boolean,
-): TerminateInsuranceStep {
+internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
   return when (this) {
     is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate, extraCoverage.toExtraCoverageItems())
@@ -66,7 +64,7 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
 
     is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
       TerminateInsuranceStep.Survey(
-        options.toOptionList(isTierFeatureEnabled),
+        options.toOptionList(),
       )
     }
 
@@ -74,9 +72,7 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(
-  isTierFeatureEnabled: Boolean,
-): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(): List<TerminationSurveyOption> {
   return map {
     // remade a bit of logic here. If we receive unknown actions in suggestion for one of the subOptions
     // (or the option itself),
@@ -86,28 +82,24 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       title = it.title,
       listIndex = this.indexOf(it),
       feedBackRequired = it.feedBack != null ||
-        (it.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction) ||
-        it.subOptions?.noUnknownActions(isTierFeatureEnabled) == false,
-      subOptions = it.subOptions?.toSubOptionList(isTierFeatureEnabled) ?: listOf(),
-      suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
+        (it.suggestion?.toSuggestion() == UnknownAction) ||
+        it.subOptions?.noUnknownActions() == false,
+      subOptions = it.subOptions?.toSubOptionList() ?: emptyList(),
+      suggestion = it.suggestion?.toSuggestion(),
     )
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(
-  isTierFeatureEnabled: Boolean,
-): Boolean {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(): Boolean {
   return none { subOption ->
-    subOption.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction
+    subOption.suggestion?.toSuggestion() == UnknownAction
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(
-  isTierFeatureEnabled: Boolean,
-): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(): List<TerminationSurveyOption> {
   // no subOptions if one of them contains some action that we don't know how to handle
   val filtered = takeIf { subs ->
-    subs.noUnknownActions(isTierFeatureEnabled)
+    subs.noUnknownActions()
   } ?: listOf()
   return filtered.map { subOption ->
     TerminationSurveyOption(
@@ -116,14 +108,13 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       feedBackRequired = subOption.feedBack != null,
       subOptions = listOf(),
       listIndex = filtered.indexOf(subOption),
-      suggestion = subOption.suggestion?.toSuggestion(isTierFeatureEnabled),
+      suggestion = subOption.suggestion?.toSuggestion(),
     )
   }
 }
 
-private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
-  isTierFeatureEnabled: Boolean,
-): SurveyOptionSuggestion? {
+private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion? {
+  val isTierFeatureEnabled = true
   return when (this) {
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
       when (action) {
@@ -135,20 +126,10 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
         }
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
-          if (isTierFeatureEnabled) {
-            SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
-              description = description,
-              buttonTitle = buttonTitle,
-            )
-          } else {
-            logcat(
-              LogPriority.ERROR,
-              message = {
-                "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_FOUND_BETTER_PRICE but tier feature flag is disabled!"
-              },
-            )
-            UnknownAction
-          }
+          SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
+            description = description,
+            buttonTitle = buttonTitle,
+          )
         }
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
