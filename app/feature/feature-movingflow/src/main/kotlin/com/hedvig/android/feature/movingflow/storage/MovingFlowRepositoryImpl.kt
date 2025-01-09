@@ -94,7 +94,7 @@ internal class MovingFlowRepositoryImpl(
               isAvailableForStudentState = when (propertyState.isAvailableForStudentState) {
                 NotAvailable -> NotAvailable
                 is Available -> propertyState.isAvailableForStudentState.copy(
-                  selectedIsStudent = isStudent,
+                  selectedIsStudent = isStudent, //todo: point for unit test here
                 )
               },
             )
@@ -116,7 +116,7 @@ internal class MovingFlowRepositoryImpl(
       val previousHouseState = existingState.propertyState as? HouseState
       if (previousHouseState == null) {
         logcat(LogPriority.ERROR) { "Trying to `updateWithHouseInput` on a non-house state" }
-        return@editMovingFlowState existingState
+        return@editMovingFlowState existingState //todo: point for unit test here
       }
       val updatedState = existingState.copy(
         propertyState = previousHouseState.copy(
