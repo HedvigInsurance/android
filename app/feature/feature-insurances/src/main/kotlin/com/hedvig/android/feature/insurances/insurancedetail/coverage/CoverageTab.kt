@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -34,6 +35,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.PerilData
@@ -41,13 +44,15 @@ import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.feature.insurances.data.Addon
 
 @Composable
 internal fun CoverageTab(
   insurableLimits: List<InsurableLimit>,
   perils: List<ProductVariantPeril>,
+  addons: List<Addon>?,
   modifier: Modifier = Modifier,
 ) {
   val bottomSheetState = rememberHedvigBottomSheetState<InsurableLimit>()
@@ -93,9 +98,35 @@ internal fun CoverageTab(
       )
       Spacer(Modifier.height(16.dp))
     }
+    for (addon in addons.orEmpty()) {
+        Spacer(Modifier.height(16.dp))
+        HighlightLabel(
+          labelText = addon.addonVariant.displayName,
+          size = HighlightLabelDefaults.HighLightSize.Medium,
+          color = HighlightLabelDefaults.HighlightColor.Blue(
+            HighlightLabelDefaults.HighlightShade.LIGHT,
+          ),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+        PerilList(
+          perilItems = addon.addonVariant.perils.map {
+            PerilData(
+              title = it.title,
+              description = it.description,
+              covered = it.covered,
+              colorCode = it.colorCode,
+            )
+          },
+          size = Small,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+    }
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
-}
+
 
 @Suppress("UnusedReceiverParameter")
 @Composable
@@ -128,9 +159,9 @@ private fun ColumnScope.InsurableLimitSection(
           )
           Spacer(Modifier.width(8.dp))
           Icon(
-            imageVector = HedvigIcons.InfoFilled,
+            imageVector = HedvigIcons.InfoOutline,
             contentDescription = null,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(24.dp),
             tint = HedvigTheme.colorScheme.fillSecondary,
           )
         }
@@ -165,6 +196,7 @@ private fun PreviewCoverageTab() {
       CoverageTab(
         previewInsurableLimits,
         previewPerils,
+        listOf(Addon(fakeAddonVariant)),
       )
     }
   }
@@ -191,10 +223,28 @@ private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
     title = "Eldsvåda",
     description = "description$index",
     covered = listOf("Covered#$index"),
-    colorCode = "0xFFC45D4F",
+    colorCode = "#FFD0ECFB",
     exceptions = listOf(),
   )
 }
+
+private val fakeAddonVariant = AddonVariant(
+  termsVersion = "terms",
+  documents = listOf(),
+  perils = listOf(
+    ProductVariantPeril(
+      id = "peril",
+      title = "Eldsvåda",
+      description = "peril",
+      covered = listOf("peril"),
+      colorCode = "#FFD0ECFB",
+      exceptions = listOf(),
+    ),
+  ),
+  displayName = "Travel Insurance Plus",
+  product = "",
+  insurableLimits = listOf(),
+)
 
 private val previewInsurableLimits: List<InsurableLimit> = listOf(
   InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
