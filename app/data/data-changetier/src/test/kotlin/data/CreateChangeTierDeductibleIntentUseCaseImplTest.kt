@@ -367,7 +367,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   }
 
   @Test
-  fun `when response is fine and tier feature flag is on get a good result`() = runTest {
+  fun `when response is fine get a good result`() = runTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
@@ -392,34 +392,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
     assertk.assertThat(deductibleAmount)
       .isNotNull()
       .isEqualTo(500.0)
-  }
-
-  @Test
-  fun `when response is fine but tier feature flag is off the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
-  }
-
-  @Test
-  fun `when response is bad and tier feature flag is on the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithBadResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
   }
 
   @Test
@@ -486,5 +458,19 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       .isNotNull()
       .prop(TierDeductibleQuote::id)
       .isEqualTo(TierConstants.CURRENT_ID)
+  }
+
+  @Test
+  fun `when response is bad the result is ErrorMessage`() = runTest {
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+      apolloClient = apolloClientWithBadResponse,
+      featureManager = featureManager,
+    )
+    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+
+    assertk.assertThat(result)
+      .isNotNull()
+      .isLeft()
   }
 }
