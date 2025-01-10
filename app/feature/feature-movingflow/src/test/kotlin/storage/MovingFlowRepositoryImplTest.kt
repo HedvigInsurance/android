@@ -193,7 +193,8 @@ class MovingFlowRepositoryImplTest {
       assertThat(awaitItem()).isNotNull().prop(MovingFlowState::lastSelectedHomeQuoteId).isEqualTo(homeQuote2.id)
       repo.updatePreselectedHomeQuoteId(homeQuote1.id)
       assertThat(awaitItem()).isNotNull().prop(MovingFlowState::lastSelectedHomeQuoteId).isEqualTo(homeQuote1.id)
-    }
+
+        }
   }
 
   private fun TestScope.movingFlowStorage() = MovingFlowStorage(
