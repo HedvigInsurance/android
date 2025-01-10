@@ -12,8 +12,6 @@ import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCaseImpl
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -106,11 +104,7 @@ class GetCustomizableInsurancesUseCaseImplTest {
 
   @Test
   fun `when response is fine and tier feature flag is on the result is good`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
-    val useCase = GetCustomizableInsurancesUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
+    val useCase = GetCustomizableInsurancesUseCaseImpl(apolloClient = apolloClientWithGoodResponse)
     useCase.invoke().collectLatest { result ->
       assertk.assertThat(result.getOrNull()?.first()?.displayName)
         .isNotNull().isEqualTo("Variant")
@@ -118,38 +112,16 @@ class GetCustomizableInsurancesUseCaseImplTest {
   }
 
   @Test
-  fun `when response is fine but tier feature flag is off the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to false))
-    val useCase = GetCustomizableInsurancesUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
+  fun `when response is bad the result is ErrorMessage`() = runTest {
+    val useCase = GetCustomizableInsurancesUseCaseImpl(apolloClient = apolloClientWithBadResponse)
     useCase.invoke().collectLatest { result ->
-      assertk.assertThat(result)
-        .isLeft()
-    }
-  }
-
-  @Test
-  fun `when response is bad and tier feature flag is on the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
-    val useCase = GetCustomizableInsurancesUseCaseImpl(
-      apolloClient = apolloClientWithBadResponse,
-      featureManager = featureManager,
-    )
-    useCase.invoke().collectLatest { result ->
-      assertk.assertThat(result)
-        .isLeft()
+      assertk.assertThat(result).isLeft()
     }
   }
 
   @Test
   fun `when response is otherwise good but there is no customizable insurance in it return null`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true))
-    val useCase = GetCustomizableInsurancesUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponseButNotEligible,
-      featureManager = featureManager,
-    )
+    val useCase = GetCustomizableInsurancesUseCaseImpl(apolloClient = apolloClientWithGoodResponseButNotEligible)
     val result = useCase.invoke().first()
     assertk.assertThat(result).isRight().isNull()
   }

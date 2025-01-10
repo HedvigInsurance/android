@@ -1,7 +1,6 @@
 package com.hedvig.android.shared.tier.comparison.di
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.shared.tier.comparison.data.GetCoverageComparisonUseCase
 import com.hedvig.android.shared.tier.comparison.data.GetCoverageComparisonUseCaseImpl
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
@@ -19,7 +18,6 @@ val comparisonModule = module {
   single<GetCoverageComparisonUseCase> {
     GetCoverageComparisonUseCaseImpl(
       apolloClient = get<ApolloClient>(),
-      featureManager = get<FeatureManager>(),
     )
   }
 }

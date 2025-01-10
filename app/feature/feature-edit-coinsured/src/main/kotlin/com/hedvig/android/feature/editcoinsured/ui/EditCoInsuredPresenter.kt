@@ -484,10 +484,14 @@ internal sealed interface EditCoInsuredState {
     ) {
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
 
-      fun canContinue() =
-        (showManualInput && manualInfo.firstName != null && manualInfo.lastName != null && manualInfo.birthDate != null) ||
-          (!showManualInput && infoFromSsn.ssn?.length == 12) ||
-          (selectedCoInsured != null)
+      fun canContinue() = (
+        showManualInput &&
+          manualInfo.firstName != null &&
+          manualInfo.lastName != null &&
+          manualInfo.birthDate != null
+      ) ||
+        (!showManualInput && infoFromSsn.ssn?.length == 12) ||
+        (selectedCoInsured != null)
 
       fun shouldFetchInfo() =
         !showManualInput && infoFromSsn.ssn != null && infoFromSsn.firstName == null && infoFromSsn.lastName == null

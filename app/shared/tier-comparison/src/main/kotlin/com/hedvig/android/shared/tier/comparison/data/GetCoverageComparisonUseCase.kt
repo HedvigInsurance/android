@@ -5,11 +5,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature.TIER
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.flow.first
 import octopus.CompareCoverageQuery
 
 interface GetCoverageComparisonUseCase {
@@ -18,18 +15,12 @@ interface GetCoverageComparisonUseCase {
 
 internal class GetCoverageComparisonUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetCoverageComparisonUseCase {
   override suspend fun invoke(termsVersionIds: List<String>): Either<ErrorMessage, ComparisonData> {
 //    val mockIds = listOf("SE_DOG_BASIC-20230330-HEDVIG-null",
 //      "SE_DOG_STANDARD-20230330-HEDVIG-null",)
 
     return either {
-      val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
-      if (!isTierEnabled) {
-        logcat(ERROR) { "Tried to ask for coverage comparison when feature flag is disabled" }
-        raise(ErrorMessage("Tried to ask for coverage comparison when feature flag is disabled"))
-      }
       val result = apolloClient.query(CompareCoverageQuery(termsVersionIds))
         .safeExecute()
         .mapLeft {
@@ -112,7 +103,8 @@ internal val mockComparisonData = ComparisonData(
   rows = listOf(
     ComparisonRow(
       title = "Veterinary care",
-      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
+      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs " +
+        "if it gets ill or injured in the event accident.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell("30 000 kr", true),
@@ -123,7 +115,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Advanced diagnostics",
-      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
+      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we " +
+        "compensate costs that have been approved in advance by Hedvig.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
@@ -134,7 +127,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Care of pet at home",
-      description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
+      description = "Compensation for loss of income if you need to stay home from work to take care of your sick " +
+        "or injured pet.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
@@ -145,7 +139,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Life insurance",
-      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
+      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized " +
+        "according to a veterinarian. You also get compensation if your pet is stolen or lost.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
@@ -156,7 +151,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Veterinary care",
-      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs if it gets ill or injured in the event accident.",
+      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs " +
+        "if it gets ill or injured in the event accident.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell("30 000 kr", true),
@@ -167,7 +163,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Advanced diagnostics",
-      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we compensate costs that have been approved in advance by Hedvig.",
+      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we " +
+        "compensate costs that have been approved in advance by Hedvig.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
@@ -178,7 +175,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Care of pet at home",
-      description = "Compensation for loss of income if you need to stay home from work to take care of your sick or injured pet.",
+      description = "Compensation for loss of income if you need to stay home from work to take care of your sick or " +
+        "injured pet.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
@@ -189,7 +187,8 @@ internal val mockComparisonData = ComparisonData(
     ),
     ComparisonRow(
       title = "Life insurance",
-      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized according to a veterinarian. You also get compensation if your pet is stolen or lost.",
+      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized " +
+        "according to a veterinarian. You also get compensation if your pet is stolen or lost.",
       numbers = "Standard: 40000 kr\nMax: 80000 kr",
       cells = listOf(
         ComparisonCell(null, false),
