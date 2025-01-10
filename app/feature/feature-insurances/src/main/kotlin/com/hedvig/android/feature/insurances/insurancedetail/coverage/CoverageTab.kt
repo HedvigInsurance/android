@@ -126,7 +126,7 @@ internal fun CoverageTab(
     }
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
-}
+
 
 @Suppress("UnusedReceiverParameter")
 @Composable
