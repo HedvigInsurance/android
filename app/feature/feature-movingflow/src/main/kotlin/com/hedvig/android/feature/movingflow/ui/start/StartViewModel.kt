@@ -20,6 +20,7 @@ import com.hedvig.android.feature.movingflow.ui.start.StartEvent.DismissStartErr
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.NavigatedToNextStep
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.SelectHousingType
 import com.hedvig.android.feature.movingflow.ui.start.StartEvent.SubmitHousingType
+import com.hedvig.android.feature.movingflow.ui.start.StartUiState.Loading
 import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -35,7 +36,7 @@ internal class StartViewModel(
     StartPresenter(apolloClient, movingFlowRepository),
   )
 
-private class StartPresenter(
+internal class StartPresenter(
   private val apolloClient: ApolloClient,
   private val movingFlowRepository: MovingFlowRepository,
 ) : MoleculePresenter<StartEvent, StartUiState> {
@@ -68,6 +69,9 @@ private class StartPresenter(
 
     LaunchedEffect(loadIteration) {
       either {
+        if (loadIteration>0) {
+          currentState = Loading
+        }
         val moveIntentCreate = apolloClient
           .mutation(MoveIntentV2CreateMutation())
           .safeExecute()
