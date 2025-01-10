@@ -98,8 +98,7 @@ internal fun CoverageTab(
       )
       Spacer(Modifier.height(16.dp))
     }
-    if (addons?.isNotEmpty() == true) {
-      addons.forEach { addon ->
+    for (addon in addons.orEmpty()) {
         Spacer(Modifier.height(16.dp))
         HighlightLabel(
           labelText = addon.addonVariant.displayName,
