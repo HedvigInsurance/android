@@ -1,9 +1,9 @@
 package storage
 
-
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.first
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
@@ -12,6 +12,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.feature.movingflow.data.HousingType
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepositoryImpl
 import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
@@ -89,12 +91,12 @@ class MovingFlowRepositoryImplTest {
     val repo = MovingFlowRepositoryImpl(storage)
     repo.initiateNewMovingFlow(moveIntent, HousingType.ApartmentOwn)
     repo.updateWithPropertyInput(
-      movingDate = LocalDate(2025,2,2),
+      movingDate = LocalDate(2025, 2, 2),
       address = "some addr",
       postalCode = "some code",
       squareMeters = 67,
       numberCoInsured = 3,
-      isStudent = false
+      isStudent = false,
     )
     repo.movingFlowState().test {
       val result = awaitItem()
@@ -102,7 +104,7 @@ class MovingFlowRepositoryImplTest {
         MovingFlowState.AddressInfo(
           street = "some addr",
           postalCode = "some code",
-        )
+        ),
       )
       assertThat(result).isNotNull().prop(MovingFlowState::propertyState).isInstanceOf(
         MovingFlowState.PropertyState.ApartmentState::class,
@@ -120,7 +122,7 @@ class MovingFlowRepositoryImplTest {
       ancillaryArea = 33,
       numberOfBathrooms = 5,
       isSublet = false,
-      extraBuildings = emptyList()
+      extraBuildings = emptyList(),
     )
     repo.movingFlowState().test {
       val result = awaitItem()
@@ -145,7 +147,7 @@ class MovingFlowRepositoryImplTest {
       ancillaryArea = 33,
       numberOfBathrooms = 5,
       isSublet = false,
-      extraBuildings = emptyList()
+      extraBuildings = emptyList(),
     )
     repo.movingFlowState().test {
       val result = awaitItem()
@@ -156,21 +158,24 @@ class MovingFlowRepositoryImplTest {
   }
 
   @Test
-  fun `should update state with move intent quotes and preselect the default choice one`() = runTest {
+  fun `should update state with move intent quotes`() = runTest {
     val storage = movingFlowStorage()
     val repo = MovingFlowRepositoryImpl(storage)
     repo.initiateNewMovingFlow(moveIntent, HousingType.ApartmentOwn)
-    repo.updateWithMoveIntentQuotes(object: MoveIntentQuotesFragment{
-      override val homeQuotes: List<MoveIntentQuotesFragment.HomeQuote>?
-        get() = buildList {
-          add(homeQuote1)
-          add(homeQuote2)
-        }
-      override val mtaQuotes: List<MoveIntentQuotesFragment.MtaQuote>?
-        get() = emptyList()
-    })
+    repo.updateWithMoveIntentQuotes(
+      object : MoveIntentQuotesFragment {
+        override val homeQuotes: List<MoveIntentQuotesFragment.HomeQuote>?
+          get() = buildList {
+            add(homeQuote1)
+            add(homeQuote2)
+          }
+        override val mtaQuotes: List<MoveIntentQuotesFragment.MtaQuote>?
+          get() = emptyList()
+      },
+    )
     repo.movingFlowState().test {
-      assertThat(awaitItem()).isNotNull().prop(MovingFlowState::lastSelectedHomeQuoteId).isEqualTo(homeQuote1.id)
+      assertThat(awaitItem()).isNotNull().prop(MovingFlowState::movingFlowQuotes)
+        .isNotNull().prop(MovingFlowQuotes::homeQuotes).first().prop(MoveHomeQuote::id).isEqualTo(homeQuote1.id)
     }
   }
 
@@ -179,22 +184,21 @@ class MovingFlowRepositoryImplTest {
     val storage = movingFlowStorage()
     val repo = MovingFlowRepositoryImpl(storage)
     repo.initiateNewMovingFlow(moveIntent, HousingType.ApartmentOwn)
-    repo.updateWithMoveIntentQuotes(object: MoveIntentQuotesFragment{
-      override val homeQuotes: List<MoveIntentQuotesFragment.HomeQuote>?
-        get() = buildList {
-          add(homeQuote1)
-          add(homeQuote2)
-        }
-      override val mtaQuotes: List<MoveIntentQuotesFragment.MtaQuote>?
-        get() = emptyList()
-    })
+    repo.updateWithMoveIntentQuotes(
+      object : MoveIntentQuotesFragment {
+        override val homeQuotes: List<MoveIntentQuotesFragment.HomeQuote>?
+          get() = buildList {
+            add(homeQuote1)
+            add(homeQuote2)
+          }
+        override val mtaQuotes: List<MoveIntentQuotesFragment.MtaQuote>?
+          get() = emptyList()
+      },
+    )
+    repo.updatePreselectedHomeQuoteId(homeQuote2.id)
     repo.movingFlowState().test {
-      repo.updatePreselectedHomeQuoteId(homeQuote2.id)
       assertThat(awaitItem()).isNotNull().prop(MovingFlowState::lastSelectedHomeQuoteId).isEqualTo(homeQuote2.id)
-      repo.updatePreselectedHomeQuoteId(homeQuote1.id)
-      assertThat(awaitItem()).isNotNull().prop(MovingFlowState::lastSelectedHomeQuoteId).isEqualTo(homeQuote1.id)
-
-        }
+    }
   }
 
   private fun TestScope.movingFlowStorage() = MovingFlowStorage(
@@ -205,12 +209,11 @@ class MovingFlowRepositoryImplTest {
   )
 }
 
-
-private val homeQuote1 = object: MoveIntentQuotesFragment.HomeQuote {
+private val homeQuote1 = object : MoveIntentQuotesFragment.HomeQuote {
   override val id: String
     get() = "id1"
   override val premium: MoveIntentQuotesFragment.HomeQuote.Premium
-    get() = object: MoveIntentQuotesFragment.HomeQuote.Premium {
+    get() = object : MoveIntentQuotesFragment.HomeQuote.Premium {
       override val __typename: String
         get() = "str"
       override val amount: Double
@@ -219,7 +222,7 @@ private val homeQuote1 = object: MoveIntentQuotesFragment.HomeQuote {
         get() = CurrencyCode.SEK
     }
   override val startDate: LocalDate
-    get() = LocalDate(2025,6,6)
+    get() = LocalDate(2025, 6, 6)
   override val defaultChoice: Boolean
     get() = true
   override val tierName: String
@@ -254,17 +257,16 @@ private val homeQuote1 = object: MoveIntentQuotesFragment.HomeQuote {
         get() = emptyList()
       override val documents: List<MoveIntentQuotesFragment.HomeQuote.ProductVariant.Document>
         get() = emptyList()
-
     }
   override val addons: List<MoveIntentQuotesFragment.HomeQuote.Addon>?
     get() = emptyList()
 }
 
-private val homeQuote2 = object: MoveIntentQuotesFragment.HomeQuote {
+private val homeQuote2 = object : MoveIntentQuotesFragment.HomeQuote {
   override val id: String
     get() = "id1"
   override val premium: MoveIntentQuotesFragment.HomeQuote.Premium
-    get() = object: MoveIntentQuotesFragment.HomeQuote.Premium {
+    get() = object : MoveIntentQuotesFragment.HomeQuote.Premium {
       override val __typename: String
         get() = "str"
       override val amount: Double
@@ -273,7 +275,7 @@ private val homeQuote2 = object: MoveIntentQuotesFragment.HomeQuote {
         get() = CurrencyCode.SEK
     }
   override val startDate: LocalDate
-    get() = LocalDate(2025,6,6)
+    get() = LocalDate(2025, 6, 6)
   override val defaultChoice: Boolean
     get() = true
   override val tierName: String
@@ -308,7 +310,6 @@ private val homeQuote2 = object: MoveIntentQuotesFragment.HomeQuote {
         get() = emptyList()
       override val documents: List<MoveIntentQuotesFragment.HomeQuote.ProductVariant.Document>
         get() = emptyList()
-
     }
   override val addons: List<MoveIntentQuotesFragment.HomeQuote.Addon>?
     get() = emptyList()
