@@ -289,6 +289,7 @@ private fun ContractDetailScreen(
                     CoverageTab(
                       state.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
                       state.insuranceContract.currentInsuranceAgreement.productVariant.perils,
+                      state.insuranceContract.currentInsuranceAgreement.addons,
                     )
                   }
 
