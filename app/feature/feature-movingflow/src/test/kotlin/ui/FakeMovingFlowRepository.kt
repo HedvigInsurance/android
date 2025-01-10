@@ -11,7 +11,8 @@ import octopus.feature.movingflow.fragment.MoveIntentFragment
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
 
 internal class FakeMovingFlowRepository : MovingFlowRepository {
-  val movingFlowStateTurbine = Turbine<MovingFlowState?>()
+  val movingFlowStateTurbine = Turbine<MovingFlowState?>(name = "movingFlowStateTurbine")
+  var selectedQuoteIdParameterThatWasSentIn = "start"
 
   override fun movingFlowState(): Flow<MovingFlowState?> {
     return movingFlowStateTurbine.asChannel().receiveAsFlow()
@@ -40,5 +41,7 @@ internal class FakeMovingFlowRepository : MovingFlowRepository {
 
   override suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment) {}
 
-  override suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {}
+  override suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {
+    selectedQuoteIdParameterThatWasSentIn = selectedHomeQuoteId
+  }
 }

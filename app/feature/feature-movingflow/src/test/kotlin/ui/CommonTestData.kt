@@ -127,6 +127,111 @@ internal val fakeHomeQuoteNoAddon = MoveHomeQuote(
   relatedAddonQuotes = emptyList(),
 )
 
+internal val fakeHomeQuoteWithTiersDeductibles1 = MoveHomeQuote(
+  id = "fakeHomeQuoteWithTiersDeductibles1",
+  premium = UiMoney(99.0, SEK),
+  startDate = LocalDate(2025, 1, 1),
+  displayItems = listOf(
+    DisplayItem(
+      title = "display title",
+      subtitle = "display subtitle",
+      value = "display value",
+    ),
+  ),
+  exposureName = "exposureName",
+  productVariant = fakeProductVariant,
+  tierName = "tierName",
+  tierLevel = 1,
+  tierDescription = "tierDescription",
+  deductible = Deductible(UiMoney(3000.0, SEK), null, "displayText"),
+  defaultChoice = false,
+  relatedAddonQuotes = emptyList(),
+)
+
+internal val fakeHomeQuoteWithTiersDeductibles2 = MoveHomeQuote(
+  id = "fakeHomeQuoteWithTiersDeductibles2",
+  premium = UiMoney(105.0, SEK),
+  startDate = LocalDate(2025, 1, 1),
+  displayItems = listOf(
+    DisplayItem(
+      title = "display title",
+      subtitle = "display subtitle",
+      value = "display value",
+    ),
+  ),
+  exposureName = "exposureName",
+  productVariant = fakeProductVariant,
+  tierName = "tierName",
+  tierLevel = 1,
+  tierDescription = "tierDescription",
+  deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
+  defaultChoice = false,
+  relatedAddonQuotes = emptyList(),
+)
+
+internal val fakeHomeQuoteWithTiersDeductibles3 = MoveHomeQuote(
+  id = "fakeHomeQuoteWithTiersDeductibles3",
+  premium = UiMoney(110.0, SEK),
+  startDate = LocalDate(2025, 1, 1),
+  displayItems = listOf(
+    DisplayItem(
+      title = "display title",
+      subtitle = "display subtitle",
+      value = "display value",
+    ),
+  ),
+  exposureName = "exposureName",
+  productVariant = fakeProductVariant,
+  tierName = "tierName 2",
+  tierLevel = 2,
+  tierDescription = "tierDescription",
+  deductible = Deductible(UiMoney(3000.0, SEK), null, "displayText"),
+  defaultChoice = true,
+  relatedAddonQuotes = emptyList(),
+)
+
+internal val fakeHomeQuoteWithTiersDeductibles4 = MoveHomeQuote(
+  id = "fakeHomeQuoteWithTiersDeductibles4",
+  premium = UiMoney(115.0, SEK),
+  startDate = LocalDate(2025, 1, 1),
+  displayItems = listOf(
+    DisplayItem(
+      title = "display title",
+      subtitle = "display subtitle",
+      value = "display value",
+    ),
+  ),
+  exposureName = "exposureName",
+  productVariant = fakeProductVariant,
+  tierName = "tierName 2",
+  tierLevel = 2,
+  tierDescription = "tierDescription",
+  deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
+  defaultChoice = false,
+  relatedAddonQuotes = emptyList(),
+)
+
+internal val fakeHomeQuoteWithTiersDeductibles5 = MoveHomeQuote(
+  id = "fakeHomeQuoteWithTiersDeductibles5",
+  premium = UiMoney(115.0, SEK),
+  startDate = LocalDate(2025, 1, 1),
+  displayItems = listOf(
+    DisplayItem(
+      title = "display title",
+      subtitle = "display subtitle",
+      value = "display value",
+    ),
+  ),
+  exposureName = "exposureName",
+  productVariant = fakeProductVariant,
+  tierName = "tierName 3",
+  tierLevel = 3,
+  tierDescription = "tierDescription",
+  deductible = Deductible(UiMoney(9900.0, SEK), null, "displayText"),
+  defaultChoice = false,
+  relatedAddonQuotes = emptyList(),
+)
+
 internal val fakeMta1 = MoveMtaQuote(
   premium = UiMoney(49.0, SEK),
   exposureName = "exposureName",
@@ -220,6 +325,21 @@ internal val fakeMovingStateNoAddons = MovingFlowState(
   oldAddressCoverageDurationDays = 30,
 )
 
+internal val fakeMovingStateWithNoQuotes = MovingFlowState(
+  id = moveIntentIdFake,
+  moveFromAddressId = "id",
+  housingType = HousingType.ApartmentOwn,
+  addressInfo = AddressInfo("street", "18888"),
+  movingDateState = MovingFlowState.MovingDateState(
+    selectedMovingDate = null,
+    allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
+  ),
+  propertyState = fakePropertyState,
+  movingFlowQuotes = null,
+  lastSelectedHomeQuoteId = null,
+  oldAddressCoverageDurationDays = 30,
+)
+
 internal val fakeMovingStateWithOnlyHomeQuote = MovingFlowState(
   id = moveIntentIdFake,
   moveFromAddressId = "id",
@@ -232,6 +352,30 @@ internal val fakeMovingStateWithOnlyHomeQuote = MovingFlowState(
   propertyState = fakePropertyState,
   movingFlowQuotes = MovingFlowQuotes(
     homeQuotes = listOf(fakeHomeQuoteNoAddon),
+    mtaQuotes = emptyList(),
+  ),
+  lastSelectedHomeQuoteId = null,
+  oldAddressCoverageDurationDays = 30,
+)
+
+internal val fakeMovingStateWithTiersAndDeductibles = MovingFlowState(
+  id = moveIntentIdFake,
+  moveFromAddressId = "id",
+  housingType = HousingType.ApartmentOwn,
+  addressInfo = AddressInfo("street", "18888"),
+  movingDateState = MovingFlowState.MovingDateState(
+    selectedMovingDate = null,
+    allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
+  ),
+  propertyState = fakePropertyState,
+  movingFlowQuotes = MovingFlowQuotes(
+    homeQuotes = listOf(
+      fakeHomeQuoteWithTiersDeductibles1,
+      fakeHomeQuoteWithTiersDeductibles2,
+      fakeHomeQuoteWithTiersDeductibles3,
+      fakeHomeQuoteWithTiersDeductibles4,
+      fakeHomeQuoteWithTiersDeductibles5,
+    ),
     mtaQuotes = emptyList(),
   ),
   lastSelectedHomeQuoteId = null,
