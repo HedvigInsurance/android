@@ -23,8 +23,6 @@ import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationP
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
-import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressGraphDestination
-import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
@@ -120,12 +118,7 @@ internal fun HedvigNavHost(
   }
 
   fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
-    val movingFlowV2Enabled = hedvigAppState.movingFlowV2Enabled.value
-    if (movingFlowV2Enabled) {
-      hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
-    } else {
-      hedvigAppState.navController.navigate(ChangeAddressGraphDestination, navOptions)
-    }
+    hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
   }
 
   NavHost(
@@ -405,13 +398,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigateToConversation(backStackEntry, conversationId)
     },
     applicationId = hedvigBuildConstants.appId,
-  )
-  changeAddressGraph(
-    navigator = navigator,
-    onNavigateToNewConversation = { backStackEntry ->
-      navigateToNewConversation(backStackEntry, null)
-    },
-    openUrl = openUrl,
   )
   travelCertificateGraph(
     density = density,

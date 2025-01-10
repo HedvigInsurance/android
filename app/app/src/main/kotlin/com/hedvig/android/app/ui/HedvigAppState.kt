@@ -134,16 +134,6 @@ internal class HedvigAppState(
       false,
     )
 
-  val movingFlowV2Enabled: StateFlow<Boolean> = featureManager
-    .isFeatureEnabled(Feature.TIER)
-    .stateIn(
-      coroutineScope,
-      // We fetch this on the fly, when we want to decide where we want to navigate, so we want it to eagerly be
-      //  populated with the right information at all times. Nobody will be explicitly collecting this flow
-      SharingStarted.Eagerly,
-      false,
-    )
-
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
