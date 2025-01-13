@@ -1,6 +1,7 @@
 package com.hedvig.android.tiersandaddons
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
@@ -24,11 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,16 +52,19 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.ripple
+import com.hedvig.android.tiersandaddons.QuoteCardDefaults.UnderDetailsContentState
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 
@@ -84,6 +90,7 @@ fun QuoteCard(
     setShowDetails = { showDetails = it },
     subtitle = subtitle,
     premium = premium,
+    isExcluded = false,
     displayItems = displayItems,
     underTitleContent = underTitleContent,
     modifier = modifier,
@@ -102,10 +109,13 @@ fun QuoteCard(
   documents: List<InsuranceVariantDocument>,
   subtitle: String,
   premium: String,
+  isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
-  onInfoIconClick: (() -> Unit)? = null,
+  underDetailsContent: @Composable (UnderDetailsContentState) -> Unit = { state ->
+    QuoteCardDefaults.UnderDetailsContent(state)
+  },
 ) {
   var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
@@ -113,6 +123,7 @@ fun QuoteCard(
     setShowDetails = { showDetails = it },
     subtitle = subtitle,
     premium = premium,
+    isExcluded = isExcluded,
     displayItems = displayItems,
     underTitleContent = underTitleContent,
     modifier = modifier,
@@ -120,8 +131,45 @@ fun QuoteCard(
     contractGroup = contractGroup,
     insurableLimits = insurableLimits,
     documents = documents,
-    onInfoIconClick = onInfoIconClick,
+    titleEndSlot = {
+      Crossfade(
+        targetState = isExcluded,
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+      ) { show ->
+        if (show) {
+          HighlightLabel(
+            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
+            size = Small,
+            color = Grey(MEDIUM),
+          )
+        }
+      }
+    },
+    underDetailsContent = underDetailsContent,
   )
+}
+
+object QuoteCardDefaults {
+  data class UnderDetailsContentState(
+    val showDetails: Boolean,
+    val setShowDetails: (Boolean) -> Unit,
+  )
+
+  @Composable
+  fun UnderDetailsContent(state: UnderDetailsContentState) {
+    HedvigButton(
+      text = if (state.showDetails) {
+        stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+      } else {
+        stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+      },
+      onClick = { state.setShowDetails(!state.showDetails) },
+      enabled = true,
+      buttonStyle = Secondary,
+      buttonSize = Medium,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
 }
 
 @Composable
@@ -130,6 +178,7 @@ private fun QuoteCard(
   setShowDetails: (Boolean) -> Unit,
   subtitle: String,
   premium: String,
+  isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
   contractGroup: ContractGroup?,
@@ -137,7 +186,10 @@ private fun QuoteCard(
   documents: List<InsuranceVariantDocument>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
-  onInfoIconClick: (() -> Unit)? = null,
+  titleEndSlot: @Composable () -> Unit = {},
+  underDetailsContent: @Composable (UnderDetailsContentState) -> Unit = { state ->
+    QuoteCardDefaults.UnderDetailsContent(state)
+  },
 ) {
   HedvigCard(
     modifier = modifier,
@@ -169,30 +221,21 @@ private fun QuoteCard(
           }
         },
         endSlot = {
-          if (onInfoIconClick != null) {
-            Row(
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.Top,
-            ) {
-              IconButton(
-                onClick = onInfoIconClick,
-                modifier = Modifier.size(24.dp),
-              ) {
-                Icon(
-                  HedvigIcons.InfoOutline,
-                  null,
-                  modifier = Modifier.size(24.dp),
-                )
-              }
-            }
-          }
+          titleEndSlot()
         },
         spaceBetween = 8.dp,
       )
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+          HedvigText(
+            text = stringResource(R.string.TIER_FLOW_TOTAL),
+            color = if (isExcluded) {
+              HedvigTheme.colorScheme.textSecondaryTranslucent
+            } else {
+              Color.Unspecified
+            },
+          )
         },
         endSlot = {
           HedvigText(
@@ -201,6 +244,14 @@ private fun QuoteCard(
               premium,
             ),
             textAlign = TextAlign.End,
+            style = if (isExcluded) {
+              LocalTextStyle.current.copy(
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                textDecoration = TextDecoration.LineThrough,
+              )
+            } else {
+              LocalTextStyle.current
+            },
             modifier = Modifier.wrapContentWidth(Alignment.End),
           )
         },
@@ -288,19 +339,10 @@ private fun QuoteCard(
           }
         }
       }
-      Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = if (showDetails) {
-          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        } else {
-          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-        },
-        onClick = { setShowDetails(!showDetails) },
-        enabled = true,
-        buttonStyle = Secondary,
-        buttonSize = Medium,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      Column {
+        Spacer(Modifier.height(16.dp))
+        underDetailsContent(UnderDetailsContentState(showDetails, setShowDetails))
+      }
     }
   }
 }
@@ -495,7 +537,6 @@ private fun PreviewQuoteCard(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       QuoteCard(
-        onInfoIconClick = {},
         showDetails = showDetails,
         setShowDetails = {},
         displayName = "displayName",
@@ -516,6 +557,7 @@ private fun PreviewQuoteCard(
         },
         subtitle = "subtitle",
         premium = "premium",
+        isExcluded = showDetails,
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",

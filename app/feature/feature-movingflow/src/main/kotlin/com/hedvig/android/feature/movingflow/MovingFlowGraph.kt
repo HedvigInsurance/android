@@ -77,7 +77,6 @@ internal sealed interface MovingFlowDestinations {
 
 fun NavGraphBuilder.movingFlowGraph(
   navController: NavController,
-  navigateToNewConversation: (backStackEntry: NavBackStackEntry) -> Unit,
 ) {
   navgraph<MovingFlowGraphDestination>(
     startDestination = MovingFlowDestinations.Start::class,
@@ -158,9 +157,6 @@ fun NavGraphBuilder.movingFlowGraph(
               inclusive = true
             }
           }
-        },
-        startNewConversation = {
-          navigateToNewConversation(backStackEntry)
         },
       )
     }

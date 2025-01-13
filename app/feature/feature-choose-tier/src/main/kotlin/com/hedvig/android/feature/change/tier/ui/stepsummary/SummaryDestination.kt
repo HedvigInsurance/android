@@ -327,6 +327,7 @@ private fun AddonCard(
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
     premium = addonQuote.premium.toString(),
+    isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
         title = it.displayTitle,

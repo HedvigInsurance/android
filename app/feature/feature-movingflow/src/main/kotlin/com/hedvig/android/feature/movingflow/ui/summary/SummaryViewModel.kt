@@ -13,11 +13,13 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ConfirmChanges
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubmissionError
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ToggleHomeAddonExclusion
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
@@ -26,6 +28,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
@@ -34,13 +37,13 @@ internal class SummaryViewModel(
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
-    Loading,
-    SummaryPresenter(
-      summaryRoute = savedStateHandle.toRoute<Summary>(),
-      movingFlowRepository = movingFlowRepository,
-      apolloClient = apolloClient,
-    ),
-  )
+  Loading,
+  SummaryPresenter(
+    summaryRoute = savedStateHandle.toRoute<Summary>(),
+    movingFlowRepository = movingFlowRepository,
+    apolloClient = apolloClient,
+  ),
+)
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,
@@ -64,6 +67,10 @@ internal class SummaryPresenter(
 
         DismissSubmissionError -> {
           submitChangesError = null
+        }
+
+        is ToggleHomeAddonExclusion -> {
+          launch { movingFlowRepository.toggleHomeAddonExclusion(event.addonQuote) }
         }
       }
     }
@@ -95,6 +102,7 @@ internal class SummaryPresenter(
     val submittingChangesForDateValue = submittingChangesForDate
     if (submittingChangesForDateValue != null) {
       LaunchedEffect(submittingChangesForDateValue) {
+        // TODO take into consideration the excluded addon quotes by letting backend know about them
         apolloClient
           .mutation(MoveIntentV2CommitMutation(summaryRoute.moveIntentId, summaryRoute.homeQuoteId))
           .safeExecute()
@@ -177,35 +185,26 @@ internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent
 
   data object DismissSubmissionError : SummaryEvent
+
+  data class ToggleHomeAddonExclusion(val addonQuote: MovingFlowQuotes.AddonQuote) : SummaryEvent
 }
 
 internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
   val moveMtaQuotes: List<MoveMtaQuote>,
 ) {
-  private val homeQuoteWithAddonsPremium = moveHomeQuote.relatedAddonQuotes.map {
-    it.premium
-  }.plus(moveHomeQuote.premium)
-    .sumOf { it.amount }
-    .let { sum ->
-      UiMoney(sum, moveHomeQuote.premium.currencyCode)
-    }
-  private val mtaQuotesPremiums = moveMtaQuotes.map {
-    it.premium
-  }.sumOf { it.amount }
-    .let { sum ->
-      UiMoney(sum, moveHomeQuote.premium.currencyCode)
-    }
-  private val mtaQuotesAddonsPremiums = moveMtaQuotes.flatMap { it.relatedAddonQuotes }.map {
-    it.premium
-  }.sumOf { it.amount }
-    .let { sum ->
-      UiMoney(sum, moveHomeQuote.premium.currencyCode)
-    }
-  val totalPremium: UiMoney =
-    UiMoney(
-      listOf(homeQuoteWithAddonsPremium, mtaQuotesPremiums, mtaQuotesAddonsPremiums)
-        .sumOf { it.amount },
-      moveHomeQuote.premium.currencyCode,
-    )
+  private val homeQuotePremium = moveHomeQuote.premium.amount
+  private val homeQuoteAddonsPremium = moveHomeQuote
+    .relatedAddonQuotes
+    .filter { !it.isExcludedByUser }
+    .sumOf { it.premium.amount }
+  private val homeQuoteWithAddonsPremium = homeQuotePremium + homeQuoteAddonsPremium
+
+  private val mtaQuotesPremium = moveMtaQuotes.sumOf { it.premium.amount }
+  private val mtaQuotesAddonsPremium = moveMtaQuotes.flatMap { it.relatedAddonQuotes }.sumOf { it.premium.amount }
+
+  val totalPremium: UiMoney = UiMoney(
+    amount = homeQuoteWithAddonsPremium + mtaQuotesPremium + mtaQuotesAddonsPremium,
+    currencyCode = moveHomeQuote.premium.currencyCode,
+  )
 }

@@ -69,6 +69,7 @@ internal data class MovingFlowQuotes(
     val displayItems: List<DisplayItem>,
     val exposureName: String,
     val addonVariant: AddonVariant,
+    val isExcludedByUser: Boolean,
   )
 
   @Serializable
@@ -81,7 +82,7 @@ internal data class MovingFlowQuotes(
 
 internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
   return MovingFlowQuotes(
-    homeQuotes = (homeQuotes ?: emptyList()).map { houseQuote ->
+    homeQuotes = homeQuotes.orEmpty().map { houseQuote ->
       MoveHomeQuote(
         id = houseQuote.id,
         premium = UiMoney.fromMoneyFragment(houseQuote.premium),
@@ -100,7 +101,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
           )
         },
         defaultChoice = houseQuote.defaultChoice,
-        relatedAddonQuotes = houseQuote.addons?.map { addon ->
+        relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
           MovingFlowQuotes.AddonQuote(
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
@@ -113,18 +114,19 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
               )
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
+            isExcludedByUser = false,
           )
-        } ?: emptyList(),
+        }
       )
     },
-    mtaQuotes = (mtaQuotes ?: emptyList()).map { mtaQuote ->
+    mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->
       MoveMtaQuote(
         premium = UiMoney.fromMoneyFragment(mtaQuote.premium),
         exposureName = mtaQuote.exposureName,
         productVariant = mtaQuote.productVariant.toProductVariant(),
         startDate = mtaQuote.startDate,
         displayItems = mtaQuote.displayItems.map { it.toDisplayItem() },
-        relatedAddonQuotes = mtaQuote.addons?.map { addon ->
+        relatedAddonQuotes = mtaQuote.addons.orEmpty().map { addon ->
           MovingFlowQuotes.AddonQuote(
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
@@ -137,8 +139,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
               )
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
+            isExcludedByUser = false,
           )
-        } ?: emptyList(),
+        },
       )
     },
   )

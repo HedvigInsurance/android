@@ -323,7 +323,7 @@ internal fun HedvigNavHost(
     addonPurchaseNavGraph(
       navigator = navigator,
       navController = hedvigAppState.navController,
-      onNavigateToNewConversation = { navigateToNewConversation() },
+      onNavigateToNewConversation = ::navigateToNewConversation,
     )
     changeTierGraph(
       navigator = navigator,
@@ -331,12 +331,11 @@ internal fun HedvigNavHost(
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
-      navigateToNewConversation = { navigateToNewConversation() },
     )
     connectPaymentGraph(
       navigator = navigator,
       market = market,
-      onNavigateToNewConversation = { navigateToNewConversation() },
+      onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     editCoInsuredGraph(navigator)
