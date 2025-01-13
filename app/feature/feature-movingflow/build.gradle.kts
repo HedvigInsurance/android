@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
-
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -10,7 +8,9 @@ hedvig {
   serialization()
   compose()
 }
-
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
 dependencies {
   api(libs.androidx.navigation.common)
 
@@ -42,4 +42,20 @@ dependencies {
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
   implementation(projects.featureFlagsPublic)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
+  testImplementation(libs.mockk)
 }

@@ -40,7 +40,7 @@ internal class SummaryViewModel(
     ),
   )
 
-private class SummaryPresenter(
+internal class SummaryPresenter(
   private val params: SummaryParameters,
   private val tierRepository: ChangeTierRepository,
   private val getCurrentContractDataUseCase: GetCurrentContractDataUseCase,

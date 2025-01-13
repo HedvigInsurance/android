@@ -38,7 +38,7 @@ internal class ChoseCoverageLevelAndDeductibleViewModel(
     ChoseCoverageLevelAndDeductiblePresenter(movingFlowRepository),
   )
 
-private class ChoseCoverageLevelAndDeductiblePresenter(
+internal class ChoseCoverageLevelAndDeductiblePresenter(
   private val movingFlowRepository: MovingFlowRepository,
 ) : MoleculePresenter<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState> {
   @Composable
@@ -62,7 +62,8 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           val newlySelectedQuote = currentContent.allOptions.firstOrNull { it.id == event.homeQuoteId }
           val newlySelectedTier = newlySelectedQuote?.tierName
           val quoteWithSameDeductibleAndNewTier = currentContent.allOptions.firstOrNull {
-            it.tierName == newlySelectedTier && it.deductible == currentDeductible
+            it.tierName == newlySelectedTier &&
+              it.deductible == currentDeductible
           }
           val newSelectedCoverage = quoteWithSameDeductibleAndNewTier ?: newlySelectedQuote ?: return@CollectEvents
           if (newSelectedCoverage == currentContent.selectedCoverage) return@CollectEvents
@@ -81,7 +82,8 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
         }
 
         is SubmitSelectedHomeQuoteId -> {
-          submittingSelectedHomeQuoteId = event.homeQuoteId
+          val currentContent = tiersInfo.getOrNull() ?: return@CollectEvents
+          submittingSelectedHomeQuoteId = currentContent.selectedHomeQuoteId
         }
 
         NavigatedToSummary -> navigateToSummaryScreenWithHomeQuoteId = null
@@ -177,7 +179,7 @@ sealed interface ChoseCoverageLevelAndDeductibleEvent {
 
   data class SelectDeductible(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
 
-  data class SubmitSelectedHomeQuoteId(val homeQuoteId: String) : ChoseCoverageLevelAndDeductibleEvent
+  data object SubmitSelectedHomeQuoteId : ChoseCoverageLevelAndDeductibleEvent
 
   data object NavigatedToSummary : ChoseCoverageLevelAndDeductibleEvent
 

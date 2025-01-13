@@ -243,7 +243,6 @@ private fun SummaryScreen(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
         val description = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION)
-        // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
         for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
           val bottomSheetTitle = addonQuote.addonVariant.displayName
           AddonQuoteCard(

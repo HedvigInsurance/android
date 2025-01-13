@@ -16,18 +16,45 @@ import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
 
-internal class MovingFlowRepository(
+internal interface MovingFlowRepository {
+  fun movingFlowState(): Flow<MovingFlowState?>
+
+  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, housingType: HousingType)
+
+  suspend fun updateWithPropertyInput(
+    movingDate: LocalDate,
+    address: String,
+    postalCode: String,
+    squareMeters: Int,
+    numberCoInsured: Int,
+    isStudent: Boolean,
+  )
+
+  suspend fun updateWithHouseInput(
+    yearOfConstruction: Int,
+    ancillaryArea: Int,
+    numberOfBathrooms: Int,
+    isSublet: Boolean,
+    extraBuildings: List<ExtraBuildingInfo>,
+  ): MovingFlowState?
+
+  suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment)
+
+  suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String)
+}
+
+internal class MovingFlowRepositoryImpl(
   private val movingFlowStorage: MovingFlowStorage,
-) {
-  fun movingFlowState(): Flow<MovingFlowState?> {
+) : MovingFlowRepository {
+  override fun movingFlowState(): Flow<MovingFlowState?> {
     return movingFlowStorage.getMovingFlowState()
   }
 
-  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, housingType: HousingType) {
+  override suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, housingType: HousingType) {
     movingFlowStorage.setMovingFlowState(MovingFlowState.fromFragments(moveIntent, null, housingType))
   }
 
-  suspend fun updateWithPropertyInput(
+  override suspend fun updateWithPropertyInput(
     movingDate: LocalDate,
     address: String,
     postalCode: String,
@@ -78,7 +105,7 @@ internal class MovingFlowRepository(
     }
   }
 
-  suspend fun updateWithHouseInput(
+  override suspend fun updateWithHouseInput(
     yearOfConstruction: Int,
     ancillaryArea: Int,
     numberOfBathrooms: Int,
@@ -106,13 +133,13 @@ internal class MovingFlowRepository(
     }
   }
 
-  suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment) {
+  override suspend fun updateWithMoveIntentQuotes(moveIntentQuotesFragment: MoveIntentQuotesFragment) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(movingFlowQuotes = moveIntentQuotesFragment.toMovingFlowQuotes())
     }
   }
 
-  suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {
+  override suspend fun updatePreselectedHomeQuoteId(selectedHomeQuoteId: String) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
         lastSelectedHomeQuoteId = selectedHomeQuoteId,

@@ -111,8 +111,8 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
     navigateUp = navigateUp,
     popBackStack = popBackStack,
     exitFlow = exitFlow,
-    onSubmit = { selectedHomeQuoteId ->
-      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId(selectedHomeQuoteId))
+    onSubmit = {
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId)
     },
     onSelectCoverageOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectCoverage(it)) },
     onSelectDeductibleOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectDeductible(it)) },
@@ -125,7 +125,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
   exitFlow: () -> Unit,
-  onSubmit: (String) -> Unit,
+  onSubmit: () -> Unit,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
   onCompareCoverageClicked: () -> Unit,
@@ -157,7 +157,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 
           is Content -> ChoseCoverageLevelAndDeductibleScreen(
             content = uiState,
-            onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
+            onSubmit = onSubmit,
             onSelectCoverageOption = onSelectCoverageOption,
             onSelectDeductibleOption = onSelectDeductibleOption,
             onCompareCoverageClicked = onCompareCoverageClicked,
