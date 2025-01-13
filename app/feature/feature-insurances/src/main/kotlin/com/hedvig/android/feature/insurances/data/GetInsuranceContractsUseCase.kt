@@ -16,30 +16,30 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override suspend fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
-    val areAddonsEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
-      apolloClient
-        .query(InsuranceContractsQuery(areAddonsEnabled))
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-        .safeFlow(::ErrorMessage),
+      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
+        apolloClient
+          .query(InsuranceContractsQuery(areAddonsEnabled))
+          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+          .safeFlow(::ErrorMessage)
+      },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
       featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
-      featureManager.isFeatureEnabled(Feature.TIER),
-    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowFlagEnabled, isTierEnabled ->
+    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowFlagEnabled ->
       either {
         val insuranceQueryData = insuranceQueryResponse.bind()
         val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
@@ -53,7 +53,6 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingEnabledForMember,
-            isTierFlagEnabled = isTierEnabled,
           )
         }
 
@@ -64,7 +63,6 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderSSN = contractHolderSSN,
             isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingEnabledForMember,
-            isTierFlagEnabled = isTierEnabled,
           )
         }
         terminatedContracts + activeContracts
@@ -84,11 +82,10 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
-  isTierFlagEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
-    tierName = if (isTierFlagEnabled) currentAgreement.productVariant.displayNameTier else null,
+    tierName = currentAgreement.productVariant.displayNameTier,
     displayName = currentAgreement.productVariant.displayName,
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
@@ -135,7 +132,7 @@ private fun ContractFragment.toContract(
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
-    supportsTierChange = supportsChangeTier && isTierFlagEnabled,
+    supportsTierChange = supportsChangeTier,
   )
 }
 

@@ -32,7 +32,6 @@ internal class GetMemberActionsUseCaseImpl(
         { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() },
         { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() },
         { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first() },
-        { featureManager.isFeatureEnabled(Feature.TIER).first() },
         { marketManager.selectedMarket().filterNotNull().first() },
         {
           apolloClient
@@ -45,7 +44,6 @@ internal class GetMemberActionsUseCaseImpl(
         isCoInsuredFeatureOn,
         isMovingFeatureOn,
         isConnectPaymentFeatureOn,
-        isTierEnabled,
         market,
         memberActions,
         ->
@@ -58,7 +56,7 @@ internal class GetMemberActionsUseCaseImpl(
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
           sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
           firstVetAction = memberActions?.firstVetAction?.toVetAction(),
-          isTierChangeEnabled = isTierEnabled && memberActions?.isChangeTierEnabled ?: false,
+          isTierChangeEnabled = memberActions?.isChangeTierEnabled ?: false,
         )
       }
     }

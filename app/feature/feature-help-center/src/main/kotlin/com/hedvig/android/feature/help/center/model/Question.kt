@@ -179,6 +179,21 @@ internal enum class Question(
     R.string.HC_COVERAGE_Q_22,
     R.string.HC_COVERAGE_A_22,
   ),
+  COVERAGE_Q23(
+    titleRes = R.string.HC_COVERAGE_TITLE,
+    questionRes = R.string.HC_COVERAGE_Q_23,
+    answerRes = R.string.HC_COVERAGE_A_23,
+  ),
+  COVERAGE_Q24(
+    titleRes = R.string.HC_COVERAGE_TITLE,
+    questionRes = R.string.HC_COVERAGE_Q_24,
+    answerRes = R.string.HC_COVERAGE_A_24,
+  ),
+  COVERAGE_Q25(
+    titleRes = R.string.HC_COVERAGE_TITLE,
+    questionRes = R.string.HC_COVERAGE_Q_25,
+    answerRes = R.string.HC_COVERAGE_A_25,
+  ),
 
   // INSURANCE
   INSURANCE_Q1(

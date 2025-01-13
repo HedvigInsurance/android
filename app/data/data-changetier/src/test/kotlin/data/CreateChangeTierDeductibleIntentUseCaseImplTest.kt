@@ -462,7 +462,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when BE response has empty quotes return intent with empty quotes`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponseButEmptyQuotes,
       featureManager = featureManager,
@@ -476,13 +476,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   }
 
   @Test
-  fun `when response is fine and tier feature flag is on get a good result`() = runTest {
-    val featureManager = FakeFeatureManager2(
-      fixedMap = mapOf(
-        Feature.TIER to true,
-        Feature.TRAVEL_ADDON to true,
-      ),
-    )
+  fun `when response is fine get a good result`() = runTest {
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
@@ -509,95 +504,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   }
 
   @Test
-  fun `when response is fine but tier feature flag is off the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to false, Feature.TRAVEL_ADDON to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
-  }
-
-  @Test
-  fun `when response is fine and addon feature flag is off the result has empty addons list`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to false))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(ChangeTierDeductibleIntent::quotes)
-      .index(1) // index(0) is agreement to change
-      .prop(TierDeductibleQuote::addons)
-      .isEmpty()
-  }
-
-  @Test
-  fun `when response is fine and addon feature flag is on the result has addons list properly populated`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(ChangeTierDeductibleIntent::quotes)
-      .index(1) // index(0) is agreement to change
-      .prop(TierDeductibleQuote::addons)
-      .first()
-      .isEqualTo(
-        com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote(
-          addonId = "addonId",
-          displayName = "Travel Plus",
-          displayItems = listOf(
-            ChangeTierDeductibleDisplayItem(
-              displayTitle = "Coinsured people",
-              displaySubtitle = null,
-              displayValue = "Only you",
-            ),
-          ),
-          previousPremium = UiMoney(29.0, com.hedvig.android.core.uidata.UiCurrencyCode.SEK),
-          premium = UiMoney(30.0, com.hedvig.android.core.uidata.UiCurrencyCode.SEK),
-          addonVariant = com.hedvig.android.data.productvariant.AddonVariant(
-            termsVersion = "terms",
-            displayName = "addonVariantDisplayName",
-            product = "product",
-            perils = emptyList(),
-            insurableLimits = emptyList(),
-            documents = emptyList(),
-          ),
-        ),
-      )
-  }
-
-  @Test
-  fun `when response is bad and tier feature flag is on the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
-    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
-      apolloClient = apolloClientWithBadResponse,
-      featureManager = featureManager,
-    )
-    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-
-    assertk.assertThat(result)
-      .isNotNull()
-      .isLeft()
-  }
-
-  @Test
   fun `when response is otherwise good but the intent is null the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodButNullResponse,
       featureManager = featureManager,
@@ -612,7 +520,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in existing agreement is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInExisting,
         featureManager = featureManager,
@@ -627,7 +535,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in one of the quotes is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInOneQuote,
         featureManager = featureManager,
@@ -641,7 +549,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `in good response one of the quotes should have the current const id`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TIER to true, Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
@@ -659,5 +567,19 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       .isNotNull()
       .prop(TierDeductibleQuote::id)
       .isEqualTo(TierConstants.CURRENT_ID)
+  }
+
+  @Test
+  fun `when response is bad the result is ErrorMessage`() = runTest {
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+      apolloClient = apolloClientWithBadResponse,
+      featureManager = featureManager,
+    )
+    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+
+    assertk.assertThat(result)
+      .isNotNull()
+      .isLeft()
   }
 }

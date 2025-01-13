@@ -168,8 +168,8 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
               R.string.ADDON_FLOW_PRICE_LABEL,
               uiState.totalPriceChange.amount.toInt(),
             )
-          } // without + (supposedly with minus)
-          else {
+          } else {
+            // without + (supposedly with minus)
             stringResource(
               R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, // todo: mb better to have a separate key?
               uiState.totalPriceChange.amount.toInt(),

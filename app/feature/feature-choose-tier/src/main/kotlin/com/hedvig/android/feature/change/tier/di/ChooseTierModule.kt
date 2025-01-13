@@ -12,7 +12,6 @@ import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsurance
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
-import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -42,14 +41,12 @@ val chooseTierModule = module {
   single<GetCurrentContractDataUseCase> {
     GetCurrentContractDataUseCaseImpl(
       apolloClient = get<ApolloClient>(),
-      featureManager = get<FeatureManager>(),
     )
   }
 
   single<GetCustomizableInsurancesUseCase> {
     GetCustomizableInsurancesUseCaseImpl(
       apolloClient = get<ApolloClient>(),
-      featureManager = get<FeatureManager>(),
     )
   }
 

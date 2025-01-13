@@ -61,7 +61,7 @@ class GetQuickLinksUseCaseTest {
     }
 
   @Test
-  fun `when response is fine and tier feature flag is on return ChangeTier quickAction`() = runTest {
+  fun `when response is fine return ChangeTier quickAction`() = runTest {
     val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
@@ -92,10 +92,10 @@ class GetQuickLinksUseCaseTest {
   }
 
   @Test
-  fun `when response is fine but tier feature flag is off should not contain ChangeTier quickAction`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedReturnForAll = false)
+  fun `when response says cannot change tier should not contain ChangeTier quickAction`() = runTest {
+    val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
-    getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
+    getMemberActionsUseCase.turbine.add(fakeMemberActionWithoutTier.right())
     val useCase = GetQuickLinksUseCase(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
@@ -121,38 +121,6 @@ class GetQuickLinksUseCaseTest {
       }
       .isTrue()
   }
-
-  @Test
-  fun `when tier feature flag is on but response says cannot change tier should not contain ChangeTier quickAction`() =
-    runTest {
-      val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
-      val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
-      getMemberActionsUseCase.turbine.add(fakeMemberActionWithoutTier.right())
-      val useCase = GetQuickLinksUseCase(
-        apolloClient = apolloClientWithGoodResponse,
-        featureManager = featureManager,
-        getMemberActionsUseCase = getMemberActionsUseCase,
-      )
-      val result = useCase.invoke()
-      val listNotEmpty = result.getOrNull()?.isNotEmpty() ?: false
-      assertk.assertThat(listNotEmpty).isTrue()
-      assertk
-        .assertThat(result)
-        .isRight()
-        .transform { list ->
-          list.filterIsInstance<MultiSelectExpandedLink>()
-            .none {
-              it.links.contains(
-                QuickAction.StandaloneQuickLink(
-                  quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
-                  titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
-                ),
-              )
-            }
-        }
-        .isTrue()
-    }
 }
 
 private class FakeGetMemberActionsUseCase : GetMemberActionsUseCase {
