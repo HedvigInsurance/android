@@ -69,7 +69,7 @@ internal class StartPresenter(
 
     LaunchedEffect(loadIteration) {
       either {
-        if (loadIteration>0) {
+        if (loadIteration > 0) {
           currentState = Loading
         }
         val moveIntentCreate = apolloClient

@@ -297,10 +297,17 @@ internal val fakeSummaryInfoWithOnlyHomeQuote = SummaryInfo(
 internal const val moveIntentIdFake = "moveIntentId"
 internal const val homeQuoteIdFake = "homeQuoteId"
 
-internal val fakePropertyState = MovingFlowState.PropertyState.ApartmentState(
+internal val fakePropertyStateBRF = MovingFlowState.PropertyState.ApartmentState(
   numberCoInsuredState = MovingFlowState.NumberCoInsuredState(allowedNumberCoInsuredRange = 0..3, 1),
   squareMetersState = MovingFlowState.SquareMetersState(10..100, 69),
   apartmentType = MovingFlowState.PropertyState.ApartmentState.ApartmentType.BRF,
+  isAvailableForStudentState = MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable,
+)
+
+internal val fakePropertyStateRent = MovingFlowState.PropertyState.ApartmentState(
+  numberCoInsuredState = MovingFlowState.NumberCoInsuredState(allowedNumberCoInsuredRange = 0..3, 1),
+  squareMetersState = MovingFlowState.SquareMetersState(10..100, 69),
+  apartmentType = MovingFlowState.PropertyState.ApartmentState.ApartmentType.RENT,
   isAvailableForStudentState = MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable,
 )
 
@@ -313,7 +320,7 @@ internal val fakeMovingStateNoAddons = MovingFlowState(
     selectedMovingDate = null,
     allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
   ),
-  propertyState = fakePropertyState,
+  propertyState = fakePropertyStateBRF,
   movingFlowQuotes = MovingFlowQuotes(
     homeQuotes = listOf(fakeHomeQuoteNoAddon),
     mtaQuotes = listOf(
@@ -334,8 +341,44 @@ internal val fakeMovingStateWithNoQuotes = MovingFlowState(
     selectedMovingDate = null,
     allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
   ),
-  propertyState = fakePropertyState,
+  propertyState = fakePropertyStateBRF,
   movingFlowQuotes = null,
+  lastSelectedHomeQuoteId = null,
+  oldAddressCoverageDurationDays = 30,
+)
+
+internal val fakeMovingStateBeforeHomeQuotes = MovingFlowState(
+  id = moveIntentIdFake,
+  moveFromAddressId = "moveFromAddressId",
+  housingType = HousingType.ApartmentOwn,
+  addressInfo = AddressInfo(null, null),
+  movingDateState = MovingFlowState.MovingDateState(
+    selectedMovingDate = null,
+    allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
+  ),
+  propertyState = fakePropertyStateBRF,
+  movingFlowQuotes = MovingFlowQuotes(
+    homeQuotes = emptyList(),
+    mtaQuotes = emptyList(),
+  ),
+  lastSelectedHomeQuoteId = null,
+  oldAddressCoverageDurationDays = 30,
+)
+
+internal val fakeMovingStateBeforeHomeQuotesFilled = MovingFlowState(
+  id = moveIntentIdFake,
+  moveFromAddressId = "moveFromAddressId",
+  housingType = HousingType.ApartmentOwn,
+  addressInfo = AddressInfo(street = "info", postalCode = 11111.toString()),
+  movingDateState = MovingFlowState.MovingDateState(
+    selectedMovingDate = LocalDate(2025, 3, 3),
+    allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 12, 1),
+  ),
+  propertyState = fakePropertyStateRent,
+  movingFlowQuotes = MovingFlowQuotes(
+    homeQuotes = emptyList(),
+    mtaQuotes = emptyList(),
+  ),
   lastSelectedHomeQuoteId = null,
   oldAddressCoverageDurationDays = 30,
 )
@@ -349,7 +392,7 @@ internal val fakeMovingStateWithOnlyHomeQuote = MovingFlowState(
     selectedMovingDate = null,
     allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
   ),
-  propertyState = fakePropertyState,
+  propertyState = fakePropertyStateBRF,
   movingFlowQuotes = MovingFlowQuotes(
     homeQuotes = listOf(fakeHomeQuoteNoAddon),
     mtaQuotes = emptyList(),
@@ -367,7 +410,7 @@ internal val fakeMovingStateWithTiersAndDeductibles = MovingFlowState(
     selectedMovingDate = null,
     allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
   ),
-  propertyState = fakePropertyState,
+  propertyState = fakePropertyStateBRF,
   movingFlowQuotes = MovingFlowQuotes(
     homeQuotes = listOf(
       fakeHomeQuoteWithTiersDeductibles1,
@@ -391,7 +434,7 @@ internal val fakeMovingStateWithTwoAddons = MovingFlowState(
     selectedMovingDate = null,
     allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
   ),
-  propertyState = fakePropertyState,
+  propertyState = fakePropertyStateBRF,
   movingFlowQuotes = MovingFlowQuotes(
     homeQuotes = listOf(fakeHomeQuoteWithAddon),
     mtaQuotes = listOf(

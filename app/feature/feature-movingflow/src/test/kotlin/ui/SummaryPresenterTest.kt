@@ -291,7 +291,7 @@ internal class SummaryPresenterTest {
             selectedMovingDate = null,
             allowedMovingDateRange = LocalDate(2025, 1, 1)..LocalDate(2025, 3, 1),
           ),
-          propertyState = fakePropertyState,
+          propertyState = fakePropertyStateBRF,
           movingFlowQuotes = null,
           lastSelectedHomeQuoteId = null,
           oldAddressCoverageDurationDays = 30,

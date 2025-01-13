@@ -57,4 +57,5 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
+  testImplementation(libs.mockk)
 }

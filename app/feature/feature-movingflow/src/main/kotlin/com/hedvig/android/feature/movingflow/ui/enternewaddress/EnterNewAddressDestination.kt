@@ -211,7 +211,8 @@ private fun EnterNewAddressScreen(
             if (it.isEmpty()) {
               uiState.postalCode.updateValue(null)
             } else if (it.isDigitsOnly()) {
-              uiState.postalCode.updateValue(it)
+              uiState
+                .postalCode.updateValue(it)
             }
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),

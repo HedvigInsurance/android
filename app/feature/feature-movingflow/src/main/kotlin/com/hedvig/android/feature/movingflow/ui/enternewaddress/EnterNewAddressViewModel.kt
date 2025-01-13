@@ -84,7 +84,7 @@ internal class EnterNewAddressViewModel(
     ),
   )
 
-private class EnterNewAddressPresenter(
+internal class EnterNewAddressPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,

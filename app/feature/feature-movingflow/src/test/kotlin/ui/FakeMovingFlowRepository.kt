@@ -21,7 +21,7 @@ internal class FakeMovingFlowRepository : MovingFlowRepository {
   }
 
   override suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, housingType: HousingType) {
-    delay(300) //to imitate button loading
+    delay(300) // to imitate button loading
     movingFlowInitiatedTurbine.add(true)
   }
 
