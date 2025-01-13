@@ -267,7 +267,7 @@ private fun CustomizeTravelAddonScreenContent(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON),
+      text = stringResource(R.string.general_continue_button),
       enabled = true,
       onClick = dropUnlessResumed {
         submitToSummary()
