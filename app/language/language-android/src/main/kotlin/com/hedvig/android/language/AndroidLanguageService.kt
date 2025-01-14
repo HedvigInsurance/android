@@ -39,9 +39,9 @@ internal class AndroidLanguageService() : LanguageService {
   }
 
   private fun getLocaleFromAppCompat(): Locale? {
-    val localeList = AppCompatDelegate.getApplicationLocales()
+    val localeList = AppCompatDelegate.getApplicationLocales() //here: weirdly depends on cache
     return if (localeList.isEmpty) {
-      null
+      Locale.getDefault()
     } else {
       localeList[0]!!
     }

@@ -28,6 +28,7 @@ internal class SetMarketUseCaseImpl(
       languageService.setLanguage(
         when {
           existingLanguage == null -> market.localLanguage()
+          existingLanguage.isSwedishLanguage() -> Language.SV_SE
           existingLanguage.isEnglishLanguage() -> market.englishLanguage()
           else -> market.localLanguage()
         }.also {
@@ -43,7 +44,13 @@ private fun Language.isEnglishLanguage(): Boolean {
   return this in englishLanguageList
 }
 
-private val englishLanguageList = listOf(Language.EN_SE, Language.EN_DK, Language.EN_NO)
+private fun Language.isSwedishLanguage(): Boolean {
+  return this in swedishLanguageList
+}
+
+private val englishLanguageList = listOf(Language.EN_SE, Language.EN_DK, Language.EN_NO, Language.EN_GLOBAL)
+
+private val swedishLanguageList = listOf(Language.SV_SE, Language.SV_GLOBAL)
 
 private fun Market.localLanguage() = when (this) {
   Market.SE -> Language.SV_SE
