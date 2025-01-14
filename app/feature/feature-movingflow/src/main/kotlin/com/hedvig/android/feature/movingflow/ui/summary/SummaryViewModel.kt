@@ -9,11 +9,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
@@ -54,15 +57,22 @@ internal class SummaryPresenter(
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
     var summaryInfo: SummaryInfoState by remember { mutableStateOf(SummaryInfoState.Loading) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
-    var submittingChangesForDate: LocalDate? by remember { mutableStateOf(null) }
+    var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
     var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
         ConfirmChanges -> {
-          val submitForDate =
-            (summaryInfo as? SummaryInfoState.Content)?.summaryInfo?.moveHomeQuote?.startDate ?: return@CollectEvents
-          submittingChangesForDate = submitForDate
+          val moveHomeQuote =
+            (summaryInfo as? SummaryInfoState.Content)?.summaryInfo?.moveHomeQuote ?: return@CollectEvents
+          submitChangesWithData = SubmitChangesData(
+            forDate = moveHomeQuote.startDate,
+            excludedAddonIds = moveHomeQuote
+              .relatedAddonQuotes
+              .filter(HomeAddonQuote::isExcludedByUser)
+              .map(HomeAddonQuote::addonId)
+              .toNonEmptyListOrNull(),
+          )
         }
 
         DismissSubmissionError -> {
@@ -99,18 +109,24 @@ internal class SummaryPresenter(
       }
     }
 
-    val submittingChangesForDateValue = submittingChangesForDate
-    if (submittingChangesForDateValue != null) {
-      LaunchedEffect(submittingChangesForDateValue) {
-        // TODO take into consideration the excluded addon quotes by letting backend know about them
+    val submitChangesDataValue = submitChangesWithData
+    if (submitChangesDataValue != null) {
+      LaunchedEffect(submitChangesDataValue) {
+        logcat { "Submitting moving changes, with submitting data:${submitChangesDataValue}" }
         apolloClient
-          .mutation(MoveIntentV2CommitMutation(summaryRoute.moveIntentId, summaryRoute.homeQuoteId))
+          .mutation(
+            MoveIntentV2CommitMutation(
+              intentId = summaryRoute.moveIntentId,
+              homeQuoteId = summaryRoute.homeQuoteId,
+              // removedAddons = submitChangesDataValue.excludedAddonIds, // TODO: Uncomment when schema is published
+            ),
+          )
           .safeExecute()
           .map { it.moveIntentCommit }
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
-                submittingChangesForDate = null
+                submitChangesWithData = null
                 submitChangesError = SubmitError.Generic
               }
             },
@@ -118,13 +134,13 @@ internal class SummaryPresenter(
               val userErrorMessage = moveIntentCommit.userError?.message
               if (userErrorMessage != null) {
                 Snapshot.withMutableSnapshot {
-                  submittingChangesForDate = null
+                  submitChangesWithData = null
                   submitChangesError = SubmitError.WithMessage(userErrorMessage)
                 }
               } else {
                 Snapshot.withMutableSnapshot {
-                  submittingChangesForDate = null
-                  navigateToFinishedScreenWithDate = submittingChangesForDateValue
+                  submitChangesWithData = null
+                  navigateToFinishedScreenWithDate = submitChangesDataValue.forDate
                 }
               }
             },
@@ -132,13 +148,14 @@ internal class SummaryPresenter(
       }
     }
 
-    return when (val summaryInfoValue = summaryInfo) {
+    return when (
+      val summaryInfoValue = summaryInfo) {
       SummaryInfoState.Loading -> Loading
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
       is SummaryInfoState.Content -> Content(
         summaryInfo = summaryInfoValue.summaryInfo,
-        isSubmitting = submittingChangesForDate != null,
+        isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
       )
@@ -208,3 +225,8 @@ internal data class SummaryInfo(
     currencyCode = moveHomeQuote.premium.currencyCode,
   )
 }
+
+private data class SubmitChangesData(
+  val forDate: LocalDate,
+  val excludedAddonIds: NonEmptyList<String>?,
+)
