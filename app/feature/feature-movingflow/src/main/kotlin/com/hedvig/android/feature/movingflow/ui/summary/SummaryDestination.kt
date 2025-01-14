@@ -9,8 +9,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -40,8 +37,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -79,7 +74,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.MtaAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -143,8 +139,8 @@ private fun SummaryScreen(
       )
       Box(
         modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f),
+            .fillMaxWidth()
+            .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -204,9 +200,9 @@ private fun SummaryScreen(
     var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
     Column(
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-        .verticalScroll(rememberScrollState()),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -232,15 +228,15 @@ private fun SummaryScreen(
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier
-        .wrapContentHeight(Alignment.Bottom)
-        .onPlaced {
-          bottomAttachedContentHeightPx = it.size.height
-        },
+          .wrapContentHeight(Alignment.Bottom)
+          .onPlaced {
+              bottomAttachedContentHeightPx = it.size.height
+          },
     ) {
       Column(
         Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
@@ -319,7 +315,10 @@ private fun AddonQuoteCard(
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
-    isExcluded = quote.isExcludedByUser,
+    isExcluded = when (quote) {
+      is HomeAddonQuote -> quote.isExcludedByUser
+      is MtaAddonQuote -> false
+    },
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -330,21 +329,23 @@ private fun AddonQuoteCard(
     modifier = modifier,
     underDetailsContent = { state ->
       Column {
-        AnimatedVisibility(
-          visible = state.showDetails || quote.isExcludedByUser,
-          enter = expandVertically(expandFrom = Alignment.Top),
-          exit = shrinkVertically(shrinkTowards = Alignment.Top),
-          modifier = Modifier.padding(bottom = 8.dp),
-        ) {
-          HedvigButton(
-            text = stringResource(if (quote.isExcludedByUser) R.string.GENERAL_ADD_BUTTON else R.string.GENERAL_REMOVE),
-            onClick = toggleHomeAddonExclusion,
-            enabled = true,
-            buttonStyle = Ghost,
-            buttonSize = Medium,
-            border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.fillMaxWidth(),
-          )
+        if (quote is HomeAddonQuote) {
+          AnimatedVisibility(
+            visible = state.showDetails || quote.isExcludedByUser,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top),
+            modifier = Modifier.padding(bottom = 8.dp),
+          ) {
+            HedvigButton(
+              text = stringResource(if (quote.isExcludedByUser) R.string.GENERAL_ADD_BUTTON else R.string.GENERAL_REMOVE),
+              onClick = toggleHomeAddonExclusion,
+              enabled = true,
+              buttonStyle = Ghost,
+              buttonSize = Medium,
+              border = HedvigTheme.colorScheme.borderPrimary,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
         }
         QuoteCardDefaults.UnderDetailsContent(state)
       }
@@ -480,7 +481,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
           defaultChoice = false,
           relatedAddonQuotes = List(1) {
-            AddonQuote(
+            HomeAddonQuote(
+              addonId = it.toString(),
               premium = UiMoney(129.0, SEK),
               startDate = startDate,
               displayItems = listOf(
@@ -512,7 +514,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
             startDate = startDate,
             displayItems = emptyList(),
             relatedAddonQuotes = listOf(
-              AddonQuote(
+              MtaAddonQuote(
+                addonId = "1",
                 premium = UiMoney(30.0, SEK),
                 startDate = startDate,
                 displayItems = listOf(
@@ -524,7 +527,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
                 ),
                 exposureName = "exposureName",
                 addonVariant = addonVariant,
-                isExcludedByUser = false,
               ),
             ),
           ),
