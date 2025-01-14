@@ -112,7 +112,7 @@ private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri
         Language.EN_NO,
         Language.DA_DK,
         Language.EN_DK,
-        Language.EN_GLOBAL
+        Language.EN_GLOBAL,
         -> "insurances"
       },
     )

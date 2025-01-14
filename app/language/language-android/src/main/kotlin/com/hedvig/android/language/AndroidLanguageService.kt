@@ -39,7 +39,7 @@ internal class AndroidLanguageService() : LanguageService {
   }
 
   private fun getLocaleFromAppCompat(): Locale? {
-    val localeList = AppCompatDelegate.getApplicationLocales() //here: weirdly depends on cache
+    val localeList = AppCompatDelegate.getApplicationLocales() // here: weirdly depends on cache
     return if (localeList.isEmpty) {
       Locale.getDefault()
     } else {

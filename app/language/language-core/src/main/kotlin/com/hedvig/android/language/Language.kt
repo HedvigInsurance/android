@@ -11,7 +11,7 @@ enum class Language {
   DA_DK,
   EN_DK,
   EN_GLOBAL,
-  SV_GLOBAL
+  SV_GLOBAL,
   ;
 
   fun toBcp47Format(): String {
@@ -76,7 +76,7 @@ enum class Language {
     }
 
     private fun String.startsWithSubstring(subString: String): Boolean {
-      return this.length >=4 && this.substring(0,3) == subString
+      return this.length >= 4 && this.substring(0, 3) == subString
     }
   }
 }
