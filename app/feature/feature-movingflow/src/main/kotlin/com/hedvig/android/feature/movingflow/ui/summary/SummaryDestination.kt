@@ -210,12 +210,20 @@ private fun SummaryScreen(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
         for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
-          AddonQuoteCard(quote = addonQuote, toggleHomeAddonExclusion = { toggleHomeAddonExclusion(addonQuote) })
+          AddonQuoteCard(
+            quote = addonQuote,
+            canExcludeAddons = content.canExcludeAddons,
+            toggleHomeAddonExclusion = { toggleHomeAddonExclusion(addonQuote) },
+          )
         }
         for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
           QuoteCard(mtaQuote)
           for (addonQuote in mtaQuote.relatedAddonQuotes) {
-            AddonQuoteCard(quote = addonQuote, toggleHomeAddonExclusion = { toggleHomeAddonExclusion(addonQuote) })
+            AddonQuoteCard(
+              quote = addonQuote,
+              canExcludeAddons = content.canExcludeAddons,
+              toggleHomeAddonExclusion = { toggleHomeAddonExclusion(addonQuote) },
+            )
           }
         }
       }
@@ -304,6 +312,7 @@ private fun QuoteCard(
 @Composable
 private fun AddonQuoteCard(
   quote: MovingFlowQuotes.AddonQuote,
+  canExcludeAddons: Boolean,
   toggleHomeAddonExclusion: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -336,7 +345,7 @@ private fun AddonQuoteCard(
     underDetailsContent = { state ->
       Column {
         AnimatedVisibility(
-          visible = state.showDetails && quote is HomeAddonQuote && !quote.isExcludedByUser,
+          visible = canExcludeAddons && state.showDetails && quote is HomeAddonQuote && !quote.isExcludedByUser,
           enter = expandVertically(expandFrom = Alignment.Top),
           exit = shrinkVertically(shrinkTowards = Alignment.Top),
           modifier = Modifier.padding(bottom = 8.dp),
@@ -550,6 +559,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       false,
       null,
       null,
+      true,
     ),
   )
 }
