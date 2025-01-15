@@ -99,34 +99,33 @@ internal fun CoverageTab(
       Spacer(Modifier.height(16.dp))
     }
     for (addon in addons.orEmpty()) {
-        Spacer(Modifier.height(16.dp))
-        HighlightLabel(
-          labelText = addon.addonVariant.displayName,
-          size = HighlightLabelDefaults.HighLightSize.Medium,
-          color = HighlightLabelDefaults.HighlightColor.Blue(
-            HighlightLabelDefaults.HighlightShade.LIGHT,
-          ),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-        PerilList(
-          perilItems = addon.addonVariant.perils.map {
-            PerilData(
-              title = it.title,
-              description = it.description,
-              covered = it.covered,
-              colorCode = it.colorCode,
-            )
-          },
-          size = Small,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-      }
+      Spacer(Modifier.height(16.dp))
+      HighlightLabel(
+        labelText = addon.addonVariant.displayName,
+        size = HighlightLabelDefaults.HighLightSize.Medium,
+        color = HighlightLabelDefaults.HighlightColor.Blue(
+          HighlightLabelDefaults.HighlightShade.LIGHT,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      PerilList(
+        perilItems = addon.addonVariant.perils.map {
+          PerilData(
+            title = it.title,
+            description = it.description,
+            covered = it.covered,
+            colorCode = it.colorCode,
+          )
+        },
+        size = Small,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
-
+  Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+}
 
 @Suppress("UnusedReceiverParameter")
 @Composable
