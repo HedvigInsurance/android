@@ -127,7 +127,7 @@ internal class SummaryPresenter(
             MoveIntentV2CommitMutation(
               intentId = summaryRoute.moveIntentId,
               homeQuoteId = summaryRoute.homeQuoteId,
-              // removedAddons = submitChangesDataValue.excludedAddonIds, // TODO: Uncomment when schema is published
+              excludedAddons = submitChangesDataValue.excludedAddonIds.orEmpty(),
             ),
           )
           .safeExecute()
