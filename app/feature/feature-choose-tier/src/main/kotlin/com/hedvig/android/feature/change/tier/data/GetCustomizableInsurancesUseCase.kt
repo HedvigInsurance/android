@@ -10,10 +10,8 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import octopus.ContractsEligibleForTierChangeQuery
 
 interface GetCustomizableInsurancesUseCase {
@@ -22,22 +20,16 @@ interface GetCustomizableInsurancesUseCase {
 
 internal class GetCustomizableInsurancesUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetCustomizableInsurancesUseCase {
   override suspend fun invoke(): Flow<Either<ErrorMessage, NonEmptyList<CustomisableInsurance>?>> {
-    return combine(
-      featureManager.isFeatureEnabled(Feature.TIER),
-      apolloClient
-        .query(ContractsEligibleForTierChangeQuery())
-        .safeFlow(::ErrorMessage),
-    ) { isEnabled, memberResponse ->
-      either {
-        if (!isEnabled) {
-          raise(ErrorMessage())
+    return apolloClient
+      .query(ContractsEligibleForTierChangeQuery())
+      .safeFlow(::ErrorMessage)
+      .map { memberResponse ->
+        either {
+          memberResponse.bind().currentMember.toInsurancesForChangingTier().toNonEmptyListOrNull()
         }
-        memberResponse.bind().currentMember.toInsurancesForChangingTier().toNonEmptyListOrNull()
       }
-    }
   }
 }
 

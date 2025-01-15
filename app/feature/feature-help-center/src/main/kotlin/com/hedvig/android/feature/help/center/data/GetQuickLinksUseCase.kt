@@ -52,8 +52,7 @@ internal class GetQuickLinksUseCase(
               add(quickAction)
             }
         }
-        // double-check - here and in getMemberActionsUseCase, but why not
-        if (memberActionOptions.isTierChangeEnabled && featureManager.isFeatureEnabled(Feature.TIER).first()) {
+        if (memberActionOptions.isTierChangeEnabled) {
           add(
             QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,

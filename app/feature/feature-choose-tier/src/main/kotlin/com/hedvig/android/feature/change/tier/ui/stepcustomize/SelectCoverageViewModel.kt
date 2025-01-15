@@ -306,7 +306,8 @@ internal data class SelectCoverageSuccessUiState(
   val isTierChoiceEnabled: Boolean,
   val quoteToNavigateFurther: TierDeductibleQuote? = null,
   val quotesToCompare: List<TierDeductibleQuote>? = null,
-  val tiers: List<Pair<Tier, UiMoney>>, // sorted list of tiers with corresponding premiums (depending on selected deductible)
+  // sorted list of tiers with corresponding premiums (depending on selected deductible)
+  val tiers: List<Pair<Tier, UiMoney>>,
   val quotesForChosenTier: List<TierDeductibleQuote>,
 )
 

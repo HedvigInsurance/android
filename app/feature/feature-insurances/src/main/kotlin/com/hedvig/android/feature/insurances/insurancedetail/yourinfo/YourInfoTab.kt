@@ -173,7 +173,7 @@ internal fun YourInfoTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
-      if (allowChangeAddress || allowEditCoInsured) {
+      if (allowChangeAddress || allowEditCoInsured || allowChangeTier) {
         HedvigButton(
           text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
           enabled = true,

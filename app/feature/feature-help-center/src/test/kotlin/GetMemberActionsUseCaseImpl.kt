@@ -81,59 +81,32 @@ class GetMemberActionsUseCaseImplTest {
     }
 
   @Test
-  fun `when response has isChangeTierEnabled as true but FF is off MemberAction should have isTierChangeEnabled as false`() =
-    runTest {
-      val featureManager = FakeFeatureManager2(
-        fixedMap = mapOf(
-          Feature.TIER to false,
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
-        ),
-      )
-      val marketManager = FakeMarketManager()
-      val subjectUseCase = GetMemberActionsUseCaseImpl(
-        apolloClient = apolloClientWithGoodResponseTierChangeTrue,
-        featureManager = featureManager,
-        marketManager = marketManager,
-      )
-      val result = subjectUseCase.invoke()
-      assertk.assertThat(result)
-        .isRight()
-        .prop(MemberAction::isTierChangeEnabled)
-        .isFalse()
-    }
+  fun `when response has isChangeTierEnabled as true MemberAction should have isTierChangeEnabled as true`() = runTest {
+    val featureManager = FakeFeatureManager2(
+      fixedMap = mapOf(
+        Feature.MOVING_FLOW to true,
+        Feature.EDIT_COINSURED to true,
+        Feature.PAYMENT_SCREEN to true,
+      ),
+    )
+    val marketManager = FakeMarketManager()
+    val subjectUseCase = GetMemberActionsUseCaseImpl(
+      apolloClient = apolloClientWithGoodResponseTierChangeTrue,
+      featureManager = featureManager,
+      marketManager = marketManager,
+    )
+    val result = subjectUseCase.invoke()
+    assertk.assertThat(result)
+      .isRight()
+      .prop(MemberAction::isTierChangeEnabled)
+      .isTrue()
+  }
 
   @Test
-  fun `when response has isChangeTierEnabled as true and FF is on MemberAction should have isTierChangeEnabled as true`() =
+  fun `when response has isChangeTierEnabled as false MemberAction should have isTierChangeEnabled as false`() =
     runTest {
       val featureManager = FakeFeatureManager2(
         fixedMap = mapOf(
-          Feature.TIER to true,
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
-        ),
-      )
-      val marketManager = FakeMarketManager()
-      val subjectUseCase = GetMemberActionsUseCaseImpl(
-        apolloClient = apolloClientWithGoodResponseTierChangeTrue,
-        featureManager = featureManager,
-        marketManager = marketManager,
-      )
-      val result = subjectUseCase.invoke()
-      assertk.assertThat(result)
-        .isRight()
-        .prop(MemberAction::isTierChangeEnabled)
-        .isTrue()
-    }
-
-  @Test
-  fun `when FF is on but response has isChangeTierEnabled as false MemberAction should have isTierChangeEnabled as false`() =
-    runTest {
-      val featureManager = FakeFeatureManager2(
-        fixedMap = mapOf(
-          Feature.TIER to true,
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
           Feature.PAYMENT_SCREEN to true,

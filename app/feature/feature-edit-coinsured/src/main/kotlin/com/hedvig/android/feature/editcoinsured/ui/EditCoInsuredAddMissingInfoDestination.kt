@@ -141,7 +141,8 @@ private fun EditCoInsuredScreen(
             onCompleted(uiState.contractUpdateDate)
           }
         }
-        val hedvigBottomSheetState = rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+        val hedvigBottomSheetState =
+          rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
         DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
         ClearBottomSheetContentStateOnSheetDismissedEffect(hedvigBottomSheetState, onResetAddBottomSheetState)
         HedvigBottomSheet(
@@ -168,7 +169,9 @@ private fun EditCoInsuredScreen(
             .fillMaxSize()
             .padding(
               WindowInsets
-                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+                .safeDrawing
+                .only(WindowInsetsSides.Horizontal)
+                .asPaddingValues(),
             )
             .verticalScroll(state = rememberScrollState()),
         ) {
@@ -190,7 +193,9 @@ private fun EditCoInsuredScreen(
                 id = R.string.CONTRACT_ADD_COINSURED_REVIEW_INFO,
               ),
               priority = NotificationDefaults.NotificationPriority.Attention,
-              modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
             )
           }
 
@@ -203,7 +208,9 @@ private fun EditCoInsuredScreen(
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp)
+                  .fillMaxWidth(),
               )
             }
           }
@@ -211,7 +218,9 @@ private fun EditCoInsuredScreen(
           HedvigTextButton(
             onClick = navigateUp,
             text = stringResource(R.string.general_cancel_button),
-            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))

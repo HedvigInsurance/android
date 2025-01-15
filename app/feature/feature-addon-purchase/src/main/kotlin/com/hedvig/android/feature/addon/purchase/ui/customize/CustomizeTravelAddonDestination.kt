@@ -267,7 +267,7 @@ private fun CustomizeTravelAddonScreenContent(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON),
+      text = stringResource(R.string.general_continue_button),
       enabled = true,
       onClick = dropUnlessResumed {
         submitToSummary()
@@ -314,7 +314,8 @@ private fun CustomizeTravelAddonCard(
         ),
         size = Small,
         containerColor = HedvigTheme.colorScheme.fillNegative,
-        hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER), // there is always one option chosen, should never be shown anyway
+        // there is always one option chosen, should never be shown anyway
+        hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
