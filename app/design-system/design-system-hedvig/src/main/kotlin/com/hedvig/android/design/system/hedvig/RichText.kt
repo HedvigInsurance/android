@@ -5,9 +5,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
 import com.halilibo.richtext.ui.BasicRichText
-import com.halilibo.richtext.ui.LinkClickHandler
 import com.halilibo.richtext.ui.RichTextScope
 import com.halilibo.richtext.ui.RichTextStyle
 import com.halilibo.richtext.ui.RichTextThemeProvider
@@ -22,15 +22,16 @@ import com.halilibo.richtext.ui.string.RichTextStringStyle
 public fun RichText(
   modifier: Modifier = Modifier,
   style: RichTextStyle? = null,
-  linkClickHandler: LinkClickHandler? = null,
   children: @Composable RichTextScope.() -> Unit,
 ) {
   val linkColor = HedvigTheme.colorScheme.link
   val linkStyle = RichTextStyle.Default.copy(
     stringStyle = RichTextStringStyle(
-      linkStyle = SpanStyle(
-        textDecoration = TextDecoration.Underline,
-        color = linkColor,
+      linkStyle = TextLinkStyles(
+        SpanStyle(
+          textDecoration = TextDecoration.Underline,
+          color = linkColor,
+        ),
       ),
     ),
   )
@@ -38,7 +39,6 @@ public fun RichText(
     BasicRichText(
       modifier = modifier,
       style = linkStyle.merge(style),
-      linkClickHandler = linkClickHandler,
       children = children,
     )
   }

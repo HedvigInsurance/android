@@ -25,7 +25,6 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
   pluginManager.apply(libs.plugins.kotlinter.get().pluginId)
 
   extensions.configure<KotlinterExtension> {
-    ignoreFailures = false
     reporters = arrayOf(ReporterType.checkstyle.name)
   }
 
