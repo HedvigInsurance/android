@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -30,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +41,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.LinkClickHandler
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -213,17 +215,19 @@ private fun SummaryScreen(
           ProvideTextStyle(
             HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
           ) {
-            RichText(
-              linkClickHandler = LinkClickHandler(
-                function = {
+            CompositionLocalProvider(
+              LocalUriHandler provides object : UriHandler {
+                override fun openUri(uri: String) {
                   infoFoBottomSheet = null
                   startNewConversation()
-                },
-              ),
+                }
+              },
             ) {
-              Markdown(
-                content = it.second,
-              )
+              RichText {
+                Markdown(
+                  content = it.second,
+                )
+              }
             }
           }
         }
