@@ -1,9 +1,13 @@
 package com.hedvig.android.tiersandaddons
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
@@ -107,7 +113,7 @@ fun QuoteCard(
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
   documents: List<InsuranceVariantDocument>,
-  subtitle: String,
+  subtitle: String?,
   premium: String,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
@@ -176,7 +182,7 @@ object QuoteCardDefaults {
 private fun QuoteCard(
   showDetails: Boolean,
   setShowDetails: (Boolean) -> Unit,
-  subtitle: String,
+  subtitle: String?,
   premium: String,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
@@ -210,13 +216,20 @@ private fun QuoteCard(
               Spacer(modifier = Modifier.width(12.dp))
             }
             Column {
-              HedvigText(
-                text = displayName,
-              )
-              HedvigText(
-                text = subtitle,
-                color = HedvigTheme.colorScheme.textSecondary,
-              )
+              HedvigText(displayName)
+              val lastKnownSubtitle by remember { mutableStateOf(subtitle) }.apply {
+                value = subtitle ?: value
+              }
+              AnimatedContent(
+                targetState = subtitle,
+                transitionSpec = { fadeIn() togetherWith fadeOut() },
+              ) { subtitle ->
+                HedvigText(
+                  text = subtitle ?: lastKnownSubtitle ?: "",
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  modifier = if (subtitle == null) Modifier.withoutPlacement() else Modifier,
+                )
+              }
             }
           }
         },

@@ -60,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -140,8 +141,8 @@ private fun SummaryScreen(
       )
       Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
+          .fillMaxWidth()
+          .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -201,9 +202,9 @@ private fun SummaryScreen(
     var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
     Column(
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-          .verticalScroll(rememberScrollState()),
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -229,15 +230,15 @@ private fun SummaryScreen(
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier
-          .wrapContentHeight(Alignment.Bottom)
-          .onPlaced {
-              bottomAttachedContentHeightPx = it.size.height
-          },
+        .wrapContentHeight(Alignment.Bottom)
+        .onPlaced {
+          bottomAttachedContentHeightPx = it.size.height
+        },
     ) {
       Column(
         Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
@@ -307,7 +308,11 @@ private fun AddonQuoteCard(
   modifier: Modifier = Modifier,
 ) {
   val startDate = formatStartDate(quote.startDate)
-  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
+    null
+  } else {
+    stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  }
   QuoteCard(
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
@@ -330,25 +335,34 @@ private fun AddonQuoteCard(
     modifier = modifier,
     underDetailsContent = { state ->
       Column {
-        if (quote is HomeAddonQuote) {
-          AnimatedVisibility(
-            visible = state.showDetails || quote.isExcludedByUser,
-            enter = expandVertically(expandFrom = Alignment.Top),
-            exit = shrinkVertically(shrinkTowards = Alignment.Top),
-            modifier = Modifier.padding(bottom = 8.dp),
-          ) {
-            HedvigButton(
-              text = stringResource(if (quote.isExcludedByUser) R.string.GENERAL_ADD_BUTTON else R.string.GENERAL_REMOVE),
-              onClick = toggleHomeAddonExclusion,
-              enabled = true,
-              buttonStyle = Ghost,
-              buttonSize = Medium,
-              border = HedvigTheme.colorScheme.borderPrimary,
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+        AnimatedVisibility(
+          visible = state.showDetails && quote is HomeAddonQuote && !quote.isExcludedByUser,
+          enter = expandVertically(expandFrom = Alignment.Top),
+          exit = shrinkVertically(shrinkTowards = Alignment.Top),
+          modifier = Modifier.padding(bottom = 8.dp),
+        ) {
+          HedvigButton(
+            text = stringResource(R.string.GENERAL_REMOVE),
+            onClick = toggleHomeAddonExclusion,
+            enabled = true,
+            buttonStyle = Ghost,
+            buttonSize = Medium,
+            border = HedvigTheme.colorScheme.borderPrimary,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-        QuoteCardDefaults.UnderDetailsContent(state)
+        if (quote is HomeAddonQuote && quote.isExcludedByUser) {
+          HedvigButton(
+            text = stringResource(R.string.ADDON_ADD_COVERAGE),
+            onClick = toggleHomeAddonExclusion,
+            enabled = true,
+            buttonStyle = Secondary,
+            buttonSize = Medium,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        } else {
+          QuoteCardDefaults.UnderDetailsContent(state)
+        }
       }
     },
   )
