@@ -65,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -386,7 +387,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   }
 }
 
-//@HedvigMultiScreenPreview
+@HedvigMultiScreenPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
 private fun PreviewSummaryScreen(
