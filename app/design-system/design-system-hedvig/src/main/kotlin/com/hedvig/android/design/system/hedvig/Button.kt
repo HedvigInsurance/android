@@ -54,6 +54,7 @@ fun HedvigButton(
   buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.buttonStyle,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
+  border: Color? = null,
   isLoading: Boolean = false,
 ) {
   HedvigButton(
@@ -63,6 +64,7 @@ fun HedvigButton(
     buttonStyle = buttonStyle,
     buttonSize = buttonSize,
     interactionSource = interactionSource,
+    border = border,
   ) {
     val buttonColors = buttonStyle.style.buttonColors
     val loadingTransition = updateTransition(isLoading, label = "loading transition")
@@ -97,6 +99,7 @@ fun HedvigButton(
   buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.buttonStyle,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
+  border: Color? = null,
   content: @Composable RowScope.() -> Unit,
 ) {
   @Suppress("NAME_SHADOWING")
@@ -118,6 +121,7 @@ fun HedvigButton(
     modifier = modifier.semantics { role = Role.Button },
     enabled = enabled,
     shape = buttonSize.size.shape,
+    border = border,
     color = color,
     contentColor = contentColor,
     interactionSource = interactionSource,
