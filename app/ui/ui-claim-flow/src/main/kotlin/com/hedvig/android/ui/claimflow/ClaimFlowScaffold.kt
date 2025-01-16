@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
+import com.hedvig.android.compose.ui.globalSharedElement
+import com.hedvig.android.compose.ui.rememberGlobalSharedContentState
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -37,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import hedvig.resources.R
 
 /**
@@ -74,7 +78,6 @@ fun ClaimFlowScaffold(
           title = topAppBarText ?: "",
           actionType = BACK,
           onActionClick = navigateUp,
-          modifier = Modifier.fillMaxWidth(),
           topAppBarActions = {
             IconButton(
               modifier = Modifier.size(24.dp),
@@ -87,6 +90,13 @@ fun ClaimFlowScaffold(
               },
             )
           },
+          modifier = Modifier
+            .fillMaxWidth()
+            .globalSharedElement(
+              LocalSharedTransitionScope.current,
+              LocalNavAnimatedVisibilityScope.current,
+              rememberGlobalSharedContentState("com.hedvig.android.ui.claimflow.ClaimFlowScaffold"),
+            ),
         )
         Column(
           horizontalAlignment = itemsColumnHorizontalAlignment,
