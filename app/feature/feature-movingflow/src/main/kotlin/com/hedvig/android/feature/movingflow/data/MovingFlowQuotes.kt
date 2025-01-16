@@ -110,40 +110,40 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
   return MovingFlowQuotes(
     homeQuotes = homeQuotes.orEmpty().map { houseQuote ->
       MoveHomeQuote(
-          id = houseQuote.id,
-          premium = UiMoney.fromMoneyFragment(houseQuote.premium),
-          startDate = houseQuote.startDate,
-          displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
-          exposureName = houseQuote.exposureName,
-          productVariant = houseQuote.productVariant.toProductVariant(),
-          tierName = houseQuote.tierName,
-          tierLevel = houseQuote.tierLevel,
-          tierDescription = houseQuote.productVariant.tierDescription,
-          deductible = houseQuote.deductible?.let { deductible ->
-              Deductible(
-                  amount = UiMoney.fromMoneyFragment(deductible.amount),
-                  percentage = deductible.percentage.takeIf { it != 0 },
-                  displayText = deductible.displayText,
+        id = houseQuote.id,
+        premium = UiMoney.fromMoneyFragment(houseQuote.premium),
+        startDate = houseQuote.startDate,
+        displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
+        exposureName = houseQuote.exposureName,
+        productVariant = houseQuote.productVariant.toProductVariant(),
+        tierName = houseQuote.tierName,
+        tierLevel = houseQuote.tierLevel,
+        tierDescription = houseQuote.productVariant.tierDescription,
+        deductible = houseQuote.deductible?.let { deductible ->
+          Deductible(
+            amount = UiMoney.fromMoneyFragment(deductible.amount),
+            percentage = deductible.percentage.takeIf { it != 0 },
+            displayText = deductible.displayText,
+          )
+        },
+        defaultChoice = houseQuote.defaultChoice,
+        relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
+          HomeAddonQuote(
+            addonId = addon.addonId,
+            premium = UiMoney.fromMoneyFragment(addon.premium),
+            startDate = addon.startDate,
+            exposureName = addon.displayName,
+            displayItems = addon.displayItems.map {
+              DisplayItem(
+                title = it.displayTitle,
+                subtitle = it.displaySubtitle,
+                value = it.displayValue,
               )
-          },
-          defaultChoice = houseQuote.defaultChoice,
-          relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
-              HomeAddonQuote(
-                  addonId = addon.addonId,
-                  premium = UiMoney.fromMoneyFragment(addon.premium),
-                  startDate = addon.startDate,
-                  exposureName = addon.displayName,
-                  displayItems = addon.displayItems.map {
-                      DisplayItem(
-                          title = it.displayTitle,
-                          subtitle = it.displaySubtitle,
-                          value = it.displayValue,
-                      )
-                  },
-                  addonVariant = addon.addonVariant.toAddonVariant(),
-                  isExcludedByUser = false,
-              )
-          },
+            },
+            addonVariant = addon.addonVariant.toAddonVariant(),
+            isExcludedByUser = false,
+          )
+        },
       )
     },
     mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->

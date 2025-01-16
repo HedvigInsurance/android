@@ -44,14 +44,14 @@ internal class SummaryViewModel(
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
-  Loading,
-  SummaryPresenter(
-    summaryRoute = savedStateHandle.toRoute<Summary>(),
-    movingFlowRepository = movingFlowRepository,
-    apolloClient = apolloClient,
-    featureManager = featureManager,
-  ),
-)
+    Loading,
+    SummaryPresenter(
+      summaryRoute = savedStateHandle.toRoute<Summary>(),
+      movingFlowRepository = movingFlowRepository,
+      apolloClient = apolloClient,
+      featureManager = featureManager,
+    ),
+  )
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,
@@ -121,7 +121,7 @@ internal class SummaryPresenter(
     val submitChangesDataValue = submitChangesWithData
     if (submitChangesDataValue != null) {
       LaunchedEffect(submitChangesDataValue) {
-        logcat { "Submitting moving changes, with submitting data:${submitChangesDataValue}" }
+        logcat { "Submitting moving changes, with submitting data:$submitChangesDataValue" }
         apolloClient
           .mutation(
             MoveIntentV2CommitMutation(
@@ -158,7 +158,8 @@ internal class SummaryPresenter(
     }
 
     return when (
-      val summaryInfoValue = summaryInfo) {
+      val summaryInfoValue = summaryInfo
+    ) {
       SummaryInfoState.Loading -> Loading
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error

@@ -125,19 +125,19 @@ internal class MovingFlowRepository(
   suspend fun toggleHomeAddonExclusion(addonQuoteToToggle: MovingFlowQuotes.AddonQuote) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
-          movingFlowQuotes = existingState.movingFlowQuotes?.copy(
-            existingState.movingFlowQuotes.homeQuotes.map { homeQuote ->
-              homeQuote.copy(
-                relatedAddonQuotes = homeQuote.relatedAddonQuotes.map { addonQuote ->
-                  if (addonQuote == addonQuoteToToggle) {
-                    addonQuote.copy(isExcludedByUser = !addonQuote.isExcludedByUser)
-                  } else {
-                    addonQuote
-                  }
+        movingFlowQuotes = existingState.movingFlowQuotes?.copy(
+          existingState.movingFlowQuotes.homeQuotes.map { homeQuote ->
+            homeQuote.copy(
+              relatedAddonQuotes = homeQuote.relatedAddonQuotes.map { addonQuote ->
+                if (addonQuote == addonQuoteToToggle) {
+                  addonQuote.copy(isExcludedByUser = !addonQuote.isExcludedByUser)
+                } else {
+                  addonQuote
                 }
-              )
-            }
-          ),
+              },
+            )
+          },
+        ),
       )
     }
   }

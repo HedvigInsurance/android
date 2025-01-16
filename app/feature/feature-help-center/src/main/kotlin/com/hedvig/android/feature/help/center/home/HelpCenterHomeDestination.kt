@@ -763,12 +763,13 @@ private fun searchForQuery(
   quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
   context: Context,
 ): HelpCenterUiState.HelpSearchResults? {
+  val lowercased = query.lowercase()
   val resultsInQuickLinks =
     buildList {
       for (link in quickLinksForSearch) {
         val title = context.getString(link.quickAction.titleRes).lowercase()
         val hint = context.getString(link.quickAction.hintTextRes).lowercase()
-        if (title.contains(query) || hint.contains(query)) {
+        if (title.contains(lowercased) || hint.contains(lowercased)) {
           add(link)
         }
       }
@@ -777,7 +778,7 @@ private fun searchForQuery(
     Question.entries.forEach {
       val answer = context.getString(it.answerRes).lowercase()
       val question = context.getString(it.questionRes).lowercase()
-      if (answer.contains(query) || question.contains(query)) {
+      if (answer.contains(lowercased) || question.contains(lowercased)) {
         add(it)
       }
     }
