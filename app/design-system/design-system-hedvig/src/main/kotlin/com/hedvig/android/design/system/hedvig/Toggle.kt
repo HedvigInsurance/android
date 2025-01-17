@@ -64,7 +64,6 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultToggleToke
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
-import com.hedvig.android.logger.logcat
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest

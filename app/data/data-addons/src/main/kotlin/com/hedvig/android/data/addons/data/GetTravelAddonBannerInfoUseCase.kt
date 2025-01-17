@@ -3,7 +3,6 @@ package com.hedvig.android.data.addons.data
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
-import arrow.core.raise.ensureNotNull
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute

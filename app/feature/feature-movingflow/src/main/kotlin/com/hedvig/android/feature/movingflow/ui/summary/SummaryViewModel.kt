@@ -16,7 +16,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
+import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
@@ -89,7 +89,7 @@ internal class SummaryPresenter(
         }
 
         is ToggleHomeAddonExclusion -> {
-          launch { movingFlowRepository.toggleHomeAddonExclusion(event.addonQuote) }
+          launch { movingFlowRepository.toggleHomeAddonExclusion(event.addonId) }
         }
       }
     }
@@ -127,7 +127,7 @@ internal class SummaryPresenter(
             MoveIntentV2CommitMutation(
               intentId = summaryRoute.moveIntentId,
               homeQuoteId = summaryRoute.homeQuoteId,
-              excludedAddons = submitChangesDataValue.excludedAddonIds.orEmpty(),
+              excludedAddons = submitChangesDataValue.excludedAddonIds.orEmpty().map(AddonId::id),
             ),
           )
           .safeExecute()
@@ -215,7 +215,7 @@ internal sealed interface SummaryEvent {
 
   data object DismissSubmissionError : SummaryEvent
 
-  data class ToggleHomeAddonExclusion(val addonQuote: MovingFlowQuotes.AddonQuote) : SummaryEvent
+  data class ToggleHomeAddonExclusion(val addonId: AddonId) : SummaryEvent
 }
 
 internal data class SummaryInfo(
@@ -240,5 +240,5 @@ internal data class SummaryInfo(
 
 private data class SubmitChangesData(
   val forDate: LocalDate,
-  val excludedAddonIds: NonEmptyList<String>?,
+  val excludedAddonIds: NonEmptyList<AddonId>?,
 )
