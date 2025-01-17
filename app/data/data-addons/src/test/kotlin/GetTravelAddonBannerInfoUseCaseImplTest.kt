@@ -133,7 +133,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   @Test
   fun `if FF for addons is off return null`() = runTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(TRAVEL_ADDON to false))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
+    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
     val resultFromInsurances = sut.invoke(INSURANCES_TAB).first()
     assertThat(resultFromInsurances)
       .isEqualTo(null.right())
@@ -146,7 +146,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   fun `if get null bannerData from BE return null`() = runTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithNullBannerData, featureManager)
-    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES)
+    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first()
     assertk.assertThat(result)
       .isEqualTo(null.right())
   }
@@ -165,7 +165,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   fun `if get bannerData from BE is not null but contractIds are empty return null`() = runTest {
     val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithEmptyContracts, featureManager)
-    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES)
+    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first()
     assertk.assertThat(result)
       .isEqualTo(null.right())
   }

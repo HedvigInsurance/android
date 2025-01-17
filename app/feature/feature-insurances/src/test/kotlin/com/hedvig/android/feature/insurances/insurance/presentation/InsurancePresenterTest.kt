@@ -28,7 +28,9 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.CrossSellsQuery
@@ -259,6 +261,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -286,6 +289,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
       expectNoEvents() // No events while we're still waiting for all backend calls to finish
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
+      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -538,8 +542,8 @@ internal class InsurancePresenterTest {
   private class FakeGetTravelAddonBannerInfoUseCase : GetTravelAddonBannerInfoUseCase {
     val turbine = Turbine<Either<ErrorMessage, TravelAddonBannerInfo?>>()
 
-    override suspend fun invoke(source: TravelAddonBannerSource): Either<ErrorMessage, TravelAddonBannerInfo?> {
-      return turbine.awaitItem()
+    override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+      return turbine.asChannel().receiveAsFlow()
     }
   }
 
