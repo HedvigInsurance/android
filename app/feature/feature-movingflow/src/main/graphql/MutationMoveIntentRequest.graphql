@@ -1,6 +1,8 @@
-mutation MoveIntentV2Request($intentId: ID!,
+mutation MoveIntentV2Request(
+  $intentId: ID!,
   $moveIntentRequestInput: MoveIntentRequestInput!,
-  $addonsFlagOn: Boolean!) {
+  $addonsFlagOn: Boolean!,
+) {
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
       ...MoveIntentQuotesFragment
@@ -78,5 +80,11 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
   startDate
   addonVariant {
     ...AddonVariantFragment
+  }
+  removeDialogInfo {
+    title
+    description
+    confirmButtonTitle
+    cancelButtonTitle
   }
 }
