@@ -5,10 +5,13 @@ import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.MtaAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.UserExcludable.ExclusionDialogInfo
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
@@ -28,7 +31,7 @@ internal data class MovingFlowQuotes(
   }
 
   @Serializable
-  data class MoveHomeQuote(
+  internal data class MoveHomeQuote(
     val id: String,
     override val premium: UiMoney,
     override val startDate: LocalDate,
@@ -40,7 +43,7 @@ internal data class MovingFlowQuotes(
     val tierDescription: String?,
     val deductible: Deductible?,
     val defaultChoice: Boolean,
-    val relatedAddonQuotes: List<AddonQuote>,
+    val relatedAddonQuotes: List<HomeAddonQuote>,
   ) : Quote {
     val tierDisplayName = productVariant.displayTierName ?: tierName
 
@@ -53,35 +56,75 @@ internal data class MovingFlowQuotes(
   }
 
   @Serializable
-  data class MoveMtaQuote(
+  internal data class MoveMtaQuote(
     override val premium: UiMoney,
     override val exposureName: String,
     override val productVariant: ProductVariant,
     override val startDate: LocalDate,
     override val displayItems: List<DisplayItem>,
-    val relatedAddonQuotes: List<AddonQuote>,
+    val relatedAddonQuotes: List<MtaAddonQuote>,
   ) : Quote
 
   @Serializable
-  data class AddonQuote(
-    val premium: UiMoney,
-    val startDate: LocalDate,
-    val displayItems: List<DisplayItem>,
-    val exposureName: String,
-    val addonVariant: AddonVariant,
-  )
-
-  @Serializable
-  data class DisplayItem(
+  internal data class DisplayItem(
     val title: String,
     val subtitle: String?,
     val value: String,
   )
+
+  internal sealed interface AddonQuote {
+    val addonId: AddonId
+    val premium: UiMoney
+    val startDate: LocalDate
+    val displayItems: List<DisplayItem>
+    val exposureName: String
+    val addonVariant: AddonVariant
+
+    @Serializable
+    data class HomeAddonQuote(
+      override val addonId: AddonId,
+      override val premium: UiMoney,
+      override val startDate: LocalDate,
+      override val displayItems: List<DisplayItem>,
+      override val exposureName: String,
+      override val addonVariant: AddonVariant,
+      override val isExcludedByUser: Boolean,
+      override val exclusionDialogInfo: ExclusionDialogInfo?,
+    ) : AddonQuote, UserExcludable
+
+    @Serializable
+    data class MtaAddonQuote(
+      override val addonId: AddonId,
+      override val premium: UiMoney,
+      override val startDate: LocalDate,
+      override val displayItems: List<DisplayItem>,
+      override val exposureName: String,
+      override val addonVariant: AddonVariant,
+    ) : AddonQuote
+  }
+
+  internal interface UserExcludable {
+    val isExcludedByUser: Boolean
+    val exclusionDialogInfo: ExclusionDialogInfo?
+
+    @Serializable
+    data class ExclusionDialogInfo(
+      val addonId: AddonId,
+      val title: String,
+      val description: String,
+      val confirmButtonTitle: String,
+      val cancelButtonTitle: String,
+    )
+  }
 }
+
+@Serializable
+@JvmInline
+internal value class AddonId(val id: String)
 
 internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
   return MovingFlowQuotes(
-    homeQuotes = (homeQuotes ?: emptyList()).map { houseQuote ->
+    homeQuotes = homeQuotes.orEmpty().map { houseQuote ->
       MoveHomeQuote(
         id = houseQuote.id,
         premium = UiMoney.fromMoneyFragment(houseQuote.premium),
@@ -100,8 +143,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
           )
         },
         defaultChoice = houseQuote.defaultChoice,
-        relatedAddonQuotes = houseQuote.addons?.map { addon ->
-          MovingFlowQuotes.AddonQuote(
+        relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
+          HomeAddonQuote(
+            addonId = AddonId(addon.addonId),
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
             exposureName = addon.displayName,
@@ -113,19 +157,30 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
               )
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
+            exclusionDialogInfo = addon.removeDialogInfo?.let { removeDialogInfo ->
+              ExclusionDialogInfo(
+                addonId = AddonId(addon.addonId),
+                title = removeDialogInfo.title,
+                description = removeDialogInfo.description,
+                confirmButtonTitle = removeDialogInfo.confirmButtonTitle,
+                cancelButtonTitle = removeDialogInfo.cancelButtonTitle,
+              )
+            },
+            isExcludedByUser = false,
           )
-        } ?: emptyList(),
+        },
       )
     },
-    mtaQuotes = (mtaQuotes ?: emptyList()).map { mtaQuote ->
+    mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->
       MoveMtaQuote(
         premium = UiMoney.fromMoneyFragment(mtaQuote.premium),
         exposureName = mtaQuote.exposureName,
         productVariant = mtaQuote.productVariant.toProductVariant(),
         startDate = mtaQuote.startDate,
         displayItems = mtaQuote.displayItems.map { it.toDisplayItem() },
-        relatedAddonQuotes = mtaQuote.addons?.map { addon ->
-          MovingFlowQuotes.AddonQuote(
+        relatedAddonQuotes = mtaQuote.addons.orEmpty().map { addon ->
+          MtaAddonQuote(
+            addonId = AddonId(addon.addonId),
             premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
             exposureName = addon.displayName,
@@ -138,7 +193,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
           )
-        } ?: emptyList(),
+        },
       )
     },
   )

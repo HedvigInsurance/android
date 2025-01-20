@@ -2,6 +2,9 @@ package com.hedvig.android.app.ui
 
 import android.graphics.Color
 import androidx.activity.SystemBarStyle
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -9,6 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
@@ -22,6 +26,7 @@ import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -49,6 +54,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
   navHostController: NavHostController,
@@ -99,19 +105,24 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
-        HedvigAppUi(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          externalNavigator = externalNavigator,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = deepLinkFirstUriHandler::openUri,
-          finishApp = finishApp,
-          market = marketManager.market.collectAsStateWithLifecycle().value,
-          imageLoader = imageLoader,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-        )
+      SharedTransitionLayout(Modifier.fillMaxSize()) {
+        CompositionLocalProvider(
+          LocalUriHandler provides deepLinkFirstUriHandler,
+          LocalSharedTransitionScope provides this,
+        ) {
+          HedvigAppUi(
+            hedvigAppState = hedvigAppState,
+            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+            externalNavigator = externalNavigator,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            openUrl = deepLinkFirstUriHandler::openUri,
+            finishApp = finishApp,
+            market = marketManager.market.collectAsStateWithLifecycle().value,
+            imageLoader = imageLoader,
+            languageService = languageService,
+            hedvigBuildConstants = hedvigBuildConstants,
+          )
+        }
       }
     }
   }

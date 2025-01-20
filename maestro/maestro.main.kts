@@ -1,6 +1,6 @@
 #! /usr/bin/env kotlinc -script --
 
-@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
 @file:DependsOn("com.github.pgreze:kotlin-process:1.5")
 
 import com.github.pgreze.process.process

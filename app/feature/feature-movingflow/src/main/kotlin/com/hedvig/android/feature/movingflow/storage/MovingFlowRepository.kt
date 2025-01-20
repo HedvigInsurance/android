@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.movingflow.storage
 
+import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
@@ -116,6 +117,27 @@ internal class MovingFlowRepository(
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
         lastSelectedHomeQuoteId = selectedHomeQuoteId,
+      )
+    }
+  }
+
+  // Flips the mark of a home addon which determines if they do not wish to contain that addon in their new quote
+  suspend fun toggleHomeAddonExclusion(addonId: AddonId) {
+    movingFlowStorage.editMovingFlowState { existingState ->
+      existingState.copy(
+        movingFlowQuotes = existingState.movingFlowQuotes?.copy(
+          existingState.movingFlowQuotes.homeQuotes.map { homeQuote ->
+            homeQuote.copy(
+              relatedAddonQuotes = homeQuote.relatedAddonQuotes.map { addonQuote ->
+                if (addonQuote.addonId == addonId) {
+                  addonQuote.copy(isExcludedByUser = !addonQuote.isExcludedByUser)
+                } else {
+                  addonQuote
+                }
+              },
+            )
+          },
+        ),
       )
     }
   }

@@ -12,8 +12,8 @@ data class ClosedRangeSerializer<T : Comparable<T>>(
   override val descriptor: SerialDescriptor = ClosedRangeSurrogate.serializer<T>(dataSerializer).descriptor
 
   override fun serialize(encoder: Encoder, value: ClosedRange<T>) {
-    val surroate = ClosedRangeSurrogate(value.start, value.endInclusive)
-    encoder.encodeSerializableValue(ClosedRangeSurrogate.serializer<T>(dataSerializer), surroate)
+    val surrogate = ClosedRangeSurrogate(value.start, value.endInclusive)
+    encoder.encodeSerializableValue(ClosedRangeSurrogate.serializer<T>(dataSerializer), surrogate)
   }
 
   override fun deserialize(decoder: Decoder): ClosedRange<T> {

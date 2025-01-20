@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.movingflow
 
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
@@ -75,10 +74,7 @@ internal sealed interface MovingFlowDestinations {
   }
 }
 
-fun NavGraphBuilder.movingFlowGraph(
-  navController: NavController,
-  navigateToNewConversation: (backStackEntry: NavBackStackEntry) -> Unit,
-) {
+fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
   navgraph<MovingFlowGraphDestination>(
     startDestination = MovingFlowDestinations.Start::class,
   ) {
@@ -158,9 +154,6 @@ fun NavGraphBuilder.movingFlowGraph(
               inclusive = true
             }
           }
-        },
-        startNewConversation = {
-          navigateToNewConversation(backStackEntry)
         },
       )
     }

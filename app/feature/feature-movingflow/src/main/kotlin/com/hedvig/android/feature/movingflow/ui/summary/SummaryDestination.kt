@@ -1,5 +1,14 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,8 +46,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.LinkClickHandler
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -51,6 +58,10 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -60,27 +71,30 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.MtaAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.UserExcludable.ExclusionDialogInfo
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.android.tiersandaddons.QuoteCardDefaults
+import com.hedvig.android.tiersandaddons.QuoteCardDefaults.UnderDetailsContentState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -93,7 +107,6 @@ internal fun SummaryDestination(
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToFinishedScreen: (LocalDate) -> Unit,
-  startNewConversation: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content && uiState.navigateToFinishedScreenWithDate != null) {
@@ -106,9 +119,9 @@ internal fun SummaryDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     exitFlow = exitFlow,
+    toggleHomeAddonExclusion = { viewModel.emit(SummaryEvent.ToggleHomeAddonExclusion(it)) },
     onConfirmChanges = { viewModel.emit(SummaryEvent.ConfirmChanges) },
     onDismissSubmissionError = { viewModel.emit(SummaryEvent.DismissSubmissionError) },
-    startNewConversation = startNewConversation,
   )
 }
 
@@ -118,9 +131,9 @@ private fun SummaryScreen(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
+  toggleHomeAddonExclusion: (AddonId) -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
-  startNewConversation: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -150,9 +163,9 @@ private fun SummaryScreen(
           is Content -> {
             SummaryScreen(
               content = uiState,
+              toggleHomeAddonExclusion = toggleHomeAddonExclusion,
               onConfirmChanges = onConfirmChanges,
               onDismissSubmissionError = onDismissSubmissionError,
-              startNewConversation = startNewConversation,
             )
           }
         }
@@ -164,12 +177,11 @@ private fun SummaryScreen(
 @Composable
 private fun SummaryScreen(
   content: SummaryUiState.Content,
+  toggleHomeAddonExclusion: (AddonId) -> Unit,
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
-  startNewConversation: () -> Unit,
 ) {
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
-  var infoFoBottomSheet by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
       title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
@@ -192,6 +204,33 @@ private fun SummaryScreen(
       onDismiss = onDismissSubmissionError,
     )
   }
+  val exclusionBottomSheetState = rememberHedvigBottomSheetState<ExclusionDialogInfo>()
+  HedvigBottomSheet(exclusionBottomSheetState) { data ->
+    HedvigText(data.title)
+    HedvigText(data.description, color = HedvigTheme.colorScheme.textSecondary)
+    Spacer(Modifier.height(32.dp))
+    HedvigButton(
+      text = data.confirmButtonTitle,
+      onClick = {
+        exclusionBottomSheetState.dismiss()
+        toggleHomeAddonExclusion(data.addonId)
+      },
+      enabled = true,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      text = data.cancelButtonTitle,
+      onClick = { exclusionBottomSheetState.dismiss() },
+      enabled = true,
+      buttonStyle = Ghost,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
   Box(propagateMinConstraints = true) {
     var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
     Column(
@@ -200,71 +239,26 @@ private fun SummaryScreen(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         .verticalScroll(rememberScrollState()),
     ) {
-      HedvigBottomSheet(
-        isVisible = infoFoBottomSheet != null,
-        onVisibleChange = { visible ->
-          if (!visible) {
-            infoFoBottomSheet = null
-          }
-        },
-      ) {
-        infoFoBottomSheet?.let {
-          HedvigText(text = it.first)
-          ProvideTextStyle(
-            HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
-          ) {
-            RichText(
-              linkClickHandler = LinkClickHandler(
-                function = {
-                  infoFoBottomSheet = null
-                  startNewConversation()
-                },
-              ),
-            ) {
-              Markdown(
-                content = it.second,
-              )
-            }
-          }
-        }
-        Spacer(Modifier.height(8.dp))
-        HedvigTextButton(
-          text = stringResource(id = R.string.general_close_button),
-          enabled = true,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = {
-            infoFoBottomSheet = null
-          },
-        )
-        Spacer(Modifier.height(8.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-      }
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
-        val description = stringResource(R.string.MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION)
-        // todo: add deep link to new conversation, not inbox! see: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1734647206289359?thread_ts=1734613513.633699&cid=C07MM6F0DK2
         for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
-          val bottomSheetTitle = addonQuote.addonVariant.displayName
           AddonQuoteCard(
             quote = addonQuote,
-            onInfoIconClick = {
-              infoFoBottomSheet =
-                bottomSheetTitle to description
+            canExcludeAddons = content.canExcludeAddons,
+            toggleHomeAddonExclusion = {
+              if (addonQuote.exclusionDialogInfo != null && !addonQuote.isExcludedByUser) {
+                exclusionBottomSheetState.show(addonQuote.exclusionDialogInfo)
+              } else {
+                toggleHomeAddonExclusion(addonQuote.addonId)
+              }
             },
           )
         }
         for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
           QuoteCard(mtaQuote)
-          for (addon in mtaQuote.relatedAddonQuotes) {
-            val bottomSheetTitle = addon.addonVariant.displayName
-            AddonQuoteCard(
-              quote = addon,
-              onInfoIconClick = {
-                infoFoBottomSheet =
-                  bottomSheetTitle to description
-              },
-            )
+          for (addonQuote in mtaQuote.relatedAddonQuotes) {
+            AddonQuoteCard(quote = addonQuote)
           }
         }
       }
@@ -295,14 +289,18 @@ private fun SummaryScreen(
             HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
           },
           endSlot = {
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                content.summaryInfo.totalPremium.toString(),
-              ),
-              textAlign = TextAlign.End,
-              modifier = Modifier.wrapContentWidth(Alignment.End),
-            )
+            AnimatedContent(
+              targetState = content.summaryInfo.totalPremium.toString(),
+              transitionSpec = {
+                slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
+              },
+            ) { premium ->
+              HedvigText(
+                text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium),
+                textAlign = TextAlign.End,
+                modifier = Modifier.wrapContentWidth(Alignment.End),
+              )
+            }
           },
           modifier = Modifier.fillMaxWidth(),
           spaceBetween = 8.dp,
@@ -348,12 +346,70 @@ private fun QuoteCard(
 
 @Composable
 private fun AddonQuoteCard(
-  quote: MovingFlowQuotes.AddonQuote,
-  onInfoIconClick: () -> Unit,
+  quote: MovingFlowQuotes.AddonQuote.HomeAddonQuote,
+  canExcludeAddons: Boolean,
+  toggleHomeAddonExclusion: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  AddonQuoteCard(
+    quote = quote,
+    modifier = modifier,
+    underDetailsContent = { state ->
+      Column {
+        AnimatedVisibility(
+          visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
+          enter = expandVertically(expandFrom = Alignment.Top),
+          exit = shrinkVertically(shrinkTowards = Alignment.Top),
+          modifier = Modifier.padding(bottom = 8.dp),
+        ) {
+          HedvigButton(
+            text = stringResource(R.string.GENERAL_REMOVE),
+            onClick = toggleHomeAddonExclusion,
+            enabled = true,
+            buttonStyle = Ghost,
+            buttonSize = Medium,
+            border = HedvigTheme.colorScheme.borderPrimary,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+        if (quote.isExcludedByUser) {
+          HedvigButton(
+            text = stringResource(R.string.ADDON_ADD_COVERAGE),
+            onClick = toggleHomeAddonExclusion,
+            enabled = true,
+            buttonStyle = Secondary,
+            buttonSize = Medium,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        } else {
+          QuoteCardDefaults.UnderDetailsContent(state)
+        }
+      }
+    },
+  )
+}
+
+@Composable
+private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, modifier: Modifier = Modifier) {
+  AddonQuoteCard(
+    quote = quote,
+    modifier = modifier,
+    underDetailsContent = null,
+  )
+}
+
+@Composable
+private fun AddonQuoteCard(
+  quote: MovingFlowQuotes.AddonQuote,
+  modifier: Modifier = Modifier,
+  underDetailsContent: (@Composable (UnderDetailsContentState) -> Unit)?,
+) {
   val startDate = formatStartDate(quote.startDate)
-  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
+    null
+  } else {
+    stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+  }
   QuoteCard(
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
@@ -362,6 +418,10 @@ private fun AddonQuoteCard(
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
+    isExcluded = when (quote) {
+      is HomeAddonQuote -> quote.isExcludedByUser
+      is MtaAddonQuote -> false
+    },
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -370,7 +430,7 @@ private fun AddonQuoteCard(
       )
     },
     modifier = modifier,
-    onInfoIconClick = onInfoIconClick,
+    underDetailsContent = underDetailsContent ?: { QuoteCardDefaults.UnderDetailsContent(it) },
   )
 }
 
@@ -420,9 +480,9 @@ private fun PreviewSummaryScreen(
         navigateUp = {},
         navigateBack = {},
         exitFlow = {},
+        toggleHomeAddonExclusion = {},
         onConfirmChanges = {},
         onDismissSubmissionError = {},
-        startNewConversation = {},
       )
     }
   }
@@ -502,7 +562,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
           defaultChoice = false,
           relatedAddonQuotes = List(1) {
-            AddonQuote(
+            HomeAddonQuote(
+              addonId = AddonId(it.toString()),
               premium = UiMoney(129.0, SEK),
               startDate = startDate,
               displayItems = listOf(
@@ -514,6 +575,14 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               ),
               exposureName = "exposureName",
               addonVariant = addonVariant,
+              exclusionDialogInfo = ExclusionDialogInfo(
+                addonId = AddonId(it.toString()),
+                title = "title",
+                description = "description",
+                confirmButtonTitle = "confirmButtonTitle",
+                cancelButtonTitle = "cancelButtonTitle",
+              ),
+              isExcludedByUser = true,
             )
           },
         ),
@@ -533,7 +602,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
             startDate = startDate,
             displayItems = emptyList(),
             relatedAddonQuotes = listOf(
-              AddonQuote(
+              MtaAddonQuote(
+                addonId = AddonId("1"),
                 premium = UiMoney(30.0, SEK),
                 startDate = startDate,
                 displayItems = listOf(
@@ -553,6 +623,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       false,
       null,
       null,
+      true,
     ),
   )
 }

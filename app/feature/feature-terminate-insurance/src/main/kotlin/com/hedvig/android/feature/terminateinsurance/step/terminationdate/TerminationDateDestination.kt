@@ -115,7 +115,7 @@ private fun TerminationDateScreen(
     Spacer(Modifier.height(16.dp))
 
     HedvigButton(
-      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
+      text = stringResource(id = R.string.general_continue_button),
       onClick = submit,
       enabled = uiState.canSubmit,
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

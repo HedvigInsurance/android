@@ -258,19 +258,19 @@ private fun Toggle(
   Box {
     ToggleBackground(
       modifier =
-        modifier
-          .height(toggleIconSize.height)
-          .width(toggleIconSize.width)
-          .fillMaxSize()
-          .onSizeChanged { layoutSize ->
-            val dragEndPoint = layoutSize.width - contentSizePx
-            state.updateAnchors(
-              DraggableAnchors {
-                false at 0f
-                true at dragEndPoint
-              },
-            )
-          },
+      modifier
+        .height(toggleIconSize.height)
+        .width(toggleIconSize.width)
+        .fillMaxSize()
+        .onSizeChanged { layoutSize ->
+          val dragEndPoint = layoutSize.width - contentSizePx
+          state.updateAnchors(
+            DraggableAnchors {
+              false at 0f
+              true at dragEndPoint
+            },
+          )
+        },
       color = backgroundColor.value,
       interactionSource = interactionSource,
       contentSize = contentSize,
@@ -307,7 +307,8 @@ private fun ToggleBackground(
         .offset {
           IntOffset(
             x = draggableState
-              .requireOffset()
+              .offset
+              .let { if (it.isNaN()) 0f else it }
               .roundToInt(),
             y = 0,
           )

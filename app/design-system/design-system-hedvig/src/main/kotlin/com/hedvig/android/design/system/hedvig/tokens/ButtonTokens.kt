@@ -91,7 +91,7 @@ internal object SmallSizeButtonTokens {
   val TopPadding = 6.5.dp
   val BottomPadding = 7.5.dp
   val ContainerShape = ShapeKeyTokens.CornerSmall
-  val LabelTextFont = TypographyKeyTokens.BodySmall
+  val LabelTextFont = TypographyKeyTokens.Label
 }
 
 internal object MiniSizeButtonTokens {

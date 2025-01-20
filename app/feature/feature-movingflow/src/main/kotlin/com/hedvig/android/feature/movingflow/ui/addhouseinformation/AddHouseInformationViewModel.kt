@@ -166,9 +166,9 @@ internal class AddHouseInformationPresenter(
         apolloClient
           .mutation(
             MoveIntentV2RequestMutation(
-              moveIntentId,
-              inputForSubmissionValue.moveIntentRequestInput,
-              isAddonFlagEnabled,
+              intentId = moveIntentId,
+              moveIntentRequestInput = inputForSubmissionValue.moveIntentRequestInput,
+              addonsFlagOn = isAddonFlagEnabled,
             ),
           )
           .safeExecute()
