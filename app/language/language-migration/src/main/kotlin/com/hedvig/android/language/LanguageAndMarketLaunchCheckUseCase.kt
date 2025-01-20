@@ -5,6 +5,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.set.SetMarketUseCase
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 
 /**
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.first
  * https://developer.android.com/guide/topics/resources/app-languages#impl-overview
  */
 interface LanguageAndMarketLaunchCheckUseCase {
-  suspend fun invoke()
+  suspend fun invoke(defLocale: Locale)
 }
 
 internal class AndroidLanguageAndMarketLaunchCheckUseCase(
@@ -20,7 +21,7 @@ internal class AndroidLanguageAndMarketLaunchCheckUseCase(
   private val languageService: LanguageService,
   private val setMarketUseCase: SetMarketUseCase,
 ) : LanguageAndMarketLaunchCheckUseCase {
-  override suspend fun invoke() {
+  override suspend fun invoke(defLocale: Locale) {
     val currentLanguage = languageService.getSelectedLanguage()
     logcat { "LanguageAndMarketLaunchCheckUseCase: currentLanguage: $currentLanguage" }
 
@@ -34,11 +35,11 @@ internal class AndroidLanguageAndMarketLaunchCheckUseCase(
     // Set the market again, which sets the right language too if there is no language selected or no market selected
     if (currentLanguage == null) {
       setMarketUseCase.setMarket(
-        preferSystemLanguageIfExistingIsNull = true,
+        preferSystemDefaultLocale = defLocale,
         market = (market ?: Market.SE).also {
           logcat {
             "LanguageAndMarketLaunchCheckUseCase: currentLanguage is null, " +
-              "market is: $market, setting market to $it with preferSystemLanguageIfExistingIsNull as true"
+              "market is: $market, setting market to $it with preferSystemDefaultLocale as $defLocale"
           }
         },
       )
