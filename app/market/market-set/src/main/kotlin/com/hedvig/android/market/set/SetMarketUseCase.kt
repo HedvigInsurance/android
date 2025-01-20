@@ -14,10 +14,7 @@ import java.util.Locale
  * language is picked instead.
  */
 interface SetMarketUseCase {
-  suspend fun setMarket(
-    market: Market,
-    preferSystemLanguageIfExistingIsNull: Boolean = false,
-  )
+  suspend fun setMarket(market: Market, preferSystemLanguageIfExistingIsNull: Boolean = false)
 }
 
 @OptIn(InternalHedvigMarketApi::class)
@@ -25,16 +22,13 @@ internal class SetMarketUseCaseImpl(
   private val internalSetMarketUseCase: InternalSetMarketUseCase,
   private val languageService: LanguageService,
 ) : SetMarketUseCase {
-  override suspend fun setMarket(
-    market: Market,
-    preferSystemLanguageIfExistingIsNull: Boolean,
-  ) {
+  override suspend fun setMarket(market: Market, preferSystemLanguageIfExistingIsNull: Boolean) {
     val selectedLanguage = languageService.getSelectedLanguage()
-    val existingLanguage = if (!preferSystemLanguageIfExistingIsNull) selectedLanguage
-    else {
+    val existingLanguage = if (!preferSystemLanguageIfExistingIsNull) {
+      selectedLanguage
+    } else {
       selectedLanguage ?: Language.from(Locale.getDefault().toLanguageTag())
     }
-
     logcat {
       "SetMarketUseCase setting market to $market, " +
         "selectedLanguage is $selectedLanguage" +

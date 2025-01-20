@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
@@ -22,7 +21,6 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import java.io.File
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -31,26 +29,26 @@ internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
-  CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+    CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
-  initialState = CertificateHistoryUiState.Loading,
-  presenter = CertificateHistoryPresenter(
-    getTravelCertificatesHistoryUseCase,
-    downloadPdfUseCase,
-    getEligibleContractsWithAddressUseCase,
-    checkTravelCertificateAvailabilityForCurrentContractsUseCase,
-    getTravelAddonBannerInfoUseCase,
-  ),
-)
+    initialState = CertificateHistoryUiState.Loading,
+    presenter = CertificateHistoryPresenter(
+      getTravelCertificatesHistoryUseCase,
+      downloadPdfUseCase,
+      getEligibleContractsWithAddressUseCase,
+      checkTravelCertificateAvailabilityForCurrentContractsUseCase,
+      getTravelAddonBannerInfoUseCase,
+    ),
+  )
 
 internal class CertificateHistoryPresenter(
   private val getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
-  CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+    CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
