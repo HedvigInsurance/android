@@ -71,7 +71,9 @@ enum class Language {
       value == BCP_47_DA_DK -> DA_DK
       value == BCP_47_EN_DK -> EN_DK
       value == BCP_47_EN || value.startsWithSubstring(BCP_47_EN_FOR_SUBSTRING) -> EN_GLOBAL
+        .also { logcat(LogPriority.WARN) { "Mapping to EN_GLOBAL for language tag: $value" } }
       value == BCP_47_SV || value.startsWithSubstring(BCP_47_SV_FOR_SUBSTRING) -> SV_GLOBAL
+        .also { logcat(LogPriority.WARN) { "Mapping to SV_GLOBAL for language tag: $value" } }
       else -> EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
     }
 
