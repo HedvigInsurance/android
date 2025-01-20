@@ -51,7 +51,5 @@ internal class AndroidLanguageAndMarketLaunchCheckUseCase(
         },
       )
     }
-    val currentLanguageAfter = languageService.getSelectedLanguage()
-    logcat { "LanguageAndMarketLaunchCheckUseCase: after check language: $currentLanguageAfter" }
   }
 }

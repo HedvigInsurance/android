@@ -31,8 +31,8 @@ internal class SetMarketUseCaseImpl(
     }
     logcat {
       "SetMarketUseCase setting market to $market, " +
-        "selectedLanguage is $selectedLanguage" +
-        "preferSystemLanguageIfExistingIsNull is: $preferSystemLanguageIfExistingIsNull" +
+        "selectedLanguage is $selectedLanguage, " +
+        "preferSystemLanguageIfExistingIsNull is: $preferSystemLanguageIfExistingIsNull, " +
         "existing language is $existingLanguage,"
     }
     if (existingLanguage !in market.availableLanguages) {
