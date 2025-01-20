@@ -35,7 +35,7 @@ internal class SetMarketUseCaseImpl(
         "preferSystemLanguageIfExistingIsNull is: $preferSystemLanguageIfExistingIsNull, " +
         "existing language is $existingLanguage,"
     }
-    if (existingLanguage !in market.availableLanguages) {
+    if (selectedLanguage == null || existingLanguage !in market.availableLanguages) {
       languageService.setLanguage(
         when {
           existingLanguage == null -> market.localLanguage()

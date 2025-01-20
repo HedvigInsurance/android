@@ -1,5 +1,6 @@
 package com.hedvig.android.language
 
+import androidx.appcompat.app.AppCompatDelegate
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
@@ -51,5 +52,7 @@ internal class AndroidLanguageAndMarketLaunchCheckUseCase(
         },
       )
     }
+    val currentLanguageListAfter = AppCompatDelegate.getApplicationLocales()
+    logcat { "LanguageAndMarketLaunchCheckUseCase: after check language: $currentLanguageListAfter" }
   }
 }
