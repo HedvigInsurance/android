@@ -14,7 +14,7 @@ apolloAdapters = "0.0.4"
 apollo = "4.1.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.2"
-datadogPlugin = "1.14.0"
+datadogPlugin = "1.15.0"
 doctor = "0.10.0"
 easylauncher = "6.4.0"
 googleServices = "4.4.2"
@@ -29,11 +29,11 @@ squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
 accompanist = "0.37.0"
-androidx-activity-compose = "1.9.3"
-androidx-activity-core = "1.9.3"
+androidx-activity-compose = "1.10.0"
+androidx-activity-core = "1.10.0"
 androidx-annotation = "1.9.1"
-androidx-composeBom = "2024.12.01"
-androidx-datastore = "1.1.1"
+androidx-composeBom = "2025.01.00"
+androidx-datastore = "1.1.2"
 androidx-junit = "1.2.1"
 androidx-lifecycle = "2.8.7"
 androidx-navigation = "2.8.5"
@@ -155,7 +155,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.7.0"
+firebase-bom = "com.google.firebase:firebase-bom:33.8.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
