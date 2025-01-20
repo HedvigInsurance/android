@@ -442,7 +442,7 @@ private fun PreviewYourInfoTab() {
             tierDescription = "Our most standard coverage",
             termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
           ),
-          certificateUrl = null,
+          certificateUrl = "adq",
           coInsured = listOf(
             InsuranceAgreement.CoInsured(
               ssn = "199101131093",
@@ -463,7 +463,7 @@ private fun PreviewYourInfoTab() {
               hasMissingInfo = false,
             ),
           ),
-          creationCause = InsuranceAgreement.CreationCause.UNKNOWN,
+          creationCause = InsuranceAgreement.CreationCause.RENEWAL,
           addons = null,
         ),
         onEditCoInsuredClick = {},

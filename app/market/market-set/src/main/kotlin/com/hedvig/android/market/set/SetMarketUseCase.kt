@@ -6,6 +6,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.InternalHedvigMarketApi
 import com.hedvig.android.market.InternalSetMarketUseCase
 import com.hedvig.android.market.Market
+import java.util.Locale
 
 /**
  * Sets the market, and ensures that the language chosen from [LanguageService] is also a valid one for that market.
@@ -13,7 +14,10 @@ import com.hedvig.android.market.Market
  * language is picked instead.
  */
 interface SetMarketUseCase {
-  suspend fun setMarket(market: Market)
+  suspend fun setMarket(
+    market: Market,
+    preferSystemLanguageIfExistingIsNull: Boolean = false,
+  )
 }
 
 @OptIn(InternalHedvigMarketApi::class)
@@ -21,9 +25,22 @@ internal class SetMarketUseCaseImpl(
   private val internalSetMarketUseCase: InternalSetMarketUseCase,
   private val languageService: LanguageService,
 ) : SetMarketUseCase {
-  override suspend fun setMarket(market: Market) {
-    val existingLanguage = languageService.getSelectedLanguage()
-    logcat { "SetMarketUseCase setting market to $market, existing language is $existingLanguage" }
+  override suspend fun setMarket(
+    market: Market,
+    preferSystemLanguageIfExistingIsNull: Boolean,
+  ) {
+    val selectedLanguage = languageService.getSelectedLanguage()
+    val existingLanguage = if (!preferSystemLanguageIfExistingIsNull) selectedLanguage
+    else {
+      selectedLanguage ?: Language.from(Locale.getDefault().toLanguageTag())
+    }
+
+    logcat {
+      "SetMarketUseCase setting market to $market, " +
+        "selectedLanguage is $selectedLanguage" +
+        "preferSystemLanguageIfExistingIsNull is: $preferSystemLanguageIfExistingIsNull" +
+        "existing language is $existingLanguage,"
+    }
     if (existingLanguage !in market.availableLanguages) {
       languageService.setLanguage(
         when {
@@ -43,7 +60,7 @@ private fun Language.isEnglishLanguage(): Boolean {
   return this in englishLanguageList
 }
 
-private val englishLanguageList = listOf(Language.EN_SE, Language.EN_DK, Language.EN_NO, Language.EN_GLOBAL)
+private val englishLanguageList = listOf(Language.EN_SE, Language.EN_DK, Language.EN_NO)
 
 private fun Market.localLanguage() = when (this) {
   Market.SE -> Language.SV_SE

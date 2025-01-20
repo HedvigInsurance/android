@@ -106,13 +106,12 @@ private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri
     .appendPath(webPath)
     .appendPath(
       when (language) {
-        Language.SV_SE, Language.SV_GLOBAL -> "forsakringar"
+        Language.SV_SE -> "forsakringar"
         Language.EN_SE,
         Language.NB_NO,
         Language.EN_NO,
         Language.DA_DK,
         Language.EN_DK,
-        Language.EN_GLOBAL,
         -> "insurances"
       },
     )

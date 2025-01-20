@@ -333,8 +333,6 @@ private fun Language.flag(): ImageVector {
     Language.EN_NO -> HedvigIcons.FlagUk
     Language.DA_DK -> HedvigIcons.FlagDenmark
     Language.EN_DK -> HedvigIcons.FlagUk
-    Language.EN_GLOBAL -> HedvigIcons.FlagUk
-    Language.SV_GLOBAL -> HedvigIcons.FlagSweden
   }
 }
 

@@ -18,6 +18,4 @@ val Language.label: Int
     EN_NO -> R.string.english_norwegian
     DA_DK -> R.string.danish
     EN_DK -> R.string.english_danish
-    Language.EN_GLOBAL -> R.string.english_swedish
-    Language.SV_GLOBAL -> R.string.swedish
   }

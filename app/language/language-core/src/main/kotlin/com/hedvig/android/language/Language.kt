@@ -9,9 +9,7 @@ enum class Language {
   NB_NO,
   EN_NO,
   DA_DK,
-  EN_DK,
-  EN_GLOBAL,
-  SV_GLOBAL,
+  EN_DK
   ;
 
   fun toBcp47Format(): String {
@@ -22,8 +20,6 @@ enum class Language {
       EN_NO -> BCP_47_EN_NO
       DA_DK -> BCP_47_DA_DK
       EN_DK -> BCP_47_EN_DK
-      EN_GLOBAL -> BCP_47_EN
-      SV_GLOBAL -> BCP_47_SV
     }
   }
 
@@ -42,8 +38,6 @@ enum class Language {
     EN_NO -> "no-en"
     DA_DK -> "dk"
     EN_DK -> "dk-en"
-    EN_GLOBAL -> "se-en"
-    SV_GLOBAL -> "se"
   }
 
   companion object {
@@ -70,10 +64,10 @@ enum class Language {
       value == BCP_47_EN_NO -> EN_NO
       value == BCP_47_DA_DK -> DA_DK
       value == BCP_47_EN_DK -> EN_DK
-      value == BCP_47_EN || value.startsWithSubstring(BCP_47_EN_FOR_SUBSTRING) -> EN_GLOBAL
-        .also { logcat(LogPriority.WARN) { "Mapping to EN_GLOBAL for language tag: $value" } }
-      value == BCP_47_SV || value.startsWithSubstring(BCP_47_SV_FOR_SUBSTRING) -> SV_GLOBAL
-        .also { logcat(LogPriority.WARN) { "Mapping to SV_GLOBAL for language tag: $value" } }
+      value == BCP_47_EN || value.startsWithSubstring(BCP_47_EN_FOR_SUBSTRING) -> EN_SE
+        .also { logcat(LogPriority.WARN) { "Mapping to EN_SE for language tag: $value" } }
+      value == BCP_47_SV || value.startsWithSubstring(BCP_47_SV_FOR_SUBSTRING) -> SV_SE
+        .also { logcat(LogPriority.WARN) { "Mapping to SV_SE for language tag: $value" } }
       else -> EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
     }
 
