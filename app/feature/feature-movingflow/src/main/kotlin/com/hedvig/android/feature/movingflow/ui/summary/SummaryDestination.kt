@@ -86,7 +86,6 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.UserExcludable.ExclusionDialogInfo
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
@@ -206,11 +205,11 @@ private fun SummaryScreen(
   }
   val exclusionBottomSheetState = rememberHedvigBottomSheetState<ExclusionDialogInfo>()
   HedvigBottomSheet(exclusionBottomSheetState) { data ->
-    HedvigText(data.title)
-    HedvigText(data.description, color = HedvigTheme.colorScheme.textSecondary)
+    HedvigText(stringResource(R.string.ADDON_REMOVE_TITLE, data.addonName))
+    HedvigText(stringResource(R.string.ADDON_REMOVE_DESCRIPTION), color = HedvigTheme.colorScheme.textSecondary)
     Spacer(Modifier.height(32.dp))
     HedvigButton(
-      text = data.confirmButtonTitle,
+      text = stringResource(R.string.ADDON_REMOVE_CONFIRM_BUTTON, data.addonName),
       onClick = {
         exclusionBottomSheetState.dismiss()
         toggleHomeAddonExclusion(data.addonId)
@@ -221,7 +220,7 @@ private fun SummaryScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = data.cancelButtonTitle,
+      text = stringResource(R.string.ADDON_REMOVE_CANCEL_BUTTON),
       onClick = { exclusionBottomSheetState.dismiss() },
       enabled = true,
       buttonStyle = Ghost,
@@ -247,8 +246,8 @@ private fun SummaryScreen(
             quote = addonQuote,
             canExcludeAddons = content.canExcludeAddons,
             toggleHomeAddonExclusion = {
-              if (addonQuote.exclusionDialogInfo != null && !addonQuote.isExcludedByUser) {
-                exclusionBottomSheetState.show(addonQuote.exclusionDialogInfo)
+              if (!addonQuote.isExcludedByUser) {
+                exclusionBottomSheetState.show(ExclusionDialogInfo(addonQuote.addonId, addonQuote.exposureName))
               } else {
                 toggleHomeAddonExclusion(addonQuote.addonId)
               }
@@ -467,6 +466,11 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   }
 }
 
+private data class ExclusionDialogInfo(
+  val addonId: AddonId,
+  val addonName: String,
+)
+
 @HedvigMultiScreenPreview
 @Preview(device = "spec:width=1080px,height=3800px,dpi=440")
 @Composable
@@ -575,13 +579,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               ),
               exposureName = "exposureName",
               addonVariant = addonVariant,
-              exclusionDialogInfo = ExclusionDialogInfo(
-                addonId = AddonId(it.toString()),
-                title = "title",
-                description = "description",
-                confirmButtonTitle = "confirmButtonTitle",
-                cancelButtonTitle = "cancelButtonTitle",
-              ),
               isExcludedByUser = true,
             )
           },

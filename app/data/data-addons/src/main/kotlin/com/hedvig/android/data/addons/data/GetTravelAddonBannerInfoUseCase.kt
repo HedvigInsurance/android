@@ -6,9 +6,7 @@ import arrow.core.raise.either
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy.CacheAndNetwork
-import com.apollographql.apollo.cache.normalized.FetchPolicy.NetworkFirst
 import com.apollographql.apollo.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
@@ -18,7 +16,6 @@ import com.hedvig.android.logger.logcat
 import kotlin.String
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import octopus.TravelAddonBannerQuery
 import octopus.type.UpsellTravelAddonFlow

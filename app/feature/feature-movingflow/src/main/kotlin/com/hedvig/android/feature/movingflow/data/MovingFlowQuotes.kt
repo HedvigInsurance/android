@@ -11,7 +11,6 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.UserExcludable.ExclusionDialogInfo
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
@@ -89,7 +88,6 @@ internal data class MovingFlowQuotes(
       override val exposureName: String,
       override val addonVariant: AddonVariant,
       override val isExcludedByUser: Boolean,
-      override val exclusionDialogInfo: ExclusionDialogInfo?,
     ) : AddonQuote, UserExcludable
 
     @Serializable
@@ -105,16 +103,6 @@ internal data class MovingFlowQuotes(
 
   internal interface UserExcludable {
     val isExcludedByUser: Boolean
-    val exclusionDialogInfo: ExclusionDialogInfo?
-
-    @Serializable
-    data class ExclusionDialogInfo(
-      val addonId: AddonId,
-      val title: String,
-      val description: String,
-      val confirmButtonTitle: String,
-      val cancelButtonTitle: String,
-    )
   }
 }
 
@@ -157,15 +145,6 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
               )
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
-            exclusionDialogInfo = addon.removeDialogInfo?.let { removeDialogInfo ->
-              ExclusionDialogInfo(
-                addonId = AddonId(addon.addonId),
-                title = removeDialogInfo.title,
-                description = removeDialogInfo.description,
-                confirmButtonTitle = removeDialogInfo.confirmButtonTitle,
-                cancelButtonTitle = removeDialogInfo.cancelButtonTitle,
-              )
-            },
             isExcludedByUser = false,
           )
         },
