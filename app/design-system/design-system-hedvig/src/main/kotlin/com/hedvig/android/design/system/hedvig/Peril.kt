@@ -148,7 +148,7 @@ private fun parseColorString(colorString: String?): Color = with(HedvigTheme.col
     try {
       Color(parseColor(colorString))
     } catch (e: Exception) {
-      logcat(priority = LogPriority.ERROR) { "Parsing color resulted in an error" }
+      logcat(priority = LogPriority.ERROR) { "Parsing color with colorString:$colorString resulted in an error" }
       fromToken(TextPrimary)
     }
   }

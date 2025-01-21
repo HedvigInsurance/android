@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -46,8 +45,6 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -65,11 +62,11 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -84,6 +81,7 @@ internal fun CustomizeTravelAddonDestination(
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
 ) {
   val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -110,6 +108,7 @@ internal fun CustomizeTravelAddonDestination(
       viewModel.emit(CustomizeTravelAddonEvent.ClearNavigation)
       navigateToSummary(params)
     },
+    onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
     navigateToChat = onNavigateToNewConversation,
   )
 }
@@ -124,6 +123,7 @@ private fun CustomizeTravelAddonScreen(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToChat: () -> Unit,
@@ -138,9 +138,11 @@ private fun CustomizeTravelAddonScreen(
         popBackStack = popBackStack,
         navigateToChat = navigateToChat,
       )
+
       CustomizeTravelAddonState.Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
+
       is CustomizeTravelAddonState.Success -> {
         LaunchedEffect(state.summaryParamsToNavigateFurther) {
           if (state.summaryParamsToNavigateFurther != null) {
@@ -155,6 +157,7 @@ private fun CustomizeTravelAddonScreen(
             onChooseSelectedOption = onChooseSelectedOption,
             onChooseOptionInDialog = onChooseOptionInDialog,
             onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+            onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
             popAddonFlow = popAddonFlow,
           )
         }
@@ -214,9 +217,9 @@ private fun CustomizeTravelAddonScreenContent(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
   submitToSummary: () -> Unit,
 ) {
-  val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -233,7 +236,6 @@ private fun CustomizeTravelAddonScreenContent(
       )
     },
   ) {
-    TravelPlusExplanationBottomSheet(referralExplanationBottomSheetState)
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
       text = stringResource(R.string.ADDON_FLOW_TITLE),
@@ -260,8 +262,17 @@ private fun CustomizeTravelAddonScreenContent(
     Spacer(Modifier.height(8.dp))
     TravelPlusInfoCard(
       modifier = Modifier.padding(horizontal = 16.dp),
-      onButtonClick = {
-        referralExplanationBottomSheetState.show(Unit)
+      onButtonClick = dropUnlessResumed {
+        onNavigateToTravelInsurancePlusExplanation(
+          uiState.currentlyChosenOption.addonVariant.perils.map {
+            PerilData(
+              title = it.title,
+              description = it.description,
+              covered = it.covered,
+              colorCode = it.colorCode,
+            )
+          },
+        )
       },
     )
     Spacer(Modifier.height(16.dp))
@@ -487,33 +498,6 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
   }
 }
 
-@Composable
-internal fun TravelPlusExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
-  HedvigBottomSheet(sheetState) {
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
-      modifier = Modifier
-        .fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = Modifier
-        .fillMaxWidth(),
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      buttonSize = Large,
-      onClick = { sheetState.dismiss() },
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-  }
-}
-
 @HedvigMultiScreenPreview
 @Composable
 private fun SelectTierScreenPreview(
@@ -525,7 +509,8 @@ private fun SelectTierScreenPreview(
         uiState = uiState,
         {},
         {},
-        { },
+        {},
+        {},
         {},
         {},
         {},
