@@ -6,6 +6,7 @@ import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.app.assist.AssistContent
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -47,6 +48,7 @@ import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
+import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -100,7 +102,8 @@ class MainActivity : AppCompatActivity() {
     )
     super.onCreate(savedInstanceState)
     applicationScope.launch {
-      languageAndMarketLaunchCheckUseCase.invoke()
+      val defaultLocale = getSystemLocale(resources.configuration)
+      languageAndMarketLaunchCheckUseCase.invoke(defaultLocale)
     }
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
@@ -242,5 +245,13 @@ private fun Activity.tryShowAppStoreReviewDialog() {
         logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
       }
     }
+  }
+}
+
+private fun getSystemLocale(config: android.content.res.Configuration): Locale {
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    Resources.getSystem().configuration.locales[0]
+  } else {
+    config.locale
   }
 }
