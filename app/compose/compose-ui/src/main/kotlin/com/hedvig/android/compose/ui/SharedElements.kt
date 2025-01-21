@@ -20,6 +20,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -32,33 +33,40 @@ import androidx.compose.ui.unit.LayoutDirection
  * A local which contains the SharedTransitionScope wrapping the entire app. This is always taking up the entire
  * screen's size and must be provided by the app's main activity
  */
-val LocalSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> = compositionLocalOf {
-  error("The app must provide a SharedTransitionScope to the entire compose hierarchy")
+val LocalSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope?> = staticCompositionLocalOf {
+  null
 }
 
 @Composable
-fun rememberGlobalSharedContentState(key: Any): SharedContentState =
-  LocalSharedTransitionScope.current.rememberSharedContentState(key)
+fun rememberGlobalSharedContentState(key: Any): SharedContentState? =
+  LocalSharedTransitionScope.current?.rememberSharedContentState(key)
 
+/**
+ * Is a no-op if [SharedTransitionScope], [AnimatedVisibilityScope] or [SharedContentState] are null
+ */
 fun Modifier.globalSharedElement(
-  sharedTransitionScope: SharedTransitionScope,
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  state: SharedContentState,
+  sharedTransitionScope: SharedTransitionScope?,
+  animatedVisibilityScope: AnimatedVisibilityScope?,
+  state: SharedContentState?,
   boundsTransform: BoundsTransform = DefaultBoundsTransform,
   placeHolderSize: PlaceHolderSize = contentSize,
   renderInOverlayDuringTransition: Boolean = true,
   zIndexInOverlay: Float = 0f,
   clipInOverlayDuringTransition: OverlayClip = ParentClip,
-): Modifier = with(sharedTransitionScope) {
-  this@globalSharedElement.sharedElement(
-    state = state,
-    animatedVisibilityScope = animatedVisibilityScope,
-    boundsTransform = boundsTransform,
-    placeHolderSize = placeHolderSize,
-    renderInOverlayDuringTransition = renderInOverlayDuringTransition,
-    zIndexInOverlay = zIndexInOverlay,
-    clipInOverlayDuringTransition = clipInOverlayDuringTransition,
-  )
+): Modifier = if (sharedTransitionScope == null || animatedVisibilityScope == null || state == null) {
+  this
+} else {
+  with(sharedTransitionScope) {
+    this@globalSharedElement.sharedElement(
+      state = state,
+      animatedVisibilityScope = animatedVisibilityScope,
+      boundsTransform = boundsTransform,
+      placeHolderSize = placeHolderSize,
+      renderInOverlayDuringTransition = renderInOverlayDuringTransition,
+      zIndexInOverlay = zIndexInOverlay,
+      clipInOverlayDuringTransition = clipInOverlayDuringTransition,
+    )
+  }
 }
 
 fun Modifier.globalSharedBounds(
