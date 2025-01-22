@@ -46,6 +46,7 @@ import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
 import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.android.tiersandaddons.QuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -218,6 +219,10 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     ).format(uiState.activationDate.toJavaLocalDate())
   }
   QuoteCard(
+    quoteCardState = object : QuoteCardState {
+      override var showDetails: Boolean = true
+      override val isEnabled: Boolean = false
+    },
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = {
       Row(horizontalArrangement = Arrangement.End) {
@@ -254,12 +259,13 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     } else {
       null
     },
-    underTitleContent = {},
-    modifier = modifier,
     displayName = uiState.offerDisplayName,
     contractGroup = null,
     insurableLimits = null,
     documents = uiState.quote.addonVariant.documents,
+    modifier = modifier,
+    underTitleContent = {},
+    underDetailsContent = {},
   )
 }
 
