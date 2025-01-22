@@ -265,6 +265,7 @@ private fun DropdownSelector(
             bounded = true,
             radius = 1000.dp,
           ),
+          enabled = isEnabled,
           onClick = onClick,
         ),
     ) {
