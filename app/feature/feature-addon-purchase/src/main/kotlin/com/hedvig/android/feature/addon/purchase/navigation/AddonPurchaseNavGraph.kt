@@ -4,11 +4,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.toRoute
+import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.CustomizeAddon
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitFailure
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitSuccess
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.Summary
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonDestination
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonDestination
@@ -17,6 +21,7 @@ import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonFailureSc
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonSuccessScreen
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryDestination
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
+import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
@@ -42,9 +47,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
       if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
         LaunchedEffect(Unit) {
-          navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0]), {
+          navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0])) {
             typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
-          })
+          }
         }
       } else {
         val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {
@@ -85,10 +90,33 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
             navigator.navigateUnsafe(Summary(summaryParameters))
           }
         },
+        onNavigateToTravelInsurancePlusExplanation = { perilDataList: List<PerilData> ->
+          navigator.navigateUnsafe(
+            TravelInsurancePlusExplanation(
+              perilDataList.map { perilData ->
+                TravelPerilData(
+                  title = perilData.title,
+                  description = perilData.description,
+                  covered = perilData.covered,
+                  colorCode = perilData.colorCode,
+                  isEnabled = perilData.isEnabled,
+                )
+              },
+            ),
+          )
+        },
         onNavigateToNewConversation = {
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
           onNavigateToNewConversation(backStackEntry)
         },
+      )
+    }
+
+    navdestination<TravelInsurancePlusExplanation>(TravelInsurancePlusExplanation) { backStackEntry ->
+      val perilData = backStackEntry.toRoute<TravelInsurancePlusExplanation>().perilData
+      TravelInsurancePlusExplanationDestination(
+        travelPerilData = perilData,
+        navigateUp = navController::navigateUp,
       )
     }
 
