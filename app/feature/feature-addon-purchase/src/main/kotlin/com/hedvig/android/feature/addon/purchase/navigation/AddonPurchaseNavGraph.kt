@@ -80,15 +80,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
         },
         navigateToSummary = { summaryParameters: SummaryParameters ->
-          if (summaryParameters.popCustomizeDestination) {
-            navigator.navigateUnsafe(Summary(summaryParameters)) {
-              typedPopUpTo<CustomizeAddon> {
-                inclusive = true
-              }
-            }
-          } else {
-            navigator.navigateUnsafe(Summary(summaryParameters))
-          }
+          navController.navigate(Summary(summaryParameters))
         },
         onNavigateToTravelInsurancePlusExplanation = { perilDataList: List<PerilData> ->
           navigator.navigateUnsafe(

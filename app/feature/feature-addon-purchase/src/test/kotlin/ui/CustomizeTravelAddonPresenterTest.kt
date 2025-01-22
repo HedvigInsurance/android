@@ -7,9 +7,7 @@ import arrow.core.nonEmptyListOf
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
@@ -64,6 +62,7 @@ class CustomizeTravelAddonPresenterTest {
         travelAddonOffer = fakeTravelOfferTwoOptions,
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
+        summaryParamsToNavigateFurther = null,
       ),
     ) {
       skipItems(1)
@@ -94,7 +93,6 @@ class CustomizeTravelAddonPresenterTest {
                 quote = fakeTravelOfferOnlyOneOption.addonOptions[0],
                 activationDate = fakeTravelOfferOnlyOneOption.activationDate,
                 currentTravelAddon = fakeTravelOfferOnlyOneOption.currentTravelAddon,
-                popCustomizeDestination = true,
               ),
             )
         }
@@ -174,36 +172,6 @@ class CustomizeTravelAddonPresenterTest {
       useCase.turbine.add(fakeTravelOfferTwoOptions.right())
       skipItems(1)
       assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
-    }
-  }
-
-  @Test
-  fun `on submit navigate further with currently chosen option and do not pop this destination`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
-    val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
-      insuranceId = insuranceId,
-    )
-    presenter.test(
-      CustomizeTravelAddonState.Loading,
-    ) {
-      useCase.turbine.add(fakeTravelOfferTwoOptions.right())
-      skipItems(2)
-      sendEvent(CustomizeTravelAddonEvent.ChooseOptionInDialog(fakeTravelOfferTwoOptions.addonOptions[1]))
-      sendEvent(CustomizeTravelAddonEvent.ChooseSelectedOption)
-      skipItems(2)
-      sendEvent(CustomizeTravelAddonEvent.SubmitSelected)
-      assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
-        .apply {
-          prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
-            .isNotNull().apply {
-              prop(SummaryParameters::popCustomizeDestination).isFalse()
-              prop(SummaryParameters::quote).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[1])
-              prop(SummaryParameters::currentTravelAddon).isEqualTo(fakeTravelOfferTwoOptions.currentTravelAddon)
-              prop(SummaryParameters::activationDate).isEqualTo(fakeTravelOfferTwoOptions.activationDate)
-              prop(SummaryParameters::offerDisplayName).isEqualTo(fakeTravelOfferTwoOptions.title)
-            }
-        }
     }
   }
 }
