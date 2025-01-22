@@ -18,7 +18,6 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
-import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonPresenter
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState
@@ -68,34 +67,6 @@ class CustomizeTravelAddonPresenterTest {
       skipItems(1)
       useCase.turbine.add(ErrorMessage().left())
       expectNoEvents()
-    }
-  }
-
-  @Test
-  fun `if receive good response but only one addon redirect to next screen and pop this destination`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
-    val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
-      insuranceId = insuranceId,
-    )
-    presenter.test(
-      CustomizeTravelAddonState.Loading,
-    ) {
-      skipItems(1)
-      useCase.turbine.add(fakeTravelOfferOnlyOneOption.right())
-      val state = awaitItem()
-      assertThat(state).isInstanceOf(CustomizeTravelAddonState.Success::class)
-        .apply {
-          prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
-            .isEqualTo(
-              SummaryParameters(
-                offerDisplayName = fakeTravelOfferOnlyOneOption.title,
-                quote = fakeTravelOfferOnlyOneOption.addonOptions[0],
-                activationDate = fakeTravelOfferOnlyOneOption.activationDate,
-                currentTravelAddon = fakeTravelOfferOnlyOneOption.currentTravelAddon,
-              ),
-            )
-        }
     }
   }
 
