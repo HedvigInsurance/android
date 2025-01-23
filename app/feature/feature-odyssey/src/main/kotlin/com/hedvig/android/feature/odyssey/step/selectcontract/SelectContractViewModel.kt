@@ -13,15 +13,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class SelectContractViewModel(
-  private val selectContract: ClaimFlowDestination.SelectContract,
+  selectContract: ClaimFlowDestination.SelectContract,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(SelectContractUiState.fromInitialSelection(selectContract.options))
   val uiState: StateFlow<SelectContractUiState> = _uiState.asStateFlow()
 
-  fun selectContractOption(selectedContract: LocalContractContractOption) {
+  fun selectContractOption(selectedContractId: String) {
     _uiState.update { oldUiState ->
-      oldUiState.copy(selectedContract = selectedContract)
+      val selected = oldUiState.contractOptions.first { it.id == selectedContractId }
+      oldUiState.copy(selectedContract = selected)
     }
   }
 
