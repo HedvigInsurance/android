@@ -359,7 +359,7 @@ private fun AddonQuoteCard(
           visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
           enter = expandVertically(expandFrom = Alignment.Top),
           exit = shrinkVertically(shrinkTowards = Alignment.Top),
-          modifier = Modifier.padding(bottom = 8.dp),
+          modifier = Modifier.padding(top = 8.dp),
         ) {
           HedvigButton(
             text = stringResource(R.string.GENERAL_REMOVE),
@@ -413,7 +413,6 @@ private fun AddonQuoteCard(
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    // todo: here we don't want to show insurable limits for addons, that may change later
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
