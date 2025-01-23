@@ -93,7 +93,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardDefaults
-import com.hedvig.android.tiersandaddons.QuoteCardDefaults.UnderDetailsContentState
+import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -378,7 +378,7 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
           )
         } else {
           QuoteCardDefaults.UnderDetailsContent(state)
@@ -401,7 +401,7 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, mod
 private fun AddonQuoteCard(
   quote: MovingFlowQuotes.AddonQuote,
   modifier: Modifier = Modifier,
-  underDetailsContent: (@Composable (UnderDetailsContentState) -> Unit)?,
+  underDetailsContent: (@Composable (QuoteCardState) -> Unit)?,
 ) {
   val startDate = formatStartDate(quote.startDate)
   val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
