@@ -93,23 +93,12 @@ internal class CustomizeTravelAddonPresenter(
           currentState = CustomizeTravelAddonState.Failure(error.message)
         },
         ifRight = { offer ->
-          val summaryParams = if (offer.addonOptions.size == 1) {
-            SummaryParameters(
-              offer.title,
-              offer.addonOptions[0],
-              offer.activationDate,
-              currentTravelAddon = offer.currentTravelAddon,
-              popCustomizeDestination = true,
-            )
-          } else {
-            null
-          }
           selectedOptionInDialog = offer.addonOptions[0]
           currentState = CustomizeTravelAddonState.Success(
             travelAddonOffer = offer,
             currentlyChosenOption = offer.addonOptions[0],
             currentlyChosenOptionInDialog = selectedOptionInDialog,
-            summaryParamsToNavigateFurther = summaryParams,
+            summaryParamsToNavigateFurther = null,
           )
         },
       )
@@ -132,7 +121,7 @@ internal sealed interface CustomizeTravelAddonState {
     val travelAddonOffer: TravelAddonOffer,
     val currentlyChosenOption: TravelAddonQuote,
     val currentlyChosenOptionInDialog: TravelAddonQuote?,
-    val summaryParamsToNavigateFurther: SummaryParameters? = null,
+    val summaryParamsToNavigateFurther: SummaryParameters?,
   ) : CustomizeTravelAddonState
 
   data class Failure(val errorMessage: String? = null) : CustomizeTravelAddonState

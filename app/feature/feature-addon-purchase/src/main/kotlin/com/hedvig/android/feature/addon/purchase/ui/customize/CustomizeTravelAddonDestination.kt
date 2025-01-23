@@ -149,18 +149,16 @@ private fun CustomizeTravelAddonScreen(
             navigateToSummary(state.summaryParamsToNavigateFurther)
           }
         }
-        if (state.summaryParamsToNavigateFurther == null) {
-          CustomizeTravelAddonScreenContent(
-            uiState = state,
-            navigateUp = navigateUp,
-            submitToSummary = submitToSummary,
-            onChooseSelectedOption = onChooseSelectedOption,
-            onChooseOptionInDialog = onChooseOptionInDialog,
-            onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
-            onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
-            popAddonFlow = popAddonFlow,
-          )
-        }
+        CustomizeTravelAddonScreenContent(
+          uiState = state,
+          navigateUp = navigateUp,
+          submitToSummary = submitToSummary,
+          onChooseSelectedOption = onChooseSelectedOption,
+          onChooseOptionInDialog = onChooseOptionInDialog,
+          onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+          onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
+          popAddonFlow = popAddonFlow,
+        )
       }
     }
   }
@@ -317,8 +315,8 @@ private fun CustomizeTravelAddonCard(
       }
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        // Locked option if there is nothing else to chose from
         isEnabled = uiState.travelAddonOffer.addonOptions.size > 1,
-        // we shouldn't get to this destination if this list size <=1 at all tbh
         style = Label(
           label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
           items = addonSimpleItems,
@@ -531,6 +529,7 @@ internal class CustomizeTravelAddonPreviewProvider :
         travelAddonOffer = fakeTravelAddon,
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
+        summaryParamsToNavigateFurther = null,
       ),
       CustomizeTravelAddonState.Failure("Ooops"),
     ),
