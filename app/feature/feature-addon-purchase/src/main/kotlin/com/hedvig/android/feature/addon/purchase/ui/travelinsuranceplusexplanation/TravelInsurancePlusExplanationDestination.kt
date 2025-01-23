@@ -24,6 +24,10 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Medium
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Blue
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
@@ -85,6 +89,13 @@ private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, nav
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 18.dp),
+        )
+        Spacer(Modifier.height(32.dp))
+        HighlightLabel(
+          labelText = stringResource(R.string.ADDON_LEARN_MORE_LABEL),
+          size = Medium,
+          color = Blue(LIGHT),
+          modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
         PerilList(perilData, Small, Modifier.fillMaxWidth().padding(horizontal = 16.dp))
