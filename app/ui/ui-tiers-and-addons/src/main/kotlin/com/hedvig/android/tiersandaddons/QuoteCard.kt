@@ -386,7 +386,7 @@ private fun QuoteCard(
                 modifier = Modifier.fillMaxWidth(),
               )
             } else {
-              Box(Modifier.fillMaxWidth()/*.height(1.dp)*/)
+              Box(Modifier.fillMaxWidth())
             }
           }
         }
