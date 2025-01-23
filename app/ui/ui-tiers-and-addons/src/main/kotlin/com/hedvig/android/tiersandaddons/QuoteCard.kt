@@ -11,6 +11,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
@@ -122,7 +121,9 @@ object QuoteCardDefaults {
       enabled = true,
       buttonStyle = Secondary,
       buttonSize = Medium,
-      modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 16.dp),
     )
   }
 }
@@ -172,7 +173,7 @@ fun QuoteCard(
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
-  ) {
+) {
   QuoteCard(
     quoteCardState = quoteCardState,
     subtitle = subtitle,
@@ -355,40 +356,41 @@ private fun QuoteCard(
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          Row {
-            if (contractGroup != null) {
-              Image(
-                painter = painterResource(contractGroup.toPillow()),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
+      Row {
+        if (contractGroup != null) {
+          Image(
+            painter = painterResource(contractGroup.toPillow()),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(modifier = Modifier.width(12.dp))
+        }
+        Column(Modifier.weight(1f)) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            startSlot = { HedvigText(displayName) },
+            endSlot = { titleEndSlot() },
+            spaceBetween = 8.dp,
+          )
+          AnimatedContent(
+            targetState = subtitle,
+            transitionSpec = {
+              (fadeIn() + expandVertically(expandFrom = Alignment.Top))
+                .togetherWith(fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top))
+            },
+            modifier = Modifier.fillMaxWidth(),
+          ) { subtitle ->
+            if (subtitle != null) {
+              HedvigText(
+                text = subtitle,
+                color = HedvigTheme.colorScheme.textSecondary,
+                modifier = Modifier.fillMaxWidth(),
               )
-              Spacer(modifier = Modifier.width(12.dp))
-            }
-            Column {
-              HedvigText(displayName)
-              val lastKnownSubtitle by remember { mutableStateOf(subtitle) }.apply {
-                value = subtitle ?: value
-              }
-              AnimatedContent(
-                targetState = subtitle,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-              ) { subtitle ->
-                HedvigText(
-                  text = subtitle ?: lastKnownSubtitle ?: "",
-                  color = HedvigTheme.colorScheme.textSecondary,
-                  modifier = if (subtitle == null) Modifier.withoutPlacement() else Modifier,
-                )
-              }
+            } else {
+              Box(Modifier.fillMaxWidth()/*.height(1.dp)*/)
             }
           }
-        },
-        endSlot = {
-          titleEndSlot()
-        },
-        spaceBetween = 8.dp,
-      )
+        }
+      }
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
