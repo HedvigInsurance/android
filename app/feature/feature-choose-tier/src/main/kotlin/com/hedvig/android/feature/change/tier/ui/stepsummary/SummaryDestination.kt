@@ -440,7 +440,6 @@ private class ChooseInsuranceUiStateProvider :
               addonVariant = AddonVariant(
                 displayName = "Addon Name",
                 perils = listOf(),
-                insurableLimits = listOf(),
                 documents = listOf(
                   InsuranceVariantDocument(
                     "Document name",

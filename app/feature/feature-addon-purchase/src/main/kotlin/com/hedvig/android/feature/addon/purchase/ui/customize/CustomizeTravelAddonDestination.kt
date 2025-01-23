@@ -562,7 +562,6 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     perils = listOf(),
     displayName = "45 days",
     product = "",
-    insurableLimits = listOf(),
   ),
   price = UiMoney(
     49.0,
@@ -580,7 +579,6 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     perils = listOf(),
     displayName = "60 days",
     product = "",
-    insurableLimits = listOf(),
   ),
   price = UiMoney(
     60.0,

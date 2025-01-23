@@ -537,8 +537,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         type = CERTIFICATE,
       ),
     ),
-    perils = listOf(),
-    insurableLimits = listOf(),
+    perils = listOf()
   )
   val startDate = LocalDate.parse("2025-01-01")
 
