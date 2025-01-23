@@ -400,7 +400,6 @@ private fun PreviewContractDetailScreen() {
                       ),
                     ),
                     perils = listOf(),
-                    insurableLimits = listOf(),
                   ),
                 ),
               ),
