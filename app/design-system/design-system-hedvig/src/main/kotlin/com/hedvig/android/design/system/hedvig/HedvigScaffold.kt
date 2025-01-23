@@ -3,12 +3,15 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -51,13 +54,10 @@ fun HedvigScaffold(
           .fillMaxSize()
           .verticalScroll(rememberScrollState())
           .consumeWindowInsets(topAppbarInsets.only(WindowInsetsSides.Top))
-          .windowInsetsPadding(
-            // todo remove this bottom insets padding from Scaffold, as it forces the callers to clip the bottom bar
-            //  insets if they happen to want to have their own scrollable state
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-          ),
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         content()
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
   }
