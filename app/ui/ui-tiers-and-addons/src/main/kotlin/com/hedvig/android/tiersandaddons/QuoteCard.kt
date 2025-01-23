@@ -158,6 +158,7 @@ fun QuoteCard(
 
 @Composable
 fun QuoteCard(
+  quoteCardState: QuoteCardState,
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
@@ -171,9 +172,9 @@ fun QuoteCard(
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
-) {
+  ) {
   QuoteCard(
-    quoteCardState = rememberQuoteCardState(),
+    quoteCardState = quoteCardState,
     subtitle = subtitle,
     premium = premium,
     isExcluded = isExcluded,
@@ -349,6 +350,7 @@ private fun QuoteCard(
   HedvigCard(
     modifier = modifier,
     onClick = quoteCardState::toggleState,
+    enabled = quoteCardState.isEnabled,
     interactionSource = null,
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {

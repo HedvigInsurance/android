@@ -95,6 +95,7 @@ import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardDefaults
 import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -378,7 +379,9 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(top = 16.dp),
           )
         } else {
           QuoteCardDefaults.UnderDetailsContent(state)
@@ -409,7 +412,18 @@ private fun AddonQuoteCard(
   } else {
     stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   }
+  val quoteCardState = rememberQuoteCardState()
   QuoteCard(
+    quoteCardState = object : QuoteCardState {
+      override var showDetails: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.showDetails
+        set(value) {
+          if (quote is HomeAddonQuote && quote.isExcludedByUser) return
+          quoteCardState.showDetails = value
+        }
+      override val isEnabled: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.isEnabled
+    },
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
