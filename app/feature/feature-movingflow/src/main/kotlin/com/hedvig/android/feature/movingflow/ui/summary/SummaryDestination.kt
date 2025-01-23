@@ -355,6 +355,11 @@ private fun AddonQuoteCard(
     quote = quote,
     modifier = modifier,
     underDetailsContent = { state ->
+      LaunchedEffect(quote.isExcludedByUser) {
+        if (quote.isExcludedByUser) {
+          state.showDetails = false
+        }
+      }
       Column {
         Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
@@ -369,7 +374,9 @@ private fun AddonQuoteCard(
             buttonStyle = Ghost,
             buttonSize = Medium,
             border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(bottom = 8.dp),
           )
         }
         if (quote.isExcludedByUser) {
@@ -379,7 +386,7 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
           )
         } else {
           HedvigButton(
@@ -392,7 +399,7 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
           )
         }
       }
@@ -559,7 +566,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         type = CERTIFICATE,
       ),
     ),
-    perils = listOf()
+    perils = listOf(),
   )
   val startDate = LocalDate.parse("2025-01-01")
 
