@@ -353,7 +353,7 @@ private class ChooseInsuranceForAddonUiStateProvider :
             documents = listOf(),
             perils = listOf(),
             displayName = "45 days",
-            product = ""
+            product = "",
           ),
           price = UiMoney(
             60.0,

@@ -9,7 +9,7 @@ data class AddonVariant(
   val displayName: String,
   val product: String,
   val documents: List<InsuranceVariantDocument>,
-  val perils: List<ProductVariantPeril>
+  val perils: List<ProductVariantPeril>,
 )
 
 fun AddonVariantFragment.toAddonVariant() = AddonVariant(
@@ -32,5 +32,5 @@ fun AddonVariantFragment.toAddonVariant() = AddonVariant(
       exceptions = peril.exceptions,
       colorCode = peril.colorCode,
     )
-  }
+  },
 )

@@ -241,7 +241,7 @@ private val fakeAddonVariant = AddonVariant(
     ),
   ),
   displayName = "Travel Insurance Plus",
-  product = ""
+  product = "",
 )
 
 private val previewInsurableLimits: List<InsurableLimit> = listOf(
