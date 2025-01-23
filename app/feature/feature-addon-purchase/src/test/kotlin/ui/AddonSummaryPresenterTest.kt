@@ -169,7 +169,6 @@ private val testSummaryParametersWithCurrentAddon = SummaryParameters(
   quote = newQuote,
   activationDate = LocalDate(2024, 12, 30),
   currentTravelAddon = currentAddon,
-  popCustomizeDestination = true,
 )
 
 private val testSummaryParametersWithMoreExpensiveCurrentAddon = SummaryParameters(
@@ -177,7 +176,6 @@ private val testSummaryParametersWithMoreExpensiveCurrentAddon = SummaryParamete
   quote = newQuote2,
   activationDate = LocalDate(2024, 12, 30),
   currentTravelAddon = moreExpensiveCurrentAddon,
-  popCustomizeDestination = true,
 )
 
 private val testSummaryParametersNoCurrentAddon = SummaryParameters(
@@ -185,5 +183,4 @@ private val testSummaryParametersNoCurrentAddon = SummaryParameters(
   quote = newQuote,
   activationDate = LocalDate(2024, 12, 30),
   currentTravelAddon = null,
-  popCustomizeDestination = true,
 )

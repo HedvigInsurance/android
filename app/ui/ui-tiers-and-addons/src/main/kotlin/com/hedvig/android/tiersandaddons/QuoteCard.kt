@@ -22,9 +22,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,7 +72,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
-import com.hedvig.android.tiersandaddons.QuoteCardDefaults.UnderDetailsContentState
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 
@@ -81,19 +82,66 @@ data class QuoteDisplayItem(
   val value: String,
 )
 
+@Stable
+interface QuoteCardState {
+  var showDetails: Boolean
+  val isEnabled: Boolean
+
+  fun toggleState() {
+    showDetails = !showDetails
+  }
+
+  companion object {
+    val Saver = Saver<QuoteCardState, Boolean>(
+      { it.showDetails },
+      { QuoteCardStateImpl(it) },
+    )
+  }
+}
+
+private class QuoteCardStateImpl(initialShowDetails: Boolean) : QuoteCardState {
+  override var showDetails by mutableStateOf(initialShowDetails)
+  override val isEnabled: Boolean = true
+}
+
+@Composable
+fun rememberQuoteCardState(showDetails: Boolean = false): QuoteCardState {
+  return rememberSaveable(saver = QuoteCardState.Saver) { QuoteCardStateImpl(showDetails) }
+}
+
+object QuoteCardDefaults {
+  @Composable
+  fun UnderDetailsContent(state: QuoteCardState) {
+    HedvigButton(
+      text = if (state.showDetails) {
+        stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+      } else {
+        stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+      },
+      onClick = state::toggleState,
+      enabled = true,
+      buttonStyle = Secondary,
+      buttonSize = Medium,
+      modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+    )
+  }
+}
+
 @Composable
 fun QuoteCard(
+  quoteCardState: QuoteCardState = rememberQuoteCardState(),
   productVariant: ProductVariant,
   subtitle: String,
   premium: String,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
+  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
+    QuoteCardDefaults.UnderDetailsContent(state)
+  },
 ) {
-  var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
-    showDetails = showDetails,
-    setShowDetails = { showDetails = it },
+    quoteCardState = quoteCardState,
     subtitle = subtitle,
     premium = premium,
     isExcluded = false,
@@ -104,6 +152,7 @@ fun QuoteCard(
     contractGroup = productVariant.contractGroup,
     insurableLimits = productVariant.insurableLimits,
     documents = productVariant.documents,
+    underDetailsContent = underDetailsContent,
   )
 }
 
@@ -119,14 +168,12 @@ fun QuoteCard(
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
-  underDetailsContent: @Composable (UnderDetailsContentState) -> Unit = { state ->
+  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
 ) {
-  var showDetails by rememberSaveable { mutableStateOf(false) }
   QuoteCard(
-    showDetails = showDetails,
-    setShowDetails = { showDetails = it },
+    quoteCardState = rememberQuoteCardState(),
     subtitle = subtitle,
     premium = premium,
     isExcluded = isExcluded,
@@ -155,33 +202,135 @@ fun QuoteCard(
   )
 }
 
-object QuoteCardDefaults {
-  data class UnderDetailsContentState(
-    val showDetails: Boolean,
-    val setShowDetails: (Boolean) -> Unit,
-  )
-
-  @Composable
-  fun UnderDetailsContent(state: UnderDetailsContentState) {
-    HedvigButton(
-      text = if (state.showDetails) {
-        stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-      } else {
-        stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-      },
-      onClick = { state.setShowDetails(!state.showDetails) },
-      enabled = true,
-      buttonStyle = Secondary,
-      buttonSize = Medium,
-      modifier = Modifier.fillMaxWidth(),
-    )
+@Composable
+fun QuoteCard(
+  quoteCardState: QuoteCardState,
+  subtitle: String,
+  premium: @Composable () -> Unit,
+  displayItems: (@Composable () -> Unit)?,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: (@Composable () -> Unit)?,
+  documents: List<InsuranceVariantDocument>,
+  modifier: Modifier = Modifier,
+  underTitleContent: @Composable () -> Unit = {},
+  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
+    QuoteCardDefaults.UnderDetailsContent(state)
+  },
+) {
+  HedvigCard(
+    modifier = modifier,
+    onClick = quoteCardState::toggleState,
+    enabled = quoteCardState.isEnabled,
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Row {
+        if (contractGroup != null) {
+          Image(
+            painter = painterResource(contractGroup.toPillow()),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(modifier = Modifier.width(12.dp))
+        }
+        Column {
+          HedvigText(
+            text = displayName,
+          )
+          HedvigText(
+            text = subtitle,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+        },
+        endSlot = premium,
+      )
+      underTitleContent()
+      AnimatedVisibility(
+        visible = quoteCardState.showDetails,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+      ) {
+        Column {
+          Spacer(Modifier.height(16.dp))
+          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            HorizontalDivider()
+            if (displayItems != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
+                displayItems()
+              }
+            }
+            if (insurableLimits != null) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
+                insurableLimits()
+              }
+            }
+            if (documents.isNotEmpty()) {
+              Column {
+                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+                Column(
+                  verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                  for (document in documents) {
+                    val uriHandler = LocalUriHandler.current
+                    Row(
+                      modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(HedvigTheme.shapes.cornerXSmall)
+                        .clickable {
+                          uriHandler.openUri(document.url)
+                        },
+                    ) {
+                      HedvigText(
+                        text = document.displayName,
+                        style = HedvigTheme.typography.bodySmall,
+                        color = HedvigTheme.colorScheme.textSecondary,
+                        modifier = Modifier.weight(1f),
+                      )
+                      Spacer(Modifier.width(8.dp))
+                      LayoutWithoutPlacement(
+                        sizeAdjustingContent = {
+                          HedvigText(
+                            "H",
+                            style = HedvigTheme.typography.bodySmall,
+                          )
+                        },
+                      ) {
+                        val density = LocalDensity.current
+                        Icon(
+                          imageVector = HedvigIcons.ArrowNorthEast,
+                          contentDescription = null,
+                          tint = HedvigTheme.colorScheme.fillPrimary,
+                          modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
+                        )
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      underDetailsContent(quoteCardState)
+    }
   }
 }
 
 @Composable
 private fun QuoteCard(
-  showDetails: Boolean,
-  setShowDetails: (Boolean) -> Unit,
+  quoteCardState: QuoteCardState,
   subtitle: String?,
   premium: String,
   isExcluded: Boolean,
@@ -193,13 +342,13 @@ private fun QuoteCard(
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
   titleEndSlot: @Composable () -> Unit = {},
-  underDetailsContent: @Composable (UnderDetailsContentState) -> Unit = { state ->
+  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
 ) {
   HedvigCard(
     modifier = modifier,
-    onClick = { setShowDetails(!showDetails) },
+    onClick = quoteCardState::toggleState,
     interactionSource = null,
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {
@@ -271,7 +420,7 @@ private fun QuoteCard(
       )
       underTitleContent()
       AnimatedVisibility(
-        visible = showDetails,
+        visible = quoteCardState.showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),
         exit = shrinkVertically(shrinkTowards = Alignment.Top),
       ) {
@@ -352,173 +501,7 @@ private fun QuoteCard(
           }
         }
       }
-      Column {
-        Spacer(Modifier.height(16.dp))
-        underDetailsContent(UnderDetailsContentState(showDetails, setShowDetails))
-      }
-    }
-  }
-}
-
-@Composable
-fun QuoteCard(
-  subtitle: String,
-  premium: @Composable () -> Unit,
-  displayItems: (@Composable () -> Unit)?,
-  displayName: String,
-  contractGroup: ContractGroup?,
-  insurableLimits: (@Composable () -> Unit)?,
-  documents: List<InsuranceVariantDocument>,
-  modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
-) {
-  var showDetails by rememberSaveable { mutableStateOf(false) }
-  QuoteCard(
-    showDetails = showDetails,
-    setShowDetails = { showDetails = it },
-    subtitle = subtitle,
-    premium = premium,
-    displayItems = displayItems,
-    underTitleContent = underTitleContent,
-    modifier = modifier,
-    displayName = displayName,
-    contractGroup = contractGroup,
-    insurableLimits = insurableLimits,
-    documents = documents,
-  )
-}
-
-@Composable
-private fun QuoteCard(
-  showDetails: Boolean,
-  setShowDetails: (Boolean) -> Unit,
-  subtitle: String,
-  premium: @Composable () -> Unit,
-  displayItems: (@Composable () -> Unit)?,
-  displayName: String,
-  contractGroup: ContractGroup?,
-  insurableLimits: (@Composable () -> Unit)?,
-  documents: List<InsuranceVariantDocument>,
-  modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
-) {
-  HedvigCard(
-    modifier = modifier,
-    onClick = { setShowDetails(!showDetails) },
-    interactionSource = null,
-    indication = ripple(bounded = true, radius = 1000.dp),
-  ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row {
-        if (contractGroup != null) {
-          Image(
-            painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-          )
-          Spacer(modifier = Modifier.width(12.dp))
-        }
-        Column {
-          HedvigText(
-            text = displayName,
-          )
-          HedvigText(
-            text = subtitle,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-        },
-        endSlot = premium,
-      )
-      underTitleContent()
-      AnimatedVisibility(
-        visible = showDetails,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            HorizontalDivider()
-            if (displayItems != null) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-                displayItems()
-              }
-            }
-            if (insurableLimits != null) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                insurableLimits()
-              }
-            }
-            if (documents.isNotEmpty()) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-                Column(
-                  verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                  for (document in documents) {
-                    val uriHandler = LocalUriHandler.current
-                    Row(
-                      modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(HedvigTheme.shapes.cornerXSmall)
-                        .clickable {
-                          uriHandler.openUri(document.url)
-                        },
-                    ) {
-                      HedvigText(
-                        text = document.displayName,
-                        style = HedvigTheme.typography.bodySmall,
-                        color = HedvigTheme.colorScheme.textSecondary,
-                        modifier = Modifier.weight(1f),
-                      )
-                      Spacer(Modifier.width(8.dp))
-                      LayoutWithoutPlacement(
-                        sizeAdjustingContent = {
-                          HedvigText(
-                            "H",
-                            style = HedvigTheme.typography.bodySmall,
-                          )
-                        },
-                      ) {
-                        val density = LocalDensity.current
-                        Icon(
-                          imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = null,
-                          tint = HedvigTheme.colorScheme.fillPrimary,
-                          modifier = Modifier
-                            .wrapContentSize(Alignment.Center)
-                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
-                        )
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = if (showDetails) {
-          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        } else {
-          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-        },
-        onClick = { setShowDetails(!showDetails) },
-        enabled = true,
-        buttonStyle = Secondary,
-        buttonSize = Medium,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      underDetailsContent(quoteCardState)
     }
   }
 }
@@ -550,8 +533,7 @@ private fun PreviewQuoteCard(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       QuoteCard(
-        showDetails = showDetails,
-        setShowDetails = {},
+        quoteCardState = rememberQuoteCardState(showDetails),
         displayName = "displayName",
         contractGroup = DOG,
         insurableLimits = List(3) {
