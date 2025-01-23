@@ -356,11 +356,11 @@ private fun AddonQuoteCard(
     modifier = modifier,
     underDetailsContent = { state ->
       Column {
+        Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
           visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
           enter = expandVertically(expandFrom = Alignment.Top),
           exit = shrinkVertically(shrinkTowards = Alignment.Top),
-          modifier = Modifier.padding(top = 8.dp),
         ) {
           HedvigButton(
             text = stringResource(R.string.GENERAL_REMOVE),
@@ -369,7 +369,7 @@ private fun AddonQuoteCard(
             buttonStyle = Ghost,
             buttonSize = Medium,
             border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
           )
         }
         if (quote.isExcludedByUser) {
@@ -379,12 +379,21 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth()
           )
         } else {
-          QuoteCardDefaults.UnderDetailsContent(state)
+          HedvigButton(
+            text = if (state.showDetails) {
+              stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+            } else {
+              stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+            },
+            onClick = state::toggleState,
+            enabled = true,
+            buttonStyle = Secondary,
+            buttonSize = Medium,
+            modifier = Modifier.fillMaxWidth()
+          )
         }
       }
     },
