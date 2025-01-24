@@ -53,11 +53,6 @@ internal fun DocumentsTab(
     Spacer(Modifier.height(16.dp))
     if (!addons.isNullOrEmpty()) {
       addons.forEach {
-//        HedvigText(
-//          it.addonVariant.displayName,
-//          color = HedvigTheme.colorScheme.textSecondary,
-//          modifier = Modifier.padding(horizontal = 16.dp),
-//        )
         HighlightLabel(
           modifier = Modifier.padding(horizontal = 16.dp),
           labelText = it.addonVariant.displayName,
