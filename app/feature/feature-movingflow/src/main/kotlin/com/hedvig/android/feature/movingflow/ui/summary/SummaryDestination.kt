@@ -95,6 +95,7 @@ import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardDefaults
 import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -354,12 +355,17 @@ private fun AddonQuoteCard(
     quote = quote,
     modifier = modifier,
     underDetailsContent = { state ->
+      LaunchedEffect(quote.isExcludedByUser) {
+        if (quote.isExcludedByUser) {
+          state.showDetails = false
+        }
+      }
       Column {
+        Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
           visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
           enter = expandVertically(expandFrom = Alignment.Top),
           exit = shrinkVertically(shrinkTowards = Alignment.Top),
-          modifier = Modifier.padding(bottom = 8.dp),
         ) {
           HedvigButton(
             text = stringResource(R.string.GENERAL_REMOVE),
@@ -368,7 +374,9 @@ private fun AddonQuoteCard(
             buttonStyle = Ghost,
             buttonSize = Medium,
             border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(bottom = 8.dp),
           )
         }
         if (quote.isExcludedByUser) {
@@ -378,10 +386,21 @@ private fun AddonQuoteCard(
             enabled = true,
             buttonStyle = Secondary,
             buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
           )
         } else {
-          QuoteCardDefaults.UnderDetailsContent(state)
+          HedvigButton(
+            text = if (state.showDetails) {
+              stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+            } else {
+              stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+            },
+            onClick = state::toggleState,
+            enabled = true,
+            buttonStyle = Secondary,
+            buttonSize = Medium,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
       }
     },
@@ -409,11 +428,21 @@ private fun AddonQuoteCard(
   } else {
     stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   }
+  val quoteCardState = rememberQuoteCardState()
   QuoteCard(
+    quoteCardState = object : QuoteCardState {
+      override var showDetails: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.showDetails
+        set(value) {
+          if (quote is HomeAddonQuote && quote.isExcludedByUser) return
+          quoteCardState.showDetails = value
+        }
+      override val isEnabled: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.isEnabled
+    },
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    // todo: here we don't want to show insurable limits for addons, that may change later
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
@@ -538,7 +567,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       ),
     ),
     perils = listOf(),
-    insurableLimits = listOf(),
   )
   val startDate = LocalDate.parse("2025-01-01")
 

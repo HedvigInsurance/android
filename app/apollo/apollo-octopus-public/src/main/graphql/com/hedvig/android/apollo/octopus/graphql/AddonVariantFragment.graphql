@@ -10,11 +10,6 @@ fragment AddonVariantFragment on AddonVariant {
     exceptions
     colorCode
   }
-  insurableLimits {
-    label
-    limit
-    description
-  }
   documents {
     displayName
     url

@@ -159,7 +159,6 @@ private fun PreviewDocumentsScreen() {
                   InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
                 ),
               ),
-              insurableLimits = listOf(),
             ),
           ),
         ),

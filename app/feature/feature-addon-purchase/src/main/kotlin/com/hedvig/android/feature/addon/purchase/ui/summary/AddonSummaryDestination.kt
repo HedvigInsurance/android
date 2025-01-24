@@ -354,7 +354,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
             perils = listOf(),
             displayName = "45 days",
             product = "",
-            insurableLimits = listOf(),
           ),
           price = UiMoney(
             60.0,

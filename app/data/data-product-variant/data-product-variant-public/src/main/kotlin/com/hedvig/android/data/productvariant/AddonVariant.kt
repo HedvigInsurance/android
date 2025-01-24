@@ -10,7 +10,6 @@ data class AddonVariant(
   val product: String,
   val documents: List<InsuranceVariantDocument>,
   val perils: List<ProductVariantPeril>,
-  val insurableLimits: List<InsurableLimit>,
 )
 
 fun AddonVariantFragment.toAddonVariant() = AddonVariant(
@@ -32,13 +31,6 @@ fun AddonVariantFragment.toAddonVariant() = AddonVariant(
       covered = peril.covered,
       exceptions = peril.exceptions,
       colorCode = peril.colorCode,
-    )
-  },
-  insurableLimits = this.insurableLimits.map { insurableLimit ->
-    InsurableLimit(
-      label = insurableLimit.label,
-      limit = insurableLimit.limit,
-      description = insurableLimit.description,
     )
   },
 )

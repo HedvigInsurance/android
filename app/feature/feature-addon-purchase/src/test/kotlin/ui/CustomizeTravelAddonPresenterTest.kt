@@ -165,7 +165,6 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     displayName = "45 days",
     product = "",
     perils = listOf(),
-    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",
@@ -188,7 +187,6 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     displayName = "60 days",
     product = "",
     perils = listOf(),
-    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",
