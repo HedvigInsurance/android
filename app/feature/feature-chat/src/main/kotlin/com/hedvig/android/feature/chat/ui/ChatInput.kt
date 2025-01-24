@@ -79,17 +79,17 @@ internal fun ChatInput(
     onSendPhoto(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onSendMedia(resultingUri)
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    resultingUriList.forEach { uri ->
+      onSendMedia(uri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onSendMedia(resultingUri)
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    resultingUriList.forEach { uri ->
+      onSendMedia(uri)
     }
   }
   ChatInput(
@@ -157,7 +157,10 @@ private fun ChatInput(
           ),
           cursorBrush = SolidColor(LocalContentColor.current),
           textStyle = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
-          modifier = Modifier.weight(1f).padding(vertical = 8.dp).padding(start = 12.dp),
+          modifier = Modifier
+            .weight(1f)
+            .padding(vertical = 8.dp)
+            .padding(start = 12.dp),
         ) { innerTextField ->
           if (text.isEmpty()) {
             HedvigText(
