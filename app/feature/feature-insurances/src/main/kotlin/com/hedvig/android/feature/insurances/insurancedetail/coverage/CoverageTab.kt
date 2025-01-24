@@ -108,7 +108,7 @@ internal fun CoverageTab(
         ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       PerilList(
         perilItems = addon.addonVariant.perils.map {
           PerilData(
