@@ -430,7 +430,8 @@ private fun ChatBubble(
         is CbmChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
             CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
-              ChatAsyncImage(model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id)
+              ChatAsyncImage(model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id,
+                modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }))
             }
 
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
@@ -659,7 +660,8 @@ private fun ChatAsyncImage(
           Modifier
         },
       )
-      .clip(HedvigTheme.shapes.cornerLarge),
+      .clip(HedvigTheme.shapes.cornerLarge)
+    ,
   )
 }
 
