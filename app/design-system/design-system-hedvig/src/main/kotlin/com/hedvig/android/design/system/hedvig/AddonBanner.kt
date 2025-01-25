@@ -26,8 +26,8 @@ fun FeatureAddonBanner(
   onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val containerColor = HedvigTheme.colorScheme.borderPrimary
-  val borderColor = HedvigTheme.colorScheme.borderPrimary
+  val containerColor = HedvigTheme.colorScheme.surfacePrimary
+  val borderColor = HedvigTheme.colorScheme.surfacePrimary
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerLarge,
