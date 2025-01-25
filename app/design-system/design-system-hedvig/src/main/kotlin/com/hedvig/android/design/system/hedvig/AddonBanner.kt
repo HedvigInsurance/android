@@ -26,8 +26,8 @@ fun FeatureAddonBanner(
   onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val containerColor = HedvigTheme.colorScheme.fillNegative
-  val borderColor = HedvigTheme.colorScheme.borderPrimary
+  val containerColor = HedvigTheme.colorScheme.surfacePrimary
+  val borderColor = HedvigTheme.colorScheme.surfacePrimary
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerLarge,
@@ -78,7 +78,7 @@ private fun LabelRow(labels: List<String>, modifier: Modifier = Modifier) {
       HighlightLabel(
         labelText = label,
         size = HighlightLabelDefaults.HighLightSize.Small,
-        color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
+        color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.DARK),
       )
       if (index != labels.lastIndex) {
         Spacer(Modifier.width(8.dp))

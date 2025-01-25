@@ -156,8 +156,6 @@ internal fun YourInfoTab(
         )
       }
     }
-
-    Spacer(Modifier.height(8.dp))
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
 
     if (allowEditCoInsured) {
