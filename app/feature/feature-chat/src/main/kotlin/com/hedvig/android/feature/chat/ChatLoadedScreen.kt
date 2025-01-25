@@ -94,6 +94,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
+import com.hedvig.android.design.system.hedvig.videoplayer.VideoPlayerExample
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.data.BannerText
@@ -434,9 +435,9 @@ private fun ChatBubble(
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }))
             }
             CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
+              VideoPlayerExample(uri = chatMessage.url)
 
-
-              TODO()  // todo chat: consider rendering videos inline in the chat
+            // todo chat: consider rendering videos inline in the chat
             }
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
