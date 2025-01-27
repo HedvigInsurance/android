@@ -189,6 +189,7 @@ private fun PaymentsContent(
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.CenterHorizontally
   ) {
     Spacer(Modifier.height(8.dp))
     val upcomingPayment = (uiState as? PaymentsUiState.Content)?.upcomingPayment
@@ -543,12 +544,13 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isRetrying = false,
-        upcomingPayment = UpcomingPayment.Content(
+        upcomingPayment = UpcomingPayment
+          .Content(
           UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "rdg",
         ),
-        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
+        upcomingPaymentInfo = UpcomingPaymentInfo.InProgress,
         connectedPaymentInfo = Connected(
           "Card",
           "****1234",

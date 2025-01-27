@@ -62,6 +62,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -393,6 +397,13 @@ private fun ChatBubble(
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
+  val context = LocalContext.current
+  val exoPlayer = remember { ExoPlayer.Builder(context).build().apply {
+      prepare()
+      playWhenReady = false
+      repeatMode = Player.REPEAT_MODE_OFF
+    }
+  }
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
@@ -435,9 +446,10 @@ private fun ChatBubble(
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }))
             }
             CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
-              VideoPlayerExample(uri = chatMessage.url)
+              exoPlayer.setMediaItem(MediaItem.fromUri( chatMessage.url))
+              VideoPlayerExample(exoPlayer)
 
-            // todo chat: consider rendering videos inline in the chat
+
             }
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
