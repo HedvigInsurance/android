@@ -78,6 +78,7 @@ internal data class MovingFlowQuotes(
     val displayItems: List<DisplayItem>
     val exposureName: String
     val addonVariant: AddonVariant
+    val coverageDisplayName: String
 
     @Serializable
     data class HomeAddonQuote(
@@ -88,6 +89,7 @@ internal data class MovingFlowQuotes(
       override val exposureName: String,
       override val addonVariant: AddonVariant,
       override val isExcludedByUser: Boolean,
+      override val coverageDisplayName: String,
     ) : AddonQuote, UserExcludable
 
     @Serializable
@@ -98,6 +100,7 @@ internal data class MovingFlowQuotes(
       override val displayItems: List<DisplayItem>,
       override val exposureName: String,
       override val addonVariant: AddonVariant,
+      override val coverageDisplayName: String,
     ) : AddonQuote
   }
 
@@ -146,6 +149,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
             isExcludedByUser = false,
+            coverageDisplayName = addon.coverageDisplayName,
           )
         },
       )
@@ -171,6 +175,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
               )
             },
             addonVariant = addon.addonVariant.toAddonVariant(),
+            coverageDisplayName = addon.coverageDisplayName,
           )
         },
       )

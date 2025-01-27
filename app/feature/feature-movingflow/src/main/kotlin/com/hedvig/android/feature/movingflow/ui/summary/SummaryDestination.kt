@@ -422,11 +422,10 @@ private fun AddonQuoteCard(
   modifier: Modifier = Modifier,
   underDetailsContent: (@Composable (QuoteCardState) -> Unit)?,
 ) {
-  val startDate = formatStartDate(quote.startDate)
   val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
     null
   } else {
-    stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+    quote.coverageDisplayName
   }
   val quoteCardState = rememberQuoteCardState()
   QuoteCard(
@@ -608,6 +607,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               exposureName = "exposureName",
               addonVariant = addonVariant,
               isExcludedByUser = true,
+              coverageDisplayName = "45 Days",
             )
           },
         ),
@@ -640,6 +640,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
                 ),
                 exposureName = "exposureName",
                 addonVariant = addonVariant,
+                coverageDisplayName = "45 Days",
               ),
             ),
           ),
