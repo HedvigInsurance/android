@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
@@ -78,6 +79,7 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -98,7 +100,13 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
+import com.hedvig.android.design.system.hedvig.videoplayer.Media
+import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
+import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
+import com.hedvig.android.design.system.hedvig.videoplayer.SimpleController
+import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
 import com.hedvig.android.design.system.hedvig.videoplayer.VideoPlayerExample
+import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.data.BannerText
@@ -398,12 +406,6 @@ private fun ChatBubble(
 ) {
   val chatMessage = uiChatMessage?.chatMessage
   val context = LocalContext.current
-  val exoPlayer = remember { ExoPlayer.Builder(context).build().apply {
-      prepare()
-      playWhenReady = false
-      repeatMode = Player.REPEAT_MODE_OFF
-    }
-  }
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
@@ -446,9 +448,37 @@ private fun ChatBubble(
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }))
             }
             CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
+              val exoPlayer = remember { ExoPlayer.Builder(context).build().apply {
+                prepare()
+                playWhenReady = false
+                repeatMode = Player.REPEAT_MODE_OFF
+              }
+              }
               exoPlayer.setMediaItem(MediaItem.fromUri( chatMessage.url))
-              VideoPlayerExample(exoPlayer)
-
+              val state = rememberMediaState(player = exoPlayer)
+              Media(
+                state = state,
+                // following parameters are optional
+                modifier = Modifier
+                  .height(250.dp)
+                  .fillMaxSize()
+                  .clip(HedvigTheme.shapes.cornerLarge)
+                  .background(Color.Black),
+                surfaceType = SurfaceType.SurfaceView,
+                resizeMode = ResizeMode.Fit,
+                keepContentOnPlayerReset = false,
+                useArtwork = true,
+                showBuffering = ShowBuffering.Never,
+                buffering = {
+                  Box(Modifier.fillMaxSize(), Alignment.Center) {
+                    HedvigCircularProgressIndicator()
+                  }
+                }
+              ) { state ->
+                SimpleController(state, Modifier.fillMaxSize()
+                  .clip(HedvigTheme.shapes.cornerLarge))
+              }
+             // VideoPlayerExample(exoPlayer)
 
             }
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
