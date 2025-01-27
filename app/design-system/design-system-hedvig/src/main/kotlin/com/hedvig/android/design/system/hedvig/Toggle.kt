@@ -307,7 +307,8 @@ private fun ToggleBackground(
         .offset {
           IntOffset(
             x = draggableState
-              .requireOffset()
+              .offset
+              .let { if (it.isNaN()) 0f else it }
               .roundToInt(),
             y = 0,
           )

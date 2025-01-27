@@ -13,6 +13,8 @@ dependencies {
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
+  implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.navigationCompose)
 }

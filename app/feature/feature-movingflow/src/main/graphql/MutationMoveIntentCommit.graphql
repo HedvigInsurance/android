@@ -1,5 +1,5 @@
-mutation MoveIntentV2Commit($intentId: ID!, $homeQuoteId: ID!) {
-  moveIntentCommit(intentId: $intentId, homeQuoteId: $homeQuoteId) {
+mutation MoveIntentV2Commit($intentId: ID!, $homeQuoteId: ID!, $excludedAddons: [ID!]!) {
+  moveIntentCommit(intentId: $intentId, homeQuoteId: $homeQuoteId, removedAddons: $excludedAddons) {
     moveIntent {
       id
     }

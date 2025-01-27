@@ -64,6 +64,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Making
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -320,6 +321,7 @@ private fun AddonCard(
   val startDate = formatStartDate(activationDate)
   val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
+    quoteCardState = rememberQuoteCardState(),
     displayName = addonQuote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
@@ -327,6 +329,7 @@ private fun AddonCard(
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
     premium = addonQuote.premium.toString(),
+    isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
         title = it.displayTitle,
@@ -439,7 +442,6 @@ private class ChooseInsuranceUiStateProvider :
               addonVariant = AddonVariant(
                 displayName = "Addon Name",
                 perils = listOf(),
-                insurableLimits = listOf(),
                 documents = listOf(
                   InsuranceVariantDocument(
                     "Document name",

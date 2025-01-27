@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
@@ -22,6 +21,9 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import java.io.File
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 
 internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
@@ -126,17 +128,17 @@ internal class CertificateHistoryPresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
-      parZip(
-        { getTravelCertificatesHistoryUseCase.invoke() },
-        { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
-        { getEligibleContractsWithAddressUseCase.invoke() },
-        { getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES) },
+      combine(
+        flow { emit(getTravelCertificatesHistoryUseCase.invoke()) },
+        flow { emit(checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke()) },
+        flow { emit(getEligibleContractsWithAddressUseCase.invoke()) },
+        getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES),
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
         val eligibleContracts = eligibleContractsResult.getOrNull()
         val travelAddonBanner = travelAddonBannerResult.getOrNull()
-        screenContentState = if (history != null && eligibility != null && eligibleContracts != null) {
+        if (history != null && eligibility != null && eligibleContracts != null) {
           val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
           ScreenContentState.Success(
@@ -149,6 +151,8 @@ internal class CertificateHistoryPresenter(
           logcat { "Could not fetch travel certificates history and eligibility" }
           ScreenContentState.Failed
         }
+      }.collectLatest {
+        screenContentState = it
       }
     }
 

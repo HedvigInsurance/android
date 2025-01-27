@@ -7,14 +7,15 @@ import com.hedvig.android.language.Language.EN_NO
 import com.hedvig.android.language.Language.EN_SE
 import com.hedvig.android.language.Language.NB_NO
 import com.hedvig.android.language.Language.SV_SE
+import hedvig.resources.R
 
 val Language.label: Int
   @StringRes
   get() = when (this) {
-    SV_SE -> hedvig.resources.R.string.swedish
-    EN_SE -> hedvig.resources.R.string.english_swedish
-    NB_NO -> hedvig.resources.R.string.norwegian
-    EN_NO -> hedvig.resources.R.string.english_norwegian
-    DA_DK -> hedvig.resources.R.string.danish
-    EN_DK -> hedvig.resources.R.string.english_danish
+    SV_SE -> R.string.swedish
+    EN_SE -> R.string.english_swedish
+    NB_NO -> R.string.norwegian
+    EN_NO -> R.string.english_norwegian
+    DA_DK -> R.string.danish
+    EN_DK -> R.string.english_danish
   }

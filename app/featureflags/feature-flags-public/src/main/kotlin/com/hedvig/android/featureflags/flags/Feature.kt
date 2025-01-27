@@ -17,4 +17,7 @@ enum class Feature(
   EDIT_COINSURED("Let member edit co insured"),
   HELP_CENTER("Enable the help center screens"),
   TRAVEL_ADDON("Let members purchase addons"),
+  ENABLE_ADDONS_REMOVAL_FROM_MOVING_FLOW(
+    "Allow members to to exclude specific addons to their home insurance when completing the moving flow",
+  ),
 }

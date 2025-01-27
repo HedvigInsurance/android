@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
@@ -27,10 +26,11 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
@@ -113,24 +113,26 @@ internal class InsurancePresenter(
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
         forceNetworkFetch = true,
         getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
-      ).fold(
-        ifLeft = {
-          Snapshot.withMutableSnapshot {
-            isLoading = false
-            isRetrying = false
-            didFailToLoad = true
-            insuranceData = InsuranceData.Empty
-          }
-        },
-        ifRight = { insuranceDataResult ->
-          Snapshot.withMutableSnapshot {
-            isLoading = false
-            isRetrying = false
-            didFailToLoad = false
-            insuranceData = insuranceDataResult
-          }
-        },
-      )
+      ).collectLatest { result ->
+        result.fold(
+          ifLeft = {
+            Snapshot.withMutableSnapshot {
+              isLoading = false
+              isRetrying = false
+              didFailToLoad = true
+              insuranceData = InsuranceData.Empty
+            }
+          },
+          ifRight = { insuranceDataResult ->
+            Snapshot.withMutableSnapshot {
+              isLoading = false
+              isRetrying = false
+              didFailToLoad = false
+              insuranceData = insuranceDataResult
+            }
+          },
+        )
+      }
     }
 
     return InsuranceUiState(
@@ -147,24 +149,22 @@ internal class InsurancePresenter(
   }
 }
 
-private suspend fun loadInsuranceData(
+private fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
   forceNetworkFetch: Boolean,
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
-): Either<ErrorMessage, InsuranceData> {
-  return either {
-    parZip(
-      { getInsuranceContractsUseCase.invoke(forceNetworkFetch).first().bind() },
-      { getCrossSellsUseCase.invoke().bind() },
-      { getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).bind() },
-    ) {
-      contracts: List<InsuranceContract>,
-      crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
-      travelAddonBannerInfo: TravelAddonBannerInfo?,
-      ->
-      val insuranceCards = contracts
-        .filterNot(InsuranceContract::isTerminated)
+): Flow<Either<ErrorMessage, InsuranceData>> {
+  return combine(
+    getInsuranceContractsUseCase.invoke(forceNetworkFetch),
+    flow { emit(getCrossSellsUseCase.invoke()) },
+    getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB),
+  ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
+    either {
+      val contracts = contractsResult.bind()
+      val crossSellsData = crossSellsDataResult.bind()
+      val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
+      val insuranceCards = contracts.filterNot(InsuranceContract::isTerminated)
 
       val crossSells = crossSellsData.map { crossSell ->
         CrossSell(
@@ -190,10 +190,10 @@ private suspend fun loadInsuranceData(
         },
         travelAddonBannerInfo = travelAddonBannerInfo,
       )
-    }
-  }.onLeft {
-    logcat(LogPriority.INFO, it.throwable) {
-      "Insurance items failed to load: ${it.message}"
+    }.onLeft {
+      logcat(LogPriority.INFO, it.throwable) {
+        "Insurance items failed to load: ${it.message}"
+      }
     }
   }
 }

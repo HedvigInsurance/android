@@ -317,7 +317,6 @@ private val mockWithoutUpgrade = TravelAddonOffer(
         displayName = "45 days",
         product = "",
         perils = listOf(),
-        insurableLimits = listOf(),
       ),
       price = UiMoney(
         49.0,
@@ -335,7 +334,6 @@ private val mockWithoutUpgrade = TravelAddonOffer(
         displayName = "60 days",
         product = "",
         perils = listOf(),
-        insurableLimits = listOf(),
       ),
       price = UiMoney(
         60.0,
@@ -362,7 +360,6 @@ private val mockWithUpgrade = TravelAddonOffer(
         displayName = "45 days",
         product = "",
         perils = listOf(),
-        insurableLimits = listOf(),
       ),
       price = UiMoney(
         60.0,

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.fir.expressions.builder.buildImplicitInvokeCall
-
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")

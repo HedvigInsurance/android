@@ -1,6 +1,8 @@
-mutation MoveIntentV2Request($intentId: ID!,
+mutation MoveIntentV2Request(
+  $intentId: ID!,
   $moveIntentRequestInput: MoveIntentRequestInput!,
-  $addonsFlagOn: Boolean!) {
+  $addonsFlagOn: Boolean!,
+) {
   moveIntentRequest(intentId: $intentId, input: $moveIntentRequestInput) {
     moveIntent {
       ...MoveIntentQuotesFragment
@@ -66,6 +68,7 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
 
 fragment MoveAddonQuoteFragment on MoveAddonQuote {
   addonId
+  coverageDisplayName
   displayName
   displayItems {
     displayTitle
