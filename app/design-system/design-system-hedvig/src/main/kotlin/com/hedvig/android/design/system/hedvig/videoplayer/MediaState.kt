@@ -1,14 +1,10 @@
 package com.hedvig.android.design.system.hedvig.videoplayer
 
-import android.graphics.BitmapFactory
 import android.os.Looper
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.media3.common.C
-import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import kotlin.math.absoluteValue
@@ -87,7 +83,7 @@ class MediaState(
           playbackState == Player.STATE_IDLE ||
             playbackState == Player.STATE_ENDED ||
             !playWhenReady
-        )
+          )
     } ?: true
   }
 
@@ -103,7 +99,6 @@ class MediaState(
   private val listener = object : Player.Listener {
     override fun onRenderedFirstFrame() {
       closeShutter = false
-      usingArtworkPainter = null
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
@@ -131,8 +126,7 @@ class MediaState(
   internal val stateOfPlayerState = mutableStateOf(initPlayer?.state())
 
   internal val contentAspectRatioRaw by derivedStateOf {
-    usingArtworkPainter?.aspectRatio
-      ?: (playerState?.videoSize ?: VideoSize.UNKNOWN).aspectRatio
+    (playerState?.videoSize ?: VideoSize.UNKNOWN).aspectRatio
   }
   private var _contentAspectRatio by mutableStateOf(0f)
   internal var contentAspectRatio
@@ -155,17 +149,6 @@ class MediaState(
   }
 
   internal var closeShutter by mutableStateOf(true)
-
-  internal val artworkPainter: BitmapPainter? by derivedStateOf {
-    playerState?.mediaMetadata?.artworkData
-      ?.run { BitmapFactory.decodeByteArray(this, 0, size)?.asImageBitmap() }
-      ?.run { BitmapPainter(this) }
-  }
-  internal var usingArtworkPainter by mutableStateOf<Painter?>(null)
-
-  internal val playerError: PlaybackException? by derivedStateOf {
-    playerState?.playerError
-  }
 
   init {
     initPlayer?.addListener(listener)

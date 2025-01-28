@@ -631,7 +631,6 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
           Lifecycle.Event.ON_STOP -> {
             state.player?.pause()
           }
-
           else -> {}
         }
       }
@@ -647,8 +646,7 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
         .background(Color.Black),
       surfaceType = SurfaceType.TextureView,
       resizeMode = ResizeMode.Fit,
-      keepContentOnPlayerReset = false,
-      useArtwork = true,
+      keepContentOnPlayerReset = true,
       showBuffering = ShowBuffering.Always,
       buffering = {
         Box(Modifier.fillMaxSize(), Alignment.Center) {
@@ -672,6 +670,7 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
 @Composable
 @androidx.annotation.OptIn(UnstableApi::class)
 private fun videoPlayerMediaState(cache: Cache): MediaState {
+  val position = remember { mutableStateOf( 0L) }
   val httpDataSourceFactory = DefaultHttpDataSource.Factory()
   val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
     .setUpstreamDataSourceFactory(httpDataSourceFactory)
@@ -688,6 +687,8 @@ private fun videoPlayerMediaState(cache: Cache): MediaState {
         prepare()
         playWhenReady = false
         repeatMode = Player.REPEAT_MODE_OFF
+
+        //todo: track playback Position!
       }
   }
   return rememberMediaState(player = exoPlayer)

@@ -1,6 +1,3 @@
-
-
-
 package com.hedvig.android.design.system.hedvig.videoplayer
 
 import android.view.SurfaceView
@@ -27,34 +24,15 @@ import androidx.media3.common.Player
 import androidx.media3.common.text.CueGroup
 import androidx.media3.common.util.UnstableApi
 
-/**
- * The type of surface view used for video playbacks.
- */
 enum class SurfaceType {
   None,
   SurfaceView,
   TextureView,
 }
 
-/**
- * Determines when the buffering indicator is shown.
- */
 enum class ShowBuffering {
-  /**
-   * The buffering indicator is never shown.
-   */
   Never,
-
-  /**
-   * The buffering indicator is shown when the player is in the [buffering][Player.STATE_BUFFERING]
-   * state and [playWhenReady][Player.getPlayWhenReady] is true.
-   */
   WhenPlaying,
-
-  /**
-   * The buffering indicator is always shown when the player is in the
-   * [buffering][Player.STATE_BUFFERING] state.
-   */
   Always,
 }
 
@@ -82,16 +60,9 @@ enum class ShowBuffering {
  * content.
  * If false is provided, the currently displayed video frame or media artwork will be hidden as soon
  * as the player is reset.
- * @param useArtwork Whether artwork is used if available in audio streams.
- * @param defaultArtworkPainter The [Painter], which will be used to draw default artwork if no
- * artwork available in audio streams.
- * @param subtitles The subtitles. Default is null.
  * @param showBuffering Determines when the buffering indicator is shown.
  * @param buffering The buffering indicator, typically a circular progress indicator. Default is
  * null.
- * @param errorMessage The error message, which will be shown when an [error][PlaybackException]
- * occurred. Default is null.
- * @param overlay An overlay, which can be shown on top of the player. Default is null.
  * @param controllerHideOnTouch Whether the playback controls are hidden by touch. Default is true.
  * @param controllerAutoShow Whether the playback controls are automatically shown when playback
  * starts, pauses, ends, or fails.
@@ -107,13 +78,8 @@ fun Media(
   resizeMode: ResizeMode = ResizeMode.Fit,
   shutterColor: Color = Color.Black,
   keepContentOnPlayerReset: Boolean = false,
-  useArtwork: Boolean = true,
-  defaultArtworkPainter: Painter? = null,
-  subtitles: @Composable ((CueGroup) -> Unit)? = null, // TODO
   showBuffering: ShowBuffering = ShowBuffering.Never,
   buffering: @Composable (() -> Unit)? = null,
-  errorMessage: @Composable ((PlaybackException) -> Unit)? = null,
-  overlay: @Composable (() -> Unit)? = null,
   controllerHideOnTouch: Boolean = true,
   controllerAutoShow: Boolean = true,
   controller: @Composable ((MediaState) -> Unit)? = null,
@@ -212,40 +178,6 @@ fun Media(
       }
     }
 
-    // artwork in audio stream
-    val artworkPainter = when {
-      // non video track is selected, can use artwork
-      state.isVideoTrackSelected == false -> {
-        if (!useArtwork) {
-          null
-        } else {
-          state.artworkPainter ?: defaultArtworkPainter
-        }
-      }
-
-      keepContentOnPlayerReset -> state.usingArtworkPainter
-      else -> null
-    }
-    if (artworkPainter != null) {
-      Image(
-        painter = artworkPainter,
-        contentDescription = null,
-        modifier = Modifier
-          .testTag(TestTag_Artwork)
-          .fillMaxSize(),
-        contentScale = resizeMode.contentScale,
-      )
-    }
-    SideEffect {
-      state.usingArtworkPainter = artworkPainter
-    }
-
-    // subtitles
-    if (subtitles != null) {
-      val cues = state.playerState?.cues ?: CueGroup.EMPTY_TIME_ZERO
-      subtitles(cues)
-    }
-
     // buffering
     val isBufferingShowing by remember(showBuffering) {
       derivedStateOf {
@@ -259,14 +191,6 @@ fun Media(
       }
     }
     if (isBufferingShowing) buffering?.invoke()
-
-    // error message
-    if (errorMessage != null) {
-      state.playerError?.run { errorMessage(this) }
-    }
-
-    // overlay
-    overlay?.invoke()
 
     // controller
     if (controller != null) {
@@ -313,14 +237,7 @@ private fun VideoSurface(state: MediaState, surfaceType: SurfaceType, modifier: 
       AndroidView(
         factory = { videoView },
         modifier = modifier,
-//        update = { view ->
-//          view.selectedItem = index
-//        },
-//        onReset = { view ->
-//          view.clear()
-//        } todo: ???? lazy lists???
       ) {
-        // update player
         val currentPlayer = state.player
         val previousPlayer = it.tag as? Player
         if (previousPlayer === currentPlayer) return@AndroidView
@@ -342,4 +259,3 @@ private fun VideoSurface(state: MediaState, surfaceType: SurfaceType, modifier: 
 
 internal const val TestTag_VideoSurface = "VideoSurface"
 internal const val TestTag_Shutter = "Shutter"
-internal const val TestTag_Artwork = "Artwork"
