@@ -2,10 +2,15 @@ package com.hedvig.android.design.system.hedvig
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ComponentRegistry
 import coil.ImageLoader
 import coil.disk.DiskCache
@@ -15,6 +20,7 @@ import coil.request.Disposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import java.io.File
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
@@ -59,6 +65,21 @@ fun rememberPreviewImageLoader(): PreviewImageLoader {
   val context = LocalContext.current
   return remember { PreviewImageLoader(context) }
 }
+
+//@OptIn(UnstableApi::class)
+//@Composable
+//fun rememberPreviewSimpleCache(): SimpleCache {
+//  val context = LocalContext.current
+//  val cache = SimpleCache(
+//    cacheDir = File("",""),
+//    evictor = LeastRecentlyUsedCacheEvictor(1 * 1 * 1.toLong()),
+//    databaseProvider = null,
+//    legacyIndexSecretKey = null,
+//    legacyIndexEncrypt = false,
+//    preferLegacyIndex = false
+//  )
+//  return remember { cache }
+//}
 
 @Preview(
   name = "lightMode portrait",

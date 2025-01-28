@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -51,10 +53,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
@@ -85,14 +89,17 @@ internal fun CbmChatDestination(
     onRetryLoadingChat = {
       viewModel.emit(CbmChatEvent.RetryLoadingChat)
     },
+    simpleVideoCache = simpleVideoCache,
   )
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatScreen(
   uiState: CbmChatUiState,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
@@ -144,6 +151,7 @@ private fun ChatScreen(
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
+              simpleVideoCache = simpleVideoCache,
             )
           }
         }
@@ -234,23 +242,24 @@ private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
 private fun PreviewChatScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
 ) {
-  com.hedvig.android.design.system.hedvig.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.Surface(
-      color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
-    ) {
-      ChatScreen(
-        uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
-        imageLoader = rememberPreviewImageLoader(),
-        appPackageId = "",
-        openUrl = {},
-        onNavigateToClaimDetails = {},
-        onNavigateUp = {},
-        onSendMessage = {},
-        onSendPhoto = {},
-        onSendMedia = {},
-        onRetrySendChatMessage = {},
-        onRetryLoadingChat = {},
-      )
-    }
-  }
+//  HedvigTheme {
+//    Surface(
+//      color = HedvigTheme.colorScheme.backgroundPrimary,
+//    ) {
+//      ChatScreen(
+//        uiState = if (isError) Error else Initializing,
+//        imageLoader = rememberPreviewImageLoader(),
+//        appPackageId = "",
+//        openUrl = {},
+//        onNavigateToClaimDetails = {},
+//        onNavigateUp = {},
+//        onSendMessage = {},
+//        onSendPhoto = {},
+//        onSendMedia = {},
+//        onRetrySendChatMessage = {},
+//        onRetryLoadingChat = {},
+//        simpleVideoCache = SimpleCache
+//      )
+//    }
+//  }
 }

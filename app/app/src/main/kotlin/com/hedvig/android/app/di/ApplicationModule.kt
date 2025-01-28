@@ -2,10 +2,14 @@
 
 package com.hedvig.android.app.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -178,6 +182,18 @@ fun makeUserAgent(languageBCP47: String): String = buildString {
   append(")")
 }
 
+@SuppressLint("UnsafeOptInUsageError")
+private val videoPlayerModule = module {
+  single<SimpleCache> {
+    val applicationContext = get<Context>().applicationContext
+    val cacheSize = 100 * 1024 * 1024 // 100MB cache
+    val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
+    val databaseProvider = StandaloneDatabaseProvider(applicationContext)
+    SimpleCache(File(applicationContext.cacheDir, "media"),
+      cacheEvictor, databaseProvider)
+  }
+}
+
 private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
     val context = get<Context>()
@@ -299,6 +315,7 @@ val applicationModule = module {
       addonPurchaseModule,
       apolloAuthListenersModule,
       appModule,
+      videoPlayerModule,
       authModule,
       buildConstantsModule,
       chooseTierModule,

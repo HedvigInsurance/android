@@ -71,10 +71,13 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -154,10 +157,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Instant
 
+
 @Composable
 internal fun CbmChatLoadedScreen(
-  uiState: CbmChatUiState.Loaded,
+  uiState: Loaded,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -176,6 +181,7 @@ internal fun CbmChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
     imageLoader = imageLoader,
+    simpleVideoCache = simpleVideoCache,
     openUrl = openUrl,
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
@@ -199,12 +205,14 @@ internal fun CbmChatLoadedScreen(
   )
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatLoadedScreen(
-  uiState: CbmChatUiState.Loaded,
+  uiState: Loaded,
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
@@ -218,6 +226,7 @@ private fun ChatLoadedScreen(
         messages = uiState.messages,
         latestChatMessage = uiState.latestMessage,
         imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
         openUrl = openUrl,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
@@ -320,6 +329,7 @@ private fun ChatLazyColumn(
   messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -343,7 +353,7 @@ private fun ChatLazyColumn(
       key = messages.itemKey { it.chatMessage.id },
       contentType = messages.itemContentType { uiChatMessage ->
         when (uiChatMessage.chatMessage) {
-          is CbmChatMessage.ChatMessageFile -> {
+          is ChatMessageFile -> {
             when (uiChatMessage.chatMessage.mimeType) {
               ChatMessageFile.MimeType.IMAGE -> "ChatMessage.ChatMessageFileImage"
               ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
@@ -351,34 +361,17 @@ private fun ChatLazyColumn(
               ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
             }
           }
-          is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
+          is ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
-          is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
+          is ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
+          is ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          is ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
         }
       },
     ) { index: Int ->
       val uiChatMessage = messages[index]
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
-      val context = LocalContext.current
-      val cacheDataSourceFactory = CacheDataSource.Factory()
-      val mediaSourceFactory: MediaSource.Factory =
-        DefaultMediaSourceFactory(context)
-          .setDataSourceFactory(cacheDataSourceFactory)
-      val exoPlayer = remember {
-        ExoPlayer
-        .Builder(context)
-//        .setMediaSourceFactory(
-//          mediaSourceFactory
-//        )
-        .build().apply {
-        prepare()
-        playWhenReady = false
-        repeatMode = Player.REPEAT_MODE_OFF
-      }
-      }
-      val mediaState = rememberMediaState(player = exoPlayer)
+      val mediaState = videoPlayerMediaState(simpleVideoCache)
       ChatBubble(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
@@ -477,38 +470,38 @@ private fun ChatBubble(
           }
         }
 
-        is CbmChatMessage.ChatMessageFile -> {
+        is ChatMessageFile -> {
           when (chatMessage.mimeType) {
-            CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
+            ChatMessageFile.MimeType.IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id,
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }),
               )
             }
-            CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
+            ChatMessageFile.MimeType.MP4 -> {
               VideoMessage(
                 state = mediaState,
-                url = chatMessage.url
+                url = chatMessage.url,
               )
 
 
             }
-            CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
+            ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
-            CbmChatMessage.ChatMessageFile.MimeType.OTHER,
+            ChatMessageFile.MimeType.OTHER,
             -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
         }
 
-        is CbmChatMessage.ChatMessageGif -> {
+        is ChatMessageGif -> {
           ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.id)
         }
 
         is CbmChatMessage.FailedToBeSent -> {
           when (chatMessage) {
-            is CbmChatMessage.FailedToBeSent.ChatMessageText -> {
+            is ChatMessageText -> {
               Surface(
                 shape = HedvigTheme.shapes.cornerLarge,
                 color = HedvigTheme.colorScheme.signalRedFill,
@@ -533,11 +526,11 @@ private fun ChatBubble(
               }
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> {
+            is ChatMessagePhoto -> {
               FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> {
+            is ChatMessageMedia -> {
               FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
           }
@@ -626,34 +619,29 @@ private fun AttachedFileMessage(
   }
 }
 
-
-//              val mediaSource = ProgressiveMediaSource.Factory(
-//                CacheDataSource.Factory()
-//                  .setCache(ApplicationClass.getInstance().simpleCache)
-//                  .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory()
-//                    .setUserAgent("ExoplayerDemo"))
-//                  .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-//              ).createMediaSource(MediaItem.fromUri(chatMessage.url))
 @Composable
 private fun VideoMessage(
   state: MediaState,
   url: String,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   LaunchedEffect(url) {
     state.player?.setMediaItem(MediaItem.fromUri(url))
   }
 
-  LocalLifecycleOwner.current.lifecycle.addObserver(object : LifecycleEventObserver {
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-      when (event) {
-        Lifecycle.Event.ON_STOP -> {
-          state.player?.pause()
+  LocalLifecycleOwner.current.lifecycle.addObserver(
+    object : LifecycleEventObserver {
+      override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+          Lifecycle.Event.ON_STOP -> {
+            state.player?.pause()
+          }
+
+          else -> {}
         }
-        else -> {}
       }
-    }
-  })
+    },
+  )
 
   DisposableEffect(
     Media(
@@ -678,13 +666,36 @@ private fun VideoMessage(
         Modifier.fillMaxSize()
           .clip(HedvigTheme.shapes.cornerLarge),
       )
-    }
+    },
   ) {
     onDispose {
       state.player?.release()
     }
   }
+}
 
+@Composable
+@androidx.annotation.OptIn(UnstableApi::class)
+private fun videoPlayerMediaState(cache: SimpleCache): MediaState {
+  val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+  val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
+    .setUpstreamDataSourceFactory(httpDataSourceFactory)
+    .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+  val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
+  val context = LocalContext.current
+  val exoPlayer = remember {
+    ExoPlayer
+      .Builder(context)
+        .setMediaSourceFactory(
+          mediaSourceFactory,
+        )
+      .build().apply {
+        prepare()
+        playWhenReady = false
+        repeatMode = Player.REPEAT_MODE_OFF
+      }
+  }
+  return rememberMediaState(player = exoPlayer)
 }
 
 @Composable
@@ -864,39 +875,39 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 @HedvigPreview
 @Composable
 private fun PreviewChatLoadedScreen() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
-        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
-        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
-        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
-        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
-      )
-        .reversed()
-        .mapIndexed { index, item ->
-          CbmUiChatMessage(item, index == 0)
-        }
-      ChatLoadedScreen(
-        uiState = Loaded(
-          backendConversationInfo = Info(
-            "1",
-            ClaimInfo("id", "claimType"),
-            Instant.parse("2024-05-01T00:00:00Z"),
-            false,
-          ),
-          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
-          latestMessage = null,
-          bannerText = ClosedConversation,
-        ),
-        lazyListState = rememberLazyListState(),
-        imageLoader = rememberPreviewImageLoader(),
-        openUrl = {},
-        onRetrySendChatMessage = {},
-        chatInput = {},
-      )
-    }
-  }
+//  HedvigTheme {
+//    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+//      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
+//        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+//        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
+//        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+//        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+//        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
+//        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
+//        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
+//      )
+//        .reversed()
+//        .mapIndexed { index, item ->
+//          CbmUiChatMessage(item, index == 0)
+//        }
+//      ChatLoadedScreen(
+//        uiState = Loaded(
+//          backendConversationInfo = Info(
+//            "1",
+//            ClaimInfo("id", "claimType"),
+//            Instant.parse("2024-05-01T00:00:00Z"),
+//            false,
+//          ),
+//          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
+//          latestMessage = null,
+//          bannerText = ClosedConversation,
+//        ),
+//        lazyListState = rememberLazyListState(),
+//        imageLoader = rememberPreviewImageLoader(),
+//        openUrl = {},
+//        onRetrySendChatMessage = {},
+//        chatInput = {},
+//      )
+//    }
+//  }
 }
