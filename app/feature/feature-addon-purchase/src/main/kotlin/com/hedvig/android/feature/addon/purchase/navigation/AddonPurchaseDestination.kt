@@ -26,7 +26,7 @@ internal sealed interface AddonPurchaseDestination {
     @Serializable
     data class TravelPerilData(
       val title: String,
-      val description: String,
+      val description: String?,
       val covered: List<String>,
       val colorCode: String?,
       val isEnabled: Boolean = true,
