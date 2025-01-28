@@ -662,7 +662,8 @@ private fun ChatAsyncImage(
         }
       }
     },
-    modifier = Modifier.clip(HedvigTheme.shapes.cornerLarge)
+    modifier = Modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
       .then(modifier)
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
@@ -676,7 +677,6 @@ private fun ChatAsyncImage(
           Modifier
         },
       ),
-//      .clip(HedvigTheme.shapes.cornerLarge),
   )
 }
 
