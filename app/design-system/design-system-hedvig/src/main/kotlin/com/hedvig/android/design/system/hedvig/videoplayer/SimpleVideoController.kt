@@ -20,10 +20,13 @@ import kotlinx.coroutines.delay
  * A simple controller, which consists of a play/pause button and a time bar.
  */
 @Composable
-fun SimpleVideoController(mediaState: MediaState, modifier: Modifier = Modifier) {
+fun SimpleVideoController(
+  mediaState: MediaState,
+  controllerState: ControllerState,
+  modifier: Modifier = Modifier) {
   Crossfade(targetState = mediaState.isControllerShowing, modifier) { isShowing ->
     if (isShowing) {
-      val controllerState = rememberControllerState(mediaState)
+
       var scrubbing by remember { mutableStateOf(false) }
       val hideWhenTimeout = !mediaState.shouldShowControllerIndefinitely && !scrubbing
       var hideEffectReset by remember { mutableStateOf(0) }

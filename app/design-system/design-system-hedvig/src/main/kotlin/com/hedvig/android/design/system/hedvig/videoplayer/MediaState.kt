@@ -2,20 +2,11 @@ package com.hedvig.android.design.system.hedvig.videoplayer
 
 import android.os.Looper
 import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import kotlin.math.absoluteValue
 
-/**
- * Create and [remember] a [MediaState] instance.
- *
- * Changes to [player] will result in the [MediaState] being updated.
- *
- * @param player the value for [MediaState.player]
- */
 @Composable
 fun rememberMediaState(player: Player?): MediaState = remember { MediaState(initPlayer = player) }.apply {
   this.player = player
@@ -84,7 +75,7 @@ class MediaState(
             playbackState == Player.STATE_ENDED ||
             !playWhenReady
           )
-    } ?: true
+    } != false
   }
 
   internal var controllerAutoShow: Boolean by mutableStateOf(true)
@@ -128,9 +119,9 @@ class MediaState(
   internal val contentAspectRatioRaw by derivedStateOf {
     (playerState?.videoSize ?: VideoSize.UNKNOWN).aspectRatio
   }
-  private var _contentAspectRatio by mutableStateOf(0f)
+  private var _contentAspectRatio by mutableFloatStateOf(0f)
   internal var contentAspectRatio
-    internal set(value) {
+    set(value) {
       val aspectDeformation: Float = value / contentAspectRatio - 1f
       if (aspectDeformation.absoluteValue > 0.01f) {
         // Not within the allowed tolerance, populate the new aspectRatio.
@@ -179,11 +170,3 @@ enum class ControllerVisibility(
 
 private val VideoSize.aspectRatio
   get() = if (height == 0) 0f else width * pixelWidthHeightRatio / height
-private val Painter.aspectRatio
-  get() = intrinsicSize.run {
-    if (this == Size.Unspecified || width.isNaN() || height.isNaN() || height == 0f) {
-      0f
-    } else {
-      width / height
-    }
-  }
