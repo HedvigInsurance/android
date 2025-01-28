@@ -189,8 +189,11 @@ private val videoPlayerModule = module {
     val cacheSize = 100 * 1024 * 1024 // 100MB cache
     val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
     val databaseProvider = StandaloneDatabaseProvider(applicationContext)
-    SimpleCache(File(applicationContext.cacheDir, "media"),
-      cacheEvictor, databaseProvider)
+    SimpleCache(
+      File(applicationContext.cacheDir, "media"),
+      cacheEvictor,
+      databaseProvider,
+    )
   }
 }
 

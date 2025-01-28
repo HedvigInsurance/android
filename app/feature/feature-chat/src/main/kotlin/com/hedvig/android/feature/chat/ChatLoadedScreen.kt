@@ -72,11 +72,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -110,6 +108,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.design.system.hedvig.videoplayer.Media
 import com.hedvig.android.design.system.hedvig.videoplayer.MediaState
@@ -157,12 +156,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Instant
 
-
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 internal fun CbmChatLoadedScreen(
   uiState: Loaded,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
+  simpleVideoCache: Cache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -212,7 +211,7 @@ private fun ChatLoadedScreen(
   uiState: Loaded,
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
+  simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
@@ -329,7 +328,7 @@ private fun ChatLazyColumn(
   messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
+  simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -474,7 +473,9 @@ private fun ChatBubble(
           when (chatMessage.mimeType) {
             ChatMessageFile.MimeType.IMAGE -> {
               ChatAsyncImage(
-                model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id,
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }),
               )
             }
@@ -483,8 +484,6 @@ private fun ChatBubble(
                 state = mediaState,
                 url = chatMessage.url,
               )
-
-
             }
             ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
@@ -620,11 +619,7 @@ private fun AttachedFileMessage(
 }
 
 @Composable
-private fun VideoMessage(
-  state: MediaState,
-  url: String,
-  modifier: Modifier = Modifier,
-) {
+private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Modifier) {
   LaunchedEffect(url) {
     state.player?.setMediaItem(MediaItem.fromUri(url))
   }
@@ -676,7 +671,7 @@ private fun VideoMessage(
 
 @Composable
 @androidx.annotation.OptIn(UnstableApi::class)
-private fun videoPlayerMediaState(cache: SimpleCache): MediaState {
+private fun videoPlayerMediaState(cache: Cache): MediaState {
   val httpDataSourceFactory = DefaultHttpDataSource.Factory()
   val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
     .setUpstreamDataSourceFactory(httpDataSourceFactory)
@@ -686,9 +681,9 @@ private fun videoPlayerMediaState(cache: SimpleCache): MediaState {
   val exoPlayer = remember {
     ExoPlayer
       .Builder(context)
-        .setMediaSourceFactory(
-          mediaSourceFactory,
-        )
+      .setMediaSourceFactory(
+        mediaSourceFactory,
+      )
       .build().apply {
         prepare()
         playWhenReady = false
@@ -875,39 +870,40 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 @HedvigPreview
 @Composable
 private fun PreviewChatLoadedScreen() {
-//  HedvigTheme {
-//    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-//      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
-//        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-//        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
-//        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-//        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
-//        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
-//        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-//        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
-//      )
-//        .reversed()
-//        .mapIndexed { index, item ->
-//          CbmUiChatMessage(item, index == 0)
-//        }
-//      ChatLoadedScreen(
-//        uiState = Loaded(
-//          backendConversationInfo = Info(
-//            "1",
-//            ClaimInfo("id", "claimType"),
-//            Instant.parse("2024-05-01T00:00:00Z"),
-//            false,
-//          ),
-//          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
-//          latestMessage = null,
-//          bannerText = ClosedConversation,
-//        ),
-//        lazyListState = rememberLazyListState(),
-//        imageLoader = rememberPreviewImageLoader(),
-//        openUrl = {},
-//        onRetrySendChatMessage = {},
-//        chatInput = {},
-//      )
-//    }
-//  }
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
+        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
+        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
+        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
+        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
+      )
+        .reversed()
+        .mapIndexed { index, item ->
+          CbmUiChatMessage(item, index == 0)
+        }
+      ChatLoadedScreen(
+        uiState = Loaded(
+          backendConversationInfo = Info(
+            "1",
+            ClaimInfo("id", "claimType"),
+            Instant.parse("2024-05-01T00:00:00Z"),
+            false,
+          ),
+          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
+          latestMessage = null,
+          bannerText = ClosedConversation,
+        ),
+        lazyListState = rememberLazyListState(),
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+        onRetrySendChatMessage = {},
+        chatInput = {},
+        simpleVideoCache = rememberPreviewSimpleCache(),
+      )
+    }
+  }
 }

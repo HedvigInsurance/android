@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig.videoplayer
 
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -60,14 +59,14 @@ fun TimeBar(
   },
   scrubber: @Composable (enable: Boolean, scrubbing: Boolean) -> Unit = { enable, scrubbing ->
     TimeBarScrubber(enable, scrubbing)
-  }
+  },
 ) {
   val layoutDirection = LocalLayoutDirection.current
   require(
     contentPadding.calculateLeftPadding(layoutDirection) >= 0.dp &&
       contentPadding.calculateTopPadding() >= 0.dp &&
       contentPadding.calculateRightPadding(layoutDirection) >= 0.dp &&
-      contentPadding.calculateBottomPadding() >= 0.dp
+      contentPadding.calculateBottomPadding() >= 0.dp,
   ) {
     "Padding must be non-negative"
   }
@@ -92,8 +91,11 @@ fun TimeBar(
     var scrubberWidth by remember { mutableStateOf(0) }
     val boundWidth by remember(barWidth, scrubberCenterAsAnchor) {
       derivedStateOf {
-        if (scrubberCenterAsAnchor) barWidth
-        else barWidth - scrubberWidth
+        if (scrubberCenterAsAnchor) {
+          barWidth
+        } else {
+          barWidth - scrubberWidth
+        }
       }
     }
     val positionFraction: Float by remember(durationMs) {
@@ -112,8 +114,11 @@ fun TimeBar(
       onDragStarted = { startPosition ->
         scrubbing = true
         val startX = (startPosition.x - contentLeftPadding).run {
-          if (scrubberCenterAsAnchor) this
-          else this - scrubberWidth / 2
+          if (scrubberCenterAsAnchor) {
+            this
+          } else {
+            this - scrubberWidth / 2
+          }
         }
         scrubPosition =
           (startX / boundWidth * durationMs).roundToLong().coerceIn(0L, durationMs)
@@ -122,23 +127,23 @@ fun TimeBar(
       onDragStopped = {
         currentOnScrubStop?.invoke(scrubPosition)
         scrubbing = false
-      }
+      },
     )
 
     Box(
       modifier = Modifier
         .fillMaxSize()
         .then(drag)
-        .padding(contentPadding)
+        .padding(contentPadding),
     ) {
       Box(
         modifier = Modifier
-          .fillMaxSize()
+          .fillMaxSize(),
       ) {
         progress(
           if (durationMs > 0) currentPosition.toFloat() / durationMs else 0f,
           if (durationMs > 0) scrubPosition.toFloat() / durationMs else 0f,
-          if (durationMs > 0) bufferedPositionMs.toFloat() / durationMs else 0f
+          if (durationMs > 0) bufferedPositionMs.toFloat() / durationMs else 0f,
         )
       }
       if (durationMs >= 0) {
@@ -148,10 +153,13 @@ fun TimeBar(
             .onGloballyPositioned { scrubberWidth = it.size.width }
             .offset {
               val offsetX =
-                if (scrubberCenterAsAnchor) positionFraction * boundWidth - (scrubberWidth / 2f)
-                else positionFraction * boundWidth
+                if (scrubberCenterAsAnchor) {
+                  positionFraction * boundWidth - (scrubberWidth / 2f)
+                } else {
+                  positionFraction * boundWidth
+                }
               IntOffset(offsetX.roundToInt(), 0)
-            }
+            },
         ) {
           scrubber(enabled, scrubbing)
         }
@@ -191,7 +199,7 @@ fun TimeBarProgress(
       drawRect(
         playedColor,
         topLeft = Offset(left, 0f),
-        size = size.copy(width = playedWidth)
+        size = size.copy(width = playedWidth),
       )
       left = playedRight
     }
@@ -202,7 +210,7 @@ fun TimeBarProgress(
       drawRect(
         bufferedColor,
         topLeft = Offset(left, 0f),
-        size = size.copy(width = bufferedWidth)
+        size = size.copy(width = bufferedWidth),
       )
       left = bufferedRight
     }
@@ -211,7 +219,7 @@ fun TimeBarProgress(
       drawRect(
         unplayedColor,
         topLeft = Offset(left, 0f),
-        size = size.copy(width = size.width - left)
+        size = size.copy(width = size.width - left),
       )
     }
   }
@@ -240,7 +248,7 @@ fun TimeBarScrubber(
   disabledSize: Dp = 0.dp,
   draggedSize: Dp = 16.dp,
   color: Color = Color(0xFFFFFFFF),
-  shape: Shape = CircleShape
+  shape: Shape = CircleShape,
 ) {
   val size = when {
     !enabled -> disabledSize
@@ -250,6 +258,6 @@ fun TimeBarScrubber(
   Spacer(
     modifier = modifier
       .size(size)
-      .background(color, shape)
+      .background(color, shape),
   )
 }

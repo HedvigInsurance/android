@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -39,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -99,7 +101,7 @@ internal fun CbmChatDestination(
 private fun ChatScreen(
   uiState: CbmChatUiState,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
+  simpleVideoCache: Cache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
@@ -242,24 +244,24 @@ private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
 private fun PreviewChatScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
 ) {
-//  HedvigTheme {
-//    Surface(
-//      color = HedvigTheme.colorScheme.backgroundPrimary,
-//    ) {
-//      ChatScreen(
-//        uiState = if (isError) Error else Initializing,
-//        imageLoader = rememberPreviewImageLoader(),
-//        appPackageId = "",
-//        openUrl = {},
-//        onNavigateToClaimDetails = {},
-//        onNavigateUp = {},
-//        onSendMessage = {},
-//        onSendPhoto = {},
-//        onSendMedia = {},
-//        onRetrySendChatMessage = {},
-//        onRetryLoadingChat = {},
-//        simpleVideoCache = SimpleCache
-//      )
-//    }
-//  }
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      ChatScreen(
+        uiState = if (isError) Error else Initializing,
+        imageLoader = rememberPreviewImageLoader(),
+        appPackageId = "",
+        openUrl = {},
+        onNavigateToClaimDetails = {},
+        onNavigateUp = {},
+        onSendMessage = {},
+        onSendPhoto = {},
+        onSendMedia = {},
+        onRetrySendChatMessage = {},
+        onRetryLoadingChat = {},
+        simpleVideoCache = rememberPreviewSimpleCache(),
+      )
+    }
+  }
 }

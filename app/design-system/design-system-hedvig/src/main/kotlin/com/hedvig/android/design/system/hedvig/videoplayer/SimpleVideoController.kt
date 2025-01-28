@@ -20,10 +20,7 @@ import kotlinx.coroutines.delay
  * A simple controller, which consists of a play/pause button and a time bar.
  */
 @Composable
-fun SimpleVideoController(
-  mediaState: MediaState,
-  modifier: Modifier = Modifier,
-) {
+fun SimpleVideoController(mediaState: MediaState, modifier: Modifier = Modifier) {
   Crossfade(targetState = mediaState.isControllerShowing, modifier) { isShowing ->
     if (isShowing) {
       val controllerState = rememberControllerState(mediaState)
@@ -51,12 +48,15 @@ fun SimpleVideoController(
         ) {
           Icon(
             imageVector =
-            if (controllerState.showPause) HedvigIcons.Pause
-            else HedvigIcons.Play,
+              if (controllerState.showPause) {
+                HedvigIcons.Pause
+              } else {
+                HedvigIcons.Play
+              },
             contentDescription = null,
             tint = Color.White,
             modifier = Modifier
-              .size(52.dp)
+              .size(52.dp),
           )
         }
 

@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
@@ -123,7 +125,7 @@ internal fun HedvigApp(
             imageLoader = imageLoader,
             languageService = languageService,
             hedvigBuildConstants = hedvigBuildConstants,
-            simpleVideoCache = simpleVideoCache
+            simpleVideoCache = simpleVideoCache,
           )
         }
       }

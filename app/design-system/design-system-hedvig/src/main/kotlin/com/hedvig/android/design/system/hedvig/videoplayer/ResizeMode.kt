@@ -48,10 +48,7 @@ internal val ResizeMode.contentScale
     ResizeMode.Zoom -> ContentScale.Crop
   }
 
-internal fun Modifier.resize(
-  aspectRatio: Float,
-  resizeMode: ResizeMode
-) = when (resizeMode) {
+internal fun Modifier.resize(aspectRatio: Float, resizeMode: ResizeMode) = when (resizeMode) {
   ResizeMode.Fit -> aspectRatio(aspectRatio)
   ResizeMode.Fill -> fillMaxSize()
   ResizeMode.FixedWidth -> fixedWidth(aspectRatio)
@@ -59,23 +56,17 @@ internal fun Modifier.resize(
   ResizeMode.Zoom -> zoom(aspectRatio)
 }
 
-private fun Modifier.fixedWidth(
-  aspectRatio: Float
-) = clipToBounds()
+private fun Modifier.fixedWidth(aspectRatio: Float) = clipToBounds()
   .fillMaxWidth()
   .wrapContentHeight(unbounded = true)
   .aspectRatio(aspectRatio)
 
-private fun Modifier.fixedHeight(
-  aspectRatio: Float
-) = clipToBounds()
+private fun Modifier.fixedHeight(aspectRatio: Float) = clipToBounds()
   .fillMaxHeight()
   .wrapContentWidth(unbounded = true)
   .aspectRatio(aspectRatio)
 
-private fun Modifier.zoom(
-  aspectRatio: Float
-) = clipToBounds()
+private fun Modifier.zoom(aspectRatio: Float) = clipToBounds()
   .layout { measurable, constraints ->
     val maxWidth = constraints.maxWidth
     val maxHeight = constraints.maxHeight

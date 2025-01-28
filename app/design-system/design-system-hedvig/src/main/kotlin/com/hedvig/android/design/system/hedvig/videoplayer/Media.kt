@@ -1,5 +1,6 @@
 
 
+
 package com.hedvig.android.design.system.hedvig.videoplayer
 
 import android.view.SurfaceView
@@ -32,7 +33,7 @@ import androidx.media3.common.util.UnstableApi
 enum class SurfaceType {
   None,
   SurfaceView,
-  TextureView;
+  TextureView,
 }
 
 /**
@@ -54,7 +55,7 @@ enum class ShowBuffering {
    * The buffering indicator is always shown when the player is in the
    * [buffering][Player.STATE_BUFFERING] state.
    */
-  Always;
+  Always,
 }
 
 /**
@@ -97,6 +98,7 @@ enum class ShowBuffering {
  * @param controller The controller. Since a controller is always a subject to be customized,
  * default is null. The [Media] only provides logic for controller visibility controlling.
  */
+@OptIn(UnstableApi::class)
 @Composable
 fun Media(
   state: MediaState,
@@ -116,8 +118,10 @@ fun Media(
   controllerAutoShow: Boolean = true,
   controller: @Composable ((MediaState) -> Unit)? = null,
 ) {
-  if (showBuffering != ShowBuffering.Never) require(buffering != null) {
-    "buffering should not be null if showBuffering is 'ShowBuffering.$showBuffering'"
+  if (showBuffering != ShowBuffering.Never) {
+    require(buffering != null) {
+      "buffering should not be null if showBuffering is 'ShowBuffering.$showBuffering'"
+    }
   }
 
   LaunchedEffect(Unit) {
@@ -140,8 +144,11 @@ fun Media(
         if (controller != null && state.player != null) {
           state.controllerVisibility = when (state.controllerVisibility) {
             ControllerVisibility.Visible -> {
-              if (controllerHideOnTouch) ControllerVisibility.Invisible
-              else ControllerVisibility.Visible
+              if (controllerHideOnTouch) {
+                ControllerVisibility.Invisible
+              } else {
+                ControllerVisibility.Visible
+              }
             }
 
             ControllerVisibility.PartiallyVisible -> ControllerVisibility.Visible
@@ -155,8 +162,11 @@ fun Media(
       modifier = Modifier
         .align(Alignment.Center)
         .run {
-          if (state.contentAspectRatio <= 0) fillMaxSize()
-          else resize(state.contentAspectRatio, resizeMode)
+          if (state.contentAspectRatio <= 0) {
+            fillMaxSize()
+          } else {
+            resize(state.contentAspectRatio, resizeMode)
+          }
         },
     ) {
       VideoSurface(
@@ -206,8 +216,11 @@ fun Media(
     val artworkPainter = when {
       // non video track is selected, can use artwork
       state.isVideoTrackSelected == false -> {
-        if (!useArtwork) null
-        else state.artworkPainter ?: defaultArtworkPainter
+        if (!useArtwork) {
+          null
+        } else {
+          state.artworkPainter ?: defaultArtworkPainter
+        }
       }
 
       keepContentOnPlayerReset -> state.usingArtworkPainter
@@ -237,9 +250,11 @@ fun Media(
     val isBufferingShowing by remember(showBuffering) {
       derivedStateOf {
         state.playerState?.run {
-          playbackState == Player.STATE_BUFFERING
-            && (showBuffering == ShowBuffering.Always
-            || (showBuffering == ShowBuffering.WhenPlaying && playWhenReady))
+          playbackState == Player.STATE_BUFFERING &&
+            (
+              showBuffering == ShowBuffering.Always ||
+                (showBuffering == ShowBuffering.WhenPlaying && playWhenReady)
+            )
         } ?: false
       }
     }
@@ -268,11 +283,7 @@ fun Media(
 }
 
 @Composable
-private fun VideoSurface(
-  state: MediaState,
-  surfaceType: SurfaceType,
-  modifier: Modifier,
-) {
+private fun VideoSurface(state: MediaState, surfaceType: SurfaceType, modifier: Modifier) {
   val context = LocalContext.current
   key(surfaceType, context) {
     if (surfaceType != SurfaceType.None) {
@@ -302,7 +313,6 @@ private fun VideoSurface(
       AndroidView(
         factory = { videoView },
         modifier = modifier,
-
 //        update = { view ->
 //          view.selectedItem = index
 //        },

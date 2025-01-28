@@ -91,7 +91,7 @@ interface PlayerState {
 }
 
 internal class PlayerStateImpl(
-  override val player: Player
+  override val player: Player,
 ) : PlayerState {
   override var timeline: Timeline by mutableStateOf(player.currentTimeline)
     private set
@@ -204,13 +204,15 @@ internal class PlayerStateImpl(
       this@PlayerStateImpl.trackSelectionParameters = parameters
     }
 
-    override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+    override fun onPlaybackStateChanged(
+      @Player.State playbackState: Int,
+    ) {
       this@PlayerStateImpl.playbackState = playbackState
     }
 
     override fun onPlayWhenReadyChanged(
       playWhenReady: Boolean,
-      @Player.PlayWhenReadyChangeReason reason: Int
+      @Player.PlayWhenReadyChangeReason reason: Int,
     ) {
       this@PlayerStateImpl.playWhenReady = playWhenReady
     }
@@ -238,7 +240,7 @@ internal class PlayerStateImpl(
     override fun onPositionDiscontinuity(
       oldPosition: Player.PositionInfo,
       newPosition: Player.PositionInfo,
-      reason: Int
+      reason: Int,
     ) {
       this@PlayerStateImpl.mediaItemIndex = player.currentMediaItemIndex
     }

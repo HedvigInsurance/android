@@ -11,9 +11,7 @@ import androidx.media3.common.util.UnstableApi
  * Create and [remember] a [ControllerState] instance.
  */
 @Composable
-fun rememberControllerState(
-  mediaState: MediaState,
-): ControllerState {
+fun rememberControllerState(mediaState: MediaState): ControllerState {
   return remember { ControllerState(mediaState) }
 }
 
@@ -36,9 +34,9 @@ class ControllerState internal constructor(
    */
   val showPause: Boolean by derivedStateOf {
     playerState?.run {
-      playbackState != Player.STATE_ENDED
-        && playbackState != Player.STATE_IDLE
-        && playWhenReady
+      playbackState != Player.STATE_ENDED &&
+        playbackState != Player.STATE_IDLE &&
+        playWhenReady
     } ?: false
   }
 
@@ -47,9 +45,9 @@ class ControllerState internal constructor(
    */
   fun playOrPause() {
     player?.run {
-      if (playbackState == Player.STATE_IDLE
-        || playbackState == Player.STATE_ENDED
-        || !playWhenReady
+      if (playbackState == Player.STATE_IDLE ||
+        playbackState == Player.STATE_ENDED ||
+        !playWhenReady
       ) {
         if (playbackState == Player.STATE_IDLE) {
           prepare()
@@ -69,8 +67,11 @@ class ControllerState internal constructor(
   val durationMs: Long by derivedStateOf {
     windowOffsetAndDurations
       ?.run {
-        if (multiWindowTimeBar) this.lastOrNull()?.run { first + second }
-        else this[playerState?.mediaItemIndex!!].second
+        if (multiWindowTimeBar) {
+          this.lastOrNull()?.run { first + second }
+        } else {
+          this[playerState?.mediaItemIndex!!].second
+        }
       } ?: C.TIME_UNSET
   }
 
@@ -139,8 +140,8 @@ class ControllerState internal constructor(
     }
   private val Timeline.canShowMultiWindowTimeBar: Boolean
     @OptIn(UnstableApi::class)
-    get() = windowCount <= MAX_WINDOWS_FOR_MULTI_WINDOW_TIME_BAR
-      && windows.all { it.durationUs != C.TIME_UNSET }
+    get() = windowCount <= MAX_WINDOWS_FOR_MULTI_WINDOW_TIME_BAR &&
+      windows.all { it.durationUs != C.TIME_UNSET }
   private val multiWindowTimeBar: Boolean by derivedStateOf {
     showMultiWindowTimeBar && (playerState?.timeline?.canShowMultiWindowTimeBar ?: false)
   }
