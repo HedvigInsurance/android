@@ -17,17 +17,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -35,21 +34,12 @@ import com.hedvig.android.feature.insurances.data.Addon
 
 @Composable
 internal fun DocumentsTab(
-  mainInsuranceTitle: String,
   documents: List<InsuranceVariantDocument>,
   addons: List<Addon>?,
   onDocumentClicked: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    if (!addons.isNullOrEmpty()) {
-      HedvigText(
-        mainInsuranceTitle,
-        color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-    }
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url) },
@@ -63,10 +53,11 @@ internal fun DocumentsTab(
     Spacer(Modifier.height(16.dp))
     if (!addons.isNullOrEmpty()) {
       addons.forEach {
-        HedvigText(
-          it.addonVariant.displayName,
-          color = HedvigTheme.colorScheme.textSecondary,
+        HighlightLabel(
           modifier = Modifier.padding(horizontal = 16.dp),
+          labelText = it.addonVariant.displayName,
+          size = HighlightLabelDefaults.HighLightSize.Medium,
+          color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
         )
         Spacer(Modifier.height(8.dp))
         it.addonVariant.documents.forEachIndexed { index, doc ->
@@ -102,13 +93,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) 
         startSlot = {
           Column {
             HedvigText(
-              text = stringWithShiftedLabel(
-                text = title,
-                labelText = " PDF",
-                labelFontSize = HedvigTheme.typography.bodySmall.fontSize,
-                textColor = LocalContentColor.current,
-                textFontSize = LocalTextStyle.current.fontSize,
-              ),
+              text = title,
             )
             if (!subtitle.isNullOrBlank()) {
               HedvigText(
@@ -144,7 +129,6 @@ private fun PreviewDocumentsScreen() {
           InsuranceVariantDocument("other doc", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
         ),
         onDocumentClicked = {},
-        mainInsuranceTitle = "Main insurance",
         addons = listOf(
           Addon(
             AddonVariant(
