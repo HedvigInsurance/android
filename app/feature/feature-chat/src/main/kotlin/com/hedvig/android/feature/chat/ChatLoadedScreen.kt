@@ -65,8 +65,13 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -101,11 +106,11 @@ import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.design.system.hedvig.videoplayer.Media
+import com.hedvig.android.design.system.hedvig.videoplayer.MediaState
 import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
 import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
 import com.hedvig.android.design.system.hedvig.videoplayer.SimpleController
 import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
-import com.hedvig.android.design.system.hedvig.videoplayer.VideoPlayerExample
 import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
@@ -305,6 +310,7 @@ private fun ScrollToBottomEffect(
   }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 private fun ChatLazyColumn(
   lazyListState: LazyListState,
@@ -334,7 +340,14 @@ private fun ChatLazyColumn(
       key = messages.itemKey { it.chatMessage.id },
       contentType = messages.itemContentType { uiChatMessage ->
         when (uiChatMessage.chatMessage) {
-          is CbmChatMessage.ChatMessageFile -> "ChatMessage.ChatMessageFile"
+          is CbmChatMessage.ChatMessageFile -> {
+            when (uiChatMessage.chatMessage.mimeType) {
+              ChatMessageFile.MimeType.IMAGE -> "ChatMessage.ChatMessageFileImage"
+              ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
+              ChatMessageFile.MimeType.PDF -> "ChatMessage.ChatMessageFilePDF"
+              ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
+            }
+          }
           is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
           is CbmChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
@@ -345,11 +358,29 @@ private fun ChatLazyColumn(
     ) { index: Int ->
       val uiChatMessage = messages[index]
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
+      val context = LocalContext.current
+      val cacheDataSourceFactory = CacheDataSource.Factory()
+      val mediaSourceFactory: MediaSource.Factory =
+        DefaultMediaSourceFactory(context)
+          .setDataSourceFactory(cacheDataSourceFactory)
+      val exoPlayer = remember { ExoPlayer
+        .Builder(context)
+//        .setMediaSourceFactory(
+//          mediaSourceFactory
+//        )
+        .build().apply {
+        prepare()
+        playWhenReady = false
+        repeatMode = Player.REPEAT_MODE_OFF
+      }
+      }
+      val mediaState = rememberMediaState(player = exoPlayer)
       ChatBubble(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
         imageLoader = imageLoader,
         openUrl = openUrl,
+        state = mediaState,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillParentMaxWidth()
@@ -395,17 +426,18 @@ private fun ChatLazyColumn(
   }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   imageLoader: ImageLoader,
+  state: MediaState,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
-  val context = LocalContext.current
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
@@ -444,39 +476,44 @@ private fun ChatBubble(
         is CbmChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
             CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
-              ChatAsyncImage(model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id,
-                modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }))
+              ChatAsyncImage(
+                model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id,
+                modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }),
+              )
             }
             CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
-              val exoPlayer = remember { ExoPlayer.Builder(context).build().apply {
-                prepare()
-                playWhenReady = false
-                repeatMode = Player.REPEAT_MODE_OFF
-              }
-              }
-              exoPlayer.setMediaItem(MediaItem.fromUri( chatMessage.url))
-              val state = rememberMediaState(player = exoPlayer)
+//              val mediaSource = ProgressiveMediaSource.Factory(
+//                CacheDataSource.Factory()
+//                  .setCache(ApplicationClass.getInstance().simpleCache)
+//                  .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory()
+//                    .setUserAgent("ExoplayerDemo"))
+//                  .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+//              ).createMediaSource(MediaItem.fromUri(chatMessage.url))
+              state.player?.setMediaItem(MediaItem.fromUri( chatMessage.url))
               Media(
                 state = state,
                 // following parameters are optional
                 modifier = Modifier
                   .height(250.dp)
-                  .fillMaxSize()
+                  // .fillMaxSize()
                   .clip(HedvigTheme.shapes.cornerLarge)
                   .background(Color.Black),
-                surfaceType = SurfaceType.SurfaceView,
+                surfaceType = SurfaceType.TextureView,
                 resizeMode = ResizeMode.Fit,
                 keepContentOnPlayerReset = false,
                 useArtwork = true,
-                showBuffering = ShowBuffering.Never,
+                showBuffering = ShowBuffering.Always,
                 buffering = {
                   Box(Modifier.fillMaxSize(), Alignment.Center) {
                     HedvigCircularProgressIndicator()
                   }
-                }
+                },
               ) { state ->
-                SimpleController(state, Modifier.fillMaxSize()
-                  .clip(HedvigTheme.shapes.cornerLarge))
+                SimpleController(
+                  state,
+                  Modifier.fillMaxSize()
+                    .clip(HedvigTheme.shapes.cornerLarge),
+                )
               }
              // VideoPlayerExample(exoPlayer)
 
@@ -707,8 +744,7 @@ private fun ChatAsyncImage(
           Modifier
         },
       )
-      .clip(HedvigTheme.shapes.cornerLarge)
-    ,
+      .clip(HedvigTheme.shapes.cornerLarge),
   )
 }
 

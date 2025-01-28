@@ -1,8 +1,11 @@
+
+
 package com.hedvig.android.design.system.hedvig.videoplayer
 
 import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
+import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.text.CueGroup
+import androidx.media3.common.util.UnstableApi
 
 /**
  * The type of surface view used for video playbacks.
@@ -298,6 +302,13 @@ private fun VideoSurface(
       AndroidView(
         factory = { videoView },
         modifier = modifier,
+
+//        update = { view ->
+//          view.selectedItem = index
+//        },
+//        onReset = { view ->
+//          view.clear()
+//        } todo: ???? lazy lists???
       ) {
         // update player
         val currentPlayer = state.player
