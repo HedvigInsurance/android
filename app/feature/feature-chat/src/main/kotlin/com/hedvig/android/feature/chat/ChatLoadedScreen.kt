@@ -108,7 +108,7 @@ import com.hedvig.android.design.system.hedvig.videoplayer.Media
 import com.hedvig.android.design.system.hedvig.videoplayer.MediaState
 import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
 import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
-import com.hedvig.android.design.system.hedvig.videoplayer.SimpleController
+import com.hedvig.android.design.system.hedvig.videoplayer.SimpleVideoController
 import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
 import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -639,36 +639,36 @@ private fun VideoMessage(
   LaunchedEffect(url) {
     state.player?.setMediaItem(MediaItem.fromUri(url))
   }
-  DisposableEffect(Unit) {
+  DisposableEffect(
+    Media(
+      state = state,
+      modifier = modifier
+        .height(250.dp)
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .background(Color.Black),
+      surfaceType = SurfaceType.TextureView,
+      resizeMode = ResizeMode.Fit,
+      keepContentOnPlayerReset = false,
+      useArtwork = true,
+      showBuffering = ShowBuffering.Always,
+      buffering = {
+        Box(Modifier.fillMaxSize(), Alignment.Center) {
+          HedvigCircularProgressIndicator()
+        }
+      },
+    ) { state ->
+      SimpleVideoController(
+        state,
+        Modifier.fillMaxSize()
+          .clip(HedvigTheme.shapes.cornerLarge),
+      )
+    }
+  ) {
     onDispose {
       state.player?.release()
     }
   }
-  Media(
-    state = state,
-    // following parameters are optional
-    modifier = modifier
-      .height(250.dp)
-      // .fillMaxSize()
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .background(Color.Black),
-    surfaceType = SurfaceType.TextureView,
-    resizeMode = ResizeMode.Fit,
-    keepContentOnPlayerReset = false,
-    useArtwork = true,
-    showBuffering = ShowBuffering.Always,
-    buffering = {
-      Box(Modifier.fillMaxSize(), Alignment.Center) {
-        HedvigCircularProgressIndicator()
-      }
-    },
-  ) { state ->
-    SimpleController(
-      state,
-      Modifier.fillMaxSize()
-        .clip(HedvigTheme.shapes.cornerLarge),
-    )
-  }
+
 }
 
 @Composable

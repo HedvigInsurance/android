@@ -2,8 +2,6 @@ package com.hedvig.android.design.system.hedvig.videoplayer
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.*
@@ -22,7 +20,7 @@ import kotlinx.coroutines.delay
  * A simple controller, which consists of a play/pause button and a time bar.
  */
 @Composable
-fun SimpleController(
+fun SimpleVideoController(
   mediaState: MediaState,
   modifier: Modifier = Modifier,
 ) {
@@ -61,7 +59,6 @@ fun SimpleController(
               .size(52.dp)
           )
         }
-
 
         LaunchedEffect(Unit) {
           while (true) {
