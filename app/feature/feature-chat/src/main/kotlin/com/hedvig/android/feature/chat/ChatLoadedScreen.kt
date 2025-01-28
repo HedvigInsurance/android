@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -66,12 +67,10 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -363,7 +362,8 @@ private fun ChatLazyColumn(
       val mediaSourceFactory: MediaSource.Factory =
         DefaultMediaSourceFactory(context)
           .setDataSourceFactory(cacheDataSourceFactory)
-      val exoPlayer = remember { ExoPlayer
+      val exoPlayer = remember {
+        ExoPlayer
         .Builder(context)
 //        .setMediaSourceFactory(
 //          mediaSourceFactory
@@ -380,7 +380,7 @@ private fun ChatLazyColumn(
         chatItemIndex = index,
         imageLoader = imageLoader,
         openUrl = openUrl,
-        state = mediaState,
+        mediaState = mediaState,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillParentMaxWidth()
@@ -432,7 +432,7 @@ private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   imageLoader: ImageLoader,
-  state: MediaState,
+  mediaState: MediaState,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -482,40 +482,11 @@ private fun ChatBubble(
               )
             }
             CbmChatMessage.ChatMessageFile.MimeType.MP4 -> {
-//              val mediaSource = ProgressiveMediaSource.Factory(
-//                CacheDataSource.Factory()
-//                  .setCache(ApplicationClass.getInstance().simpleCache)
-//                  .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory()
-//                    .setUserAgent("ExoplayerDemo"))
-//                  .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-//              ).createMediaSource(MediaItem.fromUri(chatMessage.url))
-              state.player?.setMediaItem(MediaItem.fromUri( chatMessage.url))
-              Media(
-                state = state,
-                // following parameters are optional
-                modifier = Modifier
-                  .height(250.dp)
-                  // .fillMaxSize()
-                  .clip(HedvigTheme.shapes.cornerLarge)
-                  .background(Color.Black),
-                surfaceType = SurfaceType.TextureView,
-                resizeMode = ResizeMode.Fit,
-                keepContentOnPlayerReset = false,
-                useArtwork = true,
-                showBuffering = ShowBuffering.Always,
-                buffering = {
-                  Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    HedvigCircularProgressIndicator()
-                  }
-                },
-              ) { state ->
-                SimpleController(
-                  state,
-                  Modifier.fillMaxSize()
-                    .clip(HedvigTheme.shapes.cornerLarge),
-                )
-              }
-             // VideoPlayerExample(exoPlayer)
+              VideoMessage(
+                state = mediaState,
+                url = chatMessage.url
+              )
+
 
             }
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
@@ -648,6 +619,55 @@ private fun AttachedFileMessage(
       Icon(imageVector = HedvigIcons.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
       HedvigText(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
     }
+  }
+}
+
+
+//              val mediaSource = ProgressiveMediaSource.Factory(
+//                CacheDataSource.Factory()
+//                  .setCache(ApplicationClass.getInstance().simpleCache)
+//                  .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory()
+//                    .setUserAgent("ExoplayerDemo"))
+//                  .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+//              ).createMediaSource(MediaItem.fromUri(chatMessage.url))
+@Composable
+private fun VideoMessage(
+  state: MediaState,
+  url: String,
+  modifier: Modifier = Modifier
+) {
+  LaunchedEffect(url) {
+    state.player?.setMediaItem(MediaItem.fromUri(url))
+  }
+  DisposableEffect(Unit) {
+    onDispose {
+      state.player?.release()
+    }
+  }
+  Media(
+    state = state,
+    // following parameters are optional
+    modifier = modifier
+      .height(250.dp)
+      // .fillMaxSize()
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(Color.Black),
+    surfaceType = SurfaceType.TextureView,
+    resizeMode = ResizeMode.Fit,
+    keepContentOnPlayerReset = false,
+    useArtwork = true,
+    showBuffering = ShowBuffering.Always,
+    buffering = {
+      Box(Modifier.fillMaxSize(), Alignment.Center) {
+        HedvigCircularProgressIndicator()
+      }
+    },
+  ) { state ->
+    SimpleController(
+      state,
+      Modifier.fillMaxSize()
+        .clip(HedvigTheme.shapes.cornerLarge),
+    )
   }
 }
 

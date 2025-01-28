@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
@@ -42,23 +43,25 @@ fun SimpleController(
           .fillMaxSize()
           .background(Color.Transparent),
       ) {
-        Icon(
-          imageVector =
-          if (controllerState.showPause) HedvigIcons.Pause
-          else HedvigIcons.Play,
-          contentDescription = null,
+        IconButton(
+          onClick = {
+            hideEffectReset++
+            controllerState.playOrPause()
+          },
           modifier = Modifier
-            .size(52.dp)
-            .clickable(
-              interactionSource = remember { MutableInteractionSource() },
-              indication = null,
-            ) {
-              hideEffectReset++
-              controllerState.playOrPause()
-            }
             .align(Alignment.Center),
-          tint = Color.White,
-        )
+        ) {
+          Icon(
+            imageVector =
+            if (controllerState.showPause) HedvigIcons.Pause
+            else HedvigIcons.Play,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+              .size(52.dp)
+          )
+        }
+
 
         LaunchedEffect(Unit) {
           while (true) {
