@@ -65,7 +65,7 @@ private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, nav
       color = Blue(LIGHT),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     PerilList(perilData, Small, Modifier.fillMaxWidth().padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))
   }
