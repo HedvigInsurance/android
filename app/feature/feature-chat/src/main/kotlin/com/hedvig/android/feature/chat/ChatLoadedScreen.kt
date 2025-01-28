@@ -64,6 +64,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -639,6 +643,18 @@ private fun VideoMessage(
   LaunchedEffect(url) {
     state.player?.setMediaItem(MediaItem.fromUri(url))
   }
+
+  LocalLifecycleOwner.current.lifecycle.addObserver(object : LifecycleEventObserver {
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+      when (event) {
+        Lifecycle.Event.ON_STOP -> {
+          state.player?.pause()
+        }
+        else -> {}
+      }
+    }
+  })
+
   DisposableEffect(
     Media(
       state = state,
