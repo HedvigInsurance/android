@@ -231,7 +231,7 @@ private fun InsuranceScreenContent(
       )
     }
     Spacer(Modifier.height(16.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (uiState.isLoading) {
         InsuranceCardPlaceholder(
           imageLoader = imageLoader,
@@ -239,27 +239,29 @@ private fun InsuranceScreenContent(
         )
         CrossSellItemPlaceholder(Modifier.padding(horizontal = 16.dp))
       } else {
-        ContractsSection(
-          imageLoader = imageLoader,
-          onInsuranceCardClick = onInsuranceCardClick,
-          contracts = uiState.contracts,
-        )
-        if (uiState.travelAddonBannerInfo != null) {
-          TravelAddonBanner(
-            travelAddonBannerInfo = uiState.travelAddonBannerInfo,
-            launchAddonPurchaseFlow = {
-              onNavigateToAddonPurchaseFlow(uiState.travelAddonBannerInfo.eligibleInsurancesIds)
-            },
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          ContractsSection(
+            imageLoader = imageLoader,
+            onInsuranceCardClick = onInsuranceCardClick,
+            contracts = uiState.contracts,
           )
-        }
-        if (uiState.shouldSuggestMovingFlow) {
-          MovingFlowSuggestionSection(
-            onNavigateToMovingFlow = onNavigateToMovingFlow,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
+          if (uiState.travelAddonBannerInfo != null) {
+            TravelAddonBanner(
+              travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+              launchAddonPurchaseFlow = {
+                onNavigateToAddonPurchaseFlow(uiState.travelAddonBannerInfo.eligibleInsurancesIds)
+              },
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            )
+          }
+          if (uiState.shouldSuggestMovingFlow) {
+            MovingFlowSuggestionSection(
+              onNavigateToMovingFlow = onNavigateToMovingFlow,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
         }
         if (uiState.crossSells.isNotEmpty()) {
           CrossSellsSection(
