@@ -637,33 +637,33 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
       }
     },
   )
-
-  DisposableEffect(
-    Media(
-      state = state,
-      modifier = modifier
-        .height(250.dp)
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .background(Color.Black),
-      surfaceType = SurfaceType.TextureView,
-      resizeMode = ResizeMode.Fit,
-      keepContentOnPlayerReset = true,
-      showBuffering = ShowBuffering.Always,
-      buffering = {
-        Box(Modifier.fillMaxSize(), Alignment.Center) {
-          HedvigCircularProgressIndicator()
-        }
-      },
-    ) { state ->
-      val controllerState = rememberControllerState(state)
-      SimpleVideoController(
-        mediaState = state,
-        controllerState = controllerState,
-        modifier = Modifier
-          .fillMaxSize()
-          .clip(HedvigTheme.shapes.cornerLarge),
-      )
+  Media(
+    state = state,
+    modifier = modifier
+      .height(250.dp)
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(Color.Black),
+    surfaceType = SurfaceType.TextureView,
+    resizeMode = ResizeMode.Fit,
+    keepContentOnPlayerReset = true,
+    showBuffering = ShowBuffering.Always,
+    buffering = {
+      Box(Modifier.fillMaxSize(), Alignment.Center) {
+        HedvigCircularProgressIndicator()
+      }
     },
+  ) { state ->
+    val controllerState = rememberControllerState(state)
+    SimpleVideoController(
+      mediaState = state,
+      controllerState = controllerState,
+      modifier = Modifier
+        .fillMaxSize()
+        .clip(HedvigTheme.shapes.cornerLarge),
+    )
+  }
+  DisposableEffect(
+    Unit
   ) {
     onDispose {
       state.player?.release()
@@ -674,7 +674,6 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
 @Composable
 @androidx.annotation.OptIn(UnstableApi::class)
 private fun videoPlayerMediaState(cache: Cache): MediaState {
-  val position = remember { mutableStateOf( 0L) }
   val httpDataSourceFactory = DefaultHttpDataSource.Factory()
   val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
     .setUpstreamDataSourceFactory(httpDataSourceFactory)
