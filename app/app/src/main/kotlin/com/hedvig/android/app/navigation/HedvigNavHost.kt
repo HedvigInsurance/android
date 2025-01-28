@@ -122,6 +122,9 @@ internal fun HedvigNavHost(
   fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
     hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
   }
+  val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
+    hedvigAppState.navController.navigate(ImageViewer(imageUrl, cacheKey))
+  }
 
   NavHost(
     navController = hedvigAppState.navController,
@@ -152,6 +155,7 @@ internal fun HedvigNavHost(
           externalNavigator = externalNavigator,
           imageLoader = imageLoader,
           openUrl = openUrl,
+          onNavigateToImageViewer = onNavigateToImageViewer,
           navigateToNewConversation = ::navigateToNewConversation,
           navigateToConversation = navigateToConversation,
         )
@@ -320,9 +324,7 @@ internal fun HedvigNavHost(
         logcat { "Navigating to claim details from chat" }
         hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
-      onNavigateToImageViewer = { imageUrl: String ->
-        hedvigAppState.navController.navigate(ImageViewer(imageUrl))
-      },
+      onNavigateToImageViewer = onNavigateToImageViewer,
       navigator = navigator,
     )
     addonPurchaseNavGraph(
@@ -390,6 +392,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: (NavBackStackEntry, (NavOptionsBuilder.() -> Unit)?) -> Unit,
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
@@ -397,6 +400,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigator = navigator,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     navigateUp = navigator::navigateUp,
     appPackageId = hedvigBuildConstants.appId,
     navigateToConversation = { backStackEntry, conversationId ->
@@ -422,6 +426,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
     },
+    onNavigateToImageViewer = onNavigateToImageViewer,
     openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
       hedvigAppState.navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)

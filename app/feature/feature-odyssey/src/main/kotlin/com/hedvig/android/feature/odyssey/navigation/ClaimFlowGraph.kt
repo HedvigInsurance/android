@@ -61,6 +61,7 @@ fun NavGraphBuilder.claimFlowGraph(
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -205,6 +206,7 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
         windowSizeClass = windowSizeClass,
       )
@@ -354,6 +356,7 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
+        onNavigateToImageViewer = onNavigateToImageViewer,
         appPackageId = appPackageId,
       )
     }

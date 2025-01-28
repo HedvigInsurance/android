@@ -140,7 +140,7 @@ internal fun CbmChatLoadedScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
-  onNavigateToImageViewer: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -188,7 +188,7 @@ private fun ChatLoadedScreen(
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  onNavigateToImageViewer: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
@@ -304,7 +304,7 @@ private fun ChatLazyColumn(
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  onNavigateToImageViewer: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -395,7 +395,7 @@ private fun ChatBubble(
   chatItemIndex: Int,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  onNavigateToImageViewer: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -443,7 +443,7 @@ private fun ChatBubble(
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
                 modifier = Modifier.clickable {
-                  onNavigateToImageViewer(chatMessage.url)
+                  onNavigateToImageViewer(chatMessage.url, chatMessage.id)
                 },
               )
             }
@@ -790,7 +790,7 @@ private fun PreviewChatLoadedScreen() {
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
         openUrl = {},
-        onNavigateToImageViewer = {},
+        onNavigateToImageViewer = { _, _ -> },
         onRetrySendChatMessage = {},
         chatInput = {},
       )

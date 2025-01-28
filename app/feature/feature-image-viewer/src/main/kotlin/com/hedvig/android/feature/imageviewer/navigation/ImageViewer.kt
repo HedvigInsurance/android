@@ -4,4 +4,4 @@ import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ImageViewer(val imageUrl: String) : Destination
+data class ImageViewer(val imageUrl: String, val cacheKey: String) : Destination
