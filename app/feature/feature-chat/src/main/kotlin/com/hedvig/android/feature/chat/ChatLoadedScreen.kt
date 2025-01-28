@@ -116,6 +116,7 @@ import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
 import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
 import com.hedvig.android.design.system.hedvig.videoplayer.SimpleVideoController
 import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
+import com.hedvig.android.design.system.hedvig.videoplayer.rememberControllerState
 import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
@@ -654,9 +655,12 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
         }
       },
     ) { state ->
+      val controllerState = rememberControllerState(state)
       SimpleVideoController(
-        state,
-        Modifier.fillMaxSize()
+        mediaState = state,
+        controllerState = controllerState,
+        modifier = Modifier
+          .fillMaxSize()
           .clip(HedvigTheme.shapes.cornerLarge),
       )
     },
