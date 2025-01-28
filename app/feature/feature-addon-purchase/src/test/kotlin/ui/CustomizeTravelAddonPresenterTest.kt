@@ -7,9 +7,7 @@ import arrow.core.nonEmptyListOf
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
@@ -20,7 +18,6 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
-import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonPresenter
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState
@@ -64,40 +61,12 @@ class CustomizeTravelAddonPresenterTest {
         travelAddonOffer = fakeTravelOfferTwoOptions,
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
+        summaryParamsToNavigateFurther = null,
       ),
     ) {
       skipItems(1)
       useCase.turbine.add(ErrorMessage().left())
       expectNoEvents()
-    }
-  }
-
-  @Test
-  fun `if receive good response but only one addon redirect to next screen and pop this destination`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
-    val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
-      insuranceId = insuranceId,
-    )
-    presenter.test(
-      CustomizeTravelAddonState.Loading,
-    ) {
-      skipItems(1)
-      useCase.turbine.add(fakeTravelOfferOnlyOneOption.right())
-      val state = awaitItem()
-      assertThat(state).isInstanceOf(CustomizeTravelAddonState.Success::class)
-        .apply {
-          prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
-            .isEqualTo(
-              SummaryParameters(
-                offerDisplayName = fakeTravelOfferOnlyOneOption.title,
-                quote = fakeTravelOfferOnlyOneOption.addonOptions[0],
-                activationDate = fakeTravelOfferOnlyOneOption.activationDate,
-                currentTravelAddon = fakeTravelOfferOnlyOneOption.currentTravelAddon,
-                popCustomizeDestination = true,
-              ),
-            )
-        }
     }
   }
 
@@ -176,36 +145,6 @@ class CustomizeTravelAddonPresenterTest {
       assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
     }
   }
-
-  @Test
-  fun `on submit navigate further with currently chosen option and do not pop this destination`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
-    val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
-      insuranceId = insuranceId,
-    )
-    presenter.test(
-      CustomizeTravelAddonState.Loading,
-    ) {
-      useCase.turbine.add(fakeTravelOfferTwoOptions.right())
-      skipItems(2)
-      sendEvent(CustomizeTravelAddonEvent.ChooseOptionInDialog(fakeTravelOfferTwoOptions.addonOptions[1]))
-      sendEvent(CustomizeTravelAddonEvent.ChooseSelectedOption)
-      skipItems(2)
-      sendEvent(CustomizeTravelAddonEvent.SubmitSelected)
-      assertThat(awaitItem()).isInstanceOf(CustomizeTravelAddonState.Success::class)
-        .apply {
-          prop(CustomizeTravelAddonState.Success::summaryParamsToNavigateFurther)
-            .isNotNull().apply {
-              prop(SummaryParameters::popCustomizeDestination).isFalse()
-              prop(SummaryParameters::quote).isEqualTo(fakeTravelOfferTwoOptions.addonOptions[1])
-              prop(SummaryParameters::currentTravelAddon).isEqualTo(fakeTravelOfferTwoOptions.currentTravelAddon)
-              prop(SummaryParameters::activationDate).isEqualTo(fakeTravelOfferTwoOptions.activationDate)
-              prop(SummaryParameters::offerDisplayName).isEqualTo(fakeTravelOfferTwoOptions.title)
-            }
-        }
-    }
-  }
 }
 
 private class FakeGetTravelAddonOfferUseCase() : GetTravelAddonOfferUseCase {
@@ -226,7 +165,6 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     displayName = "45 days",
     product = "",
     perils = listOf(),
-    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",
@@ -249,7 +187,6 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     displayName = "60 days",
     product = "",
     perils = listOf(),
-    insurableLimits = listOf(),
     documents = listOf(
       InsuranceVariantDocument(
         "Terms and Conditions",

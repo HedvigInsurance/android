@@ -68,6 +68,7 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
 
 fragment MoveAddonQuoteFragment on MoveAddonQuote {
   addonId
+  coverageDisplayName
   displayName
   displayItems {
     displayTitle

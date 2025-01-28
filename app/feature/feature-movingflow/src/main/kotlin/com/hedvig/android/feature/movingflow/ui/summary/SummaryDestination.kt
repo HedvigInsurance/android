@@ -93,8 +93,9 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardDefaults
-import com.hedvig.android.tiersandaddons.QuoteCardDefaults.UnderDetailsContentState
+import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -354,12 +355,17 @@ private fun AddonQuoteCard(
     quote = quote,
     modifier = modifier,
     underDetailsContent = { state ->
+      LaunchedEffect(quote.isExcludedByUser) {
+        if (quote.isExcludedByUser) {
+          state.showDetails = false
+        }
+      }
       Column {
+        Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
           visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
           enter = expandVertically(expandFrom = Alignment.Top),
           exit = shrinkVertically(shrinkTowards = Alignment.Top),
-          modifier = Modifier.padding(bottom = 8.dp),
         ) {
           HedvigButton(
             text = stringResource(R.string.GENERAL_REMOVE),
@@ -368,7 +374,9 @@ private fun AddonQuoteCard(
             buttonStyle = Ghost,
             buttonSize = Medium,
             border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(bottom = 8.dp),
           )
         }
         if (quote.isExcludedByUser) {
@@ -381,7 +389,18 @@ private fun AddonQuoteCard(
             modifier = Modifier.fillMaxWidth(),
           )
         } else {
-          QuoteCardDefaults.UnderDetailsContent(state)
+          HedvigButton(
+            text = if (state.showDetails) {
+              stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+            } else {
+              stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+            },
+            onClick = state::toggleState,
+            enabled = true,
+            buttonStyle = Secondary,
+            buttonSize = Medium,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
       }
     },
@@ -401,19 +420,28 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, mod
 private fun AddonQuoteCard(
   quote: MovingFlowQuotes.AddonQuote,
   modifier: Modifier = Modifier,
-  underDetailsContent: (@Composable (UnderDetailsContentState) -> Unit)?,
+  underDetailsContent: (@Composable (QuoteCardState) -> Unit)?,
 ) {
-  val startDate = formatStartDate(quote.startDate)
   val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
     null
   } else {
-    stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+    quote.coverageDisplayName
   }
+  val quoteCardState = rememberQuoteCardState()
   QuoteCard(
+    quoteCardState = object : QuoteCardState {
+      override var showDetails: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.showDetails
+        set(value) {
+          if (quote is HomeAddonQuote && quote.isExcludedByUser) return
+          quoteCardState.showDetails = value
+        }
+      override val isEnabled: Boolean
+        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.isEnabled
+    },
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    // todo: here we don't want to show insurable limits for addons, that may change later
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium.toString(),
@@ -504,7 +532,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         "peril title",
         "peril description",
         emptyList(),
-        emptyList(),
         null,
       ),
     ),
@@ -538,7 +565,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       ),
     ),
     perils = listOf(),
-    insurableLimits = listOf(),
   )
   val startDate = LocalDate.parse("2025-01-01")
 
@@ -580,6 +606,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               exposureName = "exposureName",
               addonVariant = addonVariant,
               isExcludedByUser = true,
+              coverageDisplayName = "45 Days",
             )
           },
         ),
@@ -612,6 +639,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
                 ),
                 exposureName = "exposureName",
                 addonVariant = addonVariant,
+                coverageDisplayName = "45 Days",
               ),
             ),
           ),

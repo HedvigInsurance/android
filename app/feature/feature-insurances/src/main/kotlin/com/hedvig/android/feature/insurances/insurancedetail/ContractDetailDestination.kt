@@ -298,7 +298,6 @@ private fun ContractDetailScreen(
                       documents = state.insuranceContract.getAllDocuments(),
                       onDocumentClicked = openUrl,
                       addons = state.insuranceContract.currentInsuranceAgreement.addons,
-                      mainInsuranceTitle = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                     )
                   }
 
@@ -400,7 +399,6 @@ private fun PreviewContractDetailScreen() {
                       ),
                     ),
                     perils = listOf(),
-                    insurableLimits = listOf(),
                   ),
                 ),
               ),

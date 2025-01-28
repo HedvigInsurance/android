@@ -10,7 +10,6 @@ data class AddonVariant(
   val product: String,
   val documents: List<InsuranceVariantDocument>,
   val perils: List<ProductVariantPeril>,
-  val insurableLimits: List<InsurableLimit>,
 )
 
 fun AddonVariantFragment.toAddonVariant() = AddonVariant(
@@ -24,21 +23,18 @@ fun AddonVariantFragment.toAddonVariant() = AddonVariant(
       type = it.type.toDocumentType(),
     )
   },
-  perils = this.perils.map { peril ->
+  perils = this.addonPerils.mapIndexed { index, peril ->
+    val description = if (peril.coverageText == null) {
+      "${peril.description}"
+    } else {
+      "${peril.description}\n\n${peril.coverageText}"
+    }
     ProductVariantPeril(
-      id = peril.id,
+      id = index.toString(),
       title = peril.title,
-      description = peril.description,
-      covered = peril.covered,
-      exceptions = peril.exceptions,
-      colorCode = peril.colorCode,
-    )
-  },
-  insurableLimits = this.insurableLimits.map { insurableLimit ->
-    InsurableLimit(
-      label = insurableLimit.label,
-      limit = insurableLimit.limit,
-      description = insurableLimit.description,
+      description = description,
+      covered = listOf(),
+      colorCode = "#FF870452", // todo: hardcoded for now
     )
   },
 )

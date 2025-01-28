@@ -20,6 +20,24 @@ internal sealed interface AddonPurchaseDestination {
   data class CustomizeAddon(val insuranceId: String) : AddonPurchaseDestination, Destination
 
   @Serializable
+  data class TravelInsurancePlusExplanation(
+    val perilData: List<TravelPerilData>,
+  ) : AddonPurchaseDestination, Destination {
+    @Serializable
+    data class TravelPerilData(
+      val title: String,
+      val description: String?,
+      val covered: List<String>,
+      val colorCode: String?,
+      val isEnabled: Boolean = true,
+    )
+
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<TravelPerilData>>())
+    }
+  }
+
+  @Serializable
   data class Summary(
     val params: SummaryParameters,
   ) : AddonPurchaseDestination, Destination {
@@ -47,5 +65,4 @@ internal data class SummaryParameters(
   val quote: TravelAddonQuote,
   val activationDate: LocalDate,
   val currentTravelAddon: CurrentTravelAddon?,
-  val popCustomizeDestination: Boolean = false,
 )

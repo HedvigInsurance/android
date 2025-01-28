@@ -45,6 +45,7 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 fun HedvigCard(
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
+  enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
   shape: Shape = HedvigTheme.shapes.cornerXLarge,
@@ -54,6 +55,7 @@ fun HedvigCard(
     Surface(
       shape = shape,
       onClick = onClick,
+      enabled = enabled,
       interactionSource = interactionSource,
       indication = indication,
       modifier = modifier,

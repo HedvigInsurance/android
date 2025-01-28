@@ -69,7 +69,7 @@ private fun ExpandablePerilCard(
   onClick: () -> Unit,
   color: Color,
   title: String,
-  description: String,
+  description: String?,
   size: PerilSize,
   expandedDescriptionList: List<String>,
   modifier: Modifier = Modifier,
@@ -98,12 +98,14 @@ private fun ExpandablePerilCard(
         Modifier.padding(size.extendedPadding),
       ) {
         Spacer(Modifier.height(size.verticalSpaceBetween))
-        Spacer(Modifier.height(12.dp))
-        HedvigText(
-          text = description,
-          style = size.descriptionTextStyle,
-          color = perilColors.textColor(isEnabled),
-        )
+        description?.let {
+          Spacer(Modifier.height(12.dp))
+          HedvigText(
+            text = it,
+            style = size.descriptionTextStyle,
+            color = perilColors.textColor(isEnabled),
+          )
+        }
         Spacer(Modifier.height(12.dp))
         if (expandedDescriptionList.isNotEmpty()) {
           Spacer(Modifier.height(12.dp))
@@ -136,7 +138,7 @@ private fun ExpandablePerilCard(
 
 data class PerilData(
   val title: String,
-  val description: String,
+  val description: String?,
   val covered: List<String>,
   val colorCode: String?,
   val isEnabled: Boolean = true,
@@ -148,7 +150,7 @@ private fun parseColorString(colorString: String?): Color = with(HedvigTheme.col
     try {
       Color(parseColor(colorString))
     } catch (e: Exception) {
-      logcat(priority = LogPriority.ERROR) { "Parsing color resulted in an error" }
+      logcat(priority = LogPriority.ERROR) { "Parsing color with colorString:$colorString resulted in an error" }
       fromToken(TextPrimary)
     }
   }
