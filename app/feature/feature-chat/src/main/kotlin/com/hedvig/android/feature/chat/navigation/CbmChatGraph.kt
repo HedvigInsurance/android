@@ -21,6 +21,7 @@ fun NavGraphBuilder.cbmChatGraph(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String) -> Unit,
   navigator: Navigator,
 ) {
   navgraph<ChatDestination>(
@@ -55,6 +56,7 @@ fun NavGraphBuilder.cbmChatGraph(
         appPackageId = hedvigBuildConstants.appId,
         openUrl = openUrl,
         onNavigateToClaimDetails = onNavigateToClaimDetails,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onNavigateUp = navigator::navigateUp,
       )
     }

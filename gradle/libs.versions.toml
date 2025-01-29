@@ -80,6 +80,7 @@ turbine = "1.2.0"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
+zoomable = "1.6.2"
 
 [libraries]
 
@@ -162,7 +163,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom"  }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
@@ -200,10 +201,11 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
+zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }

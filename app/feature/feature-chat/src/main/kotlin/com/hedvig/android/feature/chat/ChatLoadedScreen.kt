@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -139,6 +140,7 @@ internal fun CbmChatLoadedScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -156,6 +158,7 @@ internal fun CbmChatLoadedScreen(
     lazyListState = lazyListState,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
       ChatInput(
@@ -185,6 +188,7 @@ private fun ChatLoadedScreen(
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
@@ -198,6 +202,7 @@ private fun ChatLoadedScreen(
         latestChatMessage = uiState.latestMessage,
         imageLoader = imageLoader,
         openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillMaxWidth()
@@ -299,6 +304,7 @@ private fun ChatLazyColumn(
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -337,6 +343,7 @@ private fun ChatLazyColumn(
         chatItemIndex = index,
         imageLoader = imageLoader,
         openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillParentMaxWidth()
@@ -388,6 +395,7 @@ private fun ChatBubble(
   chatItemIndex: Int,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -430,7 +438,14 @@ private fun ChatBubble(
         is CbmChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
             CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
-              ChatAsyncImage(model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id)
+              ChatAsyncImage(
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
+                modifier = Modifier.clickable {
+                  onNavigateToImageViewer(chatMessage.url)
+                },
+              )
             }
 
             CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
@@ -443,7 +458,7 @@ private fun ChatBubble(
         }
 
         is CbmChatMessage.ChatMessageGif -> {
-          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.id)
+          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.gifUrl)
         }
 
         is CbmChatMessage.FailedToBeSent -> {
@@ -621,6 +636,7 @@ private fun ChatAsyncImage(
       }.build(),
     contentDescription = null,
     imageLoader = imageLoader,
+    contentScale = ContentScale.Fit,
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
@@ -646,7 +662,9 @@ private fun ChatAsyncImage(
         }
       }
     },
-    modifier = modifier
+    modifier = Modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .then(modifier)
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
         if (loadedImageIntrinsicSize.value == null) {
@@ -658,8 +676,7 @@ private fun ChatAsyncImage(
         } else {
           Modifier
         },
-      )
-      .clip(HedvigTheme.shapes.cornerLarge),
+      ),
   )
 }
 
@@ -773,6 +790,7 @@ private fun PreviewChatLoadedScreen() {
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
         openUrl = {},
+        onNavigateToImageViewer = {},
         onRetrySendChatMessage = {},
         chatInput = {},
       )
