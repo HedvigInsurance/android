@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.icon.ChevronLeft
+import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
@@ -20,7 +22,14 @@ import kotlinx.coroutines.delay
  * A simple controller, which consists of a play/pause button and a time bar.
  */
 @Composable
-fun SimpleVideoController(mediaState: MediaState, controllerState: ControllerState, modifier: Modifier = Modifier) {
+fun SimpleVideoController(
+  mediaState: MediaState,
+  controllerState: ControllerState,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
+  modifier: Modifier = Modifier,
+) {
   Crossfade(targetState = mediaState.isControllerShowing, modifier) { isShowing ->
     if (isShowing) {
       var scrubbing by remember { mutableStateOf(false) }
@@ -37,6 +46,30 @@ fun SimpleVideoController(mediaState: MediaState, controllerState: ControllerSta
           .fillMaxSize()
           .background(Color.Transparent),
       ) {
+        IconButton(
+          onClick = {
+            if (showingFullWidth) {
+              onGoDefaultWidth()
+            } else {
+              onGoFullWidth()
+            }
+          },
+          modifier = Modifier
+            .align(Alignment.TopStart),
+        ) {
+          Icon(
+            imageVector =
+              if (showingFullWidth) {
+                HedvigIcons.ChevronRight
+              } else {
+                HedvigIcons.ChevronLeft
+              },
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+              .size(24.dp),
+          )
+        }
         IconButton(
           onClick = {
             hideEffectReset++

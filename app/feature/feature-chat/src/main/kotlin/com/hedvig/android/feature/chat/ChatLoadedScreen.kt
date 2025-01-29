@@ -146,7 +146,6 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
@@ -402,6 +401,7 @@ private fun ChatLazyColumn(
         onGoDefaultWidth = {
           dynamicBubbleWidthFraction = defaultWidth
         },
+        showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
@@ -458,6 +458,7 @@ private fun ChatBubble(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onGoFullWidth: () -> Unit,
   onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
@@ -514,21 +515,17 @@ private fun ChatBubble(
                   videoPlayerMediaState(simpleVideoCache, chatMessage.url)
                 },
               )
-              val mediaStatePlayerHash = mediaState.player.hashCode()
-              val mediaStatePlayerPosition = mediaState.player?.currentPosition
-              logcat {
-                "Mariia: for message id ${chatMessage.id} mediaStatePlayerPosition:$mediaStatePlayerPosition" +
-                  "mediaStatePlayerHash: $mediaStatePlayerHash"
-              }
               VideoMessage(
                 state = mediaState,
+                onGoFullWidth = onGoFullWidth,
+                onGoDefaultWidth = onGoDefaultWidth,
+                showingFullWidth = showingFullWidth,
               )
             }
 
             ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
-
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
@@ -659,7 +656,13 @@ private fun AttachedFileMessage(
 }
 
 @Composable
-private fun VideoMessage(state: MediaState, modifier: Modifier = Modifier) {
+private fun VideoMessage(
+  state: MediaState,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
+  modifier: Modifier = Modifier,
+) {
   LocalLifecycleOwner.current.lifecycle.addObserver(
     object : LifecycleEventObserver {
       override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -673,10 +676,12 @@ private fun VideoMessage(state: MediaState, modifier: Modifier = Modifier) {
       }
     },
   )
+  val height = if (showingFullWidth) 350.dp else 220.dp
+  val updatedModifier = if (showingFullWidth) modifier.padding(horizontal = 16.dp) else modifier
   Media(
     state = state,
-    modifier = modifier
-      .height(250.dp)
+    modifier = updatedModifier
+      .height(height)
       .clip(HedvigTheme.shapes.cornerLarge)
       .background(Color.Black),
     surfaceType = SurfaceType.TextureView,
@@ -690,10 +695,12 @@ private fun VideoMessage(state: MediaState, modifier: Modifier = Modifier) {
     },
   ) { state ->
     val controllerState = rememberControllerState(state)
-
     SimpleVideoController(
       mediaState = state,
       controllerState = controllerState,
+      onGoFullWidth = onGoFullWidth,
+      onGoDefaultWidth = onGoDefaultWidth,
+      showingFullWidth = showingFullWidth,
       modifier = Modifier
         .fillMaxSize()
         .clip(HedvigTheme.shapes.cornerLarge),
