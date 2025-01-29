@@ -70,15 +70,9 @@ internal interface CbmChatRepository {
 
   suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage>
 
-  suspend fun sendPhotos(
-    conversationId: Uuid,
-    uriList: List<Uri>,
-  ): Either<String, List<CbmChatMessage>>
+  suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): Either<String, List<CbmChatMessage>>
 
-  suspend fun sendMedia(
-    conversationId: Uuid,
-    uriList: List<Uri>,
-  ): Either<String, List<CbmChatMessage>>
+  suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): Either<String, List<CbmChatMessage>>
 }
 
 internal class CbmChatRepositoryImpl(
@@ -197,13 +191,31 @@ internal class CbmChatRepositoryImpl(
             sendText(conversationId, messageToRetry.id, text!!)
           }
           failedToSend == PHOTO && url != null -> {
-           // sendPhotos(conversationId, messageToRetry.id, Uri.parse(url))
-            val uploadToken = uploadPhotoToBotService(Uri.parse(url))
+            val uri = Uri.parse(url)
+            val uploadToken = uploadPhotoToBotService(uri)
             sendMessage(conversationId, ConversationInput.File(uploadToken))
-
+              .onLeft {
+                val failedMessage =
+                  CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+                    messageId.toString(),
+                    clock.now(),
+                    uri,
+                  )
+                chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+              }
           }
           failedToSend == MEDIA && url != null -> {
-            sendMedia(conversationId, messageToRetry.id, Uri.parse(url))
+            val uri = Uri.parse(url)
+            val uploadToken = uploadMediaToBotService(uri)
+            sendMessage(conversationId, ConversationInput.File(uploadToken)).onLeft {
+              val failedMessage =
+                CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+                  messageId.toString(),
+                  clock.now(),
+                  uri,
+                )
+              chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+            }
           }
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
@@ -227,8 +239,7 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>):
-    Either<String, List<CbmChatMessage>> {
+  override suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): Either<String, List<CbmChatMessage>> {
     return either {
       buildList<CbmChatMessage> {
         uriList.forEach { uri ->
@@ -238,7 +249,7 @@ internal class CbmChatRepositoryImpl(
               ifLeft = {
                 val failedMessage =
                   CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-                    messageId?.toString() ?: Uuid.randomUUID().toString(),
+                    Uuid.randomUUID().toString(),
                     clock.now(),
                     uri,
                   )
@@ -253,10 +264,7 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendMedia(
-    conversationId: Uuid,
-    uriList: List<Uri>,
-  ): Either<String, List<CbmChatMessage>> {
+  override suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): Either<String, List<CbmChatMessage>> {
     return either {
       buildList<CbmChatMessage> {
         uriList.forEach { uri ->
@@ -266,7 +274,7 @@ internal class CbmChatRepositoryImpl(
               ifLeft = {
                 val failedMessage =
                   CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-                    messageId?.toString() ?: Uuid.randomUUID().toString(),
+                    Uuid.randomUUID().toString(),
                     clock.now(),
                     uri,
                   )

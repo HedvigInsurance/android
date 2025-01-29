@@ -142,12 +142,12 @@ internal class CbmChatPresenter(
 
         is CbmChatEvent.SendPhotoMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.provide().sendPhotos(conversationId, null, event.uriList)
+          chatRepository.provide().sendPhotos(conversationId, event.uriList)
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.provide().sendMedia(conversationId, null, event.uriList)
+          chatRepository.provide().sendMedia(conversationId, event.uriList)
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
