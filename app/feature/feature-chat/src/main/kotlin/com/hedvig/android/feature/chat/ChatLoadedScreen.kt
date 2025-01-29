@@ -38,12 +38,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
@@ -384,6 +386,8 @@ private fun ChatLazyColumn(
     ) { index: Int ->
       val uiChatMessage = messages[index]
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
+      val defaultWidth = 0.8f
+      var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
       ChatBubble(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
@@ -392,11 +396,17 @@ private fun ChatLazyColumn(
         mediaStatesWithPlayersMap = mediaStatesWithPlayers,
         openUrl = openUrl,
         onRetrySendChatMessage = onRetrySendChatMessage,
+        onGoFullWidth = {
+          dynamicBubbleWidthFraction = 1f
+        },
+        onGoDefaultWidth = {
+          dynamicBubbleWidthFraction = defaultWidth
+        },
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
           .wrapContentWidth(alignment)
-          .fillParentMaxWidth(0.8f)
+          .fillParentMaxWidth(dynamicBubbleWidthFraction)
           .wrapContentWidth(alignment)
           .padding(bottom = 8.dp),
       )
@@ -446,6 +456,8 @@ private fun ChatBubble(
   mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
@@ -516,7 +528,7 @@ private fun ChatBubble(
             ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
