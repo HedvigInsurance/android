@@ -77,13 +77,13 @@ internal fun CbmChatDestination(
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
     },
-    onSendPhoto = { uri: Uri ->
-      logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
+    onSendPhoto = { uris: List<Uri> ->
+      logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uriList)):${uris} to vm:${viewModel.hashCode()}" }
+      viewModel.emit(CbmChatEvent.SendPhotoMessage(uris))
     },
-    onSendMedia = { uri: Uri ->
-      logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
+    onSendMedia = { uris: List<Uri> ->
+      logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uriList)):${uris} to vm:${viewModel.hashCode()}" }
+      viewModel.emit(CbmChatEvent.SendMediaMessage(uris))
     },
     onRetrySendChatMessage = { messageId ->
       viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))
@@ -107,8 +107,8 @@ private fun ChatScreen(
   onNavigateUp: () -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendPhoto: (Uri) -> Unit,
-  onSendMedia: (Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
 ) {

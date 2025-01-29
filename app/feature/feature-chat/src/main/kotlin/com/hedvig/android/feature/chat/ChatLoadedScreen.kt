@@ -167,8 +167,8 @@ internal fun CbmChatLoadedScreen(
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendPhoto: (Uri) -> Unit,
-  onSendMedia: (Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()

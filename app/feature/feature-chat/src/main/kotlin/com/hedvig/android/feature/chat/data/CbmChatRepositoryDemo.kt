@@ -53,11 +53,11 @@ internal class CbmChatRepositoryDemo(
     return demoErrorMessage.left()
   }
 
-  override suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendPhotos(conversationId: Uuid, messageId: Uuid?, uriList: Uri): Either<String, CbmChatMessage> {
     return demoErrorMessage.left()
   }
 
-  override suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uriList: Uri): Either<String, CbmChatMessage> {
     return demoErrorMessage.left()
   }
 }

@@ -142,12 +142,12 @@ internal class CbmChatPresenter(
 
         is CbmChatEvent.SendPhotoMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.provide().sendPhoto(conversationId, null, event.uri)
+          chatRepository.provide().sendPhotos(conversationId, null, event.uriList)
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.provide().sendMedia(conversationId, null, event.uri)
+          chatRepository.provide().sendMedia(conversationId, null, event.uriList)
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
@@ -250,11 +250,11 @@ internal sealed interface CbmChatEvent {
   ) : CbmChatEvent
 
   data class SendPhotoMessage(
-    val uri: Uri,
+    val uriList: List<Uri>,
   ) : CbmChatEvent
 
   data class SendMediaMessage(
-    val uri: Uri,
+    val uriList: List<Uri>,
   ) : CbmChatEvent
 }
 

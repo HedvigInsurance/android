@@ -67,8 +67,8 @@ import hedvig.resources.R
 @Composable
 internal fun ChatInput(
   onSendMessage: (message: String) -> Unit,
-  onSendPhoto: (file: Uri) -> Unit,
-  onSendMedia: (file: Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
@@ -76,21 +76,17 @@ internal fun ChatInput(
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendPhoto(uri)
+    onSendPhoto(listOf(uri))
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickMultipleVisualMedia(),
   ) { resultingUriList: List<Uri> ->
-    resultingUriList.forEach { uri ->
-      onSendMedia(uri)
-    }
+    onSendMedia(resultingUriList)
   }
   val filePicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetMultipleContents(),
   ) { resultingUriList: List<Uri> ->
-    resultingUriList.forEach { uri ->
-      onSendMedia(uri)
-    }
+    onSendMedia(resultingUriList)
   }
   ChatInput(
     text = text,
