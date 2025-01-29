@@ -11,7 +11,7 @@ lintGradlePlugin = "8.8.0"
 # gradlePlugin versions
 androidGradlePlugin = "8.8.0"
 apolloAdapters = "0.0.4"
-apollo = "4.1.0"
+apollo = "4.1.1"
 cacheFix = "3.0.1"
 crashlytics = "3.0.2"
 datadogPlugin = "1.15.0"
@@ -19,9 +19,9 @@ doctor = "0.10.0"
 easylauncher = "6.4.0"
 googleServices = "4.4.2"
 gradleDevelocity = "3.19.1"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlinter = "5.0.1"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.10-1.0.29"
 ktor = "3.0.3"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -47,7 +47,7 @@ androidx-other-workManager = "2.10.0"
 androidx-test = "1.6.1"
 androidx-testRunners = "1.6.2"
 androidxGraphicsShapes = "1.0.1"
-arrow = "2.0.0"
+arrow = "2.0.1"
 assertK = "0.28.1"
 coil = "2.7.0"
 composeRichtext = "1.0.0-alpha02"
@@ -81,6 +81,7 @@ turbine = "1.2.0"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
+zoomable = "1.6.2"
 
 [libraries]
 
@@ -163,7 +164,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom"  }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
@@ -204,10 +205,11 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
+zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }

@@ -64,6 +64,7 @@ internal fun CbmChatDestination(
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,6 +75,7 @@ internal fun CbmChatDestination(
     openUrl = openUrl,
     onNavigateUp = onNavigateUp,
     onNavigateToClaimDetails = onNavigateToClaimDetails,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
     },
@@ -106,6 +108,7 @@ private fun ChatScreen(
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
@@ -149,6 +152,7 @@ private fun ChatScreen(
               imageLoader = imageLoader,
               appPackageId = appPackageId,
               openUrl = openUrl,
+              onNavigateToImageViewer = onNavigateToImageViewer,
               onRetrySendChatMessage = onRetrySendChatMessage,
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
@@ -253,6 +257,7 @@ private fun PreviewChatScreen(
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "",
         openUrl = {},
+        onNavigateToImageViewer = { _, _ -> },
         onNavigateToClaimDetails = {},
         onNavigateUp = {},
         onSendMessage = {},

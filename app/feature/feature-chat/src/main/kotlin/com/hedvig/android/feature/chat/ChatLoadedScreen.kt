@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -124,6 +125,7 @@ import com.hedvig.android.design.system.hedvig.videoplayer.rememberControllerSta
 import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
+import com.hedvig.android.feature.chat.VideoMessage
 import com.hedvig.android.feature.chat.data.BannerText
 import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
@@ -146,6 +148,7 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
+import com.hedvig.android.feature.chat.videoPlayerMediaState
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
@@ -169,6 +172,7 @@ internal fun CbmChatLoadedScreen(
   simpleVideoCache: Cache,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (List<Uri>) -> Unit,
@@ -187,6 +191,7 @@ internal fun CbmChatLoadedScreen(
     imageLoader = imageLoader,
     simpleVideoCache = simpleVideoCache,
     openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
       ChatInput(
@@ -218,6 +223,7 @@ private fun ChatLoadedScreen(
   imageLoader: ImageLoader,
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
@@ -232,6 +238,7 @@ private fun ChatLoadedScreen(
         imageLoader = imageLoader,
         simpleVideoCache = simpleVideoCache,
         openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillMaxWidth()
@@ -335,6 +342,7 @@ private fun ChatLazyColumn(
   imageLoader: ImageLoader,
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -394,6 +402,7 @@ private fun ChatLazyColumn(
         simpleVideoCache = simpleVideoCache,
         mediaStatesWithPlayersMap = mediaStatesWithPlayers,
         openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
         onGoFullWidth = {
           dynamicBubbleWidthFraction = 1f
@@ -455,6 +464,7 @@ private fun ChatBubble(
   simpleVideoCache: Cache,
   mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onGoFullWidth: () -> Unit,
   onGoDefaultWidth: () -> Unit,
@@ -499,15 +509,16 @@ private fun ChatBubble(
 
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
-            ChatMessageFile.MimeType.IMAGE -> {
+            CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
-                modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }),
+                modifier = Modifier.clickable {
+                  onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                },
               )
             }
-
             ChatMessageFile.MimeType.MP4 -> {
               val mediaState = mediaStatesWithPlayersMap.getOrPut(
                 chatMessage.id,
@@ -531,8 +542,8 @@ private fun ChatBubble(
           }
         }
 
-        is ChatMessageGif -> {
-          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.id)
+        is CbmChatMessage.ChatMessageGif -> {
+          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.gifUrl)
         }
 
         is CbmChatMessage.FailedToBeSent -> {
@@ -788,6 +799,7 @@ private fun ChatAsyncImage(
       }.build(),
     contentDescription = null,
     imageLoader = imageLoader,
+    contentScale = ContentScale.Fit,
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
@@ -813,7 +825,9 @@ private fun ChatAsyncImage(
         }
       }
     },
-    modifier = modifier
+    modifier = Modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .then(modifier)
       .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
       .then(
         if (loadedImageIntrinsicSize.value == null) {
@@ -825,8 +839,7 @@ private fun ChatAsyncImage(
         } else {
           Modifier
         },
-      )
-      .clip(HedvigTheme.shapes.cornerLarge),
+      ),
   )
 }
 
@@ -940,6 +953,7 @@ private fun PreviewChatLoadedScreen() {
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
         openUrl = {},
+        onNavigateToImageViewer = { _, _ -> },
         onRetrySendChatMessage = {},
         chatInput = {},
         simpleVideoCache = rememberPreviewSimpleCache(),

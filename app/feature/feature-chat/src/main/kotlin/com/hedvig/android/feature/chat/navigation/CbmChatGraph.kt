@@ -26,6 +26,7 @@ fun NavGraphBuilder.cbmChatGraph(
   simpleVideoCache: SimpleCache,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigator: Navigator,
 ) {
   navgraph<ChatDestination>(
@@ -60,6 +61,7 @@ fun NavGraphBuilder.cbmChatGraph(
         appPackageId = hedvigBuildConstants.appId,
         openUrl = openUrl,
         onNavigateToClaimDetails = onNavigateToClaimDetails,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onNavigateUp = navigator::navigateUp,
         simpleVideoCache = simpleVideoCache,
       )
