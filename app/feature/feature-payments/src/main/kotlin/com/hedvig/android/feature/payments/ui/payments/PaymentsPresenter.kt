@@ -14,6 +14,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
+import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
@@ -75,6 +76,7 @@ internal class PaymentsPresenter(
               }
               PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
             },
+            ongoingCharges = paymentOverview.ongoingCharges,
             connectedPaymentInfo = when (val paymentConnection = paymentOverview.paymentConnection) {
               is Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                 displayName = paymentConnection.displayName,
@@ -114,6 +116,7 @@ internal sealed interface PaymentsUiState {
     val isRetrying: Boolean,
     val upcomingPayment: UpcomingPayment,
     val upcomingPaymentInfo: UpcomingPaymentInfo,
+    val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {

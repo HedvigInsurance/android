@@ -49,13 +49,9 @@ fun NavGraphBuilder.paymentsGraph(
         onDiscountClicked = {
           with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
         },
-        onPaymentClicked = { memberChargeId: String? ->
+        onPaymentClicked = { id: String? ->
           with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
+            backStackEntry.navigate(PaymentsDestinations.Details(id))
           }
         },
       )

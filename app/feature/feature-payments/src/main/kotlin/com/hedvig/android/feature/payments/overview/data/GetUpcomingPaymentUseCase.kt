@@ -15,6 +15,7 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -43,6 +44,10 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
     PaymentOverview(
       memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo(),
+      ongoingCharges = result.currentMember.ongoingCharges.mapNotNull {
+        val id = it.id ?: return@mapNotNull null
+        OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
+      },
       paymentConnection = run {
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
@@ -93,6 +98,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
         failedCharge = null,
       ),
+      emptyList(),
       null,
     ).right()
   }
