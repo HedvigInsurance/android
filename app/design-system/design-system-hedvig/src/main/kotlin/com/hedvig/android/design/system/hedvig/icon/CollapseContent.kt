@@ -30,7 +30,7 @@ val HedvigIcons.CollapseContent: ImageVector
       defaultWidth = 24.dp,
       defaultHeight = 24.dp,
       viewportWidth = 960f,
-      viewportHeight = 960f
+      viewportHeight = 960f,
     ).apply {
       path(
         fill = SolidColor(Color(0xFF5F6368)),
@@ -41,7 +41,7 @@ val HedvigIcons.CollapseContent: ImageVector
         strokeLineCap = StrokeCap.Butt,
         strokeLineJoin = StrokeJoin.Miter,
         strokeLineMiter = 1.0f,
-        pathFillType = PathFillType.NonZero
+        pathFillType = PathFillType.NonZero,
       ) {
         moveTo(440f, 520f)
         verticalLineToRelative(240f)
