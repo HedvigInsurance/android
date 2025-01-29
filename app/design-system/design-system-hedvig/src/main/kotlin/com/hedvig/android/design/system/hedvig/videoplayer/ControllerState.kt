@@ -7,17 +7,17 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 
-/**
- * Create and [remember] a [ControllerState] instance.
- */
 @Composable
 fun rememberControllerState(mediaState: MediaState): ControllerState {
-  return remember { ControllerState(mediaState) }
+  return remember {
+    ControllerState(mediaState).also {
+      mediaState.player?.currentPosition?.let { playerPosition ->
+        it.seekTo(playerPosition)
+      }
+    }
+  }
 }
 
-/**
- * Create a [ControllerState] instance.
- */
 fun ControllerState(mediaState: MediaState): ControllerState {
   return ControllerState(mediaState.stateOfPlayerState)
 }
@@ -29,9 +29,6 @@ class ControllerState internal constructor(
   private val playerState: PlayerState? by stateOfPlayerState
   private val player: Player? get() = playerState?.player
 
-  /**
-   * If ture, show pause button. Otherwise, show play button.
-   */
   val showPause: Boolean by derivedStateOf {
     playerState?.run {
       playbackState != Player.STATE_ENDED &&
@@ -40,9 +37,6 @@ class ControllerState internal constructor(
     } ?: false
   }
 
-  /**
-   * Play or pause the player.
-   */
   fun playOrPause() {
     player?.run {
       if (playbackState == Player.STATE_IDLE ||
@@ -75,17 +69,11 @@ class ControllerState internal constructor(
       } ?: C.TIME_UNSET
   }
 
-  /**
-   * The current position, in milliseconds.
-   */
   val positionMs: Long by derivedStateOf {
     positionUpdateTrigger
     playerState?.run { currentWindowOffset + player.contentPosition } ?: 0L
   }
 
-  /**
-   * The current buffered position, in milliseconds.
-   */
   val bufferedPositionMs: Long by derivedStateOf {
     positionUpdateTrigger
     playerState?.run { currentWindowOffset + player.contentBufferedPosition } ?: 0L
@@ -115,7 +103,6 @@ class ControllerState internal constructor(
           if (position < windowDurationMs) {
             break
           } else if (windowIndex == windowCount - 1) {
-            // Seeking past the end of the last window should seek to the end of the timeline.
             position = windowDurationMs
             break
           }
@@ -146,7 +133,6 @@ class ControllerState internal constructor(
     showMultiWindowTimeBar && (playerState?.timeline?.canShowMultiWindowTimeBar ?: false)
   }
 
-  // Offset and duration pairs of all windows in current timeline.
   private val windowOffsetAndDurations: List<Pair<Long, Long>>? by derivedStateOf {
     playerState?.takeIf { !it.timeline.isEmpty }?.run {
       if (multiWindowTimeBar) {
@@ -161,7 +147,6 @@ class ControllerState internal constructor(
     }
   }
 
-  // Current window offset, in milliseconds.
   private val currentWindowOffset: Long by derivedStateOf {
     windowOffsetAndDurations?.get(playerState?.mediaItemIndex!!)?.first ?: 0L
   }

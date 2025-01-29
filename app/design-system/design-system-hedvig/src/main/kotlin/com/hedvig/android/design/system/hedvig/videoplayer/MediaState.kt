@@ -74,7 +74,7 @@ class MediaState(
           playbackState == Player.STATE_IDLE ||
             playbackState == Player.STATE_ENDED ||
             !playWhenReady
-          )
+        )
     } != false
   }
 
