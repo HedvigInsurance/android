@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -367,7 +368,13 @@ private fun QuoteCard(
         }
         Column(Modifier.weight(1f)) {
           HorizontalItemsWithMaximumSpaceTaken(
-            startSlot = { HedvigText(displayName) },
+            startSlot = {
+              HedvigText(
+                text = displayName,
+                maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+            },
             endSlot = { titleEndSlot() },
             spaceBetween = 8.dp,
           )
