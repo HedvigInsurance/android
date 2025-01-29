@@ -38,6 +38,7 @@ internal fun AddFilesScreen(
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
   onRemoveFile: (fileId: String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   ClaimFlowScaffold(
@@ -55,6 +56,7 @@ internal fun AddFilesScreen(
       imageLoader = imageLoader,
       onRemoveFile = onRemoveFile,
       onClickFile = null,
+      onNavigateToImageViewer = onNavigateToImageViewer,
       belowGridContent = {
         BelowContent(
           isLoading = uiState.isLoading,
@@ -120,6 +122,7 @@ private fun AddFilesScreenPreview() {
         navigateUp = {},
         closeClaimFlow = {},
         onRemoveFile = {},
+        onNavigateToImageViewer = { _, _ -> },
         imageLoader = rememberPreviewImageLoader(),
       )
     }

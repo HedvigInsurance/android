@@ -21,7 +21,7 @@ fun NavGraphBuilder.cbmChatGraph(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
-  onNavigateToImageViewer: (imageUrl: String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigator: Navigator,
 ) {
   navgraph<ChatDestination>(

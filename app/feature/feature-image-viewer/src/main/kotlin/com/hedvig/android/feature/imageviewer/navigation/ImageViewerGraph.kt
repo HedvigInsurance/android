@@ -13,6 +13,7 @@ fun NavGraphBuilder.imageViewerGraph(navController: NavController, imageLoader: 
     ImageViewerDestination(
       imageLoader = imageLoader,
       imageUrl = imageViewer.imageUrl,
+      cacheKey = imageViewer.cacheKey,
       navigateUp = navController::navigateUp,
     )
   }
