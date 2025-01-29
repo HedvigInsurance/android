@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.icon.ChevronLeft
-import com.hedvig.android.design.system.hedvig.icon.ChevronRight
+import com.hedvig.android.design.system.hedvig.icon.CollapseContent
+import com.hedvig.android.design.system.hedvig.icon.ExpandContent
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
@@ -60,9 +60,9 @@ fun SimpleVideoController(
           Icon(
             imageVector =
               if (showingFullWidth) {
-                HedvigIcons.ChevronRight
+                HedvigIcons.CollapseContent
               } else {
-                HedvigIcons.ChevronLeft
+                HedvigIcons.ExpandContent
               },
             contentDescription = null,
             tint = Color.White,
