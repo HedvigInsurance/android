@@ -38,12 +38,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -142,6 +144,7 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
@@ -334,6 +337,15 @@ private fun ChatLazyColumn(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val mediaStatesWithPlayers = remember { mutableStateMapOf<String, MediaState>() }
+  DisposableEffect(
+    Unit,
+  ) {
+    onDispose {
+      mediaStatesWithPlayers.values.forEach { it.player?.release() }
+      mediaStatesWithPlayers.clear() // todo: sure?
+    }
+  }
   ScrollToBottomEffect(
     lazyListState = lazyListState,
     latestChatMessage = latestChatMessage,
@@ -361,6 +373,7 @@ private fun ChatLazyColumn(
               ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
             }
           }
+
           is ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
           is ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
@@ -371,13 +384,13 @@ private fun ChatLazyColumn(
     ) { index: Int ->
       val uiChatMessage = messages[index]
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
-      val mediaState = videoPlayerMediaState(simpleVideoCache)
       ChatBubble(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
         imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
+        mediaStatesWithPlayersMap = mediaStatesWithPlayers,
         openUrl = openUrl,
-        mediaState = mediaState,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillParentMaxWidth()
@@ -429,7 +442,8 @@ private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   imageLoader: ImageLoader,
-  mediaState: MediaState,
+  simpleVideoCache: Cache,
+  mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -480,12 +494,25 @@ private fun ChatBubble(
                 modifier = Modifier.clickable(onClick = { openUrl(chatMessage.url) }),
               )
             }
+
             ChatMessageFile.MimeType.MP4 -> {
+              val mediaState = mediaStatesWithPlayersMap.getOrPut(
+                chatMessage.id,
+                {
+                  videoPlayerMediaState(simpleVideoCache, chatMessage.url)
+                },
+              )
+              val mediaStatePlayerHash = mediaState.player.hashCode()
+              val mediaStatePlayerPosition = mediaState.player?.currentPosition
+              logcat {
+                "Mariia: for message id ${chatMessage.id} mediaStatePlayerPosition:$mediaStatePlayerPosition" +
+                  "mediaStatePlayerHash: $mediaStatePlayerHash"
+              }
               VideoMessage(
                 state = mediaState,
-                url = chatMessage.url,
               )
             }
+
             ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
 
             ChatMessageFile.MimeType.OTHER,
@@ -620,11 +647,7 @@ private fun AttachedFileMessage(
 }
 
 @Composable
-private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Modifier) {
-  LaunchedEffect(url) {
-    state.player?.setMediaItem(MediaItem.fromUri(url))
-  }
-
+private fun VideoMessage(state: MediaState, modifier: Modifier = Modifier) {
   LocalLifecycleOwner.current.lifecycle.addObserver(
     object : LifecycleEventObserver {
       override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -632,6 +655,7 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
           Lifecycle.Event.ON_STOP -> {
             state.player?.pause()
           }
+
           else -> {}
         }
       }
@@ -654,6 +678,7 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
     },
   ) { state ->
     val controllerState = rememberControllerState(state)
+
     SimpleVideoController(
       mediaState = state,
       controllerState = controllerState,
@@ -662,18 +687,11 @@ private fun VideoMessage(state: MediaState, url: String, modifier: Modifier = Mo
         .clip(HedvigTheme.shapes.cornerLarge),
     )
   }
-  DisposableEffect(
-    Unit
-  ) {
-    onDispose {
-      state.player?.release()
-    }
-  }
 }
 
 @Composable
 @androidx.annotation.OptIn(UnstableApi::class)
-private fun videoPlayerMediaState(cache: Cache): MediaState {
+private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
   val httpDataSourceFactory = DefaultHttpDataSource.Factory()
   val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
     .setUpstreamDataSourceFactory(httpDataSourceFactory)
@@ -690,8 +708,7 @@ private fun videoPlayerMediaState(cache: Cache): MediaState {
         prepare()
         playWhenReady = false
         repeatMode = Player.REPEAT_MODE_OFF
-
-        //todo: track playback Position!
+        setMediaItem(MediaItem.fromUri(uri))
       }
   }
   return rememberMediaState(player = exoPlayer)
