@@ -96,13 +96,40 @@ private fun MemberChargeDetailsScreen(
 
     PaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentDetailsUiState.Success -> {
-      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+      var showBottomSheet by remember { mutableStateOf(false) }
+      HedvigBottomSheet(
+        isVisible = showBottomSheet,
+        onVisibleChange = { visible ->
+          if (!visible) {
+            showBottomSheet = false
+          }
+        },
+      ) {
+        HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+        HedvigText(
+          text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigTextButton(
+          text = stringResource(id = R.string.general_close_button),
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            showBottomSheet = false
+          },
+        )
+        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
 
+      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       HedvigScaffold(
         topAppBarText = when {
           uiState.paymentDetails.memberCharge.status == MemberCharge.MemberChargeStatus.PENDING -> {
             stringResource(R.string.PAYMENTS_PROCESSING_PAYMENT)
           }
+
           else -> {
             dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate())
           }
@@ -111,34 +138,7 @@ private fun MemberChargeDetailsScreen(
         customTopAppBarColors = uiState.paymentDetails.memberCharge.topAppBarColors(),
       ) {
         Column(modifier = Modifier.padding(16.dp)) {
-          var showBottomSheet by remember { mutableStateOf(false) }
-          HedvigBottomSheet(
-            isVisible = showBottomSheet,
-            onVisibleChange = { visible ->
-              if (!visible) {
-                showBottomSheet = false
-              }
-            },
-          ) {
-            HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
-            HedvigText(
-              text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
-            Spacer(Modifier.height(8.dp))
-            HedvigTextButton(
-              text = stringResource(id = R.string.general_close_button),
-              enabled = true,
-              modifier = Modifier.fillMaxWidth(),
-              onClick = {
-                showBottomSheet = false
-              },
-            )
-            Spacer(Modifier.height(8.dp))
-            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-          }
-
-          uiState.paymentDetails.memberCharge.chargeBreakdowns.forEach { chargeBreakdown ->
+          for (chargeBreakdown in uiState.paymentDetails.memberCharge.chargeBreakdowns) {
             PaymentDetailExpandableCard(
               displayName = chargeBreakdown.contractDisplayName,
               subtitle = chargeBreakdown.contractDetails,
