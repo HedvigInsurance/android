@@ -99,7 +99,14 @@ private fun MemberChargeDetailsScreen(
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
       HedvigScaffold(
-        topAppBarText = dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate()),
+        topAppBarText = when {
+          uiState.paymentDetails.memberCharge.status == MemberCharge.MemberChargeStatus.PENDING -> {
+            stringResource(R.string.PAYMENTS_PROCESSING_PAYMENT)
+          }
+          else -> {
+            dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate())
+          }
+        },
         navigateUp = navigateUp,
         customTopAppBarColors = uiState.paymentDetails.memberCharge.topAppBarColors(),
       ) {
