@@ -85,6 +85,7 @@ internal class PaymentsPresenter(
               )
 
               Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+
               NeedsSetup,
               Unknown,
               null,

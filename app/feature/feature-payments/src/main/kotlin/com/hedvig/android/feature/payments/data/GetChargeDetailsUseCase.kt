@@ -8,10 +8,10 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.payments.data.PaymentDetails.PaymentsInfo
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -57,35 +57,40 @@ internal class GetChargeDetailsUseCaseImpl(
       memberCharge = futureMemberChargeWithThisId ?: pastMemberCharge ?: ongoingCharge ?: raise(ErrorMessage()),
       pastCharges = pastCharges,
       upComingCharge = futureMemberCharge,
-      paymentConnection = run {
+      paymentsInfo = run {
+        if (futureMemberChargeWithThisId == null) {
+          // Only show payment connection information if the charge is a future charge. Otherwise the payment
+          // connection info we get is not reliably correct
+          return@run PaymentsInfo.NoPresentableInfo
+        }
         val paymentInformation = currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
             if (paymentInformation.connection == null) {
               logcat(LogPriority.ERROR) { "Payment connection is active but connection is null" }
-              PaymentConnection.Unknown
+              PaymentsInfo.NoPresentableInfo
             } else {
-              PaymentConnection.Active(
+              PaymentsInfo.Active(
                 displayName = paymentInformation.connection.displayName,
                 displayValue = paymentInformation.connection.descriptor,
               )
             }
           }
 
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.NeedsSetup
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+          MemberPaymentConnectionStatus.PENDING,
+          MemberPaymentConnectionStatus.NEEDS_SETUP,
+          MemberPaymentConnectionStatus.UNKNOWN__,
+          -> PaymentsInfo.NoPresentableInfo
         }
       },
     )
   }
 }
 
-@Serializable
 internal data class PaymentDetails(
   val memberCharge: MemberCharge,
   val pastCharges: List<MemberCharge>?,
-  val paymentConnection: PaymentConnection?,
+  val paymentsInfo: PaymentsInfo,
   val upComingCharge: MemberCharge?,
 ) {
   fun getNextCharge(selectedMemberCharge: MemberCharge): MemberCharge? {
@@ -95,5 +100,14 @@ internal data class PaymentDetails(
     } else {
       pastCharges?.get(index)
     }
+  }
+
+  sealed interface PaymentsInfo {
+    data class Active(
+      val displayName: String,
+      val displayValue: String,
+    ) : PaymentsInfo
+
+    data object NoPresentableInfo : PaymentsInfo
   }
 }
