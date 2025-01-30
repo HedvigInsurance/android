@@ -19,9 +19,9 @@ doctor = "0.10.0"
 easylauncher = "6.4.0"
 googleServices = "4.4.2"
 gradleDevelocity = "3.19.1"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlinter = "5.0.1"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.10-1.0.29"
 ktor = "3.0.3"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -32,11 +32,11 @@ accompanist = "0.37.0"
 androidx-activity-compose = "1.10.0"
 androidx-activity-core = "1.10.0"
 androidx-annotation = "1.9.1"
-androidx-composeBom = "2025.01.00"
+androidx-composeBom = "2025.01.01"
 androidx-datastore = "1.1.2"
 androidx-junit = "1.2.1"
 androidx-lifecycle = "2.8.7"
-androidx-navigation = "2.8.5"
+androidx-navigation = "2.8.6"
 androidx-other-appCompat = "1.7.0"
 androidx-other-browser = "1.8.0"
 androidx-other-constraintLayout = "2.2.0"
@@ -54,7 +54,7 @@ composeRichtext = "1.0.0-alpha02"
 coreLibraryDesugaring = "2.1.4"
 coroutines = "1.10.1"
 datadog = "2.17.0"
-dependencyAnalysis = "2.7.0"
+dependencyAnalysis = "2.8.0"
 firebaseCrashlyticsBuildtools = "3.0.2"
 hedvigAuthlib = "1.4.3"
 junit = "4.13.2"
@@ -71,15 +71,16 @@ playReview = "2.0.2"
 playServicesBase = "18.5.0"
 retrofit = "2.11.0"
 robolectric = "4.14.1"
-room = "2.7.0-alpha12"
+room = "2.7.0-alpha13"
 slimber = "2.0.0"
-sqlite = "2.5.0-alpha12"
+sqlite = "2.5.0-alpha13"
 testParameterInjector = "1.18"
 timber = "5.0.1"
 turbine = "1.2.0"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
+zoomable = "1.6.2"
 
 [libraries]
 
@@ -162,7 +163,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom"  }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
@@ -200,10 +201,11 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
+zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }

@@ -26,9 +26,8 @@ data class ProductVariant(
 data class ProductVariantPeril(
   val id: String,
   val title: String,
-  val description: String,
+  val description: String?,
   val covered: List<String>,
-  val exceptions: List<String>,
   val colorCode: String?,
 )
 
@@ -91,7 +90,6 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       title = peril.title,
       description = peril.description,
       covered = peril.covered,
-      exceptions = peril.exceptions,
       colorCode = peril.colorCode,
     )
   },

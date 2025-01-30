@@ -47,6 +47,7 @@ import hedvig.resources.R
 internal fun AddFilesDestination(
   viewModel: AddFilesViewModel,
   navigateUp: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
 ) {
@@ -88,6 +89,7 @@ internal fun AddFilesDestination(
     launchTakePhotoRequest = photoCaptureState::launchTakePhotoRequest,
     onPickPhoto = { photoPicker.launch(PickVisualMediaRequest()) },
     onPickFile = { filePicker.launch("*/*") },
+    onNavigateToImageViewer = onNavigateToImageViewer,
   )
 }
 
@@ -102,6 +104,7 @@ private fun AddFilesScreen(
   launchTakePhotoRequest: () -> Unit,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
 ) {
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
   FilePickerBottomSheet(
@@ -175,6 +178,7 @@ private fun AddFilesScreen(
           )
             .asPaddingValues(),
         onClickFile = null,
+        onNavigateToImageViewer = onNavigateToImageViewer,
       )
     }
   }
@@ -232,6 +236,7 @@ private fun PreviewAddFilesScreen() {
         {},
         {},
         {},
+        { _, _ -> },
       )
     }
   }

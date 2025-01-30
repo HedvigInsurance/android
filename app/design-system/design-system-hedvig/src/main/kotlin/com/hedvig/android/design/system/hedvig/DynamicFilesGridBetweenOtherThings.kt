@@ -62,6 +62,7 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
   imageLoader: ImageLoader,
   onRemoveFile: ((fileId: String) -> Unit)?,
   onClickFile: ((fileId: String) -> Unit)?,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
   aboveGridContent: @Composable () -> Unit = {},
@@ -70,18 +71,15 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
   var layoutHeight by remember { mutableIntStateOf(-1) }
   Layout(
     content = {
-      Box {
-        aboveGridContent()
-      }
-      Box {
-        belowGridContent()
-      }
+      Box { aboveGridContent() }
+      Box { belowGridContent() }
       if (files.isNotEmpty()) {
         FilesLazyVerticalGrid(
           files = files,
           onRemoveFile = onRemoveFile,
           imageLoader = imageLoader,
           onClickFile = onClickFile,
+          onNavigateToImageViewer = onNavigateToImageViewer,
         )
       }
     },
@@ -150,6 +148,7 @@ private fun FilesLazyVerticalGrid(
   files: List<UiFile>,
   onRemoveFile: ((fileId: String) -> Unit)?,
   onClickFile: ((fileId: String) -> Unit)?,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   paddingValues: PaddingValues = PaddingValues(),
@@ -173,6 +172,7 @@ private fun FilesLazyVerticalGrid(
         imageLoader = imageLoader,
         onRemoveFile = onRemoveFile,
         onClickFile = onClickFile,
+        onNavigateToImageViewer = onNavigateToImageViewer,
       )
     }
   }
@@ -187,6 +187,7 @@ private fun File(
   imageLoader: ImageLoader,
   onRemoveFile: ((fileId: String) -> Unit)?,
   onClickFile: ((fileId: String) -> Unit)?,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
 ) {
   Box(
     contentAlignment = Alignment.TopEnd,
@@ -202,10 +203,8 @@ private fun File(
           color = HedvigTheme.colorScheme.surfacePrimary,
         )
         .clip(HedvigTheme.shapes.cornerMedium)
-        .clickable {
-          if (onClickFile != null) {
-            onClickFile(id)
-          }
+        .clickable(enabled = onClickFile != null) {
+          onClickFile?.invoke(id)
         },
       propagateMinConstraints = true,
     ) {
@@ -214,6 +213,16 @@ private fun File(
           model = path,
           imageLoader = imageLoader,
           cacheKey = id,
+          modifier = if (path.startsWith("https")) {
+            Modifier.clickable {
+              onNavigateToImageViewer(
+                path,
+                id,
+              )
+            }
+          } else {
+            Modifier
+          },
         )
       } else {
         Column(
@@ -325,6 +334,7 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
           imageLoader = rememberPreviewImageLoader(),
           onRemoveFile = null,
           onClickFile = null,
+          onNavigateToImageViewer = { _, _ -> },
           modifier = Modifier,
           contentPadding = PaddingValues(16.dp),
         )
@@ -367,6 +377,7 @@ private fun PreviewDynamicFilesGridManyFiles() {
           imageLoader = rememberPreviewImageLoader(),
           onRemoveFile = null,
           onClickFile = null,
+          onNavigateToImageViewer = { _, _ -> },
           modifier = Modifier,
           contentPadding = PaddingValues(16.dp),
         )
@@ -414,6 +425,7 @@ private fun PreviewFile() {
           ),
           onRemoveFile = {},
           onClickFile = null,
+          onNavigateToImageViewer = { _, _ -> },
           imageLoader = rememberPreviewImageLoader(),
           paddingValues =
             WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)

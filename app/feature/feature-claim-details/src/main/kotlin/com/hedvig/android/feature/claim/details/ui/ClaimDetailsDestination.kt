@@ -101,6 +101,7 @@ internal fun ClaimDetailsDestination(
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   sharePdf: (File) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -109,6 +110,7 @@ internal fun ClaimDetailsDestination(
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
@@ -129,6 +131,7 @@ private fun ClaimDetailScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
@@ -172,6 +175,7 @@ private fun ClaimDetailScreen(
             uiState = uiState,
             onDismissUploadError = onDismissUploadError,
             openUrl = openUrl,
+            onNavigateToImageViewer = onNavigateToImageViewer,
             imageLoader = imageLoader,
             downloadFromUrl = downloadFromUrl,
             sharePdf = sharePdf,
@@ -193,6 +197,7 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
   downloadFromUrl: (String) -> Unit,
@@ -260,6 +265,7 @@ private fun ClaimDetailScreen(
         }
       },
       onRemoveFile = null,
+      onNavigateToImageViewer = onNavigateToImageViewer,
       contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
         .only(
           WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
@@ -659,6 +665,7 @@ private fun PreviewClaimDetailScreen() {
         onLaunchMediaRequest = {},
         onTakePhoto = {},
         onPickFile = {},
+        onNavigateToImageViewer = { _, _ -> },
       )
     }
   }
