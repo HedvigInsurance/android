@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.payments.ui.payments
 
 import androidx.compose.animation.AnimatedVisibility
@@ -228,8 +229,8 @@ private fun PaymentsContent(
     UpcomingPaymentInfoCard(
       upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo,
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
     val showConnectedPaymentInfo = uiState is Content &&
       uiState.connectedPaymentInfo is NotConnected &&
@@ -244,8 +245,8 @@ private fun PaymentsContent(
         connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? NotConnected,
         onChangeBankAccount = onChangeBankAccount,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
     }
 
@@ -261,14 +262,14 @@ private fun PaymentsContent(
               enabled = true,
               buttonStyle = Secondary,
               modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .fillMaxWidth()
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                  .hedvigPlaceholder(
-                      uiState.isRetrying,
-                      shape = HedvigTheme.shapes.cornerSmall,
-                      highlight = PlaceholderHighlight.shimmer(),
-                  ),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .hedvigPlaceholder(
+                  uiState.isRetrying,
+                  shape = HedvigTheme.shapes.cornerSmall,
+                  highlight = PlaceholderHighlight.shimmer(),
+                ),
             )
           }
         }
@@ -280,8 +281,8 @@ private fun PaymentsContent(
             message = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
             priority = Info,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         }
       }
@@ -357,8 +358,8 @@ private fun PaymentsListItems(
 ) {
   val listItemsSideSpacingModifier =
     Modifier
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
     PaymentsListItem(
       text = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
@@ -371,10 +372,10 @@ private fun PaymentsListItems(
         )
       },
       modifier = Modifier
-          .clickable(onClick = onDiscountClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
+        .clickable(onClick = onDiscountClicked)
+        .then(listItemsSideSpacingModifier)
+        .padding(vertical = 16.dp)
+        .fillMaxWidth(),
     )
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
@@ -387,10 +388,10 @@ private fun PaymentsListItems(
         )
       },
       modifier = Modifier
-          .clickable(onClick = onPaymentHistoryClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
+        .clickable(onClick = onPaymentHistoryClicked)
+        .then(listItemsSideSpacingModifier)
+        .padding(vertical = 16.dp)
+        .fillMaxWidth(),
     )
     if (uiState is Content) {
       if (uiState.connectedPaymentInfo is Connected) {
@@ -412,13 +413,13 @@ private fun PaymentsListItems(
             )
           },
           modifier = listItemsSideSpacingModifier
-              .padding(vertical = 16.dp)
-              .fillMaxWidth()
-              .hedvigPlaceholder(
-                  uiState.isRetrying,
-                  shape = HedvigTheme.shapes.cornerSmall,
-                  highlight = PlaceholderHighlight.shimmer(),
-              ),
+            .padding(vertical = 16.dp)
+            .fillMaxWidth()
+            .hedvigPlaceholder(
+              uiState.isRetrying,
+              shape = HedvigTheme.shapes.cornerSmall,
+              highlight = PlaceholderHighlight.shimmer(),
+            ),
         )
       }
     }
@@ -488,8 +489,8 @@ private fun PaymentCard(
   ) {
     Column(
       modifier = Modifier
-          .padding(horizontal = 16.dp, vertical = 12.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 16.dp, vertical = 12.dp)
+        .fillMaxWidth(),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -507,12 +508,12 @@ private fun PaymentCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .wrapContentWidth(Alignment.End)
-                .hedvigPlaceholder(
-                    visible = showPlaceholder,
-                    shape = HedvigTheme.shapes.cornerSmall,
-                    highlight = PlaceholderHighlight.shimmer(),
-                ),
+              .wrapContentWidth(Alignment.End)
+              .hedvigPlaceholder(
+                visible = showPlaceholder,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
           ) {
             HedvigText(
               text = endSlotText,
