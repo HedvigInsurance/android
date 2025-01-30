@@ -95,6 +95,7 @@ internal class CbmChatPresenter(
       )
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
+    var showUploading by remember { mutableStateOf(false) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -136,23 +137,43 @@ internal class CbmChatPresenter(
       when (event) {
         CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
         is CbmChatEvent.SendTextMessage -> launch {
+          showUploading = true
           startConversationIfNecessary()
           chatRepository.provide().sendText(conversationId, null, event.message)
+            .fold(
+              ifLeft = { showUploading = false },
+              ifRight = { showUploading = false },
+            )
         }
 
         is CbmChatEvent.SendPhotoMessage -> launch {
+          showUploading = true
           startConversationIfNecessary()
           chatRepository.provide().sendPhotos(conversationId, event.uriList)
+            .fold(
+              ifLeft = { showUploading = false },
+              ifRight = { showUploading = false },
+            )
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
+          showUploading = true
           startConversationIfNecessary()
           chatRepository.provide().sendMedia(conversationId, event.uriList)
+            .fold(
+              ifLeft = { showUploading = false },
+              ifRight = { showUploading = false },
+            )
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
+          showUploading = true
           startConversationIfNecessary()
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+            .fold(
+              ifLeft = { showUploading = false },
+              ifRight = { showUploading = false },
+            )
         }
       }
     }
@@ -169,6 +190,7 @@ internal class CbmChatPresenter(
           remoteKeyDao,
           chatRepository,
           clock,
+          showUploading,
         )
       }
     }
@@ -185,6 +207,7 @@ private fun presentLoadedChat(
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
+  showUploading: Boolean,
 ): CbmChatUiState.Loaded {
   val coroutineScope = rememberCoroutineScope()
   val latestMessage by remember(chatDao) {
@@ -235,6 +258,7 @@ private fun presentLoadedChat(
     messages = lazyPagingItems,
     latestMessage = latestMessage,
     bannerText = bannerText,
+    showUploading = showUploading,
   )
 }
 
@@ -270,6 +294,8 @@ internal sealed interface CbmChatUiState {
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
+    val showUploading: Boolean,
+    // = false
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation

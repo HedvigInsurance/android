@@ -62,6 +62,7 @@ class PaymentNotificationSender(
       sendNotificationInner(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
   }
+
   @androidx.media3.common.util.UnstableApi
   @OptIn(UnstableApi::class)
   private fun sendPaymentFailedNotification() {
