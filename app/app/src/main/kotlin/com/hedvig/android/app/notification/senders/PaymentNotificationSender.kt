@@ -4,8 +4,10 @@ import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.media3.common.util.UnstableApi
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
@@ -24,6 +26,7 @@ class PaymentNotificationSender(
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
+  @OptIn(UnstableApi::class)
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     when (type) {
       NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
@@ -59,7 +62,8 @@ class PaymentNotificationSender(
       sendNotificationInner(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
   }
-
+  @androidx.media3.common.util.UnstableApi
+  @OptIn(UnstableApi::class)
   private fun sendPaymentFailedNotification() {
     val pendingIntent = TaskStackBuilder
       .create(context)

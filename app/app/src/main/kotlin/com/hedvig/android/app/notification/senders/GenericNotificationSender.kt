@@ -2,8 +2,10 @@ package com.hedvig.android.app.notification.senders
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.media3.common.util.UnstableApi
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
@@ -21,6 +23,7 @@ class GenericNotificationSender(
 ) : NotificationSender {
   private val id = AtomicInteger(100)
 
+  @OptIn(UnstableApi::class)
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]

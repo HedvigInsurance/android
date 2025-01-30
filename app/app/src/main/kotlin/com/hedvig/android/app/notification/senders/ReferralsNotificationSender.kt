@@ -5,9 +5,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.media3.common.util.UnstableApi
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
@@ -67,6 +69,7 @@ class ReferralsNotificationSender(
     sendNotificationInner(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
   }
 
+  @OptIn(UnstableApi::class)
   private fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)

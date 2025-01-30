@@ -3,6 +3,7 @@ package com.hedvig.app.debug.impersonation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -14,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.UnstableApi
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -39,6 +41,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 class ImpersonationReceiverActivity : ComponentActivity() {
+  @OptIn(UnstableApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     loadKoinModules(module)
