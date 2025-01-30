@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
@@ -240,10 +242,14 @@ fun QuoteCard(
         Column {
           HedvigText(
             text = displayName,
+            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
+            overflow = TextOverflow.Ellipsis,
           )
           HedvigText(
             text = subtitle,
             color = HedvigTheme.colorScheme.textSecondary,
+            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
+            overflow = TextOverflow.Ellipsis,
           )
         }
       }
@@ -314,7 +320,7 @@ fun QuoteCard(
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)
-                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
+                            .then(with(density) { Modifier.size(24.sp.toDp()) }),
                         )
                       }
                     }
@@ -367,7 +373,13 @@ private fun QuoteCard(
         }
         Column(Modifier.weight(1f)) {
           HorizontalItemsWithMaximumSpaceTaken(
-            startSlot = { HedvigText(displayName) },
+            startSlot = {
+              HedvigText(
+                text = displayName,
+                maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+            },
             endSlot = { titleEndSlot() },
             spaceBetween = 8.dp,
           )
@@ -494,7 +506,7 @@ private fun QuoteCard(
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)
-                            .then(with(density) { Modifier.size(16.sp.toDp()) }),
+                            .then(with(density) { Modifier.size(24.sp.toDp()) }),
                         )
                       }
                     }
