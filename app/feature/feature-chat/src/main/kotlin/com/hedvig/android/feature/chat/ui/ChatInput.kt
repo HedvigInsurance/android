@@ -174,7 +174,7 @@ private fun ChatInput(
           innerTextField()
         }
         AnimatedVisibility(showUploading) {
-          ThreeDotsLoading(Modifier.height(24.dp))
+          ThreeDotsLoading(Modifier.height(24.dp).padding(end = 8.dp))
         }
         Box(
           modifier = Modifier
