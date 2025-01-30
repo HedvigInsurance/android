@@ -219,7 +219,7 @@ internal class CbmChatRepositoryImpl(
           sendOnePhoto(conversationId, null, uri)
             .fold(
               ifLeft = {
-                logcat{"Failed to upload list of photos: $it"}
+                logcat { "Failed to upload list of photos: $it" }
               },
               ifRight = { cbmMessage ->
                 add(cbmMessage)
@@ -237,7 +237,7 @@ internal class CbmChatRepositoryImpl(
           sendOneMedia(conversationId, null, uri)
             .fold(
               ifLeft = {
-                logcat{"Failed to upload list of media: $it"}
+                logcat { "Failed to upload list of media: $it" }
               },
               ifRight = { cbmMessage ->
                 add(cbmMessage)
@@ -248,7 +248,7 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  private suspend fun sendOneMedia(conversationId: Uuid,messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  private suspend fun sendOneMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
@@ -263,7 +263,7 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  private suspend fun sendOnePhoto(conversationId: Uuid,messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  private suspend fun sendOnePhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
