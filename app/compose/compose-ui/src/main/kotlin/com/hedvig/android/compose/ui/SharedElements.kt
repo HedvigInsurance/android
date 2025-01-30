@@ -57,7 +57,7 @@ fun Modifier.globalSharedElement(
 } else {
   with(sharedTransitionScope) {
     this@globalSharedElement.sharedElement(
-      state = state,
+      sharedContentState = state,
       animatedVisibilityScope = animatedVisibilityScope,
       boundsTransform = boundsTransform,
       placeHolderSize = placeHolderSize,
