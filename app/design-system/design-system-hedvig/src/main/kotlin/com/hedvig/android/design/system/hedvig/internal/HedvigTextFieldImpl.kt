@@ -217,7 +217,7 @@ private fun AnimatedTextFieldContent(
       val sharedInnerTextField: @Composable (Modifier) -> Unit = { modifier ->
         Box(
           modifier.sharedElement(
-            state = rememberSharedContentState(InnerTextFieldId),
+            sharedContentState = rememberSharedContentState(InnerTextFieldId),
             animatedVisibilityScope = this,
             boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
           ),
@@ -258,7 +258,7 @@ private fun AnimatedTextFieldContent(
         @Composable {
           Box(
             Modifier.sharedElement(
-              state = rememberSharedContentState(LeadingContentId),
+              sharedContentState = rememberSharedContentState(LeadingContentId),
               animatedVisibilityScope = this,
               boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
               renderInOverlayDuringTransition = false,
@@ -275,7 +275,7 @@ private fun AnimatedTextFieldContent(
         @Composable {
           Box(
             Modifier.sharedElement(
-              state = rememberSharedContentState(TrailingContentId),
+              sharedContentState = rememberSharedContentState(TrailingContentId),
               animatedVisibilityScope = this,
               boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
               renderInOverlayDuringTransition = false,
@@ -289,7 +289,7 @@ private fun AnimatedTextFieldContent(
       }
       container(
         Modifier.sharedElement(
-          state = rememberSharedContentState(ContainerId),
+          sharedContentState = rememberSharedContentState(ContainerId),
           animatedVisibilityScope = this,
           boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
         ),
