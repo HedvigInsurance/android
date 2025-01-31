@@ -5,13 +5,13 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.MessagingStyle
 import androidx.core.app.Person
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavDestination
@@ -117,13 +117,11 @@ class ChatNotificationSender(
   private fun sendChatNotificationInner(context: Context, style: MessagingStyle, remoteMessage: RemoteMessage) {
     val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
     val isValidUuid = conversationId.isValidUuid()
-    val intentUri = Uri.parse(
-      if (conversationId != null && isValidUuid) {
-        hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
-      } else {
-        hedvigDeepLinkContainer.inbox
-      },
-    )
+    val intentUri = if (conversationId != null && isValidUuid) {
+      hedvigDeepLinkContainer.conversation.first().replace("{conversationId}", conversationId)
+    } else {
+      hedvigDeepLinkContainer.inbox.first()
+    }.toUri()
     logcat { "ChatNotificationSender sending notification with deeplink uri:$intentUri" }
     val chatIntent = Intent().apply {
       action = Intent.ACTION_VIEW

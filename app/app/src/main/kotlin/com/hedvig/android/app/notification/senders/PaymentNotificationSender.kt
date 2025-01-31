@@ -3,9 +3,9 @@ package com.hedvig.android.app.notification.senders
 import android.app.Notification
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
@@ -40,7 +40,10 @@ class PaymentNotificationSender(
 
   private fun sendConnectDirectDebitNotification() {
     applicationScope.launch(Dispatchers.IO) {
-      val connectPaymentDeepLinkIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.connectPayment))
+      val connectPaymentDeepLinkIntent = Intent(
+        Intent.ACTION_VIEW,
+        hedvigDeepLinkContainer.connectPayment.first().toUri(),
+      )
       val pendingIntent = TaskStackBuilder
         .create(context)
         .addNextIntent(connectPaymentDeepLinkIntent)

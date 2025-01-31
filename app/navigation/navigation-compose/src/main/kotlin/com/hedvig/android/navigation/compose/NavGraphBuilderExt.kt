@@ -12,6 +12,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
@@ -81,4 +82,12 @@ inline fun <reified T : Destination> NavGraphBuilder.navgraph(
     sizeTransform = sizeTransform,
     builder = builder,
   )
+}
+
+fun navDeepLinks(vararg deepLinkLists: List<String>): List<NavDeepLink> {
+  return deepLinkLists.flatMap { deepLinks ->
+    deepLinks.map { uri ->
+      navDeepLink { uriPattern = uri }
+    }
+  }
 }
