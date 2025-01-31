@@ -63,6 +63,7 @@
         <data
           android:host="@string/DEEP_LINK_DOMAIN_HOST"
           android:scheme="https"
+          android:pathPrefix="@string/DEEP_LINK_DOMAIN_PATH_PREFIX" />
       </intent-filter>
     </activity>
 
