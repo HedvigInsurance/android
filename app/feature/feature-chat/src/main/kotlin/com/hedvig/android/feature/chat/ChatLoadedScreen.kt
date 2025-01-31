@@ -415,7 +415,7 @@ private fun ChatLazyColumn(
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
           .wrapContentWidth(alignment)
-          .fillParentMaxWidth(dynamicBubbleWidthFraction)
+          .fillMaxWidth(dynamicBubbleWidthFraction)
           .wrapContentWidth(alignment)
           .padding(bottom = 8.dp),
       )
@@ -688,10 +688,9 @@ private fun VideoMessage(
     },
   )
   val height = if (showingFullWidth) 350.dp else 220.dp
-  val updatedModifier = if (showingFullWidth) modifier.padding(horizontal = 16.dp) else modifier
   Media(
     state = state,
-    modifier = updatedModifier
+    modifier = modifier
       .height(height)
       .clip(HedvigTheme.shapes.cornerLarge)
       .background(Color.Black),
