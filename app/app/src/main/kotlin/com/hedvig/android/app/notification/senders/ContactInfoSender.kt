@@ -24,7 +24,7 @@ class ContactInfoSender(
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val contactInfoIntent = Intent().apply {
       action = Intent.ACTION_VIEW
-      data = Uri.parse(deepLinkContainer.contactInfo)
+      data = Uri.parse(deepLinkContainer.contactInfo.first())
       component = ComponentName(buildConstants.appId, MainActivityFullyQualifiedName)
     }
     val pendingIntent = PendingIntent.getActivity(

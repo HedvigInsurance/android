@@ -1,10 +1,10 @@
 package com.hedvig.android.feature.forever.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -21,9 +21,7 @@ fun NavGraphBuilder.foreverGraph(
     startDestination = ForeverDestination.Forever::class,
   ) {
     navdestination<ForeverDestination.Forever>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.forever),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {

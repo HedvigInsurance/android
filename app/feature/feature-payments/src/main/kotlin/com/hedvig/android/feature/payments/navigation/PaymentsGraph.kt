@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.payments.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
@@ -13,6 +12,7 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -33,9 +33,7 @@ fun NavGraphBuilder.paymentsGraph(
     startDestination = PaymentsDestination.Payments::class,
   ) {
     navdestination<PaymentsDestination.Payments>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.payments },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.payments),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -49,13 +47,9 @@ fun NavGraphBuilder.paymentsGraph(
         onDiscountClicked = {
           with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
         },
-        onPaymentClicked = { memberChargeId: String? ->
+        onPaymentClicked = { id: String? ->
           with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
+            backStackEntry.navigate(PaymentsDestinations.Details(id))
           }
         },
       )

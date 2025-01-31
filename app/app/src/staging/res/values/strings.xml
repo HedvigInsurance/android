@@ -2,7 +2,8 @@
 <resources>
     <string name="APP_NAME" translatable="false">Hedvig Test</string>
 
-    <string name="DEEP_LINK_DOMAIN_HOST" translatable="false">hedvigtest.page.link</string>
+    <string name="DEEP_LINK_DOMAIN_HOST_OLD" translatable="false">hedvigtest.page.link</string>
+    <string name="DEEP_LINK_DOMAIN_HOST" translatable="false">dev.hedvigit.com</string>
 
     <string name="OCTOPUS_GRAPHQL_URL" translatable="false">https://apollo-router.dev.hedvigit.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.dev.hedvigit.com</string>

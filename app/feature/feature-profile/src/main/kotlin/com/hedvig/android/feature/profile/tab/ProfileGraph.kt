@@ -2,7 +2,6 @@ package com.hedvig.android.feature.profile.tab
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
@@ -17,6 +16,8 @@ import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -41,9 +42,7 @@ fun NavGraphBuilder.profileGraph(
     startDestination = ProfileDestination.Profile::class,
   ) {
     navdestination<ProfileDestination.Profile>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.profile),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -75,9 +74,7 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navdestination<ProfileDestinations.Eurobonus>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.eurobonus },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.eurobonus),
     ) {
       val viewModel: EurobonusViewModel = koinViewModel()
       EurobonusDestination(
@@ -86,9 +83,9 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navdestination<ProfileDestinations.MyInfo>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.contactInfo },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo).also {
+        logcat { "Stelios it$it + {${hedvigDeepLinkContainer.contactInfo}}" }
+      },
     ) {
       val viewModel: MyInfoViewModel = koinViewModel()
       MyInfoDestination(
