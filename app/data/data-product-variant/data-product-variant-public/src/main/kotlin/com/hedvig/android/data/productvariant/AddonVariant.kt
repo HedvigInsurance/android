@@ -34,7 +34,7 @@ fun AddonVariantFragment.toAddonVariant() = AddonVariant(
       title = peril.title,
       description = description,
       covered = listOf(),
-      colorCode = peril.colorCode
+      colorCode = peril.colorCode,
     )
   },
 )
