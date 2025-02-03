@@ -448,7 +448,17 @@ private fun ChatBubble(
               )
             }
 
-            CbmChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
+            CbmChatMessage.ChatMessageFile.MimeType.PDF -> {
+              ChatAsyncImage(
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
+                modifier = Modifier.clickable {
+                  openUrl(chatMessage.url)
+                },
+              )
+            }
+
             CbmChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
             CbmChatMessage.ChatMessageFile.MimeType.OTHER,
             -> {
@@ -458,7 +468,11 @@ private fun ChatBubble(
         }
 
         is CbmChatMessage.ChatMessageGif -> {
-          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.gifUrl)
+          ChatAsyncImage(
+            model = chatMessage.gifUrl,
+            imageLoader = imageLoader,
+            cacheKey = chatMessage.gifUrl,
+          )
         }
 
         is CbmChatMessage.FailedToBeSent -> {
