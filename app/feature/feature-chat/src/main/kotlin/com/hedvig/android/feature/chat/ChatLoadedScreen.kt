@@ -125,7 +125,6 @@ import com.hedvig.android.design.system.hedvig.videoplayer.rememberControllerSta
 import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
-import com.hedvig.android.feature.chat.VideoMessage
 import com.hedvig.android.feature.chat.data.BannerText
 import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
@@ -148,7 +147,6 @@ import com.hedvig.android.feature.chat.ui.backgroundColor
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
-import com.hedvig.android.feature.chat.videoPlayerMediaState
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
@@ -209,6 +207,7 @@ internal fun CbmChatLoadedScreen(
         },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
+        showUploading = uiState.showUploading,
       )
     },
   )
@@ -965,6 +964,7 @@ private fun PreviewChatLoadedScreen() {
           messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
           latestMessage = null,
           bannerText = ClosedConversation,
+          showUploading = true,
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
