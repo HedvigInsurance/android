@@ -415,7 +415,7 @@ private fun ChatLazyColumn(
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
           .wrapContentWidth(alignment)
-          .fillParentMaxWidth(dynamicBubbleWidthFraction)
+          .fillMaxWidth(dynamicBubbleWidthFraction)
           .wrapContentWidth(alignment)
           .padding(bottom = 8.dp),
       )
@@ -514,6 +514,7 @@ private fun ChatBubble(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
                 modifier = Modifier.clickable {
                   onNavigateToImageViewer(chatMessage.url, chatMessage.id)
                 },
@@ -543,7 +544,12 @@ private fun ChatBubble(
         }
 
         is CbmChatMessage.ChatMessageGif -> {
-          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.gifUrl)
+          ChatAsyncImage(
+            model = chatMessage.gifUrl,
+            imageLoader = imageLoader,
+            cacheKey = chatMessage.gifUrl,
+            isFailedToBeSentMessage = false,
+          )
         }
 
         is CbmChatMessage.FailedToBeSent -> {
@@ -613,6 +619,7 @@ private fun FailedToBeSentUri(
     model = messageUri,
     imageLoader = imageLoader,
     isRetryable = true,
+    isFailedToBeSentMessage = true,
     modifier = Modifier
       .clip(HedvigTheme.shapes.cornerLarge)
       .clickable { onRetrySendChatMessage(messageId) }
@@ -688,10 +695,9 @@ private fun VideoMessage(
     },
   )
   val height = if (showingFullWidth) 350.dp else 220.dp
-  val updatedModifier = if (showingFullWidth) modifier.padding(horizontal = 16.dp) else modifier
   Media(
     state = state,
-    modifier = updatedModifier
+    modifier = modifier
       .height(height)
       .clip(HedvigTheme.shapes.cornerLarge)
       .background(Color.Black),
@@ -748,6 +754,7 @@ private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
 private fun ChatAsyncImage(
   model: Any,
   imageLoader: ImageLoader,
+  isFailedToBeSentMessage: Boolean,
   modifier: Modifier = Modifier,
   isRetryable: Boolean = false,
   cacheKey: String? = null,
@@ -807,11 +814,20 @@ private fun ChatAsyncImage(
         }
 
         is AsyncImagePainter.State.Error -> {
-          loadedImageIntrinsicSize.value = IntSize(0, 0)
-          if (state.result.throwable is NullRequestDataException) {
-            state.copy(painter = errorPainter)
+          if (isFailedToBeSentMessage) {
+            // When we are on a failed message already which has a retry icon itself, we don't want to double show the
+            // retry icon
+            state
           } else {
-            state.copy(painter = errorPainter)
+            loadedImageIntrinsicSize.value = IntSize(
+              errorPainter.intrinsicSize.width.toInt(),
+              errorPainter.intrinsicSize.height.toInt(),
+            )
+            if (state.result.throwable is NullRequestDataException) {
+              state.copy(painter = errorPainter)
+            } else {
+              state.copy(painter = errorPainter)
+            }
           }
         }
 
