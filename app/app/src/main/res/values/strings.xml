@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="DEEP_LINK_DOMAIN_PATH_PREFIX" translatable="false">/deeplink</string>
+</resources>

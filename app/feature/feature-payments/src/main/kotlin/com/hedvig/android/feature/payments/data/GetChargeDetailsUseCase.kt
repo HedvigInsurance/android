@@ -3,15 +3,15 @@ package com.hedvig.android.feature.payments.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.FetchPolicy.NetworkFirst
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.payments.data.PaymentDetails.PaymentsInfo
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -24,58 +24,73 @@ internal class GetChargeDetailsUseCaseImpl(
   private val clock: Clock,
 ) : GetChargeDetailsUseCase {
   override suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails> = either {
-    val result = apolloClient.query(PaymentHistoryWithDetailsQuery())
-      .fetchPolicy(FetchPolicy.NetworkFirst)
+    val currentMember = apolloClient.query(PaymentHistoryWithDetailsQuery())
+      .fetchPolicy(NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
+      .currentMember
 
-    val pastCharges = result.currentMember.pastCharges.map {
+    val pastCharges = currentMember.pastCharges.map {
       it.toMemberCharge(
-        result.currentMember.redeemedCampaigns,
-        result.currentMember.referralInformation,
+        currentMember.redeemedCampaigns,
+        currentMember.referralInformation,
         clock,
       )
     }.reversed()
-    val futureMemberCharge = result.currentMember.futureCharge?.toMemberCharge(
-      result.currentMember.redeemedCampaigns,
-      result.currentMember.referralInformation,
+    val futureMemberCharge = currentMember.futureCharge?.toMemberCharge(
+      currentMember.redeemedCampaigns,
+      currentMember.referralInformation,
       clock,
     )
+    val ongoingCharge = currentMember
+      .ongoingCharges
+      .firstOrNull { it.id == id }
+      ?.toMemberCharge(
+        currentMember.redeemedCampaigns,
+        currentMember.referralInformation,
+        clock,
+      )
     val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
 
     val pastMemberCharge = pastCharges.firstOrNull { it.id == id }
     PaymentDetails(
-      memberCharge = futureMemberChargeWithThisId ?: pastMemberCharge ?: raise(ErrorMessage()),
+      memberCharge = futureMemberChargeWithThisId ?: pastMemberCharge ?: ongoingCharge ?: raise(ErrorMessage()),
       pastCharges = pastCharges,
       upComingCharge = futureMemberCharge,
-      paymentConnection = run {
-        val paymentInformation = result.currentMember.paymentInformation
+      paymentsInfo = run {
+        if (futureMemberChargeWithThisId == null) {
+          // Only show payment connection information if the charge is a future charge. Otherwise the payment
+          // connection info we get is not reliably correct
+          return@run PaymentsInfo.NoPresentableInfo
+        }
+        val paymentInformation = currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
             if (paymentInformation.connection == null) {
               logcat(LogPriority.ERROR) { "Payment connection is active but connection is null" }
-              PaymentConnection.Unknown
+              PaymentsInfo.NoPresentableInfo
             } else {
-              PaymentConnection.Active(
+              PaymentsInfo.Active(
                 displayName = paymentInformation.connection.displayName,
                 displayValue = paymentInformation.connection.descriptor,
               )
             }
           }
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.NeedsSetup
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+
+          MemberPaymentConnectionStatus.PENDING,
+          MemberPaymentConnectionStatus.NEEDS_SETUP,
+          MemberPaymentConnectionStatus.UNKNOWN__,
+          -> PaymentsInfo.NoPresentableInfo
         }
       },
     )
   }
 }
 
-@Serializable
 internal data class PaymentDetails(
   val memberCharge: MemberCharge,
   val pastCharges: List<MemberCharge>?,
-  val paymentConnection: PaymentConnection?,
+  val paymentsInfo: PaymentsInfo,
   val upComingCharge: MemberCharge?,
 ) {
   fun getNextCharge(selectedMemberCharge: MemberCharge): MemberCharge? {
@@ -85,5 +100,14 @@ internal data class PaymentDetails(
     } else {
       pastCharges?.get(index)
     }
+  }
+
+  sealed interface PaymentsInfo {
+    data class Active(
+      val displayName: String,
+      val displayValue: String,
+    ) : PaymentsInfo
+
+    data object NoPresentableInfo : PaymentsInfo
   }
 }

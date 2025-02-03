@@ -1,13 +1,13 @@
 package com.hedvig.android.feature.chat.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -21,15 +21,16 @@ fun NavGraphBuilder.cbmChatGraph(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigator: Navigator,
 ) {
   navgraph<ChatDestination>(
     startDestination = ChatDestinations.Inbox::class,
   ) {
     navdestination<ChatDestinations.Inbox>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.inbox },
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
+      deepLinks = navDeepLinks(
+        hedvigDeepLinkContainer.inbox,
+        hedvigDeepLinkContainer.chat,
       ),
     ) { backStackEntry ->
       val viewModel: InboxViewModel = koinViewModel()
@@ -44,9 +45,7 @@ fun NavGraphBuilder.cbmChatGraph(
       )
     }
     navdestination<ChatDestinations.Chat>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.conversation },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.conversation),
     ) {
       val viewModel = koinViewModel<CbmChatViewModel> { parametersOf(this.conversationId) }
       CbmChatDestination(
@@ -55,6 +54,7 @@ fun NavGraphBuilder.cbmChatGraph(
         appPackageId = hedvigBuildConstants.appId,
         openUrl = openUrl,
         onNavigateToClaimDetails = onNavigateToClaimDetails,
+        onNavigateToImageViewer = onNavigateToImageViewer,
         onNavigateUp = navigator::navigateUp,
       )
     }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -28,45 +28,50 @@ internal fun FileContainer(
 ) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(HedvigTheme.colorScheme.textSecondary)
-  AsyncImage(
-    model = ImageRequest.Builder(LocalContext.current)
-      .data(model)
-      .apply {
-        if (cacheKey != null) {
-          diskCacheKey(cacheKey).memoryCacheKey(cacheKey)
+  Surface(
+    shape = HedvigTheme.shapes.cornerMedium,
+    color = Color.Transparent,
+    modifier = modifier,
+  ) {
+    AsyncImage(
+      model = ImageRequest.Builder(LocalContext.current)
+        .data(model)
+        .apply {
+          if (cacheKey != null) {
+            diskCacheKey(cacheKey).memoryCacheKey(cacheKey)
+          }
         }
-      }
-      .build(),
-    contentDescription = null,
-    imageLoader = imageLoader,
-    contentScale = ContentScale.Crop,
-    transform = { state ->
-      when (state) {
-        is AsyncImagePainter.State.Loading -> {
-          state.copy(painter = placeholderPainter)
-        }
+        .build(),
+      contentDescription = null,
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
+      transform = { state ->
+        when (state) {
+          is AsyncImagePainter.State.Loading -> {
+            state.copy(painter = placeholderPainter)
+          }
 
-        is AsyncImagePainter.State.Error -> {
-          state
-        }
+          is AsyncImagePainter.State.Error -> {
+            state
+          }
 
-        AsyncImagePainter.State.Empty -> state
-        is AsyncImagePainter.State.Success -> {
-          loadedImageIntrinsicSize.value = IntSize(
-            state.result.drawable.intrinsicWidth,
-            state.result.drawable.intrinsicHeight,
-          )
-          state
+          AsyncImagePainter.State.Empty -> state
+          is AsyncImagePainter.State.Success -> {
+            loadedImageIntrinsicSize.value = IntSize(
+              state.result.drawable.intrinsicWidth,
+              state.result.drawable.intrinsicHeight,
+            )
+            state
+          }
         }
-      }
-    },
-    modifier = modifier
-      .height(109.dp)
-      .hedvigPlaceholder(
-        visible = loadedImageIntrinsicSize.value == null,
-        shape = HedvigTheme.shapes.cornerMedium,
-        highlight = PlaceholderHighlight.fade(),
-      )
-      .clip(HedvigTheme.shapes.cornerMedium),
-  )
+      },
+      modifier = Modifier
+        .height(109.dp)
+        .hedvigPlaceholder(
+          visible = loadedImageIntrinsicSize.value == null,
+          shape = HedvigTheme.shapes.cornerMedium,
+          highlight = PlaceholderHighlight.fade(),
+        ),
+    )
+  }
 }

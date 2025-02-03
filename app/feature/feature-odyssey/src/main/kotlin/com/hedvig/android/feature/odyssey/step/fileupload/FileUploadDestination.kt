@@ -28,6 +28,7 @@ internal fun FileUploadDestination(
   closeClaimFlow: () -> Unit,
   imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   appPackageId: String,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -108,6 +109,7 @@ internal fun FileUploadDestination(
       onRemoveFile = {
         fileToRemoveId = it
       },
+      onNavigateToImageViewer = onNavigateToImageViewer,
     )
   } else {
     FileUploadScreen(

@@ -1,7 +1,7 @@
 #! /usr/bin/env kotlinc -script --
 
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-@file:DependsOn("com.github.pgreze:kotlin-process:1.5")
+@file:DependsOn("com.github.pgreze:kotlin-process:1.5.1")
 
 import com.github.pgreze.process.process
 import kotlinx.coroutines.runBlocking

@@ -19,6 +19,7 @@ fun NavGraphBuilder.claimDetailsGraph(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
   navigator: Navigator,
@@ -44,6 +45,7 @@ fun NavGraphBuilder.claimDetailsGraph(
         }
       },
       openUrl = openUrl,
+      onNavigateToImageViewer = onNavigateToImageViewer,
       sharePdf = {
         context.sharePDF(it, applicationId)
       },
@@ -54,6 +56,7 @@ fun NavGraphBuilder.claimDetailsGraph(
     AddFilesDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
+      onNavigateToImageViewer = onNavigateToImageViewer,
       appPackageId = appPackageId,
       imageLoader = imageLoader,
     )

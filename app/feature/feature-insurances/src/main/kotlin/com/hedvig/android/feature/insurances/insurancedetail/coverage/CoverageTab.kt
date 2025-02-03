@@ -223,7 +223,6 @@ private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
     description = "description$index",
     covered = listOf("Covered#$index"),
     colorCode = "#FFD0ECFB",
-    exceptions = listOf(),
   )
 }
 
@@ -237,7 +236,6 @@ private val fakeAddonVariant = AddonVariant(
       description = "peril",
       covered = listOf("peril"),
       colorCode = "#FFD0ECFB",
-      exceptions = listOf(),
     ),
   ),
   displayName = "Travel Insurance Plus",

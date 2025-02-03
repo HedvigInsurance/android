@@ -7,6 +7,7 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import kotlinx.datetime.LocalDate
 
 internal val periodsPreviewData = listOf(
@@ -206,22 +207,27 @@ internal val chargeHistoryPreviewData = listOf(
   ),
 )
 
-internal val paymentOverViewPreviewData = PaymentOverview(
-  memberChargeShortInfo = MemberChargeShortInfo(
-    netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
-    id = "123",
-    status = MemberCharge.MemberChargeStatus.FAILED,
-    dueDate = LocalDate.fromEpochDays(400),
-    failedCharge = MemberCharge.FailedCharge(
-      fromDate = LocalDate.fromEpochDays(200),
-      toDate = LocalDate.fromEpochDays(201),
-    ),
-  ),
-  paymentConnection = PaymentConnection.Active(
-    displayName = "Nordea",
-    displayValue = "31489*****",
-  ),
-)
+internal val paymentOverViewPreviewData: PaymentOverview
+  get() {
+    val memberChargeShortInfo = MemberChargeShortInfo(
+      netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+      id = "123",
+      status = MemberCharge.MemberChargeStatus.FAILED,
+      dueDate = LocalDate.fromEpochDays(400),
+      failedCharge = MemberCharge.FailedCharge(
+        fromDate = LocalDate.fromEpochDays(200),
+        toDate = LocalDate.fromEpochDays(201),
+      ),
+    )
+    return PaymentOverview(
+      memberChargeShortInfo = memberChargeShortInfo,
+      ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
+      paymentConnection = PaymentConnection.Active(
+        displayName = "Nordea",
+        displayValue = "31489*****",
+      ),
+    )
+  }
 
 internal val paymentDetailsPreviewData = MemberCharge(
   grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),

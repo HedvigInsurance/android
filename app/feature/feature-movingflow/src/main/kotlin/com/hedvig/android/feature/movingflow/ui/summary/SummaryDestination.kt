@@ -532,7 +532,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         "peril title",
         "peril description",
         emptyList(),
-        emptyList(),
         null,
       ),
     ),

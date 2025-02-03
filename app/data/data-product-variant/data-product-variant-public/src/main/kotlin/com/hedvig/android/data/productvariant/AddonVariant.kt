@@ -23,13 +23,17 @@ fun AddonVariantFragment.toAddonVariant() = AddonVariant(
       type = it.type.toDocumentType(),
     )
   },
-  perils = this.perils.map { peril ->
+  perils = this.addonPerils.mapIndexed { index, peril ->
+    val description = if (peril.coverageText == null) {
+      "${peril.description}"
+    } else {
+      "${peril.description}\n\n${peril.coverageText}"
+    }
     ProductVariantPeril(
-      id = peril.id,
+      id = index.toString(),
       title = peril.title,
-      description = peril.description,
-      covered = peril.covered,
-      exceptions = peril.exceptions,
+      description = description,
+      covered = listOf(),
       colorCode = peril.colorCode,
     )
   },

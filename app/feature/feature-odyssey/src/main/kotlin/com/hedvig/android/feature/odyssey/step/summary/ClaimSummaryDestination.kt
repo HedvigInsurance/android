@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -59,6 +61,7 @@ internal fun ClaimSummaryDestination(
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
@@ -75,6 +78,7 @@ internal fun ClaimSummaryDestination(
     submitSummary = viewModel::submitSummary,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    onNavigateToImageViewer = onNavigateToImageViewer,
     imageLoader = imageLoader,
     windowSizeClass = windowSizeClass,
   )
@@ -87,6 +91,7 @@ private fun ClaimSummaryScreen(
   submitSummary: () -> Unit,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
@@ -107,7 +112,14 @@ private fun ClaimSummaryScreen(
       onRemoveFile = null,
       aboveGridContent = { BeforeGridContent(uiState = uiState) },
       belowGridContent = { AfterGridContent(uiState = uiState, submitSummary = submitSummary) },
-      onClickFile = {},
+      onClickFile = with(LocalUriHandler.current) {
+        dropUnlessResumed { fileId: String ->
+          uiState.claimSummaryInfoUiState.files.firstOrNull { it.id == fileId }?.url?.let { url ->
+            openUri(url)
+          }
+        }
+      },
+      onNavigateToImageViewer = onNavigateToImageViewer,
       contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     )
   }
@@ -233,6 +245,7 @@ private fun PreviewClaimSummaryScreen() {
         {},
         {},
         {},
+        { _, _ -> },
         imageLoader = rememberPreviewImageLoader(),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
       )

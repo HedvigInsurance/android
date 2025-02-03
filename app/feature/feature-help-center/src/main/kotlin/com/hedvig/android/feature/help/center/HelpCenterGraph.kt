@@ -4,7 +4,6 @@ import android.content.res.Resources
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredDestination
 import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredViewModel
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
@@ -22,6 +21,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -40,9 +40,7 @@ fun NavGraphBuilder.helpCenterGraph(
     startDestination = HelpCenterDestinations.HelpCenter::class,
   ) {
     navdestination<HelpCenterDestinations.HelpCenter>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenter),
     ) { backStackEntry ->
       val viewModel = koinViewModel<HelpCenterViewModel>()
       val resources = LocalContext.current.resources
