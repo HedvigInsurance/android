@@ -44,6 +44,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -95,7 +97,7 @@ internal class CbmChatPresenter(
       )
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
-    var showUploading by remember { mutableStateOf(false) }
+    val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -137,43 +139,31 @@ internal class CbmChatPresenter(
       when (event) {
         CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
         is CbmChatEvent.SendTextMessage -> launch {
-          showUploading = true
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().sendText(conversationId, null, event.message)
-            .fold(
-              ifLeft = { showUploading = false },
-              ifRight = { showUploading = false },
-            )
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.SendPhotoMessage -> launch {
-          showUploading = true
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().sendPhotos(conversationId, event.uriList)
-            .fold(
-              ifLeft = { showUploading = false },
-              ifRight = { showUploading = false },
-            )
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
-          showUploading = true
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().sendMedia(conversationId, event.uriList)
-            .fold(
-              ifLeft = { showUploading = false },
-              ifRight = { showUploading = false },
-            )
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
-          showUploading = true
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
-            .fold(
-              ifLeft = { showUploading = false },
-              ifRight = { showUploading = false },
-            )
+          numberOfOngoingUploads.update { it - 1 }
         }
       }
     }
@@ -190,7 +180,7 @@ internal class CbmChatPresenter(
           remoteKeyDao,
           chatRepository,
           clock,
-          showUploading,
+          showUploading = numberOfOngoingUploads.collectAsState().value > 0,
         )
       }
     }
@@ -295,7 +285,6 @@ internal sealed interface CbmChatUiState {
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
     val showUploading: Boolean,
-    // = false
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation
