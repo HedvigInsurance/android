@@ -98,7 +98,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun PaymentsDestination(
   viewModel: PaymentsViewModel,
-  onPaymentClicked: (id: String) -> Unit,
+  onPaymentClicked: (id: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -117,7 +117,7 @@ internal fun PaymentsDestination(
 @Composable
 private fun PaymentsScreen(
   uiState: PaymentsUiState,
-  onUpcomingPaymentClicked: (memberChargeId: String) -> Unit,
+  onUpcomingPaymentClicked: (memberChargeId: String?) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
@@ -195,7 +195,7 @@ private fun PaymentsScreen(
 @Composable
 private fun PaymentsContent(
   uiState: PaymentsUiState,
-  onUpcomingPaymentClicked: (String) -> Unit,
+  onUpcomingPaymentClicked: (String?) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
@@ -448,10 +448,10 @@ private fun OngoingPaymentCards(
 @Composable
 private fun PaymentAmountCard(
   upcomingPayment: UpcomingPayment.Content?,
-  onCardClicked: (String) -> Unit,
+  onCardClicked: (String?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val onClick = if (upcomingPayment?.id != null) {
+  val onClick = if (upcomingPayment != null) {
     { onCardClicked(upcomingPayment.id) }
   } else {
     null
