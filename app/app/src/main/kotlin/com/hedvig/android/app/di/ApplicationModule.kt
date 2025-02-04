@@ -27,6 +27,7 @@ import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
+import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
@@ -96,7 +97,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import java.io.File
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -129,14 +129,14 @@ private val networkModule = module {
         )
       }.addInterceptor(DeviceIdInterceptor(get(), get()))
     if (!get<HedvigBuildConstants>().isProduction) {
-      val logger = HttpLoggingInterceptor { message ->
+      val logger = HedvigHttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
         } else {
           Timber.tag("OkHttp").v(message)
         }
       }
-      logger.level = HttpLoggingInterceptor.Level.BODY
+      logger.level = HedvigHttpLoggingInterceptor.Level.BODY
       builder.addInterceptor(logger)
     }
     builder
