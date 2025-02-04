@@ -153,6 +153,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -308,6 +309,7 @@ private fun ScrollToBottomEffect(
     snapshotFlow { updatedLatestChatMessage }
       .filterNotNull()
       .distinctUntilChangedBy(LatestChatMessage::id)
+      .drop(1)
       .collectLatest { chatMessage ->
         val idToScrollTo = chatMessage.id
         withTimeout(1.seconds) {
