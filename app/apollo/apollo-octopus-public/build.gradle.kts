@@ -28,11 +28,6 @@ hedvig {
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
-    mapScalar(
-      "Markdown",
-      "com.hedvig.android.core.markdown.MarkdownString",
-      "com.hedvig.android.apollo.octopus.MarkdownStringAdapter",
-    )
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
