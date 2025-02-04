@@ -2,12 +2,10 @@ package com.hedvig.android.design.system.hedvig
 
 import android.content.Context
 import android.content.res.Configuration
-import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
 import androidx.media3.datasource.cache.ContentMetadata
@@ -68,7 +66,6 @@ fun rememberPreviewImageLoader(): PreviewImageLoader {
   return remember { PreviewImageLoader(context) }
 }
 
-@UnstableApi
 class PreviewCache() : Cache {
   override fun getUid(): Long = 0.toLong()
 
@@ -133,7 +130,6 @@ class PreviewCache() : Cache {
   }
 }
 
-@OptIn(UnstableApi::class)
 @Composable
 fun rememberPreviewSimpleCache(): Cache {
   return remember { PreviewCache() }

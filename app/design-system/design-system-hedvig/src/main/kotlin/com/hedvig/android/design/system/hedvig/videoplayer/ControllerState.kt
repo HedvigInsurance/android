@@ -1,11 +1,9 @@
 package com.hedvig.android.design.system.hedvig.videoplayer
 
-import androidx.annotation.OptIn
 import androidx.compose.runtime.*
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.util.UnstableApi
 
 @Composable
 fun rememberControllerState(mediaState: MediaState): ControllerState {
@@ -126,7 +124,6 @@ class ControllerState internal constructor(
       }
     }
   private val Timeline.canShowMultiWindowTimeBar: Boolean
-    @OptIn(UnstableApi::class)
     get() = windowCount <= MAX_WINDOWS_FOR_MULTI_WINDOW_TIME_BAR &&
       windows.all { it.durationUs != C.TIME_UNSET }
   private val multiWindowTimeBar: Boolean by derivedStateOf {

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!--Uncomment "all" if you want to check *only* the ones that you enable inside here-->
-    <!--<issue id="all" severity="ignore" />-->
+  <!--Uncomment "all" if you want to check *only* the ones that you enable inside here-->
+  <!--<issue id="all" severity="ignore" />-->
 
-    <issue id="ButtonCase" severity="ignore"/>
-    <issue id="TypographyDashes" severity="ignore"/>
-    <issue id="TypographyEllipsis" severity="ignore"/>
-    <issue id="Typos" severity="ignore"/>
+  <issue id="ButtonCase" severity="ignore" />
+  <issue id="TypographyDashes" severity="ignore" />
+  <issue id="TypographyEllipsis" severity="ignore" />
+  <issue id="Typos" severity="ignore" />
 
-    <issue id="ComposeM2Api" severity="error">
-        <option name="allowed-m2-apis" value="Foo" />
-    </issue>
+  <issue id="ComposeM2Api" severity="error">
+    <option name="allowed-m2-apis" value="Foo" />
+  </issue>
+  <issue id="UnsafeOptInUsageError">
+    <option name="opt-in" value="androidx.media3.common.util.UnstableApi" />
+  </issue>
 </lint>

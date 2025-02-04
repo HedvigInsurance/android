@@ -3,7 +3,6 @@ package com.hedvig.android.design.system.hedvig.videoplayer
 import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
-import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 
 enum class SurfaceType {
   None,
@@ -65,7 +63,6 @@ enum class ShowBuffering {
  * @param controller The controller. Since a controller is always a subject to be customized,
  * default is null. The [Media] only provides logic for controller visibility controlling.
  */
-@OptIn(UnstableApi::class)
 @Composable
 fun Media(
   state: MediaState,

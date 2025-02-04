@@ -3,10 +3,8 @@ package com.hedvig.android.app.notification.senders
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
-import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.media3.common.util.UnstableApi
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
@@ -53,7 +51,6 @@ class CrossSellNotificationSender(
 
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_CROSS_SELL
 
-  @OptIn(UnstableApi::class)
   private fun createInsuranceTabIntent(context: Context): PendingIntent? {
     val builder = TaskStackBuilder.create(context)
     // todo: Consider opening some cross sell detail screen here instead

@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.chat.navigation
 
-import androidx.annotation.OptIn
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
@@ -18,7 +16,6 @@ import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(UnstableApi::class)
 fun NavGraphBuilder.cbmChatGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
