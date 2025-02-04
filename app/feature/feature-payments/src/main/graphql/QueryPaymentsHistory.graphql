@@ -6,6 +6,9 @@ query PaymentHistoryWithDetails {
     futureCharge {
       ...MemberChargeFragment
     }
+    ongoingCharges {
+      ...MemberChargeFragment
+    }
     redeemedCampaigns {
       code
       description

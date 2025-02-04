@@ -5,7 +5,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.termination.data.TerminatableInsurance
@@ -23,6 +22,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
 import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
@@ -83,9 +83,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
   navgraph<TerminateInsuranceGraphDestination>(
     startDestination = TerminateInsuranceDestination.StartStep::class,
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
-    ),
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.terminateInsurance),
   ) {
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController

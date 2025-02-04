@@ -27,9 +27,9 @@ interface HedvigBuildConstants {
   val urlClaimsService: String
 
   /**
-   * The base host used for all deep links.
+   * The base hosts used for all deep links. It's a list to support the legacy firebase base link too
    */
-  val deepLinkHost: String
+  val deepLinkHosts: List<String>
 
   /**
    * e.g. 11.3.2

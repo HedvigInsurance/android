@@ -26,8 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -49,10 +51,8 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
-import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRows
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -96,42 +96,49 @@ private fun MemberChargeDetailsScreen(
 
     PaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentDetailsUiState.Success -> {
-      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+      var showBottomSheet by remember { mutableStateOf(false) }
+      HedvigBottomSheet(
+        isVisible = showBottomSheet,
+        onVisibleChange = { visible ->
+          if (!visible) {
+            showBottomSheet = false
+          }
+        },
+      ) {
+        HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+        HedvigText(
+          text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigTextButton(
+          text = stringResource(id = R.string.general_close_button),
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            showBottomSheet = false
+          },
+        )
+        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
 
+      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       HedvigScaffold(
-        topAppBarText = dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate()),
+        topAppBarText = when {
+          uiState.paymentDetails.memberCharge.status == MemberCharge.MemberChargeStatus.PENDING -> {
+            stringResource(R.string.PAYMENTS_PROCESSING_PAYMENT)
+          }
+
+          else -> {
+            dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate())
+          }
+        },
         navigateUp = navigateUp,
         customTopAppBarColors = uiState.paymentDetails.memberCharge.topAppBarColors(),
       ) {
         Column(modifier = Modifier.padding(16.dp)) {
-          var showBottomSheet by remember { mutableStateOf(false) }
-          HedvigBottomSheet(
-            isVisible = showBottomSheet,
-            onVisibleChange = { visible ->
-              if (!visible) {
-                showBottomSheet = false
-              }
-            },
-          ) {
-            HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
-            HedvigText(
-              text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
-            Spacer(Modifier.height(8.dp))
-            HedvigTextButton(
-              text = stringResource(id = R.string.general_close_button),
-              enabled = true,
-              modifier = Modifier.fillMaxWidth(),
-              onClick = {
-                showBottomSheet = false
-              },
-            )
-            Spacer(Modifier.height(8.dp))
-            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-          }
-
-          uiState.paymentDetails.memberCharge.chargeBreakdowns.forEach { chargeBreakdown ->
+          for (chargeBreakdown in uiState.paymentDetails.memberCharge.chargeBreakdowns) {
             PaymentDetailExpandableCard(
               displayName = chargeBreakdown.contractDisplayName,
               subtitle = chargeBreakdown.contractDetails,
@@ -267,74 +274,76 @@ private fun MemberChargeDetailsScreen(
             MemberCharge.MemberChargeStatus.UNKNOWN -> {}
           }
 
-          val paymentConnection = uiState.paymentDetails.paymentConnection
-          if (paymentConnection is PaymentConnection.Active) {
-            Spacer(Modifier.height(32.dp))
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
-              },
-              endSlot = {
-                Icon(
-                  imageVector = HedvigIcons.InfoFilled,
-                  tint = HedvigTheme.colorScheme.fillSecondary,
-                  contentDescription = "Info icon",
-                  modifier = Modifier
-                    .wrapContentSize(Alignment.CenterEnd)
-                    .size(16.dp)
-                    .clip(HedvigTheme.shapes.cornerXLarge)
-                    .clickable { showBottomSheet = true }
-                    .minimumInteractiveComponentSize(),
-                )
-              },
-              modifier = Modifier.padding(vertical = 16.dp),
-            )
-            HorizontalDivider()
+          when (val paymentsInfo = uiState.paymentDetails.paymentsInfo) {
+            PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
+            is PaymentDetails.PaymentsInfo.Active -> {
+              Spacer(Modifier.height(32.dp))
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+                },
+                endSlot = {
+                  Icon(
+                    imageVector = HedvigIcons.InfoFilled,
+                    tint = HedvigTheme.colorScheme.fillSecondary,
+                    contentDescription = "Info icon",
+                    modifier = Modifier
+                      .wrapContentSize(Alignment.CenterEnd)
+                      .size(16.dp)
+                      .clip(HedvigTheme.shapes.cornerXLarge)
+                      .clickable { showBottomSheet = true }
+                      .minimumInteractiveComponentSize(),
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+              )
+              HorizontalDivider()
 
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
-              },
-              endSlot = {
-                HedvigText(
-                  text = stringResource(id = R.string.PAYMENTS_AUTOGIRO_LABEL),
-                  textAlign = TextAlign.End,
-                  modifier = Modifier.fillMaxWidth(),
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
-              },
-              modifier = Modifier.padding(vertical = 16.dp),
-            )
-            HorizontalDivider()
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
+                },
+                endSlot = {
+                  HedvigText(
+                    text = stringResource(id = R.string.PAYMENTS_AUTOGIRO_LABEL),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+              )
+              HorizontalDivider()
 
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                HedvigText(stringResource(id = R.string.PAYMENTS_ACCOUNT))
-              },
-              endSlot = {
-                HedvigText(
-                  text = paymentConnection.displayValue,
-                  textAlign = TextAlign.End,
-                  modifier = Modifier.fillMaxWidth(),
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
-              },
-              modifier = Modifier.padding(vertical = 16.dp),
-            )
-            HorizontalDivider()
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(id = R.string.PAYMENTS_ACCOUNT))
+                },
+                endSlot = {
+                  HedvigText(
+                    text = paymentsInfo.displayValue,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+              )
+              HorizontalDivider()
 
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = { HedvigText(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
-              endSlot = {
-                HedvigText(
-                  text = paymentConnection.displayName,
-                  textAlign = TextAlign.End,
-                  modifier = Modifier.fillMaxWidth(),
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
-              },
-              modifier = Modifier.padding(vertical = 16.dp),
-            )
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = { HedvigText(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
+                endSlot = {
+                  HedvigText(
+                    text = paymentsInfo.displayName,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+              )
+            }
           }
         }
       }
@@ -357,7 +366,9 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors? {
 @Composable
 @Preview(device = "spec:width=1080px,height=3500px,dpi=440")
 @HedvigPreview
-private fun PaymentDetailsScreenPreview() {
+private fun PaymentDetailsScreenPreview(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withPaymentInfo: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MemberChargeDetailsScreen(
@@ -365,7 +376,10 @@ private fun PaymentDetailsScreenPreview() {
           PaymentDetails(
             memberCharge = paymentDetailsPreviewData,
             pastCharges = chargeHistoryPreviewData,
-            paymentConnection = paymentOverViewPreviewData.paymentConnection,
+            paymentsInfo = when (withPaymentInfo) {
+              true -> PaymentDetails.PaymentsInfo.Active("displayName", "displayValue")
+              false -> PaymentDetails.PaymentsInfo.NoPresentableInfo
+            },
             upComingCharge = paymentDetailsPreviewData,
           ),
         ),

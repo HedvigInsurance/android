@@ -1,10 +1,10 @@
 package com.hedvig.android.feature.connect.payment
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.market.Market
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -17,9 +17,9 @@ fun NavGraphBuilder.connectPaymentGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   navdestination<TrustlyDestination>(
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.connectPayment },
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.directDebit },
+    deepLinks = navDeepLinks(
+      hedvigDeepLinkContainer.connectPayment,
+      hedvigDeepLinkContainer.directDebit,
     ),
   ) {
     val viewModel: TrustlyViewModel = koinViewModel()

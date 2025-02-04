@@ -2,7 +2,6 @@ package com.hedvig.android.feature.insurances.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -12,6 +11,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDesti
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -38,9 +38,9 @@ fun NavGraphBuilder.insuranceGraph(
   ) {
     nestedGraphs()
     navdestination<InsurancesDestination.Insurances>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },
+      deepLinks = navDeepLinks(
+        hedvigDeepLinkContainer.insurances,
+        hedvigDeepLinkContainer.contractWithoutContractId,
       ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
@@ -61,9 +61,7 @@ fun NavGraphBuilder.insuranceGraph(
       )
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contract),
     ) { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }

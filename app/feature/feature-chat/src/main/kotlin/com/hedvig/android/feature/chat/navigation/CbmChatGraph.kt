@@ -4,13 +4,13 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -33,9 +33,9 @@ fun NavGraphBuilder.cbmChatGraph(
     startDestination = ChatDestinations.Inbox::class,
   ) {
     navdestination<ChatDestinations.Inbox>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.inbox },
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
+      deepLinks = navDeepLinks(
+        hedvigDeepLinkContainer.inbox,
+        hedvigDeepLinkContainer.chat,
       ),
     ) { backStackEntry ->
       val viewModel: InboxViewModel = koinViewModel()
@@ -50,9 +50,7 @@ fun NavGraphBuilder.cbmChatGraph(
       )
     }
     navdestination<ChatDestinations.Chat>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.conversation },
-      ),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.conversation),
     ) {
       val viewModel = koinViewModel<CbmChatViewModel> { parametersOf(this.conversationId) }
       CbmChatDestination(
