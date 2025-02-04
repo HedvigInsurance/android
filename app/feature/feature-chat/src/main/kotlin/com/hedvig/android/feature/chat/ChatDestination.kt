@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
@@ -55,7 +54,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
@@ -97,7 +95,6 @@ internal fun CbmChatDestination(
   )
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatScreen(

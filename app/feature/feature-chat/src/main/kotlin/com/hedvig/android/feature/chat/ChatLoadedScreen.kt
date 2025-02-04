@@ -75,7 +75,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
@@ -162,7 +161,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Instant
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 internal fun CbmChatLoadedScreen(
   uiState: Loaded,
@@ -213,7 +211,6 @@ internal fun CbmChatLoadedScreen(
   )
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatLoadedScreen(
@@ -332,7 +329,6 @@ private fun ScrollToBottomEffect(
   }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 private fun ChatLazyColumn(
   lazyListState: LazyListState,
@@ -454,7 +450,6 @@ private fun ChatLazyColumn(
   }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
@@ -534,7 +529,18 @@ private fun ChatBubble(
               )
             }
 
-            ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
+            ChatMessageFile.MimeType.PDF -> {
+              ChatAsyncImage(
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
+                modifier = Modifier.clickable {
+                  openUrl(chatMessage.url)
+                },
+              )
+            }
+
             ChatMessageFile.MimeType.OTHER,
             -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
@@ -725,7 +731,6 @@ private fun VideoMessage(
 }
 
 @Composable
-@androidx.annotation.OptIn(UnstableApi::class)
 private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
   val httpDataSourceFactory = DefaultHttpDataSource.Factory()
   val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)

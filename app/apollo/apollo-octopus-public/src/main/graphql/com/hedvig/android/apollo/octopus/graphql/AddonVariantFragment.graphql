@@ -6,6 +6,7 @@ fragment AddonVariantFragment on AddonVariant {
     coverageText
     description
     title
+    colorCode
   }
   documents {
     displayName

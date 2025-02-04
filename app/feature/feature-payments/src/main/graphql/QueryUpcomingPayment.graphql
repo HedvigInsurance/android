@@ -3,6 +3,13 @@ query UpcomingPayment {
     futureCharge {
       ...MemberChargeFragment
     }
+    ongoingCharges {
+      id
+      date
+      net {
+        ...MoneyFragment
+      }
+    }
     paymentInformation {
       status
       connection {

@@ -1,12 +1,10 @@
 package com.hedvig.android.app.navigation
 
-import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -79,7 +77,6 @@ import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 
-@OptIn(UnstableApi::class)
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,

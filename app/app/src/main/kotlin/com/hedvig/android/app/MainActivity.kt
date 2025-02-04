@@ -22,7 +22,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -59,7 +58,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-@UnstableApi
 class MainActivity : AppCompatActivity() {
   private val applicationScope: ApplicationScope by inject()
   private val authTokenService: AuthTokenService by inject()
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity() {
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
-  private val simpleVideoCache: SimpleCache by inject() // todo: unstable API
+  private val simpleVideoCache: SimpleCache by inject()
 
   private var navController: NavController? = null
 
