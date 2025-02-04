@@ -53,6 +53,7 @@ import com.hedvig.android.database.di.databaseModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
+import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.feature.addon.purchase.di.addonPurchaseModule
 import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.chat.di.chatModule
@@ -285,6 +286,7 @@ private val coilModule = module {
         } else {
           add(GifDecoder.Factory())
         }
+        add(PdfDecoder.Factory())
       }.memoryCache {
         MemoryCache.Builder(applicationContext).build()
       }.diskCache {
