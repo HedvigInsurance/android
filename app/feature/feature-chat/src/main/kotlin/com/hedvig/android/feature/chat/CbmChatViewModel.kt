@@ -68,16 +68,24 @@ internal class CbmChatViewModel(
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
-  scope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
     presenter = CbmChatPresenter(
-      Uuid.fromString(conversationId),
-      cbmChatPresenterPagingData(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock, scope),
-      chatDao,
-      chatRepository,
+      conversationId = Uuid.fromString(conversationId),
+      pagingData = cbmChatPresenterPagingData(
+        conversationId = conversationId,
+        database = database,
+        chatDao = chatDao,
+        remoteKeyDao = remoteKeyDao,
+        chatRepository = chatRepository,
+        clock = clock,
+        scope = coroutineScope,
+      ),
+      chatDao = chatDao,
+      chatRepository = chatRepository,
     ),
-    coroutineScope = scope,
+    coroutineScope = coroutineScope,
   )
 
 @OptIn(ExperimentalPagingApi::class)
