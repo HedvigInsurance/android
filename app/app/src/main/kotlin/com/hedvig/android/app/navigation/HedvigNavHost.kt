@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -85,6 +86,7 @@ internal fun HedvigNavHost(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   market: Market,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -319,6 +321,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
+      simpleVideoCache = simpleVideoCache,
       openUrl = openUrl,
       onNavigateToClaimDetails = { claimId ->
         logcat { "Navigating to claim details from chat" }
