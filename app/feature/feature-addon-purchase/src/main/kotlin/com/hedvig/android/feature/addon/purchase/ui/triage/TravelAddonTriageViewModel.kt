@@ -7,11 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.first
 
 internal class TravelAddonTriageViewModel(
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
@@ -32,8 +35,14 @@ internal class TravelAddonTriagePresenter(
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
       val result = getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES)
-      val travelAddonBanner = result.getOrNull()
     // todo: here not sure what we are supposed to put as a source but the travel certificates one is broader, so.
+      val travelAddonBanner = result.first().fold(
+        ifLeft = { left: ErrorMessage ->
+        },
+        ifRight = { travelBannerInfo:  TravelAddonBannerInfo? ->
+
+        }
+      )
 
 //      tierRepository.startChangeTierIntentAndGetQuotesId(insuranceID, ChangeTierCreateSource.SELF_SERVICE).fold(
 //        ifLeft = { left: ErrorMessage ->
@@ -56,7 +65,7 @@ internal class TravelAddonTriagePresenter(
     }
     CollectEvents { event ->
       when (event) {
-        Reload -> loadIteration++
+        TravelAddonTriageEvent.Reload -> loadIteration++
       }
     }
 
