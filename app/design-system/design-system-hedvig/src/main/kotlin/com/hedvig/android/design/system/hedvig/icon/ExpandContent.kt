@@ -64,6 +64,7 @@ val HedvigIcons.ExpandContent: ImageVector
     return _Expand_content!!
   }
 
+@Suppress("ObjectPropertyName", "ktlint:standard:backing-property-naming")
 private var _Expand_content: ImageVector? = null
 
 @Preview

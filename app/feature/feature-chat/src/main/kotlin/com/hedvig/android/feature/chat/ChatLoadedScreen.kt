@@ -516,6 +516,7 @@ private fun ChatBubble(
                 },
               )
             }
+
             ChatMessageFile.MimeType.MP4 -> {
               val mediaState = mediaStatesWithPlayersMap.getOrPut(
                 chatMessage.id,
@@ -734,13 +735,13 @@ private fun VideoMessage(
 
 @Composable
 private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
-  val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-  val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
-    .setUpstreamDataSourceFactory(httpDataSourceFactory)
-    .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-  val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
   val context = LocalContext.current
-  val exoPlayer = remember {
+  val exoPlayer = remember(cache, uri, context) {
+    val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+    val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
+      .setUpstreamDataSourceFactory(httpDataSourceFactory)
+      .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+    val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
     ExoPlayer
       .Builder(context)
       .setMediaSourceFactory(

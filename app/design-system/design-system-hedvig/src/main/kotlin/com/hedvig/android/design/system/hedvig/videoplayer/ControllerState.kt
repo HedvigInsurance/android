@@ -1,6 +1,14 @@
 package com.hedvig.android.design.system.hedvig.videoplayer
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -113,7 +121,7 @@ class ControllerState internal constructor(
     }
   }
 
-  private var positionUpdateTrigger by mutableStateOf(0L)
+  private var positionUpdateTrigger by mutableLongStateOf(0L)
 
   private val window: Timeline.Window = Timeline.Window()
   private val Timeline.windows: Sequence<Timeline.Window>
