@@ -36,15 +36,15 @@ import hedvig.resources.R
 
 @Composable
 internal fun TravelAddonTriageDestination(
-  viewModel: TravelAddonTriageViewModel,
-  popBackStack: () -> Unit,
-  launchFlow: (insuranceIds: List<String>) -> Unit,
-  onNavigateToNewConversation: () -> Unit,
+    viewModel: TravelAddonTriageViewModel,
+    navigateUp: () -> Unit,
+    launchFlow: (insuranceIds: List<String>) -> Unit,
+    onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: TravelAddonTriageState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
     uiState = uiState,
-    popBackStack = popBackStack,
+    navigateUp = navigateUp,
     reload = {
       viewModel.emit(TravelAddonTriageEvent.Reload)
     },
@@ -55,17 +55,17 @@ internal fun TravelAddonTriageDestination(
 
 @Composable
 private fun StartChangeTierFlowScreen(
-  uiState: TravelAddonTriageState,
-  popBackStack: () -> Unit,
-  reload: () -> Unit,
-  launchFlow: (List<String>) -> Unit,
-  onNavigateToNewConversation: () -> Unit,
+    uiState: TravelAddonTriageState,
+    navigateUp: () -> Unit,
+    reload: () -> Unit,
+    launchFlow: (List<String>) -> Unit,
+    onNavigateToNewConversation: () -> Unit,
 ) {
   when (uiState) {
     is Failure -> {
       FailureScreen(
         reload = reload,
-        popBackStack = popBackStack,
+        popBackStack = navigateUp,
         reason = uiState.reason,
         onNavigateToNewConversation = onNavigateToNewConversation,
       )

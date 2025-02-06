@@ -51,7 +51,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     val viewModel: TravelAddonTriageViewModel = koinViewModel()
     TravelAddonTriageDestination(
       viewModel = viewModel,
-      popBackStack = navigator::popBackStack,
+      navigateUp = navigator::navigateUp,
       launchFlow = { insuranceIds: List<String> ->
         navigator.navigateUnsafe(AddonPurchaseGraphDestination(insuranceIds)) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
