@@ -26,14 +26,15 @@ import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
-import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Failure
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Success
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
-
 
 @Composable
 internal fun TravelAddonTriageDestination(
@@ -41,12 +42,12 @@ internal fun TravelAddonTriageDestination(
   popBackStack: () -> Unit,
   launchFlow: (insuranceIds: List<String>) -> Unit,
 ) {
-  val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: TravelAddonTriageState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
     uiState = uiState,
     popBackStack = popBackStack,
     reload = {
-      viewModel.emit(StartTierChangeEvent.Reload)
+      viewModel.emit(TravelAddonTriageEvent.Reload)
     },
     launchFlow = launchFlow,
   )
@@ -54,10 +55,10 @@ internal fun TravelAddonTriageDestination(
 
 @Composable
 private fun StartChangeTierFlowScreen(
-  uiState: StartTierChangeState,
+  uiState: TravelAddonTriageState,
   popBackStack: () -> Unit,
   reload: () -> Unit,
-  launchFlow: (InsuranceCustomizationParameters) -> Unit,
+  launchFlow: (List<String>) -> Unit,
 ) {
   when (uiState) {
     is Failure -> {
@@ -68,13 +69,11 @@ private fun StartChangeTierFlowScreen(
       )
     }
 
-    Loading -> HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(R.string.TIER_FLOW_PROCESSING),
-    )
+    Loading -> HedvigFullScreenCenterAlignedProgress()
 
     is Success -> {
-      LaunchedEffect(uiState.paramsToNavigate) {
-        val params = uiState.paramsToNavigate
+      LaunchedEffect(uiState.insuranceIds) {
+        val params = uiState.insuranceIds
         launchFlow(params)
       }
     }
@@ -85,14 +84,14 @@ private fun StartChangeTierFlowScreen(
 private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
-      GENERAL -> {
+      FailureReason.GENERAL -> {
         HedvigErrorSection(
           onButtonClick = reload,
           modifier = Modifier.fillMaxSize(),
         )
       }
 
-      QUOTES_ARE_EMPTY -> {
+      FailureReason.NO_TRAVEL_ADDON_AVAILABLE -> {
         Column(
           modifier = Modifier
             .fillMaxSize()
@@ -107,6 +106,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
           Spacer(Modifier.weight(1f))
           EmptyState(
             text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+            // todo: another string key here!
             iconStyle = INFO,
             buttonStyle = NoButton,
             description = null,
@@ -129,7 +129,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
 @HedvigMultiScreenPreview
 @Composable
 private fun StartTierFlowScreenPreview(
-  @PreviewParameter(StartTierChangeStateProvider::class) state: StartTierChangeState,
+  @PreviewParameter(TravelAddonTriageStateProvider::class) state: TravelAddonTriageState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -143,18 +143,14 @@ private fun StartTierFlowScreenPreview(
   }
 }
 
-internal class StartTierChangeStateProvider :
-  CollectionPreviewParameterProvider<StartTierChangeState>(
+internal class TravelAddonTriageStateProvider :
+  CollectionPreviewParameterProvider<TravelAddonTriageState>(
     listOf(
-      Loading,
+      TravelAddonTriageState.Loading,
       Success(
-        InsuranceCustomizationParameters(
-          "",
-          LocalDate(2024, 11, 11),
-          listOf("id", "id2"),
-        ),
+        listOf("id", "id2"),
       ),
-      Failure(GENERAL),
-      Failure(QUOTES_ARE_EMPTY),
+      Failure(FailureReason.GENERAL),
+      Failure(FailureReason.NO_TRAVEL_ADDON_AVAILABLE),
     ),
   )

@@ -40,7 +40,7 @@ interface HedvigDeepLinkContainer {
   val inbox: List<String> // Hedvig CBM inbox
   val conversation: List<String> // Hedvig specific CBM conversation
 
-  //Travel addon purchase flow
+  // Travel addon purchase flow
   val travelAddon: List<String>
 }
 
@@ -130,5 +130,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     chat.first(),
     inbox.first(),
     conversation.first(),
-    travelAddon.first()
+    travelAddon.first(),
   )

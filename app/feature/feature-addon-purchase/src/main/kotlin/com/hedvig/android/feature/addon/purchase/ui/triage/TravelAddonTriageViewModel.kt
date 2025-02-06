@@ -2,10 +2,10 @@ package com.hedvig.android.feature.addon.purchase.ui.triage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.first
 internal class TravelAddonTriageViewModel(
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ) : MoleculeViewModel<TravelAddonTriageEvent, TravelAddonTriageState>(
-  initialState = TravelAddonTriageState.Loading,
-  presenter = TravelAddonTriagePresenter(getTravelAddonBannerInfoUseCase),
-)
+    initialState = TravelAddonTriageState.Loading,
+    presenter = TravelAddonTriagePresenter(getTravelAddonBannerInfoUseCase),
+  )
 
 internal class TravelAddonTriagePresenter(
   private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
@@ -32,37 +32,24 @@ internal class TravelAddonTriagePresenter(
   ): TravelAddonTriageState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
       val result = getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES)
-    // todo: here not sure what we are supposed to put as a source but the travel certificates one is broader, so.
-      val travelAddonBanner = result.first().fold(
+      result.first().fold(
         ifLeft = { left: ErrorMessage ->
+          currentState = TravelAddonTriageState.Failure(FailureReason.GENERAL)
         },
-        ifRight = { travelBannerInfo:  TravelAddonBannerInfo? ->
-
-        }
+        ifRight = { travelBannerInfo: TravelAddonBannerInfo? ->
+          currentState = if (travelBannerInfo == null || travelBannerInfo.eligibleInsurancesIds.isEmpty()) {
+            TravelAddonTriageState.Failure(FailureReason.NO_TRAVEL_ADDON_AVAILABLE)
+          } else {
+            TravelAddonTriageState.Success(travelBannerInfo.eligibleInsurancesIds)
+          }
+        },
       )
-
-//      tierRepository.startChangeTierIntentAndGetQuotesId(insuranceID, ChangeTierCreateSource.SELF_SERVICE).fold(
-//        ifLeft = { left: ErrorMessage ->
-//          logcat(WARN) { "Start TierFlow failed with: $left" }
-//          currentState = TravelAddonTriageState.Failure(GENERAL)
-//        },
-//        ifRight = { result ->
-//          if (result.quotes.isEmpty()) {
-//            currentState = TravelAddonTriageState.Failure(QUOTES_ARE_EMPTY)
-//          } else {
-//            val parameters = InsuranceCustomizationParameters(
-//              insuranceId = insuranceID,
-//              activationDate = result.activationDate,
-//              quoteIds = result.quotes.map { it.id },
-//            )
-//            currentState = TravelAddonTriageState.Success(parameters)
-//          }
-//        },
-//      )
     }
+
     CollectEvents { event ->
       when (event) {
         TravelAddonTriageEvent.Reload -> loadIteration++
@@ -77,7 +64,7 @@ internal sealed interface TravelAddonTriageState {
   data object Loading : TravelAddonTriageState
 
   data class Success(
-    val paramsToNavigate: InsuranceCustomizationParameters,
+    val insuranceIds: List<String>,
   ) : TravelAddonTriageState
 
   data class Failure(val reason: FailureReason) : TravelAddonTriageState
@@ -89,5 +76,5 @@ internal sealed interface TravelAddonTriageEvent {
 
 internal enum class FailureReason {
   GENERAL,
-  QUOTES_ARE_EMPTY,
+  NO_TRAVEL_ADDON_AVAILABLE,
 }

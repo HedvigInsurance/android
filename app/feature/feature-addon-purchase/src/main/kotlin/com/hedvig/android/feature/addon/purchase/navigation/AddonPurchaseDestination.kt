@@ -59,9 +59,7 @@ internal sealed interface AddonPurchaseDestination {
   data object SubmitFailure : AddonPurchaseDestination, Destination
 
   @Serializable
-  data object TravelAddonTriage: AddonPurchaseDestination, Destination {
-
-  }
+  data object TravelAddonTriage : AddonPurchaseDestination, Destination
 }
 
 @Serializable

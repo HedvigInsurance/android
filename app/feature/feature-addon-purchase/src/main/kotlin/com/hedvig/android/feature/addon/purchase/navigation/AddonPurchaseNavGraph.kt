@@ -42,7 +42,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
 ) {
-
+  /**
+   * Destination to get eligible insuranceIds if member comes to the feature using the deeplink
+   */
   navdestination<TravelAddonTriage>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelAddon),
   ) { backStackEntry ->

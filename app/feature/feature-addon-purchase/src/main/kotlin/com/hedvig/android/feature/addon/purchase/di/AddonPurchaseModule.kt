@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
@@ -11,6 +12,7 @@ import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -34,6 +36,12 @@ val addonPurchaseModule = module {
     AddonSummaryViewModel(
       summaryParameters = params.get<SummaryParameters>(),
       submitAddonPurchaseUseCase = get<SubmitAddonPurchaseUseCase>(),
+    )
+  }
+
+  viewModel<TravelAddonTriageViewModel> {
+    TravelAddonTriageViewModel(
+      get<GetTravelAddonBannerInfoUseCase>(),
     )
   }
 
