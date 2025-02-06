@@ -53,7 +53,12 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       viewModel = viewModel,
       popBackStack = navigator::popBackStack,
       launchFlow = { insuranceIds: List<String> ->
-        navigator.navigateUnsafe(AddonPurchaseGraphDestination(insuranceIds))
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(insuranceIds)) {
+          typedPopUpTo<TravelAddonTriage>({ inclusive = true })
+        }
+      },
+      onNavigateToNewConversation = {
+        onNavigateToNewConversation(backStackEntry)
       },
     )
   }

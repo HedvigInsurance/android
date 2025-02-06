@@ -21,13 +21,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -41,6 +39,7 @@ internal fun TravelAddonTriageDestination(
   viewModel: TravelAddonTriageViewModel,
   popBackStack: () -> Unit,
   launchFlow: (insuranceIds: List<String>) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: TravelAddonTriageState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
@@ -50,6 +49,7 @@ internal fun TravelAddonTriageDestination(
       viewModel.emit(TravelAddonTriageEvent.Reload)
     },
     launchFlow = launchFlow,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -59,6 +59,7 @@ private fun StartChangeTierFlowScreen(
   popBackStack: () -> Unit,
   reload: () -> Unit,
   launchFlow: (List<String>) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   when (uiState) {
     is Failure -> {
@@ -66,6 +67,7 @@ private fun StartChangeTierFlowScreen(
         reload = reload,
         popBackStack = popBackStack,
         reason = uiState.reason,
+        onNavigateToNewConversation = onNavigateToNewConversation,
       )
     }
 
@@ -81,7 +83,12 @@ private fun StartChangeTierFlowScreen(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(
+  reload: () -> Unit,
+  popBackStack: () -> Unit,
+  reason: FailureReason,
+  onNavigateToNewConversation: () -> Unit,
+) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
       FailureReason.GENERAL -> {
@@ -104,18 +111,19 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
             ),
         ) {
           Spacer(Modifier.weight(1f))
-          EmptyState(
-            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
-            // todo: another string key here!
-            iconStyle = INFO,
-            buttonStyle = NoButton,
-            description = null,
-            modifier = Modifier.fillMaxWidth(),
+          val buttonText = stringResource(R.string.open_chat)
+
+          HedvigErrorSection(
+            onButtonClick = onNavigateToNewConversation,
+            subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
+            // todo: another key here! ask Richard
+            modifier = Modifier.fillMaxSize(),
+            buttonText = buttonText,
           )
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(R.string.general_close_button),
-            onClick = popBackStack,
+            onClick = dropUnlessResumed { popBackStack() },
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )
@@ -126,7 +134,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
   }
 }
 
-@HedvigMultiScreenPreview
+@HedvigPreview
 @Composable
 private fun StartTierFlowScreenPreview(
   @PreviewParameter(TravelAddonTriageStateProvider::class) state: TravelAddonTriageState,
@@ -135,6 +143,7 @@ private fun StartTierFlowScreenPreview(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StartChangeTierFlowScreen(
         uiState = state,
+        {},
         {},
         {},
         {},
