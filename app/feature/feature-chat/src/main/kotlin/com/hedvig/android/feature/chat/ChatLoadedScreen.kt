@@ -604,11 +604,21 @@ private fun ChatBubble(
             }
 
             is ChatMessagePhoto -> {
-              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendChatMessage,
+                imageLoader,
+              )
             }
 
             is ChatMessageMedia -> {
-              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendChatMessage, //todo: change to file picker + deleting from db! maybe
+                imageLoader,
+              )
             }
           }
         }
