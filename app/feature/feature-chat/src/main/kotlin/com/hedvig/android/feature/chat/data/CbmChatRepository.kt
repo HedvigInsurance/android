@@ -262,13 +262,15 @@ internal class CbmChatRepositoryImpl(
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      if (it != EXCEED_LIMIT_MESSAGE) {
+        val failedMessage =
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+            messageId?.toString() ?: Uuid.randomUUID().toString(),
+            clock.now(),
+            uri,
+          )
+        chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      }
     }
   }
 
