@@ -96,6 +96,7 @@ import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import java.io.File
+import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -109,6 +110,8 @@ private val networkModule = module {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
       .Builder()
+      .connectTimeout(240, TimeUnit.SECONDS)
+
       .addDatadogConfiguration(get<HedvigBuildConstants>())
       .addInterceptor { chain ->
         chain.proceed(

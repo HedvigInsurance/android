@@ -182,20 +182,24 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
         logger.log("--> END ${request.method} (one-shot body omitted)")
       } else {
         val buffer = Buffer()
-        requestBody.writeTo(buffer)
+        try {
+          requestBody.writeTo(buffer)
+          val contentType = requestBody.contentType()
+          val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
-        val contentType = requestBody.contentType()
-        val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
-
-        logger.log("")
-        if (buffer.size > MAX_LOG_SIZE) {
-          logger.log("--> END ${requestBody.contentLength()}-byte body")
-        } else if (buffer.isProbablyUtf8()) {
-          logger.log(buffer.readString(charset))
-          logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
-        } else {
+          logger.log("")
+          if (buffer.size > MAX_LOG_SIZE) {
+            logger.log("--> END ${requestBody.contentLength()}-byte body")
+          } else if (buffer.isProbablyUtf8()) {
+            logger.log(buffer.readString(charset))
+            logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+          } else {
+            logger.log(
+              "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)")
+          }
+        } catch (e: OutOfMemoryError) {
           logger.log(
-            "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)")
+          "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted) with OutOfMemoryError: $e")
         }
       }
     }
