@@ -92,6 +92,8 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ErrorSnackbar
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -174,6 +176,7 @@ internal fun CbmChatLoadedScreen(
   onSendMessage: (String) -> Unit,
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
+  errorSnackbarState: ErrorSnackbarState?,
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -209,6 +212,7 @@ internal fun CbmChatLoadedScreen(
         showUploading = uiState.showUploading,
       )
     },
+    errorSnackbarState = errorSnackbarState,
   )
 }
 
@@ -223,77 +227,89 @@ private fun ChatLoadedScreen(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
+  errorSnackbarState: ErrorSnackbarState?,
 ) {
   val dividerColor = HedvigTheme.colorScheme.borderSecondary
   val dividerThickness = 1.dp
-  SelectionContainer {
-    Column {
-      ChatLazyColumn(
-        lazyListState = lazyListState,
-        messages = uiState.messages,
-        latestChatMessage = uiState.latestMessage,
-        imageLoader = imageLoader,
-        simpleVideoCache = simpleVideoCache,
-        openUrl = openUrl,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        onRetrySendChatMessage = onRetrySendChatMessage,
-        modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f)
-          .clearFocusOnTap(),
-      )
-      if (uiState.bannerText != null) {
-        AnimatedVisibility(
-          visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
-          enter = expandVertically(
-            spring(
-              stiffness = Spring.StiffnessMedium,
-              visibilityThreshold = IntSize.VisibilityThreshold,
+  Box {
+    SelectionContainer {
+      Column {
+        ChatLazyColumn(
+          lazyListState = lazyListState,
+          messages = uiState.messages,
+          latestChatMessage = uiState.latestMessage,
+          imageLoader = imageLoader,
+          simpleVideoCache = simpleVideoCache,
+          openUrl = openUrl,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          onRetrySendChatMessage = onRetrySendChatMessage,
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .clearFocusOnTap(),
+        )
+        if (uiState.bannerText != null) {
+          AnimatedVisibility(
+            visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
+            enter = expandVertically(
+              spring(
+                stiffness = Spring.StiffnessMedium,
+                visibilityThreshold = IntSize.VisibilityThreshold,
+              ),
             ),
-          ),
-          exit = shrinkVertically(
-            spring(
-              stiffness = Spring.StiffnessMedium,
-              visibilityThreshold = IntSize.VisibilityThreshold,
+            exit = shrinkVertically(
+              spring(
+                stiffness = Spring.StiffnessMedium,
+                visibilityThreshold = IntSize.VisibilityThreshold,
+              ),
             ),
-          ),
-        ) {
-          ChatBanner(
-            text = when (uiState.bannerText) {
-              ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
-              is BannerText.Text -> uiState.bannerText.text
-            },
-            modifier = Modifier
-              .fillMaxWidth()
-              .drawWithContent {
-                drawContent()
-                drawLine(
-                  color = dividerColor,
-                  strokeWidth = dividerThickness.toPx(),
-                  start = Offset(0f, dividerThickness.toPx() / 2),
-                  end = Offset(size.width, dividerThickness.toPx() / 2),
-                )
+          ) {
+            ChatBanner(
+              text = when (uiState.bannerText) {
+                ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+                is BannerText.Text -> uiState.bannerText.text
               },
-          )
+              modifier = Modifier
+                .fillMaxWidth()
+                .drawWithContent {
+                  drawContent()
+                  drawLine(
+                    color = dividerColor,
+                    strokeWidth = dividerThickness.toPx(),
+                    start = Offset(0f, dividerThickness.toPx() / 2),
+                    end = Offset(size.width, dividerThickness.toPx() / 2),
+                  )
+                },
+            )
+          }
+        }
+        Box(
+          propagateMinConstraints = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+            .drawWithContent {
+              drawContent()
+              drawLine(
+                color = dividerColor,
+                strokeWidth = dividerThickness.toPx(),
+                start = Offset(0f, dividerThickness.toPx() / 2),
+                end = Offset(size.width, dividerThickness.toPx() / 2),
+              )
+            },
+        ) {
+          chatInput()
         }
       }
-      Box(
-        propagateMinConstraints = true,
+    }
+    if (errorSnackbarState != null) {
+      ErrorSnackbar(
+        errorSnackbarState = errorSnackbarState,
         modifier = Modifier
-          .fillMaxWidth()
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-          .drawWithContent {
-            drawContent()
-            drawLine(
-              color = dividerColor,
-              strokeWidth = dividerThickness.toPx(),
-              start = Offset(0f, dividerThickness.toPx() / 2),
-              end = Offset(size.width, dividerThickness.toPx() / 2),
-            )
-          },
-      ) {
-        chatInput()
-      }
+          .align(Alignment.BottomCenter)
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .padding(16.dp),
+      )
     }
   }
 }
@@ -973,6 +989,7 @@ private fun PreviewChatLoadedScreen() {
           latestMessage = null,
           bannerText = ClosedConversation,
           showUploading = true,
+          showFileTooBigErrorToast = false,
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
@@ -981,6 +998,7 @@ private fun PreviewChatLoadedScreen() {
         onRetrySendChatMessage = {},
         chatInput = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
+        errorSnackbarState = null,
       )
     }
   }

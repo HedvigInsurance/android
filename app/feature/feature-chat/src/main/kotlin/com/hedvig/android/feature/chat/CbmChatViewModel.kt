@@ -36,6 +36,7 @@ import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
+import com.hedvig.android.feature.chat.data.EXCEED_LIMIT_MESSAGE
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
@@ -139,6 +140,7 @@ internal class CbmChatPresenter(
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
+    var showFileTooBigErrorToast by remember { mutableStateOf(false) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -196,7 +198,12 @@ internal class CbmChatPresenter(
         is CbmChatEvent.SendMediaMessage -> launch {
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().sendMedia(conversationId, event.uriList)
+          val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
+          result.onLeft {
+            if (it == EXCEED_LIMIT_MESSAGE) {
+              showFileTooBigErrorToast = true
+            }
+          }
           numberOfOngoingUploads.update { it - 1 }
         }
 
@@ -206,6 +213,8 @@ internal class CbmChatPresenter(
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
           numberOfOngoingUploads.update { it - 1 }
         }
+
+        CbmChatEvent.ClearToast -> showFileTooBigErrorToast = false
       }
     }
 
@@ -220,6 +229,7 @@ internal class CbmChatPresenter(
           chatDao = chatDao,
           chatRepository = chatRepository,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
+          showFileTooBigErrorToast = showFileTooBigErrorToast,
         )
       }
     }
@@ -235,6 +245,7 @@ private fun presentLoadedChat(
   chatDao: ChatDao,
   chatRepository: Provider<CbmChatRepository>,
   showUploading: Boolean,
+  showFileTooBigErrorToast: Boolean,
 ): CbmChatUiState.Loaded {
   val latestMessage by remember(chatDao) {
     chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
@@ -263,6 +274,7 @@ private fun presentLoadedChat(
     latestMessage = latestMessage,
     bannerText = bannerText,
     showUploading = showUploading,
+    showFileTooBigErrorToast = showFileTooBigErrorToast,
   )
 }
 
@@ -284,6 +296,8 @@ internal sealed interface CbmChatEvent {
   data class SendMediaMessage(
     val uriList: List<Uri>,
   ) : CbmChatEvent
+
+  data object ClearToast : CbmChatEvent
 }
 
 internal sealed interface CbmChatUiState {
@@ -299,6 +313,7 @@ internal sealed interface CbmChatUiState {
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
     val showUploading: Boolean,
+    val showFileTooBigErrorToast: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation

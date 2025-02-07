@@ -235,16 +235,23 @@ internal class CbmChatRepositoryImpl(
   override suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): Either<String, List<CbmChatMessage>> {
     return either {
       buildList<CbmChatMessage> {
+        var hasExceedFileSizeLimitError = false
         uriList.forEach { uri ->
           sendOneMedia(conversationId, null, uri)
             .fold(
               ifLeft = {
                 logcat { "Failed to upload list of media: $it" }
+                if (it == EXCEED_LIMIT_MESSAGE) {
+                  hasExceedFileSizeLimitError = true
+                }
               },
               ifRight = { cbmMessage ->
                 add(cbmMessage)
               },
             )
+        }
+        if (hasExceedFileSizeLimitError) {
+          raise(EXCEED_LIMIT_MESSAGE)
         }
       }
     }

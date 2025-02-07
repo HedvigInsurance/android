@@ -28,6 +28,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -92,6 +93,9 @@ internal fun CbmChatDestination(
       viewModel.emit(CbmChatEvent.RetryLoadingChat)
     },
     simpleVideoCache = simpleVideoCache,
+    showedFileTooBigError = {
+      viewModel.emit(CbmChatEvent.ClearToast)
+    },
   )
 }
 
@@ -111,6 +115,7 @@ private fun ChatScreen(
   onSendMedia: (List<Uri>) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
+  showedFileTooBigError: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -155,6 +160,15 @@ private fun ChatScreen(
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
               simpleVideoCache = simpleVideoCache,
+              errorSnackbarState = if (uiState.showFileTooBigErrorToast) {
+                ErrorSnackbarState(
+                  messageText = stringResource(R.string.CHAT_FILE_SIZE_TOO_BIG_ERROR),
+                  error = true,
+                  showedError = showedFileTooBigError,
+                )
+              } else {
+                null
+              },
             )
           }
         }
@@ -263,6 +277,7 @@ private fun PreviewChatScreen(
         onRetrySendChatMessage = {},
         onRetryLoadingChat = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
+        showedFileTooBigError = {},
       )
     }
   }
