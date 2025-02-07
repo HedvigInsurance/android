@@ -171,6 +171,7 @@ internal fun CbmChatLoadedScreen(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetrySendFailedMediaMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
@@ -190,6 +191,7 @@ internal fun CbmChatLoadedScreen(
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     onRetrySendChatMessage = onRetrySendChatMessage,
+    onRetrySendFailedMediaMessage = onRetrySendFailedMediaMessage,
     chatInput = {
       ChatInput(
         onSendMessage = {
@@ -222,6 +224,7 @@ private fun ChatLoadedScreen(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetrySendFailedMediaMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
   val dividerColor = HedvigTheme.colorScheme.borderSecondary
@@ -241,6 +244,7 @@ private fun ChatLoadedScreen(
           .fillMaxWidth()
           .weight(1f)
           .clearFocusOnTap(),
+        onRetrySendFailedMediaMessage = onRetrySendFailedMediaMessage
       )
       if (uiState.bannerText != null) {
         AnimatedVisibility(
@@ -341,6 +345,7 @@ private fun ChatLazyColumn(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetrySendFailedMediaMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val mediaStatesWithPlayers = remember { mutableStateMapOf<String, MediaState>() }
@@ -415,6 +420,7 @@ private fun ChatLazyColumn(
           .fillMaxWidth(dynamicBubbleWidthFraction)
           .wrapContentWidth(alignment)
           .padding(bottom = 8.dp),
+        onRetrySendFailedMediaMessage = onRetrySendFailedMediaMessage
       )
     }
     if (appendStatus !is LoadState.NotLoading) {
@@ -462,6 +468,7 @@ private fun ChatBubble(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetrySendFailedMediaMessage: (messageId: String) -> Unit,
   onGoFullWidth: () -> Unit,
   onGoDefaultWidth: () -> Unit,
   showingFullWidth: Boolean,
@@ -588,11 +595,21 @@ private fun ChatBubble(
             }
 
             is ChatMessagePhoto -> {
-              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendChatMessage,
+                imageLoader,
+              )
             }
 
             is ChatMessageMedia -> {
-              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendFailedMediaMessage, //todo: here
+                imageLoader,
+              )
             }
           }
         }
@@ -981,6 +998,7 @@ private fun PreviewChatLoadedScreen() {
         onRetrySendChatMessage = {},
         chatInput = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
+        onRetrySendFailedMediaMessage = {}
       )
     }
   }
