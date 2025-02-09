@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.chat
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -92,6 +95,9 @@ internal fun CbmChatDestination(
       viewModel.emit(CbmChatEvent.RetryLoadingChat)
     },
     simpleVideoCache = simpleVideoCache,
+    onNewFileFoFailedMediaPicked = { messageId ->
+      viewModel.emit(CbmChatEvent.DeleteFailedMessage(messageId))
+    }
   )
 }
 
@@ -110,8 +116,20 @@ private fun ChatScreen(
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onNewFileFoFailedMediaPicked: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
 ) {
+  var failedMediaToDelete by remember {mutableStateOf<String?>(null)}
+  val photoPicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    if (!resultingUriList.isEmpty()) {
+      onSendMedia(resultingUriList)
+      failedMediaToDelete?. let {
+        onNewFileFoFailedMediaPicked(it)
+      }
+    }
+  }
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -155,6 +173,10 @@ private fun ChatScreen(
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
               simpleVideoCache = simpleVideoCache,
+              onRetrySendFailedMediaMessage = {
+                photoPicker.launch(PickVisualMediaRequest())
+                failedMediaToDelete = it
+              }
             )
           }
         }
@@ -263,6 +285,7 @@ private fun PreviewChatScreen(
         onRetrySendChatMessage = {},
         onRetryLoadingChat = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
+        onNewFileFoFailedMediaPicked = {}
       )
     }
   }

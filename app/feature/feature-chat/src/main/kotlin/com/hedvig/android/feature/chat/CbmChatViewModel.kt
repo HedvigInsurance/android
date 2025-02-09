@@ -119,6 +119,7 @@ private fun cbmChatPresenterPagingData(
   }.cachedIn(scope)
 }
 
+
 internal class CbmChatPresenter(
   private val conversationId: Uuid,
   private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
@@ -139,6 +140,7 @@ internal class CbmChatPresenter(
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
+    var messageIdToDelete by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -155,6 +157,14 @@ internal class CbmChatPresenter(
           },
         )
       }
+    }
+
+    LaunchedEffect(messageIdToDelete) {
+      messageIdToDelete?.let {
+        chatDao.deleteMessage(conversationId, it)
+        //todo: is it okay that we have direct access to dao here and not through repo?
+      }
+      messageIdToDelete = null
     }
 
     val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
@@ -205,6 +215,10 @@ internal class CbmChatPresenter(
           startConversationIfNecessary()
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
           numberOfOngoingUploads.update { it - 1 }
+        }
+
+        is CbmChatEvent.DeleteFailedMessage -> {
+          messageIdToDelete = event.messageId
         }
       }
     }
@@ -274,6 +288,10 @@ internal sealed interface CbmChatEvent {
   ) : CbmChatEvent
 
   data class RetrySendChatMessage(
+    val messageId: String,
+  ) : CbmChatEvent
+
+  data class DeleteFailedMessage(
     val messageId: String,
   ) : CbmChatEvent
 
