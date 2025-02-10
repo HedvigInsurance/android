@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+  workflow_dispatch:
 
 concurrency:
   group: ref-${{ github.ref }}
