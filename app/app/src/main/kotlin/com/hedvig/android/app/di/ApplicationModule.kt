@@ -110,8 +110,6 @@ private val networkModule = module {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
       .Builder()
-      .connectTimeout(240, TimeUnit.SECONDS)
-
       .addDatadogConfiguration(get<HedvigBuildConstants>())
       .addInterceptor { chain ->
         chain.proceed(

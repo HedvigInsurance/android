@@ -20,13 +20,14 @@ import okio.GzipSource
 private const val MAX_LOG_SIZE = 100 * 1024
 
 class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
-  private val logger: Logger = Logger.DEFAULT
+  private val logger: Logger = Logger.DEFAULT,
 ) : Interceptor {
-
-  @Volatile private var headersToRedact = emptySet<String>()
+  @Volatile
+  private var headersToRedact = emptySet<String>()
 
   @set:JvmName("level")
-  @Volatile var level = Level.NONE
+  @Volatile
+  var level = Level.NONE
 
   enum class Level {
     /** No logs. */
@@ -84,7 +85,7 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
      * <-- END HTTP
      * ```
      */
-    BODY
+    BODY,
   }
 
   fun interface Logger {
@@ -94,6 +95,7 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
       /** A [Logger] defaults output appropriate for the current platform. */
       @JvmField
       val DEFAULT: Logger = DefaultLogger()
+
       private class DefaultLogger : Logger {
         override fun log(message: String) {
           Platform.get().log(message)
@@ -124,7 +126,7 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
   @Deprecated(
     message = "moved to var",
     replaceWith = ReplaceWith(expression = "level"),
-    level = DeprecationLevel.ERROR
+    level = DeprecationLevel.ERROR,
   )
   fun getLevel(): Level = level
 
@@ -195,11 +197,13 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
             logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
           } else {
             logger.log(
-              "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)")
+              "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)",
+            )
           }
         } catch (e: OutOfMemoryError) {
           logger.log(
-          "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted) with OutOfMemoryError: $e")
+            "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted) with OutOfMemoryError: $e",
+          )
         }
       }
     }
@@ -219,7 +223,8 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
     val contentLength = responseBody.contentLength()
     val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
     logger.log(
-      "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms${if (!logHeaders) ", $bodySize body" else ""})")
+      "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms${if (!logHeaders) ", $bodySize body" else ""})",
+    )
 
     if (logHeaders) {
       val headers = response.headers
@@ -283,7 +288,6 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
       !contentEncoding.equals("gzip", ignoreCase = true)
   }
 }
-
 
 internal fun Buffer.isProbablyUtf8(): Boolean {
   try {

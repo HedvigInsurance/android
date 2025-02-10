@@ -1,29 +1,16 @@
 package com.hedvig.android.core.fileupload
 
 import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
-import androidx.annotation.RequiresApi
 import com.hedvig.android.logger.logcat
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.lang.IllegalStateException
-import java.nio.channels.FileChannel
-
-
 import java.util.Locale
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
-import okio.IOException
-import okio.buffer
-import okio.source
 
 class FileService(
   private val contentResolver: ContentResolver,
@@ -37,9 +24,7 @@ class FileService(
       }
 
       override fun writeTo(sink: BufferedSink) {
-        val size = getFileSize(contentResolver, uri)
-        val maxMemory = Runtime.getRuntime().maxMemory()
-        if (size< maxMemory) {
+        if (fileDoesNotExceedMemory(uri)) {
           contentResolver.openInputStream(uri)?.use { inputStream ->
             val buffer = ByteArray(4 * 1024)
             var bytesRead: Int
@@ -51,17 +36,15 @@ class FileService(
               }
             } catch (e: OutOfMemoryError) {
               System.gc()
-              throw OutOfMemoryError("Could not open input stream for uri:$uri with OutOfMemoryError: $e")
+              error("Could not open input stream for uri:$uri with OutOfMemoryError: $e")
             }
           } ?: error("Could not open input stream for uri:$uri")
         } else {
-          throw OutOfMemoryError("Could not open input stream for uri:$uri not enough memory")
+          error("Could not open input stream for uri:$uri with OutOfMemoryError")
         }
       }
     },
   )
-
-
 
   fun getFileName(uri: Uri): String? {
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -105,10 +88,19 @@ class FileService(
   }
 
   private fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
+
+  fun fileDoesNotExceedMemory(uri: Uri): Boolean {
+    val size = getFileSize(contentResolver, uri)
+    val maxMemory = Runtime.getRuntime().maxMemory()
+    logcat {
+      "Mariia: size of the file: ${size / 1024 / 1024} Mb, " +
+        "maxMemory: ${maxMemory / 1024 / 1024} Mb"
+    }
+    return size < maxMemory
+  }
 }
 
-
-fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
+private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
   return contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { cursor ->
     val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
     if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else -1
