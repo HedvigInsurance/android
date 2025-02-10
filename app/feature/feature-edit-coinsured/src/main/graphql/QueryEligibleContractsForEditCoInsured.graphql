@@ -1,0 +1,17 @@
+query EligibleContractsForEditCoInsured {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+        }
+      }
+      supportsCoInsured
+      coInsured {
+        hasMissingInfo
+      }
+    }
+  }
+}
