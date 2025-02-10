@@ -14,6 +14,7 @@ import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
+import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -31,8 +32,9 @@ val editCoInsuredModule = module {
   }
 
   single<GetInsurancesForEditCoInsuredUseCase> {
-    GetInsurancesForEditCoInsuredUseCaseImpl(get<ApolloClient>(),
-      )
+    GetInsurancesForEditCoInsuredUseCaseImpl(
+      get<ApolloClient>(),
+    )
   }
 
   single<CreateMidtermChangeUseCase> {
@@ -56,6 +58,13 @@ val editCoInsuredModule = module {
       get<FetchCoInsuredPersonalInformationUseCase>(),
       get<CreateMidtermChangeUseCase>(),
       get<CommitMidtermChangeUseCase>(),
+    )
+  }
+
+  viewModel<EditCoInsuredTriageViewModel> { (contractId: String?) ->
+    EditCoInsuredTriageViewModel(
+      get<GetInsurancesForEditCoInsuredUseCase>(),
+      contractId,
     )
   }
 }

@@ -58,5 +58,5 @@ internal data class InsuranceForEditOrAddCoInsured(
 
 internal enum class EditCoInsuredDestination {
   MISSING_INFO,
-  ADD_OR_REMOVE
+  ADD_OR_REMOVE,
 }

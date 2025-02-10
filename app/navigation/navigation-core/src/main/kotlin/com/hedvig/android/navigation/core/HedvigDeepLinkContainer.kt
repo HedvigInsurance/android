@@ -20,7 +20,7 @@ interface HedvigDeepLinkContainer {
   // A specific contract destination with a contractId. If none match, an empty screen is shown
   val contract: List<String>
 
-  //No contractId, either a screen with a list or redirect further
+  // No contractId, either a screen with a list or redirect further
   val editCoInsuredWithoutContractId: List<String>
 
   // A specific destination  for editing co-insured with a contractId. If none match, an error screen is shown
