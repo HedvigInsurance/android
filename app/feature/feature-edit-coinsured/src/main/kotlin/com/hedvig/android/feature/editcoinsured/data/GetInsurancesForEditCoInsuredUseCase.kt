@@ -28,22 +28,18 @@ internal class GetInsurancesForEditCoInsuredUseCaseImpl(
         .activeContracts
       val filtered = contracts
         .filter { it.supportsCoInsured }
-      buildList {
-        filtered.forEach { contract ->
-          val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-            EditCoInsuredDestination.MISSING_INFO
-          } else {
-            EditCoInsuredDestination.ADD_OR_REMOVE
-          }
-          add(
-            InsuranceForEditOrAddCoInsured(
-              destination = destination,
-              displayName = contract.currentAgreement.productVariant.displayName,
-              exposureName = contract.exposureDisplayName,
-              id = contract.id,
-            ),
-          )
+      filtered.map { contract ->
+        val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+          EditCoInsuredDestination.MISSING_INFO
+        } else {
+          EditCoInsuredDestination.ADD_OR_REMOVE
         }
+        InsuranceForEditOrAddCoInsured(
+          destination = destination,
+          displayName = contract.currentAgreement.productVariant.displayName,
+          exposureName = contract.exposureDisplayName,
+          id = contract.id,
+        )
       }
     }
   }
