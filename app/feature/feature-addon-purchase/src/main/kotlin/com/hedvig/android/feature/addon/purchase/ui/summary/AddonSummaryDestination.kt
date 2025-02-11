@@ -153,11 +153,11 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         message = stringResource(R.string.ADDON_FLOW_SUMMARY_INFO_TEXT),
         priority = NotificationDefaults.NotificationPriority.Info,
       )
-      Spacer(Modifier.height(40.dp))
+      Spacer(Modifier.height(24.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL), // todo: change copy prob?
+            stringResource(R.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
