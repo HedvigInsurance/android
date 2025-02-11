@@ -172,7 +172,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
           } else {
             // without + (supposedly with minus)
             stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, // todo: mb better to have a separate key?
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               uiState.totalPriceChange,
             )
           }
