@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
-import androidx.annotation.Keep
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -8,11 +7,6 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-// Workaround for https://issuetracker.google.com/issues/353898971
-@Keep
-@Serializable
-data object EditCoInsuredGraphDestination : Destination
 
 sealed interface EditCoInsuredDestination : Destination {
   @Serializable
