@@ -167,13 +167,13 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
             // with +
             stringResource(
               R.string.ADDON_FLOW_PRICE_LABEL,
-              uiState.totalPriceChange.amount.toInt(),
+              uiState.totalPriceChange,
             )
           } else {
             // without + (supposedly with minus)
             stringResource(
-              R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, // todo: mb better to have a separate key?
-              uiState.totalPriceChange.amount.toInt(),
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, // todo: mb better to have a separate key?
+              uiState.totalPriceChange,
             )
           }
           HedvigText(
