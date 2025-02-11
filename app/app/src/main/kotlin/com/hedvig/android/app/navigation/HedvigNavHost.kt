@@ -345,7 +345,7 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
-    editCoInsuredGraph(navigator)
+    editCoInsuredGraph(navigator, hedvigDeepLinkContainer = hedvigDeepLinkContainer)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,

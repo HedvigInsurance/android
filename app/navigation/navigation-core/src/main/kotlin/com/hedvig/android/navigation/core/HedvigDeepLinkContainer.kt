@@ -20,6 +20,12 @@ interface HedvigDeepLinkContainer {
   // A specific contract destination with a contractId. If none match, an empty screen is shown
   val contract: List<String>
 
+  // No contractId, either a screen with a list or redirect further
+  val editCoInsuredWithoutContractId: List<String>
+
+  // A specific destination  for editing co-insured with a contractId. If none match, an error screen is shown
+  val editCoInsured: List<String>
+
   val terminateInsurance: List<String> // The screen with a list of insurances eligible for self-service cancellation
 
   val forever: List<String> // The forever/referrals destination, showing the existing discount and the unique code
@@ -71,7 +77,13 @@ internal class HedvigDeepLinkContainerImpl(
   override val contract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/contract?contractId={contractId}"
   }
+  override val editCoInsuredWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coinsured"
+  }
 
+  override val editCoInsured: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coinsured?contractId={contractId}"
+  }
   override val terminateInsurance: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
   }
@@ -112,6 +124,8 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     insurances.first(),
     contract.first(),
     contractWithoutContractId.first(),
+    editCoInsured.first(),
+    editCoInsuredWithoutContractId.first(),
     terminateInsurance.first(),
     forever.first(),
     profile.first(),
