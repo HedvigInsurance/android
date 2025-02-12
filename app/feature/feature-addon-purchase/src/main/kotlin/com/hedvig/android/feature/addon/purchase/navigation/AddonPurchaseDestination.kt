@@ -57,6 +57,9 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data object SubmitFailure : AddonPurchaseDestination, Destination
+
+  @Serializable
+  data object TravelAddonTriage : AddonPurchaseDestination, Destination
 }
 
 @Serializable

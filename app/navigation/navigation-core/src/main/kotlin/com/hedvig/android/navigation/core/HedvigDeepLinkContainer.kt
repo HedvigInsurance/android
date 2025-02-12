@@ -45,6 +45,9 @@ interface HedvigDeepLinkContainer {
   val chat: List<String> // Hedvig Chat
   val inbox: List<String> // Hedvig CBM inbox
   val conversation: List<String> // Hedvig specific CBM conversation
+
+  // Travel addon purchase flow
+  val travelAddon: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -113,6 +116,9 @@ internal class HedvigDeepLinkContainerImpl(
   override val conversation: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/conversation/{conversationId}"
   }
+  override val travelAddon: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/travel-addon"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -138,4 +144,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     chat.first(),
     inbox.first(),
     conversation.first(),
+    travelAddon.first(),
   )

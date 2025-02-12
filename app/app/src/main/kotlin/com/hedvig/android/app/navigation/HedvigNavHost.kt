@@ -331,6 +331,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     changeTierGraph(
       navigator = navigator,

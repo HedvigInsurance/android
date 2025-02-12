@@ -11,6 +11,7 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestina
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitFailure
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitSuccess
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.Summary
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelAddonTriage
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonDestination
@@ -22,11 +23,15 @@ import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonSuccessSc
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryDestination
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
 import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDestination
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -34,8 +39,30 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.addonPurchaseNavGraph(
   navigator: Navigator,
   navController: NavController,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
 ) {
+  /**
+   * Destination to get eligible insuranceIds if member comes to the feature using the deeplink
+   */
+  navdestination<TravelAddonTriage>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelAddon),
+  ) { backStackEntry ->
+    val viewModel: TravelAddonTriageViewModel = koinViewModel()
+    TravelAddonTriageDestination(
+      viewModel = viewModel,
+      popBackStack = navigator::popBackStack,
+      launchFlow = { insuranceIds: List<String> ->
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(insuranceIds)) {
+          typedPopUpTo<TravelAddonTriage>({ inclusive = true })
+        }
+      },
+      onNavigateToNewConversation = {
+        onNavigateToNewConversation(backStackEntry)
+      },
+    )
+  }
+
   navgraph<AddonPurchaseGraphDestination>(
     startDestination = ChooseInsuranceToAddAddonDestination::class,
   ) {
