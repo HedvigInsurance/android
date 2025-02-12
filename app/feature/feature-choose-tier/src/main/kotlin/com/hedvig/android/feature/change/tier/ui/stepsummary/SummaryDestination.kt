@@ -217,8 +217,8 @@ private fun SummarySuccessScreen(
         endSlot = {
           HedvigText(
             text = stringResource(
-              R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
-              uiState.total.amount.toInt(),
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              uiState.total,
             ),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
