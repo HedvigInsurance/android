@@ -13,7 +13,7 @@ androidGradlePlugin = "8.8.0"
 apolloAdapters = "0.0.4"
 apollo = "4.1.1"
 cacheFix = "3.0.1"
-crashlytics = "3.0.2"
+crashlytics = "3.0.3"
 datadogPlugin = "1.15.0"
 doctor = "0.10.0"
 easylauncher = "6.4.0"
@@ -22,7 +22,7 @@ gradleDevelocity = "3.19.1"
 kotlin = "2.1.10"
 kotlinter = "5.0.1"
 ksp = "2.1.10-1.0.29"
-ktor = "3.0.3"
+ktor = "3.1.0"
 license = "0.9.8"
 molecule = "2.0.0"
 squareSortDependencies = "0.14"
@@ -56,8 +56,8 @@ composeRichtext = "1.0.0-alpha02"
 coreLibraryDesugaring = "2.1.4"
 coroutines = "1.10.1"
 datadog = "2.18.0"
-dependencyAnalysis = "2.8.0"
-firebaseCrashlyticsBuildtools = "3.0.2"
+dependencyAnalysis = "2.8.2"
+firebaseCrashlyticsBuildtools = "3.0.3"
 hedvigAuthlib = "1.4.3"
 junit = "4.13.2"
 koinBom = "4.0.2"
@@ -160,7 +160,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.8.0"
+firebase-bom = "com.google.firebase:firebase-bom:33.9.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
