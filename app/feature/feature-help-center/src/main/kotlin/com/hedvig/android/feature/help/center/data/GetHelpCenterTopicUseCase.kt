@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.help.center.data
 
 import arrow.core.Either
+import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 
 internal interface GetHelpCenterTopicUseCase {
@@ -8,10 +9,19 @@ internal interface GetHelpCenterTopicUseCase {
 }
 
 internal class GetHelpCenterTopicUseCaseImpl(
-  val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase
-): GetHelpCenterTopicUseCase {
+  private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
+) : GetHelpCenterTopicUseCase {
   override suspend fun invoke(topicId: String): Either<ErrorMessage, FAQTopic> {
-    TODO()
+    return either {
+      val result = getHelpCenterFAQUseCase.invoke()
+        .getOrNull()?.topics?.firstOrNull { it.id == topicId }
+      if (result == null) {
+        raise(ErrorMessage())
+      } else {
+        result
+      }
+    }
   }
+
 }
 
