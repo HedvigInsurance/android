@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
@@ -32,7 +34,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
-import com.hedvig.android.feature.help.center.model.Question
+import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.model.Question.CLAIMS_Q1
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -42,45 +44,78 @@ import hedvig.resources.R
 @Composable
 internal fun HelpCenterTopicDestination(
   showNavigateToInboxViewModel: ShowNavigateToInboxViewModel,
-  topic: Topic,
-  onNavigateToQuestion: (question: Question) -> Unit,
+  helpCenterTopicViewModel: HelpCenterTopicViewModel,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
-  val commonQuestions = topic
-    .commonQuestionIds
-    .mapNotNull { questionId ->
-      Question.entries.find { it == questionId }
+  val uiState by helpCenterTopicViewModel.uiState.collectAsStateWithLifecycle()
+  when (val state = uiState) {
+    HelpCenterTopicUiState.Failure -> {
+      FailureScreen(
+        onNavigateBack = onNavigateBack,
+        reload = {
+          helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload)
+        },
+      )
     }
 
-  val allQuestions = topic
-    .allQuestionIds
-    .mapNotNull { questionId ->
-      Question.entries.find { it == questionId }
+    HelpCenterTopicUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    is HelpCenterTopicUiState.Success -> {
+      HelpCenterTopicScreen(
+        topicTitle = state.topic.title,
+        commonQuestions = state.topic.commonFAQ,
+        allQuestions = state.topic.commonFAQ + state.topic.otherFAQ,
+        showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
+        onNavigateToQuestion = onNavigateToQuestion,
+        onNavigateUp = onNavigateUp,
+        onNavigateBack = onNavigateBack,
+        onNavigateToInbox = onNavigateToInbox,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+      )
     }
+  }
+}
 
-  HelpCenterTopicScreen(
-    topic = topic,
-    commonQuestions = commonQuestions,
-    allQuestions = allQuestions,
-    showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
-    onNavigateToQuestion = onNavigateToQuestion,
-    onNavigateUp = onNavigateUp,
-    onNavigateBack = onNavigateBack,
-    onNavigateToInbox = onNavigateToInbox,
-    onNavigateToNewConversation = onNavigateToNewConversation,
-  )
+@Composable
+private fun FailureScreen(
+  onNavigateBack: () -> Unit,
+  reload: () -> Unit,
+) {
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column(Modifier.fillMaxSize()) {
+      TopAppBarWithBack(
+        title = stringResource(R.string.HC_TITLE),
+        onClick = onNavigateBack,
+      )
+      HedvigErrorSection(
+        onButtonClick = reload,
+        title = stringResource(R.string.HC_TOPIC_NOT_FOUND),
+        subTitle = null,
+        buttonText = stringResource(R.string.GENERAL_RETRY),
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(
+              WindowInsetsSides.Horizontal
+                + WindowInsetsSides.Bottom,
+            ),
+          ),
+      )
+    }
+  }
 }
 
 @Composable
 private fun HelpCenterTopicScreen(
-  topic: Topic?,
-  commonQuestions: List<Question>,
-  allQuestions: List<Question>,
+  topicTitle: String,
+  commonQuestions: List<FAQItem>,
+  allQuestions: List<FAQItem>,
   showNavigateToInboxButton: Boolean,
-  onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
@@ -89,23 +124,10 @@ private fun HelpCenterTopicScreen(
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = topic?.titleRes?.let { stringResource(it) } ?: stringResource(id = R.string.HC_TITLE),
+        title = topicTitle,
         onClick = onNavigateUp,
       )
-      if (topic == null) {
-        HedvigErrorSection(
-          onButtonClick = onNavigateBack,
-          title = stringResource(id = R.string.HC_TOPIC_NOT_FOUND),
-          subTitle = null,
-          buttonText = stringResource(R.string.general_back_button),
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
-        )
-      } else if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
+      if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
         HedvigErrorSection(
           onButtonClick = onNavigateBack,
           title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
@@ -120,7 +142,6 @@ private fun HelpCenterTopicScreen(
         )
       } else {
         LocalConfiguration.current
-        val resources = LocalContext.current.resources
         Column(
           modifier = Modifier
             .fillMaxSize()
@@ -137,8 +158,8 @@ private fun HelpCenterTopicScreen(
                 title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
                 chipContainerColor = HighlightColor.Blue(LIGHT),
                 items = commonQuestions,
-                itemText = { resources.getString(it.questionRes) },
-                onClickItem = { onNavigateToQuestion(it) },
+                itemText = { it.question },
+                onClickItem = { onNavigateToQuestion(it.id) },
               )
             }
             if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
@@ -150,8 +171,8 @@ private fun HelpCenterTopicScreen(
                 title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
                 chipContainerColor = HighlightColor.Purple(LIGHT),
                 items = allQuestions,
-                itemText = { resources.getString(it.questionRes) },
-                onClickItem = { onNavigateToQuestion(it) },
+                itemText = { it.question },
+                onClickItem = { onNavigateToQuestion(it.id) },
               )
             }
           }
@@ -180,17 +201,42 @@ private fun PreviewHelpCenterTopicScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
-        Topic.PAYMENTS.takeIf { hasTopic },
-        if (hasQuestions) {
-          listOf(CLAIMS_Q1, CLAIMS_Q1)
-        } else {
-          listOf()
-        },
-        if (hasQuestions) {
-          listOf(CLAIMS_Q1, CLAIMS_Q1)
-        } else {
-          listOf()
-        },
+        stringResource(R.string.HC_CLAIMS_TITLE),
+        listOf(
+          FAQItem(
+            "id1",
+            stringResource(R.string.HC_CLAIMS_Q_01),
+            stringResource(R.string.HC_CLAIMS_A_01),
+          ),
+          FAQItem(
+            "id2",
+            stringResource(R.string.HC_CLAIMS_Q_02),
+            stringResource(R.string.HC_CLAIMS_A_02),
+          ),
+        ),
+        listOf(
+          FAQItem(
+            "id1",
+            stringResource(R.string.HC_CLAIMS_Q_01),
+            stringResource(R.string.HC_CLAIMS_A_01),
+          ),
+          FAQItem(
+            "id2",
+            stringResource(R.string.HC_CLAIMS_Q_02),
+            stringResource(R.string.HC_CLAIMS_A_02),
+          ),
+          FAQItem(
+            "id3",
+            stringResource(R.string.HC_CLAIMS_Q_03),
+            stringResource(R.string.HC_CLAIMS_A_03),
+          ),
+          FAQItem(
+            "id4",
+            stringResource(R.string.HC_CLAIMS_Q_04),
+            stringResource(R.string.HC_CLAIMS_A_04),
+          ),
+
+        ),
         true,
         {},
         {},

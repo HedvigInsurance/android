@@ -19,23 +19,13 @@ internal sealed interface HelpCenterDestinations {
 
   @Serializable
   data class Topic(
-    val displayName: String,
-    val topic: com.hedvig.android.feature.help.center.model.Topic,
-  ) : HelpCenterDestinations, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<com.hedvig.android.feature.help.center.model.Topic>())
-    }
-  }
+    val topicId: String = "",
+  ) : HelpCenterDestinations, Destination
 
   @Serializable
   data class Question(
-    val displayName: String,
-    val question: com.hedvig.android.feature.help.center.model.Question,
-  ) : HelpCenterDestinations, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<com.hedvig.android.feature.help.center.model.Question>())
-    }
-  }
+    val questionId: String = "",
+  ) : HelpCenterDestinations, Destination
 
   @Serializable
   data class Emergency(val emergencyNumber: String?, val emergencyUrl: String?) : HelpCenterDestinations, Destination
