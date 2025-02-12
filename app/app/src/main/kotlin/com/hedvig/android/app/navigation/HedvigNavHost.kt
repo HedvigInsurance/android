@@ -150,6 +150,7 @@ internal fun HedvigNavHost(
           density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
@@ -388,6 +389,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
@@ -410,9 +412,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appId,
   )
   travelCertificateGraph(
-    density = density,
     navigator = navigator,
     applicationId = hedvigBuildConstants.appId,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
     },
