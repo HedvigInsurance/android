@@ -31,6 +31,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.crossSells)
+  implementation(projects.dataAddons)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantPublic)
@@ -46,7 +47,6 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
-  implementation(projects.dataAddons)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

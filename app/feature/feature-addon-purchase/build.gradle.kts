@@ -32,6 +32,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.dataAddons)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
@@ -43,7 +44,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.uiTiersAndAddons)
-  implementation(projects.dataAddons)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
