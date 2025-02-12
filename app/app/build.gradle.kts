@@ -148,6 +148,8 @@ dependencies {
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)

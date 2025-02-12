@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.androidx.compose.materialRipple)
   implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.graphicsShapes)
+  implementation(libs.androidx.other.core)
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.modal.sheet)
@@ -27,4 +28,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.designSystemInternals)
   implementation(projects.navigationCore)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
+  implementation(libs.media3.ui)
 }

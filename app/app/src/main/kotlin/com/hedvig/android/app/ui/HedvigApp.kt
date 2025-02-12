@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -69,6 +70,7 @@ internal fun HedvigApp(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
@@ -121,6 +123,7 @@ internal fun HedvigApp(
             imageLoader = imageLoader,
             languageService = languageService,
             hedvigBuildConstants = hedvigBuildConstants,
+            simpleVideoCache = simpleVideoCache,
           )
         }
       }
