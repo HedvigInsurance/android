@@ -101,7 +101,6 @@ import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
@@ -323,7 +322,7 @@ private fun HelpCenterHomeScreen(
                 quickLinksUiState as?
                   HelpCenterUiState.QuickLinkUiState.QuickLinks
               )?.quickLinks ?: listOf(),
-              questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ }
+              questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
             )
             onUpdateSearchResults(it, results)
           }
@@ -452,11 +451,10 @@ private fun ContentWithoutSearch(
             )
             Spacer(Modifier.height(32.dp))
           }
-
         }
         LocalConfiguration.current
         AnimatedVisibility(
-          !questions.isEmpty()
+          !questions.isEmpty(),
         ) {
           HelpCenterSectionWithClickableRows(
             modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
@@ -797,8 +795,10 @@ private fun searchForQuery(
   return if (resultsInQuestions == null && resultsInQuickLinks == null) {
     null
   } else {
-    HelpCenterUiState.HelpSearchResults(resultsInQuickLinks,
-      resultsInQuestions)
+    HelpCenterUiState.HelpSearchResults(
+      resultsInQuickLinks,
+      resultsInQuestions,
+    )
   }
 }
 
@@ -810,17 +810,21 @@ private fun PreviewHelpCenterHomeScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterHomeScreen(
-        topics = listOf(FAQTopic(
-          title = "Payments",
-          commonFAQ = listOf(),
-          otherFAQ = listOf(),
-          id = "topicId"
-        )),
-        questions = listOf(FAQItem(
-          "01",
-          stringResource(R.string.HC_CLAIMS_Q_01),
-          stringResource(R.string.HC_CLAIMS_A_01),
-        )),
+        topics = listOf(
+          FAQTopic(
+            title = "Payments",
+            commonFAQ = listOf(),
+            otherFAQ = listOf(),
+            id = "topicId",
+          ),
+        ),
+        questions = listOf(
+          FAQItem(
+            "01",
+            stringResource(R.string.HC_CLAIMS_Q_01),
+            stringResource(R.string.HC_CLAIMS_A_01),
+          ),
+        ),
         selectedQuickAction = null,
         onNavigateToTopic = {},
         onNavigateToQuestion = {},
@@ -850,17 +854,21 @@ private fun PreviewQuickLinkAnimations() {
         parametersList = provider.values.toList(),
       ) { quickLinkUiState ->
         HelpCenterHomeScreen(
-          topics = listOf(FAQTopic(
-            title = "Payments",
-            commonFAQ = listOf(),
-            otherFAQ = listOf(),
-            id = "topicId"
-          )),
-          questions = listOf(FAQItem(
-            "01",
-            stringResource(R.string.HC_CLAIMS_Q_01),
-            stringResource(R.string.HC_CLAIMS_A_01),
-          )),
+          topics = listOf(
+            FAQTopic(
+              title = "Payments",
+              commonFAQ = listOf(),
+              otherFAQ = listOf(),
+              id = "topicId",
+            ),
+          ),
+          questions = listOf(
+            FAQItem(
+              "01",
+              stringResource(R.string.HC_CLAIMS_Q_01),
+              stringResource(R.string.HC_CLAIMS_A_01),
+            ),
+          ),
           selectedQuickAction = null,
           onNavigateToTopic = {},
           onNavigateToQuestion = {},

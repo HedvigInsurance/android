@@ -23,4 +23,3 @@ internal class GetHelpCenterTopicUseCaseImpl(
     }
   }
 }
-

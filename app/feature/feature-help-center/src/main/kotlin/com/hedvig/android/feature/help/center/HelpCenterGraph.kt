@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.help.center
 
-import android.content.res.Resources
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredDestination
@@ -44,14 +42,13 @@ fun NavGraphBuilder.helpCenterGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenter),
     ) { backStackEntry ->
       val viewModel = koinViewModel<HelpCenterViewModel>()
-      val resources = LocalContext.current.resources
       HelpCenterHomeDestination(
         viewModel = viewModel,
         onNavigateToTopic = { topic ->
           navigateToTopic(topic, navigator, backStackEntry)
         },
         onNavigateToQuestion = { question ->
-          navigateToQuestion(resources, question, navigator, backStackEntry)
+          navigateToQuestion(question, navigator, backStackEntry)
         },
         onNavigateToQuickLink = { destination ->
           when (destination) {
@@ -113,17 +110,16 @@ fun NavGraphBuilder.helpCenterGraph(
     }
 
     navdestination<HelpCenterDestinations.Topic> { backStackEntry ->
-      val resources = LocalContext.current.resources
       val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
-      val helpCenterTopicViewModel = koinViewModel<HelpCenterTopicViewModel>(parameters = {
+      val helpCenterTopicViewModel = koinViewModel<HelpCenterTopicViewModel> {
         parametersOf(topicId)
-      })
+      }
 
       HelpCenterTopicDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
         onNavigateToQuestion = { question ->
-          navigateToQuestion(resources, question, navigator, backStackEntry)
+          navigateToQuestion(question, navigator, backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
@@ -133,18 +129,17 @@ fun NavGraphBuilder.helpCenterGraph(
     }
     navdestination<HelpCenterDestinations.Question> { backStackEntry ->
       val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
-      val helpCenterQuestionViewModel = koinViewModel<HelpCenterQuestionViewModel>(
-          parameters = {
-              parametersOf(questionId)
-          },
-      )
+      val helpCenterQuestionViewModel = koinViewModel<HelpCenterQuestionViewModel> {
+        parametersOf(questionId)
+      }
+
       HelpCenterQuestionDestination(
-          showNavigateToInboxViewModel = showNavigateToInboxViewModel,
-          onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
-          onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
-          onNavigateUp = navigator::navigateUp,
-          onNavigateBack = navigator::popBackStack,
-          helpCenterQuestionViewModel = helpCenterQuestionViewModel,
+        showNavigateToInboxViewModel = showNavigateToInboxViewModel,
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
+        helpCenterQuestionViewModel = helpCenterQuestionViewModel,
       )
     }
     navdestination<HelpCenterDestinations.FirstVet>(
@@ -167,23 +162,14 @@ fun NavGraphBuilder.helpCenterGraph(
   }
 }
 
-private fun navigateToTopic(
-  topicId: String,
-  navigator: Navigator,
-  backStackEntry: NavBackStackEntry,
-) {
+private fun navigateToTopic(topicId: String, navigator: Navigator, backStackEntry: NavBackStackEntry) {
   val destination = HelpCenterDestinations.Topic(
     topicId = topicId,
   )
   with(navigator) { backStackEntry.navigate(destination) }
 }
 
-private fun navigateToQuestion(
-  resources: Resources,
-  questionId: String,
-  navigator: Navigator,
-  backStackEntry: NavBackStackEntry,
-) {
+private fun navigateToQuestion(questionId: String, navigator: Navigator, backStackEntry: NavBackStackEntry) {
   val destination = HelpCenterDestinations.Question(
     questionId = questionId,
   )

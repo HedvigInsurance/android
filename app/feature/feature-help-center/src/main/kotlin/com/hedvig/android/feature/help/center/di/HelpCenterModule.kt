@@ -16,6 +16,7 @@ import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredU
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
@@ -55,15 +56,22 @@ val helpCenterModule = module {
     HelpCenterViewModel(
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
-      getHelpCenterFAQUseCase = get<GetHelpCenterFAQUseCase>()
+      getHelpCenterFAQUseCase = get<GetHelpCenterFAQUseCase>(),
     )
   }
 
   viewModel<HelpCenterTopicViewModel> { params ->
     HelpCenterTopicViewModel(
       topicId = params.get(),
-      getHelpCenterTopicUseCase = get<GetHelpCenterTopicUseCase>()
-      )
+      getHelpCenterTopicUseCase = get<GetHelpCenterTopicUseCase>(),
+    )
+  }
+
+  viewModel<HelpCenterQuestionViewModel> { params ->
+    HelpCenterQuestionViewModel(
+      questionId = params.get(),
+      getHelpCenterQuestionUseCase = get<GetHelpCenterQuestionUseCase>(),
+    )
   }
 
   viewModel<ChooseInsuranceForEditCoInsuredViewModel> {

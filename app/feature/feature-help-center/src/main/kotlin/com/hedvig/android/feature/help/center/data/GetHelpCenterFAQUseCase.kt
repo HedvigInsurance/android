@@ -45,31 +45,30 @@ internal class GetHelpCenterFAQUseCaseImpl(
         .bind()
         .currentMember.memberFAQ
       MemberFAQ(
-          commonFAQ = result.commonFAQ.map { item ->
+        commonFAQ = result.commonFAQ.map { item ->
+          item.toFAQItem()
+        },
+        topics = result.topics.map { topic ->
+          FAQTopic(
+            id = topic.id,
+            title = topic.title,
+            commonFAQ = topic.commonFAQ.map { item ->
               item.toFAQItem()
-          },
-          topics = result.topics.map { topic ->
-              FAQTopic(
-                  id = topic.id,
-                  title = topic.title,
-                  commonFAQ = topic.commonFAQ.map { item ->
-                      item.toFAQItem()
-                  },
-                  otherFAQ = topic.otherFAQ.map { item ->
-                      item.toFAQItem()
-                  },
-              )
-          },
+            },
+            otherFAQ = topic.otherFAQ.map { item ->
+              item.toFAQItem()
+            },
+          )
+        },
       )
     }
   }
 }
 
-
 private fun FAQItemFragment.toFAQItem(): FAQItem {
   return FAQItem(
-      id = id,
-      question = question,
-      answer = answer,
+    id = id,
+    question = question,
+    answer = answer,
   )
 }

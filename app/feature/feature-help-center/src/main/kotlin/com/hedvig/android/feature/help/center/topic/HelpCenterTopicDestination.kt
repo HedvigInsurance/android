@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -35,8 +34,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
-import com.hedvig.android.feature.help.center.model.Question.CLAIMS_Q1
-import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
@@ -80,10 +77,7 @@ internal fun HelpCenterTopicDestination(
 }
 
 @Composable
-private fun FailureScreen(
-  onNavigateBack: () -> Unit,
-  reload: () -> Unit,
-) {
+private fun FailureScreen(onNavigateBack: () -> Unit, reload: () -> Unit) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -100,8 +94,8 @@ private fun FailureScreen(
           .padding(16.dp)
           .windowInsetsPadding(
             WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal
-                + WindowInsetsSides.Bottom,
+              WindowInsetsSides.Horizontal +
+                WindowInsetsSides.Bottom,
             ),
           ),
       )
@@ -196,47 +190,53 @@ private fun HelpCenterTopicScreen(
 private fun PreviewHelpCenterTopicScreen(
   @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
 ) {
-  val hasTopic = input.first
   val hasQuestions = input.second
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
         stringResource(R.string.HC_CLAIMS_TITLE),
-        listOf(
-          FAQItem(
-            "id1",
-            stringResource(R.string.HC_CLAIMS_Q_01),
-            stringResource(R.string.HC_CLAIMS_A_01),
-          ),
-          FAQItem(
-            "id2",
-            stringResource(R.string.HC_CLAIMS_Q_02),
-            stringResource(R.string.HC_CLAIMS_A_02),
-          ),
-        ),
-        listOf(
-          FAQItem(
-            "id1",
-            stringResource(R.string.HC_CLAIMS_Q_01),
-            stringResource(R.string.HC_CLAIMS_A_01),
-          ),
-          FAQItem(
-            "id2",
-            stringResource(R.string.HC_CLAIMS_Q_02),
-            stringResource(R.string.HC_CLAIMS_A_02),
-          ),
-          FAQItem(
-            "id3",
-            stringResource(R.string.HC_CLAIMS_Q_03),
-            stringResource(R.string.HC_CLAIMS_A_03),
-          ),
-          FAQItem(
-            "id4",
-            stringResource(R.string.HC_CLAIMS_Q_04),
-            stringResource(R.string.HC_CLAIMS_A_04),
-          ),
-
-        ),
+        if (hasQuestions) {
+          listOf(
+            FAQItem(
+              "id1",
+              stringResource(R.string.HC_CLAIMS_Q_01),
+              stringResource(R.string.HC_CLAIMS_A_01),
+            ),
+            FAQItem(
+              "id2",
+              stringResource(R.string.HC_CLAIMS_Q_02),
+              stringResource(R.string.HC_CLAIMS_A_02),
+            ),
+          )
+        } else {
+          listOf()
+        },
+        if (hasQuestions) {
+          listOf(
+            FAQItem(
+              "id1",
+              stringResource(R.string.HC_CLAIMS_Q_01),
+              stringResource(R.string.HC_CLAIMS_A_01),
+            ),
+            FAQItem(
+              "id2",
+              stringResource(R.string.HC_CLAIMS_Q_02),
+              stringResource(R.string.HC_CLAIMS_A_02),
+            ),
+            FAQItem(
+              "id3",
+              stringResource(R.string.HC_CLAIMS_Q_03),
+              stringResource(R.string.HC_CLAIMS_A_03),
+            ),
+            FAQItem(
+              "id4",
+              stringResource(R.string.HC_CLAIMS_Q_04),
+              stringResource(R.string.HC_CLAIMS_A_04),
+            ),
+          )
+        } else {
+          listOf()
+        },
         true,
         {},
         {},

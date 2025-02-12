@@ -18,13 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.commonmark.Markdown
-import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -74,14 +71,10 @@ internal fun HelpCenterQuestionDestination(
       )
     }
   }
-
 }
 
 @Composable
-private fun FailureScreen(
-  onNavigateBack: () -> Unit,
-  reload: () -> Unit,
-) {
+private fun FailureScreen(onNavigateBack: () -> Unit, reload: () -> Unit) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -98,15 +91,14 @@ private fun FailureScreen(
           .padding(16.dp)
           .windowInsetsPadding(
             WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal
-                + WindowInsetsSides.Bottom,
+              WindowInsetsSides.Horizontal +
+                WindowInsetsSides.Bottom,
             ),
           ),
       )
     }
   }
 }
-
 
 @Composable
 private fun HelpCenterQuestionScreen(
@@ -130,10 +122,10 @@ private fun HelpCenterQuestionScreen(
       ) {
         Column(
           modifier =
-          Modifier.padding(
-            WindowInsets
-              .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() + PaddingValues(horizontal = 16.dp),
-          ),
+            Modifier.padding(
+              WindowInsets
+                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() + PaddingValues(horizontal = 16.dp),
+            ),
         ) {
           Spacer(Modifier.height(16.dp))
           HelpCenterSection(
@@ -179,11 +171,7 @@ private fun HelpCenterQuestionScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewHelpCenterQuestionScreen(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
-) {
-  val hasQuestion = input.first
-  val hasRelatedQuestions = input.second
+private fun PreviewHelpCenterQuestionScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterQuestionScreen(

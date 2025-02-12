@@ -17,9 +17,9 @@ internal class HelpCenterTopicViewModel(
   topicId: String?,
   getHelpCenterTopicUseCase: GetHelpCenterTopicUseCase,
 ) : MoleculeViewModel<HelpCenterTopicEvent, HelpCenterTopicUiState>(
-  presenter = HelpCenterTopicPresenter(topicId, getHelpCenterTopicUseCase),
-  initialState = HelpCenterTopicUiState.Loading,
-)
+    presenter = HelpCenterTopicPresenter(topicId, getHelpCenterTopicUseCase),
+    initialState = HelpCenterTopicUiState.Loading,
+  )
 
 private class HelpCenterTopicPresenter(
   private val topicId: String?,
@@ -29,7 +29,6 @@ private class HelpCenterTopicPresenter(
   override fun MoleculePresenterScope<HelpCenterTopicEvent>.present(
     lastState: HelpCenterTopicUiState,
   ): HelpCenterTopicUiState {
-
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
@@ -66,6 +65,8 @@ internal sealed interface HelpCenterTopicEvent {
 
 internal sealed interface HelpCenterTopicUiState {
   data class Success(val topic: FAQTopic) : HelpCenterTopicUiState
+
   data object Loading : HelpCenterTopicUiState
+
   data object Failure : HelpCenterTopicUiState
 }

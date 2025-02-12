@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.NonEmptyList
-import arrow.core.getOrElse
 import arrow.core.merge
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
@@ -26,15 +25,12 @@ import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 internal sealed interface HelpCenterEvent {
@@ -93,7 +89,7 @@ internal data class HelpCenterUiState(
 internal class HelpCenterPresenter(
   private val getQuickLinksUseCase: GetQuickLinksUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
-  private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase
+  private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -148,8 +144,8 @@ internal class HelpCenterPresenter(
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
       }
       combine(
-        flow = flow { emit(getQuickLinksUseCase.invoke())},
-        flow2 = flow {emit(getHelpCenterFAQUseCase.invoke()) },
+        flow = flow { emit(getQuickLinksUseCase.invoke()) },
+        flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
       ) { quickLinks, faq ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
@@ -175,7 +171,7 @@ internal class HelpCenterPresenter(
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
         )
-      }.collectLatest{}
+      }.collectLatest {}
     }
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,
