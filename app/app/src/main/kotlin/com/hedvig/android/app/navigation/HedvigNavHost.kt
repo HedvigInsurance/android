@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -147,7 +146,6 @@ internal fun HedvigNavHost(
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(
-          density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -386,7 +384,6 @@ internal fun HedvigNavHost(
 }
 
 private fun NavGraphBuilder.nestedHomeGraphs(
-  density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
