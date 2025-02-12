@@ -36,47 +36,52 @@ import hedvig.resources.R
 
 @Composable
 internal fun TravelAddonTriageDestination(
-    viewModel: TravelAddonTriageViewModel,
-    navigateUp: () -> Unit,
-    launchFlow: (insuranceIds: List<String>) -> Unit,
-    onNavigateToNewConversation: () -> Unit,
+  viewModel: TravelAddonTriageViewModel,
+  popBackStack: () -> Unit,
+  launchFlow: (insuranceIds: List<String>) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState: TravelAddonTriageState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
     uiState = uiState,
-    navigateUp = navigateUp,
     reload = {
       viewModel.emit(TravelAddonTriageEvent.Reload)
     },
     launchFlow = launchFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
+    popBackStack = popBackStack,
   )
 }
 
 @Composable
 private fun StartChangeTierFlowScreen(
-    uiState: TravelAddonTriageState,
-    navigateUp: () -> Unit,
-    reload: () -> Unit,
-    launchFlow: (List<String>) -> Unit,
-    onNavigateToNewConversation: () -> Unit,
+  uiState: TravelAddonTriageState,
+  reload: () -> Unit,
+  popBackStack: () -> Unit,
+  launchFlow: (List<String>) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
-  when (uiState) {
-    is Failure -> {
-      FailureScreen(
-        reload = reload,
-        popBackStack = navigateUp,
-        reason = uiState.reason,
-        onNavigateToNewConversation = onNavigateToNewConversation,
-      )
-    }
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    when (uiState) {
+      is Failure -> {
+        FailureScreen(
+          reload = reload,
+          popBackStack = popBackStack,
+          reason = uiState.reason,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+        )
+      }
 
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+      Loading -> HedvigFullScreenCenterAlignedProgress()
 
-    is Success -> {
-      LaunchedEffect(uiState.insuranceIds) {
-        val params = uiState.insuranceIds
-        launchFlow(params)
+      is Success -> {
+        LaunchedEffect(uiState.insuranceIds) {
+          val params = uiState.insuranceIds
+          launchFlow(params)
+        }
       }
     }
   }
@@ -116,7 +121,6 @@ private fun FailureScreen(
           HedvigErrorSection(
             onButtonClick = onNavigateToNewConversation,
             subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
-            // todo: another key here! ask Richard
             modifier = Modifier.fillMaxSize(),
             buttonText = buttonText,
           )
