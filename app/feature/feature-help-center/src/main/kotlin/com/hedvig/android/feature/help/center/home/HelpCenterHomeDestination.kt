@@ -74,6 +74,7 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -156,6 +157,9 @@ internal fun HelpCenterHomeDestination(
     onClearSearch = {
       viewModel.emit(HelpCenterEvent.ClearSearchQuery)
     },
+    reload = {
+      viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
+    }
   )
 }
 
@@ -177,6 +181,7 @@ private fun HelpCenterHomeScreen(
   onNavigateUp: () -> Unit,
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
+  reload: () -> Unit,
 ) {
   when (selectedQuickAction) {
     is MultiSelectQuickLink -> {
@@ -300,78 +305,89 @@ private fun HelpCenterHomeScreen(
         onClick = onNavigateUp,
       )
       Spacer(modifier = Modifier.height(8.dp))
-      val context = LocalContext.current
-      SearchField(
-        searchQuery = searchQuery,
-        focusRequester = focusRequester,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-          ),
-        onSearchChange = {
-          if (it.isEmpty()) {
+      if (topics.isEmpty() && questions.isEmpty() &&
+        quickLinksUiState is HelpCenterUiState.QuickLinkUiState.NoQuickLinks
+      ) {
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.fillMaxSize()
+        )
+      } else {
+
+
+        val context = LocalContext.current
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+            ),
+          onSearchChange = {
+            if (it.isEmpty()) {
+              searchQuery = null
+              onClearSearch()
+            } else {
+              searchQuery = it
+              val results = searchForQuery(
+                query = it,
+                context = context,
+                quickLinksForSearch = (
+                  quickLinksUiState as?
+                    HelpCenterUiState.QuickLinkUiState.QuickLinks
+                  )?.quickLinks ?: listOf(),
+                questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
+              )
+              onUpdateSearchResults(it, results)
+            }
+          },
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+            }
+          },
+          onClearSearch = {
             searchQuery = null
             onClearSearch()
-          } else {
-            searchQuery = it
-            val results = searchForQuery(
-              query = it,
-              context = context,
-              quickLinksForSearch = (
-                quickLinksUiState as?
-                  HelpCenterUiState.QuickLinkUiState.QuickLinks
-              )?.quickLinks ?: listOf(),
-              questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
-            )
-            onUpdateSearchResults(it, results)
-          }
-        },
-        onKeyboardAction = {
-          searchQuery?.let {
-            focusManager.clearFocus()
-          }
-        },
-        onClearSearch = {
-          searchQuery = null
-          onClearSearch()
-        },
-      )
-      Spacer(Modifier.height(16.dp))
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
-      ) {
-        AnimatedContent(
-          targetState = search,
-          transitionSpec = {
-            fadeIn(animationSpec = tween(220, delayMillis = 90))
-              .togetherWith(fadeOut(animationSpec = tween(90)))
           },
-        ) { animatedSearch ->
-          if (animatedSearch == null) {
-            ContentWithoutSearch(
-              quickLinksUiState = quickLinksUiState,
-              onQuickActionsSelected = onQuickActionsSelected,
-              topics = topics,
-              onNavigateToTopic = onNavigateToTopic,
-              questions = questions,
-              onNavigateToQuestion = onNavigateToQuestion,
-              showNavigateToInboxButton = showNavigateToInboxButton,
-              onNavigateToInbox = onNavigateToInbox,
-              onNavigateToNewConversation = onNavigateToNewConversation,
-            )
-          } else {
-            SearchResults(
-              activeSearchState = animatedSearch.activeSearchState,
-              onBackPressed = {
-                searchQuery = null
-                onClearSearch()
-              },
-              onNavigateToQuestion = onNavigateToQuestion,
-              onQuickActionsSelected = onQuickActionsSelected,
-            )
+        )
+        Spacer(Modifier.height(16.dp))
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        ) {
+          AnimatedContent(
+            targetState = search,
+            transitionSpec = {
+              fadeIn(animationSpec = tween(220, delayMillis = 90))
+                .togetherWith(fadeOut(animationSpec = tween(90)))
+            },
+          ) { animatedSearch ->
+            if (animatedSearch == null) {
+              ContentWithoutSearch(
+                quickLinksUiState = quickLinksUiState,
+                onQuickActionsSelected = onQuickActionsSelected,
+                topics = topics,
+                onNavigateToTopic = onNavigateToTopic,
+                questions = questions,
+                onNavigateToQuestion = onNavigateToQuestion,
+                showNavigateToInboxButton = showNavigateToInboxButton,
+                onNavigateToInbox = onNavigateToInbox,
+                onNavigateToNewConversation = onNavigateToNewConversation,
+              )
+            } else {
+              SearchResults(
+                activeSearchState = animatedSearch.activeSearchState,
+                onBackPressed = {
+                  searchQuery = null
+                  onClearSearch()
+                },
+                onNavigateToQuestion = onNavigateToQuestion,
+                onQuickActionsSelected = onQuickActionsSelected,
+              )
+            }
           }
         }
       }
@@ -839,6 +855,7 @@ private fun PreviewHelpCenterHomeScreen(
         onClearSearch = {},
         onUpdateSearchResults = { _, _ -> },
         search = null,
+        reload = {}
       )
     }
   }
@@ -883,6 +900,7 @@ private fun PreviewQuickLinkAnimations() {
           onClearSearch = {},
           onUpdateSearchResults = { _, _ -> },
           search = null,
+          reload = {}
         )
       }
     }

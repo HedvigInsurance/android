@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +29,7 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,8 @@ internal sealed interface HelpCenterEvent {
   data class NavigateToQuickAction(val destination: QuickLinkDestination) : HelpCenterEvent
 
   data object ClearNavigation : HelpCenterEvent
+
+  data object ReloadFAQAndQuickLinks: HelpCenterEvent
 }
 
 internal data class HelpCenterUiState(
@@ -98,6 +101,7 @@ internal class HelpCenterPresenter(
     var currentState by remember {
       mutableStateOf(lastState)
     }
+    var loadIteration by remember { mutableIntStateOf(0) }
     val hasAnyActiveConversation by remember(hasAnyActiveConversationUseCase) {
       hasAnyActiveConversationUseCase.invoke().map { it.mapLeft { false }.merge() }
     }.collectAsState(false)
@@ -136,10 +140,12 @@ internal class HelpCenterPresenter(
           selectedQuickAction = null
           currentState = currentState.copy(destinationToNavigate = event.destination)
         }
+
+        HelpCenterEvent.ReloadFAQAndQuickLinks -> loadIteration++
       }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(loadIteration) {
       if (quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.QuickLinks) {
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
       }
@@ -171,7 +177,7 @@ internal class HelpCenterPresenter(
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
         )
-      }.collectLatest {}
+      }.collect()
     }
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,

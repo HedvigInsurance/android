@@ -117,7 +117,6 @@ fun NavGraphBuilder.helpCenterGraph(
       val helpCenterTopicViewModel = koinViewModel<HelpCenterTopicViewModel> {
         parametersOf(topicId)
       }
-      logcat { "Mariia: topicId: $topicId" }
       HelpCenterTopicDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
@@ -137,7 +136,6 @@ fun NavGraphBuilder.helpCenterGraph(
       val helpCenterQuestionViewModel = koinViewModel<HelpCenterQuestionViewModel> {
         parametersOf(questionId)
       }
-      logcat { "Mariia: questionId: $questionId" }
       HelpCenterQuestionDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
