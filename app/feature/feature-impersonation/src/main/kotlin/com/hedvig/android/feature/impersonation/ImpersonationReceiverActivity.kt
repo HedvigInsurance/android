@@ -95,7 +95,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
         com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel(
           params.get(),
           get(),
-          get()
+          get(),
         )
       }
     }

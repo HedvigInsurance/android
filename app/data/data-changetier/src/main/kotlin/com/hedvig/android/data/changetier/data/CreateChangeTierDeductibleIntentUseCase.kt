@@ -58,7 +58,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
             TierDeductibleQuote(
               id = TierConstants.CURRENT_ID,
               deductible = deductible?.toDeductible(),
-              premium = UiMoney.fromMoneyFragment(premium),
+              premium = UiMoney.fromMoneyFragment(basePremium),
               productVariant = productVariant.toProductVariant(),
               tier = Tier(
                 tierName = tierName,
@@ -67,7 +67,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                 tierDisplayName = productVariant.displayNameTier,
               ),
               displayItems = displayItems.toDisplayItems(),
-              addons = emptyList(), // todo: we don't show current agreement addon anywhere
+              addons = emptyList(),
             )
           }
           val quotesToOffer = intent.quotes.map {
