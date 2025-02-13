@@ -225,8 +225,9 @@ dependencies {
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 
+  "stagingImplementation".invoke(projects.featureImpersonation)
   debugImplementation(libs.androidx.compose.uiTooling)
-
+  debugImplementation(projects.featureImpersonation)
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 
