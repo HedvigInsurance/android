@@ -34,7 +34,7 @@ fun NavGraphBuilder.travelCertificateGraph(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
   ) {
     navdestination<TravelCertificateDestination.TravelCertificateHistory>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelCertificate)
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelCertificate),
     ) { navBackStackEntry ->
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
