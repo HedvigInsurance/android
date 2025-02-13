@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -147,9 +146,9 @@ internal fun HedvigNavHost(
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(
-          density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
@@ -331,6 +330,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     changeTierGraph(
       navigator = navigator,
@@ -345,7 +345,7 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
-    editCoInsuredGraph(navigator)
+    editCoInsuredGraph(navigator, hedvigDeepLinkContainer = hedvigDeepLinkContainer)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
@@ -384,9 +384,9 @@ internal fun HedvigNavHost(
 }
 
 private fun NavGraphBuilder.nestedHomeGraphs(
-  density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
@@ -409,9 +409,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appId,
   )
   travelCertificateGraph(
-    density = density,
     navigator = navigator,
     applicationId = hedvigBuildConstants.appId,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
     },

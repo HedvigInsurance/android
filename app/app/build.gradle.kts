@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.10.1"
+    versionName = "12.10.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -225,8 +225,9 @@ dependencies {
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 
+  "stagingImplementation".invoke(projects.featureImpersonation)
   debugImplementation(libs.androidx.compose.uiTooling)
-
+  debugImplementation(projects.featureImpersonation)
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 

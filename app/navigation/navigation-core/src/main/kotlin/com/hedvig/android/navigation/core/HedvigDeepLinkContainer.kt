@@ -20,6 +20,12 @@ interface HedvigDeepLinkContainer {
   // A specific contract destination with a contractId. If none match, an empty screen is shown
   val contract: List<String>
 
+  // No contractId, either a screen with a list or redirect further
+  val editCoInsuredWithoutContractId: List<String>
+
+  // A specific destination  for editing co-insured with a contractId. If none match, an error screen is shown
+  val editCoInsured: List<String>
+
   val terminateInsurance: List<String> // The screen with a list of insurances eligible for self-service cancellation
 
   val forever: List<String> // The forever/referrals destination, showing the existing discount and the unique code
@@ -39,6 +45,10 @@ interface HedvigDeepLinkContainer {
   val chat: List<String> // Hedvig Chat
   val inbox: List<String> // Hedvig CBM inbox
   val conversation: List<String> // Hedvig specific CBM conversation
+
+  // Travel addon purchase flow
+  val travelAddon: List<String>
+  val travelCertificate: List<String> // The screen which shows existing and allows creating new travel certificates
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -71,7 +81,13 @@ internal class HedvigDeepLinkContainerImpl(
   override val contract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/contract?contractId={contractId}"
   }
+  override val editCoInsuredWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coinsured"
+  }
 
+  override val editCoInsured: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coinsured?contractId={contractId}"
+  }
   override val terminateInsurance: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
   }
@@ -101,6 +117,12 @@ internal class HedvigDeepLinkContainerImpl(
   override val conversation: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/conversation/{conversationId}"
   }
+  override val travelAddon: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/travel-addon"
+  }
+  override val travelCertificate: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/travelCertificate"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -112,6 +134,8 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     insurances.first(),
     contract.first(),
     contractWithoutContractId.first(),
+    editCoInsured.first(),
+    editCoInsuredWithoutContractId.first(),
     terminateInsurance.first(),
     forever.first(),
     profile.first(),
@@ -124,4 +148,6 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     chat.first(),
     inbox.first(),
     conversation.first(),
+    travelAddon.first(),
+    travelCertificate.first(),
   )
