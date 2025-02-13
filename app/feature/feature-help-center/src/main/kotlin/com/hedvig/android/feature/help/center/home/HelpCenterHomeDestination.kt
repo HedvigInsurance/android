@@ -74,6 +74,7 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -98,13 +99,13 @@ import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
+import com.hedvig.android.feature.help.center.data.FAQItem
+import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
 import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
-import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
@@ -114,8 +115,8 @@ import hedvig.resources.R
 @Composable
 internal fun HelpCenterHomeDestination(
   viewModel: HelpCenterViewModel,
-  onNavigateToTopic: (topic: Topic) -> Unit,
-  onNavigateToQuestion: (question: Question) -> Unit,
+  onNavigateToTopic: (topicId: String) -> Unit,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -156,18 +157,21 @@ internal fun HelpCenterHomeDestination(
     onClearSearch = {
       viewModel.emit(HelpCenterEvent.ClearSearchQuery)
     },
+    reload = {
+      viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
+    },
   )
 }
 
 @Composable
 private fun HelpCenterHomeScreen(
   search: HelpCenterUiState.Search?,
-  topics: List<Topic>,
-  questions: List<Question>,
+  topics: List<FAQTopic>,
+  questions: List<FAQItem>,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   selectedQuickAction: QuickAction?,
-  onNavigateToTopic: (topic: Topic) -> Unit,
-  onNavigateToQuestion: (question: Question) -> Unit,
+  onNavigateToTopic: (topicId: String) -> Unit,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
@@ -177,6 +181,7 @@ private fun HelpCenterHomeScreen(
   onNavigateUp: () -> Unit,
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
+  reload: () -> Unit,
 ) {
   when (selectedQuickAction) {
     is MultiSelectQuickLink -> {
@@ -300,77 +305,88 @@ private fun HelpCenterHomeScreen(
         onClick = onNavigateUp,
       )
       Spacer(modifier = Modifier.height(8.dp))
-      val context = LocalContext.current
-      SearchField(
-        searchQuery = searchQuery,
-        focusRequester = focusRequester,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-          ),
-        onSearchChange = {
-          if (it.isEmpty()) {
+      if (topics.isEmpty() &&
+        questions.isEmpty() &&
+        quickLinksUiState is HelpCenterUiState.QuickLinkUiState.NoQuickLinks
+      ) {
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.fillMaxSize(),
+        )
+      } else {
+        val context = LocalContext.current
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+            ),
+          onSearchChange = {
+            if (it.isEmpty()) {
+              searchQuery = null
+              onClearSearch()
+            } else {
+              searchQuery = it
+              val results = searchForQuery(
+                query = it,
+                context = context,
+                quickLinksForSearch = (
+                  quickLinksUiState as?
+                    HelpCenterUiState.QuickLinkUiState.QuickLinks
+                )?.quickLinks ?: listOf(),
+                questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
+              )
+              onUpdateSearchResults(it, results)
+            }
+          },
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+            }
+          },
+          onClearSearch = {
             searchQuery = null
             onClearSearch()
-          } else {
-            searchQuery = it
-            val results = searchForQuery(
-              query = it,
-              context = context,
-              quickLinksForSearch = (
-                quickLinksUiState as?
-                  HelpCenterUiState.QuickLinkUiState.QuickLinks
-              )?.quickLinks ?: listOf(),
-            )
-            onUpdateSearchResults(it, results)
-          }
-        },
-        onKeyboardAction = {
-          searchQuery?.let {
-            focusManager.clearFocus()
-          }
-        },
-        onClearSearch = {
-          searchQuery = null
-          onClearSearch()
-        },
-      )
-      Spacer(Modifier.height(16.dp))
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
-      ) {
-        AnimatedContent(
-          targetState = search,
-          transitionSpec = {
-            fadeIn(animationSpec = tween(220, delayMillis = 90))
-              .togetherWith(fadeOut(animationSpec = tween(90)))
           },
-        ) { animatedSearch ->
-          if (animatedSearch == null) {
-            ContentWithoutSearch(
-              quickLinksUiState = quickLinksUiState,
-              onQuickActionsSelected = onQuickActionsSelected,
-              topics = topics,
-              onNavigateToTopic = onNavigateToTopic,
-              questions = questions,
-              onNavigateToQuestion = onNavigateToQuestion,
-              showNavigateToInboxButton = showNavigateToInboxButton,
-              onNavigateToInbox = onNavigateToInbox,
-              onNavigateToNewConversation = onNavigateToNewConversation,
-            )
-          } else {
-            SearchResults(
-              activeSearchState = animatedSearch.activeSearchState,
-              onBackPressed = {
-                searchQuery = null
-                onClearSearch()
-              },
-              onNavigateToQuestion = onNavigateToQuestion,
-              onQuickActionsSelected = onQuickActionsSelected,
-            )
+        )
+        Spacer(Modifier.height(16.dp))
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        ) {
+          AnimatedContent(
+            targetState = search,
+            transitionSpec = {
+              fadeIn(animationSpec = tween(220, delayMillis = 90))
+                .togetherWith(fadeOut(animationSpec = tween(90)))
+            },
+          ) { animatedSearch ->
+            if (animatedSearch == null) {
+              ContentWithoutSearch(
+                quickLinksUiState = quickLinksUiState,
+                onQuickActionsSelected = onQuickActionsSelected,
+                topics = topics,
+                onNavigateToTopic = onNavigateToTopic,
+                questions = questions,
+                onNavigateToQuestion = onNavigateToQuestion,
+                showNavigateToInboxButton = showNavigateToInboxButton,
+                onNavigateToInbox = onNavigateToInbox,
+                onNavigateToNewConversation = onNavigateToNewConversation,
+              )
+            } else {
+              SearchResults(
+                activeSearchState = animatedSearch.activeSearchState,
+                onBackPressed = {
+                  searchQuery = null
+                  onClearSearch()
+                },
+                onNavigateToQuestion = onNavigateToQuestion,
+                onQuickActionsSelected = onQuickActionsSelected,
+              )
+            }
           }
         }
       }
@@ -382,10 +398,10 @@ private fun HelpCenterHomeScreen(
 private fun ContentWithoutSearch(
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   onQuickActionsSelected: (QuickAction) -> Unit,
-  topics: List<Topic>,
-  onNavigateToTopic: (topic: Topic) -> Unit,
-  questions: List<Question>,
-  onNavigateToQuestion: (question: Question) -> Unit,
+  topics: List<FAQTopic>,
+  onNavigateToTopic: (topicId: String) -> Unit,
+  questions: List<FAQItem>,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -428,35 +444,42 @@ private fun ContentWithoutSearch(
             Spacer(Modifier.height(32.dp))
           }
         }
-        HelpCenterSection(
-          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-          title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-          chipContainerColor = HighlightColor.Yellow(LIGHT),
-          content = {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-              for (topic in topics) {
-                HedvigCard(
-                  onClick = { onNavigateToTopic(topic) },
-                  modifier = Modifier
-                    .fillMaxWidth(),
-                ) {
-                  HedvigText(stringResource(topic.titleRes), Modifier.padding(16.dp))
+        AnimatedVisibility(!topics.isEmpty()) {
+          Column {
+            HelpCenterSection(
+              modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+              title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+              chipContainerColor = HighlightColor.Yellow(LIGHT),
+              content = {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                  for (topic in topics) {
+                    HedvigCard(
+                      onClick = { onNavigateToTopic(topic.id) },
+                      modifier = Modifier
+                        .fillMaxWidth(),
+                    ) {
+                      HedvigText(topic.title, Modifier.padding(16.dp))
+                    }
+                  }
                 }
-              }
-            }
-          },
-        )
-        Spacer(Modifier.height(32.dp))
+              },
+            )
+            Spacer(Modifier.height(32.dp))
+          }
+        }
         LocalConfiguration.current
-        val resources = LocalContext.current.resources
-        HelpCenterSectionWithClickableRows(
-          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-          title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-          chipContainerColor = HighlightColor.Blue(LIGHT),
-          items = questions,
-          itemText = { resources.getString(it.questionRes) },
-          onClickItem = { onNavigateToQuestion(it) },
-        )
+        AnimatedVisibility(
+          !questions.isEmpty(),
+        ) {
+          HelpCenterSectionWithClickableRows(
+            modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+            title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+            chipContainerColor = HighlightColor.Blue(LIGHT),
+            items = questions,
+            itemText = { it.question },
+            onClickItem = { onNavigateToQuestion(it.id) },
+          )
+        }
       }
     }
     Spacer(Modifier.weight(1f))
@@ -475,7 +498,7 @@ private fun ContentWithoutSearch(
 private fun SearchResults(
   activeSearchState: HelpCenterUiState.ActiveSearchState,
   onBackPressed: () -> Unit,
-  onNavigateToQuestion: (question: Question) -> Unit,
+  onNavigateToQuestion: (questionId: String) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
 ) {
   BackHandler(true) {
@@ -527,8 +550,8 @@ private fun SearchResults(
             title = stringResource(R.string.HC_COMMON_QUESTIONS_TITLE),
             chipContainerColor = HighlightColor.Blue(LIGHT),
             items = activeSearchState.results.filteredQuestions,
-            itemText = { resources.getString(it.questionRes) },
-            onClickItem = { onNavigateToQuestion(it) },
+            itemText = { it.question },
+            onClickItem = { onNavigateToQuestion(it.id) },
           )
           Spacer(Modifier.height(32.dp))
         }
@@ -761,6 +784,7 @@ private fun QuickLinkCard(
 private fun searchForQuery(
   query: String,
   quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
+  questionsForSearch: List<FAQItem>,
   context: Context,
 ): HelpCenterUiState.HelpSearchResults? {
   val lowercased = query.lowercase()
@@ -775,9 +799,9 @@ private fun searchForQuery(
       }
     }.toNonEmptyListOrNull()
   val resultsInQuestions = buildList {
-    Question.entries.forEach {
-      val answer = context.getString(it.answerRes).lowercase()
-      val question = context.getString(it.questionRes).lowercase()
+    questionsForSearch.forEach {
+      val answer = it.answer.lowercase()
+      val question = it.question.lowercase()
       if (answer.contains(lowercased) || question.contains(lowercased)) {
         add(it)
       }
@@ -786,7 +810,10 @@ private fun searchForQuery(
   return if (resultsInQuestions == null && resultsInQuickLinks == null) {
     null
   } else {
-    HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
+    HelpCenterUiState.HelpSearchResults(
+      resultsInQuickLinks,
+      resultsInQuestions,
+    )
   }
 }
 
@@ -798,8 +825,21 @@ private fun PreviewHelpCenterHomeScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterHomeScreen(
-        topics = listOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        questions = listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        topics = listOf(
+          FAQTopic(
+            title = "Payments",
+            commonFAQ = listOf(),
+            otherFAQ = listOf(),
+            id = "topicId",
+          ),
+        ),
+        questions = listOf(
+          FAQItem(
+            "01",
+            stringResource(R.string.HC_CLAIMS_Q_01),
+            stringResource(R.string.HC_CLAIMS_A_01),
+          ),
+        ),
         selectedQuickAction = null,
         onNavigateToTopic = {},
         onNavigateToQuestion = {},
@@ -814,6 +854,7 @@ private fun PreviewHelpCenterHomeScreen(
         onClearSearch = {},
         onUpdateSearchResults = { _, _ -> },
         search = null,
+        reload = {},
       )
     }
   }
@@ -829,8 +870,21 @@ private fun PreviewQuickLinkAnimations() {
         parametersList = provider.values.toList(),
       ) { quickLinkUiState ->
         HelpCenterHomeScreen(
-          topics = listOf(Topic.PAYMENTS, Topic.PAYMENTS),
-          questions = listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+          topics = listOf(
+            FAQTopic(
+              title = "Payments",
+              commonFAQ = listOf(),
+              otherFAQ = listOf(),
+              id = "topicId",
+            ),
+          ),
+          questions = listOf(
+            FAQItem(
+              "01",
+              stringResource(R.string.HC_CLAIMS_Q_01),
+              stringResource(R.string.HC_CLAIMS_A_01),
+            ),
+          ),
           selectedQuickAction = null,
           onNavigateToTopic = {},
           onNavigateToQuestion = {},
@@ -845,6 +899,7 @@ private fun PreviewQuickLinkAnimations() {
           onClearSearch = {},
           onUpdateSearchResults = { _, _ -> },
           search = null,
+          reload = {},
         )
       }
     }
