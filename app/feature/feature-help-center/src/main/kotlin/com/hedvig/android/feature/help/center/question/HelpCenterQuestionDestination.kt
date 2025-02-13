@@ -46,57 +46,56 @@ internal fun HelpCenterQuestionDestination(
   helpCenterQuestionViewModel: HelpCenterQuestionViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
   val uiState by helpCenterQuestionViewModel.uiState.collectAsStateWithLifecycle()
-  when (val state = uiState) {
-    HelpCenterQuestionUiState.Failure -> {
-      FailureScreen(
-        onNavigateBack = onNavigateBack,
-        reload = {
-          helpCenterQuestionViewModel.emit(HelpCenterQuestionEvent.Reload)
-        },
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column(Modifier.fillMaxSize()) {
+      TopAppBarWithBack(
+        title = stringResource(R.string.HC_TITLE),
+        onClick = onNavigateBack,
       )
-    }
+      when (val state = uiState) {
+        HelpCenterQuestionUiState.Failure -> {
+          FailureScreen(
+            reload = {
+              helpCenterQuestionViewModel.emit(HelpCenterQuestionEvent.Reload)
+            },
+          )
+        }
 
-    HelpCenterQuestionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    is HelpCenterQuestionUiState.Success -> {
-      HelpCenterQuestionScreen(
-        faqItem = state.faqItem,
-        showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
-        onNavigateUp = onNavigateUp,
-        onNavigateToInbox = onNavigateToInbox,
-        onNavigateToNewConversation = onNavigateToNewConversation,
-      )
+        HelpCenterQuestionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+        is HelpCenterQuestionUiState.Success -> {
+          HelpCenterQuestionScreen(
+            faqItem = state.faqItem,
+            showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
+            onNavigateToInbox = onNavigateToInbox,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+          )
+        }
+      }
     }
   }
 }
 
 @Composable
-private fun FailureScreen(onNavigateBack: () -> Unit, reload: () -> Unit) {
-  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-    Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        title = stringResource(R.string.HC_QUESTION_TITLE),
-        onClick = onNavigateBack,
-      )
-      HedvigErrorSection(
-        onButtonClick = reload,
-        title = stringResource(R.string.HC_QUESTION_NOT_FOUND),
-        subTitle = null,
-        buttonText = stringResource(R.string.GENERAL_RETRY),
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(16.dp)
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal +
-                WindowInsetsSides.Bottom,
-            ),
+private fun FailureScreen(reload: () -> Unit) {
+  Column {
+    HedvigErrorSection(
+      onButtonClick = reload,
+      title = stringResource(R.string.HC_QUESTION_NOT_FOUND),
+      subTitle = null,
+      buttonText = stringResource(R.string.GENERAL_RETRY),
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)
+        .windowInsetsPadding(
+          WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal +
+              WindowInsetsSides.Bottom,
           ),
-      )
-    }
+        ),
+    )
   }
 }
 
@@ -106,66 +105,57 @@ private fun HelpCenterQuestionScreen(
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateUp: () -> Unit,
 ) {
-  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-    Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        title = faqItem.question,
-        onClick = onNavigateUp,
+  LocalConfiguration.current
+  Column(
+    Modifier
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState()),
+  ) {
+    Column(
+      modifier =
+        Modifier.padding(
+          WindowInsets
+            .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() + PaddingValues(horizontal = 16.dp),
+        ),
+    ) {
+      Spacer(Modifier.height(16.dp))
+      HelpCenterSection(
+        title = stringResource(id = R.string.HC_QUESTION_TITLE),
+        chipContainerColor = HighlightColor.Blue(LIGHT),
+        content = {
+          HedvigText(
+            text = faqItem.question,
+            style = HedvigTheme.typography.bodySmall,
+          )
+        },
       )
-      LocalConfiguration.current
-      Column(
-        Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
-      ) {
-        Column(
-          modifier =
-            Modifier.padding(
-              WindowInsets
-                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() + PaddingValues(horizontal = 16.dp),
-            ),
-        ) {
-          Spacer(Modifier.height(16.dp))
-          HelpCenterSection(
-            title = stringResource(id = R.string.HC_QUESTION_TITLE),
-            chipContainerColor = HighlightColor.Blue(LIGHT),
-            content = {
-              HedvigText(
-                text = faqItem.question,
-                style = HedvigTheme.typography.bodySmall,
+      Spacer(Modifier.height(32.dp))
+      HelpCenterSection(
+        title = stringResource(R.string.HC_ANSWER_TITLE),
+        chipContainerColor = HighlightColor.Green(LIGHT),
+        content = {
+          ProvideTextStyle(
+            HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
+          ) {
+            RichText {
+              Markdown(
+                content = faqItem.answer,
               )
-            },
-          )
-          Spacer(Modifier.height(32.dp))
-          HelpCenterSection(
-            title = stringResource(R.string.HC_ANSWER_TITLE),
-            chipContainerColor = HighlightColor.Green(LIGHT),
-            content = {
-              ProvideTextStyle(
-                HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
-              ) {
-                RichText {
-                  Markdown(
-                    content = faqItem.answer,
-                  )
-                }
-              }
-            },
-          )
-        }
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(40.dp))
-        StillNeedHelpSection(
-          onNavigateToInbox = onNavigateToInbox,
-          onNavigateToNewConversation = onNavigateToNewConversation,
-          showNavigateToInboxButton = showNavigateToInboxButton,
-          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
-            PaddingValues(horizontal = 16.dp),
-        )
-      }
+            }
+          }
+        },
+      )
     }
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(40.dp))
+    StillNeedHelpSection(
+      onNavigateToInbox = onNavigateToInbox,
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      showNavigateToInboxButton = showNavigateToInboxButton,
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+        PaddingValues(horizontal = 16.dp),
+    )
   }
 }
 
@@ -183,7 +173,6 @@ private fun PreviewHelpCenterQuestionScreen() {
         showNavigateToInboxButton = true,
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
-        onNavigateUp = {},
       )
     }
   }

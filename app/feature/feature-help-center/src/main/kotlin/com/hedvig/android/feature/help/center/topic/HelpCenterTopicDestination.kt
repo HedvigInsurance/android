@@ -45,141 +45,137 @@ internal fun HelpCenterTopicDestination(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
   val uiState by helpCenterTopicViewModel.uiState.collectAsStateWithLifecycle()
-  when (val state = uiState) {
-    HelpCenterTopicUiState.Failure -> {
-      FailureScreen(
-        onNavigateBack = onNavigateBack,
-        reload = {
-          helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload)
-        },
-      )
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    val state = uiState
+    val title = if (state is HelpCenterTopicUiState.Success) {
+      state.topic.title
+    } else {
+      stringResource(R.string.HC_TITLE)
     }
-
-    HelpCenterTopicUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    is HelpCenterTopicUiState.Success -> {
-      HelpCenterTopicScreen(
-        topicTitle = state.topic.title,
-        commonQuestions = state.topic.commonFAQ,
-        allQuestions = state.topic.commonFAQ + state.topic.otherFAQ,
-        showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
-        onNavigateToQuestion = onNavigateToQuestion,
-        onNavigateUp = onNavigateUp,
-        onNavigateBack = onNavigateBack,
-        onNavigateToInbox = onNavigateToInbox,
-        onNavigateToNewConversation = onNavigateToNewConversation,
+    Column(Modifier.fillMaxSize()) {
+      TopAppBarWithBack(
+        title = title,
+        onClick = onNavigateBack,
       )
+      when (state) {
+        HelpCenterTopicUiState.Failure -> {
+          FailureScreen(
+            reload = {
+              helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload)
+            },
+          )
+        }
+
+        HelpCenterTopicUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+        is HelpCenterTopicUiState.Success -> {
+          HelpCenterTopicScreen(
+            commonQuestions = state.topic.commonFAQ,
+            allQuestions = state.topic.commonFAQ + state.topic.otherFAQ,
+            showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
+            onNavigateToQuestion = onNavigateToQuestion,
+            onNavigateToInbox = onNavigateToInbox,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+            onNavigateBack = onNavigateBack,
+          )
+        }
+      }
     }
   }
 }
 
 @Composable
-private fun FailureScreen(onNavigateBack: () -> Unit, reload: () -> Unit) {
-  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-    Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        title = stringResource(R.string.HC_TITLE),
-        onClick = onNavigateBack,
-      )
-      HedvigErrorSection(
-        onButtonClick = reload,
-        title = stringResource(R.string.HC_TOPIC_NOT_FOUND),
-        subTitle = null,
-        buttonText = stringResource(R.string.GENERAL_RETRY),
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(16.dp)
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal +
-                WindowInsetsSides.Bottom,
-            ),
+private fun FailureScreen(reload: () -> Unit) {
+  Column {
+    HedvigErrorSection(
+      onButtonClick = reload,
+      title = stringResource(R.string.HC_TOPIC_NOT_FOUND),
+      subTitle = null,
+      buttonText = stringResource(R.string.GENERAL_RETRY),
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)
+        .windowInsetsPadding(
+          WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal +
+              WindowInsetsSides.Bottom,
           ),
-      )
-    }
+        ),
+    )
   }
 }
 
 @Composable
 private fun HelpCenterTopicScreen(
-  topicTitle: String,
   commonQuestions: List<FAQItem>,
   allQuestions: List<FAQItem>,
   showNavigateToInboxButton: Boolean,
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
-  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-    Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        title = topicTitle,
-        onClick = onNavigateUp,
+  Column {
+    if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
+      HedvigErrorSection(
+        onButtonClick = onNavigateBack,
+        title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
+        subTitle = null,
+        buttonText = stringResource(R.string.general_back_button),
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+          ),
       )
-      if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
-        HedvigErrorSection(
-          onButtonClick = onNavigateBack,
-          title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
-          subTitle = null,
-          buttonText = stringResource(R.string.general_back_button),
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
-        )
-      } else {
-        LocalConfiguration.current
+    } else {
+      LocalConfiguration.current
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState()),
+      ) {
         Column(
           modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
         ) {
-          Column(
-            modifier = Modifier
-              .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
-          ) {
-            Spacer(Modifier.height(16.dp))
-            if (commonQuestions.isNotEmpty()) {
-              HelpCenterSectionWithClickableRows(
-                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-                title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-                chipContainerColor = HighlightColor.Blue(LIGHT),
-                items = commonQuestions,
-                itemText = { it.question },
-                onClickItem = { onNavigateToQuestion(it.id) },
-              )
-            }
-            if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
-              Spacer(Modifier.height(40.dp))
-            }
-            if (allQuestions.isNotEmpty()) {
-              HelpCenterSectionWithClickableRows(
-                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-                title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
-                chipContainerColor = HighlightColor.Purple(LIGHT),
-                items = allQuestions,
-                itemText = { it.question },
-                onClickItem = { onNavigateToQuestion(it.id) },
-              )
-            }
+          Spacer(Modifier.height(16.dp))
+          if (commonQuestions.isNotEmpty()) {
+            HelpCenterSectionWithClickableRows(
+              modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+              title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+              chipContainerColor = HighlightColor.Blue(LIGHT),
+              items = commonQuestions,
+              itemText = { it.question },
+              onClickItem = { onNavigateToQuestion(it.id) },
+            )
           }
-          Spacer(Modifier.weight(1f))
-          Spacer(Modifier.height(40.dp))
-          StillNeedHelpSection(
-            onNavigateToInbox = onNavigateToInbox,
-            onNavigateToNewConversation = onNavigateToNewConversation,
-            showNavigateToInboxButton = showNavigateToInboxButton,
-            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
-              PaddingValues(horizontal = 16.dp),
-          )
+          if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
+            Spacer(Modifier.height(40.dp))
+          }
+          if (allQuestions.isNotEmpty()) {
+            HelpCenterSectionWithClickableRows(
+              modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+              title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
+              chipContainerColor = HighlightColor.Purple(LIGHT),
+              items = allQuestions,
+              itemText = { it.question },
+              onClickItem = { onNavigateToQuestion(it.id) },
+            )
+          }
         }
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(40.dp))
+        StillNeedHelpSection(
+          onNavigateToInbox = onNavigateToInbox,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+          showNavigateToInboxButton = showNavigateToInboxButton,
+          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+            PaddingValues(horizontal = 16.dp),
+        )
       }
     }
   }
@@ -194,7 +190,6 @@ private fun PreviewHelpCenterTopicScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
-        stringResource(R.string.HC_CLAIMS_TITLE),
         if (hasQuestions) {
           listOf(
             FAQItem(
@@ -238,7 +233,6 @@ private fun PreviewHelpCenterTopicScreen(
           listOf()
         },
         true,
-        {},
         {},
         {},
         {},

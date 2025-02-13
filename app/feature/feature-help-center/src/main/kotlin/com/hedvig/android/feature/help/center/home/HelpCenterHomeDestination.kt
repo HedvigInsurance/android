@@ -159,7 +159,7 @@ internal fun HelpCenterHomeDestination(
     },
     reload = {
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
-    }
+    },
   )
 }
 
@@ -305,16 +305,15 @@ private fun HelpCenterHomeScreen(
         onClick = onNavigateUp,
       )
       Spacer(modifier = Modifier.height(8.dp))
-      if (topics.isEmpty() && questions.isEmpty() &&
+      if (topics.isEmpty() &&
+        questions.isEmpty() &&
         quickLinksUiState is HelpCenterUiState.QuickLinkUiState.NoQuickLinks
       ) {
         HedvigErrorSection(
           onButtonClick = reload,
-          modifier = Modifier.fillMaxSize()
+          modifier = Modifier.fillMaxSize(),
         )
       } else {
-
-
         val context = LocalContext.current
         SearchField(
           searchQuery = searchQuery,
@@ -336,7 +335,7 @@ private fun HelpCenterHomeScreen(
                 quickLinksForSearch = (
                   quickLinksUiState as?
                     HelpCenterUiState.QuickLinkUiState.QuickLinks
-                  )?.quickLinks ?: listOf(),
+                )?.quickLinks ?: listOf(),
                 questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
               )
               onUpdateSearchResults(it, results)
@@ -855,7 +854,7 @@ private fun PreviewHelpCenterHomeScreen(
         onClearSearch = {},
         onUpdateSearchResults = { _, _ -> },
         search = null,
-        reload = {}
+        reload = {},
       )
     }
   }
@@ -900,7 +899,7 @@ private fun PreviewQuickLinkAnimations() {
           onClearSearch = {},
           onUpdateSearchResults = { _, _ -> },
           search = null,
-          reload = {}
+          reload = {},
         )
       }
     }

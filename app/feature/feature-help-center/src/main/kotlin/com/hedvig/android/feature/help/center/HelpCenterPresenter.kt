@@ -50,7 +50,7 @@ internal sealed interface HelpCenterEvent {
 
   data object ClearNavigation : HelpCenterEvent
 
-  data object ReloadFAQAndQuickLinks: HelpCenterEvent
+  data object ReloadFAQAndQuickLinks : HelpCenterEvent
 }
 
 internal data class HelpCenterUiState(
