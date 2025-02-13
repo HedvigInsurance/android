@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.data
 
+import android.content.ContentResolver
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -82,6 +83,7 @@ internal class CbmChatRepositoryImpl(
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
+  private val contentResolver: ContentResolver,
   private val clock: Clock,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
@@ -238,6 +240,9 @@ internal class CbmChatRepositoryImpl(
             .fold(
               ifLeft = {
                 logcat { "Failed to upload list of media: $it" }
+                if (it == EXCEED_LIMIT_MESSAGE) {
+                  raise(EXCEED_LIMIT_MESSAGE)
+                }
               },
               ifRight = { cbmMessage ->
                 add(cbmMessage)
@@ -253,13 +258,15 @@ internal class CbmChatRepositoryImpl(
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      if (it != EXCEED_LIMIT_MESSAGE) {
+        val failedMessage =
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+            messageId?.toString() ?: Uuid.randomUUID().toString(),
+            clock.now(),
+            uri,
+          )
+        chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      }
     }
   }
 
@@ -351,8 +358,17 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
+    val fileSize = contentResolver.openFileDescriptor(uri, "r")?.use {
+      it.statSize
+    } ?: raise("Could not determine file size for uri: $uri")
+
+    if (fileSize > fileSizeLimit) {
+      raise(EXCEED_LIMIT_MESSAGE)
+    }
+
+    val file = fileService.createFormData(uri)
     val uploadToken = botServiceService
-      .uploadFile(fileService.createFormData(uri))
+      .uploadFile(file)
       .mapLeft {
         val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
         logcat(LogPriority.ERROR) { errorMessage }
@@ -493,3 +509,9 @@ private fun String.isGifUrl(): Boolean {
 }
 
 private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()
+
+/*
+* Current BE limit for file upload in chat conversation
+ */
+private const val fileSizeLimit = 47 * 1024 * 1024L
+internal val EXCEED_LIMIT_MESSAGE = "File size exceeds the limit"
