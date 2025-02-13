@@ -384,7 +384,7 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, quote.premium.amount.toInt()),
+                    premium = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
                     tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
@@ -420,7 +420,7 @@ private fun CustomizationCard(
         endSlot = {
           HedvigText(
             text =
-              newDisplayPremium?.let { stringResource(R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH, it.amount.toInt()) }
+              newDisplayPremium?.let { stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, it) }
                 ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,

@@ -333,7 +333,7 @@ private fun CustomizeTravelAddonCard(
           ExpandedRadioOptionData(
             chosenState = if (uiState.currentlyChosenOptionInDialog == option) Chosen else NotChosen,
             title = option.displayName,
-            premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price.amount.toInt()),
+            premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price),
             onRadioOptionClick = {
               onChooseOptionInDialog(option)
             },
@@ -379,7 +379,7 @@ private fun HeaderInfoWithCurrentPrice(
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HighlightLabel(
-            labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra.amount.toInt()),
+            labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
             size = HighLightSize.Small,
             color = HighlightColor.Grey(MEDIUM),
             modifier = Modifier.wrapContentSize(Alignment.TopEnd),

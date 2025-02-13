@@ -99,16 +99,14 @@ private fun ExpandablePerilCard(
       ) {
         Spacer(Modifier.height(size.verticalSpaceBetween))
         description?.let {
-          Spacer(Modifier.height(12.dp))
           HedvigText(
             text = it,
             style = size.descriptionTextStyle,
             color = perilColors.textColor(isEnabled),
           )
         }
-        Spacer(Modifier.height(12.dp))
         if (expandedDescriptionList.isNotEmpty()) {
-          Spacer(Modifier.height(12.dp))
+          Spacer(Modifier.height(24.dp))
           for ((index, itemDescription) in expandedDescriptionList.withIndex()) {
             Row {
               HedvigText(
