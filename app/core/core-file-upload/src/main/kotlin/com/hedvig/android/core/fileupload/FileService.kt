@@ -11,11 +11,13 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
+import okio.IOException
+import okio.source
 
 class FileService(
   private val contentResolver: ContentResolver,
 ) {
-  fun createFormData(uri: Uri) = MultipartBody.Part.createFormData(
+  fun createFormData(uri: Uri): MultipartBody.Part = MultipartBody.Part.createFormData(
     name = "files",
     filename = getFileName(uri) ?: "media",
     body = object : RequestBody() {
@@ -24,24 +26,10 @@ class FileService(
       }
 
       override fun writeTo(sink: BufferedSink) {
-        if (fileDoesNotExceedMemory(uri)) {
-          contentResolver.openInputStream(uri)?.use { inputStream ->
-            val buffer = ByteArray(4 * 1024)
-            var bytesRead: Int
-            val outputStream = sink.outputStream()
-            try {
-              while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-                outputStream.flush()
-              }
-            } catch (e: OutOfMemoryError) {
-              System.gc()
-              error("Could not open input stream for uri:$uri with OutOfMemoryError: $e")
-            }
-          } ?: error("Could not open input stream for uri:$uri")
-        } else {
-          error("Could not open input stream for uri:$uri with OutOfMemoryError")
-        }
+        requireFileSizeWithinBackendLimits(uri)
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+          sink.writeAll(inputStream.source())
+        } ?: throw IOException("Could not open input stream for uri:$uri")
       }
     },
   )
@@ -89,14 +77,16 @@ class FileService(
 
   private fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
 
-  fun fileDoesNotExceedMemory(uri: Uri): Boolean {
+  @Throws(IOException::class)
+  private fun requireFileSizeWithinBackendLimits(uri: Uri) {
     val size = getFileSize(contentResolver, uri)
-    val maxMemory = Runtime.getRuntime().maxMemory()
     logcat {
-      "Mariia: size of the file: ${size / 1024 / 1024} Mb, " +
-        "maxMemory: ${maxMemory / 1024 / 1024} Mb"
+      "FileService: Size of the file: ${size / 1024 / 1024} Mb, " +
+        "Backend limit: ${backendContentSizeLimit / 1024 / 1024} Mb"
     }
-    return size < maxMemory
+    if (size >= backendContentSizeLimit) {
+      throw IOException("Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit")
+    }
   }
 }
 
@@ -105,4 +95,7 @@ private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
     val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
     if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else -1
   } ?: -1
+
 }
+
+private const val backendContentSizeLimit = 48 * 1024 * 1024 // 48 Mb

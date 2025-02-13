@@ -351,23 +351,18 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
-    val fileDoesNotExceedMemory = fileService.fileDoesNotExceedMemory(uri)
-    if (fileDoesNotExceedMemory) {
-      val uploadToken = botServiceService
-        .uploadFile(fileService.createFormData(uri))
-        .mapLeft {
-          val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
-          logcat(ERROR) { errorMessage }
-          it.toErrorMessage().message ?: errorMessage
-        }.bind()
-        .firstOrNull()
-        ?.uploadToken
-      ensureNotNull(uploadToken) { "No upload token" }
-      logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
-      return uploadToken
-    } else {
-      raise("Failed to upload media with uri:$uri with Out Of Memory error.")
-    }
+    val uploadToken = botServiceService
+      .uploadFile(fileService.createFormData(uri))
+      .mapLeft {
+        val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
+        logcat(ERROR) { errorMessage }
+        it.toErrorMessage().message ?: errorMessage
+      }.bind()
+      .firstOrNull()
+      ?.uploadToken
+    ensureNotNull(uploadToken) { "No upload token" }
+    logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
+    return uploadToken
   }
 }
 
