@@ -55,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
@@ -133,8 +134,7 @@ private fun SummaryScreen(
 
     is Success -> {
       LaunchedEffect(uiState.navigateToFail) {
-        val fail = uiState.navigateToFail
-        if (fail) {
+        if (uiState.navigateToFail) {
           onFailure()
         }
       }
@@ -153,7 +153,7 @@ private fun SummaryScreen(
 private fun MakingChangesScreen() {
   HedvigFullScreenCenterAlignedLinearProgress(
     title =
-      stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
+    stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
   )
 }
 
@@ -172,21 +172,25 @@ private fun SummarySuccessScreen(
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     var showConfirmationDialog by remember { mutableStateOf(false) }
+    val dateFormatter = rememberHedvigDateTimeFormatter()
     if (showConfirmationDialog) {
       HedvigAlertDialog(
-        title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
+        title = stringResource(R.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(
+          R.string.CONFIRM_CHANGES_SUBTITLE,
+          dateFormatter.format(uiState.activationDate.toJavaLocalDate()),
+        ),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
         confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(R.string.general_cancel_button),
-        text = null,
       )
     }
     SummaryCard(
       uiState = uiState,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -195,8 +199,8 @@ private fun SummarySuccessScreen(
           addonQuote = addon,
           activationDate = uiState.activationDate,
           modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
         )
       }
     }
@@ -294,8 +298,8 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     underTitleContent = {
       HedvigText(
         modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 2.dp),
+            .fillMaxWidth()
+            .padding(top = 2.dp),
         textAlign = TextAlign.End,
         text = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
@@ -341,8 +345,8 @@ private fun AddonCard(
     underTitleContent = {
       HedvigText(
         modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 2.dp),
+            .fillMaxWidth()
+            .padding(top = 2.dp),
         textAlign = TextAlign.End,
         text = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
