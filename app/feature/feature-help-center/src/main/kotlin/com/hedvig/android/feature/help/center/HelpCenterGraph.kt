@@ -19,6 +19,7 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestina
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -109,12 +110,14 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.Topic> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Topic>(
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterCommonTopic),
+    ) { backStackEntry ->
       val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       val helpCenterTopicViewModel = koinViewModel<HelpCenterTopicViewModel> {
         parametersOf(topicId)
       }
-
+      logcat { "Mariia: topicId: $topicId" }
       HelpCenterTopicDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
@@ -127,12 +130,14 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       )
     }
-    navdestination<HelpCenterDestinations.Question> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Question>(
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterQuestion),
+    ) { backStackEntry ->
       val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       val helpCenterQuestionViewModel = koinViewModel<HelpCenterQuestionViewModel> {
         parametersOf(questionId)
       }
-
+      logcat { "Mariia: questionId: $questionId" }
       HelpCenterQuestionDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },

@@ -5,6 +5,7 @@ import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,11 +20,15 @@ internal sealed interface HelpCenterDestinations {
 
   @Serializable
   data class Topic(
+    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+    @SerialName("id")
     val topicId: String = "",
   ) : HelpCenterDestinations, Destination
 
   @Serializable
   data class Question(
+    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+    @SerialName("id")
     val questionId: String = "",
   ) : HelpCenterDestinations, Destination
 
