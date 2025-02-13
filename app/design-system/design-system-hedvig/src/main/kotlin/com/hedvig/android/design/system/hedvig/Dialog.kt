@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -318,7 +319,9 @@ private fun HedvigDialogContent(
     ) {
       when (style) {
         is Buttons -> {
-          content()
+          Box(Modifier.fillMaxWidth(), propagateMinConstraints = true) {
+            content()
+          }
           Spacer(Modifier.height(40.dp))
           when (style.buttonSize) {
             BIG -> {
@@ -503,7 +506,7 @@ private fun PreviewHedvigDialogContent() {
         applyDefaultPadding = false,
         style = Buttons({}, "Cancel", {}, "Confirm text with upgrade and everything"),
         content = {
-          HedvigText("Some varying content")
+          HedvigText("Some varying content", textAlign = TextAlign.Center)
         },
       )
     }
