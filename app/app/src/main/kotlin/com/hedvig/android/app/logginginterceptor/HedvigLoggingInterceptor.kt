@@ -11,6 +11,7 @@ import kotlin.text.equals
 import kotlin.text.plus
 import okhttp3.Headers
 import okhttp3.Interceptor
+import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.promisesBody
 import okhttp3.internal.platform.Platform
@@ -182,27 +183,24 @@ class HedvigHttpLoggingInterceptor @JvmOverloads constructor(
         logger.log("--> END ${request.method} (duplex request body omitted)")
       } else if (requestBody.isOneShot()) {
         logger.log("--> END ${request.method} (one-shot body omitted)")
+      } else if (requestBody.isMultipart()) {
+        logger.log("--> END ${request.method} (multipart body omitted)")
       } else {
         val buffer = Buffer()
-        try {
-          requestBody.writeTo(buffer)
-          val contentType = requestBody.contentType()
-          val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
+        requestBody.writeTo(buffer)
 
-          logger.log("")
-          if (buffer.size > MAX_LOG_SIZE) {
-            logger.log("--> END ${requestBody.contentLength()}-byte body")
-          } else if (buffer.isProbablyUtf8()) {
-            logger.log(buffer.readString(charset))
-            logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
-          } else {
-            logger.log(
-              "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)",
-            )
-          }
-        } catch (e: OutOfMemoryError) {
+        val contentType = requestBody.contentType()
+        val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
+
+        logger.log("")
+        if (buffer.size > MAX_LOG_SIZE) {
+          logger.log("--> END ${requestBody.contentLength()}-byte body")
+        } else if (buffer.isProbablyUtf8()) {
+          logger.log(buffer.readString(charset))
+          logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+        } else {
           logger.log(
-            "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted) with OutOfMemoryError: $e",
+            "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)",
           )
         }
       }
@@ -307,4 +305,8 @@ internal fun Buffer.isProbablyUtf8(): Boolean {
   } catch (_: EOFException) {
     return false // Truncated UTF-8 sequence.
   }
+}
+
+private fun RequestBody.isMultipart(): Boolean {
+  return contentType()?.type == "multipart"
 }
