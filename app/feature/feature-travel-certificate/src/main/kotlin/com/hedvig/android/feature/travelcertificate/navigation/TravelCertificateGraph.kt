@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
@@ -15,24 +14,28 @@ import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistor
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.travelCertificateGraph(
-  density: Density,
   navigator: Navigator,
   applicationId: String,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   navgraph<TravelCertificateGraphDestination>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
   ) {
-    navdestination<TravelCertificateDestination.TravelCertificateHistory> { navBackStackEntry ->
+    navdestination<TravelCertificateDestination.TravelCertificateHistory>(
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelCertificate)
+    ) { navBackStackEntry ->
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(

@@ -48,6 +48,7 @@ interface HedvigDeepLinkContainer {
 
   // Travel addon purchase flow
   val travelAddon: List<String>
+  val travelCertificate: List<String> // The screen which shows existing and allows creating new travel certificates
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -119,6 +120,9 @@ internal class HedvigDeepLinkContainerImpl(
   override val travelAddon: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/travel-addon"
   }
+  override val travelCertificate: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/travelCertificate"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -145,4 +149,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     inbox.first(),
     conversation.first(),
     travelAddon.first(),
+    travelCertificate.first(),
   )
