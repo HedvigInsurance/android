@@ -70,7 +70,7 @@ internal class InsurancePresenter(
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   private val applicationScope: CoroutineScope,
-  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
+  private val getTravelAddonBannerInfoUseCase: Provider<GetTravelAddonBannerInfoUseCase>,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -111,7 +111,7 @@ internal class InsurancePresenter(
       loadInsuranceData(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
-        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase.provide(),
       ).collectLatest { result ->
         result.fold(
           ifLeft = {

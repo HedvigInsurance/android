@@ -13,7 +13,7 @@ internal class InsuranceViewModel(
   getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   applicationScope: CoroutineScope,
-  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
+  getTravelAddonBannerInfoUseCase: Provider<GetTravelAddonBannerInfoUseCase>,
 ) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>(
     initialState = InsuranceUiState.initialState,
     presenter = InsurancePresenter(

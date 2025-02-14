@@ -11,11 +11,13 @@ import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.hedvig.android.apollo.ExtensionErrorType
 import com.hedvig.android.apollo.extensionErrorType
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
@@ -77,12 +79,13 @@ internal class LoggingInterceptor : ApolloInterceptor {
 
 internal class LogoutOnUnauthenticatedInterceptor(
   private val authTokenService: AuthTokenService,
+  private val demoManager: DemoManager,
 ) : ApolloInterceptor {
   override fun <D : Data> intercept(request: ApolloRequest<D>, chain: ApolloInterceptorChain): Flow<ApolloResponse<D>> {
     return chain.proceed(request).onEach { response ->
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       val isUnauthenticated = errors.isUnathenticated()
-      if (isUnauthenticated) {
+      if (isUnauthenticated && !demoManager.isDemoMode().first()) {
         authTokenService.logoutAndInvalidateTokens()
       }
     }
