@@ -16,9 +16,6 @@ internal sealed interface HelpCenterDestinations {
   data object HelpCenter : HelpCenterDestinations, Destination
 
   @Serializable
-  data object ChooseInsuranceToEditCoInsured : HelpCenterDestinations, Destination
-
-  @Serializable
   data class Topic(
     /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
     @SerialName("id")

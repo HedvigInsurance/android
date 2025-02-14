@@ -6,7 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.ChooseInsuranceForEditCoInsured
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.featureflags.FeatureManager
@@ -169,11 +169,11 @@ sealed interface QuickLinkDestination {
     data object QuickLinkConnectPayment : OuterDestination
 
     data object QuickLinkChangeTier : OuterDestination
+
+    data object ChooseInsuranceForEditCoInsured : OuterDestination
   }
 
   sealed interface InnerHelpCenterDestination : QuickLinkDestination {
-    data object ChooseInsuranceForEditCoInsured : InnerHelpCenterDestination
-
     data class QuickLinkSickAbroad(
       val emergencyNumber: String?,
       val emergencyUrl: String?,
