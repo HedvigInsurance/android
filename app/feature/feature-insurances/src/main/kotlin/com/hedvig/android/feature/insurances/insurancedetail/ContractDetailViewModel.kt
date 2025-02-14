@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.core.Either
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.featureflags.FeatureManager
@@ -57,9 +56,9 @@ internal class ContractDetailPresenter(
         getContractForContractIdUseCase.invoke(contractId),
         featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
       ) { insuranceContractResult, isTerminationFlowEnabled ->
-        IntermediateResult(insuranceContractResult, isTerminationFlowEnabled)
-      }.collect { result ->
-        result.insuranceContractResult.fold(
+        insuranceContractResult to isTerminationFlowEnabled
+      }.collect { (insuranceContractResult, isTerminationFlowEnabled) ->
+        insuranceContractResult.fold(
           ifLeft = { error ->
             currentState = when (error) {
               is GetContractForContractIdError.GenericError -> ContractDetailsUiState.Error
@@ -70,7 +69,7 @@ internal class ContractDetailPresenter(
             val noTerminationDateYet = contract.terminationDate == null
             currentState = ContractDetailsUiState.Success(
               insuranceContract = contract,
-              allowTerminatingInsurance = result.isTerminationFlowEnabled && noTerminationDateYet,
+              allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,
             )
           },
         )
@@ -79,11 +78,6 @@ internal class ContractDetailPresenter(
     return currentState
   }
 }
-
-private data class IntermediateResult(
-  val insuranceContractResult: Either<GetContractForContractIdUseCaseImpl.GetContractForContractIdError, InsuranceContract>,
-  val isTerminationFlowEnabled: Boolean,
-)
 
 internal sealed interface ContractDetailsUiState {
   data class Success(
