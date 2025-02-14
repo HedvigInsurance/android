@@ -14,9 +14,15 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.logcat
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
@@ -31,11 +37,17 @@ internal class GetInsuranceContractsUseCaseImpl(
 ) : GetInsuranceContractsUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
-      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
-        apolloClient
-          .query(InsuranceContractsQuery(areAddonsEnabled))
-          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-          .safeFlow(::ErrorMessage)
+      flow {
+        while (currentCoroutineContext().isActive) {
+          emitAll(featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
+            apolloClient
+              .query(InsuranceContractsQuery(areAddonsEnabled))
+              .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+              .safeFlow(::ErrorMessage)
+          })
+          logcat{"Mariia: hitting delay in GetInsuranceContractsUseCaseImpl"}
+          delay(3000)
+        }
       },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
       featureManager.isFeatureEnabled(Feature.MOVING_FLOW),

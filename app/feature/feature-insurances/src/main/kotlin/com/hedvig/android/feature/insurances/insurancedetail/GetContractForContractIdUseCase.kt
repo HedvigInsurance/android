@@ -40,7 +40,7 @@ internal class GetContractForContractIdUseCaseImpl(
               )
             }
           }
-        }
+        }.collect(this)
     }
   }
 
