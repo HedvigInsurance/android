@@ -21,9 +21,9 @@ internal class ContractDetailViewModel(
   featureManager: FeatureManager,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
-  initialState = ContractDetailsUiState.Loading,
-  presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
-)
+    initialState = ContractDetailsUiState.Loading,
+    presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
+  )
 
 internal class ContractDetailPresenter(
   private val contractId: String,
