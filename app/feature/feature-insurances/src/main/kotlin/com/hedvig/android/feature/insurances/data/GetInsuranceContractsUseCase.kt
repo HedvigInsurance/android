@@ -14,7 +14,7 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.logger.logcat
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -37,16 +37,17 @@ internal class GetInsuranceContractsUseCaseImpl(
 ) : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
-      flow {
-        while (currentCoroutineContext().isActive) {
-          emitAll(featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
-            apolloClient
-              .query(InsuranceContractsQuery(areAddonsEnabled))
-              .safeFlow(::ErrorMessage)
-          })
-          logcat{"Mariia: hitting delay in GetInsuranceContractsUseCaseImpl"}
-          delay(3000)
+      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
+        flow {
+          while (currentCoroutineContext().isActive) {
+            emitAll(
+              apolloClient
+                .query(InsuranceContractsQuery(areAddonsEnabled))
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)
+                .safeFlow(::ErrorMessage),
+            )
+            delay(3.seconds)
+          }
         }
       },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
