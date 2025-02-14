@@ -70,7 +70,7 @@ internal class InsurancePresenter(
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   private val applicationScope: CoroutineScope,
-  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
+  private val getTravelAddonBannerInfoUseCase: Provider<GetTravelAddonBannerInfoUseCase>,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -111,8 +111,7 @@ internal class InsurancePresenter(
       loadInsuranceData(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
-        forceNetworkFetch = true,
-        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+        getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase.provide(),
       ).collectLatest { result ->
         result.fold(
           ifLeft = {
@@ -152,11 +151,10 @@ internal class InsurancePresenter(
 private fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
-  forceNetworkFetch: Boolean,
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ): Flow<Either<ErrorMessage, InsuranceData>> {
   return combine(
-    getInsuranceContractsUseCase.invoke(forceNetworkFetch),
+    getInsuranceContractsUseCase.invoke(),
     flow { emit(getCrossSellsUseCase.invoke()) },
     getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB),
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
