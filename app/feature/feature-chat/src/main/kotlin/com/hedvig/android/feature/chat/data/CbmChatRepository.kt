@@ -347,7 +347,7 @@ internal class CbmChatRepositoryImpl(
       .onLeft {
       }.mapLeft {
         val errorMessage = "Failed to upload file with path:${file.absolutePath}. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
+        logcat(ERROR) { errorMessage }
         it.toErrorMessage().message ?: errorMessage
       }.bind()
       .firstOrNull()
@@ -371,7 +371,7 @@ internal class CbmChatRepositoryImpl(
       .uploadFile(file)
       .mapLeft {
         val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
+        logcat(ERROR) { errorMessage }
         it.toErrorMessage().message ?: errorMessage
       }.bind()
       .firstOrNull()
