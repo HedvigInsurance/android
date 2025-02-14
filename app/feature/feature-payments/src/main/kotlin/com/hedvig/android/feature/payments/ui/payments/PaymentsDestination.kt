@@ -1,4 +1,3 @@
-
 package com.hedvig.android.feature.payments.ui.payments
 
 import androidx.compose.animation.AnimatedVisibility
@@ -204,6 +203,7 @@ private fun PaymentsContent(
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(8.dp))
     val ongoingCharges = (uiState as? Content)?.ongoingCharges

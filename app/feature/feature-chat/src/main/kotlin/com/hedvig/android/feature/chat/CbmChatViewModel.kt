@@ -44,6 +44,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -95,6 +97,7 @@ internal class CbmChatPresenter(
       )
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
+    val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -136,23 +139,31 @@ internal class CbmChatPresenter(
       when (event) {
         CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
         is CbmChatEvent.SendTextMessage -> launch {
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().sendText(conversationId, null, event.message)
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.SendPhotoMessage -> launch {
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().sendPhoto(conversationId, null, event.uri)
+          chatRepository.provide().sendPhotos(conversationId, event.uriList)
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().sendMedia(conversationId, null, event.uri)
+          chatRepository.provide().sendMedia(conversationId, event.uriList)
+          numberOfOngoingUploads.update { it - 1 }
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
+          numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+          numberOfOngoingUploads.update { it - 1 }
         }
       }
     }
@@ -169,6 +180,7 @@ internal class CbmChatPresenter(
           remoteKeyDao,
           chatRepository,
           clock,
+          showUploading = numberOfOngoingUploads.collectAsState().value > 0,
         )
       }
     }
@@ -185,6 +197,7 @@ private fun presentLoadedChat(
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
+  showUploading: Boolean,
 ): CbmChatUiState.Loaded {
   val coroutineScope = rememberCoroutineScope()
   val latestMessage by remember(chatDao) {
@@ -235,6 +248,7 @@ private fun presentLoadedChat(
     messages = lazyPagingItems,
     latestMessage = latestMessage,
     bannerText = bannerText,
+    showUploading = showUploading,
   )
 }
 
@@ -250,11 +264,11 @@ internal sealed interface CbmChatEvent {
   ) : CbmChatEvent
 
   data class SendPhotoMessage(
-    val uri: Uri,
+    val uriList: List<Uri>,
   ) : CbmChatEvent
 
   data class SendMediaMessage(
-    val uri: Uri,
+    val uriList: List<Uri>,
   ) : CbmChatEvent
 }
 
@@ -270,6 +284,7 @@ internal sealed interface CbmChatUiState {
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
+    val showUploading: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation

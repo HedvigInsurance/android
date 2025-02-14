@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
@@ -33,15 +34,20 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +69,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -75,6 +92,7 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -94,7 +112,16 @@ import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
+import com.hedvig.android.design.system.hedvig.videoplayer.Media
+import com.hedvig.android.design.system.hedvig.videoplayer.MediaState
+import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
+import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
+import com.hedvig.android.design.system.hedvig.videoplayer.SimpleVideoController
+import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
+import com.hedvig.android.design.system.hedvig.videoplayer.rememberControllerState
+import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.data.BannerText
@@ -136,15 +163,16 @@ import kotlinx.datetime.Instant
 
 @Composable
 internal fun CbmChatLoadedScreen(
-  uiState: CbmChatUiState.Loaded,
+  uiState: Loaded,
   imageLoader: ImageLoader,
+  simpleVideoCache: Cache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendPhoto: (Uri) -> Unit,
-  onSendMedia: (Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -157,6 +185,7 @@ internal fun CbmChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
     imageLoader = imageLoader,
+    simpleVideoCache = simpleVideoCache,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     onRetrySendChatMessage = onRetrySendChatMessage,
@@ -176,6 +205,7 @@ internal fun CbmChatLoadedScreen(
         },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
+        showUploading = uiState.showUploading,
       )
     },
   )
@@ -184,9 +214,10 @@ internal fun CbmChatLoadedScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatLoadedScreen(
-  uiState: CbmChatUiState.Loaded,
+  uiState: Loaded,
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
+  simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -201,6 +232,7 @@ private fun ChatLoadedScreen(
         messages = uiState.messages,
         latestChatMessage = uiState.latestMessage,
         imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
         openUrl = openUrl,
         onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
@@ -303,11 +335,21 @@ private fun ChatLazyColumn(
   messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
+  simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val mediaStatesWithPlayers = remember { mutableStateMapOf<String, MediaState>() }
+  DisposableEffect(
+    Unit,
+  ) {
+    onDispose {
+      mediaStatesWithPlayers.values.forEach { it.player?.release() }
+      mediaStatesWithPlayers.clear() // todo: sure?
+    }
+  }
   ScrollToBottomEffect(
     lazyListState = lazyListState,
     latestChatMessage = latestChatMessage,
@@ -327,29 +369,48 @@ private fun ChatLazyColumn(
       key = messages.itemKey { it.chatMessage.id },
       contentType = messages.itemContentType { uiChatMessage ->
         when (uiChatMessage.chatMessage) {
-          is CbmChatMessage.ChatMessageFile -> "ChatMessage.ChatMessageFile"
-          is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
+          is ChatMessageFile -> {
+            when (uiChatMessage.chatMessage.mimeType) {
+              ChatMessageFile.MimeType.IMAGE -> "ChatMessage.ChatMessageFileImage"
+              ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
+              ChatMessageFile.MimeType.PDF -> "ChatMessage.ChatMessageFilePDF"
+              ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
+            }
+          }
+
+          is ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
-          is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
+          is ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
+          is ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          is ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
         }
       },
     ) { index: Int ->
       val uiChatMessage = messages[index]
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
+      val defaultWidth = 0.8f
+      var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
       ChatBubble(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
         imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
+        mediaStatesWithPlayersMap = mediaStatesWithPlayers,
         openUrl = openUrl,
         onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
+        onGoFullWidth = {
+          dynamicBubbleWidthFraction = 1f
+        },
+        onGoDefaultWidth = {
+          dynamicBubbleWidthFraction = defaultWidth
+        },
+        showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
           .wrapContentWidth(alignment)
-          .fillParentMaxWidth(0.8f)
+          .fillMaxWidth(dynamicBubbleWidthFraction)
           .wrapContentWidth(alignment)
           .padding(bottom = 8.dp),
       )
@@ -394,9 +455,14 @@ private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   imageLoader: ImageLoader,
+  simpleVideoCache: Cache,
+  mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
@@ -435,32 +501,47 @@ private fun ChatBubble(
           }
         }
 
-        is CbmChatMessage.ChatMessageFile -> {
+        is ChatMessageFile -> {
           when (chatMessage.mimeType) {
             CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
                 modifier = Modifier.clickable {
                   onNavigateToImageViewer(chatMessage.url, chatMessage.id)
                 },
               )
             }
+            ChatMessageFile.MimeType.MP4 -> {
+              val mediaState = mediaStatesWithPlayersMap.getOrPut(
+                chatMessage.id,
+                {
+                  videoPlayerMediaState(simpleVideoCache, chatMessage.url)
+                },
+              )
+              VideoMessage(
+                state = mediaState,
+                onGoFullWidth = onGoFullWidth,
+                onGoDefaultWidth = onGoDefaultWidth,
+                showingFullWidth = showingFullWidth,
+              )
+            }
 
-            CbmChatMessage.ChatMessageFile.MimeType.PDF -> {
+            ChatMessageFile.MimeType.PDF -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
                 modifier = Modifier.clickable {
                   openUrl(chatMessage.url)
                 },
               )
             }
 
-            CbmChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
-            CbmChatMessage.ChatMessageFile.MimeType.OTHER,
+            ChatMessageFile.MimeType.OTHER,
             -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
@@ -472,12 +553,13 @@ private fun ChatBubble(
             model = chatMessage.gifUrl,
             imageLoader = imageLoader,
             cacheKey = chatMessage.gifUrl,
+            isFailedToBeSentMessage = false,
           )
         }
 
         is CbmChatMessage.FailedToBeSent -> {
           when (chatMessage) {
-            is CbmChatMessage.FailedToBeSent.ChatMessageText -> {
+            is ChatMessageText -> {
               Surface(
                 shape = HedvigTheme.shapes.cornerLarge,
                 color = HedvigTheme.colorScheme.signalRedFill,
@@ -502,11 +584,11 @@ private fun ChatBubble(
               }
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> {
+            is ChatMessagePhoto -> {
               FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> {
+            is ChatMessageMedia -> {
               FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
           }
@@ -542,6 +624,7 @@ private fun FailedToBeSentUri(
     model = messageUri,
     imageLoader = imageLoader,
     isRetryable = true,
+    isFailedToBeSentMessage = true,
     modifier = Modifier
       .clip(HedvigTheme.shapes.cornerLarge)
       .clickable { onRetrySendChatMessage(messageId) }
@@ -596,9 +679,86 @@ private fun AttachedFileMessage(
 }
 
 @Composable
+private fun VideoMessage(
+  state: MediaState,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  LocalLifecycleOwner.current.lifecycle.addObserver(
+    object : LifecycleEventObserver {
+      override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+          Lifecycle.Event.ON_STOP -> {
+            state.player?.pause()
+          }
+
+          else -> {}
+        }
+      }
+    },
+  )
+  val height = if (showingFullWidth) 350.dp else 220.dp
+  Media(
+    state = state,
+    modifier = modifier
+      .height(height)
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(Color.Black),
+    surfaceType = SurfaceType.TextureView,
+    resizeMode = ResizeMode.Fit,
+    keepContentOnPlayerReset = true,
+    showBuffering = ShowBuffering.Always,
+    buffering = {
+      Box(Modifier.fillMaxSize(), Alignment.Center) {
+        HedvigCircularProgressIndicator()
+      }
+    },
+  ) { state ->
+    val controllerState = rememberControllerState(state)
+    SimpleVideoController(
+      mediaState = state,
+      controllerState = controllerState,
+      onGoFullWidth = onGoFullWidth,
+      onGoDefaultWidth = onGoDefaultWidth,
+      showingFullWidth = showingFullWidth,
+      modifier = Modifier
+        .fillMaxSize()
+        .clip(HedvigTheme.shapes.cornerLarge),
+    )
+  }
+}
+
+@Composable
+private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
+  val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+  val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
+    .setUpstreamDataSourceFactory(httpDataSourceFactory)
+    .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+  val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
+  val context = LocalContext.current
+  val exoPlayer = remember {
+    ExoPlayer
+      .Builder(context)
+      .setMediaSourceFactory(
+        mediaSourceFactory,
+      )
+      .build().apply {
+        prepare()
+        playWhenReady = false
+        repeatMode = Player.REPEAT_MODE_OFF
+        setMediaItem(MediaItem.fromUri(uri))
+      }
+  }
+  return rememberMediaState(player = exoPlayer)
+}
+
+@Composable
 private fun ChatAsyncImage(
   model: Any,
   imageLoader: ImageLoader,
+  isFailedToBeSentMessage: Boolean,
   modifier: Modifier = Modifier,
   isRetryable: Boolean = false,
   cacheKey: String? = null,
@@ -658,11 +818,20 @@ private fun ChatAsyncImage(
         }
 
         is AsyncImagePainter.State.Error -> {
-          loadedImageIntrinsicSize.value = IntSize(0, 0)
-          if (state.result.throwable is NullRequestDataException) {
-            state.copy(painter = errorPainter)
+          if (isFailedToBeSentMessage) {
+            // When we are on a failed message already which has a retry icon itself, we don't want to double show the
+            // retry icon
+            state
           } else {
-            state.copy(painter = errorPainter)
+            loadedImageIntrinsicSize.value = IntSize(
+              errorPainter.intrinsicSize.width.toInt(),
+              errorPainter.intrinsicSize.height.toInt(),
+            )
+            if (state.result.throwable is NullRequestDataException) {
+              state.copy(painter = errorPainter)
+            } else {
+              state.copy(painter = errorPainter)
+            }
           }
         }
 
@@ -800,6 +969,7 @@ private fun PreviewChatLoadedScreen() {
           messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
           latestMessage = null,
           bannerText = ClosedConversation,
+          showUploading = true,
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
@@ -807,6 +977,7 @@ private fun PreviewChatLoadedScreen() {
         onNavigateToImageViewer = { _, _ -> },
         onRetrySendChatMessage = {},
         chatInput = {},
+        simpleVideoCache = rememberPreviewSimpleCache(),
       )
     }
   }
