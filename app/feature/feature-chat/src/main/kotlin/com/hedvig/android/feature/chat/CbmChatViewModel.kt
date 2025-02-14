@@ -9,13 +9,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -35,6 +36,7 @@ import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
+import com.hedvig.android.feature.chat.data.EXCEED_LIMIT_MESSAGE
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
@@ -44,6 +46,9 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -64,25 +69,62 @@ internal class CbmChatViewModel(
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
-    CbmChatUiState.Initializing,
-    CbmChatPresenter(
-      Uuid.fromString(conversationId),
-      database,
-      chatDao,
-      remoteKeyDao,
-      chatRepository,
-      clock,
+    initialState = CbmChatUiState.Initializing,
+    presenter = CbmChatPresenter(
+      conversationId = Uuid.fromString(conversationId),
+      pagingData = cbmChatPresenterPagingData(
+        conversationId = conversationId,
+        database = database,
+        chatDao = chatDao,
+        remoteKeyDao = remoteKeyDao,
+        chatRepository = chatRepository,
+        clock = clock,
+        scope = coroutineScope,
+      ),
+      chatDao = chatDao,
+      chatRepository = chatRepository,
     ),
+    coroutineScope = coroutineScope,
   )
+
+@OptIn(ExperimentalPagingApi::class)
+private fun cbmChatPresenterPagingData(
+  conversationId: String,
+  database: RoomDatabase,
+  chatDao: ChatDao,
+  remoteKeyDao: RemoteKeyDao,
+  chatRepository: Provider<CbmChatRepository>,
+  clock: Clock,
+  scope: CoroutineScope,
+): Flow<PagingData<CbmUiChatMessage>> {
+  val conversationId = Uuid.fromString(conversationId)
+  val remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock)
+  val pagingDataFlow = Pager(
+    config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
+    remoteMediator = remoteMediator,
+    pagingSourceFactory = { chatDao.messages(conversationId) },
+  )
+    .flow
+    .map { value ->
+      value.flatMap { listOfNotNull(it.toChatMessage()) }
+    }
+  return combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
+    pagingData.map { cbmChatMessage ->
+      CbmUiChatMessage(
+        cbmChatMessage,
+        cbmChatMessage.sender == Sender.MEMBER && cbmChatMessage.id == lastDeliveredMessageId.toString(),
+      )
+    }
+  }.cachedIn(scope)
+}
 
 internal class CbmChatPresenter(
   private val conversationId: Uuid,
-  private val database: RoomDatabase,
+  private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
   private val chatDao: ChatDao,
-  private val remoteKeyDao: RemoteKeyDao,
   private val chatRepository: Provider<CbmChatRepository>,
-  private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -98,6 +140,7 @@ internal class CbmChatPresenter(
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
+    var showFileTooBigErrorToast by remember { mutableStateOf(false) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -155,7 +198,12 @@ internal class CbmChatPresenter(
         is CbmChatEvent.SendMediaMessage -> launch {
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().sendMedia(conversationId, event.uriList)
+          val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
+          result.onLeft {
+            if (it == EXCEED_LIMIT_MESSAGE) {
+              showFileTooBigErrorToast = true
+            }
+          }
           numberOfOngoingUploads.update { it - 1 }
         }
 
@@ -165,6 +213,8 @@ internal class CbmChatPresenter(
           chatRepository.provide().retrySendMessage(conversationId, event.messageId)
           numberOfOngoingUploads.update { it - 1 }
         }
+
+        CbmChatEvent.ClearToast -> showFileTooBigErrorToast = false
       }
     }
 
@@ -173,14 +223,13 @@ internal class CbmChatPresenter(
       Failed -> CbmChatUiState.Error
       is Loaded -> {
         presentLoadedChat(
-          conversationIdStatusValue.conversationInfo,
-          conversationId,
-          database,
-          chatDao,
-          remoteKeyDao,
-          chatRepository,
-          clock,
+          pagingData = pagingData,
+          backendConversationInfo = conversationIdStatusValue.conversationInfo,
+          conversationId = conversationId,
+          chatDao = chatDao,
+          chatRepository = chatRepository,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
+          showFileTooBigErrorToast = showFileTooBigErrorToast,
         )
       }
     }
@@ -190,44 +239,20 @@ internal class CbmChatPresenter(
 @OptIn(ExperimentalPagingApi::class)
 @Composable
 private fun presentLoadedChat(
+  pagingData: Flow<PagingData<CbmUiChatMessage>>,
   backendConversationInfo: ConversationInfo,
   conversationId: Uuid,
-  database: RoomDatabase,
   chatDao: ChatDao,
-  remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
-  clock: Clock,
   showUploading: Boolean,
+  showFileTooBigErrorToast: Boolean,
 ): CbmChatUiState.Loaded {
-  val coroutineScope = rememberCoroutineScope()
   val latestMessage by remember(chatDao) {
     chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
   }.collectAsState(null)
   val bannerText by remember(conversationId, chatRepository) {
     flow { emitAll(chatRepository.provide().bannerText(conversationId)) }
   }.collectAsState(null)
-  val pagingDataFlow = remember(backendConversationInfo) {
-    val remoteMediator =
-      ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock)
-    Pager(
-      config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
-      remoteMediator = remoteMediator,
-      pagingSourceFactory = { chatDao.messages(conversationId) },
-    ).flow
-      .map { value ->
-        value.flatMap { listOfNotNull(it.toChatMessage()) }
-      }.cachedIn(coroutineScope)
-  }
-  val pagingData = remember(pagingDataFlow, chatDao) {
-    combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
-      pagingData.map { cbmChatMessage ->
-        CbmUiChatMessage(
-          cbmChatMessage,
-          cbmChatMessage.sender == Sender.MEMBER && cbmChatMessage.id == lastDeliveredMessageId.toString(),
-        )
-      }
-    }.cachedIn(coroutineScope)
-  }
   val lazyPagingItems = pagingData.collectAsLazyPagingItems()
 
   LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
@@ -249,6 +274,7 @@ private fun presentLoadedChat(
     latestMessage = latestMessage,
     bannerText = bannerText,
     showUploading = showUploading,
+    showFileTooBigErrorToast = showFileTooBigErrorToast,
   )
 }
 
@@ -270,6 +296,8 @@ internal sealed interface CbmChatEvent {
   data class SendMediaMessage(
     val uriList: List<Uri>,
   ) : CbmChatEvent
+
+  data object ClearToast : CbmChatEvent
 }
 
 internal sealed interface CbmChatUiState {
@@ -285,6 +313,7 @@ internal sealed interface CbmChatUiState {
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
     val showUploading: Boolean,
+    val showFileTooBigErrorToast: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation

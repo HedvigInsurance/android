@@ -64,6 +64,7 @@ val HedvigIcons.CollapseContent: ImageVector
     return _Collapse_content!!
   }
 
+@Suppress("ObjectPropertyName", "ktlint:standard:backing-property-naming")
 private var _Collapse_content: ImageVector? = null
 
 @Preview

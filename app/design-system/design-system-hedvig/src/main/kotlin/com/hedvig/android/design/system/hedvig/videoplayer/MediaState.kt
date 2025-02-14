@@ -1,7 +1,14 @@
 package com.hedvig.android.design.system.hedvig.videoplayer
 
 import android.os.Looper
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
@@ -42,7 +49,8 @@ class MediaState(
    */
   val playerState: PlayerState? get() = stateOfPlayerState.value
 
-  // Controller visibility related properties and functions
+  // region Controller visibility related properties and functions
+
   /**
    * Whether the controller is showing.
    */
@@ -86,7 +94,9 @@ class MediaState(
     }
   }
 
-  // internally used properties and functions
+  // endregion
+
+  // region internally used properties and functions
   private val listener = object : Player.Listener {
     override fun onRenderedFirstFrame() {
       closeShutter = false
@@ -119,6 +129,8 @@ class MediaState(
   internal val contentAspectRatioRaw by derivedStateOf {
     (playerState?.videoSize ?: VideoSize.UNKNOWN).aspectRatio
   }
+
+  @Suppress("ktlint:standard:backing-property-naming")
   private var _contentAspectRatio by mutableFloatStateOf(0f)
   internal var contentAspectRatio
     set(value) {
@@ -140,6 +152,8 @@ class MediaState(
   }
 
   internal var closeShutter by mutableStateOf(true)
+
+  // endregion
 
   init {
     initPlayer?.addListener(listener)
