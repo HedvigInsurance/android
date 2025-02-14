@@ -318,7 +318,7 @@ class ContractDetailPresenterTest {
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, InsuranceContract>>()
 
-    override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
+    override suspend fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
       return responseTurbine.asChannel().receiveAsFlow()
     }
 
