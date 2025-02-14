@@ -15,19 +15,21 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 
 internal class ContractDetailViewModel(
   contractId: String,
   featureManager: FeatureManager,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
-    initialState = ContractDetailsUiState.Loading,
-    sharingStarted = SharingStarted.WhileSubscribed(1.seconds),
-    presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
-  )
+  initialState = ContractDetailsUiState.Loading,
+  sharingStarted = SharingStarted.WhileSubscribed(1.seconds),
+  presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
+)
 
 internal class ContractDetailPresenter(
   private val contractId: String,
@@ -41,6 +43,13 @@ internal class ContractDetailPresenter(
   ): ContractDetailsUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
+
+    LaunchedEffect(Unit) {
+      while (isActive) {
+        dataLoadIteration++
+        delay(2000)
+      }
+    }
 
     CollectEvents { event ->
       when (event) {
