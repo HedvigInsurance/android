@@ -33,12 +33,12 @@ import hedvig.resources.R
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
-  allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
   allowChangeTier: Boolean,
+  allowTerminatingInsurance: Boolean,
   onEditCoInsuredClick: () -> Unit,
-  onChangeAddressClick: () -> Unit,
   onChangeTierClick: () -> Unit,
+  onCancelInsuranceClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -57,22 +57,22 @@ internal fun EditInsuranceBottomSheetContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      if (allowChangeAddress) {
+      if (allowChangeTier) {
         RadioOptionRightAligned(
-          chosenState = if (selectedItemIndex == 0) Chosen else NotChosen,
-          onClick = { selectedItemIndex = 0 },
           optionContent = {
             Column {
               HedvigText(
-                text = stringResource(R.string.insurance_details_change_address_button),
+                text = stringResource(R.string.insurance_details_change_coverage),
               )
               HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE),
+                text = stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
                 color = HedvigTheme.colorScheme.textSecondary,
                 style = HedvigTheme.typography.label,
               )
             }
           },
+          chosenState = if (selectedItemIndex == 0) Chosen else NotChosen,
+          onClick = { selectedItemIndex = 0 },
         )
       }
       if (allowEditCoInsured) {
@@ -93,22 +93,22 @@ internal fun EditInsuranceBottomSheetContent(
           onClick = { selectedItemIndex = 1 },
         )
       }
-      if (allowChangeTier) {
+      if (allowTerminatingInsurance) {
         RadioOptionRightAligned(
+          chosenState = if (selectedItemIndex == 2) Chosen else NotChosen,
+          onClick = { selectedItemIndex = 2 },
           optionContent = {
             Column {
               HedvigText(
-                text = stringResource(R.string.insurance_details_change_coverage),
+                text = stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
               )
               HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
+                text = stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
                 color = HedvigTheme.colorScheme.textSecondary,
                 style = HedvigTheme.typography.label,
               )
             }
           },
-          chosenState = if (selectedItemIndex == 2) Chosen else NotChosen,
-          onClick = { selectedItemIndex = 2 },
         )
       }
     }
@@ -117,11 +117,11 @@ internal fun EditInsuranceBottomSheetContent(
       text = stringResource(id = R.string.general_continue_button),
       enabled = selectedItemIndex != -1,
       onClick = dropUnlessResumed {
-        if (selectedItemIndex == 0 && allowChangeAddress) {
-          onChangeAddressClick()
+        if (selectedItemIndex == 2 && allowTerminatingInsurance) {
+          onCancelInsuranceClick()
         } else if (selectedItemIndex == 1 && allowEditCoInsured) {
           onEditCoInsuredClick()
-        } else if (selectedItemIndex == 2 && allowChangeTier) {
+        } else if (selectedItemIndex == 0 && allowChangeTier) {
           onChangeTierClick()
         }
       },
@@ -145,14 +145,14 @@ private fun PreviewEditInsuranceBottomSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditInsuranceBottomSheetContent(
-        allowChangeAddress = true,
+        allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         allowChangeTier = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},
-        onChangeAddressClick = {},
         onDismiss = {},
         modifier = Modifier.padding(horizontal = 16.dp),
+        onCancelInsuranceClick = {},
       )
     }
   }

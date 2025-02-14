@@ -19,6 +19,7 @@ import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -78,7 +79,7 @@ internal fun YourInfoTab(
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
   HedvigBottomSheet(editYourInfoBottomSheet) {
     EditInsuranceBottomSheetContent(
-      allowChangeAddress = allowChangeAddress,
+      allowTerminatingInsurance = allowTerminatingInsurance,
       allowEditCoInsured = allowEditCoInsured,
       allowChangeTier = allowChangeTier,
       onChangeTierClick = {
@@ -89,12 +90,12 @@ internal fun YourInfoTab(
         editYourInfoBottomSheet.dismiss()
         onEditCoInsuredClick()
       },
-      onChangeAddressClick = {
-        editYourInfoBottomSheet.dismiss()
-        onChangeAddressClick()
-      },
       onDismiss = {
         editYourInfoBottomSheet.dismiss()
+      },
+      onCancelInsuranceClick = {
+        editYourInfoBottomSheet.dismiss()
+        onCancelInsuranceClick()
       },
     )
   }
@@ -171,22 +172,27 @@ internal fun YourInfoTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
-      if (allowChangeAddress || allowEditCoInsured || allowChangeTier) {
+      if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
         HedvigButton(
           text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
           enabled = true,
           onClick = { editYourInfoBottomSheet.show() },
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
       }
-      if (allowTerminatingInsurance) {
+      if (allowChangeAddress) {
         HedvigButton(
-          text = stringResource(R.string.TERMINATION_BUTTON),
+          text = stringResource(R.string.insurance_details_move_button),
           buttonStyle = Ghost,
           enabled = true,
-          onClick = { onCancelInsuranceClick() },
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+          onClick = { onChangeAddressClick() },
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
       }
