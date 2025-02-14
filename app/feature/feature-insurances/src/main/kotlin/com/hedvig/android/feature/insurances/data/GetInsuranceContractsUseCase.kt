@@ -14,28 +14,41 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
-        apolloClient
-          .query(InsuranceContractsQuery(areAddonsEnabled))
-          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-          .safeFlow(::ErrorMessage)
+        flow {
+          while (currentCoroutineContext().isActive) {
+            emitAll(
+              apolloClient
+                .query(InsuranceContractsQuery(areAddonsEnabled))
+                .fetchPolicy(FetchPolicy.CacheAndNetwork)
+                .safeFlow(::ErrorMessage),
+            )
+            delay(3.seconds)
+          }
+        }
       },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
       featureManager.isFeatureEnabled(Feature.MOVING_FLOW),

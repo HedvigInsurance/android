@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(
       listOf(
         InsuranceContract(
