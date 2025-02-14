@@ -25,6 +25,7 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -36,7 +37,6 @@ import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
-import com.hedvig.android.feature.chat.data.EXCEED_LIMIT_MESSAGE
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
@@ -199,10 +199,14 @@ internal class CbmChatPresenter(
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
-          result.onLeft {
-            if (it == EXCEED_LIMIT_MESSAGE) {
-              showFileTooBigErrorToast = true
-            }
+          val hadSomeFailureDueToBigFileSize = result.any {
+            it.fold(
+              { errorMessage -> errorMessage.throwable is BackendFileLimitException },
+              { false },
+            )
+          }
+          if (hadSomeFailureDueToBigFileSize) {
+            showFileTooBigErrorToast = true
           }
           numberOfOngoingUploads.update { it - 1 }
         }

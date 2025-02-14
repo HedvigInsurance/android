@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.hedvig.android.logger.logcat
 import java.util.Locale
+import kotlin.math.max
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -85,17 +86,27 @@ class FileService(
         "Backend limit: ${backendContentSizeLimit / 1024 / 1024} Mb"
     }
     if (size >= backendContentSizeLimit) {
-      throw IOException("Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit")
+      throw BackendFileLimitException(
+        "Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit",
+      )
     }
   }
 }
 
 private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
-  return contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { cursor ->
-    val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
-    if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else -1
+  val statSize = contentResolver.openFileDescriptor(uri, "r")?.use {
+    it.statSize
   } ?: -1
 
+  val sizeFromCursor =
+    contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+      val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+      if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
+    } ?: -1
+  logcat { "getFileSize for uri:$uri | statSize:$statSize | contentSize:$sizeFromCursor" }
+  return max(statSize, sizeFromCursor)
 }
+
+class BackendFileLimitException(message: String) : IOException(message)
 
 private const val backendContentSizeLimit = 48 * 1024 * 1024 // 48 Mb

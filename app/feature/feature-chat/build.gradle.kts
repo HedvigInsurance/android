@@ -20,6 +20,7 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
