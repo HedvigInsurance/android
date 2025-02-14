@@ -25,7 +25,7 @@ internal class GetContractForContractIdUseCaseImpl(
     return flow {
       getInsuranceContractsUseCaseProvider
         .provide()
-        .invoke(forceNetworkFetch = false)
+        .invoke()
         .map { insuranceContractResult ->
           either {
             val contract = insuranceContractResult

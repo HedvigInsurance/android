@@ -28,25 +28,25 @@ import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
       flow {
         while (currentCoroutineContext().isActive) {
           emitAll(featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
             apolloClient
               .query(InsuranceContractsQuery(areAddonsEnabled))
-              .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
               .safeFlow(::ErrorMessage)
           })
           logcat{"Mariia: hitting delay in GetInsuranceContractsUseCaseImpl"}
           delay(3000)
+                .fetchPolicy(FetchPolicy.CacheAndNetwork)
         }
       },
       featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),

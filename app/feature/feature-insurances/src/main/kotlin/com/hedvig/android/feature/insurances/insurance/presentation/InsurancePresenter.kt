@@ -111,7 +111,6 @@ internal class InsurancePresenter(
       loadInsuranceData(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
-        forceNetworkFetch = true,
         getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
       ).collectLatest { result ->
         result.fold(
@@ -152,11 +151,10 @@ internal class InsurancePresenter(
 private fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
-  forceNetworkFetch: Boolean,
   getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
 ): Flow<Either<ErrorMessage, InsuranceData>> {
   return combine(
-    getInsuranceContractsUseCase.invoke(forceNetworkFetch),
+    getInsuranceContractsUseCase.invoke(),
     flow { emit(getCrossSellsUseCase.invoke()) },
     getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB),
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
