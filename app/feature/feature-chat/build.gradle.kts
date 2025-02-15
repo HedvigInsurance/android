@@ -20,6 +20,7 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
@@ -59,4 +60,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
+  implementation(libs.media3.ui)
 }
