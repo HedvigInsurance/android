@@ -14,6 +14,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -70,29 +71,31 @@ internal class TravelCertificateTravellersInputPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      getCoInsuredForContractUseCase.invoke(primaryInput.contractId).fold(
-        ifLeft = {
-          screenContent = TravelersInputScreenContent.Failure
-        },
-        ifRight = { data ->
-          val resultList = data.coInsuredList.filterNot {
-            it.hasMissingInfo
-          }.map { coInsured ->
-            CoInsured(
-              coInsured.id,
-              "${coInsured.firstName} ${coInsured.lastName}",
-              coInsured.ssn,
-              coInsured.dateOfBirth,
+      getCoInsuredForContractUseCase.invoke(primaryInput.contractId).collectLatest { data ->
+        data.fold(
+          ifLeft = {
+            screenContent = TravelersInputScreenContent.Failure
+          },
+          ifRight = { data ->
+            val resultList = data.coInsuredList.filterNot {
+              it.hasMissingInfo
+            }.map { coInsured ->
+              CoInsured(
+                coInsured.id,
+                "${coInsured.firstName} ${coInsured.lastName}",
+                coInsured.ssn,
+                coInsured.dateOfBirth,
+              )
+            }.sortedBy { it.name }
+            currentCoInsuredList = resultList
+            val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
+            screenContent = TravelersInputScreenContent.Success(
+              hasMissingInfo,
+              data.memberFullName,
             )
-          }.sortedBy { it.name }
-          currentCoInsuredList = resultList
-          val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
-          screenContent = TravelersInputScreenContent.Success(
-            hasMissingInfo,
-            data.memberFullName,
-          )
-        },
-      )
+          },
+        )
+      }
     }
 
     LaunchedEffect(generateIteration) {
