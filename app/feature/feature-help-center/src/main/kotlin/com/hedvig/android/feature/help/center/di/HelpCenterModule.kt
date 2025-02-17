@@ -4,7 +4,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
-import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredViewModel
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetHelpCenterQuestionUseCase
@@ -71,12 +70,6 @@ val helpCenterModule = module {
     HelpCenterQuestionViewModel(
       questionId = params.get(),
       getHelpCenterQuestionUseCase = get<GetHelpCenterQuestionUseCase>(),
-    )
-  }
-
-  viewModel<ChooseInsuranceForEditCoInsuredViewModel> {
-    ChooseInsuranceForEditCoInsuredViewModel(
-      getInsuranceForEditCoInsuredUseCase = get<GetInsuranceForEditCoInsuredUseCase>(),
     )
   }
 
