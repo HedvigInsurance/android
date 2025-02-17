@@ -79,6 +79,7 @@ internal class TravelCertificateTravellersInputPresenter(
             }
           },
           ifRight = { data ->
+            val previousContentCoInsuredList = currentCoInsuredList
             val resultList = data.coInsuredList.filterNot {
               it.hasMissingInfo
             }.map { coInsured ->
@@ -89,13 +90,15 @@ internal class TravelCertificateTravellersInputPresenter(
                 coInsured.dateOfBirth,
               )
             }.sortedBy { it.name }
-            currentCoInsuredList = resultList
-            val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
-            screenContent = TravelersInputScreenContent.Success(
-              hasMissingInfo,
-              data.memberFullName,
-              isButtonLoading = false,
-            )
+            if (resultList.map { it.name to it.ssn } != previousContentCoInsuredList.map { it.name to it.ssn }) {
+              currentCoInsuredList = resultList
+              val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
+              screenContent = TravelersInputScreenContent.Success(
+                hasMissingInfo,
+                data.memberFullName,
+                isButtonLoading = false,
+              )
+            }
           },
         )
       }
