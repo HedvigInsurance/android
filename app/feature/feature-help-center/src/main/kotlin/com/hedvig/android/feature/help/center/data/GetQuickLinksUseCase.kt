@@ -27,16 +27,7 @@ internal class GetQuickLinksUseCase(
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
-      val linksToExpand = buildList<StandaloneQuickLink> {
-        if (memberActionOptions.isMovingEnabled) {
-          add(
-            StandaloneQuickLink(
-              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-              titleRes = R.string.insurance_details_change_address_button,
-              hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
-            ),
-          )
-        }
+      val linksToExpand = buildList {
         if (memberActionOptions.isEditCoInsuredEnabled) {
           val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
             .safeExecute(::ErrorMessage)
@@ -54,7 +45,7 @@ internal class GetQuickLinksUseCase(
         }
         if (memberActionOptions.isTierChangeEnabled) {
           add(
-            QuickAction.StandaloneQuickLink(
+            StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
               titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
               hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
@@ -63,7 +54,7 @@ internal class GetQuickLinksUseCase(
         }
         if (memberActionOptions.isCancelInsuranceEnabled) {
           add(
-            QuickAction.StandaloneQuickLink(
+            StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
               titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
               hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
@@ -80,7 +71,15 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-
+      if (memberActionOptions.isMovingEnabled) {
+        add(
+          StandaloneQuickLink(
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+          ),
+        )
+      }
       if (memberActionOptions.isConnectPaymentEnabled) {
         add(
           StandaloneQuickLink(

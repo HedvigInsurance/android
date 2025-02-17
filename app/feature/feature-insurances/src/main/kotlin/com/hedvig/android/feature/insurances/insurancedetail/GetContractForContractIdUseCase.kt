@@ -7,6 +7,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ internal class GetContractForContractIdUseCaseImpl(
     return flow {
       getInsuranceContractsUseCaseProvider
         .provide()
-        .invoke(forceNetworkFetch = false)
+        .invoke()
         .map { insuranceContractResult ->
           either {
             val contract = insuranceContractResult
@@ -39,16 +40,17 @@ internal class GetContractForContractIdUseCaseImpl(
               )
             }
           }
-        }
-        .collect(this)
+        }.collect(this)
     }
   }
-}
 
-internal sealed interface GetContractForContractIdError {
-  data class NoContractFound(
-    val errorMessage: ErrorMessage,
-  ) : GetContractForContractIdError, ErrorMessage by errorMessage
+  internal sealed interface GetContractForContractIdError {
+    data class NoContractFound(
+      val errorMessage: ErrorMessage,
+    ) : GetContractForContractIdError, ErrorMessage by errorMessage
 
-  data class GenericError(val errorMessage: ErrorMessage) : GetContractForContractIdError, ErrorMessage by errorMessage
+    data class GenericError(val errorMessage: ErrorMessage) :
+      GetContractForContractIdError,
+      ErrorMessage by errorMessage
+  }
 }

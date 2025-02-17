@@ -114,7 +114,7 @@ class GetInsuranceContractsUseCaseImplTest {
         apolloClient = apolloClientWithGoodResponseThatSupportsTier,
         featureManager = featureManager,
       )
-      val result = subjectUseCase.invoke(true).first()
+      val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
         it.first().supportsTierChange
       }.isTrue()
@@ -135,7 +135,7 @@ class GetInsuranceContractsUseCaseImplTest {
         apolloClient = apolloClientWithGoodResponseWithoutTier,
         featureManager = featureManager,
       )
-      val result = subjectUseCase.invoke(true).first()
+      val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
         it.first().supportsTierChange
       }.isFalse()

@@ -155,7 +155,7 @@ class TerminatedContractsPresenterTest {
   internal class FakeGetInsuranceContractsUseCase() : GetInsuranceContractsUseCase {
     private val responseTurbine = Turbine<Either<ErrorMessage, List<InsuranceContract>>>()
 
-    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
       return responseTurbine.asChannel().receiveAsFlow()
     }
 

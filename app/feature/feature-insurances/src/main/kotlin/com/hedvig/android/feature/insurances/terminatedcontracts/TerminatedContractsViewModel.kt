@@ -50,7 +50,7 @@ internal class TerminatedContractsPresenter(
       }
       getInsuranceContractsUseCaseProvider
         .provide()
-        .invoke(forceNetworkFetch = false)
+        .invoke()
         .onEach { result: Either<ErrorMessage, List<InsuranceContract>> ->
           result.onLeft { errorMessage ->
             logcat(LogPriority.INFO, errorMessage.throwable) {
