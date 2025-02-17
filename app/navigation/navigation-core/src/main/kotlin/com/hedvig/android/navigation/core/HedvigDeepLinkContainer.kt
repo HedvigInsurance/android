@@ -32,13 +32,11 @@ interface HedvigDeepLinkContainer {
 
   val profile: List<String> // The profile screen, which acts as a gateway to several app settings
 
-
   val connectPayment: List<String> // Screen where the member can connect their payment method to Hedvig to pay for insurance
   val directDebit: List<String> // Same as connectPayment but to support an old link to it
   val eurobonus: List<String> // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: List<String> // The payments screen, showing the payments history and the upcoming payment information
   val deleteAccount: List<String> // The screen where the member may request for their account data to be GDPR wiped
-
 
   val contactInfo: List<String> // The screen where one can change their contact information, like their email and phone.
 
@@ -46,11 +44,11 @@ interface HedvigDeepLinkContainer {
   val inbox: List<String> // Hedvig CBM inbox
   val conversation: List<String> // Hedvig specific CBM conversation
 
-
   val travelAddon: List<String> // Travel addon purchase flow
   val travelCertificate: List<String> // The screen which shows existing and allows creating new travel certificates
 
-  val changeTier: List<String> //The screen where member can change tier and deductible of their insurance
+  val changeTierWithoutContractId: List<String> // The screen where member can choose insurance to change tier and deductible
+  val changeTierWithContractId: List<String> // The screen where member can change tier and deductible
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -125,8 +123,11 @@ internal class HedvigDeepLinkContainerImpl(
   override val travelCertificate: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/travelCertificate"
   }
-  override val changeTier: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+  override val changeTierWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/change-tier"
+  }
+  override val changeTierWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/change-tier?contractId={contractId}"
   }
 }
 
@@ -155,5 +156,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     conversation.first(),
     travelAddon.first(),
     travelCertificate.first(),
-    changeTier.first()
+    changeTierWithoutContractId.first(),
   )

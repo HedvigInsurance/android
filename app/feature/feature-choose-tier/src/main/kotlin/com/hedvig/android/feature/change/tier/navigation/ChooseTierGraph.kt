@@ -29,9 +29,10 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.changeTierGraph(
   navigator: Navigator,
   navController: NavController,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
-  navdestination<StartTierFlowDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTier),
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+) {
+  navdestination<StartTierFlowDestination> (
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
   ) { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
       parametersOf(this.insuranceId)
@@ -51,7 +52,9 @@ fun NavGraphBuilder.changeTierGraph(
     )
   }
 
-  navdestination<StartTierFlowChooseInsuranceDestination> {
+  navdestination<StartTierFlowChooseInsuranceDestination>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithoutContractId),
+  ) {
     val viewModel: ChooseInsuranceViewModel = koinViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
