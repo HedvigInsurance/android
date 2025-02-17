@@ -45,6 +45,7 @@ internal class TravelCertificateTravellersInputPresenter(
     var screenContent by remember { mutableStateOf<TravelersInputScreenContent>(TravelersInputScreenContent.Loading) }
 
     var currentCoInsuredList by remember { mutableStateOf<List<CoInsured>>(listOf()) }
+    var coInsuredAlteredList by remember { mutableStateOf<List<Pair<CoInsured, Boolean>>>(listOf()) }
 
     var isMemberIncluded by remember { mutableStateOf(true) }
 
@@ -53,7 +54,10 @@ internal class TravelCertificateTravellersInputPresenter(
     CollectEvents { event ->
       when (event) {
         TravelCertificateTravellersInputEvent.RetryLoadData -> loadIteration++
-        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> generateIteration++
+        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
+          generateIteration++
+        }
+
         is TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked -> {
           val changedTraveler = event.coInsured.copy(isIncluded = !event.coInsured.isIncluded)
           val newList = currentCoInsuredList.toMutableList()
@@ -61,6 +65,7 @@ internal class TravelCertificateTravellersInputPresenter(
           newList.add(changedTraveler)
           val sorted = newList.sortedBy { it.name }
           currentCoInsuredList = sorted
+          coInsuredAlteredList = sorted.map { it to it.isIncluded }
         }
 
         TravelCertificateTravellersInputEvent.ChangeMemberChecked -> {
@@ -79,7 +84,6 @@ internal class TravelCertificateTravellersInputPresenter(
             }
           },
           ifRight = { data ->
-            val previousContentCoInsuredList = currentCoInsuredList
             val resultList = data.coInsuredList.filterNot {
               it.hasMissingInfo
             }.map { coInsured ->
@@ -90,15 +94,13 @@ internal class TravelCertificateTravellersInputPresenter(
                 coInsured.dateOfBirth,
               )
             }.sortedBy { it.name }
-            if (resultList.map { it.name to it.ssn } != previousContentCoInsuredList.map { it.name to it.ssn }) {
-              currentCoInsuredList = resultList
-              val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
-              screenContent = TravelersInputScreenContent.Success(
-                hasMissingInfo,
-                data.memberFullName,
-                isButtonLoading = false,
-              )
-            }
+            currentCoInsuredList = resultList
+            val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
+            screenContent = TravelersInputScreenContent.Success(
+              hasMissingInfo,
+              data.memberFullName,
+              isButtonLoading = false,
+            )
           },
         )
       }
@@ -128,13 +130,23 @@ internal class TravelCertificateTravellersInputPresenter(
     return when (val currentContent = screenContent) {
       TravelersInputScreenContent.Failure -> TravelCertificateTravellersInputUiState.Failure
       TravelersInputScreenContent.Loading -> TravelCertificateTravellersInputUiState.Loading
-      is TravelersInputScreenContent.Success -> TravelCertificateTravellersInputUiState.Success(
-        coInsuredHasMissingInfo = currentContent.coInsuredHasMissingInfo,
-        coInsuredList = currentCoInsuredList,
-        memberFullName = currentContent.memberFullName,
-        isMemberIncluded = isMemberIncluded,
-        isButtonLoading = currentContent.isButtonLoading,
-      )
+      is TravelersInputScreenContent.Success -> {
+        val updatedList = buildList {
+          currentCoInsuredList.forEach { coInsured ->
+            val altered = coInsuredAlteredList.firstOrNull { it.first.id == coInsured.id }
+            val final = altered?.let { alt -> coInsured.copy(isIncluded = alt.second) } ?: coInsured
+            add(final)
+          }
+        }
+        currentCoInsuredList = updatedList
+        TravelCertificateTravellersInputUiState.Success(
+          coInsuredHasMissingInfo = currentContent.coInsuredHasMissingInfo,
+          coInsuredList = currentCoInsuredList,
+          memberFullName = currentContent.memberFullName,
+          isMemberIncluded = isMemberIncluded,
+          isButtonLoading = currentContent.isButtonLoading,
+        )
+      }
 
       is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
         currentContent.travelCertificateUrl,
