@@ -31,7 +31,7 @@ internal class GetCoInsuredForContractUseCaseImpl(
       while (currentCoroutineContext().isActive) {
         emitAll(
           apolloClient.query(CoInsuredForContractQuery(contractId))
-            .fetchPolicy(FetchPolicy.CacheAndNetwork)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeFlow(::ErrorMessage)
             .map { rawData ->
               val result = either {
@@ -55,7 +55,7 @@ internal class GetCoInsuredForContractUseCaseImpl(
               result
             },
         )
-        delay(1.seconds)
+        delay(2.seconds)
       }
     }
   }

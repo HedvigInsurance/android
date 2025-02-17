@@ -74,7 +74,9 @@ internal class TravelCertificateTravellersInputPresenter(
       getCoInsuredForContractUseCase.invoke(primaryInput.contractId).collectLatest { data ->
         data.fold(
           ifLeft = {
-            screenContent = TravelersInputScreenContent.Failure
+            if (screenContent !is TravelersInputScreenContent.Success) {
+              screenContent = TravelersInputScreenContent.Failure
+            }
           },
           ifRight = { data ->
             val resultList = data.coInsuredList.filterNot {
@@ -100,7 +102,9 @@ internal class TravelCertificateTravellersInputPresenter(
 
     LaunchedEffect(generateIteration) {
       val currentContent = screenContent
-      if (currentContent is TravelersInputScreenContent.Success) {
+      if (currentContent is TravelersInputScreenContent.Success ||
+        currentContent is TravelersInputScreenContent.Failure
+      ) {
         screenContent = TravelersInputScreenContent.Loading
         createTravelCertificateUseCase.invoke(
           contractId = primaryInput.contractId,
