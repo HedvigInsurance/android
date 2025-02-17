@@ -102,9 +102,7 @@ internal class TravelCertificateTravellersInputPresenter(
 
     LaunchedEffect(generateIteration) {
       val currentContent = screenContent
-      if (currentContent is TravelersInputScreenContent.Success ||
-        currentContent is TravelersInputScreenContent.Failure
-      ) {
+      if (currentContent is TravelersInputScreenContent.Success) {
         screenContent = TravelersInputScreenContent.Loading
         createTravelCertificateUseCase.invoke(
           contractId = primaryInput.contractId,
