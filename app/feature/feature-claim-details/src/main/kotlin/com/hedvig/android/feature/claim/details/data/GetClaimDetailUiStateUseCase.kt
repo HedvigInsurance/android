@@ -31,7 +31,7 @@ import octopus.type.InsuranceDocumentType
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  operator fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
       while (currentCoroutineContext().isActive) {
         val queryFlow = queryFlow(claimId)

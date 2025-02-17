@@ -253,6 +253,7 @@ internal data class TerminationSurveyState(
   val actionButtonLoading: Boolean = false,
 ) {
   val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
+  val selectedReason: TerminationReason? = reasons.firstOrNull { it.surveyOption == selectedOption }
 }
 
 internal sealed interface SurveyNavigationStep {
