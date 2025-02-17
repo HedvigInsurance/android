@@ -140,6 +140,7 @@ private fun TravelCertificateTravellersInput(
                 onGenerateTravelCertificate()
               }
             },
+            isLoading = uiState.isButtonLoading,
             enabled = uiState.hasAtLeastOneTraveler,
             modifier = Modifier
               .fillMaxWidth()
@@ -166,6 +167,7 @@ private fun PreviewTravelCertificateTravellersInput() {
           ),
           "The Member Themselves",
           true,
+          isButtonLoading = true,
         ),
         {},
         {},

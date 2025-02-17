@@ -94,6 +94,7 @@ internal class TravelCertificateTravellersInputPresenter(
             screenContent = TravelersInputScreenContent.Success(
               hasMissingInfo,
               data.memberFullName,
+              isButtonLoading = false,
             )
           },
         )
@@ -103,7 +104,7 @@ internal class TravelCertificateTravellersInputPresenter(
     LaunchedEffect(generateIteration) {
       val currentContent = screenContent
       if (currentContent is TravelersInputScreenContent.Success) {
-        screenContent = TravelersInputScreenContent.Loading
+        screenContent = currentContent.copy(isButtonLoading = true)
         createTravelCertificateUseCase.invoke(
           contractId = primaryInput.contractId,
           startDate = primaryInput.travelDate,
@@ -129,6 +130,7 @@ internal class TravelCertificateTravellersInputPresenter(
         coInsuredList = currentCoInsuredList,
         memberFullName = currentContent.memberFullName,
         isMemberIncluded = isMemberIncluded,
+        isButtonLoading = currentContent.isButtonLoading,
       )
 
       is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
@@ -148,6 +150,7 @@ private sealed interface TravelersInputScreenContent {
   data class Success(
     val coInsuredHasMissingInfo: Boolean,
     val memberFullName: String,
+    val isButtonLoading: Boolean,
   ) : TravelersInputScreenContent
 }
 
@@ -163,6 +166,7 @@ internal sealed interface TravelCertificateTravellersInputUiState {
     val coInsuredList: List<CoInsured>,
     val memberFullName: String,
     val isMemberIncluded: Boolean,
+    val isButtonLoading: Boolean,
   ) : TravelCertificateTravellersInputUiState {
     val hasAtLeastOneTraveler = isMemberIncluded || coInsuredList.any { it.isIncluded }
   }
