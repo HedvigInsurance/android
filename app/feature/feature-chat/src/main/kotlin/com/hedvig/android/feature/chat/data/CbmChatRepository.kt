@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.chat.data
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -83,6 +85,7 @@ internal class CbmChatRepositoryImpl(
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val clock: Clock,
+  private val context: Context,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return either {
@@ -188,8 +191,22 @@ internal class CbmChatRepositoryImpl(
       return with(messageToRetry) {
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
-          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, messageToRetry.id, Uri.parse(url))
-          failedToSend == MEDIA && url != null -> sendMedia(conversationId, messageToRetry.id, Uri.parse(url))
+          failedToSend == PHOTO && url != null -> {
+            val uriWithPermission = grantPermissionForUri(context, Uri.parse(url))
+            if (uriWithPermission!=null) {
+              sendPhoto(conversationId, messageToRetry.id, uriWithPermission)
+            } else {
+              raise("Could not grant permission!")
+            }
+          }
+          failedToSend == MEDIA && url != null -> {
+            val uriWithPermission = grantPermissionForUri(context, Uri.parse(url))
+            if (uriWithPermission!=null) {
+              sendMedia(conversationId, messageToRetry.id, uriWithPermission)
+            } else {
+              raise("Could not grant permission!")
+            }
+          }
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise("Unknown message type")
@@ -200,6 +217,7 @@ internal class CbmChatRepositoryImpl(
       }
     }
   }
+
 
   override suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
@@ -448,6 +466,40 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   else -> {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
+  }
+}
+
+fun grantPermissionForUri(
+  context: Context,
+  treeUri: Uri?,
+): Uri? {
+  if (treeUri != null) {
+    try {
+      context.contentResolver.takePersistableUriPermission(
+        treeUri,
+        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+      )
+      return treeUri
+    } catch (e: Throwable) {
+      logcat{ "Could not takePersistableUriPermission with: ${e.message}" }
+      //todo: bc max 512 grants per app. should be enough?
+      //could do clearAllPersistedUriPermissions here, but then all the db uri would become stale
+    }
+  }
+  return null
+}
+
+private fun clearAllPersistedUriPermissions(context: Context) {
+  try {
+    val contentResolver = context.contentResolver
+    for (uriPermission in contentResolver.persistedUriPermissions) {
+      contentResolver.releasePersistableUriPermission(
+        uriPermission.uri,
+        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+      )
+    }
+  } catch (e: Throwable) {
+    e.printStackTrace()
   }
 }
 
