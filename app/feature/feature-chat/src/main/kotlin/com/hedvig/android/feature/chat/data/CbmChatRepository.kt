@@ -90,7 +90,6 @@ internal class CbmChatRepositoryImpl(
   private val botServiceService: BotServiceService,
   private val contentResolver: ContentResolver,
   private val clock: Clock,
-  private val context: Context,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return either {
@@ -197,19 +196,19 @@ internal class CbmChatRepositoryImpl(
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
           failedToSend == PHOTO && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
+            val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
             if (uriWithPermission!=null) {
               sendOnePhoto(conversationId, messageToRetry.id, uriWithPermission)
             } else {
-              raise("Could not grant permission!")
+              raise(ErrorMessage("Could not grant permission!"))
             }
           }
           failedToSend == MEDIA && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
+            val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
             if (uriWithPermission!=null) {
               sendOneMedia(conversationId, messageToRetry.id, uriWithPermission)
             } else {
-              raise("Could not grant permission!")
+              raise(ErrorMessage("Could not grant permission!"))
             }
           }
           else -> {
@@ -504,13 +503,13 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   }
 }
 
-fun grantPermissionForUri(
-  context: Context,
+private fun grantPermissionForUri(
+  contentResolver: ContentResolver,
   treeUri: Uri?,
 ): Uri? {
   if (treeUri != null) {
     try {
-      context.contentResolver.takePersistableUriPermission(
+      contentResolver.takePersistableUriPermission(
         treeUri,
         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
       )
@@ -524,9 +523,8 @@ fun grantPermissionForUri(
   return null
 }
 
-private fun clearAllPersistedUriPermissions(context: Context) {
+private fun clearAllPersistedUriPermissions(contentResolver: ContentResolver,) {
   try {
-    val contentResolver = context.contentResolver
     for (uriPermission in contentResolver.persistedUriPermissions) {
       contentResolver.releasePersistableUriPermission(
         uriPermission.uri,
