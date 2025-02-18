@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
@@ -44,14 +45,14 @@ internal fun TravelCertificateTravellersInputDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateTravellersInput(
-    uiState,
-    navigateUp,
-    { viewModel.emit(TravelCertificateTravellersInputEvent.RetryLoadData) },
-    onNavigateToOverview,
-    { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked(it)) },
-    { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeMemberChecked) },
-    onNavigateToCoInsuredAddInfo,
-    { viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate) },
+    uiState = uiState,
+    navigateUp = navigateUp,
+    reload = { viewModel.emit(TravelCertificateTravellersInputEvent.RetryLoadData) },
+    onNavigateToOverview = onNavigateToOverview,
+    changeCoInsuredChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked(it)) },
+    changeMemberChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeMemberChecked) },
+    onNavigateToCoInsuredAddInfo = onNavigateToCoInsuredAddInfo,
+    onGenerateTravelCertificate = { viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate) },
   )
 }
 
@@ -92,7 +93,9 @@ private fun TravelCertificateTravellersInput(
           HedvigText(
             text = stringResource(id = R.string.travel_certificate_who_is_traveling),
             style = HedvigTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           )
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(16.dp))
@@ -106,16 +109,16 @@ private fun TravelCertificateTravellersInput(
             checkboxStyle = CheckboxStyle.Default,
             checkboxSize = Large,
           )
-          for (i in uiState.coInsuredList) {
+          for (coInsured in uiState.coInsuredList) {
             Spacer(Modifier.height(4.dp))
 
             Checkbox(
-              optionText = i.name,
-              chosenState = if (i.isIncluded) Chosen else NotChosen,
+              optionText = coInsured.name,
+              chosenState = if (coInsured.isIncluded) Chosen else NotChosen,
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-              onClick = { changeCoInsuredChecked(i) },
+              onClick = { changeCoInsuredChecked(coInsured) },
               checkboxStyle = CheckboxStyle.Default,
               checkboxSize = Large,
             )
@@ -129,7 +132,9 @@ private fun TravelCertificateTravellersInput(
                 buttonText = stringResource(R.string.travel_certificate_missing_coinsured_button),
                 onButtonClick = dropUnlessResumed { onNavigateToCoInsuredAddInfo() },
               ),
-              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             )
           }
           Spacer(Modifier.height(16.dp))
