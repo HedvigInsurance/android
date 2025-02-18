@@ -83,7 +83,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
   navgraph<TerminateInsuranceGraphDestination>(
     startDestination = TerminateInsuranceDestination.StartStep::class,
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.terminateInsurance),
+    deepLinks = navDeepLinks(
+      hedvigDeepLinkContainer.terminateInsurance,
+      hedvigDeepLinkContainer.terminateInsuranceWithoutId,
+    ),
   ) {
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController
@@ -93,7 +96,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        popBackStack = navigator::popBackStack,
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
