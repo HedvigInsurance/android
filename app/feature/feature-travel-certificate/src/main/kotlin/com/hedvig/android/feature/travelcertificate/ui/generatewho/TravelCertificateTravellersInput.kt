@@ -167,8 +167,8 @@ private fun PreviewTravelCertificateTravellersInput() {
         Success(
           true,
           listOf(
-            CoInsured("id", "Co-insured Baby", null, null, false),
-            CoInsured("id2", "Co-insured Baby 2", null, null, true),
+            CoInsured(CoInsured.CoInsuredId("id"), "Co-insured Baby", null, null, false),
+            CoInsured(CoInsured.CoInsuredId("id2"), "Co-insured Baby 2", null, null, true),
           ),
           "The Member Themselves",
           true,

@@ -10,10 +10,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -49,11 +51,11 @@ internal class TravelCertificateTravellersInputPresenter(
     var screenContent by remember { mutableStateOf<TravelersInputScreenContent>(TravelersInputScreenContent.Loading) }
 
     var fetchedCoInsuredList by remember { mutableStateOf<List<CoInsured>>(listOf()) }
-    val coInsuredIncludedMap = remember { mutableStateMapOf<CoInsured, Boolean>() }
+    val coInsuredIncludedMap = remember { mutableStateMapOf<CoInsuredId, Boolean>() }
     val coInsuredList by remember {
       derivedStateOf {
         fetchedCoInsuredList.map {
-          it.copy(isIncluded = coInsuredIncludedMap.get(it) ?: it.isIncluded)
+          it.copy(isIncluded = coInsuredIncludedMap.get(it.id) ?: it.isIncluded)
         }
       }
     }
@@ -64,7 +66,7 @@ internal class TravelCertificateTravellersInputPresenter(
         TravelCertificateTravellersInputEvent.RetryLoadData -> loadIteration++
         TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> generateIteration++
         is TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked -> {
-          coInsuredIncludedMap.put(event.coInsured, !event.coInsured.isIncluded)
+          coInsuredIncludedMap.put(event.coInsured.id, !event.coInsured.isIncluded)
         }
 
         TravelCertificateTravellersInputEvent.ChangeMemberChecked -> {
@@ -84,12 +86,12 @@ internal class TravelCertificateTravellersInputPresenter(
           ifRight = { data ->
             val coInsuredList = data.coInsuredList.filterNot {
               it.hasMissingInfo
-            }.map { coInsured ->
+            }.map { coInsuredData ->
               CoInsured(
-                id = coInsured.id,
-                name = "${coInsured.firstName} ${coInsured.lastName}",
-                ssn = coInsured.ssn,
-                dateOfBirth = coInsured.dateOfBirth,
+                id = CoInsured.CoInsuredId(coInsuredData),
+                name = "${coInsuredData.firstName} ${coInsuredData.lastName}",
+                ssn = coInsuredData.ssn,
+                dateOfBirth = coInsuredData.dateOfBirth,
                 isIncluded = false,
               )
             }.sortedBy { it.name }
@@ -192,9 +194,22 @@ internal sealed interface TravelCertificateTravellersInputEvent {
 
 @Serializable
 internal data class CoInsured(
-  val id: String?,
+  val id: CoInsuredId,
   val name: String,
   val ssn: String?,
   val dateOfBirth: LocalDate?,
   val isIncluded: Boolean,
-)
+) {
+  @Serializable
+  @JvmInline
+  value class CoInsuredId(val value: String) {
+    companion object {
+      operator fun invoke(coInsuredData: CoInsuredData) = CoInsuredId(
+        // Backend does not return a non-null ID here, so to make sure we don't accidentally consider two entries as
+        // duplicate since they'd have the same key ("null"), we make our own key based on the data available to us.
+        coInsuredData.id
+          ?: coInsuredData.firstName + coInsuredData.lastName + coInsuredData.ssn + coInsuredData.dateOfBirth,
+      )
+    }
+  }
+}
