@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.chat.data
 
-import android.content.Context
-import android.content.Intent
 import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -197,7 +196,7 @@ internal class CbmChatRepositoryImpl(
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
           failedToSend == PHOTO && url != null -> {
             val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
-            if (uriWithPermission!=null) {
+            if (uriWithPermission != null) {
               sendOnePhoto(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise(ErrorMessage("Could not grant permission!"))
@@ -205,7 +204,7 @@ internal class CbmChatRepositoryImpl(
           }
           failedToSend == MEDIA && url != null -> {
             val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
-            if (uriWithPermission!=null) {
+            if (uriWithPermission != null) {
               sendOneMedia(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise(ErrorMessage("Could not grant permission!"))
@@ -503,10 +502,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   }
 }
 
-private fun grantPermissionForUri(
-  contentResolver: ContentResolver,
-  treeUri: Uri?,
-): Uri? {
+private fun grantPermissionForUri(contentResolver: ContentResolver, treeUri: Uri?): Uri? {
   if (treeUri != null) {
     try {
       contentResolver.takePersistableUriPermission(
@@ -515,15 +511,15 @@ private fun grantPermissionForUri(
       )
       return treeUri
     } catch (e: Throwable) {
-      logcat{ "Could not takePersistableUriPermission with: ${e.message}" }
-      //todo: bc max 512 grants per app. should be enough?
-      //could do clearAllPersistedUriPermissions here, but then all the db uri would become stale
+      logcat { "Could not takePersistableUriPermission with: ${e.message}" }
+      // todo: bc max 512 grants per app. should be enough?
+      // could do clearAllPersistedUriPermissions here, but then all the db uri would become stale
     }
   }
   return null
 }
 
-private fun clearAllPersistedUriPermissions(contentResolver: ContentResolver,) {
+private fun clearAllPersistedUriPermissions(contentResolver: ContentResolver) {
   try {
     for (uriPermission in contentResolver.persistedUriPermissions) {
       contentResolver.releasePersistableUriPermission(

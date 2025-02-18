@@ -616,7 +616,7 @@ private fun ChatBubble(
               FailedToBeSentUri(
                 chatMessage.id,
                 chatMessage.uri,
-                onRetrySendChatMessage, //todo: change to file picker + deleting from db! maybe
+                onRetrySendChatMessage, // todo: change to file picker + deleting from db! maybe
                 imageLoader,
               )
             }
