@@ -9,6 +9,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,9 +24,8 @@ abstract class MoleculeViewModel<Event, State>(
   initialState: State,
   presenter: MoleculePresenter<Event, State>,
   sharingStarted: SharingStarted = SharingStarted.WhileSubscribed(5.seconds),
-) : ViewModel() {
-  private val scope = CoroutineScope(viewModelScope.coroutineContext + AndroidUiDispatcher.Main)
-
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
+) : ViewModel(coroutineScope) {
   /**
    * Events have a capacity large enough to handle simultaneous UI events, but small enough to surface issues if they
    * get backed up for some reason.
@@ -54,7 +54,7 @@ abstract class MoleculeViewModel<Event, State>(
   }.onEach { newState: State ->
     lastState = newState
   }.stateIn(
-    scope = scope,
+    scope = viewModelScope,
     started = sharingStarted,
     initialValue = lastState,
   )

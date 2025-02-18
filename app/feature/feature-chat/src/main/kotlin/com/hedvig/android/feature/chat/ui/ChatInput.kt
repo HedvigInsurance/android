@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
@@ -16,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -54,6 +56,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.ChevronUp
@@ -67,30 +70,27 @@ import hedvig.resources.R
 @Composable
 internal fun ChatInput(
   onSendMessage: (message: String) -> Unit,
-  onSendPhoto: (file: Uri) -> Unit,
-  onSendMedia: (file: Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
   appPackageId: String,
+  showUploading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   var expandChatOptions by rememberSaveable { mutableStateOf(true) }
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendPhoto(uri)
+    onSendPhoto(listOf(uri))
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onSendMedia(resultingUri)
-    }
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    onSendMedia(resultingUriList)
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onSendMedia(resultingUri)
-    }
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    onSendMedia(resultingUriList)
   }
   ChatInput(
     text = text,
@@ -108,6 +108,7 @@ internal fun ChatInput(
     selectMedia = { photoPicker.launch(PickVisualMediaRequest()) },
     selectFile = { filePicker.launch("*/*") },
     modifier = modifier,
+    showUploading = showUploading,
   )
 }
 
@@ -121,6 +122,7 @@ private fun ChatInput(
   takePicture: () -> Unit,
   selectMedia: () -> Unit,
   selectFile: () -> Unit,
+  showUploading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -157,7 +159,10 @@ private fun ChatInput(
           ),
           cursorBrush = SolidColor(LocalContentColor.current),
           textStyle = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
-          modifier = Modifier.weight(1f).padding(vertical = 8.dp).padding(start = 12.dp),
+          modifier = Modifier
+            .weight(1f)
+            .padding(vertical = 8.dp)
+            .padding(start = 12.dp),
         ) { innerTextField ->
           if (text.isEmpty()) {
             HedvigText(
@@ -167,6 +172,9 @@ private fun ChatInput(
             )
           }
           innerTextField()
+        }
+        AnimatedVisibility(showUploading) {
+          ThreeDotsLoading(Modifier.height(24.dp).padding(end = 8.dp))
         }
         Box(
           modifier = Modifier
@@ -318,6 +326,7 @@ private fun PreviewChatTextInput(
         {},
         {},
         {},
+        true,
       )
     }
   }

@@ -24,8 +24,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -37,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -55,6 +59,7 @@ import kotlinx.datetime.toLocalDateTime
 internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
@@ -73,19 +78,23 @@ internal fun CbmChatDestination(
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
     },
-    onSendPhoto = { uri: Uri ->
-      logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
+    onSendPhoto = { uris: List<Uri> ->
+      logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uriList)):$uris to vm:${viewModel.hashCode()}" }
+      viewModel.emit(CbmChatEvent.SendPhotoMessage(uris))
     },
-    onSendMedia = { uri: Uri ->
-      logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
+    onSendMedia = { uris: List<Uri> ->
+      logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uriList)):$uris to vm:${viewModel.hashCode()}" }
+      viewModel.emit(CbmChatEvent.SendMediaMessage(uris))
     },
     onRetrySendChatMessage = { messageId ->
       viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))
     },
     onRetryLoadingChat = {
       viewModel.emit(CbmChatEvent.RetryLoadingChat)
+    },
+    simpleVideoCache = simpleVideoCache,
+    showedFileTooBigError = {
+      viewModel.emit(CbmChatEvent.ClearToast)
     },
   )
 }
@@ -95,16 +104,18 @@ internal fun CbmChatDestination(
 private fun ChatScreen(
   uiState: CbmChatUiState,
   imageLoader: ImageLoader,
+  simpleVideoCache: Cache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendPhoto: (Uri) -> Unit,
-  onSendMedia: (Uri) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
+  showedFileTooBigError: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -148,6 +159,16 @@ private fun ChatScreen(
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
+              simpleVideoCache = simpleVideoCache,
+              errorSnackbarState = if (uiState.showFileTooBigErrorToast) {
+                ErrorSnackbarState(
+                  messageText = stringResource(R.string.CHAT_FILE_SIZE_TOO_BIG_ERROR),
+                  error = true,
+                  showedError = showedFileTooBigError,
+                )
+              } else {
+                null
+              },
             )
           }
         }
@@ -238,12 +259,12 @@ private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
 private fun PreviewChatScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
 ) {
-  com.hedvig.android.design.system.hedvig.HedvigTheme {
-    com.hedvig.android.design.system.hedvig.Surface(
-      color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
     ) {
       ChatScreen(
-        uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
+        uiState = if (isError) Error else Initializing,
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "",
         openUrl = {},
@@ -255,6 +276,8 @@ private fun PreviewChatScreen(
         onSendMedia = {},
         onRetrySendChatMessage = {},
         onRetryLoadingChat = {},
+        simpleVideoCache = rememberPreviewSimpleCache(),
+        showedFileTooBigError = {},
       )
     }
   }

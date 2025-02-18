@@ -72,7 +72,8 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList():
+  List<TerminationSurveyOption> {
   return map {
     // remade a bit of logic here. If we receive unknown actions in suggestion for one of the subOptions
     // (or the option itself),
@@ -90,13 +91,15 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(): Boolean {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions():
+  Boolean {
   return none { subOption ->
     subOption.suggestion?.toSuggestion() == UnknownAction
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList():
+  List<TerminationSurveyOption> {
   // no subOptions if one of them contains some action that we don't know how to handle
   val filtered = takeIf { subs ->
     subs.noUnknownActions()

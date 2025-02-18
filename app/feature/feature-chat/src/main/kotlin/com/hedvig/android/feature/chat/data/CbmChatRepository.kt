@@ -2,9 +2,11 @@ package com.hedvig.android.feature.chat.data
 
 import android.content.Context
 import android.content.Intent
+import android.content.ContentResolver
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
@@ -13,6 +15,7 @@ import arrow.core.Either.Right
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
+import arrow.fx.coroutines.parMap
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.doNotStore
@@ -23,6 +26,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.database.ChatDao
@@ -68,13 +72,13 @@ internal interface CbmChatRepository {
 
   fun pollNewestMessages(conversationId: Uuid): Flow<String>
 
-  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage>
+  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<ErrorMessage, CbmChatMessage>
 
-  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage>
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<ErrorMessage, CbmChatMessage>
 
-  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+  suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): List<Either<ErrorMessage, CbmChatMessage>>
 
-  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+  suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<ErrorMessage, CbmChatMessage>>
 }
 
 internal class CbmChatRepositoryImpl(
@@ -84,6 +88,7 @@ internal class CbmChatRepositoryImpl(
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
+  private val contentResolver: ContentResolver,
   private val clock: Clock,
   private val context: Context,
 ) : CbmChatRepository {
@@ -181,35 +186,35 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
+  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<ErrorMessage, CbmChatMessage> {
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
-        "Message not found"
+        ErrorMessage("Message not found")
       }
       return with(messageToRetry) {
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
           failedToSend == PHOTO && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, Uri.parse(url))
+            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
             if (uriWithPermission!=null) {
-              sendPhoto(conversationId, messageToRetry.id, uriWithPermission)
+              sendOnePhoto(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise("Could not grant permission!")
             }
           }
           failedToSend == MEDIA && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, Uri.parse(url))
+            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
             if (uriWithPermission!=null) {
-              sendMedia(conversationId, messageToRetry.id, uriWithPermission)
+              sendOneMedia(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise("Could not grant permission!")
             }
           }
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
-            raise("Unknown message type")
+            raise(ErrorMessage("Unknown message type"))
           }
         }.onRight {
           chatDao.deleteMessage(conversationId, messageId)
@@ -218,8 +223,11 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-
-  override suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
+  override suspend fun sendText(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    text: String,
+  ): Either<ErrorMessage, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
         messageId?.toString() ?: Uuid.randomUUID().toString(),
@@ -230,7 +238,50 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendPhotos(
+    conversationId: Uuid,
+    uriList: List<Uri>,
+  ): List<Either<ErrorMessage, CbmChatMessage>> {
+    return uriList.parMap { uri ->
+      sendOnePhoto(conversationId, null, uri)
+    }
+  }
+
+  override suspend fun sendMedia(
+    conversationId: Uuid,
+    uriList: List<Uri>,
+  ): List<Either<ErrorMessage, CbmChatMessage>> {
+    return uriList.parMap { uri ->
+      sendOneMedia(conversationId, null, uri)
+    }
+  }
+
+  private suspend fun sendOneMedia(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    uri: Uri,
+  ): Either<ErrorMessage, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadMediaToBotService(uri)
+      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
+    }.onLeft {
+      if (it.throwable !is BackendFileLimitException) {
+        val failedMessage =
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+            messageId?.toString() ?: Uuid.randomUUID().toString(),
+            clock.now(),
+            uri,
+          )
+        chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      }
+    }
+  }
+
+  private suspend fun sendOnePhoto(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    uri: Uri,
+  ): Either<ErrorMessage, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
@@ -245,35 +296,22 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
-    return either {
-      val uploadToken = uploadMediaToBotService(uri)
-      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
-    }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
-    }
-  }
-
-  private suspend fun sendMessage(conversationId: Uuid, input: ConversationInput): Either<String, CbmChatMessage> {
+  private suspend fun sendMessage(
+    conversationId: Uuid,
+    input: ConversationInput,
+  ): Either<ErrorMessage, CbmChatMessage> {
     return either {
       val response = apolloClient
         .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
         .safeExecute(::ErrorMessage)
-        .mapLeft { it.toString() }
         .bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
-        "Sent message resulted in no response from backend"
+        ErrorMessage("Sent message resulted in no response from backend")
       }
       val chatMessage = response.conversationSendMessage.message.toChatMessage()
       ensureNotNull(chatMessage) {
-        "Unknown chat message type"
+        ErrorMessage("Unknown chat message type")
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
       chatMessage
@@ -314,35 +352,32 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  private suspend fun Raise<String>.uploadPhotoToBotService(uri: Uri): String {
+  private suspend fun Raise<ErrorMessage>.uploadPhotoToBotService(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
     val uploadToken = botServiceService
       .uploadFile(file, contentType)
-      .onLeft {
-      }.mapLeft {
-        val errorMessage = "Failed to upload file with path:${file.absolutePath}. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
-        it.toErrorMessage().message ?: errorMessage
+      .mapLeft {
+        logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+        it.toErrorMessage()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { "No upload token" }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
     return uploadToken
   }
 
-  private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
+  private suspend fun Raise<ErrorMessage>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = botServiceService
       .uploadFile(fileService.createFormData(uri))
       .mapLeft {
-        val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
-        it.toErrorMessage().message ?: errorMessage
+        logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
+        it.toErrorMessage()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { "No upload token" }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
   }
