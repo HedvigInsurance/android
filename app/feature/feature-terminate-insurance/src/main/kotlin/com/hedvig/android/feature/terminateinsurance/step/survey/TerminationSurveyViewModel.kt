@@ -37,7 +37,7 @@ internal class TerminationSurveyViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
   changeTierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
-    initialState = TerminationSurveyState.Empty,
+    initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
       options,
       terminateInsuranceRepository,
@@ -56,7 +56,7 @@ internal class TerminationSurveyPresenter(
   ): TerminationSurveyState {
     var loadBetterQuotesSource by remember { mutableStateOf<ChangeTierCreateSource?>(null) }
     var loadNextStep by remember { mutableStateOf(false) }
-    var feedbackText: String? by remember { mutableStateOf(null) }
+    var feedbackText: String? by remember { mutableStateOf(lastState.feedbackText) }
 
     var showFullScreenTextField by remember {
       mutableStateOf(false)
@@ -185,6 +185,7 @@ internal class TerminationSurveyPresenter(
           option
         }
       },
+      feedbackText = feedbackText,
       showFullScreenEditText = showFullScreenTextField,
     )
   }
@@ -212,7 +213,7 @@ internal sealed interface TerminationSurveyEvent {
 
 internal data class TerminationSurveyState(
   val reasons: List<TerminationSurveyOption>,
-  val feedbackText: String,
+  val feedbackText: String?,
   val showFullScreenEditText: Boolean,
   val selectedOptionId: String?,
   val nextNavigationStep: SurveyNavigationStep?,
@@ -225,20 +226,18 @@ internal data class TerminationSurveyState(
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
   val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
 
-  companion object {
-    val Empty = TerminationSurveyState(
-      reasons = emptyList(),
-      feedbackText = "",
-      showFullScreenEditText = false,
-      selectedOptionId = null,
-      nextNavigationStep = null,
-      navigationStepLoading = false,
-      errorWhileLoadingNextStep = false,
-      showEmptyQuotesDialog = false,
-      intentAndIdToRedirectToChangeTierFlow = null,
-      actionButtonLoading = false,
-    )
-  }
+  constructor(reasons: List<TerminationSurveyOption>) : this(
+    reasons = reasons,
+    feedbackText = null,
+    showFullScreenEditText = false,
+    selectedOptionId = null,
+    nextNavigationStep = null,
+    navigationStepLoading = false,
+    errorWhileLoadingNextStep = false,
+    showEmptyQuotesDialog = false,
+    intentAndIdToRedirectToChangeTierFlow = null,
+    actionButtonLoading = false,
+  )
 }
 
 internal sealed interface SurveyNavigationStep {
