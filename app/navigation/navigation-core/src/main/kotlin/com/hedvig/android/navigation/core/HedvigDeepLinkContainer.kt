@@ -27,7 +27,6 @@ interface HedvigDeepLinkContainer {
   val editCoInsured: List<String>
 
   val terminateInsurance: List<String> // The screen with a list of insurances eligible for self-service cancellation
-  val terminateInsuranceWithoutId: List<String>
 
   val forever: List<String> // The forever/referrals destination, showing the existing discount and the unique code
 
@@ -91,9 +90,6 @@ internal class HedvigDeepLinkContainerImpl(
   }
   override val terminateInsurance: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
-  }
-  override val terminateInsuranceWithoutId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
-    "$baseDeepLinkDomain/terminate-contract"
   }
 
   override val forever: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/forever" }
@@ -162,5 +158,4 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     travelCertificate.first(),
     changeTierWithoutContractId.first(),
     changeTierWithContractId.first(),
-    terminateInsuranceWithoutId.first(),
   )

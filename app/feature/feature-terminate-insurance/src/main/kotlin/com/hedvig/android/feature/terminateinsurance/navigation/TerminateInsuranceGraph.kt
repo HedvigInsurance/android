@@ -85,7 +85,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     startDestination = TerminateInsuranceDestination.StartStep::class,
     deepLinks = navDeepLinks(
       hedvigDeepLinkContainer.terminateInsurance,
-      hedvigDeepLinkContainer.terminateInsuranceWithoutId,
     ),
   ) {
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
