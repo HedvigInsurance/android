@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.data
 
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
@@ -87,7 +88,7 @@ internal class CbmChatRepositoryImpl(
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
-  private val contentResolver: ContentResolver,
+  private val context: Context,
   private val clock: Clock,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
@@ -195,21 +196,23 @@ internal class CbmChatRepositoryImpl(
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
           failedToSend == PHOTO && url != null -> {
-            val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
+            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
             if (uriWithPermission != null) {
               sendOnePhoto(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise(ErrorMessage("Could not grant permission!"))
             }
           }
+
           failedToSend == MEDIA && url != null -> {
-            val uriWithPermission = grantPermissionForUri(contentResolver, url!!.toUri())
+            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
             if (uriWithPermission != null) {
               sendOneMedia(conversationId, messageToRetry.id, uriWithPermission)
             } else {
               raise(ErrorMessage("Could not grant permission!"))
             }
           }
+
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise(ErrorMessage("Unknown message type"))
@@ -502,10 +505,12 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   }
 }
 
-private fun grantPermissionForUri(contentResolver: ContentResolver, treeUri: Uri?): Uri? {
+private fun grantPermissionForUri(context: Context, treeUri: Uri?): Uri? {
   if (treeUri != null) {
     try {
-      contentResolver.takePersistableUriPermission(
+//      context.grantUriPermission(context.packageName,treeUri,
+//         Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      context.contentResolver.takePersistableUriPermission(
         treeUri,
         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
       )

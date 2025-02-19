@@ -55,7 +55,7 @@ val chatModule = module {
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
       clock = get<Clock>(),
-      contentResolver = get<Context>().contentResolver,
+      context = get<Context>(),
     )
   }
   single<CbmChatRepositoryDemo> {
