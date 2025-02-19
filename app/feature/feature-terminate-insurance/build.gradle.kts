@@ -49,6 +49,8 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(libs.compose.richtext)
+  implementation(libs.compose.richtextCommonmark)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

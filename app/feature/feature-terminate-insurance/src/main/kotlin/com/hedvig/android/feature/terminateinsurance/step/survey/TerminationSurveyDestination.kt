@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -43,11 +44,14 @@ import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
+import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.DowngradePriceByChangingTier
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
@@ -253,16 +257,38 @@ private fun TerminationSurveyScreen(
                     UnknownAction -> {
                       {}
                     }
+
+                    is SurveyOptionSuggestion.Info -> { // buttonText is always null for this type
+                      {}
+                    }
                   }
                   HedvigNotificationCard(
                     buttonLoading = uiState.actionButtonLoading,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    message = text,
-                    priority = NotificationPriority.Campaign,
-                    style = InfoCardStyle.Button(
-                      buttonText = buttonText,
-                      onButtonClick = onSuggestionButtonClick,
-                    ),
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                    content = {
+                      ProvideTextStyle(
+                        HedvigTheme.typography.label,
+                      ) {
+                        RichText {
+                          Markdown(
+                            content = text,
+                          )
+                        }
+                      }
+                    },
+                    priority = when (suggestion.infoType) {
+                      InfoType.INFO -> NotificationPriority.Info
+                      InfoType.OFFER -> NotificationPriority.Campaign
+                      InfoType.UNKNOWN -> NotificationPriority.InfoInline
+                    },
+                    style = if (buttonText != null) {
+                      InfoCardStyle.Button(
+                        buttonText = buttonText,
+                        onButtonClick = onSuggestionButtonClick,
+                      )
+                    } else {
+                      InfoCardStyle.Default
+                    },
                   )
                   Spacer(modifier = (Modifier.height(4.dp)))
                 }
@@ -412,7 +438,10 @@ private val previewReason1 = TerminationReason(
         listIndex = 2,
       ),
     ),
-    suggestion = SurveyOptionSuggestion.Action.UpdateAddress("test description", "test"),
+    suggestion = SurveyOptionSuggestion.Info(
+      "Why don't you try this: go to [Move to a new address](https://hedvig.page.link/home) here in the app, then proceed from there as you see fit",
+      infoType = InfoType.OFFER,
+    ),
     feedBackRequired = true,
     listIndex = 0,
   ),
@@ -457,6 +486,7 @@ private val previewReason3 = TerminationReason(
       "http://www.google.com",
       "Do this action instead",
       "Click here to do it",
+      infoType = InfoType.OFFER,
     ),
     feedBackRequired = false,
     listIndex = 3,
