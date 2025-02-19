@@ -333,15 +333,18 @@ private fun ColumnScope.SelectedSurveyTextDisplay(
   onLaunchFullScreenEditText: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val showTextEntry: (TerminationSurveyOption?) -> Boolean = { reason ->
+    reason != null &&
+      !reason.isDisabled &&
+      reason.feedBackRequired
+  }
   AnimatedContent(
     targetState = selectedReason,
     transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
+    contentKey = { showTextEntry(it) },
     modifier = modifier,
   ) { selectedReason ->
-    if (selectedReason != null &&
-      !selectedReason.isDisabled &&
-      selectedReason.feedBackRequired
-    ) {
+    if (showTextEntry(selectedReason)) {
       Column {
         Spacer(modifier = (Modifier.height(4.dp)))
         FreeTextDisplay(
@@ -415,20 +418,17 @@ private fun PreviewEmptyQuotesDialogContent() {
 private class ShowSurveyUiStateProvider :
   CollectionPreviewParameterProvider<TerminationSurveyState>(
     listOf(
-      TerminationSurveyState.Empty.copy(
-        reasons = listOf(previewReason1, previewReason2, previewReason3),
+      TerminationSurveyState(reasons = listOf(previewReason1, previewReason2, previewReason3)).copy(
         showFullScreenEditText = false,
         selectedOptionId = previewReason1.id,
         errorWhileLoadingNextStep = false,
       ),
-      TerminationSurveyState.Empty.copy(
-        reasons = listOf(previewReason1, previewReason2, previewReason3),
+      TerminationSurveyState(reasons = listOf(previewReason1, previewReason2, previewReason3)).copy(
         showFullScreenEditText = false,
         selectedOptionId = previewReason2.id,
         errorWhileLoadingNextStep = false,
       ),
-      TerminationSurveyState.Empty.copy(
-        reasons = listOf(previewReason1, previewReason2, previewReason3),
+      TerminationSurveyState(reasons = listOf(previewReason1, previewReason2, previewReason3)).copy(
         showFullScreenEditText = false,
         selectedOptionId = previewReason3.id,
         errorWhileLoadingNextStep = true,
