@@ -562,7 +562,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
@@ -617,7 +617,7 @@ private fun ChatBubble(
               FailedToBeSentUri(
                 chatMessage.id,
                 chatMessage.uri,
-                onRetrySendChatMessage, //todo: change to file picker + deleting from db! maybe
+                onRetrySendChatMessage,
                 imageLoader,
               )
             }
