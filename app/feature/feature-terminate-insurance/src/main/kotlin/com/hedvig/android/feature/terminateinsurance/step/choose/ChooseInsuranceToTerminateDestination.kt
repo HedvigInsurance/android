@@ -46,7 +46,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun ChooseInsuranceToTerminateDestination(
   viewModel: ChooseInsuranceToTerminateViewModel,
-  popBackStack: () -> Unit,
+  navigateUp: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   closeTerminationFlow: () -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
@@ -61,7 +61,7 @@ internal fun ChooseInsuranceToTerminateDestination(
   }
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
-    popBackStack = popBackStack,
+    navigateUp = navigateUp,
     openChat = onNavigateToNewConversation,
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
@@ -73,7 +73,7 @@ internal fun ChooseInsuranceToTerminateDestination(
 @Composable
 private fun ChooseInsuranceToTerminateScreen(
   uiState: ChooseInsuranceToTerminateStepUiState,
-  popBackStack: () -> Unit,
+  navigateUp: () -> Unit,
   reload: () -> Unit,
   openChat: () -> Unit,
   closeTerminationFlow: () -> Unit,
@@ -83,7 +83,7 @@ private fun ChooseInsuranceToTerminateScreen(
   when (uiState) {
     ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
       HedvigScaffold(
-        navigateUp = popBackStack,
+        navigateUp = navigateUp,
       ) {
         HedvigErrorSection(
           onButtonClick = openChat,
@@ -97,7 +97,7 @@ private fun ChooseInsuranceToTerminateScreen(
 
     ChooseInsuranceToTerminateStepUiState.Failure -> {
       HedvigScaffold(
-        navigateUp = popBackStack,
+        navigateUp = navigateUp,
       ) {
         HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
@@ -107,7 +107,7 @@ private fun ChooseInsuranceToTerminateScreen(
 
     is ChooseInsuranceToTerminateStepUiState.Success -> {
       TerminationScaffold(
-        navigateUp = popBackStack,
+        navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
         textForInfoIcon = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
       ) {
