@@ -26,7 +26,10 @@ internal interface TerminateInsuranceRepository {
 
   suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep>
 
-  suspend fun submitReasonForCancelling(reason: TerminationReason): Either<ErrorMessage, TerminateInsuranceStep>
+  suspend fun submitReasonForCancelling(
+    reason: TerminationSurveyOption,
+    feedback: String?,
+  ): Either<ErrorMessage, TerminateInsuranceStep>
 
   suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
 
@@ -72,7 +75,8 @@ internal class TerminateInsuranceRepositoryImpl(
   }
 
   override suspend fun submitReasonForCancelling(
-    reason: TerminationReason,
+    reason: TerminationSurveyOption,
+    feedback: String?,
   ): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
@@ -82,8 +86,8 @@ internal class TerminateInsuranceRepositoryImpl(
             context = terminationFlowContextStorage.getContext(),
             input = FlowTerminationSurveyInput(
               data = FlowTerminationSurveyDataInput(
-                optionId = reason.surveyOption.id,
-                text = Optional.presentIfNotNull(reason.feedBack),
+                optionId = reason.id,
+                text = Optional.presentIfNotNull(feedback),
               ),
             ),
             addonsEnabled = isAddonsEnabled,

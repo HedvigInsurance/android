@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,11 +59,9 @@ import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Redirect
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
-import java.lang.System.exit
 
 @Composable
 internal fun TerminationSurveyDestination(
@@ -114,13 +110,13 @@ internal fun TerminationSurveyDestination(
       viewModel.emit(TerminationSurveyEvent.SelectOption(option))
     },
     changeFeedbackForSelectedReason = { feedback ->
-      viewModel.emit(TerminationSurveyEvent.ChangeFeedbackForSelectedReason(feedback))
+      viewModel.emit(TerminationSurveyEvent.EditTextFeedback(feedback))
     },
     onCloseFullScreenEditText = {
       viewModel.emit(TerminationSurveyEvent.CloseFullScreenEditText)
     },
     onLaunchFullScreenEditText = {
-      viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
+      viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText)
     },
     openUrl = openUrl,
     tryToDowngradePrice = {
@@ -130,7 +126,7 @@ internal fun TerminationSurveyDestination(
       viewModel.emit(TerminationSurveyEvent.TryToUpgradeCoverage)
     },
     closeEmptyQuotesDialog = {
-      viewModel.emit(TerminationSurveyEvent.ClearEmptyQuotes)
+      viewModel.emit(TerminationSurveyEvent.ClearEmptyQuotesDialog)
     },
   )
 }
@@ -144,7 +140,7 @@ private fun TerminationSurveyScreen(
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
-  onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
+  onLaunchFullScreenEditText: () -> Unit,
   changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
   tryToUpgradeCoverage: () -> Unit,
@@ -153,7 +149,7 @@ private fun TerminationSurveyScreen(
 ) {
   FreeTextOverlay(
     freeTextMaxLength = 2000,
-    freeTextValue = uiState.showFullScreenEditText?.feedBack,
+    freeTextValue = uiState.feedbackText,
     freeTextHint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
     freeTextOnCancelClick = {
       onCloseFullScreenEditText()
@@ -161,7 +157,7 @@ private fun TerminationSurveyScreen(
     freeTextOnSaveClick = { feedback ->
       changeFeedbackForSelectedReason(feedback)
     },
-    shouldShowOverlay = uiState.showFullScreenEditText != null,
+    shouldShowOverlay = uiState.showFullScreenEditText,
     overlaidContent = {
       TerminationScaffold(
         navigateUp = navigateUp,
@@ -198,9 +194,9 @@ private fun TerminationSurveyScreen(
             val title = stringResource(R.string.something_went_wrong)
             EmptyState(
               modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .fillMaxWidth()
-                  .wrapContentWidth(),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
               text = title,
               iconStyle = ERROR,
               description = subTitle,
@@ -210,48 +206,35 @@ private fun TerminationSurveyScreen(
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
           for (reason in uiState.reasons) {
-            Column {
-              RadioOption(
-                optionText = reason.surveyOption.title,
-                chosenState = if (uiState.selectedOption == reason.surveyOption) Chosen else NotChosen,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                onClick = {
-                  if (!reason.surveyOption.isDisabled) {
-                    selectOption(reason.surveyOption)
-                  }
-                },
-                lockedState = if (reason.surveyOption.isDisabled) Locked else NotLocked,
-                radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
-              )
-              AnimatedVisibility(
-                visible = (
-                  reason.surveyOption == uiState.selectedOption &&
-                    !reason.surveyOption.isDisabled &&
-                    reason.surveyOption.feedBackRequired
-                ),
-              ) {
-                Column {
-                  Spacer(modifier = (Modifier.height(4.dp)))
-                  FreeTextDisplay(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    onClick = { onLaunchFullScreenEditText(reason.surveyOption) },
-                    freeTextValue = reason.feedBack,
-                    freeTextPlaceholder = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
-                  )
+            RadioOption(
+              optionText = reason.title,
+              chosenState = if (uiState.selectedOption == reason) Chosen else NotChosen,
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+              onClick = {
+                if (!reason.isDisabled) {
+                  selectOption(reason)
                 }
-              }
-            }
+              },
+              lockedState = if (reason.isDisabled) Locked else NotLocked,
+              radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+            )
           }
         }
         SelectedSurveyInfoBox(
-          selectedReason = uiState.selectedReason,
+          selectedOption = uiState.selectedOption,
           actionButtonLoading = uiState.actionButtonLoading,
           navigateToMovingFlow = navigateToMovingFlow,
           openUrl = openUrl,
           tryToDowngradePrice = tryToDowngradePrice,
           tryToUpgradeCoverage = tryToUpgradeCoverage,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        SelectedSurveyTextDisplay(
+          selectedReason = uiState.selectedOption,
+          feedbackText = uiState.feedbackText,
+          onLaunchFullScreenEditText = onLaunchFullScreenEditText,
           modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(12.dp))
@@ -263,10 +246,10 @@ private fun TerminationSurveyScreen(
             stringResource(id = R.string.general_continue_button),
             enabled = uiState.continueAllowed,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
             onClick = onContinueClick,
-            isLoading = uiState.navigationStepLoadingForReason != null,
+            isLoading = uiState.navigationStepLoading,
           )
         }
         Spacer(Modifier.height(16.dp))
@@ -277,7 +260,7 @@ private fun TerminationSurveyScreen(
 
 @Composable
 private fun ColumnScope.SelectedSurveyInfoBox(
-  selectedReason: TerminationReason?,
+  selectedOption: TerminationSurveyOption?,
   actionButtonLoading: Boolean,
   navigateToMovingFlow: () -> Unit,
   openUrl: (String) -> Unit,
@@ -286,17 +269,17 @@ private fun ColumnScope.SelectedSurveyInfoBox(
   modifier: Modifier = Modifier,
 ) {
   AnimatedContent(
-    targetState = selectedReason,
+    targetState = selectedOption,
     transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
     modifier = modifier,
   ) { selectedReason ->
     if (
       selectedReason != null &&
-      selectedReason.surveyOption.suggestion != null &&
-      !selectedReason.surveyOption.isDisabled
+      selectedReason.suggestion != null &&
+      !selectedReason.isDisabled
     ) {
       Column {
-        val suggestion = selectedReason.surveyOption.suggestion
+        val suggestion = selectedReason.suggestion
         Spacer(Modifier.height(4.dp))
         val text = suggestion.description
         val buttonText = suggestion.buttonTitle
@@ -336,6 +319,37 @@ private fun ColumnScope.SelectedSurveyInfoBox(
           ),
         )
         Spacer(modifier = (Modifier.height(4.dp)))
+      }
+    } else {
+      Spacer(Modifier)
+    }
+  }
+}
+
+@Composable
+private fun ColumnScope.SelectedSurveyTextDisplay(
+  selectedReason: TerminationSurveyOption?,
+  feedbackText: String?,
+  onLaunchFullScreenEditText: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  AnimatedContent(
+    targetState = selectedReason,
+    transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
+    modifier = modifier,
+  ) { selectedReason ->
+    if (selectedReason != null &&
+      !selectedReason.isDisabled &&
+      selectedReason.feedBackRequired
+    ) {
+      Column {
+        Spacer(modifier = (Modifier.height(4.dp)))
+        FreeTextDisplay(
+          modifier = Modifier.padding(horizontal = 16.dp),
+          onClick = { onLaunchFullScreenEditText() },
+          freeTextValue = feedbackText,
+          freeTextPlaceholder = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+        )
       }
     } else {
       Spacer(Modifier)
@@ -401,106 +415,96 @@ private fun PreviewEmptyQuotesDialogContent() {
 private class ShowSurveyUiStateProvider :
   CollectionPreviewParameterProvider<TerminationSurveyState>(
     listOf(
-      TerminationSurveyState(
-        nextNavigationStep = null,
-        navigationStepLoadingForReason = null,
-        selectedOption = previewReason1.surveyOption,
+      TerminationSurveyState.Empty.copy(
         reasons = listOf(previewReason1, previewReason2, previewReason3),
+        showFullScreenEditText = false,
+        selectedOptionId = previewReason1.id,
+        errorWhileLoadingNextStep = false,
       ),
-      TerminationSurveyState(
-        nextNavigationStep = null,
-        navigationStepLoadingForReason = null,
-        selectedOption = previewReason3.surveyOption,
+      TerminationSurveyState.Empty.copy(
         reasons = listOf(previewReason1, previewReason2, previewReason3),
+        showFullScreenEditText = false,
+        selectedOptionId = previewReason2.id,
+        errorWhileLoadingNextStep = false,
       ),
-      TerminationSurveyState(
-        nextNavigationStep = null,
-        navigationStepLoadingForReason = null,
+      TerminationSurveyState.Empty.copy(
+        reasons = listOf(previewReason1, previewReason2, previewReason3),
+        showFullScreenEditText = false,
+        selectedOptionId = previewReason3.id,
         errorWhileLoadingNextStep = true,
-        selectedOption = previewReason2.surveyOption,
-        reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
     ),
   )
 
-private val previewReason1 = TerminationReason(
-  TerminationSurveyOption(
-    id = "1",
-    title = "I'm moving",
-    subOptions = listOf(
-      TerminationSurveyOption(
-        id = "11",
-        title = "I'm moving in with someone else",
-        subOptions = listOf(),
-        suggestion = null,
-        feedBackRequired = false,
-        listIndex = 0,
-      ),
-      TerminationSurveyOption(
-        id = "12",
-        title = "I'm moving abroad",
-        subOptions = listOf(),
-        suggestion = null,
-        feedBackRequired = false,
-        listIndex = 1,
-      ),
-      TerminationSurveyOption(
-        id = "23",
-        title = "Other",
-        subOptions = listOf(),
-        suggestion = null,
-        feedBackRequired = true,
-        listIndex = 2,
-      ),
+private val previewReason1 = TerminationSurveyOption(
+  id = "1",
+  title = "I'm moving",
+  subOptions = listOf(
+    TerminationSurveyOption(
+      id = "11",
+      title = "I'm moving in with someone else",
+      subOptions = listOf(),
+      suggestion = null,
+      feedBackRequired = false,
+      listIndex = 0,
     ),
-    suggestion = SurveyOptionSuggestion.Action.UpdateAddress("test description", "test"),
-    feedBackRequired = true,
-    listIndex = 0,
+    TerminationSurveyOption(
+      id = "12",
+      title = "I'm moving abroad",
+      subOptions = listOf(),
+      suggestion = null,
+      feedBackRequired = false,
+      listIndex = 1,
+    ),
+    TerminationSurveyOption(
+      id = "23",
+      title = "Other",
+      subOptions = listOf(),
+      suggestion = null,
+      feedBackRequired = true,
+      listIndex = 2,
+    ),
   ),
-  null,
+  suggestion = SurveyOptionSuggestion.Action.UpdateAddress("test description", "test"),
+  feedBackRequired = true,
+  listIndex = 0,
 )
 
-private val previewReason2 = TerminationReason(
-  TerminationSurveyOption(
-    id = "2",
-    title = "I got a better offer elsewhere",
-    subOptions = listOf(),
-    suggestion = null,
-    feedBackRequired = true,
-    listIndex = 1,
-  ),
-  feedBack = LoremIpsum(25).values.first(),
+private val previewReason2 = TerminationSurveyOption(
+  id = "2",
+  title = "I got a better offer elsewhere",
+  subOptions = listOf(),
+  suggestion = null,
+  feedBackRequired = true,
+  listIndex = 1,
 )
 
-private val previewReason3 = TerminationReason(
-  TerminationSurveyOption(
-    id = "3",
-    title = "I am dissatisfied",
-    subOptions = listOf(
-      TerminationSurveyOption(
-        id = "31",
-        title = "I am dissatisfied with the coverage",
-        subOptions = listOf(),
-        suggestion = null,
-        feedBackRequired = true,
-        listIndex = 0,
-      ),
-      TerminationSurveyOption(
-        id = "32",
-        title = "I am dissatisfied with the service",
-        subOptions = listOf(),
-        suggestion = null,
-        feedBackRequired = true,
-        listIndex = 1,
-      ),
+private val previewReason3 = TerminationSurveyOption(
+  id = "3",
+  title = "I am dissatisfied",
+  subOptions = listOf(
+    TerminationSurveyOption(
+      id = "31",
+      title = "I am dissatisfied with the coverage",
+      subOptions = listOf(),
+      suggestion = null,
+      feedBackRequired = true,
+      listIndex = 0,
     ),
-    suggestion = SurveyOptionSuggestion.Redirect(
-      "http://www.google.com",
-      "Do this action instead",
-      "Click here to do it",
+    TerminationSurveyOption(
+      id = "32",
+      title = "I am dissatisfied with the service",
+      subOptions = listOf(),
+      suggestion = null,
+      feedBackRequired = true,
+      listIndex = 1,
     ),
-    feedBackRequired = false,
-    listIndex = 3,
   ),
-  null,
+  suggestion = SurveyOptionSuggestion.Redirect(
+    "http://www.google.com",
+    "Do this action instead",
+    "Click here to do it",
+  ),
+  feedBackRequired = false,
+  listIndex = 3,
 )

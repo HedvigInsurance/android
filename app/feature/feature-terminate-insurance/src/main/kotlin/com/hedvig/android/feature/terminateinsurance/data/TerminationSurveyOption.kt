@@ -54,8 +54,3 @@ internal sealed interface SurveyOptionSuggestion {
     override val buttonTitle: String,
   ) : SurveyOptionSuggestion
 }
-
-internal data class TerminationReason(
-  val surveyOption: TerminationSurveyOption,
-  val feedBack: String?,
-)

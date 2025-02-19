@@ -3,7 +3,6 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -16,14 +15,13 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
-import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ChangeFeedbackForSelectedReason
-import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotes
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearNextStep
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.CloseFullScreenEditText
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.Continue
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.EditTextFeedback
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.SelectOption
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ShowFullScreenEditText
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.TryToDowngradePrice
@@ -39,7 +37,7 @@ internal class TerminationSurveyViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
   changeTierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
-    initialState = TerminationSurveyState(),
+    initialState = TerminationSurveyState.Empty,
     presenter = TerminationSurveyPresenter(
       options,
       terminateInsuranceRepository,
@@ -58,22 +56,12 @@ internal class TerminationSurveyPresenter(
   ): TerminationSurveyState {
     var loadBetterQuotesSource by remember { mutableStateOf<ChangeTierCreateSource?>(null) }
     var loadNextStep by remember { mutableStateOf(false) }
-    val currentReasonsWithFeedback = remember {
-      val initialReasons = (
-        lastState.reasons.ifEmpty {
-          options.map { option ->
-            TerminationReason(option, null)
-          }
-        }
-      ).map {
-        it.surveyOption to it.feedBack
-      }
-      mutableStateMapOf(*initialReasons.toTypedArray())
-    }
+    var feedbackText: String? by remember { mutableStateOf(null) }
 
     var showFullScreenTextField by remember {
-      mutableStateOf<TerminationReason?>(null)
+      mutableStateOf(false)
     }
+    var disabledOptionsIdsDueToEmptyResultingQuotes by remember { mutableStateOf<List<String>>(emptyList()) }
 
     var currentState by remember {
       mutableStateOf(lastState)
@@ -81,16 +69,13 @@ internal class TerminationSurveyPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is ChangeFeedbackForSelectedReason -> {
-          showFullScreenTextField = null
-          val selectedOption = currentState.selectedOption
-          selectedOption?.let { selected ->
-            currentReasonsWithFeedback[selected] = event.newFeedback
-          }
+        is EditTextFeedback -> {
+          showFullScreenTextField = false
+          feedbackText = event.newFeedback
         }
 
         is SelectOption -> {
-          currentState = currentState.copy(selectedOption = event.option, errorWhileLoadingNextStep = false)
+          currentState = currentState.copy(selectedOptionId = event.option.id, errorWhileLoadingNextStep = false)
         }
 
         is Continue -> {
@@ -107,21 +92,11 @@ internal class TerminationSurveyPresenter(
           currentState = currentState.copy(nextNavigationStep = null, intentAndIdToRedirectToChangeTierFlow = null)
         }
 
-        is ShowFullScreenEditText -> {
-          showFullScreenTextField = TerminationReason(event.option, currentReasonsWithFeedback[event.option])
-        }
-
-        CloseFullScreenEditText -> showFullScreenTextField = null
-
-        TryToDowngradePrice -> {
-          loadBetterQuotesSource = TERMINATION_BETTER_PRICE
-        }
-
-        TryToUpgradeCoverage -> {
-          loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
-        }
-
-        ClearEmptyQuotes -> {
+        is ShowFullScreenEditText -> showFullScreenTextField = true
+        CloseFullScreenEditText -> showFullScreenTextField = false
+        TryToDowngradePrice -> loadBetterQuotesSource = TERMINATION_BETTER_PRICE
+        TryToUpgradeCoverage -> loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
+        ClearEmptyQuotesDialog -> {
           currentState = currentState.copy(showEmptyQuotesDialog = false)
         }
       }
@@ -147,22 +122,16 @@ internal class TerminationSurveyPresenter(
         ifRight = { changeTierIntent ->
           if (changeTierIntent.quotes.isEmpty()) {
             Snapshot.withMutableSnapshot {
-              val optionsToDisable = currentReasonsWithFeedback.filter {
-                it.key.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                  it.key.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-              }.keys
-              optionsToDisable.forEach {
-                if (currentReasonsWithFeedback.contains(it)) {
-                  currentReasonsWithFeedback.remove(it)
-                  val newOption = it.copy(isDisabled = true)
-                  currentReasonsWithFeedback[newOption] = null
-                }
+              val optionsToDisable = options.filter { option ->
+                option.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
+                  option.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
               }
+              disabledOptionsIdsDueToEmptyResultingQuotes = optionsToDisable.map { it.id }
               currentState = currentState.copy(
                 actionButtonLoading = false,
                 errorWhileLoadingNextStep = false,
                 showEmptyQuotesDialog = true,
-                selectedOption = null,
+                selectedOptionId = null,
               )
               loadBetterQuotesSource = null
             }
@@ -178,19 +147,18 @@ internal class TerminationSurveyPresenter(
       )
     }
 
-    LaunchedEffect(loadNextStep) {
-      if (loadNextStep) {
-        val option = currentState.selectedOption ?: return@LaunchedEffect
-        val reasonToSubmit = TerminationReason(option, currentReasonsWithFeedback[option])
-        currentState = currentState.copy(navigationStepLoadingForReason = reasonToSubmit)
+    if (loadNextStep) {
+      LaunchedEffect(Unit) {
+        val reasonToSubmit = currentState.selectedOption ?: return@LaunchedEffect
+        currentState = currentState.copy(navigationStepLoading = true)
         currentState = terminateInsuranceRepository
-          .submitReasonForCancelling(reasonToSubmit)
+          .submitReasonForCancelling(reasonToSubmit, feedbackText)
           .fold(
             ifLeft = {
               logcat(LogPriority.WARN) { "Received error on submitting reason for termination" }
               loadNextStep = false
               currentState.copy(
-                navigationStepLoadingForReason = null,
+                navigationStepLoading = false,
                 errorWhileLoadingNextStep = true,
               )
             },
@@ -200,7 +168,7 @@ internal class TerminationSurveyPresenter(
               }
               loadNextStep = false
               currentState.copy(
-                navigationStepLoadingForReason = null,
+                navigationStepLoading = false,
                 errorWhileLoadingNextStep = false,
                 nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(step),
               )
@@ -210,9 +178,13 @@ internal class TerminationSurveyPresenter(
     }
 
     return currentState.copy(
-      reasons = currentReasonsWithFeedback.map {
-        TerminationReason(it.key, it.value)
-      }.sortedBy { it.surveyOption.listIndex },
+      reasons = options.map { option ->
+        if (option.id in disabledOptionsIdsDueToEmptyResultingQuotes) {
+          option.copy(isDisabled = true)
+        } else {
+          option
+        }
+      },
       showFullScreenEditText = showFullScreenTextField,
     )
   }
@@ -227,33 +199,46 @@ internal sealed interface TerminationSurveyEvent {
 
   data object TryToUpgradeCoverage : TerminationSurveyEvent
 
-  data class ShowFullScreenEditText(val option: TerminationSurveyOption) : TerminationSurveyEvent
+  data object ShowFullScreenEditText : TerminationSurveyEvent
 
   data object CloseFullScreenEditText : TerminationSurveyEvent
 
-  data class ChangeFeedbackForSelectedReason(
-    val newFeedback: String?,
-  ) : TerminationSurveyEvent
+  data class EditTextFeedback(val newFeedback: String?) : TerminationSurveyEvent
 
   data object ClearNextStep : TerminationSurveyEvent
 
-  data object ClearEmptyQuotes : TerminationSurveyEvent
+  data object ClearEmptyQuotesDialog : TerminationSurveyEvent
 }
 
 internal data class TerminationSurveyState(
-  val reasons: List<TerminationReason> = listOf(),
-  val showFullScreenEditText: TerminationReason? = null,
-  val selectedOption: TerminationSurveyOption? = null,
-  val nextNavigationStep: SurveyNavigationStep? = null,
-  // this one is not Boolean entirely for the sake of more convenient testing
-  val navigationStepLoadingForReason: TerminationReason? = null,
-  val errorWhileLoadingNextStep: Boolean = false,
-  val showEmptyQuotesDialog: Boolean = false,
-  val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>? = null,
-  val actionButtonLoading: Boolean = false,
+  val reasons: List<TerminationSurveyOption>,
+  val feedbackText: String,
+  val showFullScreenEditText: Boolean,
+  val selectedOptionId: String?,
+  val nextNavigationStep: SurveyNavigationStep?,
+  val navigationStepLoading: Boolean,
+  val errorWhileLoadingNextStep: Boolean,
+  val showEmptyQuotesDialog: Boolean,
+  val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>?,
+  val actionButtonLoading: Boolean,
 ) {
+  val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
   val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
-  val selectedReason: TerminationReason? = reasons.firstOrNull { it.surveyOption == selectedOption }
+
+  companion object {
+    val Empty = TerminationSurveyState(
+      reasons = emptyList(),
+      feedbackText = "",
+      showFullScreenEditText = false,
+      selectedOptionId = null,
+      nextNavigationStep = null,
+      navigationStepLoading = false,
+      errorWhileLoadingNextStep = false,
+      showEmptyQuotesDialog = false,
+      intentAndIdToRedirectToChangeTierFlow = null,
+      actionButtonLoading = false,
+    )
+  }
 }
 
 internal sealed interface SurveyNavigationStep {
