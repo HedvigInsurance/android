@@ -49,12 +49,19 @@ fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyO
     action
     description
     buttonTitle
+    infoType
   }
   ... on FlowTerminationSurveyOptionSuggestionRedirect {
     buttonTitle
     description
     id
     url
+    infoType
+  }
+  ... on FlowTerminationSurveyOptionSuggestionInfo {
+    description
+    id
+    infoType
   }
 }
 
