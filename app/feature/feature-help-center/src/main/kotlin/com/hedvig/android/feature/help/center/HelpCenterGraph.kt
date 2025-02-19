@@ -2,18 +2,14 @@ package com.hedvig.android.feature.help.center
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredDestination
-import com.hedvig.android.feature.help.center.choosecoinsured.ChooseInsuranceForEditCoInsuredViewModel
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.FirstVet
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
-import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.ChooseInsuranceToEditCoInsured
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
@@ -74,15 +70,6 @@ fun NavGraphBuilder.helpCenterGraph(
                     )
                   }
                 }
-
-                ChooseInsuranceForEditCoInsured -> {
-                  with(navigator) {
-                    backStackEntry.navigate(
-                      ChooseInsuranceToEditCoInsured,
-                      // todo: change to EditCoinsuredTriage!
-                    )
-                  }
-                }
               }
             }
           }
@@ -94,19 +81,6 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToNewConversation(backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
-      )
-    }
-
-    navdestination<ChooseInsuranceToEditCoInsured> { backStackEntry ->
-      val viewModel = koinViewModel<ChooseInsuranceForEditCoInsuredViewModel>()
-      ChooseInsuranceForEditCoInsuredDestination(
-        viewModel = viewModel,
-        navigateUp = {
-          navigator.navigateUp()
-        },
-        navigateToNextStep = { destination ->
-          onNavigateToQuickLink(backStackEntry, destination)
-        },
       )
     }
 

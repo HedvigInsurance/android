@@ -12,11 +12,13 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDe
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -24,8 +26,14 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavController) {
-  navdestination<StartTierFlowDestination> { _ ->
+fun NavGraphBuilder.changeTierGraph(
+  navigator: Navigator,
+  navController: NavController,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+) {
+  navdestination<StartTierFlowDestination> (
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
+  ) { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
       parametersOf(this.insuranceId)
     }
@@ -44,7 +52,9 @@ fun NavGraphBuilder.changeTierGraph(navigator: Navigator, navController: NavCont
     )
   }
 
-  navdestination<StartTierFlowChooseInsuranceDestination> {
+  navdestination<StartTierFlowChooseInsuranceDestination>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithoutContractId),
+  ) {
     val viewModel: ChooseInsuranceViewModel = koinViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,

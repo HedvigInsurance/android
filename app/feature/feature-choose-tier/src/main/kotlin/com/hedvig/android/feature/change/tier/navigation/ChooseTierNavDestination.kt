@@ -6,6 +6,7 @@ import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -13,6 +14,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StartTierFlowDestination(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */
+  @SerialName("contractId")
   val insuranceId: String,
 ) : Destination
 
