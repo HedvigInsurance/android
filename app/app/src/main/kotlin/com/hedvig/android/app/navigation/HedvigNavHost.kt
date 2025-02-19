@@ -35,8 +35,11 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.*
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo
@@ -338,6 +341,7 @@ internal fun HedvigNavHost(
     changeTierGraph(
       navigator = navigator,
       navController = hedvigAppState.navController,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
@@ -358,17 +362,13 @@ internal fun HedvigNavHost(
             navigateToMovingFlow()
             return@onNavigateToQuickLink
           }
-
-          is QuickLinkCoInsuredAddInfo ->
-            EditCoInsuredDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
-
-          is QuickLinkCoInsuredAddOrRemove ->
-            EditCoInsuredDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
-
+          is QuickLinkCoInsuredAddInfo -> CoInsuredAddInfo(quickLinkDestination.contractId)
+          is QuickLinkCoInsuredAddOrRemove -> CoInsuredAddOrRemove(quickLinkDestination.contractId)
           QuickLinkConnectPayment -> TrustlyDestination
           QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
           QuickLinkTravelCertificate -> TravelCertificateGraphDestination
           QuickLinkChangeTier -> StartTierFlowChooseInsuranceDestination
+          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> EditCoInsuredTriage()
         }
         with(navigator) {
           backStackEntry.navigate(destination)

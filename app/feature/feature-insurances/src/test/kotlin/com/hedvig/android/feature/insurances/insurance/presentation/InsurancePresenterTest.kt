@@ -216,7 +216,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -253,7 +253,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -280,7 +280,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -307,7 +307,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -353,7 +353,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -385,7 +385,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
     presenter.test(InsuranceUiState.initialState) {
@@ -409,7 +409,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
@@ -438,7 +438,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -460,7 +460,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -482,7 +482,7 @@ internal class InsurancePresenterTest {
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
       backgroundScope,
-      getTravelAddonBannerInfoUseCase = getTravelAddonBannerInfoUseCase,
+      { getTravelAddonBannerInfoUseCase },
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),
@@ -514,7 +514,7 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val contracts = Turbine<List<InsuranceContract>>()
 
-    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
       return flow {
         emit(
           raceN(

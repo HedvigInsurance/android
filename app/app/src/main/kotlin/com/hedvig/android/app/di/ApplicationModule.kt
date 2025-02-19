@@ -44,6 +44,7 @@ import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.addons.di.dataAddonsModule
@@ -153,7 +154,7 @@ private val networkModule = module {
       .Builder()
       .okHttpClient(get<OkHttpClient>())
       .addInterceptor(LoggingInterceptor())
-      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>()))
+      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
       .normalizedCache(get<NormalizedCacheFactory>())
   }
   single<ApolloClient> {

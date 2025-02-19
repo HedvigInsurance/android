@@ -8,12 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 
 internal class ContractDetailViewModel(
@@ -53,7 +53,7 @@ internal class ContractDetailPresenter(
         featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
       ) { insuranceContractResult, isTerminationFlowEnabled ->
         insuranceContractResult to isTerminationFlowEnabled
-      }.collectLatest { (insuranceContractResult, isTerminationFlowEnabled) ->
+      }.collect { (insuranceContractResult, isTerminationFlowEnabled) ->
         insuranceContractResult.fold(
           ifLeft = { error ->
             currentState = when (error) {

@@ -21,6 +21,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.testingSupport)

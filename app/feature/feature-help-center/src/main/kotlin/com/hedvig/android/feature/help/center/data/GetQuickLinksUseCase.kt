@@ -6,7 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.ChooseInsuranceForEditCoInsured
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.featureflags.FeatureManager
@@ -27,16 +27,7 @@ internal class GetQuickLinksUseCase(
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
-      val linksToExpand = buildList<StandaloneQuickLink> {
-        if (memberActionOptions.isMovingEnabled) {
-          add(
-            StandaloneQuickLink(
-              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-              titleRes = R.string.insurance_details_change_address_button,
-              hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
-            ),
-          )
-        }
+      val linksToExpand = buildList {
         if (memberActionOptions.isEditCoInsuredEnabled) {
           val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
             .safeExecute(::ErrorMessage)
@@ -54,7 +45,7 @@ internal class GetQuickLinksUseCase(
         }
         if (memberActionOptions.isTierChangeEnabled) {
           add(
-            QuickAction.StandaloneQuickLink(
+            StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
               titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
               hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
@@ -63,7 +54,7 @@ internal class GetQuickLinksUseCase(
         }
         if (memberActionOptions.isCancelInsuranceEnabled) {
           add(
-            QuickAction.StandaloneQuickLink(
+            StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
               titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
               hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
@@ -80,7 +71,15 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-
+      if (memberActionOptions.isMovingEnabled) {
+        add(
+          StandaloneQuickLink(
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+          ),
+        )
+      }
       if (memberActionOptions.isConnectPaymentEnabled) {
         add(
           StandaloneQuickLink(
@@ -169,11 +168,11 @@ sealed interface QuickLinkDestination {
     data object QuickLinkConnectPayment : OuterDestination
 
     data object QuickLinkChangeTier : OuterDestination
+
+    data object ChooseInsuranceForEditCoInsured : OuterDestination
   }
 
   sealed interface InnerHelpCenterDestination : QuickLinkDestination {
-    data object ChooseInsuranceForEditCoInsured : InnerHelpCenterDestination
-
     data class QuickLinkSickAbroad(
       val emergencyNumber: String?,
       val emergencyUrl: String?,
