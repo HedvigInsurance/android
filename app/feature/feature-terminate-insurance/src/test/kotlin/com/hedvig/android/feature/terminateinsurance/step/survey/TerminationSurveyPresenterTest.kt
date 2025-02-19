@@ -26,6 +26,7 @@ import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -43,6 +44,7 @@ class TerminationSurveyPresenterTest {
   private val downgradeSuggestion = SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
     "description",
     "Button",
+    InfoType.INFO,
   )
 
   private val listOfOptionsForHome = listOf(
@@ -52,7 +54,7 @@ class TerminationSurveyPresenterTest {
       title = "I'm moving",
       subOptions = emptyList(),
       listIndex = 0,
-      suggestion = SurveyOptionSuggestion.Action.UpdateAddress("description", "buttonTitle"),
+      suggestion = SurveyOptionSuggestion.Action.UpdateAddress("description", "buttonTitle", InfoType.INFO),
     ),
     TerminationSurveyOption(
       id = "id2",

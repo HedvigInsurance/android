@@ -709,7 +709,7 @@ private fun QuickLinksSection(
                     ),
                     textAlign = TextAlign.Start,
                     color = HedvigTheme.colorScheme.textSecondary,
-                    style = HedvigTheme.typography.label,
+                    style = HedvigTheme.typography.finePrint,
                   )
                 },
                 onClick = {
@@ -745,7 +745,7 @@ private fun PlaceholderQuickLinks() {
         bottomText = {
           HedvigText(
             text = "HHHHHHHHHHHHHHHHHH",
-            style = HedvigTheme.typography.label,
+            style = HedvigTheme.typography.finePrint,
             modifier = Modifier
               .hedvigPlaceholder(
                 true,

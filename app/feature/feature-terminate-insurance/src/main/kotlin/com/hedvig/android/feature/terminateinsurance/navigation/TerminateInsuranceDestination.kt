@@ -17,7 +17,7 @@ data class TerminateInsuranceGraphDestination(
    * The ID to the contract which needs to be pre-selected in the termination flow
    */
   @SerialName("contractId")
-  val insuranceId: String?,
+  val insuranceId: String? = null,
 ) : Destination
 
 internal sealed interface TerminateInsuranceDestination {

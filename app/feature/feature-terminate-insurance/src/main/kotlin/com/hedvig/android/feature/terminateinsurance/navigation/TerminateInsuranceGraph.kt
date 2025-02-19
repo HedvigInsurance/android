@@ -83,7 +83,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
   navgraph<TerminateInsuranceGraphDestination>(
     startDestination = TerminateInsuranceDestination.StartStep::class,
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.terminateInsurance),
+    deepLinks = navDeepLinks(
+      hedvigDeepLinkContainer.terminateInsurance,
+    ),
   ) {
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController
