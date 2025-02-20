@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.chat.data
 
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
@@ -30,6 +29,7 @@ import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
@@ -88,7 +88,7 @@ internal class CbmChatRepositoryImpl(
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
-  private val context: Context,
+  private val contentResolver: ContentResolver,
   private val clock: Clock,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
@@ -195,29 +195,19 @@ internal class CbmChatRepositoryImpl(
       return with(messageToRetry) {
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
-          failedToSend == PHOTO && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
-            if (uriWithPermission != null) {
-              sendOnePhoto(conversationId, messageToRetry.id, uriWithPermission)
-            } else {
-              raise(ErrorMessage("Could not grant permission!"))
-            }
-          }
-
-          failedToSend == MEDIA && url != null -> {
-            val uriWithPermission = grantPermissionForUri(context, url!!.toUri())
-            if (uriWithPermission != null) {
-              sendOneMedia(conversationId, messageToRetry.id, uriWithPermission)
-            } else {
-              raise(ErrorMessage("Could not grant permission!"))
-            }
-          }
-
+          failedToSend == PHOTO && url != null -> sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
+          failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise(ErrorMessage("Unknown message type"))
           }
         }.onRight {
+          when (failedToSend) {
+            ChatMessageEntity.FailedToSendType.PHOTO,
+            ChatMessageEntity.FailedToSendType.MEDIA,
+            -> url!!.toUri().releasePersistableUriPermission()
+            else -> {}
+          }
           chatDao.deleteMessage(conversationId, messageId)
         }
       }
@@ -273,6 +263,7 @@ internal class CbmChatRepositoryImpl(
             clock.now(),
             uri,
           )
+        failedMessage.uri.takePersistableUriPermission()
         chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
       }
     }
@@ -293,6 +284,7 @@ internal class CbmChatRepositoryImpl(
           clock.now(),
           uri,
         )
+      failedMessage.uri.takePersistableUriPermission()
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
@@ -381,6 +373,14 @@ internal class CbmChatRepositoryImpl(
     ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
+  }
+
+  private fun Uri.takePersistableUriPermission() {
+    contentResolver.takePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  }
+
+  private fun Uri.releasePersistableUriPermission() {
+    contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
   }
 }
 
@@ -502,38 +502,6 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   else -> {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
-  }
-}
-
-private fun grantPermissionForUri(context: Context, treeUri: Uri?): Uri? {
-  if (treeUri != null) {
-    try {
-//      context.grantUriPermission(context.packageName,treeUri,
-//         Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      context.contentResolver.takePersistableUriPermission(
-        treeUri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
-      )
-      return treeUri
-    } catch (e: Throwable) {
-      logcat { "Could not takePersistableUriPermission with: ${e.message}" }
-      // todo: bc max 512 grants per app. should be enough?
-      // could do clearAllPersistedUriPermissions here, but then all the db uri would become stale
-    }
-  }
-  return null
-}
-
-private fun clearAllPersistedUriPermissions(contentResolver: ContentResolver) {
-  try {
-    for (uriPermission in contentResolver.persistedUriPermissions) {
-      contentResolver.releasePersistableUriPermission(
-        uriPermission.uri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
-      )
-    }
-  } catch (e: Throwable) {
-    e.printStackTrace()
   }
 }
 
