@@ -11,8 +11,10 @@ import kotlinx.serialization.Serializable
 import octopus.fragment.ExtraCoverageItemFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
+import octopus.fragment.FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.TerminationFlowStepFragment
+import octopus.type.FlowTerminationSurveyOptionSuggestionInfoType
 import octopus.type.FlowTerminationSurveyRedirectAction
 
 internal sealed interface TerminateInsuranceStep {
@@ -125,6 +127,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
           SurveyOptionSuggestion.Action.UpdateAddress(
             description = description,
             buttonTitle = buttonTitle,
+            infoType = this.infoType.toInfoType(),
           )
         }
 
@@ -132,6 +135,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
           SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
             description = description,
             buttonTitle = buttonTitle,
+            infoType = this.infoType.toInfoType(),
           )
         }
 
@@ -140,6 +144,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
             SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
               description = description,
               buttonTitle = buttonTitle,
+              infoType = this.infoType.toInfoType(),
             )
           } else {
             logcat(
@@ -167,6 +172,14 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
         buttonTitle = this.buttonTitle,
         description = this.description,
         url = this.url,
+        infoType = this.infoType.toInfoType(),
+      )
+    }
+
+    is FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment -> {
+      SurveyOptionSuggestion.Info(
+        description = this.description,
+        infoType = this.infoType.toInfoType(),
       )
     }
 
@@ -177,6 +190,14 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
       )
       null
     }
+  }
+}
+
+private fun FlowTerminationSurveyOptionSuggestionInfoType.toInfoType(): InfoType {
+  return when (this) {
+    FlowTerminationSurveyOptionSuggestionInfoType.INFO -> InfoType.INFO
+    FlowTerminationSurveyOptionSuggestionInfoType.OFFER -> InfoType.OFFER
+    FlowTerminationSurveyOptionSuggestionInfoType.UNKNOWN__ -> InfoType.UNKNOWN
   }
 }
 

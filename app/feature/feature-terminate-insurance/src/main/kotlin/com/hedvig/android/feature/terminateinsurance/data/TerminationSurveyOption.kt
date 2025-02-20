@@ -16,7 +16,16 @@ internal data class TerminationSurveyOption(
 @Serializable
 internal sealed interface SurveyOptionSuggestion {
   val description: String
-  val buttonTitle: String
+  val buttonTitle: String?
+  val infoType: InfoType
+
+  @Serializable
+  data class Info(
+    override val description: String,
+    override val infoType: InfoType,
+  ) : SurveyOptionSuggestion {
+    override val buttonTitle = null
+  }
 
   @Serializable
   sealed interface Action : SurveyOptionSuggestion {
@@ -24,26 +33,28 @@ internal sealed interface SurveyOptionSuggestion {
     data class UpdateAddress(
       override val description: String,
       override val buttonTitle: String,
+      override val infoType: InfoType,
     ) : Action
 
     @Serializable
     data class UpgradeCoverageByChangingTier(
       override val description: String,
       override val buttonTitle: String,
+      override val infoType: InfoType,
     ) : Action
 
     @Serializable
     data class DowngradePriceByChangingTier(
       override val description: String,
       override val buttonTitle: String,
+      override val infoType: InfoType,
     ) : Action
 
     @Serializable // adding for filtering. may be useful in the future for old clients?
     data object UnknownAction : Action {
-      override val description: String
-        get() = ""
-      override val buttonTitle: String
-        get() = ""
+      override val description: String = ""
+      override val buttonTitle: String = ""
+      override val infoType: InfoType = InfoType.UNKNOWN
     }
   }
 
@@ -52,10 +63,12 @@ internal sealed interface SurveyOptionSuggestion {
     val url: String,
     override val description: String,
     override val buttonTitle: String,
+    override val infoType: InfoType,
   ) : SurveyOptionSuggestion
 }
 
-internal data class TerminationReason(
-  val surveyOption: TerminationSurveyOption,
-  val feedBack: String?,
-)
+enum class InfoType {
+  INFO,
+  OFFER,
+  UNKNOWN,
+}
