@@ -8,12 +8,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -21,15 +24,20 @@ import kotlinx.datetime.LocalDate
 
 internal class AddonSummaryViewModel(
   summaryParameters: SummaryParameters,
+  addonPurchaseSource: TravelAddonBannerSource,
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
     initialState = getInitialState(summaryParameters),
-    presenter = AddonSummaryPresenter(summaryParameters, submitAddonPurchaseUseCase),
+    presenter = AddonSummaryPresenter(
+      summaryParameters,
+      submitAddonPurchaseUseCase,
+      addonPurchaseSource),
   )
 
 internal class AddonSummaryPresenter(
   private val summaryParameters: SummaryParameters,
   private val submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
+  private val addonPurchaseSource: TravelAddonBannerSource,
 ) :
   MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
@@ -59,6 +67,10 @@ internal class AddonSummaryPresenter(
             // the case of final failure?
           },
           ifRight = { date ->
+            val wasUpgradedFrom45 = summaryParameters.currentTravelAddon!=null
+            logcat(LogPriority.INFO) {
+              "Successfully purchased addon from source: $addonPurchaseSource was upgraded from 45: $wasUpgradedFrom45" }
+            //todo: make a log with real datadog event and attributes here
             currentState =
               initialState.copy(activationDateForSuccessfullyPurchasedAddon = summaryParameters.activationDate)
           },
