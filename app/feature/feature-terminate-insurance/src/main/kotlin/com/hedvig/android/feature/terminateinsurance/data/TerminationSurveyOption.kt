@@ -67,11 +67,6 @@ internal sealed interface SurveyOptionSuggestion {
   ) : SurveyOptionSuggestion
 }
 
-internal data class TerminationReason(
-  val surveyOption: TerminationSurveyOption,
-  val feedBack: String?,
-)
-
 enum class InfoType {
   INFO,
   OFFER,

@@ -30,7 +30,6 @@ import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -53,7 +52,7 @@ class TerminationSurveyPresenterTest {
       id = "id1",
       feedBackRequired = false,
       title = "I'm moving",
-      subOptions = listOf(),
+      subOptions = emptyList(),
       listIndex = 0,
       suggestion = SurveyOptionSuggestion.Action.UpdateAddress("description", "buttonTitle", InfoType.INFO),
     ),
@@ -64,8 +63,8 @@ class TerminationSurveyPresenterTest {
       suggestion = null,
       listIndex = 1,
       subOptions = listOf(
-        TerminationSurveyOption("id2-2", 0, "I have moved abroad", feedBackRequired = false, null, listOf()),
-        TerminationSurveyOption("id2-1", 1, "Other reason", feedBackRequired = true, null, listOf()),
+        TerminationSurveyOption("id2-2", 0, "I have moved abroad", feedBackRequired = false, null, emptyList()),
+        TerminationSurveyOption("id2-1", 1, "Other reason", feedBackRequired = true, null, emptyList()),
       ),
     ),
     TerminationSurveyOption(
@@ -74,7 +73,7 @@ class TerminationSurveyPresenterTest {
       feedBackRequired = true,
       suggestion = null,
       listIndex = 2,
-      subOptions = listOf(),
+      subOptions = emptyList(),
     ),
     TerminationSurveyOption(
       id = "id4",
@@ -82,7 +81,7 @@ class TerminationSurveyPresenterTest {
       feedBackRequired = false,
       suggestion = downgradeSuggestion,
       listIndex = 3,
-      subOptions = listOf(),
+      subOptions = emptyList(),
     ),
   )
 
@@ -95,12 +94,12 @@ class TerminationSurveyPresenterTest {
       terminateInsuranceRepository = repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
-      assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
-      assertThat(awaitItem().showFullScreenEditText?.surveyOption).isEqualTo(listOfOptionsForHome[3])
+      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText)
+      assertThat(awaitItem().showFullScreenEditText).isTrue()
     }
   }
 
@@ -113,14 +112,14 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
+      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText)
       assertThat(awaitItem().showFullScreenEditText).isNotNull()
       sendEvent(TerminationSurveyEvent.CloseFullScreenEditText)
-      assertThat(awaitItem().showFullScreenEditText).isNull()
+      assertThat(awaitItem().showFullScreenEditText).isFalse()
     }
   }
 
@@ -133,13 +132,13 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
-      assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
     }
   }
 
   @Test
-  fun `if feedback for a reason is changed the right reason is updated with the new feedback`() = runTest {
+  fun `if feedback for a reason is changed the screen-wide feedback text is updated with the new input`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
@@ -147,24 +146,16 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback!"))
-      assertThat(
-        awaitItem().reasons.first { it.surveyOption == listOfOptionsForHome[3] }.feedBack,
-      ).isEqualTo("new feedback!")
+      sendEvent(TerminationSurveyEvent.EditTextFeedback("new feedback!"))
+      assertThat(awaitItem().feedbackText).isEqualTo("new feedback!")
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[2]))
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback22!"))
-      assertThat(
-        awaitItem()
-          .reasons
-          .first {
-            it.surveyOption == listOfOptionsForHome[2]
-          }.feedBack,
-      ).isEqualTo("new feedback22!")
+      sendEvent(TerminationSurveyEvent.EditTextFeedback("new feedback22!"))
+      assertThat(awaitItem().feedbackText).isEqualTo("new feedback22!")
     }
   }
 
@@ -177,17 +168,24 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
+      LocalDate(2024, 6, 1),
+      LocalDate(2024, 6, 29),
+      emptyList(),
+    )
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("entirely new feedback"))
+      sendEvent(TerminationSurveyEvent.EditTextFeedback("entirely new feedback"))
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
-      assertThat(
-        awaitItem().navigationStepLoadingForReason,
-      ).isEqualTo(TerminationReason(listOfOptionsForHome[3], "entirely new feedback"))
-      cancelAndIgnoreRemainingEvents()
+      assertThat(awaitItem().navigationStepLoading).isTrue()
+      assertThat(repository.submitReasonForCancellingTurbine.awaitItem())
+        .isEqualTo(listOfOptionsForHome[3] to "entirely new feedback")
+      expectNoEvents()
+      repository.terminationFlowTurbine.add(nextStep.right())
+      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
     }
   }
 
@@ -205,11 +203,12 @@ class TerminationSurveyPresenterTest {
       LocalDate(2024, 6, 29),
       emptyList(),
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
+      repository.submitReasonForCancellingTurbine.awaitItem()
       skipItems(1)
       repository.terminationFlowTurbine.add(nextStep.right())
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
@@ -225,7 +224,7 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[1]))
       skipItems(1)
@@ -243,7 +242,7 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       val current = awaitItem()
@@ -263,23 +262,23 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       val current0 = awaitItem()
       val navig0 = current0.intentAndIdToRedirectToChangeTierFlow
       assertThat(navig0).isNull()
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf()).right(),
+        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), emptyList()).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
-      val optionNowDisabled = current.reasons.first { it.surveyOption.suggestion == downgradeSuggestion }
+      val optionNowDisabled = current.reasons.first { it.suggestion == downgradeSuggestion }
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
       assertThat(currentEmptyQuotesDialog).isTrue()
       assertThat(currentRedirectToChangeTierIntent).isNull()
-      assertThat(optionNowDisabled.surveyOption.isDisabled).isTrue()
+      assertThat(optionNowDisabled.isDisabled).isTrue()
     }
   }
 
@@ -292,7 +291,7 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(
@@ -316,7 +315,7 @@ class TerminationSurveyPresenterTest {
       repository,
       changeTierRepository,
     )
-    presenter.test(initialState = TerminationSurveyState()) {
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(ErrorMessage().left())
@@ -359,9 +358,9 @@ private val testQuote = TierDeductibleQuote(
     contractGroup = RENTAL,
     contractType = SE_APARTMENT_RENT,
     partner = "test",
-    perils = listOf(),
-    insurableLimits = listOf(),
-    documents = listOf(),
+    perils = emptyList(),
+    insurableLimits = emptyList(),
+    documents = emptyList(),
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
@@ -401,7 +400,9 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
 }
 
 private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
-  val terminationFlowTurbine = Turbine<Either<ErrorMessage, TerminateInsuranceStep>>()
+  val terminationFlowTurbine = Turbine<Either<ErrorMessage, TerminateInsuranceStep>>(name = "terminationFlowTurbine")
+  val submitReasonForCancellingTurbine =
+    Turbine<Pair<TerminationSurveyOption, String?>>(name = "submitReasonForCancellingTurbine")
 
   override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> =
     terminationFlowTurbine.awaitItem()
@@ -410,8 +411,12 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
     terminationFlowTurbine.awaitItem()
 
   override suspend fun submitReasonForCancelling(
-    reason: TerminationReason,
-  ): Either<ErrorMessage, TerminateInsuranceStep> = terminationFlowTurbine.awaitItem()
+    reason: TerminationSurveyOption,
+    feedback: String?,
+  ): Either<ErrorMessage, TerminateInsuranceStep> {
+    submitReasonForCancellingTurbine.add(reason to feedback)
+    return terminationFlowTurbine.awaitItem()
+  }
 
   override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> =
     terminationFlowTurbine.awaitItem()
