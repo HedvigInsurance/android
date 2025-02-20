@@ -336,6 +336,7 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<ErrorMessage>.uploadPhotoToBotService(uri: Uri): String {
+//    raise(ErrorMessage("Not implemented"))
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
     val uploadToken = botServiceService
@@ -352,6 +353,7 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<ErrorMessage>.uploadMediaToBotService(uri: Uri): String {
+//    raise(ErrorMessage("Not implemented"))
     val uploadToken = botServiceService
       .uploadFile(fileService.createFormData(uri))
       .mapLeft {

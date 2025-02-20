@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.chat.ui
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -67,6 +70,14 @@ import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
+private class PersistentPickMultipleVisualMedia : ActivityResultContracts.PickMultipleVisualMedia() {
+  override fun createIntent(context: Context, input: PickVisualMediaRequest): Intent {
+    return super.createIntent(context, input).apply {
+      addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+  }
+}
+
 @Composable
 internal fun ChatInput(
   onSendMessage: (message: String) -> Unit,
@@ -82,9 +93,13 @@ internal fun ChatInput(
     logcat { "ChatFileState sending uri:$uri" }
     onSendPhoto(listOf(uri))
   }
+  val context = LocalContext.current
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+    contract = PersistentPickMultipleVisualMedia(),
   ) { resultingUriList: List<Uri> ->
+    for (uri in resultingUriList) {
+//      context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
     onSendMedia(resultingUriList)
   }
   val filePicker = rememberLauncherForActivityResult(
@@ -174,7 +189,11 @@ private fun ChatInput(
           innerTextField()
         }
         AnimatedVisibility(showUploading) {
-          ThreeDotsLoading(Modifier.height(24.dp).padding(end = 8.dp))
+          ThreeDotsLoading(
+            Modifier
+              .height(24.dp)
+              .padding(end = 8.dp),
+          )
         }
         Box(
           modifier = Modifier
