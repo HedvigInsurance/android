@@ -109,7 +109,7 @@ private fun cbmChatPresenterPagingData(
     .flow
     .map { value ->
       value.flatMap { listOfNotNull(it.toChatMessage()) }
-    }
+    }.cachedIn(scope)
   return combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
     pagingData.map { cbmChatMessage ->
       CbmUiChatMessage(
@@ -117,7 +117,7 @@ private fun cbmChatPresenterPagingData(
         cbmChatMessage.sender == Sender.MEMBER && cbmChatMessage.id == lastDeliveredMessageId.toString(),
       )
     }
-  }.cachedIn(scope)
+  }
 }
 
 internal class CbmChatPresenter(

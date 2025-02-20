@@ -78,6 +78,7 @@ import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
@@ -616,7 +617,7 @@ private fun ChatBubble(
               FailedToBeSentUri(
                 chatMessage.id,
                 chatMessage.uri,
-                onRetrySendChatMessage, // todo: change to file picker + deleting from db! maybe
+                onRetrySendChatMessage,
                 imageLoader,
               )
             }
@@ -772,6 +773,10 @@ private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
       .Builder(context)
       .setMediaSourceFactory(
         mediaSourceFactory,
+      )
+      .setRenderersFactory(
+        DefaultRenderersFactory(context)
+          .setEnableDecoderFallback(true),
       )
       .build().apply {
         prepare()
