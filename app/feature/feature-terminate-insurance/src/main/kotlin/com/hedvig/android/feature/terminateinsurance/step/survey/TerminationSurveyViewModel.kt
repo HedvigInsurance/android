@@ -224,7 +224,12 @@ internal data class TerminationSurveyState(
   val actionButtonLoading: Boolean,
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
-  val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
+  val continueAllowed: Boolean = selectedOption != null &&
+    (
+      selectedOption.suggestion == null ||
+        selectedOption.suggestion is SurveyOptionSuggestion.Info ||
+        selectedOption.suggestion.buttonTitle == null
+    )
 
   constructor(reasons: List<TerminationSurveyOption>) : this(
     reasons = reasons,
