@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.chat.di
 
-import android.content.ContentResolver
+import android.content.Context
 import androidx.room.RoomDatabase
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo.ApolloClient
@@ -54,7 +54,7 @@ val chatModule = module {
       remoteKeyDao = get<RemoteKeyDao>(),
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
-      contentResolver = get<ContentResolver>(),
+      contentResolver = get<Context>().contentResolver,
       clock = get<Clock>(),
     )
   }
