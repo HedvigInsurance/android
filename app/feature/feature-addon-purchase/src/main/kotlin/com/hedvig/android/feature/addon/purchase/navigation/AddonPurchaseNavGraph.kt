@@ -56,7 +56,8 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       launchFlow = { insuranceIds: List<String> ->
         navigator.navigateUnsafe(
           AddonPurchaseGraphDestination(
-            insuranceIds, TravelAddonBannerSource.DEEPLINK,
+            insuranceIds,
+            TravelAddonBannerSource.DEEPLINK,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })

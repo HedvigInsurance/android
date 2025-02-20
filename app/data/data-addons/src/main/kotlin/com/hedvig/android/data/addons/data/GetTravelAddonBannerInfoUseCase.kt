@@ -32,7 +32,6 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
     val mappedSource = when (source) {
       TravelAddonBannerSource.TRAVEL_CERTIFICATES, TravelAddonBannerSource.DEEPLINK -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
       TravelAddonBannerSource.INSURANCES_TAB -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
-
     }
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
@@ -90,5 +89,5 @@ data class TravelAddonBannerInfo(
 enum class TravelAddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
-  DEEPLINK
+  DEEPLINK,
 }

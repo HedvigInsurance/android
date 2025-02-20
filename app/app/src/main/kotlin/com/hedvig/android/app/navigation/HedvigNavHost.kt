@@ -417,8 +417,12 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
-      navigator.navigateUnsafe(AddonPurchaseGraphDestination(
-        ids, TravelAddonBannerSource.TRAVEL_CERTIFICATES))
+      navigator.navigateUnsafe(
+        AddonPurchaseGraphDestination(
+          ids,
+          TravelAddonBannerSource.TRAVEL_CERTIFICATES,
+        ),
+      )
     },
   )
   claimFlowGraph(
