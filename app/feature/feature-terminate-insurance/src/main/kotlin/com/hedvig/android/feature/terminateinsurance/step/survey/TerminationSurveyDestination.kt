@@ -57,11 +57,10 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.DowngradePriceByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpdateAddress
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Redirect
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.Redirect
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.UpdateAddress
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -280,29 +279,12 @@ private fun ColumnScope.SelectedSurveyInfoBox(
     if (
       selectedReason != null &&
       selectedReason.suggestion != null &&
-      !selectedReason.isDisabled
+      !selectedReason.isDisabled &&
+      selectedReason.suggestion is SurveyOptionSuggestion.Known
     ) {
       Column {
         val suggestion = selectedReason.suggestion
         Spacer(Modifier.height(4.dp))
-        val text = suggestion.description
-        val buttonText = suggestion.buttonTitle
-        val onSuggestionButtonClick: (() -> Unit)? = when (suggestion) {
-          is SurveyOptionSuggestion.Action -> {
-            when (suggestion) {
-              is DowngradePriceByChangingTier -> tryToDowngradePrice
-              is UpdateAddress -> dropUnlessResumed { navigateToMovingFlow() }
-              is UpgradeCoverageByChangingTier -> tryToUpgradeCoverage
-              UnknownAction -> null
-            }
-          }
-
-          is Redirect -> {
-            { openUrl(suggestion.url) }
-          }
-          // buttonText is always null for this type
-          is SurveyOptionSuggestion.Info -> null
-        }
         HedvigNotificationCard(
           buttonLoading = actionButtonLoading,
           modifier = Modifier
@@ -314,7 +296,7 @@ private fun ColumnScope.SelectedSurveyInfoBox(
             ) {
               RichText {
                 Markdown(
-                  content = text,
+                  content = suggestion.description,
                 )
               }
             }
@@ -324,13 +306,20 @@ private fun ColumnScope.SelectedSurveyInfoBox(
             InfoType.OFFER -> NotificationPriority.Campaign
             InfoType.UNKNOWN -> NotificationPriority.InfoInline
           },
-          style = if (buttonText != null && onSuggestionButtonClick != null) {
-            InfoCardStyle.Button(
-              buttonText = buttonText,
-              onButtonClick = onSuggestionButtonClick,
+          style = when (suggestion) {
+            is SurveyOptionSuggestion.Known.Action -> InfoCardStyle.Button(
+              buttonText = suggestion.buttonTitle,
+              onButtonClick = when (suggestion) {
+                is DowngradePriceByChangingTier -> tryToDowngradePrice
+                is UpdateAddress -> dropUnlessResumed { navigateToMovingFlow() }
+                is UpgradeCoverageByChangingTier -> tryToUpgradeCoverage
+                is Redirect -> {
+                  { openUrl(suggestion.url) }
+                }
+              },
             )
-          } else {
-            InfoCardStyle.Default
+
+            is SurveyOptionSuggestion.Known.Info -> InfoCardStyle.Default
           },
         )
         Spacer(modifier = (Modifier.height(4.dp)))
@@ -480,7 +469,7 @@ private val previewReason1 = TerminationSurveyOption(
       listIndex = 2,
     ),
   ),
-  suggestion = SurveyOptionSuggestion.Info(
+  suggestion = SurveyOptionSuggestion.Known.Info(
     "Why don't you try this: go to [Move to a new address](https://hedvig.page.link/home) here in the app, then proceed from there as you see fit",
     infoType = InfoType.OFFER,
   ),
@@ -518,7 +507,7 @@ private val previewReason3 = TerminationSurveyOption(
       listIndex = 1,
     ),
   ),
-  suggestion = SurveyOptionSuggestion.Redirect(
+  suggestion = SurveyOptionSuggestion.Known.Action.Redirect(
     "http://www.google.com",
     "Do this action instead",
     "Click here to do it",
