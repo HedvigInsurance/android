@@ -1,5 +1,6 @@
 package com.hedvig.android.logger
 
+import com.hedvig.android.core.tracking.RumLogger
 import org.junit.rules.ExternalResource
 
 /**
@@ -12,12 +13,15 @@ import org.junit.rules.ExternalResource
  */
 class TestLogcatLoggingRule(
   private val testLogcatLogger: LogcatLogger = TestLogcatLogger(),
-) : ExternalResource(), LogcatLogger by testLogcatLogger {
+  private val testRumLogger: RumLogger = TestRumLogger(),
+) : ExternalResource(), LogcatLogger by testLogcatLogger, RumLogger by testRumLogger {
   override fun before() {
     LogcatLogger.install(testLogcatLogger)
+    RumLogger.install(testRumLogger)
   }
 
   override fun after() {
     LogcatLogger.uninstall()
+    RumLogger.uninstall()
   }
 }

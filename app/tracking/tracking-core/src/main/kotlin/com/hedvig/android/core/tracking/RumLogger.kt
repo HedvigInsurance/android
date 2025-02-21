@@ -34,6 +34,16 @@ interface RumLogger {
         this.rumLogger = rumLogger
       }
     }
+
+    /**
+     * Replaces the current logger (if any) with a no-op logger.
+     */
+    fun uninstall() {
+      synchronized(this) {
+        installedThrowable = null
+        rumLogger = NoLog
+      }
+    }
   }
 
   private object NoLog : RumLogger {

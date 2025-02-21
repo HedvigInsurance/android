@@ -5,6 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.CustomizeAddon
@@ -53,7 +54,12 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       viewModel = viewModel,
       popBackStack = navigator::popBackStack,
       launchFlow = { insuranceIds: List<String> ->
-        navigator.navigateUnsafe(AddonPurchaseGraphDestination(insuranceIds)) {
+        navigator.navigateUnsafe(
+          AddonPurchaseGraphDestination(
+            insuranceIds,
+            TravelAddonBannerSource.DEEPLINK,
+          ),
+        ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
         }
       },
@@ -143,8 +149,10 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
      * Summary for the purchase addon flow (not upgrade 45->60)
      */
     navdestination<Summary>(Summary) { backStackEntry ->
+      val source = navController
+        .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source
       val viewModel: AddonSummaryViewModel = koinViewModel {
-        parametersOf(this.params)
+        parametersOf(this.params, source)
       }
       AddonSummaryDestination(
         viewModel = viewModel,

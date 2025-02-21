@@ -71,6 +71,7 @@ internal class GetTravelAddonOfferUseCaseImpl(
 private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes(): NonEmptyList<TravelAddonQuote> {
   return this.map {
     TravelAddonQuote(
+      addonSubtype = it.addonSubtype,
       quoteId = it.quoteId,
       addonId = it.addonId,
       displayName = it.displayName,

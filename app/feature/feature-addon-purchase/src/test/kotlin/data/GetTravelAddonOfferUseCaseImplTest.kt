@@ -122,6 +122,7 @@ class GetTravelAddonOfferUseCaseImplTest {
               quotes = buildList {
                 add(
                   buildUpsellTravelAddonQuote {
+                    addonSubtype = "45_DAYS"
                     addonId = mockWithoutUpgrade.addonOptions[0].addonId
                     displayName = mockWithoutUpgrade.addonOptions[0].displayName
                     quoteId = mockWithoutUpgrade.addonOptions[0].quoteId
@@ -151,6 +152,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                 add(
                   buildUpsellTravelAddonQuote {
                     addonId = mockWithoutUpgrade.addonOptions[1].addonId
+                    addonSubtype = "45_DAYS"
                     displayName = mockWithoutUpgrade.addonOptions[1].displayName
                     quoteId = mockWithoutUpgrade.addonOptions[1].quoteId
                     displayItems = buildList {
@@ -211,6 +213,7 @@ class GetTravelAddonOfferUseCaseImplTest {
               quotes = buildList {
                 add(
                   buildUpsellTravelAddonQuote {
+                    addonSubtype = "45_DAYS"
                     addonId = mockWithUpgrade.addonOptions[0].addonId
                     displayName = mockWithUpgrade.addonOptions[0].displayName
                     quoteId = mockWithUpgrade.addonOptions[0].quoteId
@@ -318,6 +321,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
         product = "",
         perils = listOf(),
       ),
+      addonSubtype = "45_DAYS",
       price = UiMoney(
         49.0,
         UiCurrencyCode.SEK,
@@ -335,6 +339,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
         product = "",
         perils = listOf(),
       ),
+      addonSubtype = "45_DAYS",
       price = UiMoney(
         60.0,
         UiCurrencyCode.SEK,
@@ -361,6 +366,7 @@ private val mockWithUpgrade = TravelAddonOffer(
         product = "",
         perils = listOf(),
       ),
+      addonSubtype = "45_DAYS",
       price = UiMoney(
         60.0,
         UiCurrencyCode.SEK,
