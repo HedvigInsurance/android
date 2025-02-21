@@ -20,14 +20,6 @@ internal sealed interface SurveyOptionSuggestion {
   val infoType: InfoType
 
   @Serializable
-  data class Info(
-    override val description: String,
-    override val infoType: InfoType,
-  ) : SurveyOptionSuggestion {
-    override val buttonTitle = null
-  }
-
-  @Serializable
   sealed interface Action : SurveyOptionSuggestion {
     @Serializable
     data class UpdateAddress(
@@ -65,6 +57,14 @@ internal sealed interface SurveyOptionSuggestion {
     override val buttonTitle: String,
     override val infoType: InfoType,
   ) : SurveyOptionSuggestion
+
+  @Serializable
+  data class Info(
+    override val description: String,
+    override val infoType: InfoType,
+  ) : SurveyOptionSuggestion {
+    override val buttonTitle = null
+  }
 }
 
 enum class InfoType {
