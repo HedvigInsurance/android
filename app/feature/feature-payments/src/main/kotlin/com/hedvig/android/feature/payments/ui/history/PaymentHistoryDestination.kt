@@ -79,8 +79,7 @@ private fun PaymentHistoryScreen(
             PaymentHistory.NoHistoryData to { _: String -> }
           } else {
             PaymentHistory.PastCharges(
-              chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }
-                .map { (year, charges) ->
+              chargesInYear = uiState.paymentHistory.groupBy { it.dueDate.year }.map { (year, charges) ->
                   PaymentHistory.PastCharges.YearCharges(
                     year = year,
                     charge = charges.map { charge ->
