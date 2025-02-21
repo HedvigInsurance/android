@@ -3,6 +3,7 @@ package com.hedvig.android.compose.photo.capture.state
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -77,7 +78,7 @@ fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: Uri) 
   }
 
   val takePictureLauncher: ActivityResultLauncher<Uri> = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.TakePicture(),
+    contract = TakePicturePermittingPersistentAccess(),
   ) { didSucceed ->
     logcat {
       "Take picture launcher result, didSucceed:$didSucceed, currentPhotoPath:${photoCaptureState.currentPhotoPath}"
@@ -113,4 +114,12 @@ private fun Context.findActivity(): Activity {
     context = context.baseContext
   }
   throw IllegalStateException("no activity")
+}
+
+private class TakePicturePermittingPersistentAccess : ActivityResultContracts.TakePicture() {
+  override fun createIntent(context: Context, input: Uri): Intent {
+    return super.createIntent(context, input).apply {
+      addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+  }
 }
