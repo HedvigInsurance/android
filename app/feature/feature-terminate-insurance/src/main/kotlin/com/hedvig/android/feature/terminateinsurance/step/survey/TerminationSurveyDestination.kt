@@ -287,38 +287,27 @@ private fun ColumnScope.SelectedSurveyInfoBox(
         Spacer(Modifier.height(4.dp))
         val text = suggestion.description
         val buttonText = suggestion.buttonTitle
-        val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-          is UpdateAddress -> {
-            dropUnlessResumed { navigateToMovingFlow() }
+        val onSuggestionButtonClick: (() -> Unit)? = when (suggestion) {
+          is SurveyOptionSuggestion.Action -> {
+            when (suggestion) {
+              is DowngradePriceByChangingTier -> tryToDowngradePrice
+              is UpdateAddress -> dropUnlessResumed { navigateToMovingFlow() }
+              is UpgradeCoverageByChangingTier -> tryToUpgradeCoverage
+              UnknownAction -> null
+            }
           }
 
           is Redirect -> {
             { openUrl(suggestion.url) }
           }
-
-          is DowngradePriceByChangingTier -> {
-            {
-              tryToDowngradePrice()
-            }
-          }
-
-          is UpgradeCoverageByChangingTier -> {
-            {
-              tryToUpgradeCoverage()
-            }
-          }
-
-          UnknownAction -> {
-            {}
-          }
-
-          is SurveyOptionSuggestion.Info -> { // buttonText is always null for this type
-            {}
-          }
+          // buttonText is always null for this type
+          is SurveyOptionSuggestion.Info -> null
         }
         HedvigNotificationCard(
           buttonLoading = actionButtonLoading,
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
           content = {
             ProvideTextStyle(
               HedvigTheme.typography.label,
@@ -335,7 +324,7 @@ private fun ColumnScope.SelectedSurveyInfoBox(
             InfoType.OFFER -> NotificationPriority.Campaign
             InfoType.UNKNOWN -> NotificationPriority.InfoInline
           },
-          style = if (buttonText != null) {
+          style = if (buttonText != null && onSuggestionButtonClick != null) {
             InfoCardStyle.Button(
               buttonText = buttonText,
               onButtonClick = onSuggestionButtonClick,
