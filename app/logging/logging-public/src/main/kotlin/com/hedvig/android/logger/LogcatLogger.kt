@@ -36,7 +36,7 @@ interface LogcatLogger {
           }
         }
         installedThrowable = RuntimeException("Previous logger installed here")
-        Companion.logger = logger
+        this.logger = logger
       }
     }
 
