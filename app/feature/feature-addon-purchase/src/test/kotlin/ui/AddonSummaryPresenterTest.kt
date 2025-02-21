@@ -41,7 +41,7 @@ class AddonSummaryPresenterTest {
     val presenter = AddonSummaryPresenter(
       submitAddonPurchaseUseCase = useCase,
       summaryParameters = testSummaryParametersWithCurrentAddon,
-      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB
+      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB,
     )
     presenter.test(getInitialState(testSummaryParametersWithCurrentAddon)) {
       skipItems(1)
@@ -59,7 +59,7 @@ class AddonSummaryPresenterTest {
     val presenter = AddonSummaryPresenter(
       submitAddonPurchaseUseCase = useCase,
       summaryParameters = testSummaryParametersWithCurrentAddon,
-      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB
+      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB,
     )
     presenter.test(getInitialState(testSummaryParametersWithCurrentAddon)) {
       skipItems(1)
@@ -122,6 +122,7 @@ private val newQuote = TravelAddonQuote(
       ),
     ),
   ),
+  addonSubtype = "45_DAYS",
   price = UiMoney(
     60.0,
     UiCurrencyCode.SEK,
@@ -149,6 +150,7 @@ private val newQuote2 = TravelAddonQuote(
       ),
     ),
   ),
+  addonSubtype = "45_DAYS",
   price = UiMoney(
     60.0,
     UiCurrencyCode.NOK,

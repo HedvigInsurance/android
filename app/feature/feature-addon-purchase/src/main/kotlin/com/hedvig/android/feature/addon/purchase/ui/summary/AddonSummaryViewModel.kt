@@ -122,7 +122,7 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   val logInfo = AddonLogInfo(
     flow = addonPurchaseSource,
-    subType = summaryParameters.quote.displayName,
+    subType = summaryParameters.quote.addonSubtype,
   )
   val eventType = if (summaryParameters.currentTravelAddon == null) {
     AddonEventType.ADDON_PURCHASED

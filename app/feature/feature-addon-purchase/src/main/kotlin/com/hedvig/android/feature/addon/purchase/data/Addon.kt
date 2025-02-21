@@ -19,6 +19,7 @@ internal sealed interface Addon {
 @Serializable
 internal data class TravelAddonQuote(
   val quoteId: String,
+  val addonSubtype: String,
   val addonId: String,
   val displayName: String,
   val price: UiMoney,
