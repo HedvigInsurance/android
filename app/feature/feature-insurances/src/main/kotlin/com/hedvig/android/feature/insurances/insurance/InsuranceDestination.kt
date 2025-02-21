@@ -28,6 +28,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +78,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiS
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
@@ -148,6 +151,10 @@ private fun InsuranceScreen(
   )
   Surface(Modifier.fillMaxSize(), color = HedvigTheme.colorScheme.backgroundPrimary) {
     Box(propagateMinConstraints = true) {
+      remember { mutableStateOf(uiState) }.apply {
+        logcat { "Stelios:$uiState == ${this.value}" }
+        this.value = uiState
+      }
       AnimatedContent(
         targetState = uiState,
         transitionSpec = {

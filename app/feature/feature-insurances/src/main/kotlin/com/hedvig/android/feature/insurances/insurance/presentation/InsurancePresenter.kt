@@ -63,6 +63,47 @@ internal data class InsuranceUiState(
       travelAddonBannerInfo = null,
     )
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as InsuranceUiState
+    logcat { "Stelios 1" }
+    if (showNotificationBadge != other.showNotificationBadge) return false
+    logcat { "Stelios 2" }
+    if (quantityOfCancelledInsurances != other.quantityOfCancelledInsurances) return false
+    logcat { "Stelios 3" }
+    if (shouldSuggestMovingFlow != other.shouldSuggestMovingFlow) return false
+    logcat { "Stelios 4" }
+    if (hasError != other.hasError) return false
+    logcat { "Stelios 5" }
+    if (isLoading != other.isLoading) return false
+    logcat { "Stelios 6" }
+    if (isRetrying != other.isRetrying) return false
+    logcat { "Stelios 7" }
+    if (contracts != other.contracts) return false
+    logcat { "Stelios 8" }
+    if (crossSells != other.crossSells) return false
+    logcat { "Stelios 9" }
+    if (travelAddonBannerInfo != other.travelAddonBannerInfo) return false
+    logcat { "Stelios 10" }
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = showNotificationBadge.hashCode()
+    result = 31 * result + quantityOfCancelledInsurances
+    result = 31 * result + shouldSuggestMovingFlow.hashCode()
+    result = 31 * result + hasError.hashCode()
+    result = 31 * result + isLoading.hashCode()
+    result = 31 * result + isRetrying.hashCode()
+    result = 31 * result + contracts.hashCode()
+    result = 31 * result + crossSells.hashCode()
+    result = 31 * result + (travelAddonBannerInfo?.hashCode() ?: 0)
+    return result
+  }
 }
 
 internal class InsurancePresenter(
