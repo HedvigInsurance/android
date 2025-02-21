@@ -15,56 +15,54 @@ internal data class TerminationSurveyOption(
 
 @Serializable
 internal sealed interface SurveyOptionSuggestion {
-  val description: String
-  val buttonTitle: String?
-  val infoType: InfoType
-
-  @Serializable
-  data class Info(
-    override val description: String,
-    override val infoType: InfoType,
-  ) : SurveyOptionSuggestion {
-    override val buttonTitle = null
-  }
-
-  @Serializable
-  sealed interface Action : SurveyOptionSuggestion {
-    @Serializable
-    data class UpdateAddress(
-      override val description: String,
-      override val buttonTitle: String,
-      override val infoType: InfoType,
-    ) : Action
+  sealed interface Known : SurveyOptionSuggestion {
+    val description: String
+    val infoType: InfoType
 
     @Serializable
-    data class UpgradeCoverageByChangingTier(
-      override val description: String,
-      override val buttonTitle: String,
-      override val infoType: InfoType,
-    ) : Action
+    sealed interface Action : Known {
+      val buttonTitle: String
 
-    @Serializable
-    data class DowngradePriceByChangingTier(
-      override val description: String,
-      override val buttonTitle: String,
-      override val infoType: InfoType,
-    ) : Action
+      @Serializable
+      data class UpdateAddress(
+        override val description: String,
+        override val buttonTitle: String,
+        override val infoType: InfoType,
+      ) : Action
 
-    @Serializable // adding for filtering. may be useful in the future for old clients?
-    data object UnknownAction : Action {
-      override val description: String = ""
-      override val buttonTitle: String = ""
-      override val infoType: InfoType = InfoType.UNKNOWN
+      @Serializable
+      data class UpgradeCoverageByChangingTier(
+        override val description: String,
+        override val buttonTitle: String,
+        override val infoType: InfoType,
+      ) : Action
+
+      @Serializable
+      data class DowngradePriceByChangingTier(
+        override val description: String,
+        override val buttonTitle: String,
+        override val infoType: InfoType,
+      ) : Action
+
+      @Serializable
+      data class Redirect(
+        val url: String,
+        override val description: String,
+        override val buttonTitle: String,
+        override val infoType: InfoType,
+      ) : Action
     }
+
+    @Serializable
+    data class Info(
+      override val description: String,
+      override val infoType: InfoType,
+    ) : Known
   }
 
+  // Fallback for future-proofing old clients
   @Serializable
-  data class Redirect(
-    val url: String,
-    override val description: String,
-    override val buttonTitle: String,
-    override val infoType: InfoType,
-  ) : SurveyOptionSuggestion
+  data object Unknown : SurveyOptionSuggestion
 }
 
 enum class InfoType {

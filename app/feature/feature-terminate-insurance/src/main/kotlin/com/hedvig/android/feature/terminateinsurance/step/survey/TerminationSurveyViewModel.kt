@@ -123,8 +123,8 @@ internal class TerminationSurveyPresenter(
           if (changeTierIntent.quotes.isEmpty()) {
             Snapshot.withMutableSnapshot {
               val optionsToDisable = options.filter { option ->
-                option.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                  option.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+                option.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
+                  option.suggestion is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
               }
               disabledOptionsIdsDueToEmptyResultingQuotes = optionsToDisable.map { it.id }
               currentState = currentState.copy(
@@ -225,11 +225,7 @@ internal data class TerminationSurveyState(
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
   val continueAllowed: Boolean = selectedOption != null &&
-    (
-      selectedOption.suggestion == null ||
-        selectedOption.suggestion is SurveyOptionSuggestion.Info ||
-        selectedOption.suggestion.buttonTitle == null
-    )
+    (selectedOption.suggestion == null || selectedOption.suggestion !is SurveyOptionSuggestion.Known.Action)
 
   constructor(reasons: List<TerminationSurveyOption>) : this(
     reasons = reasons,
