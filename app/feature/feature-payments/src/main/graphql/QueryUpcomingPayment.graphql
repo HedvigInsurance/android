@@ -22,25 +22,19 @@ query UpcomingPayment {
 
 fragment MemberChargeFragment on MemberCharge {
   id
-  contractsChargeBreakdown {
-    contract {
-      exposureDisplayName
-      currentAgreement {
-        productVariant {
-          displayName
-        }
-      }
-    }
+  chargeBreakdown {
+    displayTitle
+    displaySubtitle
     gross {
       ...MoneyFragment
     }
     periods {
+      fromDate
+      toDate
       amount {
         ...MoneyFragment
       }
-      fromDate
       isPreviouslyFailedCharge
-      toDate
     }
   }
   date
