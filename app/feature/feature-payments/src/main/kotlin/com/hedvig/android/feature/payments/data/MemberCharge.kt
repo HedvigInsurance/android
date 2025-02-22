@@ -109,10 +109,10 @@ internal fun MemberChargeFragment.toMemberCharge(
   },
   dueDate = date,
   failedCharge = toFailedCharge(),
-  chargeBreakdowns = contractsChargeBreakdown.map { chargeBreakdown ->
+  chargeBreakdowns = chargeBreakdown.map { chargeBreakdown ->
     MemberCharge.ChargeBreakdown(
-      contractDisplayName = chargeBreakdown.contract.currentAgreement.productVariant.displayName,
-      contractDetails = chargeBreakdown.contract.exposureDisplayName,
+      contractDisplayName = chargeBreakdown.displayTitle,
+      contractDetails = chargeBreakdown.displaySubtitle ?: "",
       grossAmount = UiMoney.fromMoneyFragment(chargeBreakdown.gross),
       periods = chargeBreakdown.periods.map {
         MemberCharge.ChargeBreakdown.Period(
@@ -153,7 +153,7 @@ internal fun MemberChargeFragment.toMemberCharge(
 )
 
 internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
-  val previousChargesPeriods = contractsChargeBreakdown
+  val previousChargesPeriods = chargeBreakdown
     .flatMap { it.periods }
     .filter { it.isPreviouslyFailedCharge }
 
