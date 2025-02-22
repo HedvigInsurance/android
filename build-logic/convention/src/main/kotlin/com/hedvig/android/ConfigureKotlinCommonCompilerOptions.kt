@@ -11,6 +11,7 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
       configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
       jvmTarget.set(JvmTarget.JVM_21)
     }
+
     else -> {
       configureCommonKotlinCompilerOptions()
     }
@@ -26,21 +27,18 @@ private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
 }
 
 private fun commonFreeCompilerArgs(): List<String> {
-  return buildList {
-    addAll(
-      listOf(
-        "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-        "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
-        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
-        "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-        "-opt-in=kotlin.Experimental",
-        "-opt-in=kotlin.RequiresOptIn",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-opt-in=kotlinx.coroutines.FlowPreview",
-        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-      ),
-    )
-  }
+  return listOf(
+    "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
+    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+    "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
+    "-opt-in=androidx.media3.common.util.UnstableApi",
+    "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+    "-opt-in=kotlin.Experimental",
+    "-opt-in=kotlin.RequiresOptIn",
+    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "-opt-in=kotlinx.coroutines.FlowPreview",
+    "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+  )
 }
