@@ -3,7 +3,6 @@ package com.hedvig.android.feature.chat.ui
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
@@ -83,12 +82,12 @@ internal fun ChatInput(
     onSendPhoto(listOf(uri))
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+    contract = PickMultipleVisualMediaPermittingPersistentAccess(),
   ) { resultingUriList: List<Uri> ->
     onSendMedia(resultingUriList)
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetMultipleContents(),
+    contract = GetMultipleContentsPermittingPersistentAccess(),
   ) { resultingUriList: List<Uri> ->
     onSendMedia(resultingUriList)
   }

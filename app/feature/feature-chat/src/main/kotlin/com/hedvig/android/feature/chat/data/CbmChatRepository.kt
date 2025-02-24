@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.data
 
 import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -28,6 +29,7 @@ import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
@@ -200,6 +202,12 @@ internal class CbmChatRepositoryImpl(
             raise(ErrorMessage("Unknown message type"))
           }
         }.onRight {
+          when (failedToSend) {
+            ChatMessageEntity.FailedToSendType.PHOTO,
+            ChatMessageEntity.FailedToSendType.MEDIA,
+            -> url!!.toUri().releasePersistableUriPermission()
+            else -> {}
+          }
           chatDao.deleteMessage(conversationId, messageId)
         }
       }
@@ -255,6 +263,7 @@ internal class CbmChatRepositoryImpl(
             clock.now(),
             uri,
           )
+        failedMessage.uri.takePersistableUriPermission()
         chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
       }
     }
@@ -275,6 +284,7 @@ internal class CbmChatRepositoryImpl(
           clock.now(),
           uri,
         )
+      failedMessage.uri.takePersistableUriPermission()
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
@@ -363,6 +373,14 @@ internal class CbmChatRepositoryImpl(
     ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
+  }
+
+  private fun Uri.takePersistableUriPermission() {
+    contentResolver.takePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  }
+
+  private fun Uri.releasePersistableUriPermission() {
+    contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
   }
 }
 

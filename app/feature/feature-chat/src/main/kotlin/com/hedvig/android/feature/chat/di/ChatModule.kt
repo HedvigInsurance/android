@@ -54,8 +54,8 @@ val chatModule = module {
       remoteKeyDao = get<RemoteKeyDao>(),
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
-      clock = get<Clock>(),
       contentResolver = get<Context>().contentResolver,
+      clock = get<Clock>(),
     )
   }
   single<CbmChatRepositoryDemo> {
