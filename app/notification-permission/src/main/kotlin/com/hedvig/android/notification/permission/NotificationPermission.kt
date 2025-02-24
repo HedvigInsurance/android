@@ -4,9 +4,6 @@ package com.hedvig.android.notification.permission
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -63,7 +60,7 @@ private class NotificationPermissionStateImpl(
 @Composable
 fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState {
   val context = LocalContext.current
-  val activity = LocalActivity
+  val activity = LocalActivity.current
   val permissionState = remember {
     MutablePermissionState(Manifest.permission.POST_NOTIFICATIONS, context, activity)
   }
@@ -114,15 +111,6 @@ fun rememberNotificationPermissionStatus(): Boolean {
   } else {
     true
   }
-}
-
-private fun Context.findActivity(): Activity {
-  var context = this
-  while (context is ContextWrapper) {
-    if (context is Activity) return context
-    context = context.baseContext
-  }
-  throw IllegalStateException("Permissions should be called in the context of an Activity")
 }
 
 fun rememberPreviewNotificationPermissionState(
