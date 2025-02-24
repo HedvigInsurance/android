@@ -17,6 +17,7 @@ import kotlin.String
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
 import octopus.TravelAddonBannerQuery
 import octopus.type.UpsellTravelAddonFlow
 
@@ -86,6 +87,8 @@ data class TravelAddonBannerInfo(
   val bannerSource: UpsellTravelAddonFlow,
 )
 
+@Serializable
+@androidx.annotation.Keep
 enum class TravelAddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
