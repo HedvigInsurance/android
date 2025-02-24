@@ -16,7 +16,6 @@ import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -83,9 +82,7 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navdestination<ProfileDestinations.MyInfo>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo).also {
-        logcat { "Stelios it$it + {${hedvigDeepLinkContainer.contactInfo}}" }
-      },
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
     ) {
       val viewModel: MyInfoViewModel = koinViewModel()
       MyInfoDestination(

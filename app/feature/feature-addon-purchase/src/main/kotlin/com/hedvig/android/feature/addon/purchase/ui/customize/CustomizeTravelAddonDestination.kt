@@ -547,6 +547,7 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     displayName = "45 days",
     product = "",
   ),
+  addonSubtype = "45 days",
   price = UiMoney(
     49.0,
     UiCurrencyCode.SEK,
@@ -564,6 +565,7 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     displayName = "60 days",
     product = "",
   ),
+  addonSubtype = "45 days",
   price = UiMoney(
     60.0,
     UiCurrencyCode.SEK,

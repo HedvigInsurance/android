@@ -216,7 +216,10 @@ private fun PaymentsContent(
     }
     val upcomingPayment = (uiState as? Content)?.upcomingPayment
     if (upcomingPayment == NoUpcomingPayment) {
-      HedvigInformationSection(stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
+      HedvigInformationSection(
+        stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      )
     } else {
       PaymentAmountCard(
         upcomingPayment = upcomingPayment as? UpcomingPayment.Content,

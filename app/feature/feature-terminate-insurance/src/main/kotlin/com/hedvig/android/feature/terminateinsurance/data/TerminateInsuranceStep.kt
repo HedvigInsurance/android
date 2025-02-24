@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
@@ -11,8 +10,10 @@ import kotlinx.serialization.Serializable
 import octopus.fragment.ExtraCoverageItemFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
+import octopus.fragment.FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.TerminationFlowStepFragment
+import octopus.type.FlowTerminationSurveyOptionSuggestionInfoType
 import octopus.type.FlowTerminationSurveyRedirectAction
 
 internal sealed interface TerminateInsuranceStep {
@@ -72,7 +73,8 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList():
+  List<TerminationSurveyOption> {
   return map {
     // remade a bit of logic here. If we receive unknown actions in suggestion for one of the subOptions
     // (or the option itself),
@@ -82,7 +84,7 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       title = it.title,
       listIndex = this.indexOf(it),
       feedBackRequired = it.feedBack != null ||
-        (it.suggestion?.toSuggestion() == UnknownAction) ||
+        (it.suggestion?.toSuggestion() == SurveyOptionSuggestion.Unknown) ||
         it.subOptions?.noUnknownActions() == false,
       subOptions = it.subOptions?.toSubOptionList() ?: emptyList(),
       suggestion = it.suggestion?.toSuggestion(),
@@ -90,13 +92,15 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(): Boolean {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions():
+  Boolean {
   return none { subOption ->
-    subOption.suggestion?.toSuggestion() == UnknownAction
+    subOption.suggestion?.toSuggestion() == SurveyOptionSuggestion.Unknown
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList():
+  List<TerminationSurveyOption> {
   // no subOptions if one of them contains some action that we don't know how to handle
   val filtered = takeIf { subs ->
     subs.noUnknownActions()
@@ -119,24 +123,27 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
       when (action) {
         FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS -> {
-          SurveyOptionSuggestion.Action.UpdateAddress(
+          SurveyOptionSuggestion.Known.Action.UpdateAddress(
             description = description,
             buttonTitle = buttonTitle,
+            infoType = this.infoType.toInfoType(),
           )
         }
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
-          SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
+          SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier(
             description = description,
             buttonTitle = buttonTitle,
+            infoType = this.infoType.toInfoType(),
           )
         }
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
           if (isTierFeatureEnabled) {
-            SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
+            SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
               description = description,
               buttonTitle = buttonTitle,
+              infoType = this.infoType.toInfoType(),
             )
           } else {
             logcat(
@@ -145,7 +152,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
                 "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_MISSING_COVERAGE_AND_TERMS but tier feature flag is disabled!"
               },
             )
-            UnknownAction
+            SurveyOptionSuggestion.Unknown
           }
         }
 
@@ -154,16 +161,24 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
             LogPriority.WARN,
             message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
           )
-          UnknownAction
+          SurveyOptionSuggestion.Unknown
         }
       }
     }
 
     is FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment -> {
-      SurveyOptionSuggestion.Redirect(
+      SurveyOptionSuggestion.Known.Action.Redirect(
         buttonTitle = this.buttonTitle,
         description = this.description,
         url = this.url,
+        infoType = this.infoType.toInfoType(),
+      )
+    }
+
+    is FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment -> {
+      SurveyOptionSuggestion.Known.Info(
+        description = this.description,
+        infoType = this.infoType.toInfoType(),
       )
     }
 
@@ -174,6 +189,14 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
       )
       null
     }
+  }
+}
+
+private fun FlowTerminationSurveyOptionSuggestionInfoType.toInfoType(): InfoType {
+  return when (this) {
+    FlowTerminationSurveyOptionSuggestionInfoType.INFO -> InfoType.INFO
+    FlowTerminationSurveyOptionSuggestionInfoType.OFFER -> InfoType.OFFER
+    FlowTerminationSurveyOptionSuggestionInfoType.UNKNOWN__ -> InfoType.UNKNOWN
   }
 }
 
