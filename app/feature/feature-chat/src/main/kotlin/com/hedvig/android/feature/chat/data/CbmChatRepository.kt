@@ -258,7 +258,12 @@ internal class CbmChatRepositoryImpl(
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       if (it.throwable !is BackendFileLimitException) {
-        handleFailedToSendMedia(messageId, uri, conversationId)
+        val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+          messageId?.toString() ?: Uuid.randomUUID().toString(),
+          clock.now(),
+          uri,
+        )
+        handleFailedToSendMedia(failedMessage, uri, conversationId)
       }
     }
   }
@@ -272,18 +277,22 @@ internal class CbmChatRepositoryImpl(
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
-      handleFailedToSendMedia(messageId, uri, conversationId)
+      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        clock.now(),
+        uri,
+      )
+      handleFailedToSendMedia(failedMessage, uri, conversationId)
     }
   }
 
-  private suspend fun handleFailedToSendMedia(messageId: Uuid?, uri: Uri, conversationId: Uuid) {
-    val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-      messageId?.toString() ?: Uuid.randomUUID().toString(),
-      clock.now(),
-      uri,
-    )
+  private suspend fun handleFailedToSendMedia(
+    failedMessage: CbmChatMessage.FailedToBeSent,
+    uri: Uri,
+    conversationId: Uuid,
+  ) {
     try {
-      failedMessage.uri.takePersistableUriPermission()
+      uri.takePersistableUriPermission()
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     } catch (e: SecurityException) {
       // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
