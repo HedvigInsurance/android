@@ -38,7 +38,7 @@ internal class CbmChatRepositoryDemo(
     conversationId: Uuid,
     pagingToken: PagingToken?,
   ): Either<Throwable, ChatMessagePageResponse> {
-    return Exception(demoErrorMessage.message).left()
+    return Exception(demoErrorMessage.originalError.message).left()
   }
 
   override fun pollNewestMessages(conversationId: Uuid): Flow<String> {

@@ -406,7 +406,7 @@ internal class CbmChatRepositoryImpl(
   }
 }
 
-sealed class MessageSendError(val originalError: ErrorMessage) : ErrorMessage by originalError {
+sealed class MessageSendError(val originalError: ErrorMessage) {
   class GenericError(originalError: ErrorMessage) : MessageSendError(originalError)
 
   class FileTooBigError(originalError: ErrorMessage) : MessageSendError(originalError)
