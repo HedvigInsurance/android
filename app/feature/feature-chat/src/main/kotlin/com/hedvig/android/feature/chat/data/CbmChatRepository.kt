@@ -205,7 +205,8 @@ internal class CbmChatRepositoryImpl(
           when (failedToSend) {
             ChatMessageEntity.FailedToSendType.PHOTO,
             ChatMessageEntity.FailedToSendType.MEDIA,
-            -> url!!.toUri().releasePersistableUriPermission()
+            -> url!!.toUri().tryReleasePersistableUriPermission()
+
             else -> {}
           }
           chatDao.deleteMessage(conversationId, messageId)
@@ -257,14 +258,12 @@ internal class CbmChatRepositoryImpl(
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       if (it.throwable !is BackendFileLimitException) {
-        val failedMessage =
-          CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-            messageId?.toString() ?: Uuid.randomUUID().toString(),
-            clock.now(),
-            uri,
-          )
-        failedMessage.uri.takePersistableUriPermission()
-        chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+        val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+          messageId?.toString() ?: Uuid.randomUUID().toString(),
+          clock.now(),
+          uri,
+        )
+        handleFailedToSendMedia(failedMessage, uri, conversationId)
       }
     }
   }
@@ -278,14 +277,27 @@ internal class CbmChatRepositoryImpl(
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      failedMessage.uri.takePersistableUriPermission()
+      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        clock.now(),
+        uri,
+      )
+      handleFailedToSendMedia(failedMessage, uri, conversationId)
+    }
+  }
+
+  private suspend fun handleFailedToSendMedia(
+    failedMessage: CbmChatMessage.FailedToBeSent,
+    uri: Uri,
+    conversationId: Uuid,
+  ) {
+    try {
+      uri.takePersistableUriPermission()
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+    } catch (e: SecurityException) {
+      // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
+      // without the persistent access permission given to us
+      logcat(ERROR, e) { "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri" }
     }
   }
 
@@ -379,8 +391,12 @@ internal class CbmChatRepositoryImpl(
     contentResolver.takePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
   }
 
-  private fun Uri.releasePersistableUriPermission() {
-    contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  private fun Uri.tryReleasePersistableUriPermission() {
+    try {
+      contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    } catch (e: SecurityException) {
+      logcat(ERROR, e) { "PersistableUriPermission: Failed to release persistable uri permission for uri:$this" }
+    }
   }
 }
 
