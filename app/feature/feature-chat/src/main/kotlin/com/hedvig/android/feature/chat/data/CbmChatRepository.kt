@@ -72,13 +72,13 @@ internal interface CbmChatRepository {
 
   fun pollNewestMessages(conversationId: Uuid): Flow<String>
 
-  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<ErrorMessage, CbmChatMessage>
+  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<MessageSendError, CbmChatMessage>
 
-  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<ErrorMessage, CbmChatMessage>
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<MessageSendError, CbmChatMessage>
 
-  suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): List<Either<ErrorMessage, CbmChatMessage>>
+  suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 
-  suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<ErrorMessage, CbmChatMessage>>
+  suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 }
 
 internal class CbmChatRepositoryImpl(
@@ -185,12 +185,15 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<ErrorMessage, CbmChatMessage> {
+  override suspend fun retrySendMessage(
+    conversationId: Uuid,
+    messageId: String,
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
-        ErrorMessage("Message not found")
+        ErrorMessage("Message not found").toMessageSendError()
       }
       return with(messageToRetry) {
         when {
@@ -199,7 +202,7 @@ internal class CbmChatRepositoryImpl(
           failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
-            raise(ErrorMessage("Unknown message type"))
+            raise(ErrorMessage("Unknown message type").toMessageSendError())
           }
         }.onRight {
           when (failedToSend) {
@@ -219,7 +222,7 @@ internal class CbmChatRepositoryImpl(
     conversationId: Uuid,
     messageId: Uuid?,
     text: String,
-  ): Either<ErrorMessage, CbmChatMessage> {
+  ): Either<MessageSendError, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
         messageId?.toString() ?: Uuid.randomUUID().toString(),
@@ -233,7 +236,7 @@ internal class CbmChatRepositoryImpl(
   override suspend fun sendPhotos(
     conversationId: Uuid,
     uriList: List<Uri>,
-  ): List<Either<ErrorMessage, CbmChatMessage>> {
+  ): List<Either<MessageSendError, CbmChatMessage>> {
     return uriList.parMap { uri ->
       sendOnePhoto(conversationId, null, uri)
     }
@@ -242,7 +245,7 @@ internal class CbmChatRepositoryImpl(
   override suspend fun sendMedia(
     conversationId: Uuid,
     uriList: List<Uri>,
-  ): List<Either<ErrorMessage, CbmChatMessage>> {
+  ): List<Either<MessageSendError, CbmChatMessage>> {
     return uriList.parMap { uri ->
       sendOneMedia(conversationId, null, uri)
     }
@@ -252,18 +255,18 @@ internal class CbmChatRepositoryImpl(
     conversationId: Uuid,
     messageId: Uuid?,
     uri: Uri,
-  ): Either<ErrorMessage, CbmChatMessage> {
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
-    }.onLeft {
-      if (it.throwable !is BackendFileLimitException) {
+    }.onLeft { messageSendError ->
+      if (messageSendError !is MessageSendError.FileTooBigError) {
         val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageMedia(
           messageId?.toString() ?: Uuid.randomUUID().toString(),
           clock.now(),
           uri,
         )
-        handleFailedToSendMedia(failedMessage, uri, conversationId)
+        messageSendError.handleFailedToSendMedia(failedMessage, uri, conversationId)
       }
     }
   }
@@ -272,7 +275,7 @@ internal class CbmChatRepositoryImpl(
     conversationId: Uuid,
     messageId: Uuid?,
     uri: Uri,
-  ): Either<ErrorMessage, CbmChatMessage> {
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
@@ -282,41 +285,44 @@ internal class CbmChatRepositoryImpl(
         clock.now(),
         uri,
       )
-      handleFailedToSendMedia(failedMessage, uri, conversationId)
+      it.handleFailedToSendMedia(failedMessage, uri, conversationId)
     }
   }
 
-  private suspend fun handleFailedToSendMedia(
+  private suspend fun MessageSendError.handleFailedToSendMedia(
     failedMessage: CbmChatMessage.FailedToBeSent,
     uri: Uri,
     conversationId: Uuid,
-  ) {
+  ): MessageSendError {
     try {
       uri.takePersistableUriPermission()
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     } catch (e: SecurityException) {
       // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
       // without the persistent access permission given to us
       logcat(ERROR, e) { "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri" }
+      return MessageSendError.FailedToPersistUriPermissionError(this.originalError)
     }
+    chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+    return this
   }
 
   private suspend fun sendMessage(
     conversationId: Uuid,
     input: ConversationInput,
-  ): Either<ErrorMessage, CbmChatMessage> {
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val response = apolloClient
         .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
         .safeExecute(::ErrorMessage)
+        .mapLeft(ErrorMessage::toMessageSendError)
         .bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
-        ErrorMessage("Sent message resulted in no response from backend")
+        ErrorMessage("Sent message resulted in no response from backend").toMessageSendError()
       }
       val chatMessage = response.conversationSendMessage.message.toChatMessage()
       ensureNotNull(chatMessage) {
-        ErrorMessage("Unknown chat message type")
+        ErrorMessage("Unknown chat message type").toMessageSendError()
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
       chatMessage
@@ -357,32 +363,32 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  private suspend fun Raise<ErrorMessage>.uploadPhotoToBotService(uri: Uri): String {
+  private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
     val uploadToken = botServiceService
       .uploadFile(file, contentType)
       .mapLeft {
         logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
-        it.toErrorMessage()
+        it.toErrorMessage().toMessageSendError()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
     return uploadToken
   }
 
-  private suspend fun Raise<ErrorMessage>.uploadMediaToBotService(uri: Uri): String {
+  private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = botServiceService
       .uploadFile(fileService.createFormData(uri))
       .mapLeft {
         logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
-        it.toErrorMessage()
+        it.toErrorMessage().toMessageSendError()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { ErrorMessage("No upload token") }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
   }
@@ -397,6 +403,22 @@ internal class CbmChatRepositoryImpl(
     } catch (e: SecurityException) {
       logcat(ERROR, e) { "PersistableUriPermission: Failed to release persistable uri permission for uri:$this" }
     }
+  }
+}
+
+sealed class MessageSendError(val originalError: ErrorMessage) : ErrorMessage by originalError {
+  class GenericError(originalError: ErrorMessage) : MessageSendError(originalError)
+
+  class FileTooBigError(originalError: ErrorMessage) : MessageSendError(originalError)
+
+  class FailedToPersistUriPermissionError(originalError: ErrorMessage) : MessageSendError(originalError)
+}
+
+private fun ErrorMessage.toMessageSendError(): MessageSendError {
+  return if (throwable is BackendFileLimitException) {
+    MessageSendError.FileTooBigError(this)
+  } else {
+    MessageSendError.GenericError(this)
   }
 }
 
