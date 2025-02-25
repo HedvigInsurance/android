@@ -23,7 +23,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.flatMap
 import androidx.paging.map
 import androidx.room.RoomDatabase
+import arrow.core.Either
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.data.chat.database.ChatDao
@@ -199,13 +201,7 @@ internal class CbmChatPresenter(
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
-          val hadSomeFailureDueToBigFileSize = result.any {
-            it.fold(
-              { errorMessage -> errorMessage.throwable is BackendFileLimitException },
-              { false },
-            )
-          }
-          if (hadSomeFailureDueToBigFileSize) {
+          if (result.any(Either<ErrorMessage, *>::hadSomeFailureDueToBigFileSize)) {
             showFileTooBigErrorToast = true
           }
           numberOfOngoingUploads.update { it - 1 }
@@ -214,7 +210,10 @@ internal class CbmChatPresenter(
         is CbmChatEvent.RetrySendChatMessage -> launch {
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+          val result = chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+          if (result.hadSomeFailureDueToBigFileSize()) {
+            showFileTooBigErrorToast = true
+          }
           numberOfOngoingUploads.update { it - 1 }
         }
 
@@ -368,4 +367,11 @@ private sealed interface ConversationInfoStatus {
   data class Loaded(
     val conversationInfo: ConversationInfo,
   ) : ConversationInfoStatus
+}
+
+private fun Either<ErrorMessage, *>.hadSomeFailureDueToBigFileSize(): Boolean {
+  return fold(
+    { errorMessage -> errorMessage.throwable is BackendFileLimitException },
+    { false },
+  )
 }
