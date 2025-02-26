@@ -20,9 +20,7 @@ class ReferralsNotificationSender(
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    when (type) {
-      NOTIFICATION_TYPE_REFERRAL_SUCCESS -> sendReferralSuccessfulNotification(remoteMessage)
-    }
+    sendReferralSuccessfulNotification(remoteMessage)
   }
 
   override fun handlesNotificationType(notificationType: String) =
