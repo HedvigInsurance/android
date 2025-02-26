@@ -1,14 +1,14 @@
 package com.hedvig.android.app.notification.senders
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
+import androidx.core.app.PendingIntentCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.MainActivity
-import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
+import com.hedvig.android.app.notification.intentForNotification
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -17,7 +17,8 @@ import hedvig.resources.R
 
 class PaymentNotificationSender(
   private val context: Context,
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val buildConstants: HedvigBuildConstants,
+  private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
@@ -35,15 +36,13 @@ class PaymentNotificationSender(
   }
 
   private fun sendConnectDirectDebitNotification() {
-    val connectPaymentDeepLinkIntent = Intent(
-      Intent.ACTION_VIEW,
-      hedvigDeepLinkContainer.connectPayment.first().toUri(),
+    val pendingIntent = PendingIntentCompat.getActivity(
+      context,
+      0,
+      buildConstants.intentForNotification(deepLinkContainer.connectPayment.first().toUri()),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
     )
-    val pendingIntent = TaskStackBuilder
-      .create(context)
-      .addNextIntent(connectPaymentDeepLinkIntent)
-      .getPendingIntent(0, getImmutablePendingIntentFlags())
-
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
@@ -58,16 +57,13 @@ class PaymentNotificationSender(
   }
 
   private fun sendPaymentFailedNotification() {
-    val pendingIntent = TaskStackBuilder
-      .create(context)
-      .addNextIntent(
-        Intent(
-          context,
-          MainActivity::class.java,
-        ),
-      )
-      .getPendingIntent(0, getImmutablePendingIntentFlags())
-
+    val pendingIntent = PendingIntentCompat.getActivity(
+      context,
+      0,
+      buildConstants.intentForNotification(deepLinkUri = null),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
+    )
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)

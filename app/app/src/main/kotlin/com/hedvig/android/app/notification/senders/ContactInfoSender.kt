@@ -1,13 +1,12 @@
 package com.hedvig.android.app.notification.senders
 
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.app.PendingIntentCompat
+import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
+import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -22,16 +21,12 @@ class ContactInfoSender(
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    val contactInfoIntent = Intent().apply {
-      action = Intent.ACTION_VIEW
-      data = Uri.parse(deepLinkContainer.contactInfo.first())
-      component = ComponentName(buildConstants.appId, MainActivityFullyQualifiedName)
-    }
-    val pendingIntent = PendingIntent.getActivity(
+    val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
-      contactInfoIntent,
-      getImmutablePendingIntentFlags(),
+      buildConstants.intentForNotification(deepLinkContainer.contactInfo.first().toUri()),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
     )
     val title = remoteMessage.data.titleFromCustomerIoData()
     val body = remoteMessage.data.bodyFromCustomerIoData()

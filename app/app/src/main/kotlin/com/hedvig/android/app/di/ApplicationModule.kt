@@ -27,6 +27,7 @@ import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
+import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.auth.AuthTokenService
@@ -34,7 +35,6 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -208,28 +208,41 @@ private val buildConstantsModule = module {
 }
 
 private val notificationModule = module {
-  single {
+  single<PaymentNotificationSender> {
     PaymentNotificationSender(
       get<Context>(),
-      get<ApplicationScope>(),
+      get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Payments,
     )
   } bind NotificationSender::class
-  single {
-    CrossSellNotificationSender(get<Context>(), get<ApplicationScope>(), HedvigNotificationChannel.CrossSell)
+  single<CrossSellNotificationSender> {
+    CrossSellNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.CrossSell,
+    )
   } bind NotificationSender::class
-  single {
-    ReferralsNotificationSender(get<Context>(), get<HedvigDeepLinkContainer>(), HedvigNotificationChannel.Referrals)
+  single<ReferralsNotificationSender> {
+    ReferralsNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Referrals,
+    )
   } bind NotificationSender::class
-  single {
-    GenericNotificationSender(get<Context>(), HedvigNotificationChannel.Other)
+  single<GenericNotificationSender> {
+    GenericNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.Other,
+    )
   } bind NotificationSender::class
   single<ChatNotificationSender> {
     ChatNotificationSender(
       get<Context>(),
-      get<HedvigDeepLinkContainer>(),
       get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Chat,
     )
   } bind NotificationSender::class
