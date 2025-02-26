@@ -1,89 +1,63 @@
 package com.hedvig.android.app.notification.senders
 
-import android.app.Notification
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
-import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_DEFAULT
 import androidx.core.app.PendingIntentCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.notification.intentForNotification
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import hedvig.resources.R
+import hedvig.resources.R.drawable.ic_hedvig_h
+import hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT
+import hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE
 
 class ReferralsNotificationSender(
   private val context: Context,
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val buildConstants: HedvigBuildConstants,
+  private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    sendReferralSuccessfulNotification(remoteMessage)
-  }
-
   override fun handlesNotificationType(notificationType: String) =
     notificationType == NOTIFICATION_TYPE_REFERRAL_SUCCESS
 
-  private fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
-    val foreverIntent = Intent(Intent.ACTION_VIEW, hedvigDeepLinkContainer.forever.first().toUri())
-    val pendingIntent = PendingIntentCompat.getBroadcast(
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+    val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
-      foreverIntent,
+      buildConstants.intentForNotification(deepLinkContainer.forever.first().toUri()),
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )
-
-    val referralName = remoteMessage.data[DATA_MESSAGE_REFERRED_SUCCESS_NAME]
-
-    val contentText = referralName?.let {
-      context.resources.getString(
-        R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
-        it,
-      )
-    } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
-
-    val notificationBuilder = createNotificationBuilder(
-      context = context,
-      title = context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
-      body = contentText,
-      pendingIntent = pendingIntent,
-    )
-
-    sendNotificationInner(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
-  }
-
-  private fun sendNotificationInner(id: Int, notification: Notification) {
+    val title = remoteMessage.data.titleFromCustomerIoData()
+      ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_TITLE)
+    val body = remoteMessage.data.bodyFromCustomerIoData()
+      ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+    val notificationBuilder = NotificationCompat
+      .Builder(context, notificationChannel.channelId)
+      .setSmallIcon(ic_hedvig_h)
+      .setContentTitle(title)
+      .setContentText(body)
+      .setPriority(PRIORITY_DEFAULT)
+      .setAutoCancel(true)
+      .setContentIntent(pendingIntent)
     sendHedvigNotification(
       context = context,
-      notificationId = id,
-      notification = notification,
+      notificationId = REFERRAL_NOTIFICATION_ID,
+      notification = notificationBuilder.build(),
       notificationChannel = notificationChannel,
       notificationSenderName = "ReferralsNotificationSender",
     )
   }
 
-  private fun createNotificationBuilder(
-    context: Context,
-    title: String?,
-    body: String?,
-    pendingIntent: PendingIntent?,
-  ) = NotificationCompat
-    .Builder(context, notificationChannel.channelId)
-    .setSmallIcon(R.drawable.ic_hedvig_h)
-    .setContentText(title)
-    .setContentText(body)
-    .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
-    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-    .setAutoCancel(true)
-    .setContentIntent(pendingIntent)
-
   companion object {
     private const val REFERRAL_NOTIFICATION_ID = 2
-
-    internal const val DATA_MESSAGE_REFERRED_SUCCESS_NAME = "DATA_MESSAGE_REFERRED_SUCCESS_NAME"
 
     private const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
   }
