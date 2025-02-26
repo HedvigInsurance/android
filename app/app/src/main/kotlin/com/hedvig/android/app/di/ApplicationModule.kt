@@ -254,6 +254,14 @@ private val notificationModule = module {
       HedvigNotificationChannel.Other,
     )
   } bind NotificationSender::class
+  single<InsuranceTabNotificationSender> {
+    InsuranceTabNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
+    )
+  } bind NotificationSender::class
 }
 
 private val clockModule = module {
