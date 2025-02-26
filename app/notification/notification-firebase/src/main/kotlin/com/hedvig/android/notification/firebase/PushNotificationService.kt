@@ -34,15 +34,16 @@ class PushNotificationService : FirebaseMessagingService() {
       return
     }
     logcat(LogPriority.INFO) { "FCM onMessageReceived, type:$type" }
-    notificationSenders
-      .firstOrNull { notificationSender ->
-        notificationSender.handlesNotificationType(type)
+    val matchingNotificationSender = notificationSenders.firstOrNull { notificationSender ->
+      notificationSender.handlesNotificationType(type)
+    }
+    if (matchingNotificationSender != null) {
+      coroutineScope.launch {
+        matchingNotificationSender.sendNotification(type, remoteMessage)
       }
-      ?.run {
-        coroutineScope.launch {
-          sendNotification(type, remoteMessage)
-        }
-      }
+    } else {
+      logcat(LogPriority.ERROR) { "FCM onMessageReceived, no matching notification sender for type:$type" }
+    }
   }
 
   override fun onDestroy() {
