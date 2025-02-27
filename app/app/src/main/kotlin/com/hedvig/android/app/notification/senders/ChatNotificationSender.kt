@@ -7,7 +7,6 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.CATEGORY_MESSAGE
-import androidx.core.app.NotificationCompat.MessagingStyle
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
 import androidx.core.app.PendingIntentCompat
@@ -110,7 +109,7 @@ class ChatNotificationSender(
     )
   }
 
-  private fun createMessagingStyle(remoteMessage: RemoteMessage): MessagingStyle {
+  private fun createMessagingStyle(remoteMessage: RemoteMessage): NotificationCompat.MessagingStyle {
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
         val overriddenTitle = remoteMessage.titleFromCustomerIoData()
@@ -122,7 +121,7 @@ class ChatNotificationSender(
 
     val messageText = context.getString(R.string.NOTIFICATION_CHAT_NEW_MESSAGE_BODY)
 
-    val message = MessagingStyle.Message(
+    val message = NotificationCompat.MessagingStyle.Message(
       messageText,
       System.currentTimeMillis(),
       hedvigPerson,
@@ -136,7 +135,8 @@ class ChatNotificationSender(
         ?.firstOrNull { it.id == CHAT_NOTIFICATION_ID }
         ?.notification
         ?.let { existingNotification ->
-          MessagingStyle
+          NotificationCompat
+            .MessagingStyle
             .extractMessagingStyleFromNotification(existingNotification)
             ?.addMessage(message)
         } ?: defaultMessagingStyle(message)
@@ -146,8 +146,9 @@ class ChatNotificationSender(
     return messagingStyle
   }
 
-  private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message): MessagingStyle =
-    NotificationCompat.MessagingStyle(youPerson).addMessage(message)
+  private fun defaultMessagingStyle(
+    message: NotificationCompat.MessagingStyle.Message,
+  ): NotificationCompat.MessagingStyle = NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
   private val hedvigPerson: Person = Person.Builder()
     .setName(context.getString(R.string.NOTIFICATION_CHAT_TITLE))
