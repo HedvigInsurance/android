@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +49,33 @@ import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 import kotlin.math.ceil
 
+interface HedvigTabRowState {
+  val selectedTabIndex: Int
+
+  fun onTabChosen(index: Int)
+}
+
+private class HedvigTabRowStateImpl() : HedvigTabRowState {
+  override var selectedTabIndex: Int by mutableIntStateOf(0)
+    internal set
+
+  override fun onTabChosen(index: Int) {
+    selectedTabIndex = index
+  }
+}
+
+@Composable
+fun rememberHedvigTabRowState(): HedvigTabRowState {
+  return rememberSaveable(
+    saver = Saver(
+      save = { it.selectedTabIndex },
+      restore = { HedvigTabRowStateImpl().apply { selectedTabIndex = it } },
+    ),
+  ) {
+    HedvigTabRowStateImpl()
+  }
+}
+
 // only for up to 6 TabItems!
 @Composable
 fun HedvigTabRowMaxSixTabs(
@@ -55,6 +83,40 @@ fun HedvigTabRowMaxSixTabs(
   selectedTabIndex: Int,
   onTabChosen: (index: Int) -> Unit,
   modifier: Modifier = Modifier,
+  tabSize: TabSize = TabDefaults.defaultSize,
+  tabStyle: TabStyle = TabDefaults.defaultStyle,
+  selectIndicatorAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
+    durationMillis = 600,
+    easing = FastOutSlowInEasing,
+  ),
+) {
+  val updatedSelectedTabIndex by rememberUpdatedState(selectedTabIndex)
+  val updatedOnTabChosen by rememberUpdatedState(onTabChosen)
+  HedvigTabRowMaxSixTabs(
+    tabTitles = tabTitles,
+    modifier = modifier,
+    tabRowState = remember {
+      object : HedvigTabRowState {
+        override val selectedTabIndex: Int
+          get() = updatedSelectedTabIndex
+
+        override fun onTabChosen(index: Int) {
+          updatedOnTabChosen(index)
+        }
+      }
+    },
+    tabSize = tabSize,
+    tabStyle = tabStyle,
+    selectIndicatorAnimationSpec = selectIndicatorAnimationSpec,
+  )
+}
+
+// only for up to 6 TabItems!
+@Composable
+fun HedvigTabRowMaxSixTabs(
+  tabTitles: List<String>,
+  modifier: Modifier = Modifier,
+  tabRowState: HedvigTabRowState = rememberHedvigTabRowState(),
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
   selectIndicatorAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
@@ -101,7 +163,7 @@ fun HedvigTabRowMaxSixTabs(
               modifier = Modifier
                 .clip(tabSize.tabShape),
               onClick = {
-                onTabChosen(index)
+                tabRowState.onTabChosen(index)
               },
               text = title,
               textStyle = tabSize.textStyle,
@@ -192,7 +254,7 @@ fun HedvigTabRowMaxSixTabs(
         )
         tabItemsPlaceables.add(placeable)
       }
-      val chosenItem = tabItemsPlaceables[selectedTabIndex]
+      val chosenItem = tabItemsPlaceables[tabRowState.selectedTabIndex]
       val indicatorPlaceable = allMeasurables[0][0].measure(
         Constraints(
           minWidth = chosenItem.width,
@@ -207,7 +269,10 @@ fun HedvigTabRowMaxSixTabs(
         width = fullWidth,
         height = howManyLines * oneLineHeight,
       ) {
-        currentIndicatorOffset = IntOffset(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
+        currentIndicatorOffset = IntOffset(
+          mapOfOffsets[tabRowState.selectedTabIndex]!!.x,
+          mapOfOffsets[tabRowState.selectedTabIndex]!!.y,
+        )
         indicatorPlaceable.placeRelative(indicatorOffset)
         tabItemsPlaceables.forEachIndexed { index, placeable ->
           placeable.placeRelative(
