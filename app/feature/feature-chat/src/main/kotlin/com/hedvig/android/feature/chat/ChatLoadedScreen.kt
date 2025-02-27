@@ -425,7 +425,7 @@ private fun ChatLazyColumn(
           .padding(bottom = 8.dp),
       )
     }
-    if (appendStatus !is LoadState.NotLoading) {
+    if (appendStatus !is LoadState.NotLoading && messages.itemCount>0) {
       item(
         key = "fetching_more",
         contentType = "fetching_more",
