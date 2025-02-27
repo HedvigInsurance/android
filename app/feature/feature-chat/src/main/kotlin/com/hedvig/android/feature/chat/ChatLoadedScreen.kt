@@ -999,6 +999,7 @@ private fun PreviewChatLoadedScreen() {
           bannerText = ClosedConversation,
           showUploading = true,
           showFileTooBigErrorToast = false,
+          showFileFailedToBeSentToast = false,
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),

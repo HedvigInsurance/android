@@ -20,7 +20,7 @@ internal class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {
   private val info = ConversationInfo.Info("1", null, clock.now(), true)
-  private val demoErrorMessage = ErrorMessage("No chat impl for demo")
+  private val demoErrorMessage = MessageSendError.GenericError(ErrorMessage("No chat impl for demo"))
 
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return info.right()
@@ -38,14 +38,17 @@ internal class CbmChatRepositoryDemo(
     conversationId: Uuid,
     pagingToken: PagingToken?,
   ): Either<Throwable, ChatMessagePageResponse> {
-    return Exception(demoErrorMessage.message).left()
+    return Exception(demoErrorMessage.originalError.message).left()
   }
 
   override fun pollNewestMessages(conversationId: Uuid): Flow<String> {
     return flowOf()
   }
 
-  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<ErrorMessage, CbmChatMessage> {
+  override suspend fun retrySendMessage(
+    conversationId: Uuid,
+    messageId: String,
+  ): Either<MessageSendError, CbmChatMessage> {
     return demoErrorMessage.left()
   }
 
@@ -53,18 +56,21 @@ internal class CbmChatRepositoryDemo(
     conversationId: Uuid,
     messageId: Uuid?,
     text: String,
-  ): Either<ErrorMessage, CbmChatMessage> {
+  ): Either<MessageSendError, CbmChatMessage> {
     return demoErrorMessage.left()
   }
 
   override suspend fun sendPhotos(
     conversationId: Uuid,
     uriList: List<Uri>,
-  ): List<Either<ErrorMessage, CbmChatMessage>> {
+  ): List<Either<MessageSendError, CbmChatMessage>> {
     return listOf(demoErrorMessage.left())
   }
 
-  override suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<ErrorMessage, CbmChatMessage>> {
+  override suspend fun sendMedia(
+    conversationId: Uuid,
+    uriList: List<Uri>,
+  ): List<Either<MessageSendError, CbmChatMessage>> {
     return listOf(demoErrorMessage.left())
   }
 }

@@ -75,9 +75,7 @@ internal fun CbmChatDestination(
     onNavigateUp = onNavigateUp,
     onNavigateToClaimDetails = onNavigateToClaimDetails,
     onNavigateToImageViewer = onNavigateToImageViewer,
-    onSendMessage = { message: String ->
-      viewModel.emit(CbmChatEvent.SendTextMessage(message))
-    },
+    onSendMessage = { message: String -> viewModel.emit(CbmChatEvent.SendTextMessage(message)) },
     onSendPhoto = { uris: List<Uri> ->
       logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uriList)):$uris to vm:${viewModel.hashCode()}" }
       viewModel.emit(CbmChatEvent.SendPhotoMessage(uris))
@@ -86,20 +84,15 @@ internal fun CbmChatDestination(
       logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uriList)):$uris to vm:${viewModel.hashCode()}" }
       viewModel.emit(CbmChatEvent.SendMediaMessage(uris))
     },
-    onRetrySendChatMessage = { messageId ->
-      viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))
-    },
-    onRetryLoadingChat = {
-      viewModel.emit(CbmChatEvent.RetryLoadingChat)
-    },
+    onRetrySendChatMessage = { messageId -> viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId)) },
+    onRetryLoadingChat = { viewModel.emit(CbmChatEvent.RetryLoadingChat) },
     simpleVideoCache = simpleVideoCache,
-    showedFileTooBigError = {
-      viewModel.emit(CbmChatEvent.ClearToast)
-    },
+    showedFileTooBigError = { viewModel.emit(CbmChatEvent.ClearFileTooBigToast) },
+    showedFileFailedToBeSentToast = { viewModel.emit(CbmChatEvent.ClearFileFailedToBeSentToast) },
     onCloseBannerClick = {
       viewModel.emit(CbmChatEvent.HideBanner)
     },
-  )
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -120,6 +113,7 @@ private fun ChatScreen(
   onRetryLoadingChat: () -> Unit,
   showedFileTooBigError: () -> Unit,
   onCloseBannerClick: () -> Unit,
+  showedFileFailedToBeSentToast: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -169,6 +163,12 @@ private fun ChatScreen(
                   messageText = stringResource(R.string.CHAT_FILE_SIZE_TOO_BIG_ERROR),
                   error = true,
                   showedError = showedFileTooBigError,
+                )
+              } else if (uiState.showFileFailedToBeSentToast) {
+                ErrorSnackbarState(
+                  messageText = stringResource(R.string.CHAT_FAILED_TO_SEND),
+                  error = true,
+                  showedError = showedFileFailedToBeSentToast,
                 )
               } else {
                 null
@@ -283,6 +283,7 @@ private fun PreviewChatScreen(
         onRetryLoadingChat = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
         showedFileTooBigError = {},
+        showedFileFailedToBeSentToast = {},
         onCloseBannerClick = {},
       )
     }

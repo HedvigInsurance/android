@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -23,9 +24,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.flatMap
 import androidx.paging.map
 import androidx.room.RoomDatabase
+import arrow.core.Either
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -37,6 +38,7 @@ import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
+import com.hedvig.android.feature.chat.data.MessageSendError
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
@@ -142,6 +144,7 @@ internal class CbmChatPresenter(
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
     var hideBanner by remember { mutableStateOf(false) }
+    var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -200,14 +203,13 @@ internal class CbmChatPresenter(
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
           val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
-          val hadSomeFailureDueToBigFileSize = result.any {
-            it.fold(
-              { errorMessage -> errorMessage.throwable is BackendFileLimitException },
-              { false },
-            )
-          }
-          if (hadSomeFailureDueToBigFileSize) {
-            showFileTooBigErrorToast = true
+          Snapshot.withMutableSnapshot {
+            for (result in result) {
+              result.onError(
+                onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+                onFileTooBigError = { showFileTooBigErrorToast = true },
+              )
+            }
           }
           numberOfOngoingUploads.update { it - 1 }
         }
@@ -215,11 +217,16 @@ internal class CbmChatPresenter(
         is CbmChatEvent.RetrySendChatMessage -> launch {
           numberOfOngoingUploads.update { it + 1 }
           startConversationIfNecessary()
-          chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+          val result = chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+          result.onError(
+            onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+            onFileTooBigError = { showFileTooBigErrorToast = true },
+          )
           numberOfOngoingUploads.update { it - 1 }
         }
 
-        CbmChatEvent.ClearToast -> showFileTooBigErrorToast = false
+        CbmChatEvent.ClearFileTooBigToast -> showFileTooBigErrorToast = false
+        CbmChatEvent.ClearFileFailedToBeSentToast -> showFileFailedToBeSendToast = false
         CbmChatEvent.HideBanner -> {
           hideBanner = true
         }
@@ -239,6 +246,7 @@ internal class CbmChatPresenter(
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
           showFileTooBigErrorToast = showFileTooBigErrorToast,
           hideBanner = hideBanner,
+          showFileFailedToBeSendToast = showFileFailedToBeSendToast,
         )
       }
     }
@@ -256,6 +264,7 @@ private fun presentLoadedChat(
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
   hideBanner: Boolean,
+  showFileFailedToBeSendToast: Boolean,
 ): CbmChatUiState.Loaded {
   val latestMessage by remember(chatDao) {
     chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
@@ -290,6 +299,7 @@ private fun presentLoadedChat(
     bannerText = bannerText,
     showUploading = showUploading,
     showFileTooBigErrorToast = showFileTooBigErrorToast,
+    showFileFailedToBeSentToast = showFileFailedToBeSendToast,
   )
 }
 
@@ -314,7 +324,9 @@ internal sealed interface CbmChatEvent {
     val uriList: List<Uri>,
   ) : CbmChatEvent
 
-  data object ClearToast : CbmChatEvent
+  data object ClearFileTooBigToast : CbmChatEvent
+
+  data object ClearFileFailedToBeSentToast : CbmChatEvent
 }
 
 internal sealed interface CbmChatUiState {
@@ -331,6 +343,8 @@ internal sealed interface CbmChatUiState {
     val bannerText: BannerText?,
     val showUploading: Boolean,
     val showFileTooBigErrorToast: Boolean,
+    // When we fail to persist the message in a way where we can retry it later, we simply fall back to showing an error
+    val showFileFailedToBeSentToast: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation
@@ -381,4 +395,19 @@ private sealed interface ConversationInfoStatus {
   data class Loaded(
     val conversationInfo: ConversationInfo,
   ) : ConversationInfoStatus
+}
+
+private fun Either<MessageSendError, *>.onError(
+  onFailedToPersistUriPermissionError: (MessageSendError.FailedToPersistUriPermissionError) -> Unit,
+  onFileTooBigError: (MessageSendError.FileTooBigError) -> Unit,
+) {
+  when (this) {
+    is Either.Left<MessageSendError> -> when (val error = value) {
+      is MessageSendError.FailedToPersistUriPermissionError -> onFailedToPersistUriPermissionError(error)
+      is MessageSendError.FileTooBigError -> onFileTooBigError(error)
+      is MessageSendError.GenericError -> {}
+    }
+
+    is Either.Right<*> -> {}
+  }
 }
