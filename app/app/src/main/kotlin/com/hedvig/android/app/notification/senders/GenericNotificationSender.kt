@@ -26,8 +26,8 @@ class GenericNotificationSender(
     notificationType == NOTIFICATION_TYPE_GENERIC_COMMUNICATION
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    val title = remoteMessage.data[DATA_MESSAGE_TITLE]
-    val body = remoteMessage.data[DATA_MESSAGE_BODY]
+    val title = remoteMessage.data.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
+    val body = remoteMessage.data.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
