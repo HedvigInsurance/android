@@ -5,6 +5,7 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import octopus.CompareCoverageQuery
@@ -32,8 +33,13 @@ internal class GetCoverageComparisonUseCaseImpl(
         .bind()
       logcat { "Coverage comparison result: $result " }
       ComparisonData(
-        columns = result.productVariantComparison.variantColumns.map {
-          ComparisonColumn(title = it.displayNameTier, termsVersion = it.termsVersion)
+        columns = result.productVariantComparison.variantColumns.mapNotNull { variantColumn ->
+          if (variantColumn.displayNameTier != null) {
+            ComparisonColumn(title = variantColumn.displayNameTier, termsVersion = variantColumn.termsVersion)
+          } else {
+            logcat(LogPriority.ERROR) { "Got variant with null title, can't show in comparison table. $variantColumn" }
+            null
+          }
         },
         rows = result.productVariantComparison.rows.map { row ->
           val numbers = if (row.cells.any { it.coverageText != null }) {
@@ -71,7 +77,7 @@ data class ComparisonData(
 )
 
 data class ComparisonColumn(
-  val title: String?,
+  val title: String,
   val termsVersion: String,
 )
 
