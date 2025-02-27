@@ -113,7 +113,7 @@ class ChatNotificationSender(
   private fun createMessagingStyle(remoteMessage: RemoteMessage): MessagingStyle {
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
-        val overriddenTitle = remoteMessage.data.titleFromCustomerIoData()
+        val overriddenTitle = remoteMessage.titleFromCustomerIoData()
         if (overriddenTitle != null) {
           person.setName(overriddenTitle)
         }

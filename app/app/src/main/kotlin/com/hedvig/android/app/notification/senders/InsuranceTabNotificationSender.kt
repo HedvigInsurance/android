@@ -26,8 +26,8 @@ internal class InsuranceTabNotificationSender(
     NOTIFICATION_TYPE_OPEN_INSURANCE_TAB == notificationType
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    val title = remoteMessage.data.titleFromCustomerIoData()
-    val body = remoteMessage.data.bodyFromCustomerIoData()
+    val title = remoteMessage.titleFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
     if (title == null || body == null) {
       logcat(LogPriority.ERROR) {
         "InsuranceTabNotificationSender got no title or body, bailing! data:[${remoteMessage.data}]"

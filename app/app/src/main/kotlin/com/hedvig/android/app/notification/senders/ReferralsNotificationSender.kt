@@ -35,9 +35,9 @@ class ReferralsNotificationSender(
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )
-    val title = remoteMessage.data.titleFromCustomerIoData()
+    val title = remoteMessage.titleFromCustomerIoData()
       ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_TITLE)
-    val body = remoteMessage.data.bodyFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
       ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
     val notificationBuilder = NotificationCompat
       .Builder(context, notificationChannel.channelId)

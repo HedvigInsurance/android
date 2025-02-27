@@ -28,8 +28,8 @@ class ContactInfoSender(
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )
-    val title = remoteMessage.data.titleFromCustomerIoData()
-    val body = remoteMessage.data.bodyFromCustomerIoData()
+    val title = remoteMessage.titleFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
