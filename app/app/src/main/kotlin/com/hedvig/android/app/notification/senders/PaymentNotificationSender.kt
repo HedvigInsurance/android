@@ -60,7 +60,7 @@ class PaymentNotificationSender(
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
-      buildConstants.intentForNotification(deepLinkUri = null),
+      buildConstants.intentForNotification(deepLinkContainer.connectPayment.first().toUri()),
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )
