@@ -2,9 +2,11 @@ package com.hedvig.android.shared.tier.comparison.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -12,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +25,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -38,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
 import com.hedvig.android.shared.tier.comparison.data.mockComparisonData
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonEvent.Reload
@@ -78,35 +82,12 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 
 @Composable
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
-  var bottomSheetRow by remember { mutableStateOf<ComparisonRow?>(null) }
+  val selectedComparisonRowBottomSheetState = rememberHedvigBottomSheetState<ComparisonRow>()
   HedvigBottomSheet(
-    isVisible = bottomSheetRow != null,
-    onVisibleChange = { isVisible ->
-      if (!isVisible) {
-        bottomSheetRow = null
-      }
-    },
-  ) {
-    Column {
-      bottomSheetRow?.let { HedvigText(text = it.title) }
-      Spacer(Modifier.height(16.dp))
-      bottomSheetRow?.let {
-        HedvigText(
-          text = it.description,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-      val exactNumbers = bottomSheetRow?.numbers
-      if (exactNumbers != null) {
-        Spacer(Modifier.height(16.dp))
-        HedvigText(
-          text = exactNumbers,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-    }
+    hedvigBottomSheetState = selectedComparisonRowBottomSheetState,
+    contentPadding = PaddingValues(horizontal = 24.dp),
+  ) { comparisonRow ->
+    ComparisonRowBottomSheetContent(comparisonRow, { selectedComparisonRowBottomSheetState.dismiss() })
   }
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -141,6 +122,39 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     )
     Spacer(Modifier.height(24.dp))
     // todo add new comparison table content
+  }
+}
+
+@Composable
+private fun ComparisonRowBottomSheetContent(
+  comparisonRow: ComparisonRow,
+  dismissSheet: () -> Unit,
+) {
+  Column {
+    HedvigText(text = comparisonRow.title)
+    Spacer(Modifier.height(2.dp))
+    HedvigText(
+      text = comparisonRow.description,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    val exactNumbers = comparisonRow.numbers
+    if (exactNumbers != null) { // todo see if we want to remove this part completely
+      Spacer(Modifier.height(2.dp))
+      HedvigText(
+        text = exactNumbers,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
+    Spacer(Modifier.height(32.dp))
+    HedvigButton(
+      onClick = dismissSheet,
+      text = stringResource(R.string.general_close_button),
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -179,6 +193,16 @@ private fun ComparisonScreenPreview(
         ),
         {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewComparisonRowBottomSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ComparisonRowBottomSheetContent(mockComparisonData.rows.first(), {})
     }
   }
 }
