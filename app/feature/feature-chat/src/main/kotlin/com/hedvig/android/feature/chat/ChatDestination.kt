@@ -96,6 +96,9 @@ internal fun CbmChatDestination(
     showedFileTooBigError = {
       viewModel.emit(CbmChatEvent.ClearToast)
     },
+    onCloseBannerClick = {
+      viewModel.emit(CbmChatEvent.HideBanner)
+    },
   )
 }
 
@@ -116,6 +119,7 @@ private fun ChatScreen(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
   showedFileTooBigError: () -> Unit,
+  onCloseBannerClick: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -169,6 +173,7 @@ private fun ChatScreen(
               } else {
                 null
               },
+              onCloseBannerClick = onCloseBannerClick,
             )
           }
         }
@@ -278,6 +283,7 @@ private fun PreviewChatScreen(
         onRetryLoadingChat = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
         showedFileTooBigError = {},
+        onCloseBannerClick = {},
       )
     }
   }

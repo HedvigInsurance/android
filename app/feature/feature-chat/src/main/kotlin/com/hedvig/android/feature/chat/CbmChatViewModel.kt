@@ -141,6 +141,7 @@ internal class CbmChatPresenter(
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
+    var hideBanner by remember { mutableStateOf(false) }
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -219,6 +220,9 @@ internal class CbmChatPresenter(
         }
 
         CbmChatEvent.ClearToast -> showFileTooBigErrorToast = false
+        CbmChatEvent.HideBanner -> {
+          hideBanner = true
+        }
       }
     }
 
@@ -234,6 +238,7 @@ internal class CbmChatPresenter(
           chatRepository = chatRepository,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
           showFileTooBigErrorToast = showFileTooBigErrorToast,
+          hideBanner = hideBanner,
         )
       }
     }
@@ -250,13 +255,19 @@ private fun presentLoadedChat(
   chatRepository: Provider<CbmChatRepository>,
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
+  hideBanner: Boolean,
 ): CbmChatUiState.Loaded {
   val latestMessage by remember(chatDao) {
     chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
   }.collectAsState(null)
-  val bannerText by remember(conversationId, chatRepository) {
-    flow { emitAll(chatRepository.provide().bannerText(conversationId)) }
-  }.collectAsState(null)
+
+  val bannerText by if (!hideBanner) {
+    remember(conversationId, chatRepository) {
+      flow { emitAll(chatRepository.provide().bannerText(conversationId)) }
+    }.collectAsState(null)
+  } else {
+    remember { mutableStateOf(null) }
+  }
   val lazyPagingItems = pagingData.collectAsLazyPagingItems()
 
   LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
@@ -284,6 +295,8 @@ private fun presentLoadedChat(
 
 internal sealed interface CbmChatEvent {
   data object RetryLoadingChat : CbmChatEvent
+
+  data object HideBanner : CbmChatEvent
 
   data class SendTextMessage(
     val message: String,
