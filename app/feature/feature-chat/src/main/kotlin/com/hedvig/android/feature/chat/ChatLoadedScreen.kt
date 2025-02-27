@@ -261,6 +261,7 @@ private fun ChatLoadedScreen(
                 ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
                 is BannerText.Text -> uiState.bannerText.text
               },
+              possibleToClose = uiState.bannerText !is ClosedConversation,
               modifier = Modifier
                 .fillMaxWidth()
                 .drawWithContent {
