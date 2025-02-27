@@ -9,6 +9,8 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -22,6 +24,9 @@ class CrossSellNotificationSender(
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_CROSS_SELL
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+    // TODO drop support for this notification type if we see we never get it
+    logcat(LogPriority.ASSERT) { "We never expect to get a notification of type $type" }
+    return
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
 
