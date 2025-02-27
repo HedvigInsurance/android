@@ -180,12 +180,6 @@ internal fun CbmChatLoadedScreen(
   errorSnackbarState: ErrorSnackbarState?,
 ) {
   val lazyListState = rememberLazyListState()
-  val coroutineScope = rememberCoroutineScope()
-  val focusManager = LocalFocusManager.current
-  val onMessageSent = {
-    focusManager.clearFocus()
-    coroutineScope.launch { lazyListState.scrollToItem(0) }
-  }
   ChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
@@ -198,15 +192,12 @@ internal fun CbmChatLoadedScreen(
       ChatInput(
         onSendMessage = {
           onSendMessage(it)
-          onMessageSent()
         },
         onSendPhoto = {
           onSendPhoto(it)
-          onMessageSent()
         },
         onSendMedia = {
           onSendMedia(it)
-          onMessageSent()
         },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
