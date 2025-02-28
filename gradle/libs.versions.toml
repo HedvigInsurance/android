@@ -21,7 +21,7 @@ googleServices = "4.4.2"
 gradleDevelocity = "3.19.2"
 kotlin = "2.1.10"
 kotlinter = "5.0.1"
-ksp = "2.1.10-1.0.30"
+ksp = "2.1.10-1.0.31"
 ktor = "3.1.1"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -160,7 +160,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.9.0"
+firebase-bom = "com.google.firebase:firebase-bom:33.10.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
