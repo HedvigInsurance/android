@@ -1,27 +1,23 @@
 package com.hedvig.android.app.notification.senders
 
-import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
+import androidx.core.app.PendingIntentCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.MainActivity
-import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
-import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.app.notification.intentForNotification
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class PaymentNotificationSender(
   private val context: Context,
-  private val applicationScope: ApplicationScope,
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val buildConstants: HedvigBuildConstants,
+  private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
@@ -31,66 +27,48 @@ class PaymentNotificationSender(
     }
   }
 
-  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
+  override fun handlesNotificationType(notificationType: String) = notificationType in listOf(
     NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
     NOTIFICATION_TYPE_PAYMENT_FAILED,
-    -> true
-    else -> false
-  }
+  )
 
   private fun sendConnectDirectDebitNotification() {
-    applicationScope.launch(Dispatchers.IO) {
-      val connectPaymentDeepLinkIntent = Intent(
-        Intent.ACTION_VIEW,
-        hedvigDeepLinkContainer.connectPayment.first().toUri(),
-      )
-      val pendingIntent = TaskStackBuilder
-        .create(context)
-        .addNextIntent(connectPaymentDeepLinkIntent)
-        .getPendingIntent(0, getImmutablePendingIntentFlags())
-
-      val notification = NotificationCompat
-        .Builder(context, notificationChannel.channelId)
-        .setSmallIcon(R.drawable.ic_hedvig_h)
-        .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
-        .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
-        .setPriority(NotificationCompat.PRIORITY_MAX)
-        .setAutoCancel(true)
-        .setContentIntent(pendingIntent)
-        .build()
-
-      sendNotificationInner(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
-    }
+    sendNotificationInner(
+      context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE),
+      context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY),
+      CONNECT_DIRECT_DEBIT_NOTIFICATION_ID,
+    )
   }
 
   private fun sendPaymentFailedNotification() {
-    val pendingIntent = TaskStackBuilder
-      .create(context)
-      .addNextIntent(
-        Intent(
-          context,
-          MainActivity::class.java,
-        ),
-      )
-      .getPendingIntent(0, getImmutablePendingIntentFlags())
+    sendNotificationInner(
+      context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE),
+      context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY),
+      PAYMENT_FAILED_NOTIFICATION_ID,
+    )
+  }
 
+  private fun sendNotificationInner(title: String, body: String, notificationId: Int) {
+    val pendingIntent = PendingIntentCompat.getActivity(
+      context,
+      0,
+      buildConstants.intentForNotification(deepLinkContainer.connectPayment.first().toUri()),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
+    )
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
-      .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
-      .setContentText(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
+      .setContentTitle(title)
+      .setContentText(body)
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
       .setContentIntent(pendingIntent)
       .build()
 
-    sendNotificationInner(PAYMENT_FAILED_NOTIFICATION_ID, notification)
-  }
-
-  private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationId = id,
+      notificationId = notificationId,
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "PaymentNotificationSender",
