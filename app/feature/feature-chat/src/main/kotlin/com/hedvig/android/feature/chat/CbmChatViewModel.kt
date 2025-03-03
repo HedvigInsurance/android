@@ -40,6 +40,8 @@ import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
 import com.hedvig.android.feature.chat.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -61,6 +63,7 @@ internal class CbmChatViewModel(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
+  featureManager: FeatureManager,
   clock: Clock,
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     CbmChatUiState.Initializing,
@@ -70,6 +73,7 @@ internal class CbmChatViewModel(
       chatDao,
       remoteKeyDao,
       chatRepository,
+      featureManager,
       clock,
     ),
   )
@@ -80,6 +84,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val chatRepository: Provider<CbmChatRepository>,
+  private val featureManager: FeatureManager,
   private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -95,6 +100,9 @@ internal class CbmChatPresenter(
       )
     }
     var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
+    val enableInlineMediaPlayer by remember(featureManager) {
+      featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
+    }.collectAsState(false)
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -163,6 +171,7 @@ internal class CbmChatPresenter(
       is Loaded -> {
         presentLoadedChat(
           conversationIdStatusValue.conversationInfo,
+          enableInlineMediaPlayer,
           conversationId,
           database,
           chatDao,
@@ -179,6 +188,7 @@ internal class CbmChatPresenter(
 @Composable
 private fun presentLoadedChat(
   backendConversationInfo: ConversationInfo,
+  enableInlineMediaPlayer: Boolean,
   conversationId: Uuid,
   database: RoomDatabase,
   chatDao: ChatDao,
@@ -235,6 +245,7 @@ private fun presentLoadedChat(
     messages = lazyPagingItems,
     latestMessage = latestMessage,
     bannerText = bannerText,
+    enableInlineMediaPlayer = enableInlineMediaPlayer,
   )
 }
 
@@ -270,6 +281,7 @@ internal sealed interface CbmChatUiState {
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
+    val enableInlineMediaPlayer: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation
