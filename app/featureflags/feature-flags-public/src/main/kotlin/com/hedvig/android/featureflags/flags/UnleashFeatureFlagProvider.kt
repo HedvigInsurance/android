@@ -25,6 +25,11 @@ internal class UnleashFeatureFlagProvider(
             "enable_addons_removal_from_moving_flow",
             false,
           )
+
+          Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES -> hedvigUnleashClient.client.isEnabled(
+            "enable_video_player_in_chat_messages",
+            false,
+          )
         }
       }.distinctUntilChanged()
   }
