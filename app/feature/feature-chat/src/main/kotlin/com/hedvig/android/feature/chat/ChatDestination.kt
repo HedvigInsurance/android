@@ -89,7 +89,10 @@ internal fun CbmChatDestination(
     simpleVideoCache = simpleVideoCache,
     showedFileTooBigError = { viewModel.emit(CbmChatEvent.ClearFileTooBigToast) },
     showedFileFailedToBeSentToast = { viewModel.emit(CbmChatEvent.ClearFileFailedToBeSentToast) },
-  )
+    onCloseBannerClick = {
+      viewModel.emit(CbmChatEvent.HideBanner)
+    },
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -109,6 +112,7 @@ private fun ChatScreen(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onRetryLoadingChat: () -> Unit,
   showedFileTooBigError: () -> Unit,
+  onCloseBannerClick: () -> Unit,
   showedFileFailedToBeSentToast: () -> Unit,
 ) {
   Surface(
@@ -169,6 +173,7 @@ private fun ChatScreen(
               } else {
                 null
               },
+              onCloseBannerClick = onCloseBannerClick,
             )
           }
         }
@@ -279,6 +284,7 @@ private fun PreviewChatScreen(
         simpleVideoCache = rememberPreviewSimpleCache(),
         showedFileTooBigError = {},
         showedFileFailedToBeSentToast = {},
+        onCloseBannerClick = {},
       )
     }
   }

@@ -43,7 +43,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -65,7 +64,6 @@ import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -161,7 +159,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Instant
 
@@ -177,15 +174,10 @@ internal fun CbmChatLoadedScreen(
   onSendMessage: (String) -> Unit,
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
+  onCloseBannerClick: () -> Unit,
   errorSnackbarState: ErrorSnackbarState?,
 ) {
   val lazyListState = rememberLazyListState()
-  val coroutineScope = rememberCoroutineScope()
-  val focusManager = LocalFocusManager.current
-  val onMessageSent = {
-    focusManager.clearFocus()
-    coroutineScope.launch { lazyListState.scrollToItem(0) }
-  }
   ChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
@@ -198,15 +190,12 @@ internal fun CbmChatLoadedScreen(
       ChatInput(
         onSendMessage = {
           onSendMessage(it)
-          onMessageSent()
         },
         onSendPhoto = {
           onSendPhoto(it)
-          onMessageSent()
         },
         onSendMedia = {
           onSendMedia(it)
-          onMessageSent()
         },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
@@ -214,6 +203,7 @@ internal fun CbmChatLoadedScreen(
       )
     },
     errorSnackbarState = errorSnackbarState,
+    onCloseBannerClick = onCloseBannerClick,
   )
 }
 
@@ -225,6 +215,7 @@ private fun ChatLoadedScreen(
   imageLoader: ImageLoader,
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
+  onCloseBannerClick: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
@@ -249,40 +240,43 @@ private fun ChatLoadedScreen(
             .weight(1f)
             .clearFocusOnTap(),
         )
-        if (uiState.bannerText != null) {
-          AnimatedVisibility(
-            visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
-            enter = expandVertically(
-              spring(
-                stiffness = Spring.StiffnessMedium,
-                visibilityThreshold = IntSize.VisibilityThreshold,
-              ),
+
+        AnimatedVisibility(
+          visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+            uiState.bannerText != null,
+          enter = expandVertically(
+            spring(
+              stiffness = Spring.StiffnessMedium,
+              visibilityThreshold = IntSize.VisibilityThreshold,
             ),
-            exit = shrinkVertically(
-              spring(
-                stiffness = Spring.StiffnessMedium,
-                visibilityThreshold = IntSize.VisibilityThreshold,
-              ),
+          ),
+          exit = shrinkVertically(
+            spring(
+              stiffness = Spring.StiffnessMedium,
+              visibilityThreshold = IntSize.VisibilityThreshold,
             ),
-          ) {
-            ChatBanner(
-              text = when (uiState.bannerText) {
-                ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
-                is BannerText.Text -> uiState.bannerText.text
+          ),
+        ) {
+          ChatBanner(
+            text = when (uiState.bannerText) {
+              ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+              is BannerText.Text -> uiState.bannerText.text
+              null -> ""
+            },
+            possibleToClose = uiState.bannerText !is ClosedConversation,
+            onCloseCLick = onCloseBannerClick,
+            modifier = Modifier
+              .fillMaxWidth()
+              .drawWithContent {
+                drawContent()
+                drawLine(
+                  color = dividerColor,
+                  strokeWidth = dividerThickness.toPx(),
+                  start = Offset(0f, dividerThickness.toPx() / 2),
+                  end = Offset(size.width, dividerThickness.toPx() / 2),
+                )
               },
-              modifier = Modifier
-                .fillMaxWidth()
-                .drawWithContent {
-                  drawContent()
-                  drawLine(
-                    color = dividerColor,
-                    strokeWidth = dividerThickness.toPx(),
-                    start = Offset(0f, dividerThickness.toPx() / 2),
-                    end = Offset(size.width, dividerThickness.toPx() / 2),
-                  )
-                },
-            )
-          }
+          )
         }
         Box(
           propagateMinConstraints = true,
@@ -434,7 +428,7 @@ private fun ChatLazyColumn(
           .padding(bottom = 8.dp),
       )
     }
-    if (appendStatus !is LoadState.NotLoading) {
+    if (appendStatus !is LoadState.NotLoading && messages.itemCount > 0) {
       item(
         key = "fetching_more",
         contentType = "fetching_more",
@@ -1015,6 +1009,7 @@ private fun PreviewChatLoadedScreen() {
         chatInput = {},
         simpleVideoCache = rememberPreviewSimpleCache(),
         errorSnackbarState = null,
+        onCloseBannerClick = {},
       )
     }
   }
