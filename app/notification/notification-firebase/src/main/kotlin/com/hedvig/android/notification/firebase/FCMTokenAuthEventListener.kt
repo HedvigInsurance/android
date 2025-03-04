@@ -11,8 +11,10 @@ internal class FCMTokenAuthEventListener(
   private val fcmTokenManager: FCMTokenManager,
 ) : AuthEventListener {
   override suspend fun loggedIn(accessToken: String) {
-    logcat { "Logged in, fetching a new FCM token" }
+    logcat { "Newly logged in, clearing the existing FCM push token and fetching a new token" }
     try {
+      fcmTokenManager.deleteTokenLocallyAndFromFirebaseMessaging()
+      logcat { "Cleared existing push token on log in" }
       val freshToken = FirebaseMessaging.getInstance().token.await()
       logcat { "Logged in, so storing a new push token:$freshToken" }
       fcmTokenManager.saveLocallyAndUploadTokenToBackend(freshToken)
@@ -25,7 +27,6 @@ internal class FCMTokenAuthEventListener(
   }
 
   override suspend fun loggedOut() {
-    logcat { "Logged out, so clearing the existing push token" }
-    fcmTokenManager.deleteTokenLocallyAndFromFirebaseMessaging()
+    logcat { "Logged out: FCMTokenAuthEventListener" }
   }
 }

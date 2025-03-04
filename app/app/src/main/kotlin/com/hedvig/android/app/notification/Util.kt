@@ -13,6 +13,7 @@ private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainA
  * [null] [deepLinkUri] just opens the app without deep linking anywhere
  */
 fun HedvigBuildConstants.intentForNotification(deepLinkUri: Uri?): Intent = Intent().apply {
+  action = Intent.ACTION_VIEW
   data = deepLinkUri
   component = ComponentName(this@intentForNotification.appId, MainActivityFullyQualifiedName)
 }
