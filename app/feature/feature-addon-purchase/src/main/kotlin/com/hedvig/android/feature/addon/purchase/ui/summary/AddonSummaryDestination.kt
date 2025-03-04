@@ -355,6 +355,7 @@ private class ChooseInsuranceForAddonUiStateProvider :
             displayName = "45 days",
             product = "",
           ),
+          addonSubtype = "45 days",
           price = UiMoney(
             60.0,
             UiCurrencyCode.SEK,

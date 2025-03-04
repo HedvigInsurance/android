@@ -13,6 +13,7 @@ import coil.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
@@ -278,7 +279,7 @@ internal fun HedvigNavHost(
         }
       },
       onNavigateToAddonPurchaseFlow = { ids ->
-        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
       },
     )
     foreverGraph(
@@ -419,7 +420,12 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
-      navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids))
+      navigator.navigateUnsafe(
+        AddonPurchaseGraphDestination(
+          ids,
+          TravelAddonBannerSource.TRAVEL_CERTIFICATES,
+        ),
+      )
     },
   )
   claimFlowGraph(

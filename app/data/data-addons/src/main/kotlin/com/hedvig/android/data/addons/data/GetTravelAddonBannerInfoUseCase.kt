@@ -17,6 +17,7 @@ import kotlin.String
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
 import octopus.TravelAddonBannerQuery
 import octopus.type.UpsellTravelAddonFlow
 
@@ -30,7 +31,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
 ) : GetTravelAddonBannerInfoUseCase {
   override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
     val mappedSource = when (source) {
-      TravelAddonBannerSource.TRAVEL_CERTIFICATES -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
+      TravelAddonBannerSource.TRAVEL_CERTIFICATES, TravelAddonBannerSource.DEEPLINK -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
       TravelAddonBannerSource.INSURANCES_TAB -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
     }
     return combine(
@@ -86,7 +87,10 @@ data class TravelAddonBannerInfo(
   val bannerSource: UpsellTravelAddonFlow,
 )
 
+@Serializable
+@androidx.annotation.Keep
 enum class TravelAddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
+  DEEPLINK,
 }

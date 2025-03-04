@@ -34,6 +34,7 @@ import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageStat
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Success
 import hedvig.resources.R
 
+@androidx.annotation.Keep
 @Composable
 internal fun TravelAddonTriageDestination(
   viewModel: TravelAddonTriageViewModel,

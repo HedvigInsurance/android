@@ -72,6 +72,7 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
   NonEmptyList<TravelAddonQuote> {
   return this.map {
     TravelAddonQuote(
+      addonSubtype = it.addonSubtype,
       quoteId = it.quoteId,
       addonId = it.addonId,
       displayName = it.displayName,

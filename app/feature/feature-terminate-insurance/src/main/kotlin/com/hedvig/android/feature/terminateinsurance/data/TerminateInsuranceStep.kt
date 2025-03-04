@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
@@ -85,7 +84,7 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       title = it.title,
       listIndex = this.indexOf(it),
       feedBackRequired = it.feedBack != null ||
-        (it.suggestion?.toSuggestion() == UnknownAction) ||
+        (it.suggestion?.toSuggestion() == SurveyOptionSuggestion.Unknown) ||
         it.subOptions?.noUnknownActions() == false,
       subOptions = it.subOptions?.toSubOptionList() ?: emptyList(),
       suggestion = it.suggestion?.toSuggestion(),
@@ -96,7 +95,7 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
 private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions():
   Boolean {
   return none { subOption ->
-    subOption.suggestion?.toSuggestion() == UnknownAction
+    subOption.suggestion?.toSuggestion() == SurveyOptionSuggestion.Unknown
   }
 }
 
@@ -124,7 +123,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
       when (action) {
         FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS -> {
-          SurveyOptionSuggestion.Action.UpdateAddress(
+          SurveyOptionSuggestion.Known.Action.UpdateAddress(
             description = description,
             buttonTitle = buttonTitle,
             infoType = this.infoType.toInfoType(),
@@ -132,7 +131,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
         }
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
-          SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
+          SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier(
             description = description,
             buttonTitle = buttonTitle,
             infoType = this.infoType.toInfoType(),
@@ -141,7 +140,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
 
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
           if (isTierFeatureEnabled) {
-            SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
+            SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
               description = description,
               buttonTitle = buttonTitle,
               infoType = this.infoType.toInfoType(),
@@ -153,7 +152,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
                 "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_MISSING_COVERAGE_AND_TERMS but tier feature flag is disabled!"
               },
             )
-            UnknownAction
+            SurveyOptionSuggestion.Unknown
           }
         }
 
@@ -162,13 +161,13 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
             LogPriority.WARN,
             message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
           )
-          UnknownAction
+          SurveyOptionSuggestion.Unknown
         }
       }
     }
 
     is FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment -> {
-      SurveyOptionSuggestion.Redirect(
+      SurveyOptionSuggestion.Known.Action.Redirect(
         buttonTitle = this.buttonTitle,
         description = this.description,
         url = this.url,
@@ -177,7 +176,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
     }
 
     is FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment -> {
-      SurveyOptionSuggestion.Info(
+      SurveyOptionSuggestion.Known.Info(
         description = this.description,
         infoType = this.infoType.toInfoType(),
       )

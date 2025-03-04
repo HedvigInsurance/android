@@ -8,29 +8,41 @@ import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
 
-class ContactInfoSender(
+internal class InsuranceTabNotificationSender(
   private val context: Context,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
+  override fun handlesNotificationType(notificationType: String): Boolean =
+    NOTIFICATION_TYPE_OPEN_INSURANCE_TAB == notificationType
+
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+    val title = remoteMessage.titleFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
+    if (title == null || body == null) {
+      logcat(LogPriority.ERROR) {
+        "InsuranceTabNotificationSender got no title or body, bailing! data:[${remoteMessage.data}]"
+      }
+      return
+    }
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
-      0,
-      buildConstants.intentForNotification(deepLinkContainer.contactInfo.first().toUri()),
+      RequestCode,
+      buildConstants.intentForNotification(deepLinkContainer.insurances.first().toUri()),
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )
-    val title = remoteMessage.titleFromCustomerIoData()
-    val body = remoteMessage.bodyFromCustomerIoData()
-    val notification = NotificationCompat
+
+    val builder: NotificationCompat.Builder = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
@@ -38,25 +50,23 @@ class ContactInfoSender(
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setAutoCancel(true)
       .setContentIntent(pendingIntent)
-      .build()
 
     sendHedvigNotification(
       context = context,
-      notificationId = ContactInfoNotificationId,
-      notification = notification,
+      notificationId = NotificationId,
+      notification = builder.build(),
       notificationChannel = notificationChannel,
-      notificationSenderName = "ContactInfoSender",
+      notificationSenderName = "InsuranceTabNotificationSender",
     )
   }
 
-  override fun handlesNotificationType(notificationType: String): Boolean {
-    return notificationType == NOTIFICATION_TYPE_CONTACT_INFO
-  }
-
   companion object {
-    private const val NOTIFICATION_TYPE_CONTACT_INFO = "OPEN_CONTACT_INFO"
+    private const val NOTIFICATION_TYPE_OPEN_INSURANCE_TAB = "open_insurance_tab"
 
-    // Randomly chosen, holds no specific importance
-    private const val ContactInfoNotificationId = 100
+    // Unique number compared to the other request codes. Has no significance otherwise.
+    private const val RequestCode = 9986132
+
+    // Unique number compared to the other notification IDs. Has no significance otherwise.
+    private const val NotificationId = 9986133
   }
 }

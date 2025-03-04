@@ -79,20 +79,19 @@ private fun PaymentHistoryScreen(
             PaymentHistory.NoHistoryData to { _: String -> }
           } else {
             PaymentHistory.PastCharges(
-              chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }
-                .map { (year, charges) ->
-                  PaymentHistory.PastCharges.YearCharges(
-                    year = year,
-                    charge = charges.map { charge ->
-                      PaymentHistory.PastCharges.YearCharges.Charge(
-                        id = charge.id,
-                        dueDate = charge.dueDate,
-                        netAmount = charge.netAmount,
-                        hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
-                      )
-                    },
-                  )
-                },
+              chargesInYear = uiState.paymentHistory.groupBy { it.dueDate.year }.map { (year, charges) ->
+                PaymentHistory.PastCharges.YearCharges(
+                  year = year,
+                  charge = charges.map { charge ->
+                    PaymentHistory.PastCharges.YearCharges.Charge(
+                      id = charge.id,
+                      dueDate = charge.dueDate,
+                      netAmount = charge.netAmount,
+                      hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+                    )
+                  },
+                )
+              },
               showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
             ) to { chargeId: String ->
               updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
