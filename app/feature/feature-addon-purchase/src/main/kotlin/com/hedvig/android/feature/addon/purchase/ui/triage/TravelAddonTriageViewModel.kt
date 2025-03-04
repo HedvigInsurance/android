@@ -35,7 +35,7 @@ internal class TravelAddonTriagePresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
-      val result = getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES)
+      val result = getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.DEEPLINK)
       result.first().fold(
         ifLeft = { left: ErrorMessage ->
           currentState = TravelAddonTriageState.Failure(FailureReason.GENERAL)

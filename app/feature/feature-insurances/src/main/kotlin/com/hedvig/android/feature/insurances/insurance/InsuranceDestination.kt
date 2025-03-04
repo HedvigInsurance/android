@@ -153,6 +153,7 @@ private fun InsuranceScreen(
         transitionSpec = {
           fadeIn() togetherWith fadeOut()
         },
+        contentKey = { it.hasError },
         label = "uiState",
       ) { state ->
         if (state.hasError) {

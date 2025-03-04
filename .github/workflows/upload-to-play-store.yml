@@ -73,4 +73,3 @@ jobs:
           track: internal
           mappingFile: app/app/build/outputs/mapping/release/mapping.txt
           status: completed
-          changesNotSentForReview: true

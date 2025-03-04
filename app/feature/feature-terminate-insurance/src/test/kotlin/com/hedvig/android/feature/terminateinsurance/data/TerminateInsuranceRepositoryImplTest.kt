@@ -156,8 +156,8 @@ class TerminateInsuranceRepositoryImplTest {
         .transform { list ->
           list.any { option ->
             option.subOptions.any { subOption ->
-              subOption.suggestion is SurveyOptionSuggestion.Action.DowngradePriceByChangingTier ||
-                subOption.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+              subOption.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
+                subOption.suggestion is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
             }
           }
         }
@@ -201,7 +201,7 @@ class TerminateInsuranceRepositoryImplTest {
           list.filter { option ->
             option.id == "0013"
           }.all {
-            !it.feedBackRequired && it.suggestion is SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+            !it.feedBackRequired && it.suggestion is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
           }
         }
         .isTrue()

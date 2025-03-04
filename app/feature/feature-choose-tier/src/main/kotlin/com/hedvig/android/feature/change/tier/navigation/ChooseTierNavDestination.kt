@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 /**
  * The start of the flow, where we have only insurance ID and start the flow as self-service
  */
+@androidx.annotation.Keep
 @Serializable
 data class StartTierFlowDestination(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */
