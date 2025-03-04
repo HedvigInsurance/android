@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+    android:name="com.hedvig.android.app.HedvigApplication">
+    <!--
+    Uncomment the receiver below to allow testing notifications locally through ADB
+    Try doing for example:
+    ```
+    adb shell am broadcast -n com.hedvig.dev.app/com.google.firebase.iid.FirebaseInstanceIdReceiver \
+      -c com.hedvig.dev.app \
+      -a com.google.android.c2dm.intent.RECEIVE \
+      - -es "TYPE" "NEW_MESSAGE" \
+      - -es "title" "Title" \
+      - -es "body" "Body"
+    ```
+    -->
+    <!--<receiver
+      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+      android:exported="true"
+      android:permission="@null"
+      tools:replace="android:permission" />-->
+  </application>
+</manifest>
