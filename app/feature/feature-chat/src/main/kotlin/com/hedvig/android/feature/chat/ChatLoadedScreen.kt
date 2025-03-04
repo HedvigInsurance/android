@@ -230,7 +230,8 @@ private fun ChatLoadedScreen(
           lazyListState = lazyListState,
           messages = uiState.messages,
           latestChatMessage = uiState.latestMessage,
-          enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,imageLoader = imageLoader,
+          enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
+          imageLoader = imageLoader,
           simpleVideoCache = simpleVideoCache,
           openUrl = openUrl,
           onNavigateToImageViewer = onNavigateToImageViewer,
@@ -530,19 +531,23 @@ private fun ChatBubble(
               )
             }
 
-            ChatMessageFile.MimeType.MP4 -> { // todo default to `Other` if media ff is off
-              val mediaState = mediaStatesWithPlayersMap.getOrPut(
-                chatMessage.id,
-                {
-                  videoPlayerMediaState(simpleVideoCache, chatMessage.url)
-                },
-              )
-              VideoMessage(
-                state = mediaState,
-                onGoFullWidth = onGoFullWidth,
-                onGoDefaultWidth = onGoDefaultWidth,
-                showingFullWidth = showingFullWidth,
-              )
+            ChatMessageFile.MimeType.MP4 -> {
+              if (enableInlineMediaPlayer) {
+                val mediaState = mediaStatesWithPlayersMap.getOrPut(
+                  chatMessage.id,
+                  {
+                    videoPlayerMediaState(simpleVideoCache, chatMessage.url)
+                  },
+                )
+                VideoMessage(
+                  state = mediaState,
+                  onGoFullWidth = onGoFullWidth,
+                  onGoDefaultWidth = onGoDefaultWidth,
+                  showingFullWidth = showingFullWidth,
+                )
+              } else {
+                AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
+              }
             }
 
             ChatMessageFile.MimeType.PDF -> {
