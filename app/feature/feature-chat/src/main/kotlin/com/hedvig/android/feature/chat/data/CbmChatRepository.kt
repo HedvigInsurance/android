@@ -1,8 +1,11 @@
 package com.hedvig.android.feature.chat.data
 
+import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
@@ -11,6 +14,7 @@ import arrow.core.Either.Right
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
+import arrow.fx.coroutines.parMap
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.doNotStore
@@ -21,9 +25,11 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
@@ -66,13 +72,13 @@ internal interface CbmChatRepository {
 
   fun pollNewestMessages(conversationId: Uuid): Flow<String>
 
-  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage>
+  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<MessageSendError, CbmChatMessage>
 
-  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage>
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<MessageSendError, CbmChatMessage>
 
-  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+  suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 
-  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+  suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 }
 
 internal class CbmChatRepositoryImpl(
@@ -82,6 +88,7 @@ internal class CbmChatRepositoryImpl(
   private val remoteKeyDao: RemoteKeyDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
+  private val contentResolver: ContentResolver,
   private val clock: Clock,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
@@ -178,30 +185,44 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
+  override suspend fun retrySendMessage(
+    conversationId: Uuid,
+    messageId: String,
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
-        "Message not found"
+        ErrorMessage("Message not found").toMessageSendError()
       }
       return with(messageToRetry) {
         when {
           failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
-          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, messageToRetry.id, Uri.parse(url))
-          failedToSend == MEDIA && url != null -> sendMedia(conversationId, messageToRetry.id, Uri.parse(url))
+          failedToSend == PHOTO && url != null -> sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
+          failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
-            raise("Unknown message type")
+            raise(ErrorMessage("Unknown message type").toMessageSendError())
           }
         }.onRight {
+          when (failedToSend) {
+            ChatMessageEntity.FailedToSendType.PHOTO,
+            ChatMessageEntity.FailedToSendType.MEDIA,
+            -> url!!.toUri().tryReleasePersistableUriPermission()
+
+            else -> {}
+          }
           chatDao.deleteMessage(conversationId, messageId)
         }
       }
     }
   }
 
-  override suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
+  override suspend fun sendText(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    text: String,
+  ): Either<MessageSendError, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
         messageId?.toString() ?: Uuid.randomUUID().toString(),
@@ -212,50 +233,96 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendPhotos(
+    conversationId: Uuid,
+    uriList: List<Uri>,
+  ): List<Either<MessageSendError, CbmChatMessage>> {
+    return uriList.parMap { uri ->
+      sendOnePhoto(conversationId, null, uri)
+    }
+  }
+
+  override suspend fun sendMedia(
+    conversationId: Uuid,
+    uriList: List<Uri>,
+  ): List<Either<MessageSendError, CbmChatMessage>> {
+    return uriList.parMap { uri ->
+      sendOneMedia(conversationId, null, uri)
+    }
+  }
+
+  private suspend fun sendOneMedia(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    uri: Uri,
+  ): Either<MessageSendError, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadMediaToBotService(uri)
+      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
+    }.onLeft { messageSendError ->
+      if (messageSendError !is MessageSendError.FileTooBigError) {
+        val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+          messageId?.toString() ?: Uuid.randomUUID().toString(),
+          clock.now(),
+          uri,
+        )
+        messageSendError.handleFailedToSendMedia(failedMessage, uri, conversationId)
+      }
+    }
+  }
+
+  private suspend fun sendOnePhoto(
+    conversationId: Uuid,
+    messageId: Uuid?,
+    uri: Uri,
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        clock.now(),
+        uri,
+      )
+      it.handleFailedToSendMedia(failedMessage, uri, conversationId)
     }
   }
 
-  override suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
-    return either {
-      val uploadToken = uploadMediaToBotService(uri)
-      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
-    }.onLeft {
-      val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
-        )
-      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+  private suspend fun MessageSendError.handleFailedToSendMedia(
+    failedMessage: CbmChatMessage.FailedToBeSent,
+    uri: Uri,
+    conversationId: Uuid,
+  ): MessageSendError {
+    try {
+      uri.takePersistableUriPermission()
+    } catch (e: SecurityException) {
+      // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
+      // without the persistent access permission given to us
+      logcat(ERROR, e) { "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri" }
+      return MessageSendError.FailedToPersistUriPermissionError(this.originalError)
     }
+    chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+    return this
   }
 
-  private suspend fun sendMessage(conversationId: Uuid, input: ConversationInput): Either<String, CbmChatMessage> {
+  private suspend fun sendMessage(
+    conversationId: Uuid,
+    input: ConversationInput,
+  ): Either<MessageSendError, CbmChatMessage> {
     return either {
       val response = apolloClient
         .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
         .safeExecute(::ErrorMessage)
-        .mapLeft { it.toString() }
+        .mapLeft(ErrorMessage::toMessageSendError)
         .bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
-        "Sent message resulted in no response from backend"
+        ErrorMessage("Sent message resulted in no response from backend").toMessageSendError()
       }
       val chatMessage = response.conversationSendMessage.message.toChatMessage()
       ensureNotNull(chatMessage) {
-        "Unknown chat message type"
+        ErrorMessage("Unknown chat message type").toMessageSendError()
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
       chatMessage
@@ -296,37 +363,62 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  private suspend fun Raise<String>.uploadPhotoToBotService(uri: Uri): String {
+  private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
     val uploadToken = botServiceService
       .uploadFile(file, contentType)
-      .onLeft {
-      }.mapLeft {
-        val errorMessage = "Failed to upload file with path:${file.absolutePath}. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
-        it.toErrorMessage().message ?: errorMessage
+      .mapLeft {
+        logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+        it.toErrorMessage().toMessageSendError()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { "No upload token" }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
     return uploadToken
   }
 
-  private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
+  private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = botServiceService
       .uploadFile(fileService.createFormData(uri))
       .mapLeft {
-        val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
-        logcat(LogPriority.ERROR) { errorMessage }
-        it.toErrorMessage().message ?: errorMessage
+        logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
+        it.toErrorMessage().toMessageSendError()
       }.bind()
       .firstOrNull()
       ?.uploadToken
-    ensureNotNull(uploadToken) { "No upload token" }
+    ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
+  }
+
+  private fun Uri.takePersistableUriPermission() {
+    contentResolver.takePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  }
+
+  private fun Uri.tryReleasePersistableUriPermission() {
+    try {
+      contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    } catch (e: SecurityException) {
+      logcat(ERROR, e) { "PersistableUriPermission: Failed to release persistable uri permission for uri:$this" }
+    }
+  }
+}
+
+sealed class MessageSendError(val originalError: ErrorMessage) {
+  class GenericError(originalError: ErrorMessage) : MessageSendError(originalError)
+
+  class FileTooBigError(originalError: ErrorMessage) : MessageSendError(originalError)
+
+  class FailedToPersistUriPermissionError(originalError: ErrorMessage) : MessageSendError(originalError)
+}
+
+private fun ErrorMessage.toMessageSendError(): MessageSendError {
+  return if (throwable is BackendFileLimitException) {
+    MessageSendError.FileTooBigError(this)
+  } else {
+    MessageSendError.GenericError(this)
   }
 }
 

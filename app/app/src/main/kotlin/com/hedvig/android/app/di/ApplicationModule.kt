@@ -2,10 +2,14 @@
 
 package com.hedvig.android.app.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -23,10 +27,12 @@ import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
+import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
+import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.auth.AuthTokenService
@@ -34,7 +40,6 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -93,7 +98,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import java.io.File
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -126,14 +130,14 @@ private val networkModule = module {
         )
       }.addInterceptor(DeviceIdInterceptor(get(), get()))
     if (!get<HedvigBuildConstants>().isProduction) {
-      val logger = HttpLoggingInterceptor { message ->
+      val logger = HedvigHttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
         } else {
           Timber.tag("OkHttp").v(message)
         }
       }
-      logger.level = HttpLoggingInterceptor.Level.BODY
+      logger.level = HedvigHttpLoggingInterceptor.Level.BODY
       builder.addInterceptor(logger)
     }
     builder
@@ -180,6 +184,21 @@ fun makeUserAgent(languageBCP47: String): String = buildString {
   append(")")
 }
 
+@SuppressLint("UnsafeOptInUsageError")
+private val videoPlayerModule = module {
+  single<SimpleCache> {
+    val applicationContext = get<Context>().applicationContext
+    val cacheSize = 100 * 1024 * 1024 // 100MB cache
+    val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
+    val databaseProvider = StandaloneDatabaseProvider(applicationContext)
+    SimpleCache(
+      File(applicationContext.cacheDir, "media"),
+      cacheEvictor,
+      databaseProvider,
+    )
+  }
+}
+
 private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
     val context = get<Context>()
@@ -208,33 +227,54 @@ private val buildConstantsModule = module {
 }
 
 private val notificationModule = module {
-  single {
+  single<PaymentNotificationSender> {
     PaymentNotificationSender(
       get<Context>(),
-      get<ApplicationScope>(),
+      get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Payments,
     )
   } bind NotificationSender::class
-  single {
-    CrossSellNotificationSender(get<Context>(), get<ApplicationScope>(), HedvigNotificationChannel.CrossSell)
+  single<CrossSellNotificationSender> {
+    CrossSellNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.CrossSell,
+    )
   } bind NotificationSender::class
-  single {
-    ReferralsNotificationSender(get<Context>(), get<HedvigDeepLinkContainer>(), HedvigNotificationChannel.Referrals)
+  single<ReferralsNotificationSender> {
+    ReferralsNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Referrals,
+    )
   } bind NotificationSender::class
-  single {
-    GenericNotificationSender(get<Context>(), HedvigNotificationChannel.Other)
+  single<GenericNotificationSender> {
+    GenericNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.Other,
+    )
   } bind NotificationSender::class
   single<ChatNotificationSender> {
     ChatNotificationSender(
       get<Context>(),
-      get<HedvigDeepLinkContainer>(),
       get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Chat,
     )
   } bind NotificationSender::class
   single<ContactInfoSender> {
     ContactInfoSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
+    )
+  } bind NotificationSender::class
+  single<InsuranceTabNotificationSender> {
+    InsuranceTabNotificationSender(
       get<Context>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
@@ -305,6 +345,7 @@ val applicationModule = module {
       addonPurchaseModule,
       apolloAuthListenersModule,
       appModule,
+      videoPlayerModule,
       authModule,
       buildConstantsModule,
       chooseTierModule,

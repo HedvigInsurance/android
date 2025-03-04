@@ -1,14 +1,14 @@
 package com.hedvig.android.app.notification.senders
 
+import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
+import androidx.core.app.PendingIntentCompat
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
-import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
+import com.hedvig.android.app.notification.intentForNotification
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -17,17 +17,24 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class GenericNotificationSender(
   private val context: Context,
+  private val buildConstants: HedvigBuildConstants,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   private val id = AtomicInteger(100)
 
+  override fun handlesNotificationType(notificationType: String) =
+    notificationType == NOTIFICATION_TYPE_GENERIC_COMMUNICATION
+
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    val title = remoteMessage.data[DATA_MESSAGE_TITLE]
-    val body = remoteMessage.data[DATA_MESSAGE_BODY]
-    val pendingIntent = TaskStackBuilder
-      .create(context)
-      .addNextIntent(Intent(context, MainActivity::class.java))
-      .getPendingIntent(0, getImmutablePendingIntentFlags())
+    val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
+    val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
+    val pendingIntent = PendingIntentCompat.getActivity(
+      context,
+      0,
+      buildConstants.intentForNotification(deepLinkUri = null),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
+    )
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
@@ -47,10 +54,7 @@ class GenericNotificationSender(
     )
   }
 
-  override fun handlesNotificationType(notificationType: String) =
-    notificationType == NOTIFICATION_TYPE_GENERIC_COMMUNICATION
-
   companion object {
-    const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
+    private const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
   }
 }

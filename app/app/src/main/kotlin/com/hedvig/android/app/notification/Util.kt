@@ -1,14 +1,21 @@
 package com.hedvig.android.app.notification
 
-import android.app.PendingIntent
-import android.os.Build
+import android.content.ComponentName
+import android.content.Intent
+import android.net.Uri
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 
-fun getImmutablePendingIntentFlags(): Int = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+// Used to refer to the MainActivity class fully qualified name when trying to make a notification deep link to
+// specific screen of it
+private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainActivity"
 
-fun getMutablePendingIntentFlags(): Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-  PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-} else {
-  PendingIntent.FLAG_UPDATE_CURRENT
+/**
+ * [null] [deepLinkUri] just opens the app without deep linking anywhere
+ */
+fun HedvigBuildConstants.intentForNotification(deepLinkUri: Uri?): Intent = Intent().apply {
+  action = Intent.ACTION_VIEW
+  data = deepLinkUri
+  component = ComponentName(this@intentForNotification.appId, MainActivityFullyQualifiedName)
 }
 
 const val DATA_MESSAGE_TITLE = "DATA_MESSAGE_TITLE"

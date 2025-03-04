@@ -54,11 +54,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
             labelText = discount.code,
             modifier = Modifier
               .wrapContentWidth(),
-            color = if (discountIsExpired) {
-              HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT)
-            } else {
-              HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT)
-            },
+            color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
             size = HighlightLabelDefaults.HighLightSize.Small,
           )
         }
@@ -66,7 +62,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
       endSlot = {
         discount.amount?.let { discountAmount ->
           HedvigText(
-            text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, discountAmount.toString()),
+            text = discountAmount.toString(),
             color = if (discountIsExpired) {
               HedvigTheme.colorScheme.textDisabled
             } else {
