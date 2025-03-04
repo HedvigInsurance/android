@@ -18,14 +18,16 @@ fun ErrorSnackbar(hasError: Boolean, showedError: () -> Unit, modifier: Modifier
 @Composable
 fun ErrorSnackbar(errorSnackbarState: ErrorSnackbarState, modifier: Modifier = Modifier) {
   HedvigSnackbar(
-    snackbarText = stringResource(R.string.something_went_wrong),
+    snackbarText = errorSnackbarState.messageText ?: stringResource(R.string.something_went_wrong),
     showSnackbar = errorSnackbarState.error,
     showedSnackbar = errorSnackbarState.showedError,
     modifier = modifier,
+    priority = NotificationDefaults.NotificationPriority.Error,
   )
 }
 
 class ErrorSnackbarState(
   val error: Boolean,
   val showedError: () -> Unit,
+  val messageText: String? = null,
 )

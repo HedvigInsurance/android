@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.navigation
 
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -19,6 +20,7 @@ fun NavGraphBuilder.cbmChatGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -56,6 +58,7 @@ fun NavGraphBuilder.cbmChatGraph(
         onNavigateToClaimDetails = onNavigateToClaimDetails,
         onNavigateToImageViewer = onNavigateToImageViewer,
         onNavigateUp = navigator::navigateUp,
+        simpleVideoCache = simpleVideoCache,
       )
     }
   }

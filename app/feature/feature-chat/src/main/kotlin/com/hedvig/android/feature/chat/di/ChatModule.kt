@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.di
 
+import android.content.Context
 import androidx.room.RoomDatabase
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo.ApolloClient
@@ -16,6 +17,7 @@ import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
 import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -53,6 +55,7 @@ val chatModule = module {
       remoteKeyDao = get<RemoteKeyDao>(),
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
+      contentResolver = get<Context>().contentResolver,
       clock = get<Clock>(),
     )
   }
@@ -75,6 +78,7 @@ val chatModule = module {
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
       chatRepository = get<GetCbmChatRepositoryProvider>(),
+      featureManager = get<FeatureManager>(),
       clock = get<Clock>(),
     )
   }

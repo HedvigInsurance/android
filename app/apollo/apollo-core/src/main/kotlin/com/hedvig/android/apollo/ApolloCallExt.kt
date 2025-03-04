@@ -201,7 +201,8 @@ private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.mergeApolloErro
  * Turn it all back into `Either<ApolloOperationError, D>`, which drops all information where we may have had both
  * errors and data. This only is [Either.Right] if everything went well and we got no responses.
  */
-private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.dropPartialResponses(): Either<ApolloOperationError, D> {
+private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.dropPartialResponses():
+  Either<ApolloOperationError, D> {
   return mergeApolloErrors().toEither()
 }
 
