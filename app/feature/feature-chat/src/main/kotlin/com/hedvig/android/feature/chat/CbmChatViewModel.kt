@@ -44,6 +44,8 @@ import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
 import com.hedvig.android.feature.chat.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -70,6 +72,7 @@ internal class CbmChatViewModel(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
+  featureManager: FeatureManager,
   clock: Clock,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
@@ -87,6 +90,7 @@ internal class CbmChatViewModel(
       ),
       chatDao = chatDao,
       chatRepository = chatRepository,
+      featureManager = featureManager,
     ),
     coroutineScope = coroutineScope,
   )
@@ -127,6 +131,7 @@ internal class CbmChatPresenter(
   private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
   private val chatDao: ChatDao,
   private val chatRepository: Provider<CbmChatRepository>,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -145,6 +150,9 @@ internal class CbmChatPresenter(
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
     var hideBanner by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
+    val enableInlineMediaPlayer by remember(featureManager) {
+      featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
+    }.collectAsState(false)
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
@@ -240,6 +248,7 @@ internal class CbmChatPresenter(
         presentLoadedChat(
           pagingData = pagingData,
           backendConversationInfo = conversationIdStatusValue.conversationInfo,
+          enableInlineMediaPlayer = enableInlineMediaPlayer,
           conversationId = conversationId,
           chatDao = chatDao,
           chatRepository = chatRepository,
@@ -258,6 +267,7 @@ internal class CbmChatPresenter(
 private fun presentLoadedChat(
   pagingData: Flow<PagingData<CbmUiChatMessage>>,
   backendConversationInfo: ConversationInfo,
+  enableInlineMediaPlayer: Boolean,
   conversationId: Uuid,
   chatDao: ChatDao,
   chatRepository: Provider<CbmChatRepository>,
@@ -297,6 +307,7 @@ private fun presentLoadedChat(
     messages = lazyPagingItems,
     latestMessage = latestMessage,
     bannerText = bannerText,
+    enableInlineMediaPlayer = enableInlineMediaPlayer,
     showUploading = showUploading,
     showFileTooBigErrorToast = showFileTooBigErrorToast,
     showFileFailedToBeSentToast = showFileFailedToBeSendToast,
@@ -341,6 +352,7 @@ internal sealed interface CbmChatUiState {
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
+    val enableInlineMediaPlayer: Boolean,
     val showUploading: Boolean,
     val showFileTooBigErrorToast: Boolean,
     // When we fail to persist the message in a way where we can retry it later, we simply fall back to showing an error

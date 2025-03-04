@@ -17,6 +17,7 @@ import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
 import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -77,6 +78,7 @@ val chatModule = module {
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
       chatRepository = get<GetCbmChatRepositoryProvider>(),
+      featureManager = get<FeatureManager>(),
       clock = get<Clock>(),
     )
   }

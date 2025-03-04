@@ -92,7 +92,7 @@ internal fun CbmChatDestination(
     onCloseBannerClick = {
       viewModel.emit(CbmChatEvent.HideBanner)
     },
-    )
+  )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

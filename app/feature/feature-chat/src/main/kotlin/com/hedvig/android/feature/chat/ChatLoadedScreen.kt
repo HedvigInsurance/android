@@ -230,6 +230,7 @@ private fun ChatLoadedScreen(
           lazyListState = lazyListState,
           messages = uiState.messages,
           latestChatMessage = uiState.latestMessage,
+          enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
           imageLoader = imageLoader,
           simpleVideoCache = simpleVideoCache,
           openUrl = openUrl,
@@ -240,7 +241,6 @@ private fun ChatLoadedScreen(
             .weight(1f)
             .clearFocusOnTap(),
         )
-
         AnimatedVisibility(
           visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
             uiState.bannerText != null,
@@ -348,6 +348,7 @@ private fun ChatLazyColumn(
   messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
+  enableInlineMediaPlayer: Boolean,
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -407,6 +408,7 @@ private fun ChatLazyColumn(
         uiChatMessage = uiChatMessage,
         chatItemIndex = index,
         imageLoader = imageLoader,
+        enableInlineMediaPlayer = enableInlineMediaPlayer,
         simpleVideoCache = simpleVideoCache,
         mediaStatesWithPlayersMap = mediaStatesWithPlayers,
         openUrl = openUrl,
@@ -468,6 +470,7 @@ private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   imageLoader: ImageLoader,
+  enableInlineMediaPlayer: Boolean,
   simpleVideoCache: Cache,
   mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
   openUrl: (String) -> Unit,
@@ -529,18 +532,22 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.MP4 -> {
-              val mediaState = mediaStatesWithPlayersMap.getOrPut(
-                chatMessage.id,
-                {
-                  videoPlayerMediaState(simpleVideoCache, chatMessage.url)
-                },
-              )
-              VideoMessage(
-                state = mediaState,
-                onGoFullWidth = onGoFullWidth,
-                onGoDefaultWidth = onGoDefaultWidth,
-                showingFullWidth = showingFullWidth,
-              )
+              if (enableInlineMediaPlayer) {
+                val mediaState = mediaStatesWithPlayersMap.getOrPut(
+                  chatMessage.id,
+                  {
+                    videoPlayerMediaState(simpleVideoCache, chatMessage.url)
+                  },
+                )
+                VideoMessage(
+                  state = mediaState,
+                  onGoFullWidth = onGoFullWidth,
+                  onGoDefaultWidth = onGoDefaultWidth,
+                  showingFullWidth = showingFullWidth,
+                )
+              } else {
+                AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
+              }
             }
 
             ChatMessageFile.MimeType.PDF -> {
@@ -997,6 +1004,7 @@ private fun PreviewChatLoadedScreen() {
           messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
           latestMessage = null,
           bannerText = ClosedConversation,
+          enableInlineMediaPlayer = true,
           showUploading = true,
           showFileTooBigErrorToast = false,
           showFileFailedToBeSentToast = false,
