@@ -29,6 +29,8 @@ class CrossSellNotificationSender(
     return
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
+    val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
+    val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
 
     @Suppress("UNUSED_VARIABLE") // Unused when there's no cross sale detail screen in the app
     val id = remoteMessage.data[CROSS_SELL_ID]
