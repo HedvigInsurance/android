@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDate
 internal data class PaymentOverview(
   val memberChargeShortInfo: MemberChargeShortInfo?,
   val ongoingCharges: List<OngoingCharge>,
-  val paymentConnection: PaymentConnection?,
+  val paymentConnection: PaymentConnection,
 ) {
   data class OngoingCharge(
     val id: String,

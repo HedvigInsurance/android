@@ -19,6 +19,7 @@ import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlin.collections.sorted
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -64,7 +65,17 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           }
 
           MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.NeedsSetup
+          MemberPaymentConnectionStatus.NEEDS_SETUP -> {
+            val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
+              .currentMember
+              .activeContracts
+              .filter { it.terminationDueToMissedPayments }
+              .mapNotNull { it.terminationDate }
+              .sorted()
+              .firstOrNull()
+            PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
+          }
+
           MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
         }
       },
@@ -99,7 +110,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
         failedCharge = null,
       ),
       emptyList(),
-      null,
+      PaymentConnection.Unknown,
     ).right()
   }
 }

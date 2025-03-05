@@ -86,14 +86,15 @@ internal class PaymentsPresenter(
 
               Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
 
-              NeedsSetup,
-              Unknown,
-              null,
-              -> {
-                PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(
-                  dueDateToConnect = paymentOverview.memberChargeShortInfo?.dueDate,
+              is NeedsSetup -> {
+                PaymentsUiState.Content.ConnectedPaymentInfo.NeedsSetup(
+                  dueDateToConnect = paymentConnection.terminationDateIfNotConnected,
                   allowChangingConnectedBankAccount = allowChangingConnectedBankAccount,
                 )
+              }
+
+              Unknown -> {
+                PaymentsUiState.Content.ConnectedPaymentInfo.Unknown
               }
             },
           )
@@ -142,7 +143,9 @@ internal sealed interface PaymentsUiState {
     }
 
     sealed interface ConnectedPaymentInfo {
-      data class NotConnected(
+      object Unknown : ConnectedPaymentInfo
+
+      data class NeedsSetup(
         val dueDateToConnect: LocalDate?,
         val allowChangingConnectedBankAccount: Boolean,
       ) : ConnectedPaymentInfo

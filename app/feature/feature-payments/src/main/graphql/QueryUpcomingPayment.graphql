@@ -1,5 +1,9 @@
 query UpcomingPayment {
   currentMember {
+    activeContracts {
+      terminationDueToMissedPayments
+      terminationDate
+    }
     futureCharge {
       ...MemberChargeFragment
     }
