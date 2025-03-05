@@ -27,8 +27,6 @@ class CrossSellNotificationSender(
     // TODO drop support for this notification type if we see we never get it
     logcat(LogPriority.ASSERT) { "We never expect to get a notification of type $type" }
     return
-    val title = remoteMessage.data[DATA_MESSAGE_TITLE]
-    val body = remoteMessage.data[DATA_MESSAGE_BODY]
     val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
 
