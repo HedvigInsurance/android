@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -46,6 +47,7 @@ internal fun HedvigAppUi(
   openUrl: (String) -> Unit,
   market: Market,
   imageLoader: ImageLoader,
+  simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -69,6 +71,7 @@ internal fun HedvigAppUi(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openUrl = openUrl,
           imageLoader = imageLoader,
+          simpleVideoCache = simpleVideoCache,
           market = market,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,

@@ -20,4 +20,7 @@ enum class Feature(
   ENABLE_ADDONS_REMOVAL_FROM_MOVING_FLOW(
     "Allow members to to exclude specific addons to their home insurance when completing the moving flow",
   ),
+  ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES(
+    "When enabled, it allows the chat to show media in inline video players in the chat messages",
+  ),
 }

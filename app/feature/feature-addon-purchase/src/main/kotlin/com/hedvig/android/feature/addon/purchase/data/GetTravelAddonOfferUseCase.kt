@@ -68,7 +68,8 @@ internal class GetTravelAddonOfferUseCaseImpl(
   }
 }
 
-private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes(): NonEmptyList<TravelAddonQuote> {
+private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes():
+  NonEmptyList<TravelAddonQuote> {
   return this.map {
     TravelAddonQuote(
       addonSubtype = it.addonSubtype,
@@ -84,7 +85,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
   }
 }
 
-private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAddon?.toCurrentAddon(): CurrentTravelAddon? {
+private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAddon?.toCurrentAddon():
+  CurrentTravelAddon? {
   return this?.let {
     CurrentTravelAddon(
       price = UiMoney.fromMoneyFragment(premium),

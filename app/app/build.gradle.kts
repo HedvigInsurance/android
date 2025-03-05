@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.10.8"
+    versionName = "12.10.9"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -148,6 +148,8 @@ dependencies {
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
