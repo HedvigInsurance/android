@@ -47,6 +47,8 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.uiClaimFlow)
   implementation(projects.uiEmergency)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

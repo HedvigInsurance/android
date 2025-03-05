@@ -89,14 +89,15 @@ private fun SelectContractScreen(
     Spacer(Modifier.weight(1f))
     RadioGroup(
       radioGroupSize = RadioGroupDefaults.RadioGroupSize.Medium,
-      radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Default(
+      radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Label(
         dataList = uiState.contractOptions.map { option ->
-          RadioOptionGroupData.RadioOptionGroupDataSimple(
+          RadioOptionGroupData.RadioOptionGroupDataWithLabel(
             RadioOptionData(
               id = option.id,
               optionText = option.displayName,
               chosenState = if (option == uiState.selectedContract) ChosenState.Chosen else ChosenState.NotChosen,
             ),
+            labelText = option.description
           )
         },
       ),
@@ -127,9 +128,11 @@ private fun PreviewLocationScreen() {
       SelectContractScreen(
         uiState = SelectContractUiState(
           contractOptions = List(3) {
-            LocalContractContractOption("#$it", "Location #$it")
+            LocalContractContractOption("#$it", "Location #$it",
+              description = "Bullegatan Bullegatan")
           },
-          selectedContract = LocalContractContractOption("#1", "Location #1"),
+          selectedContract = LocalContractContractOption("#1", "Location #1",
+            description = "Bullegatan Bullegatan"),
         ),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         selectLocation = {},
