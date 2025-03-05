@@ -1,0 +1,19 @@
+query AllContracts {
+  currentMember {
+    pendingContracts {
+      id
+      exposureDisplayName
+    }
+    terminatedContracts {
+      ...ShortContractInfoFragment
+    }
+    activeContracts {
+      ...ShortContractInfoFragment
+    }
+  }
+}
+
+fragment ShortContractInfoFragment on Contract {
+  id
+  exposureDisplayName
+}

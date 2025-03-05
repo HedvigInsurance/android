@@ -296,7 +296,7 @@ data class LocationOption(
 @Serializable
 data class LocalContractContractOption(
   val id: String,
-  val displayName: String
+  val displayName: String,
 )
 
 @Serializable
