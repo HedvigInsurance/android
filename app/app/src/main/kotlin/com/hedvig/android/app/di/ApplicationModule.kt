@@ -35,6 +35,7 @@ import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
+import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -279,6 +280,14 @@ private val notificationModule = module {
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
+    )
+  } bind NotificationSender::class
+  single<TravelAddonSender> {
+    TravelAddonSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.CrossSell,
     )
   } bind NotificationSender::class
 }
