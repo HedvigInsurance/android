@@ -287,7 +287,7 @@ private val notificationModule = module {
       get<Context>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
-      HedvigNotificationChannel.Other,
+      HedvigNotificationChannel.CrossSell,
     )
   } bind NotificationSender::class
 }
