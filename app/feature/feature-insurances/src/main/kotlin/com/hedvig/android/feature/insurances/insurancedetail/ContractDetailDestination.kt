@@ -333,17 +333,13 @@ private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> 
 
 @Composable
 private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier) {
-  val couroutineScope = rememberCoroutineScope()
   HedvigTabRowMaxSixTabs(
     tabTitles = listOf(
       stringResource(R.string.insurance_details_view_tab_1_title),
       stringResource(R.string.insurance_details_view_tab_2_title),
       stringResource(R.string.insurance_details_view_tab_3_title),
     ),
-    tabRowState = rememberHedvigTabRowState(
-      { pagerState.currentPage },
-      { index -> couroutineScope.launch { pagerState.animateScrollToPage(index) } },
-    ),
+    tabRowState = rememberHedvigTabRowState(pagerState),
     selectIndicatorAnimationSpec = horizontalPagerSpringSpec(IntOffset.VisibilityThreshold),
     modifier = modifier.fillMaxWidth(),
     tabSize = TabSize.Small,

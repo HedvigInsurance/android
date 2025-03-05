@@ -10,12 +10,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 import kotlin.math.ceil
+import kotlinx.coroutines.launch
 
 interface HedvigTabRowState {
   val selectedTabIndex: Int
@@ -67,9 +70,13 @@ fun rememberHedvigTabRowState(): HedvigTabRowState {
 }
 
 @Composable
-fun rememberHedvigTabRowState(indexProvider: () -> Int, onTabChosenDelegate: (Int) -> Unit): HedvigTabRowState {
-  return remember(indexProvider, onTabChosenDelegate) {
-    DelegatedHedvigTabRowState(indexProvider, onTabChosenDelegate)
+fun rememberHedvigTabRowState(pagerState: PagerState): HedvigTabRowState {
+  val coroutineScope = rememberCoroutineScope()
+  return remember(pagerState, coroutineScope) {
+    DelegatedHedvigTabRowState(
+      indexProvider = { pagerState.currentPage },
+      onTabChosenDelegate = { coroutineScope.launch { pagerState.animateScrollToPage(it) } },
+    )
   }
 }
 
