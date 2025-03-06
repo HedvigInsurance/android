@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
@@ -45,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -54,6 +58,8 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Failure
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Loading
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Checkmark
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Description
 import hedvig.resources.R
 
 @Composable
@@ -179,8 +185,28 @@ private fun CoverageLevelRow(
 //          TODO("Add + icon on the end of the text")
         },
         endSlot = {
-          HedvigText(item.rightPart.toString(), textAlign = TextAlign.End)
-//          TODO("See what backend returns here instead ")
+          when (item.coveredStatus) {
+            Checkmark -> {
+              Icon(
+                imageVector = HedvigIcons.Checkmark,
+                contentDescription = null,
+                modifier = with(LocalDensity.current) {
+                  Modifier
+                    .wrapContentSize(Alignment.CenterEnd)
+                    .size(24.sp.toDp())
+                },
+              )
+            }
+
+            is Description -> {
+              HedvigText(
+                text = item.coveredStatus.description,
+                color = HedvigTheme.colorScheme.textSecondary,
+                textAlign = TextAlign.End,
+                modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+              )
+            }
+          }
         },
         modifier = Modifier
           .clickable { onCoverageClicked(item) }
@@ -231,15 +257,16 @@ private fun ComparisonScreenPreview(
           listOf(
             CoverageLevel(
               title = "Coverage level 1",
-              items = List(4) {
+              items = List(4) { index ->
                 CoverageLevel.ComparisonItem(
-                  "title",
-                  CoverageLevel.ComparisonItem.RightPart.Checkmark,
-                  "description",
+                  title = "title",
+                  description = "description",
+                  coveredStatus = if (index % 2 == 0) Description("description") else Checkmark,
                 )
               },
             ),
           ),
+          1,
         ),
         {},
       )
@@ -253,13 +280,12 @@ private fun PreviewComparisonRowBottomSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ComparisonRowBottomSheetContent(
-        CoverageLevel.ComparisonItem(
-          "Title",
-          CoverageLevel.ComparisonItem.RightPart.Checkmark,
-          "Description eh".repeat(15),
+        comparisonItem = CoverageLevel.ComparisonItem(
+          title = "Title",
+          description = "Description eh".repeat(15),
+          coveredStatus = Checkmark,
         ),
-        {
-        },
+        dismissSheet = {},
       )
     }
   }
