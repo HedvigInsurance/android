@@ -2,10 +2,10 @@ package com.hedvig.android.shared.tier.comparison.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import octopus.CompareCoverageQuery
@@ -18,9 +18,6 @@ internal class GetCoverageComparisonUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCoverageComparisonUseCase {
   override suspend fun invoke(termsVersionIds: List<String>): Either<ErrorMessage, ComparisonData> {
-//    val mockIds = listOf("SE_DOG_BASIC-20230330-HEDVIG-null",
-//      "SE_DOG_STANDARD-20230330-HEDVIG-null",)
-
     return either {
       val result = apolloClient.query(CompareCoverageQuery(termsVersionIds))
         .safeExecute()
@@ -31,37 +28,38 @@ internal class GetCoverageComparisonUseCaseImpl(
           logcat(ERROR) { "Tried to to ask for coverage comparison but got error from CompareCoverageQuery: $it" }
         }
         .bind()
-      logcat { "Coverage comparison result: $result " }
+        .productVariantComparison
+      logcat { "Coverage comparison result: $result" }
+      ensure(result.rows.all { it.cells.size == result.variantColumns.size }) {
+        ErrorMessage(
+          "Coverage comparison result has inconsistent data. We have #${result.variantColumns.size} variants, yet " +
+            "some of the row cells had a different amount of cells. $result",
+        )
+      }
       ComparisonData(
-        columns = result.productVariantComparison.variantColumns.mapNotNull { variantColumn ->
-          if (variantColumn.displayNameTier != null) {
-            ComparisonColumn(title = variantColumn.displayNameTier, termsVersion = variantColumn.termsVersion)
-          } else {
-            logcat(LogPriority.ERROR) { "Got variant with null title, can't show in comparison table. $variantColumn" }
-            null
-          }
-        },
-        rows = result.productVariantComparison.rows.map { row ->
-          val numbers = if (row.cells.any { it.coverageText != null }) {
-            buildString {
-              row.cells.forEachIndexed { index, cell ->
-                val columnTitle = result.productVariantComparison.variantColumns[index].displayNameTier
-                if (cell.coverageText != null && columnTitle != null) {
-                  appendLine("$columnTitle: ${cell.coverageText}")
-                }
-              }
-            }.trimIndent()
-          } else {
-            null
-          }
-          ComparisonRow(
-            title = row.title,
-            description = row.description,
-            numbers = numbers,
-            cells = row.cells.map { cell ->
-              ComparisonCell(
-                coverageText = cell.coverageText,
-                isCovered = cell.isCovered,
+        coverageLevels = result.variantColumns.mapIndexed { variantColumnIndex, variantColumn ->
+          ComparisonData.CoverageLevel(
+            displayNameTier = if (variantColumn.displayNameTier != null) {
+              variantColumn.displayNameTier
+            } else {
+              logcat(ERROR) { "Got variant with null title, falling back to displayNameSubtype. $variantColumn" }
+              variantColumn.displayNameSubtype
+            },
+            termsVersion = variantColumn.termsVersion,
+            coveredItems = result.rows.map { row ->
+              val cellForCurrentVariant = row.cells[variantColumnIndex]
+              ComparisonData.CoverageLevel.CoveredItem(
+                title = row.title,
+                description = row.description,
+                coveredStatus = if (!cellForCurrentVariant.isCovered) {
+                  ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.NotCovered
+                } else if (cellForCurrentVariant.coverageText != null) {
+                  ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.CoveredWithDescription(
+                    cellForCurrentVariant.coverageText,
+                  )
+                } else {
+                  ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.Covered
+                },
               )
             },
           )
@@ -72,136 +70,25 @@ internal class GetCoverageComparisonUseCaseImpl(
 }
 
 data class ComparisonData(
-  val columns: List<ComparisonColumn>,
-  val rows: List<ComparisonRow>,
-)
+  val coverageLevels: List<CoverageLevel>,
+) {
+  data class CoverageLevel(
+    val displayNameTier: String,
+    val termsVersion: String,
+    val coveredItems: List<CoveredItem>,
+  ) {
+    data class CoveredItem(
+      val title: String,
+      val description: String,
+      val coveredStatus: CoveredStatus,
+    ) {
+      sealed interface CoveredStatus {
+        object Covered : CoveredStatus
 
-data class ComparisonColumn(
-  val title: String,
-  val termsVersion: String,
-)
+        data class CoveredWithDescription(val coverageText: String) : CoveredStatus
 
-data class ComparisonRow(
-  val title: String,
-  val description: String,
-  val numbers: String?,
-  val cells: List<ComparisonCell>,
-)
-
-data class ComparisonCell(
-  val coverageText: String?,
-  val isCovered: Boolean,
-)
-
-internal val mockComparisonData = ComparisonData(
-  columns = listOf(
-    ComparisonColumn(
-      "Student",
-      "termsVersion0",
-    ),
-    ComparisonColumn(
-      "Basic",
-      "termsVersion1",
-    ),
-    ComparisonColumn("Standard", "termsVersion2"),
-    ComparisonColumn("Premium", "termsVersion3"),
-  ),
-  rows = listOf(
-    ComparisonRow(
-      title = "Veterinary care",
-      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs " +
-        "if it gets ill or injured in the event accident.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell("30 000 kr", true),
-        ComparisonCell("30 000 kr", true),
-        ComparisonCell("60 000 kr", true),
-        ComparisonCell("120 000 kr", true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Advanced diagnostics",
-      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we " +
-        "compensate costs that have been approved in advance by Hedvig.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell(null, true),
-        ComparisonCell(null, true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Care of pet at home",
-      description = "Compensation for loss of income if you need to stay home from work to take care of your sick " +
-        "or injured pet.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell("500 kr", true),
-        ComparisonCell("2 000 kr", true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Life insurance",
-      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized " +
-        "according to a veterinarian. You also get compensation if your pet is stolen or lost.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell("30 000 kr", true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Veterinary care",
-      description = "We ensure that you receive compensation for the examination, care and treatment your pet needs " +
-        "if it gets ill or injured in the event accident.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell("30 000 kr", true),
-        ComparisonCell("30 000 kr", true),
-        ComparisonCell("60 000 kr", true),
-        ComparisonCell("120 000 kr", true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Advanced diagnostics",
-      description = "If your pet needs diagnostic examination prescribed by a veterinarian for further care, we " +
-        "compensate costs that have been approved in advance by Hedvig.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell(null, true),
-        ComparisonCell(null, true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Care of pet at home",
-      description = "Compensation for loss of income if you need to stay home from work to take care of your sick or " +
-        "injured pet.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell("500 kr", true),
-        ComparisonCell("2 000 kr", true),
-      ),
-    ),
-    ComparisonRow(
-      title = "Life insurance",
-      description = "If your pet were to die as a result of illness or injury. Or if your pet must be euthanized " +
-        "according to a veterinarian. You also get compensation if your pet is stolen or lost.",
-      numbers = "Standard: 40000 kr\nMax: 80000 kr",
-      cells = listOf(
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell(null, false),
-        ComparisonCell("30 000 kr", true),
-      ),
-    ),
-  ),
-)
+        object NotCovered : CoveredStatus
+      }
+    }
+  }
+}
