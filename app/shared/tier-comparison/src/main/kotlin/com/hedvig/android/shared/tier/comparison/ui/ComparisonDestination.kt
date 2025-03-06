@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -137,6 +138,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     HedvigTabRowMaxSixTabs(
       tabRowState = tabRowState,
       tabTitles = uiState.coverageLevels.map { it.title },
+      tabStyle = TabDefaults.TabStyle.Filled,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
