@@ -1,5 +1,6 @@
 package com.hedvig.android.shared.tier.comparison.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,13 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -27,27 +31,29 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
 import com.hedvig.android.design.system.hedvig.HedvigTabletLandscapePreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.shared.tier.comparison.data.ComparisonRow
-import com.hedvig.android.shared.tier.comparison.data.mockComparisonData
+import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonEvent.Reload
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Failure
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Loading
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel
 import hedvig.resources.R
 
 @Composable
@@ -82,7 +88,7 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
 
 @Composable
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
-  val selectedComparisonRowBottomSheetState = rememberHedvigBottomSheetState<ComparisonRow>()
+  val selectedComparisonRowBottomSheetState = rememberHedvigBottomSheetState<CoverageLevel.ComparisonItem>()
   HedvigBottomSheet(
     hedvigBottomSheetState = selectedComparisonRowBottomSheetState,
     contentPadding = PaddingValues(horizontal = 24.dp),
@@ -111,7 +117,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-
     HedvigText(
       style = HedvigTheme.typography.headlineMedium.copy(
         lineBreak = LineBreak.Heading,
@@ -121,30 +126,80 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
-    // todo add new comparison table content
+    val pagerState = rememberPagerState { uiState.coverageLevels.size }
+    val tabRowState = rememberHedvigTabRowState(pagerState)
+    HedvigTabRowMaxSixTabs(
+      tabRowState = tabRowState,
+      tabTitles = uiState.coverageLevels.map { it.title },
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    ComparisonPager(
+      coverageLevels = uiState.coverageLevels,
+      pagerState = pagerState,
+      contentPadding = PaddingValues(horizontal = 16.dp),
+      onCoverageClicked = { selectedComparisonRowBottomSheetState.show(it) },
+      modifier = Modifier,
+    )
+    Spacer(Modifier.height(32.dp))
   }
 }
 
 @Composable
-private fun ComparisonRowBottomSheetContent(
-  comparisonRow: ComparisonRow,
-  dismissSheet: () -> Unit,
+private fun ComparisonPager(
+  coverageLevels: List<CoverageLevel>,
+  pagerState: PagerState,
+  contentPadding: PaddingValues,
+  onCoverageClicked: (CoverageLevel.ComparisonItem) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HorizontalPager(
+    state = pagerState,
+    modifier = modifier,
+  ) { index ->
+    val coverage = coverageLevels[index]
+    CoverageLevelRow(coverage, contentPadding, { onCoverageClicked(it) })
+  }
+}
+
+@Composable
+private fun CoverageLevelRow(
+  coverage: CoverageLevel,
+  contentPadding: PaddingValues,
+  onCoverageClicked: (CoverageLevel.ComparisonItem) -> Unit,
 ) {
   Column {
-    HedvigText(text = comparisonRow.title)
-    Spacer(Modifier.height(2.dp))
-    HedvigText(
-      text = comparisonRow.description,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
-    val exactNumbers = comparisonRow.numbers
-    if (exactNumbers != null) { // todo see if we want to remove this part completely
-      Spacer(Modifier.height(2.dp))
-      HedvigText(
-        text = exactNumbers,
-        color = HedvigTheme.colorScheme.textSecondary,
+    coverage.items.forEachIndexed { index, item ->
+      if (index != 0) {
+        HorizontalDivider(Modifier.padding(contentPadding))
+      }
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(item.title)
+//          TODO("Add + icon on the end of the text")
+        },
+        endSlot = {
+          HedvigText(item.rightPart.toString(), textAlign = TextAlign.End)
+//          TODO("See what backend returns here instead ")
+        },
+        modifier = Modifier
+          .clickable { onCoverageClicked(item) }
+          .padding(contentPadding)
+          .padding(horizontal = 4.dp, vertical = 16.dp),
       )
     }
+  }
+}
+
+@Composable
+private fun ComparisonRowBottomSheetContent(comparisonItem: CoverageLevel.ComparisonItem, dismissSheet: () -> Unit) {
+  Column {
+    HedvigText(text = comparisonItem.title)
+    Spacer(Modifier.height(2.dp))
+    HedvigText(
+      text = comparisonItem.description,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
     Spacer(Modifier.height(32.dp))
     HedvigButton(
       onClick = dismissSheet,
@@ -166,21 +221,6 @@ private fun ComparisonRowBottomSheetContent(
 private fun ComparisonScreenPreview(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withExtraData: Boolean,
 ) {
-  val comparisonData = if (withExtraData) {
-    val rows = mockComparisonData.rows.map {
-      it.copy(
-        title = it.title.repeat(2),
-        cells = it.cells + it.cells,
-      )
-    }
-    val columns = (mockComparisonData.columns + mockComparisonData.columns)
-    mockComparisonData.copy(
-      rows = rows + rows,
-      columns = columns,
-    )
-  } else {
-    mockComparisonData
-  }
   HedvigTheme {
     Surface(
       modifier = Modifier.fillMaxSize(),
@@ -188,8 +228,18 @@ private fun ComparisonScreenPreview(
     ) {
       ComparisonScreen(
         Success(
-          comparisonData,
-          1,
+          listOf(
+            CoverageLevel(
+              title = "Coverage level 1",
+              items = List(4) {
+                CoverageLevel.ComparisonItem(
+                  "title",
+                  CoverageLevel.ComparisonItem.RightPart.Checkmark,
+                  "description",
+                )
+              },
+            ),
+          ),
         ),
         {},
       )
@@ -202,7 +252,15 @@ private fun ComparisonScreenPreview(
 private fun PreviewComparisonRowBottomSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ComparisonRowBottomSheetContent(mockComparisonData.rows.first(), {})
+      ComparisonRowBottomSheetContent(
+        CoverageLevel.ComparisonItem(
+          "Title",
+          CoverageLevel.ComparisonItem.RightPart.Checkmark,
+          "Description eh".repeat(15),
+        ),
+        {
+        },
+      )
     }
   }
 }
