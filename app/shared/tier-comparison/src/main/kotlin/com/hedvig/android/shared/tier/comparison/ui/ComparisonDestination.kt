@@ -14,24 +14,28 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -52,6 +56,7 @@ import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonEvent.Reload
@@ -184,8 +189,34 @@ private fun CoverageLevelRow(
       }
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          HedvigText(item.title)
-//          TODO("Add + icon on the end of the text")
+          val inlinePlusIconId = "plus"
+          HedvigText(
+            buildAnnotatedString {
+              // Add a space so that the + icon does not touch the text too much, while still having the space be taken
+              // into consideration for the text layout purposes like when the line break will go
+              append(item.title + " ")
+              appendInlineContent(inlinePlusIconId, alternateText = "+")
+            },
+            inlineContent = mapOf(
+              inlinePlusIconId to InlineTextContent(
+                placeholder = Placeholder(
+                  width = 24.sp,
+                  height = 24.sp,
+                  placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                ),
+                children = {
+                  Icon(
+                    imageVector = HedvigIcons.Plus,
+                    contentDescription = null,
+                    tint = HedvigTheme.colorScheme.textSecondary,
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .wrapContentWidth(Alignment.End),
+                  )
+                },
+              ),
+            ),
+          )
         },
         endSlot = {
           when (item.coveredStatus) {
@@ -247,31 +278,29 @@ private fun ComparisonRowBottomSheetContent(comparisonItem: CoverageLevel.Compar
 @PreviewFontScale
 @Preview
 @Composable
-private fun ComparisonScreenPreview(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withExtraData: Boolean,
-) {
+private fun ComparisonScreenPreview() {
   HedvigTheme {
     Surface(
       modifier = Modifier.fillMaxSize(),
       color = HedvigTheme.colorScheme.backgroundPrimary,
     ) {
       ComparisonScreen(
-        Success(
-          listOf(
+        uiState = Success(
+          coverageLevels = listOf(
             CoverageLevel(
               title = "Coverage level 1",
-              items = List(4) { index ->
+              items = List(8) { index ->
                 CoverageLevel.ComparisonItem(
-                  title = "title",
+                  title = " title".repeat((index + 1) * 2).trimStart(),
                   description = "description",
                   coveredStatus = if (index % 2 == 0) Description("description") else Checkmark,
                 )
               },
             ),
           ),
-          1,
+          initialTabIndex = 1,
         ),
-        {},
+        navigateUp = {},
       )
     }
   }
