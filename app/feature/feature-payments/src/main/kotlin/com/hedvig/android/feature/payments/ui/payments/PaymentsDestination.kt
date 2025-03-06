@@ -55,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
@@ -70,9 +69,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.ui.payments.PaymentsEvent.Retry
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content
-import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
-import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
-import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPayment
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPayment.NoUpcomingPayment
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPaymentInfo
@@ -218,7 +215,9 @@ private fun PaymentsContent(
     if (upcomingPayment == NoUpcomingPayment) {
       HedvigInformationSection(
         stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
     } else {
       PaymentAmountCard(
@@ -236,7 +235,7 @@ private fun PaymentsContent(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
     val showConnectedPaymentInfo = uiState is Content &&
-      uiState.connectedPaymentInfo is NotConnected &&
+      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup &&
       uiState.connectedPaymentInfo.allowChangingConnectedBankAccount
     AnimatedVisibility(
       visibleState = remember { MutableTransitionState(showConnectedPaymentInfo) }.apply {
@@ -245,7 +244,7 @@ private fun PaymentsContent(
       enter = expandVertically(expandFrom = Alignment.CenterVertically),
     ) {
       CardNotConnectedWarningCard(
-        connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? NotConnected,
+        connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsSetup,
         onChangeBankAccount = onChangeBankAccount,
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -256,7 +255,7 @@ private fun PaymentsContent(
     PaymentsListItems(uiState, onDiscountClicked, onPaymentHistoryClicked)
     if (uiState is Content) {
       when (val connectedPaymentInfo = uiState.connectedPaymentInfo) {
-        is Connected -> {
+        is ConnectedPaymentInfo.Connected -> {
           if (connectedPaymentInfo.allowChangingConnectedBankAccount) {
             Spacer(Modifier.weight(1f))
             HedvigButton(
@@ -277,9 +276,7 @@ private fun PaymentsContent(
           }
         }
 
-        is NotConnected -> {}
-
-        Pending -> {
+        ConnectedPaymentInfo.Pending -> {
           HedvigNotificationCard(
             message = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
             priority = Info,
@@ -288,6 +285,11 @@ private fun PaymentsContent(
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         }
+
+        is ConnectedPaymentInfo.NeedsSetup,
+        ConnectedPaymentInfo.Unknown,
+        -> {
+        }
       }
     }
   }
@@ -295,23 +297,19 @@ private fun PaymentsContent(
 
 @Composable
 private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: NotConnected?,
+  connectedPaymentInfo: ConnectedPaymentInfo.NeedsSetup?,
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val text = if (connectedPaymentInfo?.dueDateToConnect != null) {
+  val dueDateToConnect = connectedPaymentInfo?.dueDateToConnect
+  val text = if (dueDateToConnect != null) {
     stringResource(
       R.string.info_card_missing_payment_missing_payments_body,
-      dateTimeFormatter.format(connectedPaymentInfo.dueDateToConnect.toJavaLocalDate()),
+      dateTimeFormatter.format(dueDateToConnect.toJavaLocalDate()),
     )
   } else {
     stringResource(id = R.string.info_card_missing_payment_body)
-  }
-  val priority = if (connectedPaymentInfo?.dueDateToConnect != null) {
-    NotificationPriority.Error
-  } else {
-    Attention
   }
   HedvigNotificationCard(
     message = text,
@@ -319,7 +317,7 @@ private fun CardNotConnectedWarningCard(
       buttonText = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
       onButtonClick = onChangeBankAccount,
     ),
-    priority = priority,
+    priority = NotificationPriority.Attention,
     modifier = modifier,
   )
 }
@@ -339,7 +337,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
         HedvigNotificationCard(
-          priority = NotificationPriority.Error,
+          priority = NotificationPriority.Attention,
           message = stringResource(
             R.string.PAYMENTS_MISSED_PAYMENT,
             monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
@@ -397,7 +395,7 @@ private fun PaymentsListItems(
         .fillMaxWidth(),
     )
     if (uiState is Content) {
-      if (uiState.connectedPaymentInfo is Connected) {
+      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Connected) {
         HorizontalDivider(listItemsSideSpacingModifier)
         PaymentsListItem(
           text = uiState.connectedPaymentInfo.displayName,
@@ -598,7 +596,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
-        connectedPaymentInfo = Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
           true,
@@ -615,7 +613,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
           true,
@@ -632,7 +630,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = InProgress,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
           true,
@@ -652,7 +650,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
           true,
@@ -669,7 +667,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = Pending,
+        connectedPaymentInfo = ConnectedPaymentInfo.Pending,
       ),
     )
     add(
@@ -682,7 +680,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = NotConnected(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
           true,
         ),
@@ -698,7 +696,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = NotConnected(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
           false,
         ),
@@ -717,9 +715,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = NotConnected(
-          null,
-          true,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+          dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          allowChangingConnectedBankAccount = true,
         ),
       ),
     )
@@ -736,7 +734,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = NotConnected(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
           false,
         ),
