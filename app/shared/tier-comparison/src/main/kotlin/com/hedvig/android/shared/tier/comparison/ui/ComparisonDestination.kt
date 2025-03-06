@@ -202,16 +202,14 @@ private fun CoverageLevelRow(
                 placeholder = Placeholder(
                   width = 24.sp,
                   height = 24.sp,
-                  placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                  placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
                 ),
                 children = {
                   Icon(
                     imageVector = HedvigIcons.Plus,
                     contentDescription = null,
                     tint = HedvigTheme.colorScheme.textSecondary,
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .wrapContentWidth(Alignment.End),
+                    modifier = Modifier.fillMaxSize()
                   )
                 },
               ),
