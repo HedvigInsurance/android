@@ -163,6 +163,7 @@ private fun ComparisonPager(
 ) {
   HorizontalPager(
     state = pagerState,
+    verticalAlignment = Alignment.Top,
     modifier = modifier,
   ) { index ->
     val coverage = coverageLevels[index]
