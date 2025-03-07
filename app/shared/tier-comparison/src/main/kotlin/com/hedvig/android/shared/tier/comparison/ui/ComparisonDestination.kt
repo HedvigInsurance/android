@@ -138,7 +138,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
-    val pagerState = rememberPagerState { uiState.coverageLevels.size }
+    val pagerState = rememberPagerState(initialPage = uiState.initialTabIndex) { uiState.coverageLevels.size }
     val tabRowState = rememberHedvigTabRowState(pagerState)
     HedvigTabRowMaxSixTabs(
       tabRowState = tabRowState,
