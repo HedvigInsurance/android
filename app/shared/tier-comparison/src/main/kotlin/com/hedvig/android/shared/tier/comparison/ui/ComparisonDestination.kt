@@ -288,9 +288,9 @@ private fun ComparisonScreenPreview() {
     ) {
       ComparisonScreen(
         uiState = Success(
-          coverageLevels = listOf(
+          coverageLevels = List(4) { coverageIndex ->
             CoverageLevel(
-              title = "Coverage level 1",
+              title = "Cover #${coverageIndex + 1}",
               items = List(8) { index ->
                 CoverageLevel.ComparisonItem(
                   title = " title".repeat((index + 1) * 2).trimStart(),
@@ -298,8 +298,8 @@ private fun ComparisonScreenPreview() {
                   coveredStatus = if (index % 2 == 0) Description("description") else Checkmark,
                 )
               },
-            ),
-          ),
+            )
+          },
           initialTabIndex = 1,
         ),
         navigateUp = {},
