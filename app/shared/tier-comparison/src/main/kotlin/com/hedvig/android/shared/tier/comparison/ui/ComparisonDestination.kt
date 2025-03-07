@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -51,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -197,6 +197,9 @@ private fun CoverageLevelRow(
               append(item.title + " ")
               appendInlineContent(inlinePlusIconId, alternateText = "+")
             },
+            style = LocalTextStyle.current.copy(
+              lineBreak = LineBreak.Heading,
+            ),
             inlineContent = mapOf(
               inlinePlusIconId to InlineTextContent(
                 placeholder = Placeholder(
@@ -209,7 +212,7 @@ private fun CoverageLevelRow(
                     imageVector = HedvigIcons.Plus,
                     contentDescription = null,
                     tint = HedvigTheme.colorScheme.textSecondary,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                   )
                 },
               ),
@@ -240,6 +243,7 @@ private fun CoverageLevelRow(
             }
           }
         },
+        spaceBetween = 8.dp,
         modifier = Modifier
           .clickable { onCoverageClicked(item) }
           .padding(contentPadding)
