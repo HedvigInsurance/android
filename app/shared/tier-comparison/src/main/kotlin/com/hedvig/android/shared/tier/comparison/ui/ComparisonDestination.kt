@@ -42,7 +42,7 @@ import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
+import com.hedvig.android.design.system.hedvig.HedvigTabRow
 import com.hedvig.android.design.system.hedvig.HedvigTabletLandscapePreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -140,7 +140,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     Spacer(Modifier.height(24.dp))
     val pagerState = rememberPagerState(initialPage = uiState.initialTabIndex) { uiState.coverageLevels.size }
     val tabRowState = rememberHedvigTabRowState(pagerState)
-    HedvigTabRowMaxSixTabs(
+    HedvigTabRow(
       tabRowState = tabRowState,
       tabTitles = uiState.coverageLevels.map { it.title },
       tabStyle = TabDefaults.TabStyle.Filled,

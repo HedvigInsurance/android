@@ -34,7 +34,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -50,7 +49,7 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
+import com.hedvig.android.design.system.hedvig.HedvigTabRow
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
@@ -73,7 +72,6 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -333,7 +331,7 @@ private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> 
 
 @Composable
 private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier) {
-  HedvigTabRowMaxSixTabs(
+  HedvigTabRow(
     tabTitles = listOf(
       stringResource(R.string.insurance_details_view_tab_1_title),
       stringResource(R.string.insurance_details_view_tab_2_title),
