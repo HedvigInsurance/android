@@ -10,12 +10,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,14 +49,63 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 import kotlin.math.ceil
+import kotlinx.coroutines.launch
+
+interface HedvigTabRowState {
+  val selectedTabIndex: Int
+
+  fun onTabChosen(index: Int)
+}
+
+@Composable
+fun rememberHedvigTabRowState(): HedvigTabRowState {
+  return rememberSaveable(
+    saver = Saver(
+      save = { it.selectedTabIndex },
+      restore = { StandaloneHedvigTabRowState().apply { selectedTabIndex = it } },
+    ),
+  ) {
+    StandaloneHedvigTabRowState()
+  }
+}
+
+@Composable
+fun rememberHedvigTabRowState(pagerState: PagerState): HedvigTabRowState {
+  val coroutineScope = rememberCoroutineScope()
+  return remember(pagerState, coroutineScope) {
+    DelegatedHedvigTabRowState(
+      indexProvider = { pagerState.currentPage },
+      onTabChosenDelegate = { coroutineScope.launch { pagerState.animateScrollToPage(it) } },
+    )
+  }
+}
+
+private class StandaloneHedvigTabRowState() : HedvigTabRowState {
+  override var selectedTabIndex: Int by mutableIntStateOf(0)
+    internal set
+
+  override fun onTabChosen(index: Int) {
+    selectedTabIndex = index
+  }
+}
+
+private class DelegatedHedvigTabRowState(
+  private val indexProvider: () -> Int,
+  private val onTabChosenDelegate: (Int) -> Unit,
+) : HedvigTabRowState {
+  override val selectedTabIndex: Int get() = indexProvider()
+
+  override fun onTabChosen(index: Int) {
+    onTabChosenDelegate(index)
+  }
+}
 
 // only for up to 6 TabItems!
 @Composable
 fun HedvigTabRowMaxSixTabs(
   tabTitles: List<String>,
-  selectedTabIndex: Int,
-  onTabChosen: (index: Int) -> Unit,
   modifier: Modifier = Modifier,
+  tabRowState: HedvigTabRowState = rememberHedvigTabRowState(),
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
   selectIndicatorAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
@@ -101,7 +152,7 @@ fun HedvigTabRowMaxSixTabs(
               modifier = Modifier
                 .clip(tabSize.tabShape),
               onClick = {
-                onTabChosen(index)
+                tabRowState.onTabChosen(index)
               },
               text = title,
               textStyle = tabSize.textStyle,
@@ -192,7 +243,7 @@ fun HedvigTabRowMaxSixTabs(
         )
         tabItemsPlaceables.add(placeable)
       }
-      val chosenItem = tabItemsPlaceables[selectedTabIndex]
+      val chosenItem = tabItemsPlaceables[tabRowState.selectedTabIndex]
       val indicatorPlaceable = allMeasurables[0][0].measure(
         Constraints(
           minWidth = chosenItem.width,
@@ -207,7 +258,10 @@ fun HedvigTabRowMaxSixTabs(
         width = fullWidth,
         height = howManyLines * oneLineHeight,
       ) {
-        currentIndicatorOffset = IntOffset(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
+        currentIndicatorOffset = IntOffset(
+          mapOfOffsets[tabRowState.selectedTabIndex]!!.x,
+          mapOfOffsets[tabRowState.selectedTabIndex]!!.y,
+        )
         indicatorPlaceable.placeRelative(indicatorOffset)
         tabItemsPlaceables.forEachIndexed { index, placeable ->
           placeable.placeRelative(

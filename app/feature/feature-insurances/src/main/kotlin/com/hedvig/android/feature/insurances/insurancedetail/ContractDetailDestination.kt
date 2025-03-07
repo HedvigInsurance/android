@@ -59,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -332,20 +333,14 @@ private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> 
 
 @Composable
 private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier) {
-  val couroutineScope = rememberCoroutineScope()
   HedvigTabRowMaxSixTabs(
     tabTitles = listOf(
       stringResource(R.string.insurance_details_view_tab_1_title),
       stringResource(R.string.insurance_details_view_tab_2_title),
       stringResource(R.string.insurance_details_view_tab_3_title),
     ),
-    selectedTabIndex = pagerState.currentPage,
+    tabRowState = rememberHedvigTabRowState(pagerState),
     selectIndicatorAnimationSpec = horizontalPagerSpringSpec(IntOffset.VisibilityThreshold),
-    onTabChosen = { index ->
-      couroutineScope.launch {
-        pagerState.animateScrollToPage(index)
-      }
-    },
     modifier = modifier.fillMaxWidth(),
     tabSize = TabSize.Small,
     tabStyle = Filled,
