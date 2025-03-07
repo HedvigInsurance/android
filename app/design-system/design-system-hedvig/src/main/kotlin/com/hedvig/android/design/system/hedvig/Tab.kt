@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.tokens.LargeTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
+import com.hedvig.android.design.system.hedvig.tokens.TabTokens
 import kotlin.math.ceil
 import kotlinx.coroutines.launch
 
@@ -301,18 +302,16 @@ object TabDefaults {
     @get:Composable
     internal abstract val tabShape: Shape
 
-    internal abstract val rowPadding: PaddingValues
+    internal val rowPadding: PaddingValues = PaddingValues(
+      horizontal = TabTokens.RowHorizontalPadding,
+      vertical = TabTokens.RowVerticalPadding,
+    )
     internal abstract val tabPadding: PaddingValues
 
     @get:Composable
     internal abstract val textStyle: TextStyle
 
     data object Mini : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = MiniTabTokens.RowHorizontalPadding,
-          vertical = MiniTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           horizontal = MiniTabTokens.TabHorizontalPadding,
@@ -333,11 +332,6 @@ object TabDefaults {
     }
 
     data object Small : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = SmallTabTokens.RowHorizontalPadding,
-          vertical = SmallTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = SmallTabTokens.TabTopPadding,
@@ -360,11 +354,6 @@ object TabDefaults {
     }
 
     data object Medium : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = MediumTabTokens.RowHorizontalPadding,
-          vertical = MediumTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = MediumTabTokens.TabTopPadding,
@@ -387,11 +376,6 @@ object TabDefaults {
     }
 
     data object Large : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = LargeTabTokens.RowHorizontalPadding,
-          vertical = LargeTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = LargeTabTokens.TabTopPadding,
