@@ -31,15 +31,16 @@ import octopus.type.MoveExtraBuildingType.UNKNOWN__
 internal data class MovingFlowState(
   val id: String,
   val moveFromAddressId: String,
-  val housingType: HousingType,
+  val housingType: HousingType?,
   val addressInfo: AddressInfo,
   val movingDateState: MovingDateState,
-  val propertyState: PropertyState,
+  val propertyState: PropertyState?,
   val movingFlowQuotes: MovingFlowQuotes?,
   // If in the flow there was a quote selected once, we persist that selection so that it's pre-selected when going
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
   val oldAddressCoverageDurationDays: Int?,
+  val mapOfPropertyStates: Map<HousingType, MovingFlowState.PropertyState>,
 ) {
   @Serializable
   data class AddressInfo(
@@ -162,7 +163,7 @@ internal data class MovingFlowState(
 internal fun MovingFlowState.Companion.fromFragments(
   moveIntentFragment: MoveIntentFragment,
   moveIntentQuotesFragment: MoveIntentQuotesFragment?,
-  housingType: HousingType,
+  moveFromAddressId: String,
 ): MovingFlowState {
   val houseState = with(moveIntentFragment) {
     MovingFlowState.PropertyState.HouseState(
@@ -202,24 +203,26 @@ internal fun MovingFlowState.Companion.fromFragments(
       )
     }
   }
-  val propertyState = when (housingType) {
-    HousingType.ApartmentOwn -> apartmentState(ApartmentState.ApartmentType.BRF)
-    HousingType.ApartmentRent -> apartmentState(ApartmentState.ApartmentType.RENT)
-    HousingType.Villa -> houseState
-  }
+  val mapOfPropertyStates = mapOf(
+    HousingType.ApartmentOwn to apartmentState(ApartmentState.ApartmentType.BRF),
+    HousingType.ApartmentRent to apartmentState(ApartmentState.ApartmentType.RENT),
+    HousingType.Villa to houseState,
+  )
   return MovingFlowState(
     id = moveIntentFragment.id,
-    moveFromAddressId = moveIntentFragment.currentHomeAddresses.first().id,
-    housingType = housingType,
+    moveFromAddressId = moveFromAddressId,
+    housingType = null,
     addressInfo = AddressInfo(null, null),
     movingDateState = MovingFlowState.MovingDateState(
       selectedMovingDate = null,
       allowedMovingDateRange = moveIntentFragment.minMovingDate..moveIntentFragment.maxMovingDate,
     ),
-    propertyState = propertyState,
+    propertyState = null,
+    mapOfPropertyStates = mapOfPropertyStates,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
     lastSelectedHomeQuoteId = null,
-    oldAddressCoverageDurationDays = moveIntentFragment.currentHomeAddresses.first().oldAddressCoverageDurationDays,
+    oldAddressCoverageDurationDays = moveIntentFragment.currentHomeAddresses
+      .first { it.id == moveFromAddressId }.oldAddressCoverageDurationDays,
   )
 }
 

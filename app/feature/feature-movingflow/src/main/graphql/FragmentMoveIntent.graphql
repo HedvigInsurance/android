@@ -13,5 +13,11 @@ fragment MoveIntentFragment on MoveIntent {
   currentHomeAddresses {
     id
     oldAddressCoverageDurationDays
+#    todo: here add
+#    subtitle,
+#    title,
+#    suggestedNumberOfCoInsured,
+#    maxMovingDate
+#    minMovingDate
   }
 }

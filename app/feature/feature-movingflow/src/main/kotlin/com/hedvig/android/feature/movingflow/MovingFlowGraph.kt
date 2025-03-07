@@ -10,8 +10,10 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressDestination
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
-import com.hedvig.android.feature.movingflow.ui.start.StartDestination
-import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
+import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractDestination
+import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractViewModel
+import com.hedvig.android.feature.movingflow.ui.start.HousingTypeDestination
+import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
 import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
@@ -36,7 +38,10 @@ data object MovingFlowGraphDestination : Destination
 
 internal sealed interface MovingFlowDestinations {
   @Serializable
-  data object Start : MovingFlowDestinations, Destination
+  data object SelectContract : MovingFlowDestinations, Destination
+
+  @Serializable
+  data class HousingType(val moveIntentId: String) : MovingFlowDestinations, Destination
 
   @Serializable
   data class EnterNewAddress(val moveIntentId: String) : MovingFlowDestinations, Destination
@@ -76,14 +81,26 @@ internal sealed interface MovingFlowDestinations {
 
 fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
   navgraph<MovingFlowGraphDestination>(
-    startDestination = MovingFlowDestinations.Start::class,
+    startDestination = MovingFlowDestinations.SelectContract::class,
   ) {
-    navdestination<MovingFlowDestinations.Start> {
-      StartDestination(
-        viewModel = koinViewModel<StartViewModel>(),
+    navdestination<MovingFlowDestinations.SelectContract> {
+      SelectContractDestination(
+        viewModel = koinViewModel<SelectContractViewModel>(),
         navigateUp = navController::navigateUp,
         exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
         onNavigateToNextStep = { moveIntentId ->
+          navController.navigate(MovingFlowDestinations.HousingType(moveIntentId))
+        },
+      )
+    }
+
+    navdestination<MovingFlowDestinations.HousingType> {
+      val moveIntentId = it.toRoute<MovingFlowDestinations.HousingType>().moveIntentId
+      HousingTypeDestination(
+        viewModel = koinViewModel<HousingTypeViewModel>(),
+        navigateUp = navController::navigateUp,
+        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        onNavigateToNextStep = {
           navController.navigate(EnterNewAddress(moveIntentId))
         },
       )
