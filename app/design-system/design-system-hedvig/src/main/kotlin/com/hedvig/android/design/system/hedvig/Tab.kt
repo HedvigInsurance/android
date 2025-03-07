@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
@@ -28,14 +30,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
@@ -48,7 +56,7 @@ import com.hedvig.android.design.system.hedvig.tokens.LargeTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
-import kotlin.math.ceil
+import com.hedvig.android.design.system.hedvig.tokens.TabTokens
 import kotlinx.coroutines.launch
 
 interface HedvigTabRowState {
@@ -58,14 +66,14 @@ interface HedvigTabRowState {
 }
 
 @Composable
-fun rememberHedvigTabRowState(): HedvigTabRowState {
+fun rememberHedvigTabRowState(initialIndex: Int = 0): HedvigTabRowState {
   return rememberSaveable(
     saver = Saver(
       save = { it.selectedTabIndex },
-      restore = { StandaloneHedvigTabRowState().apply { selectedTabIndex = it } },
+      restore = { StandaloneHedvigTabRowState(it) },
     ),
   ) {
-    StandaloneHedvigTabRowState()
+    StandaloneHedvigTabRowState(initialIndex)
   }
 }
 
@@ -80,8 +88,8 @@ fun rememberHedvigTabRowState(pagerState: PagerState): HedvigTabRowState {
   }
 }
 
-private class StandaloneHedvigTabRowState() : HedvigTabRowState {
-  override var selectedTabIndex: Int by mutableIntStateOf(0)
+private class StandaloneHedvigTabRowState(initialIndex: Int = 0) : HedvigTabRowState {
+  override var selectedTabIndex: Int by mutableIntStateOf(initialIndex)
     internal set
 
   override fun onTabChosen(index: Int) {
@@ -100,9 +108,8 @@ private class DelegatedHedvigTabRowState(
   }
 }
 
-// only for up to 6 TabItems!
 @Composable
-fun HedvigTabRowMaxSixTabs(
+fun HedvigTabRow(
   tabTitles: List<String>,
   modifier: Modifier = Modifier,
   tabRowState: HedvigTabRowState = rememberHedvigTabRowState(),
@@ -113,31 +120,43 @@ fun HedvigTabRowMaxSixTabs(
     easing = FastOutSlowInEasing,
   ),
 ) {
-  var currentIndicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(0, 0)) }
-  val indicatorOffset: IntOffset by animateIntOffsetAsState(
-    targetValue = currentIndicatorOffset,
-    animationSpec = selectIndicatorAnimationSpec,
-    label = "",
-  )
-  var oneLineHeight by remember { mutableIntStateOf(0) }
+  val textStyle = tabSize.textStyle
+  val tabInternalPadding = tabSize.tabPadding
+  val textMeasurer = rememberTextMeasurer(tabTitles.size)
+  val layoutDirection = LocalLayoutDirection.current
+  val density = LocalDensity.current
+  val (minItemWidth, fixedItemHeight) = remember(textMeasurer, tabTitles, density) {
+    var width = 0
+    var height = 0
+    for (title in tabTitles) {
+      val textLayoutResult = textMeasurer.measure(title, textStyle, maxLines = 1)
+      width = maxOf(width, textLayoutResult.size.width)
+      height = maxOf(height, textLayoutResult.size.height)
+    }
+    with(density) {
+      val extraHorizontalSpace = tabInternalPadding.calculateStartPadding(layoutDirection)
+        .plus(tabInternalPadding.calculateEndPadding(layoutDirection))
+      val extraVerticalSpace = tabInternalPadding.calculateTopPadding() + tabInternalPadding.calculateBottomPadding()
+      DpSize(width.toDp() + extraHorizontalSpace, height.toDp() + extraVerticalSpace)
+    }
+  }
+  var indicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(-1, -1)) }
+  val animatedIndicatorOffset: IntOffset by if (indicatorOffset == IntOffset.Uninitialized) {
+    remember { mutableStateOf(IntOffset.Uninitialized) }
+  } else {
+    animateIntOffsetAsState(
+      targetValue = indicatorOffset,
+      animationSpec = selectIndicatorAnimationSpec,
+      label = "indicatorOffset",
+    )
+  }
+
   Box(
     modifier = modifier
       .clip(tabSize.rowShape)
       .background(tabStyle.colors.tabRowBackground)
       .padding(tabSize.rowPadding),
   ) {
-    Box(Modifier.withoutPlacement()) {
-      // to get one line height
-      HedvigText(
-        text = "measurement",
-        style = tabSize.textStyle,
-        modifier = Modifier
-          .onSizeChanged {
-            oneLineHeight = it.height
-          }
-          .padding(tabSize.tabPadding),
-      )
-    }
     Layout(
       contents = listOf(
         {
@@ -147,148 +166,106 @@ fun HedvigTabRowMaxSixTabs(
           )
         },
         {
-          tabTitles.take(6).forEachIndexed { index, title ->
+          tabTitles.forEachIndexed { index, title ->
             TabItem(
-              modifier = Modifier
-                .clip(tabSize.tabShape),
-              onClick = {
-                tabRowState.onTabChosen(index)
-              },
+              onClick = { tabRowState.onTabChosen(index) },
               text = title,
               textStyle = tabSize.textStyle,
               tabTextColor = tabStyle.colors.textColor,
               contentPadding = tabSize.tabPadding,
+              modifier = Modifier.clip(tabSize.tabShape),
             )
           }
         },
       ),
-    ) { allMeasurables: List<List<Measurable>>, constraints ->
-      val tabItemsMeasurables = allMeasurables[1]
+    ) { measurables: List<List<Measurable>>, constraints ->
+      val indicator = measurables[0][0]
+      val tabMeasureables = measurables[1]
 
-      // calculate the size
-      val fullWidth = constraints.maxWidth
-      val desiredItemWidth =
-        if (tabItemsMeasurables.size <= 1) {
-          fullWidth
-        } else if (tabItemsMeasurables.size == 2) {
-          fullWidth / 2
-          // if there are only two tabs they always take full width
-        } else if (tabItemsMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) {
-          fullWidth / 2
-          // this is the maximum width we give the item, if the text is too big for the basic 1/3 of the full width.
-          // If it's still not enough, the text itself gets eclipsed later on
-        } else {
-          fullWidth / 3
-          // basic
-        }
-
-      // calculate the offsets
-      val howManyLines = (ceil(tabItemsMeasurables.size.toDouble() * desiredItemWidth / fullWidth)).toInt()
-      val howManyItemsInEachLine = fullWidth / desiredItemWidth
-      val fullLayoutCapacity = howManyLines * howManyItemsInEachLine
-      val isLastRowFull = tabItemsMeasurables.size == fullLayoutCapacity
-      val howManyItemsToCenter = if (isLastRowFull || tabItemsMeasurables.size == 2) {
-        0
-      } else {
-        howManyItemsInEachLine - (fullLayoutCapacity - tabItemsMeasurables.size)
-      }
-      val indicesToCenter = tabItemsMeasurables.indices.filter {
-        it > tabItemsMeasurables.lastIndex - howManyItemsToCenter
-      }
-
-      val mapOfOffsets = mutableMapOf<Int, IntOffset>()
-
-      tabItemsMeasurables.forEachIndexed { index, _ ->
-        val currentRow = if (index <= howManyItemsInEachLine - 1) {
-          0
-        } else if (index <= (2 * howManyItemsInEachLine - 1)) {
-          1
-        } else {
-          2
-        }
-
-        val verticalOffset = oneLineHeight * currentRow
-
-        val horizontalOffset = if (indicesToCenter.contains(index)) {
-          // last line not full, centered
-          calculateHorizontalOffsetForCentered(
-            desiredItemWidth = desiredItemWidth,
-            fullWidth = fullWidth,
-            howManyItemsToCenter = howManyItemsToCenter,
-            currentIndex = index,
-            lastIndex = tabItemsMeasurables.lastIndex,
-          )
-        } else { // full line
-          val adjustedIndex = index - (currentRow * howManyItemsInEachLine)
-          desiredItemWidth * adjustedIndex
-        }
-
-        mapOfOffsets[index] = IntOffset(
-          y = verticalOffset,
-          x = horizontalOffset,
-        )
-      }
-
-      // measure
-      val tabItemsPlaceables = mutableListOf<Placeable>()
-      for (item in tabItemsMeasurables) {
-        val desiredItemHeight = oneLineHeight
-        val placeable = item.measure(
-          constraints.copy(
-            maxWidth = desiredItemWidth,
-            minWidth = desiredItemWidth,
-            maxHeight = desiredItemHeight,
-            minHeight = desiredItemHeight,
-          ),
-        )
-        tabItemsPlaceables.add(placeable)
-      }
-      val chosenItem = tabItemsPlaceables[tabRowState.selectedTabIndex]
-      val indicatorPlaceable = allMeasurables[0][0].measure(
-        Constraints(
-          minWidth = chosenItem.width,
-          minHeight = chosenItem.height,
-          maxHeight = chosenItem.height,
-          maxWidth = chosenItem.width,
-        ),
+      val layoutInformation = TabRowLayoutInformation(
+        density,
+        constraints,
+        tabRowState,
+        minItemWidth,
+        fixedItemHeight,
+        tabTitles.size,
       )
+      indicatorOffset = layoutInformation.calculateIndicatorOffset()
 
-      // placing first indicator, then items
-      layout(
-        width = fullWidth,
-        height = howManyLines * oneLineHeight,
-      ) {
-        currentIndicatorOffset = IntOffset(
-          mapOfOffsets[tabRowState.selectedTabIndex]!!.x,
-          mapOfOffsets[tabRowState.selectedTabIndex]!!.y,
-        )
-        indicatorPlaceable.placeRelative(indicatorOffset)
-        tabItemsPlaceables.forEachIndexed { index, placeable ->
-          placeable.placeRelative(
-            x = mapOfOffsets[index]!!.x,
-            y = mapOfOffsets[index]!!.y,
-          )
+      val placeableIndicator = indicator.measure(layoutInformation.itemMeasurableConstraints)
+      val placeableTabItems = tabMeasureables.map { measurableTab ->
+        measurableTab.measure(layoutInformation.itemMeasurableConstraints)
+      }
+      layout(layoutInformation.layoutWidth, layoutInformation.layoutHeight) {
+        if (animatedIndicatorOffset != IntOffset.Uninitialized) {
+          placeableIndicator.placeRelative(animatedIndicatorOffset)
+        }
+        var y = 0
+        placeableTabItems.chunked(layoutInformation.maxItemsPerRow) { tabItems ->
+          var x = layoutInformation.calculateStartingXPositionForNumberOfTabItemsInRow(tabItems.size)
+          for (tabItem in tabItems) {
+            tabItem.placeRelative(x, y)
+            x += tabItem.width
+          }
+          y += fixedItemHeight.roundToPx()
         }
       }
     }
   }
 }
 
-private fun calculateHorizontalOffsetForCentered(
-  desiredItemWidth: Int,
-  fullWidth: Int,
-  howManyItemsToCenter: Int,
-  currentIndex: Int,
-  lastIndex: Int,
-): Int {
-  return if (howManyItemsToCenter == 1) {
-    (fullWidth - desiredItemWidth) / 2
-  } else if (currentIndex == lastIndex) {
-    (desiredItemWidth * 1.5).toInt()
+private data class TabRowLayoutInformation(
+  private val layoutDensity: Density,
+  private val constraints: Constraints,
+  private val tabRowState: HedvigTabRowState,
+  private val minItemWidth: Dp,
+  private val fixedItemHeight: Dp,
+  private val numberOfItems: Int,
+) : Density by layoutDensity {
+  val maxItemsPerRow = constraints.maxWidth / minItemWidth.roundToPx()
+  val rowsRequired = (numberOfItems / maxItemsPerRow) + (if (numberOfItems % maxItemsPerRow == 0) 0 else 1)
+  val realItemsPerRow: Int = if (rowsRequired == 1) {
+    numberOfItems
   } else {
-    (desiredItemWidth * 0.5).toInt()
+    maxItemsPerRow
+  }
+  val widthAllowedPerItem = constraints.maxWidth / realItemsPerRow
+
+  val layoutWidth = constraints.maxWidth
+  val layoutHeight = rowsRequired * fixedItemHeight.roundToPx()
+
+  val itemMeasurableConstraints = Constraints.fixed(widthAllowedPerItem, fixedItemHeight.roundToPx())
+
+  fun calculateIndicatorOffset(): IntOffset {
+    val selectedIndex = tabRowState.selectedTabIndex
+    val matchingRowIndex = selectedIndex / realItemsPerRow
+    val indexInRow = selectedIndex % realItemsPerRow
+    val startingX = calculateStartingXPositionForNumberOfTabItemsInRow(
+      calculateNumberOfItemsInRowNumber(matchingRowIndex),
+    )
+    return IntOffset(
+      startingX + indexInRow * widthAllowedPerItem,
+      matchingRowIndex * fixedItemHeight.roundToPx(),
+    )
+  }
+
+  fun calculateStartingXPositionForNumberOfTabItemsInRow(numberOfTabItems: Int): Int {
+    val remainingWidth = layoutWidth - (numberOfTabItems * widthAllowedPerItem)
+    return remainingWidth / 2
+  }
+
+  fun calculateNumberOfItemsInRowNumber(rowIndex: Int): Int {
+    return when {
+      rowsRequired == 1 -> numberOfItems
+      maxItemsPerRow == realItemsPerRow -> realItemsPerRow
+      rowIndex == rowsRequired - 1 -> numberOfItems % maxItemsPerRow
+      else -> realItemsPerRow
+    }
   }
 }
+
+private val IntOffset.Companion.Uninitialized: IntOffset
+  get() = IntOffset(-1, -1)
 
 object TabDefaults {
   internal val defaultSize: TabSize = Mini
@@ -301,18 +278,16 @@ object TabDefaults {
     @get:Composable
     internal abstract val tabShape: Shape
 
-    internal abstract val rowPadding: PaddingValues
+    internal val rowPadding: PaddingValues = PaddingValues(
+      horizontal = TabTokens.RowHorizontalPadding,
+      vertical = TabTokens.RowVerticalPadding,
+    )
     internal abstract val tabPadding: PaddingValues
 
     @get:Composable
     internal abstract val textStyle: TextStyle
 
     data object Mini : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = MiniTabTokens.RowHorizontalPadding,
-          vertical = MiniTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           horizontal = MiniTabTokens.TabHorizontalPadding,
@@ -333,11 +308,6 @@ object TabDefaults {
     }
 
     data object Small : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = SmallTabTokens.RowHorizontalPadding,
-          vertical = SmallTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = SmallTabTokens.TabTopPadding,
@@ -360,11 +330,6 @@ object TabDefaults {
     }
 
     data object Medium : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = MediumTabTokens.RowHorizontalPadding,
-          vertical = MediumTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = MediumTabTokens.TabTopPadding,
@@ -387,11 +352,6 @@ object TabDefaults {
     }
 
     data object Large : TabSize() {
-      override val rowPadding: PaddingValues
-        get() = PaddingValues(
-          horizontal = LargeTabTokens.RowHorizontalPadding,
-          vertical = LargeTabTokens.RowVerticalPadding,
-        )
       override val tabPadding: PaddingValues
         get() = PaddingValues(
           top = LargeTabTokens.TabTopPadding,
@@ -426,7 +386,6 @@ object TabDefaults {
             TabColors(
               tabRowBackground = Color.Transparent,
               chosenTabBackground = fromToken(ButtonSecondaryResting),
-              notChosenTabBackground = Color.Transparent,
               textColor = fromToken(TextPrimary),
             )
           }
@@ -441,7 +400,6 @@ object TabDefaults {
             TabColors(
               tabRowBackground = fromToken(SurfacePrimary),
               chosenTabBackground = fromToken(ButtonSecondaryAltResting),
-              notChosenTabBackground = Color.Transparent,
               textColor = fromToken(TextPrimary),
             )
           }
@@ -451,7 +409,6 @@ object TabDefaults {
     data class TabColors(
       val tabRowBackground: Color,
       val chosenTabBackground: Color,
-      val notChosenTabBackground: Color,
       val textColor: Color,
     )
   }
@@ -484,15 +441,11 @@ private fun TabItem(
 }
 
 @Composable
-private fun TabIndicator(indicatorColor: Color, indicatorShape: Shape) {
+private fun TabIndicator(indicatorColor: Color, indicatorShape: Shape, modifier: Modifier = Modifier) {
   Box(
-    modifier = Modifier
-      .clip(
-        shape = indicatorShape,
-      )
-      .background(
-        color = indicatorColor,
-      ),
+    modifier = modifier
+      .clip(shape = indicatorShape)
+      .background(color = indicatorColor),
   )
 }
 
@@ -501,3 +454,41 @@ val IntOffset.Companion.Saver: Saver<IntOffset, Any>
     save = { listOf(it.x, it.y) },
     restore = { IntOffset(it[0], it[1]) },
   )
+
+@Preview(widthDp = 150)
+@Preview(widthDp = 200)
+@Preview(widthDp = 250)
+@Preview(widthDp = 260)
+@Preview(widthDp = 320)
+@Preview(widthDp = 360)
+@HedvigPreview
+@Composable
+private fun PreviewHedvigTabRow() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HedvigTabRow(
+        tabTitles = List(5) { "Title#$it" },
+        tabRowState = rememberHedvigTabRowState(4),
+        tabStyle = TabDefaults.TabStyle.Filled,
+      )
+    }
+  }
+}
+
+@Preview(widthDp = 250)
+@Composable
+private fun PreviewHedvigTabRowWithVariousNumberOfItems(
+  @PreviewParameter(NumberOfItemsProvider::class) numberOfItems: Int,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HedvigTabRow(
+        tabTitles = List(numberOfItems) { "Title#$it" },
+        tabRowState = rememberHedvigTabRowState(4),
+        tabStyle = TabDefaults.TabStyle.Filled,
+      )
+    }
+  }
+}
+
+private class NumberOfItemsProvider : CollectionPreviewParameterProvider<Int>(List(10) { it + 1 })
