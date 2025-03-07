@@ -408,10 +408,12 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       },
     ),
     squareMeters = ValidatedInput(
-      initialValue = propertyState.squareMetersState.selectedSquareMeters,
+      initialValue = propertyState?.squareMetersState?.selectedSquareMeters,
       validator = { squareMeters ->
         either {
-          val invalidSquareMetersError = InvalidSquareMeters(propertyState.squareMetersState.allowedSquareMetersRange)
+          val invalidSquareMetersError = InvalidSquareMeters(
+            propertyState?.squareMetersState?.allowedSquareMetersRange!!,
+          )
           ensureNotNull(squareMeters) { invalidSquareMetersError }
           ensure(squareMeters in propertyState.squareMetersState.allowedSquareMetersRange) {
             invalidSquareMetersError
@@ -421,7 +423,8 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       },
     ),
     numberCoInsured = ConstrainedNumberInput(
-      initialValue = propertyState.numberCoInsuredState.selectedNumberCoInsured,
+      // property state should be set before (HousingType step)
+      initialValue = propertyState?.numberCoInsuredState?.selectedNumberCoInsured!!,
       validRange = propertyState.numberCoInsuredState.allowedNumberCoInsuredRange,
     ),
     propertyType = when (propertyState) {

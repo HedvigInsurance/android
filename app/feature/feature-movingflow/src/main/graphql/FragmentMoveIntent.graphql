@@ -1,17 +1,23 @@
 # Consider inlining this fragment
 fragment MoveIntentFragment on MoveIntent {
   id
-  minMovingDate
-  maxMovingDate
+  minMovingDate #todo: deprecate
+  maxMovingDate #todo: deprecate
   maxHouseNumberCoInsured
   maxHouseSquareMeters
   maxApartmentNumberCoInsured
   maxApartmentSquareMeters
   isApartmentAvailableforStudent
   extraBuildingTypes
-  suggestedNumberCoInsured
+  suggestedNumberCoInsured #todo: deprecate
   currentHomeAddresses {
     id
     oldAddressCoverageDurationDays
+#    todo: here add
+#    subtitle,
+#    title,
+#    suggestedNumberOfCoInsured,
+#    maxMovingDate
+#    minMovingDate
   }
 }
