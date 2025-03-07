@@ -385,7 +385,6 @@ object TabDefaults {
             TabColors(
               tabRowBackground = Color.Transparent,
               chosenTabBackground = fromToken(ButtonSecondaryResting),
-              notChosenTabBackground = Color.Transparent,
               textColor = fromToken(TextPrimary),
             )
           }
@@ -400,7 +399,6 @@ object TabDefaults {
             TabColors(
               tabRowBackground = fromToken(SurfacePrimary),
               chosenTabBackground = fromToken(ButtonSecondaryAltResting),
-              notChosenTabBackground = Color.Transparent,
               textColor = fromToken(TextPrimary),
             )
           }
@@ -410,7 +408,6 @@ object TabDefaults {
     data class TabColors(
       val tabRowBackground: Color,
       val chosenTabBackground: Color,
-      val notChosenTabBackground: Color,
       val textColor: Color,
     )
   }
