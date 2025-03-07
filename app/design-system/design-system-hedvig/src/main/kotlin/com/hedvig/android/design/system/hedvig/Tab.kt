@@ -257,6 +257,7 @@ private data class TabRowLayoutInformation(
   fun calculateNumberOfItemsInRowNumber(rowIndex: Int): Int {
     return when {
       rowsRequired == 1 -> numberOfItems
+      maxItemsPerRow == realItemsPerRow -> realItemsPerRow
       rowIndex == rowsRequired - 1 -> numberOfItems % maxItemsPerRow
       else -> realItemsPerRow
     }
