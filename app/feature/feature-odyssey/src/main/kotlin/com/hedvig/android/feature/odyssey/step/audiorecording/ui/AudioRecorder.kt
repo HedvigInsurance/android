@@ -51,7 +51,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
-import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.NotRecording
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.Playback
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.PrerecordedWithAudioContent
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.Recording
 import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
@@ -68,7 +72,7 @@ import kotlinx.datetime.Instant
 
 @Composable
 internal fun AudioRecorder(
-  uiState: AudioRecordingUiState,
+  uiState: WhatHappenedUiState,
   startRecording: () -> Unit,
   clock: Clock,
   stopRecording: () -> Unit,
@@ -76,9 +80,11 @@ internal fun AudioRecorder(
   submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   modifier: Modifier = Modifier,
+  textButtonTitle: String? = null,
+  onTextButtonClick: (() -> Unit)? = null,
 ) {
   when (uiState) {
-    is AudioRecordingUiState.Playback -> Playback(
+    is Playback -> Playback(
       uiState = uiState,
       submit = {
         val filePath = uiState.filePath
@@ -89,7 +95,7 @@ internal fun AudioRecorder(
       modifier = modifier,
     )
 
-    is AudioRecordingUiState.PrerecordedWithAudioContent -> PrerecordedPlayback(
+    is PrerecordedWithAudioContent -> PrerecordedPlayback(
       uiState = uiState,
       submitAudioUrl = {
         submitAudioUrl(uiState.audioContent.audioUrl)
@@ -99,7 +105,7 @@ internal fun AudioRecorder(
     )
 
     else -> {
-      val isRecording = uiState is AudioRecordingUiState.Recording
+      val isRecording = uiState is Recording
       val isRecordingTransition = updateTransition(isRecording)
       if (isRecording) {
         ScreenOnFlag()
@@ -112,7 +118,7 @@ internal fun AudioRecorder(
         Box(
           contentAlignment = Alignment.Center,
         ) {
-          if (uiState is AudioRecordingUiState.Recording && uiState.amplitudes.isNotEmpty()) {
+          if (uiState is Recording && uiState.amplitudes.isNotEmpty()) {
             RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
           }
           Box(
@@ -149,7 +155,7 @@ internal fun AudioRecorder(
         val startedRecordingAt by remember {
           mutableStateOf<Instant?>(null)
         }.apply {
-          if (uiState is AudioRecordingUiState.Recording) {
+          if (uiState is Recording) {
             value = uiState.startedAt
           }
         }
@@ -184,11 +190,18 @@ internal fun AudioRecorder(
               modifier = Modifier.padding(bottom = 16.dp),
             )
           } else {
-            HedvigText(
-              text = stringResource(R.string.EMBARK_START_RECORDING),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(bottom = 16.dp),
-            )
+            if (textButtonTitle != null && onTextButtonClick != null) {
+              HedvigTextButton(
+                text = textButtonTitle,
+                onClick = onTextButtonClick,
+              )
+            } else {
+              HedvigText(
+                text = stringResource(R.string.EMBARK_START_RECORDING),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 16.dp),
+              )
+            }
           }
         }
       }
@@ -197,12 +210,7 @@ internal fun AudioRecorder(
 }
 
 @Composable
-private fun Playback(
-  uiState: AudioRecordingUiState.Playback,
-  submit: () -> Unit,
-  redo: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun Playback(uiState: Playback, submit: () -> Unit, redo: () -> Unit, modifier: Modifier = Modifier) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
@@ -233,7 +241,7 @@ private fun Playback(
 
 @Composable
 private fun PrerecordedPlayback(
-  uiState: AudioRecordingUiState.PrerecordedWithAudioContent,
+  uiState: PrerecordedWithAudioContent,
   redo: () -> Unit,
   submitAudioUrl: () -> Unit,
   modifier: Modifier = Modifier,
@@ -289,13 +297,15 @@ private fun PreviewNotRecording() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
-        uiState = AudioRecordingUiState.NotRecording,
+        uiState = NotRecording,
         startRecording = { },
         clock = Clock.System,
         stopRecording = { },
         submitAudioFile = {},
         submitAudioUrl = {},
         redo = { },
+        textButtonTitle = "Write text instead",
+        onTextButtonClick = {},
       )
     }
   }
@@ -307,7 +317,7 @@ private fun PreviewRecording() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
-        uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now().minus(1019.seconds), ""),
+        uiState = Recording(listOf(70), Clock.System.now().minus(1019.seconds), ""),
         startRecording = { },
         clock = Clock.System,
         stopRecording = { },
@@ -325,7 +335,7 @@ private fun PreviewPrerecordedPlayback() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PrerecordedPlayback(
-        uiState = AudioRecordingUiState.PrerecordedWithAudioContent(AudioContent(AudioUrl(""), AudioUrl(""))),
+        uiState = PrerecordedWithAudioContent(AudioContent(AudioUrl(""), AudioUrl(""))),
         redo = {},
         submitAudioUrl = {},
         modifier = Modifier,

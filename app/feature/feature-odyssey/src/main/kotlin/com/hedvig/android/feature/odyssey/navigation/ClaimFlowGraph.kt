@@ -114,6 +114,8 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
+        freeTextAvailable = this.freeTextAvailable,
+        freeTextQuestions = this.freeTextQuestions,
       )
     }
     navdestination<ClaimFlowDestination.DateOfOccurrence>(
