@@ -99,6 +99,7 @@ sealed interface ClaimFlowStep {
     val selectedItemProblems: List<String>?,
     val signedAudioUrl: String?,
     val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
+    val freeText: String?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(

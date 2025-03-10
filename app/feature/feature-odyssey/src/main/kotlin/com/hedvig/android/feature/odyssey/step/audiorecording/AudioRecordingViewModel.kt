@@ -69,7 +69,7 @@ internal class AudioRecordingViewModel(
     }
   }
 
-  fun updateFreeText(text: String) {
+  fun updateFreeText(text: String?) {
     val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
     _uiState.update {
       uiState.copy(freeText = text, hasError = false)

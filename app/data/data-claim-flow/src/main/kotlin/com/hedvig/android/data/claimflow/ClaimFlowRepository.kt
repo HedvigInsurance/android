@@ -476,6 +476,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         selectedItemProblems = singleItemStep?.selectedItemProblems,
         fileUploads = fileUploadStep?.uploads,
         signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
+        freeText = audioRecordingStep?.freeText,
       )
     }
 

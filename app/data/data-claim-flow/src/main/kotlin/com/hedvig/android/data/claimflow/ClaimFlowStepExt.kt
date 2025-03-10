@@ -96,6 +96,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
         submittedContent = signedAudioUrl?.let {
           SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
+        freeText = freeText,
       )
     }
 

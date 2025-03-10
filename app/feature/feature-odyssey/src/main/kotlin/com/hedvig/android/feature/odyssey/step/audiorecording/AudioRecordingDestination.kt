@@ -122,7 +122,7 @@ private fun AudioRecordingScreen(
   submitFreeText: () -> Unit,
   showFreeText: () -> Unit,
   showAudioRecording: () -> Unit,
-  updateFreeText: (String) -> Unit,
+  updateFreeText: (String?) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
 ) {
@@ -134,9 +134,8 @@ private fun AudioRecordingScreen(
       onCloseFullScreenEditText()
     },
     freeTextOnSaveClick = { feedback ->
-      if (feedback != null) {
-        updateFreeText(feedback)
-      }
+      updateFreeText(feedback)
+
       onCloseFullScreenEditText()
     },
     shouldShowOverlay = if (uiState is WhatHappenedUiState.FreeTextDescription) uiState.showOverlay else false,
