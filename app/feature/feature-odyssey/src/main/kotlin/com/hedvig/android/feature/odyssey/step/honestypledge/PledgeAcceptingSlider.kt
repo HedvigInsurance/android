@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -69,7 +70,7 @@ private interface PledgeAcceptingSliderState {
   val draggableState: DraggableState
   val isInAcceptedPosition: Boolean
 
-  fun updateAnchors(anchors: DraggableAnchors<PledgeAcceptingSliderPosition>)
+  fun updateAnchors(layoutSize: IntSize)
 
   fun onDragStopped(velocity: Float)
 
@@ -92,8 +93,11 @@ private class PledgeAcceptingSliderStateImpl(
     xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted)
   }
 
-  override fun updateAnchors(anchors: DraggableAnchors<PledgeAcceptingSliderPosition>) {
-    this.anchors = anchors
+  override fun updateAnchors(layoutSize: IntSize) {
+    anchors = DraggableAnchors {
+      Resting at 0f
+      Accepted at layoutSize.width - circleDiameterPx
+    }
   }
 
   override fun onDragStopped(velocity: Float) {
@@ -175,14 +179,7 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
-      .onSizeChanged { layoutSize ->
-        state.updateAnchors(
-          DraggableAnchors {
-            Resting at 0f
-            Accepted at layoutSize.width - circleDiameterPx
-          },
-        )
-      },
+      .onSizeChanged(state::updateAnchors),
   ) {
     HedvigText(
       text = text,
