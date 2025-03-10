@@ -1,8 +1,11 @@
 package com.hedvig.android.feature.odyssey.step.honestypledge
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.DraggableState
@@ -28,6 +31,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -39,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
@@ -79,7 +85,7 @@ private class PledgeAcceptingSliderStateImpl(
   override var xOffset: Float by mutableFloatStateOf(0f)
   override val draggableState = DraggableState { delta ->
     if (isInAcceptedPosition) return@DraggableState
-    cancelPreviousOnDragStoppedJob()
+    cancelOnDragStoppedJob()
     xOffset = (xOffset + delta).coerceIn(anchors.minPosition(), anchors.maxPosition())
   }
   override val isInAcceptedPosition: Boolean by derivedStateOf {
@@ -100,7 +106,7 @@ private class PledgeAcceptingSliderStateImpl(
         PledgeAcceptingSliderPosition.Resting
       },
     )
-    cancelPreviousOnDragStoppedJob()
+    cancelOnDragStoppedJob()
     onDragStoppedJob = coroutineScope.launch {
       animate(
         initialValue = xOffset,
@@ -113,16 +119,17 @@ private class PledgeAcceptingSliderStateImpl(
         ),
       ) { value, _ ->
         xOffset = value.coerceIn(anchors.minPosition(), anchors.maxPosition())
+        if (isInAcceptedPosition) cancelOnDragStoppedJob()
       }
     }
   }
 
   override fun resetState() {
-    cancelPreviousOnDragStoppedJob()
+    cancelOnDragStoppedJob()
     xOffset = 0f
   }
 
-  private fun cancelPreviousOnDragStoppedJob() {
+  private fun cancelOnDragStoppedJob() {
     onDragStoppedJob?.cancel()
     onDragStoppedJob = null
   }
@@ -141,8 +148,9 @@ private fun rememberPledgeAcceptingSliderState(
   LaunchedEffect(state) {
     snapshotFlow { state.isInAcceptedPosition }.collect { isInAcceptedPosition ->
       if (isInAcceptedPosition) {
+        delay(1.seconds)
         updatedOnAccepted()
-        delay(2.seconds)
+        delay(1.seconds)
         state.resetState()
       }
     }
@@ -154,6 +162,14 @@ private fun rememberPledgeAcceptingSliderState(
 internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifier: Modifier = Modifier) {
   val circleDiameterPx = with(LocalDensity.current) { circleDiameter.toPx() }
   val state = rememberPledgeAcceptingSliderState(circleDiameterPx, onAccepted)
+  val isAcceptedTransition = updateTransition(state.isInAcceptedPosition)
+  val boxColor by isAcceptedTransition.animateColor { isAccepted ->
+    if (isAccepted) {
+      HedvigTheme.colorScheme.highlightGreenFill3
+    } else {
+      HedvigTheme.colorScheme.fillPrimary
+    }
+  }
   Box(
     modifier
       .requiredHeight(circleDiameter)
@@ -192,15 +208,26 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
         )
         .size(circleDiameter)
         .padding(4.dp)
-        .clip(CircleShape)
-        .background(HedvigTheme.colorScheme.fillPrimary),
+        .background({ boxColor }, CircleShape),
     ) {
-      Icon(
-        imageVector = HedvigIcons.ChevronRight,
-        contentDescription = null,
-        tint = HedvigTheme.colorScheme.fillNegative,
+      isAcceptedTransition.AnimatedContent(
+        contentAlignment = Alignment.Center,
         modifier = Modifier.align(Alignment.Center),
-      )
+      ) { isAccepted ->
+        if (isAccepted) {
+          Icon(
+            imageVector = HedvigIcons.Checkmark,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.fillBlack,
+          )
+        } else {
+          Icon(
+            imageVector = HedvigIcons.ChevronRight,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.fillNegative,
+          )
+        }
+      }
     }
   }
 }
@@ -217,3 +244,5 @@ private fun PreviewPledgeAcceptingSlider() {
     }
   }
 }
+
+private fun Modifier.background(colorProvider: () -> Color, shape: Shape) = this.background(colorProvider(), shape)
