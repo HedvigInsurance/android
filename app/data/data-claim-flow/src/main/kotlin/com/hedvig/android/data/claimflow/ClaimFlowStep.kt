@@ -25,6 +25,9 @@ sealed interface ClaimFlowStep {
     override val flowId: FlowId,
     val questions: List<String>,
     val audioContent: AudioContentFragment?,
+    val freeTextAvailable: Boolean,
+    val freeText: String?,
+    val freeTextQuestions: List<String>,
   ) : ClaimFlowStep
 
   data class ClaimDateOfOccurrenceStep(
@@ -96,6 +99,7 @@ sealed interface ClaimFlowStep {
     val selectedItemProblems: List<String>?,
     val signedAudioUrl: String?,
     val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
+    val freeText: String?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(

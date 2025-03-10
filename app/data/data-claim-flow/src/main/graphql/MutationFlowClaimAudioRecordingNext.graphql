@@ -1,5 +1,5 @@
-mutation FlowClaimAudioRecordingNext($audioUrl: Url!, $context: FlowContext!) {
-  flowClaimAudioRecordingNext(input: { audioUrl: $audioUrl }, context: $context) {
+mutation FlowClaimAudioRecordingNext($audioUrl: Url, $freeText: String, $context: FlowContext!) {
+  flowClaimAudioRecordingNext(input: { audioUrl: $audioUrl, freeText: $freeText }, context: $context) {
     id
     context
     ...ClaimFlowStepFragment

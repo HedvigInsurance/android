@@ -29,6 +29,9 @@ fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep {
   audioContent {
     ...AudioContentFragment
   }
+  freeTextQuestions
+  freeTextAvailable
+  freeText
 }
 
 fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {

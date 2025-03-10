@@ -100,7 +100,8 @@ fun NavGraphBuilder.claimFlowGraph(
     navdestination<ClaimFlowDestination.AudioRecording>(
       ClaimFlowDestination.AudioRecording,
     ) { backStackEntry ->
-      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
+      val audioRecording = this
+      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(audioRecording) }
       AudioRecordingDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
@@ -113,6 +114,8 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
+        freeTextAvailable = this.freeTextAvailable,
+        freeTextQuestions = this.freeTextQuestions,
       )
     }
     navdestination<ClaimFlowDestination.DateOfOccurrence>(

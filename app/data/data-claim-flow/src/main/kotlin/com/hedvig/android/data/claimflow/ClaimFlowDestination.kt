@@ -27,6 +27,9 @@ sealed interface ClaimFlowDestination {
     val flowId: FlowId,
     val questions: List<String>,
     val audioContent: AudioContent?,
+    val freeTextAvailable: Boolean,
+    val freeText: String?,
+    val freeTextQuestions: List<String>,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
@@ -199,6 +202,7 @@ sealed interface ClaimFlowDestination {
     val selectedItemProblems: List<String>?,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
+    val freeText: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
