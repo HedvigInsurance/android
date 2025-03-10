@@ -68,6 +68,8 @@ private interface PledgeAcceptingSliderState {
   val xOffset: Float
   val isInAcceptedPosition: Boolean
 
+  fun Modifier.containerDraggableModifier(): Modifier
+
   fun Modifier.thumbDraggableModifier(): Modifier
 
   fun updateAnchors(layoutSize: IntSize)
@@ -83,10 +85,11 @@ private class PledgeAcceptingSliderStateImpl(
   private var onDragStoppedJob: Job? = null
   private var anchors by mutableStateOf(DraggableAnchors<PledgeAcceptingSliderPosition> {})
   override var xOffset: Float by mutableFloatStateOf(0f)
+
   private val draggableState = DraggableState { delta ->
     if (isInAcceptedPosition) return@DraggableState
     cancelOnDragStoppedJob()
-    xOffset = (xOffset + delta).coerceIn(anchors.minPosition(), anchors.maxPosition())
+    safeSetXOffset(xOffset + delta)
   }
   override val isInAcceptedPosition: Boolean by derivedStateOf {
     xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted)
@@ -97,6 +100,20 @@ private class PledgeAcceptingSliderStateImpl(
       Resting at 0f
       Accepted at layoutSize.width - circleDiameterPx
     }
+  }
+
+  override fun Modifier.containerDraggableModifier(): Modifier {
+    return this.draggable(
+      state = draggableState,
+      orientation = Horizontal,
+      startDragImmediately = true,
+      onDragStarted = { offset ->
+        safeSetXOffset(offset.x.minus(circleDiameterPx / 2))
+      },
+      onDragStopped = { velocity ->
+        onDragStopped(velocity)
+      },
+    )
   }
 
   override fun Modifier.thumbDraggableModifier(): Modifier {
@@ -125,6 +142,10 @@ private class PledgeAcceptingSliderStateImpl(
     }
   }
 
+  private fun safeSetXOffset(value: Float) {
+    xOffset = value.coerceIn(anchors.minPosition(), anchors.maxPosition())
+  }
+
   private fun onDragStopped(velocity: Float) {
     if (isInAcceptedPosition) return
     val sliderAlmostAtEnd = xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted) - circleDiameterPx
@@ -147,7 +168,7 @@ private class PledgeAcceptingSliderStateImpl(
           visibilityThreshold = 2f,
         ),
       ) { value, _ ->
-        xOffset = value.coerceIn(anchors.minPosition(), anchors.maxPosition())
+        safeSetXOffset(value)
         if (isInAcceptedPosition) cancelOnDragStoppedJob()
       }
     }
@@ -155,7 +176,7 @@ private class PledgeAcceptingSliderStateImpl(
 
   private fun resetState() {
     cancelOnDragStoppedJob()
-    xOffset = 0f
+    safeSetXOffset(0f)
   }
 
   private fun cancelOnDragStoppedJob() {
@@ -194,7 +215,8 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
-      .onSizeChanged(state::updateAnchors),
+      .onSizeChanged(state::updateAnchors)
+      .then(with(state) { Modifier.containerDraggableModifier() }),
   ) {
     HedvigText(
       text = text,
