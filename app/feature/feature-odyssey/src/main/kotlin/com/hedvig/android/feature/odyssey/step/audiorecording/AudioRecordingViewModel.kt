@@ -5,10 +5,10 @@ import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimflow.AudioContent
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
-import com.hedvig.android.data.claimflow.model.FlowId
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
@@ -21,18 +21,18 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 internal class AudioRecordingViewModel(
-  private val flowId: FlowId,
-  audioContent: AudioContent?,
+  private val audioRecording: ClaimFlowDestination.AudioRecording,
   private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
   private var recorder: MediaRecorder? = null
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
+  private val incomingAudioContent = audioRecording.audioContent
 
   private val _uiState: MutableStateFlow<AudioRecordingUiState> = MutableStateFlow(
-    if (audioContent != null) {
-      AudioRecordingUiState.PrerecordedWithAudioContent(audioContent)
+    if (incomingAudioContent != null) {
+      AudioRecordingUiState.PrerecordedWithAudioContent(incomingAudioContent)
     } else {
       AudioRecordingUiState.NotRecording
     },
@@ -44,7 +44,7 @@ internal class AudioRecordingViewModel(
     if (uiState.hasError || uiState.isLoading) return
     _uiState.update { uiState.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.submitAudioRecording(flowId, audioFile).fold(
+      claimFlowRepository.submitAudioRecording(audioRecording.flowId, audioFile).fold(
         ifLeft = {
           _uiState.update {
             uiState.copy(isLoading = false, hasError = true)
@@ -64,7 +64,7 @@ internal class AudioRecordingViewModel(
     if (uiState.hasError || uiState.isLoading) return
     _uiState.update { uiState.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.submitAudioUrl(flowId, audioUrl).fold(
+      claimFlowRepository.submitAudioUrl(audioRecording.flowId, audioUrl).fold(
         ifLeft = {
           _uiState.update {
             uiState.copy(isLoading = false, hasError = true)

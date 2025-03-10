@@ -380,7 +380,14 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
 ): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
-      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
+      ClaimFlowStep.ClaimAudioRecordingStep(
+        flowId = flowId,
+        questions = questions,
+        audioContent = audioContent,
+        freeTextAvailable = freeTextAvailable,
+        freeText = freeText,
+        freeTextQuestions = freeTextQuestions,
+      )
     }
 
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
