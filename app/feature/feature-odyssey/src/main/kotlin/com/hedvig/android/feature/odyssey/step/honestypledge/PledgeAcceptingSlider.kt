@@ -116,7 +116,7 @@ private class PledgeAcceptingSliderStateImpl(
     LaunchedEffect(this) {
       snapshotFlow { isInAcceptedPosition }.collect { isInAcceptedPosition ->
         if (isInAcceptedPosition) {
-          delay(1.seconds)
+          delay(0.5.seconds)
           updatedOnAccepted()
           delay(1.seconds)
           resetState()
