@@ -42,7 +42,7 @@ internal class AudioRecordingViewModel(
     if (incomingAudioContent != null) {
       PrerecordedWithAudioContent(incomingAudioContent)
     } else if (incomingFreeText != null) {
-      WhatHappenedUiState.FreeTextDescription(incomingFreeText)
+      WhatHappenedUiState.FreeTextDescription(freeText = incomingFreeText, showOverlay = false)
     } else {
       NotRecording
     },
@@ -72,10 +72,24 @@ internal class AudioRecordingViewModel(
   fun updateFreeText(text: String) {
     val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
     _uiState.update {
-      uiState.copy(freeText = text)
+      uiState.copy(freeText = text, hasError = false)
     }
     currentFreeText.update {
       text
+    }
+  }
+
+  fun onLaunchFullScreenOverlay() {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    _uiState.update {
+      uiState.copy(showOverlay = true)
+    }
+  }
+
+  fun onCloseFullScreenOverlay() {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    _uiState.update {
+      uiState.copy(showOverlay = false)
     }
   }
 
@@ -124,7 +138,7 @@ internal class AudioRecordingViewModel(
     when (mode) {
       ScreenMode.RECORDING -> redo()
       ScreenMode.FREE_TEXT -> _uiState.update {
-        WhatHappenedUiState.FreeTextDescription(currentFreeText.value)
+        WhatHappenedUiState.FreeTextDescription(freeText = currentFreeText.value, showOverlay = false)
       }
     }
   }
@@ -259,7 +273,9 @@ internal sealed interface WhatHappenedUiState {
     get() {
       val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
       val prerecordedCanSubmit = this is PrerecordedWithAudioContent && nextStep == null && !isLoading && !hasError
-      return playbackCanSubmit || prerecordedCanSubmit
+      val freeTextCanSubmit =
+        this is FreeTextDescription && nextStep == null && !isLoading && !hasError && !this.freeText.isNullOrEmpty()
+      return playbackCanSubmit || prerecordedCanSubmit || freeTextCanSubmit
     }
 
   val nextStep: ClaimFlowStep?
@@ -273,6 +289,7 @@ internal sealed interface WhatHappenedUiState {
 
   data class FreeTextDescription(
     val freeText: String?,
+    val showOverlay: Boolean,
     override val nextStep: ClaimFlowStep? = null,
     override val isLoading: Boolean = false,
     override val hasError: Boolean = false,

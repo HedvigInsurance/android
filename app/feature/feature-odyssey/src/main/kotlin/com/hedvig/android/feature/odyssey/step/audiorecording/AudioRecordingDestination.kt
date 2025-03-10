@@ -2,11 +2,11 @@ package com.hedvig.android.feature.odyssey.step.audiorecording
 
 import android.Manifest
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -33,13 +32,17 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.NotRecording
 import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.ScreenMode
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
@@ -93,6 +96,8 @@ internal fun AudioRecordingDestination(
       viewModel.switchMode(ScreenMode.RECORDING)
     },
     updateFreeText = viewModel::updateFreeText,
+    onLaunchFullScreenEditText = viewModel::onLaunchFullScreenOverlay,
+    onCloseFullScreenEditText = viewModel::onCloseFullScreenOverlay,
   )
 }
 
@@ -118,91 +123,136 @@ private fun AudioRecordingScreen(
   showFreeText: () -> Unit,
   showAudioRecording: () -> Unit,
   updateFreeText: (String) -> Unit,
+  onCloseFullScreenEditText: () -> Unit,
+  onLaunchFullScreenEditText: () -> Unit,
 ) {
-  ClaimFlowScaffold(
-    windowSizeClass = windowSizeClass,
-    navigateUp = navigateUp,
-    closeClaimFlow = closeClaimFlow,
-    errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
-  ) { sideSpacingModifier ->
-    Spacer(Modifier.height(16.dp))
-    val suitableQuestions = when (uiState) {
-      is WhatHappenedUiState.AudioRecording -> questions
-      is WhatHappenedUiState.FreeTextDescription -> freeTextQuestions
-    }
-    for (question in suitableQuestions) {
-      HedvigCard(modifier = sideSpacingModifier.padding(end = 16.dp)) {
-        HedvigText(
-          text = question,
-          modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
-        )
+  FreeTextOverlay(
+    freeTextMaxLength = 2000,
+    freeTextValue = if (uiState is WhatHappenedUiState.FreeTextDescription) uiState.freeText else null,
+    freeTextHint = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    freeTextOnCancelClick = {
+      onCloseFullScreenEditText()
+    },
+    freeTextOnSaveClick = { feedback ->
+      if (feedback != null) {
+        updateFreeText(feedback)
       }
-      Spacer(Modifier.height(8.dp))
-    }
-    Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    AnimatedContent(
-      uiState,
-      contentKey = { s ->
-        when (s) {
-          is WhatHappenedUiState.AudioRecording -> "audio_recording"
-          is WhatHappenedUiState.FreeTextDescription -> "freetext"
-        }
-      },
-    ) { uiStateAnimated ->
-      Column {
-        when (uiStateAnimated) {
-          is WhatHappenedUiState.AudioRecording -> {
-            AudioRecordingSection(
-              uiState = uiStateAnimated,
-              clock = clock,
-              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-              startRecording = startRecording,
-              stopRecording = stopRecording,
-              submitAudioFile = submitAudioFile,
-              submitAudioUrl = submitAudioUrl,
-              redo = redo,
-              openAppSettings = openAppSettings,
-              modifier = sideSpacingModifier,
-              allowFreeText = freeTextAvailable,
-              launchFreeText = showFreeText,
-            )
-          }
-          is WhatHappenedUiState.FreeTextDescription -> {
-            FreeTextInputSection(
-              submitFreeText = submitFreeText,
-              showAudioRecording = showAudioRecording,
-              updateFreeText = updateFreeText,
-              freeText = uiStateAnimated.freeText,
-              modifier = sideSpacingModifier,
-            )
+      onCloseFullScreenEditText()
+    },
+    shouldShowOverlay = if (uiState is WhatHappenedUiState.FreeTextDescription) uiState.showOverlay else false,
+    overlaidContent = {
+      ClaimFlowScaffold(
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigateUp,
+        closeClaimFlow = closeClaimFlow,
+        modifier = Modifier.fillMaxSize(),
+        errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
+      ) { sideSpacingModifier ->
+        Spacer(Modifier.height(16.dp))
+        AnimatedContent(
+          uiState,
+          contentKey = { s ->
+            when (s) {
+              is WhatHappenedUiState.AudioRecording -> "audio_recording"
+              is WhatHappenedUiState.FreeTextDescription -> "freetext"
+            }
+          },
+        ) { uiStateAnimated ->
+          Column {
+            val suitableQuestions = when (uiStateAnimated) {
+              is WhatHappenedUiState.AudioRecording -> questions
+              is WhatHappenedUiState.FreeTextDescription -> freeTextQuestions
+            }
+            for (question in suitableQuestions) {
+              HedvigCard(modifier = sideSpacingModifier.padding(end = 16.dp)) {
+                HedvigText(
+                  text = question,
+                  modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                )
+              }
+              Spacer(Modifier.height(8.dp))
+            }
           }
         }
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(16.dp))
+        AnimatedContent(
+          uiState,
+          contentKey = { s ->
+            when (s) {
+              is WhatHappenedUiState.AudioRecording -> "audio_recording"
+              is WhatHappenedUiState.FreeTextDescription -> "freetext"
+            }
+          },
+        ) { uiStateAnimated ->
+          Column {
+            when (uiStateAnimated) {
+              is WhatHappenedUiState.AudioRecording -> {
+                AudioRecordingSection(
+                  uiState = uiStateAnimated,
+                  clock = clock,
+                  shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+                  startRecording = startRecording,
+                  stopRecording = stopRecording,
+                  submitAudioFile = submitAudioFile,
+                  submitAudioUrl = submitAudioUrl,
+                  redo = redo,
+                  openAppSettings = openAppSettings,
+                  modifier = sideSpacingModifier,
+                  allowFreeText = freeTextAvailable,
+                  launchFreeText = showFreeText,
+                )
+              }
+
+              is WhatHappenedUiState.FreeTextDescription -> {
+                FreeTextInputSection(
+                  submitFreeText = submitFreeText,
+                  showAudioRecording = showAudioRecording,
+                  uiState = uiStateAnimated,
+                  modifier = sideSpacingModifier,
+                  onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+                )
+              }
+            }
+          }
+        }
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
-    }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
-  }
+    },
+  )
 }
 
 @Composable
 private fun FreeTextInputSection(
-  freeText: String?,
+  uiState: WhatHappenedUiState.FreeTextDescription,
   showAudioRecording: () -> Unit,
-  updateFreeText: (String) -> Unit,
+  onLaunchFullScreenEditText: () -> Unit,
   submitFreeText: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
-    HedvigText(
-      "STUB STUB STUB",
-      textAlign = TextAlign.Center,
-      modifier = Modifier.clickable {
-        showAudioRecording()
-      },
+    FreeTextDisplay(
+      onClick = { onLaunchFullScreenEditText() },
+      freeTextValue = uiState.freeText,
+      freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      onClick = submitFreeText,
+      text = stringResource(R.string.general_continue_button),
+      isLoading = uiState.isLoading,
+      enabled = uiState.canSubmit,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(R.string.CLAIMS_USE_AUDIO_RECORDING),
+      onClick = showAudioRecording,
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
     )
   }
-  // TODO()
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -301,6 +351,8 @@ private fun PreviewAudioRecordingScreen() {
         showAudioRecording = {},
         showFreeText = {},
         updateFreeText = {},
+        onCloseFullScreenEditText = {},
+        onLaunchFullScreenEditText = {},
       )
     }
   }
