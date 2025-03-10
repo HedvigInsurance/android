@@ -74,6 +74,7 @@ internal fun AudioRecordingDestination(
     openAppSettings = openAppSettings,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    submitFreeText = viewModel::submitFreeText,
   )
 }
 
@@ -93,6 +94,7 @@ private fun AudioRecordingScreen(
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
+  submitFreeText: (String) -> Unit, // todo: use it in UI
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
@@ -197,6 +199,7 @@ private fun PreviewAudioRecordingScreen() {
         ),
         Clock.System,
         { false },
+        {},
         {},
         {},
         {},

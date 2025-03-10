@@ -59,6 +59,26 @@ internal class AudioRecordingViewModel(
     }
   }
 
+  fun submitFreeText(freeText: String) {
+    val uiState = _uiState.value as? AudioRecordingUiState.PrerecordedWithAudioContent ?: return
+    if (uiState.hasError || uiState.isLoading) return
+    _uiState.update { uiState.copy(isLoading = true) }
+    viewModelScope.launch {
+      claimFlowRepository.submitFreeTextInsteadOfAudio(freeText).fold(
+        ifLeft = {
+          _uiState.update {
+            uiState.copy(isLoading = false, hasError = true)
+          }
+        },
+        ifRight = { claimFlowStep ->
+          _uiState.update {
+            uiState.copy(isLoading = false, nextStep = claimFlowStep)
+          }
+        },
+      )
+    }
+  }
+
   fun submitAudioUrl(audioUrl: AudioUrl) {
     val uiState = _uiState.value as? AudioRecordingUiState.PrerecordedWithAudioContent ?: return
     if (uiState.hasError || uiState.isLoading) return
