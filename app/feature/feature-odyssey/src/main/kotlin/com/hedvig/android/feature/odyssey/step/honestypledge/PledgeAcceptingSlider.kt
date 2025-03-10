@@ -1,15 +1,13 @@
 package com.hedvig.android.feature.odyssey.step.honestypledge
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.horizontalDrag
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.DraggableState
+import androidx.compose.foundation.gestures.Orientation.Horizontal
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -17,19 +15,22 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -40,24 +41,132 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
+import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Resting
 import kotlin.math.roundToInt
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private val circleDiameter: Dp = 62.dp
 
+private enum class PledgeAcceptingSliderPosition {
+  Resting,
+  Accepted,
+}
+
+private interface PledgeAcceptingSliderState {
+  val anchors: DraggableAnchors<PledgeAcceptingSliderPosition>
+  val xOffset: Float
+  val draggableState: DraggableState
+  val isInAcceptedPosition: Boolean
+
+  fun updateAnchors(anchors: DraggableAnchors<PledgeAcceptingSliderPosition>)
+
+  fun onDragStopped(velocity: Float)
+
+  fun resetState()
+}
+
+private class PledgeAcceptingSliderStateImpl(
+  val coroutineScope: CoroutineScope,
+  val circleDiameterPx: Float,
+) : PledgeAcceptingSliderState {
+  private var onDragStoppedJob: Job? = null
+  override var anchors by mutableStateOf(DraggableAnchors<PledgeAcceptingSliderPosition> {})
+  override var xOffset: Float by mutableFloatStateOf(0f)
+  override val draggableState = DraggableState { delta ->
+    if (isInAcceptedPosition) return@DraggableState
+    cancelPreviousOnDragStoppedJob()
+    xOffset = (xOffset + delta).coerceIn(anchors.minPosition(), anchors.maxPosition())
+  }
+  override val isInAcceptedPosition: Boolean by derivedStateOf {
+    xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted)
+  }
+
+  override fun updateAnchors(anchors: DraggableAnchors<PledgeAcceptingSliderPosition>) {
+    this.anchors = anchors
+  }
+
+  override fun onDragStopped(velocity: Float) {
+    if (isInAcceptedPosition) return
+    val sliderAlmostAtEnd = xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted) - circleDiameterPx
+    val closestAnchor = anchors.positionOf(
+      if (sliderAlmostAtEnd) {
+        PledgeAcceptingSliderPosition.Accepted
+      } else {
+        PledgeAcceptingSliderPosition.Resting
+      },
+    )
+    cancelPreviousOnDragStoppedJob()
+    onDragStoppedJob = coroutineScope.launch {
+      animate(
+        initialValue = xOffset,
+        targetValue = closestAnchor,
+        initialVelocity = velocity,
+        animationSpec = spring(
+          dampingRatio = Spring.DampingRatioNoBouncy,
+          stiffness = if (sliderAlmostAtEnd) Spring.StiffnessMedium else Spring.StiffnessVeryLow,
+          visibilityThreshold = 2f,
+        ),
+      ) { value, _ ->
+        xOffset = value.coerceIn(anchors.minPosition(), anchors.maxPosition())
+      }
+    }
+  }
+
+  override fun resetState() {
+    cancelPreviousOnDragStoppedJob()
+    xOffset = 0f
+  }
+
+  private fun cancelPreviousOnDragStoppedJob() {
+    onDragStoppedJob?.cancel()
+    onDragStoppedJob = null
+  }
+}
+
+@Composable
+private fun rememberPledgeAcceptingSliderState(
+  circleDiameterPx: Float,
+  onAccepted: () -> Unit,
+): PledgeAcceptingSliderState {
+  val updatedOnAccepted by rememberUpdatedState(onAccepted)
+  val corouineScope = rememberCoroutineScope()
+  val state = remember(corouineScope, circleDiameterPx) {
+    PledgeAcceptingSliderStateImpl(corouineScope, circleDiameterPx)
+  }
+  LaunchedEffect(state) {
+    snapshotFlow { state.isInAcceptedPosition }.collect { isInAcceptedPosition ->
+      if (isInAcceptedPosition) {
+        updatedOnAccepted()
+        delay(2.seconds)
+        state.resetState()
+      }
+    }
+  }
+  return state
+}
+
 @Composable
 internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifier: Modifier = Modifier) {
-  val offsetX: Animatable<Float, AnimationVector1D> = remember { Animatable(0f) }
+  val circleDiameterPx = with(LocalDensity.current) { circleDiameter.toPx() }
+  val state = rememberPledgeAcceptingSliderState(circleDiameterPx, onAccepted)
   Box(
     modifier
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
-      .animatingSliderModifier(offsetX, LocalDensity.current, onAccepted),
+      .onSizeChanged { layoutSize ->
+        state.updateAnchors(
+          DraggableAnchors {
+            Resting at 0f
+            Accepted at layoutSize.width - circleDiameterPx
+          },
+        )
+      },
   ) {
     HedvigText(
       text = text,
@@ -65,17 +174,24 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       modifier = Modifier
         .align(Alignment.Center)
         .graphicsLayer {
-          val offset = offsetX.value
           val pointWhereTextShouldBeInvisible = (circleDiameter * 2).toPx()
-          val ratioToInvisiblePoint = (offset / pointWhereTextShouldBeInvisible).coerceIn(0f, 1f)
+          val ratioToInvisiblePoint = (state.xOffset / pointWhereTextShouldBeInvisible).coerceIn(0f, 1f)
           alpha = 1 - ratioToInvisiblePoint
         },
     )
     Box(
       Modifier
-        .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+        .offset { IntOffset(state.xOffset.roundToInt(), 0) }
+        .draggable(
+          state = state.draggableState,
+          orientation = Horizontal,
+          startDragImmediately = true,
+          onDragStopped = { velocity ->
+            state.onDragStopped(velocity)
+          },
+        )
+        .size(circleDiameter)
         .padding(4.dp)
-        .size(circleDiameter - 8.dp)
         .clip(CircleShape)
         .background(HedvigTheme.colorScheme.fillPrimary),
     ) {
@@ -87,84 +203,6 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       )
     }
   }
-}
-
-/**
- * Detects drag interactions in the component, and reports the necessary offest that needs to be se into the [offsetX]
- * [Animatable]. When the gesture goes all the way to the end, [onAccepted] is called.
- */
-@SuppressLint("ReturnFromAwaitPointerEventScope", "MultipleAwaitPointerEventScopes")
-private fun Modifier.animatingSliderModifier(
-  offsetX: Animatable<Float, AnimationVector1D>,
-  density: Density,
-  onAccepted: () -> Unit,
-): Modifier {
-  return this
-    .onPlaced {
-      offsetX.updateBounds(
-        lowerBound = 0f,
-        upperBound = it.size.width - with(density) { circleDiameter.toPx() },
-      )
-    }
-    .pointerInput(Unit) {
-      val decay = splineBasedDecay<Float>(this)
-      val halfCircleSize = (circleDiameter / 2).roundToPx()
-      val getEndPoint = { this.size.width - circleDiameter.toPx() }
-      val hasOffsetSlidedToTheEnd = {
-        offsetX.value >= getEndPoint()
-      }
-      coroutineScope {
-        while (isActive) {
-          val velocityTracker = VelocityTracker()
-
-          val firstDownPointer = awaitPointerEventScope { awaitFirstDown() }
-          offsetX.stop()
-          offsetX.animateTo(
-            targetValue = firstDownPointer.position.x - halfCircleSize,
-            animationSpec = spring(stiffness = Spring.StiffnessHigh * 10),
-          )
-          if (hasOffsetSlidedToTheEnd()) {
-            onAccepted()
-            return@coroutineScope
-          }
-          awaitPointerEventScope {
-            horizontalDrag(firstDownPointer.id) { change: PointerInputChange ->
-              val horizontalDragOffset = change.position.x - halfCircleSize
-              launch(Dispatchers.Unconfined) {
-                offsetX.snapTo(horizontalDragOffset)
-              }
-              if (hasOffsetSlidedToTheEnd()) {
-                onAccepted()
-                this@coroutineScope.cancel()
-              }
-              velocityTracker.addPosition(change.uptimeMillis, change.position)
-              if (change.positionChange() != Offset.Zero) {
-                change.consume()
-              }
-            }
-          }
-          val velocity: Float = velocityTracker.calculateVelocity().x
-          val targetOffsetXAfterFlingEnd = decay.calculateTargetValue(offsetX.value, velocity)
-          launch {
-            if (targetOffsetXAfterFlingEnd <= getEndPoint()) {
-              // Not enough velocity; Slide back to the default position.
-              offsetX.animateTo(
-                targetValue = 0f,
-                animationSpec = spring(
-                  dampingRatio = Spring.DampingRatioMediumBouncy,
-                  stiffness = Spring.StiffnessVeryLow,
-                ),
-                initialVelocity = velocity,
-              )
-            } else {
-              // Enough velocity to finish the slide
-              offsetX.animateDecay(velocity, decay)
-              onAccepted()
-            }
-          }
-        }
-      }
-    }
 }
 
 @HedvigPreview
