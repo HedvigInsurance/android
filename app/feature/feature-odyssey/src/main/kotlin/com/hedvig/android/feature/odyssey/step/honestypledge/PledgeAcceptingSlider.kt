@@ -36,6 +36,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -50,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Resting
+import hedvig.resources.R
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +71,8 @@ private enum class PledgeAcceptingSliderPosition {
 private interface PledgeAcceptingSliderState {
   val xOffset: Float
   val isInAcceptedPosition: Boolean
+
+  fun Modifier.sliderSemantics(acceptLabel: String): Modifier
 
   fun Modifier.containerDraggableModifier(): Modifier
 
@@ -99,6 +105,15 @@ private class PledgeAcceptingSliderStateImpl(
     anchors = DraggableAnchors {
       Resting at 0f
       Accepted at layoutSize.width - circleDiameterPx
+    }
+  }
+
+  override fun Modifier.sliderSemantics(acceptLabel: String): Modifier {
+    return this.semantics(mergeDescendants = true) {
+      onClick(acceptLabel) {
+        safeSetXOffset(anchors.positionOf(Accepted))
+        true
+      }
     }
   }
 
@@ -216,7 +231,8 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
       .onSizeChanged(state::updateAnchors)
-      .then(with(state) { Modifier.containerDraggableModifier() }),
+      .then(with(state) { Modifier.containerDraggableModifier() })
+      .then(with(state) { Modifier.sliderSemantics("accept the terms") }),
   ) {
     HedvigText(
       text = text,
