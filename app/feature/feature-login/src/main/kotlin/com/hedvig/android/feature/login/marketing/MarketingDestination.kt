@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
+import com.hedvig.android.design.system.hedvig.HedvigTabRowState
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -62,13 +62,11 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
+import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
 import com.hedvig.android.market.Market
-import com.hedvig.android.market.Market.DK
-import com.hedvig.android.market.Market.NO
-import com.hedvig.android.market.Market.SE
 import com.hedvig.android.market.label
 import hedvig.resources.R
 
@@ -219,7 +217,7 @@ private fun ColumnScope.PreferencesSheetContent(
   selectLanguage: (Language) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+  val tabRowState = rememberHedvigTabRowState()
   HedvigText(
     text = stringResource(R.string.LOGIN_MARKET_PICKER_PREFERENCES),
     textAlign = TextAlign.Center,
@@ -228,10 +226,10 @@ private fun ColumnScope.PreferencesSheetContent(
       .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(24.dp))
-  PreferencesPagerSelector(selectedTabIndex, { selectedTabIndex = it }, Modifier.padding(horizontal = 16.dp))
+  PreferencesPagerSelector(tabRowState, Modifier.padding(horizontal = 16.dp))
   Spacer(Modifier.height(16.dp))
   AnimatedContent(
-    targetState = selectedTabIndex,
+    targetState = tabRowState.selectedTabIndex,
     transitionSpec = {
       val spec = tween<IntOffset>(durationMillis = 600, easing = FastOutSlowInEasing)
       if (initialState == 0) {
@@ -300,18 +298,13 @@ private fun ColumnScope.PreferencesSheetContent(
 }
 
 @Composable
-private fun PreferencesPagerSelector(
-  selectedTabIndex: Int,
-  selectTabIndex: (Int) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun PreferencesPagerSelector(tabRowState: HedvigTabRowState, modifier: Modifier = Modifier) {
   HedvigTabRowMaxSixTabs(
     tabTitles = listOf(
       stringResource(R.string.market_picker_modal_title),
       stringResource(R.string.language_picker_modal_title),
     ),
-    selectedTabIndex = selectedTabIndex,
-    onTabChosen = { selectTabIndex(it) },
+    tabRowState = tabRowState,
     modifier = modifier,
     tabStyle = TabDefaults.TabStyle.Filled,
   )
