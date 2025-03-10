@@ -65,16 +65,15 @@ private enum class PledgeAcceptingSliderPosition {
 }
 
 private interface PledgeAcceptingSliderState {
-  val anchors: DraggableAnchors<PledgeAcceptingSliderPosition>
   val xOffset: Float
-  val draggableState: DraggableState
   val isInAcceptedPosition: Boolean
+
+  fun Modifier.thumbDraggableModifier(): Modifier
 
   fun updateAnchors(layoutSize: IntSize)
 
-  fun onDragStopped(velocity: Float)
-
-  fun resetState()
+  @Composable
+  fun ReportAcceptedEffect(onAccepted: () -> Unit)
 }
 
 private class PledgeAcceptingSliderStateImpl(
@@ -82,9 +81,9 @@ private class PledgeAcceptingSliderStateImpl(
   val circleDiameterPx: Float,
 ) : PledgeAcceptingSliderState {
   private var onDragStoppedJob: Job? = null
-  override var anchors by mutableStateOf(DraggableAnchors<PledgeAcceptingSliderPosition> {})
+  private var anchors by mutableStateOf(DraggableAnchors<PledgeAcceptingSliderPosition> {})
   override var xOffset: Float by mutableFloatStateOf(0f)
-  override val draggableState = DraggableState { delta ->
+  private val draggableState = DraggableState { delta ->
     if (isInAcceptedPosition) return@DraggableState
     cancelOnDragStoppedJob()
     xOffset = (xOffset + delta).coerceIn(anchors.minPosition(), anchors.maxPosition())
@@ -100,7 +99,33 @@ private class PledgeAcceptingSliderStateImpl(
     }
   }
 
-  override fun onDragStopped(velocity: Float) {
+  override fun Modifier.thumbDraggableModifier(): Modifier {
+    return this.draggable(
+      state = draggableState,
+      orientation = Horizontal,
+      startDragImmediately = true,
+      onDragStopped = { velocity ->
+        onDragStopped(velocity)
+      },
+    )
+  }
+
+  @Composable
+  override fun ReportAcceptedEffect(onAccepted: () -> Unit) {
+    val updatedOnAccepted by rememberUpdatedState(onAccepted)
+    LaunchedEffect(this) {
+      snapshotFlow { isInAcceptedPosition }.collect { isInAcceptedPosition ->
+        if (isInAcceptedPosition) {
+          delay(1.seconds)
+          updatedOnAccepted()
+          delay(1.seconds)
+          resetState()
+        }
+      }
+    }
+  }
+
+  private fun onDragStopped(velocity: Float) {
     if (isInAcceptedPosition) return
     val sliderAlmostAtEnd = xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted) - circleDiameterPx
     val closestAnchor = anchors.positionOf(
@@ -128,7 +153,7 @@ private class PledgeAcceptingSliderStateImpl(
     }
   }
 
-  override fun resetState() {
+  private fun resetState() {
     cancelOnDragStoppedJob()
     xOffset = 0f
   }
@@ -144,21 +169,11 @@ private fun rememberPledgeAcceptingSliderState(
   circleDiameterPx: Float,
   onAccepted: () -> Unit,
 ): PledgeAcceptingSliderState {
-  val updatedOnAccepted by rememberUpdatedState(onAccepted)
-  val corouineScope = rememberCoroutineScope()
-  val state = remember(corouineScope, circleDiameterPx) {
-    PledgeAcceptingSliderStateImpl(corouineScope, circleDiameterPx)
+  val coroutineScope = rememberCoroutineScope()
+  val state = remember(coroutineScope, circleDiameterPx) {
+    PledgeAcceptingSliderStateImpl(coroutineScope, circleDiameterPx)
   }
-  LaunchedEffect(state) {
-    snapshotFlow { state.isInAcceptedPosition }.collect { isInAcceptedPosition ->
-      if (isInAcceptedPosition) {
-        delay(1.seconds)
-        updatedOnAccepted()
-        delay(1.seconds)
-        state.resetState()
-      }
-    }
-  }
+  state.ReportAcceptedEffect(onAccepted)
   return state
 }
 
@@ -195,14 +210,7 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
     Box(
       Modifier
         .offset { IntOffset(state.xOffset.roundToInt(), 0) }
-        .draggable(
-          state = state.draggableState,
-          orientation = Horizontal,
-          startDragImmediately = true,
-          onDragStopped = { velocity ->
-            state.onDragStopped(velocity)
-          },
-        )
+        .then(with(state) { Modifier.thumbDraggableModifier() })
         .size(circleDiameter)
         .padding(4.dp)
         .background({ boxColor }, CircleShape),
