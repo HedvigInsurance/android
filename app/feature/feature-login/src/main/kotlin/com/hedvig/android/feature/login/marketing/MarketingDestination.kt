@@ -43,7 +43,7 @@ import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
-import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
+import com.hedvig.android.design.system.hedvig.HedvigTabRow
 import com.hedvig.android.design.system.hedvig.HedvigTabRowState
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -299,7 +299,7 @@ private fun ColumnScope.PreferencesSheetContent(
 
 @Composable
 private fun PreferencesPagerSelector(tabRowState: HedvigTabRowState, modifier: Modifier = Modifier) {
-  HedvigTabRowMaxSixTabs(
+  HedvigTabRow(
     tabTitles = listOf(
       stringResource(R.string.market_picker_modal_title),
       stringResource(R.string.language_picker_modal_title),
