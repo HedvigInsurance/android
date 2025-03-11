@@ -165,11 +165,15 @@ internal fun MovingFlowState.Companion.fromFragments(
   moveIntentQuotesFragment: MoveIntentQuotesFragment?,
   moveFromAddressId: String,
 ): MovingFlowState {
+  val suggestedCoInsured = with(moveIntentFragment) {
+    currentHomeAddresses.firstOrNull { it.id == moveFromAddressId }?.suggestedNumberCoInsured
+      ?: currentHomeAddresses.first().suggestedNumberCoInsured
+  }
   val houseState = with(moveIntentFragment) {
     MovingFlowState.PropertyState.HouseState(
       numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
         maxNumberCoInsured = maxHouseNumberCoInsured,
-        suggestedNumberCoInsured = suggestedNumberCoInsured,
+        suggestedNumberCoInsured = suggestedCoInsured,
       ),
       squareMetersState = MovingFlowState.SquareMetersState(
         maxSquareMeters = maxHouseSquareMeters,
@@ -189,7 +193,7 @@ internal fun MovingFlowState.Companion.fromFragments(
       MovingFlowState.PropertyState.ApartmentState(
         numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
           maxNumberCoInsured = maxApartmentNumberCoInsured,
-          suggestedNumberCoInsured = suggestedNumberCoInsured,
+          suggestedNumberCoInsured = suggestedCoInsured,
         ),
         squareMetersState = MovingFlowState.SquareMetersState(
           maxSquareMeters = maxApartmentSquareMeters,

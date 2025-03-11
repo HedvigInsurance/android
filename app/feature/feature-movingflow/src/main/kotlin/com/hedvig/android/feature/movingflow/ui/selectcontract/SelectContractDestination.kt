@@ -166,12 +166,10 @@ private fun List<MoveIntentFragment.CurrentHomeAddress>.toListOfDataWithLabel(
     RadioOptionGroupDataWithLabel(
       RadioOptionData(
         id = i.id,
-        // optionText = i.displayName, //todo: remove the mock when schema is in place!
-        optionText = "Mock home insurance",
+        optionText = i.displayTitle,
         chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
       ),
-      labelText = "Mockmockvägen 273",
-      // labelText = i.contractExposure, //todo: remove the mock when schema is in place!
+      labelText = i.displaySubtitle ?: " ",
     )
   }
 }
@@ -208,12 +206,21 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
   maxApartmentSquareMeters = null,
   isApartmentAvailableforStudent = null,
   extraBuildingTypes = listOf(),
-  suggestedNumberCoInsured = 2,
   currentHomeAddresses = listOf(
-    MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress
-      ("id1", 30),
-    MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress
-      ("id2", 30),
+    MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
+      id = "id1",
+      oldAddressCoverageDurationDays = 30,
+      suggestedNumberCoInsured = 2,
+      displaySubtitle = "Subtitle",
+      displayTitle = "Title",
+    ),
+    MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
+      id = "id2",
+      oldAddressCoverageDurationDays = 30,
+      suggestedNumberCoInsured = 2,
+      displaySubtitle = "Subtitle",
+      displayTitle = "Title",
+    ),
   ),
 )
 
