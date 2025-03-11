@@ -21,7 +21,14 @@ import octopus.fragment.FlowClaimSingleItemStepFragment
 fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
-      ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
+      ClaimFlowDestination.AudioRecording(
+        flowId = flowId,
+        questions = questions,
+        audioContent = audioContent?.toAudioContent(),
+        freeTextAvailable = freeTextAvailable,
+        freeText = freeText,
+        freeTextQuestions = freeTextQuestions,
+      )
     }
 
     is ClaimFlowStep.ClaimDateOfOccurrenceStep -> {
@@ -89,6 +96,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
         submittedContent = signedAudioUrl?.let {
           SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
+        freeText = freeText,
       )
     }
 

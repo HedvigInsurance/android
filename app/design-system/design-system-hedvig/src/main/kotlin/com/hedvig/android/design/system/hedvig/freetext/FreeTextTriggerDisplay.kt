@@ -61,6 +61,7 @@ fun FreeTextDisplay(
   style: Style = defaultStyle,
   hasError: Boolean = false,
   supportingText: String? = null,
+  showCount: Boolean = true,
 ) {
   val textValue = freeTextValue ?: ""
 
@@ -108,21 +109,23 @@ fun FreeTextDisplay(
           }
         }
         Spacer(Modifier.height(8.dp))
-        Row(
-          horizontalArrangement = Arrangement.End,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .fillMaxWidth(),
-        ) {
-          AnimatedVisibility(textValue.length >= maxLength) {
-            Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
+        if (showCount) {
+          Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .fillMaxWidth(),
+          ) {
+            AnimatedVisibility(textValue.length >= maxLength) {
+              Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
+            }
+            Spacer(Modifier.width(2.dp))
+            HedvigText(
+              text = "${textValue.length}/$maxLength",
+              style = FreeTextDisplayDefaults.countLabelStyle.value,
+              color = displayColors.counterColor,
+            )
           }
-          Spacer(Modifier.width(2.dp))
-          HedvigText(
-            text = "${textValue.length}/$maxLength",
-            style = FreeTextDisplayDefaults.countLabelStyle.value,
-            color = displayColors.counterColor,
-          )
         }
       }
     }
