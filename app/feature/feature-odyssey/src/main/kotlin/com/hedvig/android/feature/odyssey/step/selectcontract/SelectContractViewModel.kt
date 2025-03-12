@@ -7,36 +7,30 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.ErrorMessage
-import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractUiState.Loading
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractUiState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import octopus.AllContractsQuery
 
 internal class SelectContractViewModel(
   selectContract: ClaimFlowDestination.SelectContract,
   claimFlowRepository: ClaimFlowRepository,
-  apolloClient: ApolloClient,
 ) : MoleculeViewModel<SelectContractEvent, SelectContractUiState>(
     initialState = Loading,
     presenter = SelectContractPresenter(
       selectContract = selectContract,
       claimFlowRepository = claimFlowRepository,
-      apolloClient = apolloClient,
     ),
   )
 
 private class SelectContractPresenter(
   private val selectContract: ClaimFlowDestination.SelectContract,
   private val claimFlowRepository: ClaimFlowRepository,
-  private val apolloClient: ApolloClient,
 ) : MoleculePresenter<SelectContractEvent, SelectContractUiState> {
   @Composable
   override fun MoleculePresenterScope<SelectContractEvent>.present(
@@ -50,23 +44,24 @@ private class SelectContractPresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = Loading
-      val result = apolloClient.query(AllContractsQuery())
-        .safeExecute(::ErrorMessage).getOrNull()
-      val allShortInfo = result.toAllContractsShortInfo()
       val initialOptions = selectContract.options.map { option ->
         ContractOptionForSelection(
           id = option.id,
-          displayName = option.displayName,
-          description = allShortInfo.firstOrNull { it.id == option.id }?.exposureName
-            ?: "-",
+          displayName = option.displayTitle,
+          description = option.displaySubtitle,
         )
       }
+      val preSelected = initialOptions.firstOrNull {
+        selectContract.options.firstOrNull { it.isPreselected }?.id == it.id
+      }
+      logcat { "preselected: $preSelected" }
+
       currentState = if (initialOptions.isEmpty()) {
         SelectContractUiState.Error
       } else {
         Success(
           contractOptions = initialOptions,
-          selectedContract = initialOptions[0],
+          selectedContract = preSelected ?: initialOptions[0],
         )
       }
     }
@@ -113,28 +108,6 @@ private class SelectContractPresenter(
   }
 }
 
-private fun AllContractsQuery.Data?.toAllContractsShortInfo(): List<ShortContractInfo> {
-  val activeContracts = this?.currentMember?.activeContracts?.map {
-    ShortContractInfo(
-      id = it.id,
-      exposureName = it.exposureDisplayName,
-    )
-  } ?: listOf()
-  val pendingContracts = this?.currentMember?.pendingContracts?.map {
-    ShortContractInfo(
-      id = it.id,
-      exposureName = it.exposureDisplayName,
-    )
-  } ?: listOf()
-  val terminatedContracts = this?.currentMember?.terminatedContracts?.map {
-    ShortContractInfo(
-      id = it.id,
-      exposureName = it.exposureDisplayName,
-    )
-  } ?: listOf()
-  return activeContracts + pendingContracts + terminatedContracts
-}
-
 internal sealed interface SelectContractUiState {
   data object Loading : SelectContractUiState
 
@@ -155,11 +128,6 @@ internal data class ContractOptionForSelection(
   val id: String,
   val displayName: String,
   val description: String,
-)
-
-private data class ShortContractInfo(
-  val id: String,
-  val exposureName: String,
 )
 
 internal sealed interface SelectContractEvent {

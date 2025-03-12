@@ -5,6 +5,7 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.audio.player.data.SignedAudioUrl
 import octopus.fragment.AudioContentFragment
@@ -112,7 +113,10 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
     is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
-      options = options.map { it.toLocalOptions() },
+      options = options.map {
+        logcat { "preselected selectedOptionId: ${this.selectedOptionId}" }
+        it.toLocalOptions(this.selectedOptionId)
+      },
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
@@ -155,8 +159,15 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   }
 }
 
-private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(): LocalContractContractOption {
-  return LocalContractContractOption(id, displayName)
+private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(
+  preselectedId: String?,
+): LocalContractContractOption {
+  return LocalContractContractOption(
+    id = id,
+    displayTitle = displayTitle,
+    displaySubtitle = displaySubtitle ?: " ",
+    isPreselected = preselectedId?.let { it == this.id } == true,
+  )
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {

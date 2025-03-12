@@ -158,9 +158,11 @@ fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
 
 fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
   id
+  selectedOptionId
   options {
     id
-    displayName
+    displayTitle
+    displaySubtitle
   }
 }
 
