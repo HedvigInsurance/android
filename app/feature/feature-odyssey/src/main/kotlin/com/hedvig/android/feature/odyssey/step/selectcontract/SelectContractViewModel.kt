@@ -43,6 +43,7 @@ private class SelectContractPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      val oldState = lastState
       currentState = Loading
       val initialOptions = selectContract.options.map { option ->
         ContractOptionForSelection(
@@ -51,11 +52,11 @@ private class SelectContractPresenter(
           description = option.displaySubtitle,
         )
       }
+      val preSelectedId = if (oldState is Success) oldState.selectedContract.id else selectContract.selectedOptionId
       val preSelected = initialOptions.firstOrNull {
-        selectContract.selectedOptionId == it.id
+        preSelectedId == it.id
       }
       logcat { "preselected: $preSelected" }
-
       currentState = if (initialOptions.isEmpty()) {
         SelectContractUiState.Error
       } else {
