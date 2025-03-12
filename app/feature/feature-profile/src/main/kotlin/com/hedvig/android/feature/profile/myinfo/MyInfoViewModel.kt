@@ -119,11 +119,10 @@ internal class MyInfoPresenter(
         },
       )
       isSubmittingNewValues = true
-      try {
-        val profileRepository = profileRepositoryProvider.provide()
-        val backendMemberResponse =
-          profileRepository.updatePhoneAndEmail(validMyInfoMember, originalPhoneNumber, originalEmail)
-        backendMemberResponse.fold(
+      profileRepositoryProvider
+        .provide()
+        .updatePhoneAndEmail(validMyInfoMember, originalPhoneNumber, originalEmail)
+        .fold(
           { hasError = true },
           {
             Snapshot.withMutableSnapshot {
@@ -133,9 +132,7 @@ internal class MyInfoPresenter(
             }
           },
         )
-      } finally {
-        isSubmittingNewValues = false
-      }
+      isSubmittingNewValues = false
     }
     val myInfoMemberValue = myInfoMember
     return when {
