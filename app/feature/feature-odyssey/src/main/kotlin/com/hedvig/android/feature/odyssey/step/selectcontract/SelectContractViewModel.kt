@@ -52,7 +52,7 @@ private class SelectContractPresenter(
         )
       }
       val preSelected = initialOptions.firstOrNull {
-        selectContract.options.firstOrNull { it.isPreselected }?.id == it.id
+        selectContract.selectedOptionId == it.id
       }
       logcat { "preselected: $preSelected" }
 

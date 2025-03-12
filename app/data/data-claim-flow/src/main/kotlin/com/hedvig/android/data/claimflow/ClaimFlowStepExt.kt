@@ -115,8 +115,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
     is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
       options = options.map {
         logcat { "preselected selectedOptionId: ${this.selectedOptionId}" }
-        it.toLocalOptions(this.selectedOptionId)
+        it.toLocalOptions()
       },
+      selectedOptionId = selectedOptionId
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
@@ -159,14 +160,11 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   }
 }
 
-private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(
-  preselectedId: String?,
-): LocalContractContractOption {
+private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(): LocalContractContractOption {
   return LocalContractContractOption(
     id = id,
     displayTitle = displayTitle,
     displaySubtitle = displaySubtitle ?: " ",
-    isPreselected = preselectedId?.let { it == this.id } == true,
   )
 }
 

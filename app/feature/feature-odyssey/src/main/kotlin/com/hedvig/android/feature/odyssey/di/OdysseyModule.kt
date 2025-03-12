@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.odyssey.di
 
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.data.claimflow.AudioContent
@@ -72,7 +71,7 @@ val odysseyModule = module {
     SingleItemPayoutViewModel(singleItemPayout, get<ClaimFlowRepository>())
   }
   viewModel<SelectContractViewModel> { (selectContract: ClaimFlowDestination.SelectContract) ->
-    SelectContractViewModel(selectContract, get<ClaimFlowRepository>(), get<ApolloClient>())
+    SelectContractViewModel(selectContract, get<ClaimFlowRepository>())
   }
   viewModel<ConfirmEmergencyViewModel> { (confirmEmergency: ClaimFlowDestination.ConfirmEmergency) ->
     ConfirmEmergencyViewModel(confirmEmergency, get<ClaimFlowRepository>())
