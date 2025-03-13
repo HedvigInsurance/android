@@ -12,7 +12,6 @@ import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractUiState.Loading
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractUiState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -56,7 +55,6 @@ private class SelectContractPresenter(
       val preSelected = initialOptions.firstOrNull {
         preSelectedId == it.id
       }
-      logcat { "preselected: $preSelected" }
       currentState = if (initialOptions.isEmpty()) {
         SelectContractUiState.Error
       } else {
