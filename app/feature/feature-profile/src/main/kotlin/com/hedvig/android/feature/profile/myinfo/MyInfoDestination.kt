@@ -135,9 +135,6 @@ private fun ColumnScope.SuccessState(
     inputTransformation = uiState.phoneNumberInputTransformation,
     keyboardActionHandler = null,
   )
-//  AnimatedVisibility(visible = phoneErrorText != null) {
-//    Spacer(Modifier.height(4.dp))
-//  }
   Spacer(Modifier.height(4.dp))
   MyInfoTextField(
     textFieldState = uiState.emailState,

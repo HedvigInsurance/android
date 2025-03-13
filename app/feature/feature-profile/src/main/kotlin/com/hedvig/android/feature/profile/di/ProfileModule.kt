@@ -101,9 +101,6 @@ val profileModule = module {
     )
   }
 
-//  viewModel<MyInfoViewModel> {
-//    MyInfoViewModel(get<ProfileRepositoryProvider>())
-//  }
   viewModel<ContactInfoViewModel> {
     ContactInfoViewModel(get<ProfileRepositoryProvider>())
   }
