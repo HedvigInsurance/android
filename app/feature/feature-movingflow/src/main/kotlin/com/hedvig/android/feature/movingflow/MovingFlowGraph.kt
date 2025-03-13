@@ -37,10 +37,10 @@ import org.koin.core.parameter.parametersOf
 @Serializable
 data object MovingFlowGraphDestination : Destination
 
-internal sealed interface MovingFlowDestinations {
-  @Serializable
-  data object SelectContract : MovingFlowDestinations, Destination
+@Serializable
+data object SelectContractForMoving : Destination
 
+internal sealed interface MovingFlowDestinations {
   @Serializable
   data class HousingType(val moveIntentId: String) : MovingFlowDestinations, Destination
 
@@ -81,21 +81,25 @@ internal sealed interface MovingFlowDestinations {
 }
 
 fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
-  navgraph<MovingFlowGraphDestination>(
-    startDestination = MovingFlowDestinations.SelectContract::class,
-  ) {
-    navdestination<MovingFlowDestinations.SelectContract> {
-      logcat { "Mariia: navigated to MovingFlowDestinations.SelectContract" }
-      SelectContractDestination(
-        viewModel = koinViewModel<SelectContractViewModel>(),
-        navigateUp = navController::navigateUp,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
-        onNavigateToNextStep = { moveIntentId ->
-          navController.navigate(MovingFlowDestinations.HousingType(moveIntentId))
-        },
-      )
-    }
+  navdestination<SelectContractForMoving> {
+    logcat { "Mariia: navigated to MovingFlowDestinations.SelectContract" }
+    SelectContractDestination(
+      viewModel = koinViewModel<SelectContractViewModel>(),
+      navigateUp = navController::navigateUp,
+      exitFlow = { navController.typedPopBackStack<SelectContractForMoving>(inclusive = true) },
+      onNavigateToNextStep = { moveIntentId ->
+        navController.navigate(MovingFlowDestinations.HousingType(moveIntentId)) {
+          typedPopUpTo<SelectContractForMoving> {
+            inclusive = true
+          }
+        }
+      },
+    )
+  }
 
+  navgraph<MovingFlowGraphDestination>(
+    startDestination = MovingFlowDestinations.HousingType::class,
+  ) {
     navdestination<MovingFlowDestinations.HousingType> {
       val moveIntentId = it.toRoute<MovingFlowDestinations.HousingType>().moveIntentId
       HousingTypeDestination(
