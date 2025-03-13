@@ -1,10 +1,10 @@
-mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
-  memberUpdatePhoneNumber(input: $input) {
+mutation MemberUpdatePhoneNumber($input: String!) {
+  memberUpdatePhoneNumber(input: {phoneNumber: $input}) {
     userError {
       message
     }
     member {
-      ...MemberDataFragment
+      ...ContactInformation
     }
   }
 }

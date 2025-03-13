@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.profile.myinfo
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,14 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -27,8 +24,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.FadeAnimatedContent
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -40,25 +39,23 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
+import com.hedvig.android.feature.profile.data.ContactInformation.Email
+import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import hedvig.resources.R
 
 @Composable
-internal fun MyInfoDestination(viewModel: MyInfoViewModel, navigateUp: () -> Unit) {
+internal fun MyInfoDestination(viewModel: ContactInfoViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   MyInfoScreen(
     uiState = uiState,
-    emailChanged = {
-      viewModel.emit(MyInfoEvent.EmailChanged(it))
-    },
-    phoneNumberChanged = {
-      viewModel.emit(MyInfoEvent.PhoneNumberChanged(it))
-    },
     updateEmailAndPhoneNumber = {
-      viewModel.emit(MyInfoEvent.UpdateEmailAndPhoneNumber)
+      viewModel.emit(ContactInfoEvent.SubmitData)
     },
     reload = {
-      viewModel.emit(MyInfoEvent.Reload)
+      viewModel.emit(ContactInfoEvent.RetryLoadData)
     },
     navigateUp = navigateUp,
   )
@@ -66,12 +63,10 @@ internal fun MyInfoDestination(viewModel: MyInfoViewModel, navigateUp: () -> Uni
 
 @Composable
 private fun MyInfoScreen(
-  uiState: MyInfoUiState,
+  uiState: ContactInfoUiState,
   updateEmailAndPhoneNumber: () -> Unit,
-  navigateUp: () -> Unit,
-  emailChanged: (String) -> Unit,
-  phoneNumberChanged: (String) -> Unit,
   reload: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   val focusManager = LocalFocusManager.current
   Box(
@@ -88,25 +83,30 @@ private fun MyInfoScreen(
         modifier = Modifier.weight(1f),
       ) { animatedUiState ->
         Column(
-          Modifier.fillMaxSize()
+          Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState()),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           when (animatedUiState) {
-            MyInfoUiState.Loading -> {
+            ContactInfoUiState.Loading -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 HedvigFullScreenCenterAlignedProgressDebounced()
               }
             }
 
-            MyInfoUiState.Error -> {
+            ContactInfoUiState.Error -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 HedvigErrorSection(onButtonClick = reload)
               }
             }
 
-            is Success -> {
-              SuccessState(animatedUiState, phoneNumberChanged, emailChanged, updateEmailAndPhoneNumber, focusManager)
+            is ContactInfoUiState.Content -> {
+              SuccessState(
+                uiState = animatedUiState,
+                updateEmailAndPhoneNumber = updateEmailAndPhoneNumber,
+                focusManager = focusManager,
+              )
             }
           }
         }
@@ -117,77 +117,46 @@ private fun MyInfoScreen(
 
 @Composable
 private fun ColumnScope.SuccessState(
-  uiState: Success,
-  phoneNumberChanged: (String) -> Unit,
-  emailChanged: (String) -> Unit,
+  uiState: ContactInfoUiState.Content,
   updateEmailAndPhoneNumber: () -> Unit,
   focusManager: FocusManager,
 ) {
-  var emailInput by rememberSaveable { mutableStateOf(uiState.member.email) }
-  var phoneInput by rememberSaveable { mutableStateOf(uiState.member.phoneNumber ?: "") }
   Spacer(Modifier.height(16.dp))
-  val phoneErrorText = uiState.member.phoneNumberErrorMessage?.let { stringResource(id = it) }
-  HedvigTextField(
-    text = phoneInput,
-    onValueChange = onValueChange@{ newInput ->
-      if (newInput.any { it.isWhitespace() }) return@onValueChange
-      phoneNumberChanged(newInput)
-      phoneInput = newInput
-    },
+  MyInfoTextField(
+    textFieldState = uiState.phoneNumberState,
     labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
-    errorState = if (phoneErrorText == null) {
-      HedvigTextFieldDefaults.ErrorState.NoError
-    } else {
-      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(phoneErrorText)
+    errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
+      uiState.phoneNumberHasError
     },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+    inputTransformation = uiState.phoneNumberInputTransformation,
+    keyboardActionHandler = null,
   )
-  AnimatedVisibility(visible = phoneErrorText != null) {
-    Spacer(Modifier.height(4.dp))
-  }
+//  AnimatedVisibility(visible = phoneErrorText != null) {
+//    Spacer(Modifier.height(4.dp))
+//  }
   Spacer(Modifier.height(4.dp))
-  val emailErrorText = uiState.member.emailErrorMessage?.let { stringResource(id = it) }
-  HedvigTextField(
-    text = emailInput,
-    onValueChange = onValueChange@{ newInput ->
-      if (newInput.any { it.isWhitespace() }) return@onValueChange
-      emailChanged(newInput)
-      emailInput = newInput
-    },
+  MyInfoTextField(
+    textFieldState = uiState.emailState,
     labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
-    errorState = if (emailErrorText == null) {
-      HedvigTextFieldDefaults.ErrorState.NoError
-    } else {
-      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(emailErrorText)
+    errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
+      uiState.emailHasError
     },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Email,
       imeAction = ImeAction.Done,
     ),
-    keyboardActions = KeyboardActions(
-      onDone = {
-        updateEmailAndPhoneNumber()
-        focusManager.clearFocus()
-      },
-    ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+    inputTransformation = uiState.emailInputTransformation,
+    keyboardActionHandler = KeyboardActionHandler {
+      updateEmailAndPhoneNumber()
+      focusManager.clearFocus()
+    },
   )
   Spacer(Modifier.height(16.dp))
-  AnimatedVisibility(
-    visible = uiState.canSubmit || uiState.isSubmitting,
-    enter = fadeIn(),
-    exit = fadeOut(),
-  ) {
+  if (uiState.canSubmit || uiState.submittingUpdatedInfo) {
     HedvigButton(
       text = stringResource(R.string.general_save_button),
       enabled = uiState.canSubmit,
@@ -195,35 +164,60 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
         updateEmailAndPhoneNumber()
       },
-      isLoading = uiState.isSubmitting,
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
+      isLoading = uiState.submittingUpdatedInfo,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxSize(),
     )
     Spacer(Modifier.height(16.dp))
   }
 }
 
+@Composable
+private fun MyInfoTextField(
+  textFieldState: TextFieldState,
+  labelText: String,
+  errorText: String?,
+  keyboardOptions: KeyboardOptions,
+  inputTransformation: InputTransformation,
+  keyboardActionHandler: KeyboardActionHandler?,
+) {
+  HedvigTextField(
+    state = textFieldState,
+    labelText = labelText,
+    errorState = if (errorText == null) {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    } else {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+    },
+    keyboardOptions = keyboardOptions,
+    inputTransformation = inputTransformation,
+    keyboardActions = keyboardActionHandler,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  )
+}
+
 @HedvigPreview
 @Composable
-private fun PreviewMyInfoScreen() {
+private fun PreviewMyInfoScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withErrors: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MyInfoScreen(
-        // uiState = Loading,
-        uiState = Success(
-          member = MyInfoMember(
-            "email@email.com",
-            null,
-            "072102103",
-            null,
-          ),
-          isSubmitting = false,
-          canSubmit = true,
+        uiState = ContactInfoUiState.Content(
+          rememberTextFieldState(),
+          rememberTextFieldState(),
+          PhoneNumber("072102103".takeIf { !withErrors } ?: ""),
+          Email("email@email.com".takeIf { !withErrors } ?: ""),
+          false,
         ),
         updateEmailAndPhoneNumber = {},
-        navigateUp = {},
-        emailChanged = {},
-        phoneNumberChanged = {},
         reload = {},
+        navigateUp = {},
       )
     }
   }

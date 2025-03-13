@@ -7,10 +7,10 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
-import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
@@ -84,7 +84,7 @@ fun NavGraphBuilder.profileGraph(
     navdestination<ProfileDestinations.MyInfo>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
     ) {
-      val viewModel: MyInfoViewModel = koinViewModel()
+      val viewModel: ContactInfoViewModel = koinViewModel()
       MyInfoDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,

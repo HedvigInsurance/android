@@ -7,18 +7,18 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
+import com.hedvig.android.feature.profile.data.ContactInfoRepositoryDemo
+import com.hedvig.android.feature.profile.data.ContactInfoRepositoryImpl
 import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
 import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCaseImpl
-import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
-import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
 import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCaseImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
-import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.feature.profile.tab.GetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
@@ -63,20 +63,29 @@ val profileModule = module {
       apolloClient = get<ApolloClient>(),
     )
   }
-  single<ProfileRepositoryImpl> {
-    ProfileRepositoryImpl(
+  single<ContactInfoRepositoryImpl> {
+    ContactInfoRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       networkCacheManager = get<NetworkCacheManager>(),
     )
   }
-  single<ProfileRepositoryDemo> {
-    ProfileRepositoryDemo()
+  single<ContactInfoRepositoryDemo> {
+    ContactInfoRepositoryDemo()
+  }
+  single<ContactInfoRepositoryImpl> {
+    ContactInfoRepositoryImpl(
+      apolloClient = get<ApolloClient>(),
+      networkCacheManager = get<NetworkCacheManager>(),
+    )
+  }
+  single<ContactInfoRepositoryDemo> {
+    ContactInfoRepositoryDemo()
   }
   single<ProfileRepositoryProvider> {
     ProfileRepositoryProvider(
       demoManager = get<DemoManager>(),
-      prodImpl = get<ProfileRepositoryImpl>(),
-      demoImpl = get<ProfileRepositoryDemo>(),
+      prodImpl = get<ContactInfoRepositoryImpl>(),
+      demoImpl = get<ContactInfoRepositoryDemo>(),
     )
   }
 
@@ -92,8 +101,11 @@ val profileModule = module {
     )
   }
 
-  viewModel<MyInfoViewModel> {
-    MyInfoViewModel(get<ProfileRepositoryProvider>())
+//  viewModel<MyInfoViewModel> {
+//    MyInfoViewModel(get<ProfileRepositoryProvider>())
+//  }
+  viewModel<ContactInfoViewModel> {
+    ContactInfoViewModel(get<ProfileRepositoryProvider>())
   }
   viewModel<AboutAppViewModel> { AboutAppViewModel(get<ApolloClient>()) }
   single<CheckTravelCertificateDestinationAvailabilityUseCase> {
