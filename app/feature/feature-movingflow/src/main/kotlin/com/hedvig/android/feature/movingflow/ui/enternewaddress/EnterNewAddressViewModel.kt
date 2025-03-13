@@ -424,7 +424,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
     ),
     numberCoInsured = ConstrainedNumberInput(
       // property state should be set before (HousingType step)
-      initialValue = propertyState?.numberCoInsuredState?.selectedNumberCoInsured!!,
+      initialValue = propertyState!!.numberCoInsuredState.selectedNumberCoInsured,
       validRange = propertyState.numberCoInsuredState.allowedNumberCoInsuredRange,
     ),
     propertyType = when (propertyState) {

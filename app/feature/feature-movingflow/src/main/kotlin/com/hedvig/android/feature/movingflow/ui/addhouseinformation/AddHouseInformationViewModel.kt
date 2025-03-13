@@ -226,7 +226,7 @@ private fun MovingFlowState.toInputForSubmission(validContent: ValidAddressInput
       moveFromAddressId = moveFromAddressId,
       movingDate = this.movingDateState.selectedMovingDate!!,
       // property state should be set before
-      numberCoInsured = this.propertyState?.numberCoInsuredState?.selectedNumberCoInsured!!,
+      numberCoInsured = this.propertyState!!.numberCoInsuredState.selectedNumberCoInsured,
       squareMeters = this.propertyState.squareMetersState.selectedSquareMeters!!,
       apartment = com.apollographql.apollo.api.Optional.absent(),
       house = com.apollographql.apollo.api.Optional.present(

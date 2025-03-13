@@ -109,24 +109,23 @@ internal class SelectContractPresenter(
         moveIntent
       }.fold(
         ifLeft = { error ->
-          Snapshot.withMutableSnapshot {
-            currentState = error
-          }
+
+          currentState = error
         },
         ifRight = { intent ->
-          Snapshot.withMutableSnapshot {
-            val currentAddressesSize = intent.currentHomeAddresses.size
-            when {
-              currentAddressesSize > 1 -> {
-                currentState = Content(
-                  intent = intent,
-                  selectedAddress = null,
-                  navigateToHousingType = false,
-                  buttonLoading = false,
-                )
-              }
+          val currentAddressesSize = intent.currentHomeAddresses.size
+          when {
+            currentAddressesSize > 1 -> {
+              currentState = Content(
+                intent = intent,
+                selectedAddress = null,
+                navigateToHousingType = false,
+                buttonLoading = false,
+              )
+            }
 
-              currentAddressesSize == 1 -> {
+            currentAddressesSize == 1 -> {
+              Snapshot.withMutableSnapshot {
                 submittingAddressId = intent.currentHomeAddresses[0].id
                 currentState = Redirecting(
                   intent = intent,
@@ -134,12 +133,12 @@ internal class SelectContractPresenter(
                   navigateToHousingType = false,
                 )
               }
+            }
 
-              else -> {
-                currentState = SelectContractState.Error.GenericError(
-                  ErrorMessage("empty current addresses list"),
-                )
-              }
+            else -> {
+              currentState = SelectContractState.Error.GenericError(
+                ErrorMessage("empty current addresses list"),
+              )
             }
           }
         },
