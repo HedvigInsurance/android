@@ -374,7 +374,7 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       initialValue = movingDateState.selectedMovingDate,
       validator = { movingDate ->
         either {
-          ensureNotNull(movingDate) {
+          ensure(movingDate != null) {
             InvalidMovingDate.MustSelectDate
           }
           ensure(movingDate in movingDateState.allowedMovingDateRange) {
