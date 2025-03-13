@@ -45,14 +45,15 @@ internal fun SelectContractDestination(
   viewModel: SelectContractViewModel,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNextStep: (moveIntentId: String) -> Unit,
+  onNavigateToNextStep: (moveIntentId: String, popUpDestination: Boolean) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {
     val uiStateValue = uiState as? SelectContractState.NotEmpty ?: return@LaunchedEffect
     if (uiStateValue.navigateToHousingType) {
+      val shouldPopUp = uiStateValue.intent.currentHomeAddresses.size < 2
       viewModel.emit(SelectContractEvent.ClearNavigation)
-      onNavigateToNextStep(uiStateValue.intent.id)
+      onNavigateToNextStep(uiStateValue.intent.id, shouldPopUp)
     }
   }
   SelectContractScreen(

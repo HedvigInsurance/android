@@ -85,10 +85,12 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
       viewModel = koinViewModel<SelectContractViewModel>(),
       navigateUp = navController::navigateUp,
       exitFlow = { navController.typedPopBackStack<SelectContractForMoving>(inclusive = true) },
-      onNavigateToNextStep = { moveIntentId ->
+      onNavigateToNextStep = { moveIntentId, shouldPopUp ->
         navController.navigate(MovingFlowDestinations.HousingType(moveIntentId)) {
-          typedPopUpTo<SelectContractForMoving> {
-            inclusive = true
+          if (shouldPopUp) {
+            typedPopUpTo<SelectContractForMoving> {
+              inclusive = true
+            }
           }
         }
       },
@@ -103,7 +105,10 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
       HousingTypeDestination(
         viewModel = koinViewModel<HousingTypeViewModel>(),
         navigateUp = navController::navigateUp,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        exitFlow = {
+          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
+        },
         onNavigateToNextStep = {
           navController.navigate(EnterNewAddress(moveIntentId))
         },
@@ -115,7 +120,10 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
         viewModel = koinViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        exitFlow = {
+          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
+        },
         onNavigateToAddHouseInformation = {
           navController.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
         },
@@ -129,7 +137,10 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
         viewModel = koinViewModel<AddHouseInformationViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        exitFlow = {
+          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
+        },
         onNavigateToChoseCoverageLevelAndDeductible = {
           navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
         },
@@ -141,7 +152,10 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
         viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        exitFlow = {
+          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
+        },
         onNavigateToSummaryScreen = { homeQuoteId ->
           navController.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))
         },
@@ -168,7 +182,10 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
         viewModel = koinViewModel<SummaryViewModel>(),
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
-        exitFlow = { navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true) },
+        exitFlow = {
+          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
+        },
         onNavigateToFinishedScreen = { moveDate ->
           navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
             typedPopUpTo<MovingFlowGraphDestination> {
