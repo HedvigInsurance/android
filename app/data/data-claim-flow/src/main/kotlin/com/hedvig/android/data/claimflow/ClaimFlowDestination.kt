@@ -84,6 +84,7 @@ sealed interface ClaimFlowDestination {
   @Serializable
   data class SelectContract(
     val options: List<LocalContractContractOption>,
+    val selectedOptionId: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<List<LocalContractContractOption>>())
@@ -300,7 +301,8 @@ data class LocationOption(
 @Serializable
 data class LocalContractContractOption(
   val id: String,
-  val displayName: String,
+  val displayTitle: String,
+  val displaySubtitle: String,
 )
 
 @Serializable

@@ -58,6 +58,7 @@ sealed interface ClaimFlowStep {
   data class ClaimSelectContractStep(
     override val flowId: FlowId,
     val options: List<FlowClaimContractSelectStepFragment.Option>,
+    val selectedOptionId: String?,
   ) : ClaimFlowStep
 
   data class ClaimSingleItemStep(

@@ -32,6 +32,7 @@ import com.hedvig.android.feature.odyssey.step.notificationpermission.Notificati
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractDestination
+import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractEvent
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
@@ -243,7 +244,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
-          viewModel.handledNextStepNavigation()
+          viewModel.emit(SelectContractEvent.HandledNextStepNavigation)
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,

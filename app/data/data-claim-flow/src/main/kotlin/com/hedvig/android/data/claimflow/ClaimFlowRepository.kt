@@ -489,6 +489,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
+      selectedOptionId,
     )
 
     is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(
