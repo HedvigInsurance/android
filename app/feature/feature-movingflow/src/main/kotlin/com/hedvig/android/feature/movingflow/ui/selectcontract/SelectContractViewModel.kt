@@ -18,6 +18,7 @@ import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Content
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Redirecting
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -109,7 +110,7 @@ internal class SelectContractPresenter(
         moveIntent
       }.fold(
         ifLeft = { error ->
-
+          logcat { "Mariia: SelectContractViewModel error: $error" }
           currentState = error
         },
         ifRight = { intent ->

@@ -17,6 +17,7 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
 import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
@@ -84,6 +85,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
     startDestination = MovingFlowDestinations.SelectContract::class,
   ) {
     navdestination<MovingFlowDestinations.SelectContract> {
+      logcat { "Mariia: navigated to MovingFlowDestinations.SelectContract" }
       SelectContractDestination(
         viewModel = koinViewModel<SelectContractViewModel>(),
         navigateUp = navController::navigateUp,

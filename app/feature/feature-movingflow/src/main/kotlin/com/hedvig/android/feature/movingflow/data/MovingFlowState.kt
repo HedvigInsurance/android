@@ -165,10 +165,9 @@ internal fun MovingFlowState.Companion.fromFragments(
   moveIntentQuotesFragment: MoveIntentQuotesFragment?,
   moveFromAddressId: String,
 ): MovingFlowState {
-  val suggestedCoInsured = with(moveIntentFragment) {
-    currentHomeAddresses.firstOrNull { it.id == moveFromAddressId }?.suggestedNumberCoInsured
-      ?: currentHomeAddresses.first().suggestedNumberCoInsured
-  }
+  val currentHomeAddress = moveIntentFragment.currentHomeAddresses.firstOrNull { it.id == moveFromAddressId }
+    ?: moveIntentFragment.currentHomeAddresses.first()
+  val suggestedCoInsured = currentHomeAddress.suggestedNumberCoInsured
   val houseState = with(moveIntentFragment) {
     MovingFlowState.PropertyState.HouseState(
       numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
@@ -219,14 +218,13 @@ internal fun MovingFlowState.Companion.fromFragments(
     addressInfo = AddressInfo(null, null),
     movingDateState = MovingFlowState.MovingDateState(
       selectedMovingDate = null,
-      allowedMovingDateRange = moveIntentFragment.minMovingDate..moveIntentFragment.maxMovingDate,
+      allowedMovingDateRange = currentHomeAddress.minMovingDate..currentHomeAddress.maxMovingDate,
     ),
     propertyState = null,
     mapOfPropertyStates = mapOfPropertyStates,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
     lastSelectedHomeQuoteId = null,
-    oldAddressCoverageDurationDays = moveIntentFragment.currentHomeAddresses
-      .first { it.id == moveFromAddressId }.oldAddressCoverageDurationDays,
+    oldAddressCoverageDurationDays = currentHomeAddress.oldAddressCoverageDurationDays,
   )
 }
 

@@ -1,8 +1,6 @@
 # Consider inlining this fragment
 fragment MoveIntentFragment on MoveIntent {
   id
-  minMovingDate
-  maxMovingDate
   maxHouseNumberCoInsured
   maxHouseSquareMeters
   maxApartmentNumberCoInsured
@@ -15,5 +13,7 @@ fragment MoveIntentFragment on MoveIntent {
     displayTitle
     displaySubtitle
     suggestedNumberCoInsured
+    maxMovingDate
+    minMovingDate
   }
 }

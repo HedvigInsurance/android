@@ -198,8 +198,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
   __typename = "",
   id = "id",
-  minMovingDate = LocalDate(2024, 11, 5),
-  maxMovingDate = LocalDate(2024, 12, 31),
   maxHouseNumberCoInsured = null,
   maxHouseSquareMeters = null,
   maxApartmentNumberCoInsured = null,
@@ -213,6 +211,8 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",
       displayTitle = "Title",
+      minMovingDate = LocalDate(2024, 11, 5),
+      maxMovingDate = LocalDate(2024, 12, 31),
     ),
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
       id = "id2",
@@ -220,6 +220,8 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",
       displayTitle = "Title",
+      minMovingDate = LocalDate(2024, 11, 5),
+      maxMovingDate = LocalDate(2024, 12, 31),
     ),
   ),
 )
