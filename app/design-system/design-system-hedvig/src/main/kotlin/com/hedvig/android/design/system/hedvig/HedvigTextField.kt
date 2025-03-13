@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
@@ -94,35 +95,16 @@ fun HedvigTextField(
     label = { HedvigText(text = labelText) },
     suffix = suffix,
     leadingContent = leadingContent,
-    trailingContent = when {
-      trailingContent != null -> {
-        trailingContent
-      }
-      errorState.isError -> {
-        { ErrorTrailingIcon(trailingIconColor) }
-      }
-
-      readOnly -> {
-        { ReadOnlyTrailingIcon(trailingIconColor) }
-      }
-
-      isFocused && text.isNotEmpty() -> {
-        {
-          IsNotEmptyTrailingIcon(
-            trailingIconColor,
-            {
-              if (enabled && !readOnly) {
-                onValueChange("")
-              }
-            },
-          )
-        }
-      }
-
-      else -> {
-        null
-      }
-    },
+    trailingContent = TrailingContent(
+      trailingContent = trailingContent,
+      errorState = errorState,
+      trailingIconColor = trailingIconColor,
+      readOnly = readOnly,
+      isFocused = isFocused,
+      text = text,
+      enabled = enabled,
+      clearText = { onValueChange("") },
+    ),
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
@@ -138,6 +120,47 @@ fun HedvigTextField(
     minLines = minLines,
     interactionSource = interactionSource,
   )
+}
+
+@Composable
+private fun TrailingContent(
+  trailingContent: @Composable() (() -> Unit)?,
+  errorState: ErrorState,
+  trailingIconColor: Color,
+  readOnly: Boolean,
+  isFocused: Boolean,
+  text: String,
+  enabled: Boolean,
+  clearText: () -> Unit,
+) = when {
+  trailingContent != null -> {
+    trailingContent
+  }
+
+  errorState.isError -> {
+    { ErrorTrailingIcon(trailingIconColor) }
+  }
+
+  readOnly -> {
+    { ReadOnlyTrailingIcon(trailingIconColor) }
+  }
+
+  isFocused && text.isNotEmpty() -> {
+    {
+      IsNotEmptyTrailingIcon(
+        trailingIconColor,
+        {
+          if (enabled && !readOnly) {
+            clearText()
+          }
+        },
+      )
+    }
+  }
+
+  else -> {
+    null
+  }
 }
 
 @Composable
@@ -185,35 +208,16 @@ fun HedvigTextField(
     label = { HedvigText(text = labelText) },
     suffix = suffix,
     leadingContent = leadingContent,
-    trailingContent = when {
-      trailingContent != null -> {
-        trailingContent
-      }
-      errorState.isError -> {
-        { ErrorTrailingIcon(trailingIconColor) }
-      }
-
-      readOnly -> {
-        { ReadOnlyTrailingIcon(trailingIconColor) }
-      }
-
-      isFocused && textValue.text.isNotEmpty() -> {
-        {
-          IsNotEmptyTrailingIcon(
-            trailingIconColor,
-            {
-              if (enabled && !readOnly) {
-                onValueChange(TextFieldValue(""))
-              }
-            },
-          )
-        }
-      }
-
-      else -> {
-        null
-      }
-    },
+    trailingContent = TrailingContent(
+      trailingContent = trailingContent,
+      errorState = errorState,
+      trailingIconColor = trailingIconColor,
+      readOnly = readOnly,
+      isFocused = isFocused,
+      text = textValue.text,
+      enabled = enabled,
+      clearText = { onValueChange(TextFieldValue("")) },
+    ),
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
@@ -722,7 +726,7 @@ private fun HedvigTextField(
       cursorBrush = SolidColor(colors.cursorColor),
       decorationBox = @Composable { innerTextField ->
         HedvigTextFieldDecorationBox(
-          value = value.text, // todo: not sure here
+          value = value.text,
           colors = colors,
           configuration = configuration,
           size = size,
