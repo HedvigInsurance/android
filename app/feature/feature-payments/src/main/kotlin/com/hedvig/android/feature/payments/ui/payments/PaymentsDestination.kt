@@ -564,6 +564,7 @@ private fun PaymentsListItem(
     },
     endSlot = { endSlot() },
     modifier = modifier,
+    spaceBetween = 8.dp,
   )
 }
 
