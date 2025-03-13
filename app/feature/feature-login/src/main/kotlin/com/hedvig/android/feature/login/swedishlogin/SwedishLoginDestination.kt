@@ -32,6 +32,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -177,10 +181,15 @@ private fun SwedishLoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
+          val qrCodeDescription = stringResource(R.string.TALK_BACK_QR_CODE_DESCRIPTION)
           QRCode(
             autoStartToken = uiState.bankIdLiveQrCodeData,
             modifier = Modifier
               .size(180.dp)
+              .semantics {
+                role = Role.Image
+                contentDescription = qrCodeDescription
+              }
               .then(demoModeModifier),
           )
           Spacer(Modifier.height(32.dp))

@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
@@ -38,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.mxalbert.zoomable.OverZoomConfig
 import com.mxalbert.zoomable.Zoomable
 import com.mxalbert.zoomable.rememberZoomableState
+import hedvig.resources.R
 
 @Composable
 internal fun ImageViewerDestination(
@@ -80,7 +84,13 @@ internal fun ImageViewerDestination(
               .fillMaxWidth()
               .height(64.dp),
           ) {
-            IconButton(onClick = navigateUp) {
+            val description = stringResource(R.string.general_back_button)
+            IconButton(
+              onClick = navigateUp,
+              Modifier.semantics {
+                contentDescription = description
+              },
+            ) {
               Icon(
                 imageVector = HedvigIcons.ArrowLeft,
                 contentDescription = null,

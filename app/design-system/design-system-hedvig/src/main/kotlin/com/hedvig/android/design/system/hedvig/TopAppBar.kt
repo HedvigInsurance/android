@@ -24,6 +24,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
@@ -31,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.TopAppBarTokens
+import hedvig.resources.R
 
 @Composable
 fun TopAppBar(
@@ -52,8 +56,14 @@ fun TopAppBar(
         .height(TopAppBarTokens.ContainerHeight)
         .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
     ) {
+      val description = when (actionType) {
+        TopAppBarActionType.BACK -> stringResource(R.string.general_back_button)
+        TopAppBarActionType.CLOSE -> stringResource(R.string.general_close_button)
+      }
       IconButton(
-        modifier = Modifier.size(24.dp),
+        modifier = Modifier.size(24.dp).semantics {
+          contentDescription = description
+        },
         onClick = onActionClick,
         content = {
           Icon(
@@ -90,6 +100,10 @@ fun TopAppBar(
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
   customTopAppBarColors: TopAppBarColors? = null,
 ) {
+  val description = when (actionType) {
+    TopAppBarActionType.BACK -> stringResource(R.string.general_back_button)
+    TopAppBarActionType.CLOSE -> stringResource(R.string.general_close_button)
+  }
   Surface(
     color = if (customTopAppBarColors !=
       null
@@ -123,7 +137,9 @@ fun TopAppBar(
           ) {
             IconButton(
               onClick = onActionClick,
-              modifier = Modifier.size(24.dp),
+              modifier = Modifier.size(24.dp).semantics {
+                contentDescription = description
+              },
               content = {
                 Icon(
                   imageVector = when (actionType) {
