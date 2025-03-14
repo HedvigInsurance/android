@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.profile.contactinfo
 
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -65,14 +65,8 @@ class ContactInfoPresenterTest {
         assertThat(this.content!!.uploadedEmail).isEqualTo(Email(originalEmail))
         assertThat(this.content!!.submittingUpdatedInfo).isEqualTo(false)
         assertThat(this.content!!.canSubmit).isEqualTo(false)
-        content!!.phoneNumberState.edit {
-          delete(0, length)
-          append(alteredPhoneNumber)
-        }
-        content!!.emailState.edit {
-          delete(0, length)
-          append(alteredEmail)
-        }
+        content!!.phoneNumberState.setTextAndPlaceCursorAtEnd(alteredPhoneNumber)
+        content!!.emailState.setTextAndPlaceCursorAtEnd(alteredEmail)
         assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(originalPhoneNumber))
         assertThat(this.content!!.uploadedEmail).isEqualTo(Email(originalEmail))
         assertThat(this.content!!.canSubmit).isEqualTo(true)
@@ -165,23 +159,23 @@ class ContactInfoPresenterTest {
       ) {
         with(awaitItem().content!!) {
           assertThat(canSubmit).isFalse()
-          phoneNumberState.replaceTextWith(validPhoneNumbers.first())
+          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
           assertThat(canSubmit).isTrue()
           for (invalidEmail in invalidEmails) {
-            emailState.replaceTextWith(invalidEmail)
+            emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
             assertThat(canSubmit).isFalse()
           }
-          emailState.replaceTextWith(validEmails.first())
+          emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
           assertThat(canSubmit).isTrue()
           for (invalidPhoneNumber in invalidPhoneNumbers) {
-            phoneNumberState.replaceTextWith(invalidPhoneNumber)
+            phoneNumberState.setTextAndPlaceCursorAtEnd(invalidPhoneNumber)
             assertThat(canSubmit).isFalse()
           }
-          phoneNumberState.replaceTextWith(validPhoneNumbers.first())
+          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
           assertThat(canSubmit).isTrue()
-          emailState.replaceTextWith(originalEmail)
+          emailState.setTextAndPlaceCursorAtEnd(originalEmail)
           assertThat(canSubmit).isTrue()
-          phoneNumberState.replaceTextWith(originalPhoneNumber)
+          phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
           assertThat(canSubmit).isFalse()
         }
         awaitUnchanged()
@@ -212,9 +206,4 @@ class ContactInfoPresenterTest {
       assertThat(awaitItem()).isInstanceOf<ContactInfoUiState.Content>()
     }
   }
-}
-
-private fun TextFieldState.replaceTextWith(text: String) = this.edit {
-  delete(0, length)
-  append(text)
 }

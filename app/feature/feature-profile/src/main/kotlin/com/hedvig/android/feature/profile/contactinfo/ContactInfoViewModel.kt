@@ -3,7 +3,7 @@ package com.hedvig.android.feature.profile.contactinfo
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
-import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -107,14 +107,8 @@ internal class ContactInfoPresenter(
     val updateStateWithFetchedContactInformation = { contactInformation: ContactInformation ->
       uploadedEmail = contactInformation.email
       uploadedPhoneNumber = contactInformation.phoneNumber
-      email.edit {
-        delete(0, length)
-        append(contactInformation.email.value)
-      }
-      phoneNumber.edit {
-        delete(0, length)
-        append(contactInformation.phoneNumber.value)
-      }
+      email.setTextAndPlaceCursorAtEnd(contactInformation.email.value)
+      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber.value)
     }
 
     LaunchedEffect(refetchDataIteration) {
