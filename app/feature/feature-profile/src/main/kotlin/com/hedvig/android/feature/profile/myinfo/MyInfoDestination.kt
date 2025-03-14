@@ -1,23 +1,18 @@
 package com.hedvig.android.feature.profile.myinfo
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -28,7 +23,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.design.system.hedvig.FadeAnimatedContent
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -69,54 +63,33 @@ private fun MyInfoScreen(
   navigateUp: () -> Unit,
 ) {
   val focusManager = LocalFocusManager.current
-  Box(
-    modifier = Modifier.fillMaxSize(),
+  HedvigScaffold(
+    topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
+    navigateUp = navigateUp,
+    modifier = Modifier.fillMaxSize().clearFocusOnTap(),
   ) {
-    HedvigScaffold(
-      topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
-      navigateUp = navigateUp,
-      modifier = Modifier.clearFocusOnTap(),
-    ) {
-      FadeAnimatedContent(
-        targetState = uiState,
-        contentKey = { it::class },
-        modifier = Modifier.weight(1f),
-      ) { animatedUiState ->
-        Column(
-          Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-          horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-          when (animatedUiState) {
-            ContactInfoUiState.Loading -> {
-              Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigFullScreenCenterAlignedProgressDebounced()
-              }
-            }
+    when (uiState) {
+      ContactInfoUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f).wrapContentHeight())
+      }
 
-            ContactInfoUiState.Error -> {
-              Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigErrorSection(onButtonClick = reload)
-              }
-            }
+      ContactInfoUiState.Error -> {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f).wrapContentHeight())
+      }
 
-            is ContactInfoUiState.Content -> {
-              SuccessState(
-                uiState = animatedUiState,
-                updateEmailAndPhoneNumber = updateEmailAndPhoneNumber,
-                focusManager = focusManager,
-              )
-            }
-          }
-        }
+      is ContactInfoUiState.Content -> {
+        SuccessState(
+          uiState = uiState,
+          updateEmailAndPhoneNumber = updateEmailAndPhoneNumber,
+          focusManager = focusManager,
+        )
       }
     }
   }
 }
 
 @Composable
-private fun ColumnScope.SuccessState(
+private fun SuccessState(
   uiState: ContactInfoUiState.Content,
   updateEmailAndPhoneNumber: () -> Unit,
   focusManager: FocusManager,
