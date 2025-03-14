@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -33,8 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -50,26 +50,38 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseOptionInDialog
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseSelectedOption
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ClearNavigation
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.Reload
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SubmitSelected
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Failure
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Success
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -90,22 +102,22 @@ internal fun CustomizeTravelAddonDestination(
     popBackStack = popBackStack,
     popAddonFlow = popAddonFlow,
     submitToSummary = {
-      viewModel.emit(CustomizeTravelAddonEvent.SubmitSelected)
+      viewModel.emit(SubmitSelected)
     },
     reload = {
-      viewModel.emit(CustomizeTravelAddonEvent.Reload)
+      viewModel.emit(Reload)
     },
     onChooseOptionInDialog = { option ->
-      viewModel.emit(CustomizeTravelAddonEvent.ChooseOptionInDialog(option))
+      viewModel.emit(ChooseOptionInDialog(option))
     },
     onChooseSelectedOption = {
-      viewModel.emit(CustomizeTravelAddonEvent.ChooseSelectedOption)
+      viewModel.emit(ChooseSelectedOption)
     },
     onSetOptionBackToPreviouslyChosen = {
-      viewModel.emit(CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen)
+      viewModel.emit(SetOptionBackToPreviouslyChosen)
     },
     navigateToSummary = { params ->
-      viewModel.emit(CustomizeTravelAddonEvent.ClearNavigation)
+      viewModel.emit(ClearNavigation)
       navigateToSummary(params)
     },
     onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
@@ -132,18 +144,18 @@ private fun CustomizeTravelAddonScreen(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is CustomizeTravelAddonState.Failure -> FailureScreen(
+      is Failure -> FailureScreen(
         errorMessage = state.errorMessage,
         reload = reload,
         popBackStack = popBackStack,
         navigateToChat = navigateToChat,
       )
 
-      CustomizeTravelAddonState.Loading -> {
+      Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
 
-      is CustomizeTravelAddonState.Success -> {
+      is Success -> {
         LaunchedEffect(state.summaryParamsToNavigateFurther) {
           if (state.summaryParamsToNavigateFurther != null) {
             navigateToSummary(state.summaryParamsToNavigateFurther)
@@ -209,7 +221,7 @@ private fun FailureScreen(
 
 @Composable
 private fun CustomizeTravelAddonScreenContent(
-  uiState: CustomizeTravelAddonState.Success,
+  uiState: Success,
   navigateUp: () -> Unit,
   popAddonFlow: () -> Unit,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
@@ -235,18 +247,10 @@ private fun CustomizeTravelAddonScreenContent(
     },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    HedvigText(
-      style = HedvigTheme.typography.headlineMedium.copy(
-        lineBreak = LineBreak.Heading,
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
-      text = stringResource(R.string.ADDON_FLOW_SUBTITLE),
-      modifier = Modifier.padding(horizontal = 16.dp),
+    DoubleTitleHeading(
+      stringResource(R.string.ADDON_FLOW_TITLE),
+      stringResource(R.string.ADDON_FLOW_SUBTITLE),
+      Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
@@ -373,7 +377,7 @@ private fun HeaderInfoWithCurrentPrice(
           HighlightLabel(
             labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
             size = HighLightSize.Small,
-            color = HighlightColor.Grey(MEDIUM),
+            color = Grey(MEDIUM),
             modifier = Modifier.wrapContentSize(Alignment.TopEnd),
           )
         }
@@ -398,8 +402,8 @@ private fun TravelPlusInfoCard(onButtonClick: () -> Unit, modifier: Modifier = M
   HedvigNotificationCard(
     modifier = modifier,
     message = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT),
-    priority = NotificationDefaults.NotificationPriority.InfoInline,
-    style = NotificationDefaults.InfoCardStyle.Button(
+    priority = InfoInline,
+    style = Button(
       onButtonClick = onButtonClick,
       buttonText = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
     ),
@@ -490,7 +494,7 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
           HighlightLabel(
             labelText = premium,
             size = HighLightSize.Small,
-            color = HighlightColor.Grey(MEDIUM),
+            color = Grey(MEDIUM),
             modifier = Modifier.wrapContentSize(Alignment.TopEnd),
           )
         },
@@ -546,14 +550,14 @@ private fun SelectTierScreenPreview(
 internal class CustomizeTravelAddonPreviewProvider :
   CollectionPreviewParameterProvider<CustomizeTravelAddonState>(
     listOf(
-      CustomizeTravelAddonState.Loading,
-      CustomizeTravelAddonState.Success(
+      Loading,
+      Success(
         travelAddonOffer = fakeTravelAddon,
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
         summaryParamsToNavigateFurther = null,
       ),
-      CustomizeTravelAddonState.Failure("Ooops"),
+      Failure("Ooops"),
     ),
   )
 
@@ -572,7 +576,7 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
   addonSubtype = "45 days",
   price = UiMoney(
     49.0,
-    UiCurrencyCode.SEK,
+    SEK,
   ),
 )
 private val fakeTravelAddonQuote2 = TravelAddonQuote(
@@ -590,7 +594,7 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
   addonSubtype = "45 days",
   price = UiMoney(
     60.0,
-    UiCurrencyCode.SEK,
+    SEK,
   ),
 )
 private val fakeTravelAddon = TravelAddonOffer(

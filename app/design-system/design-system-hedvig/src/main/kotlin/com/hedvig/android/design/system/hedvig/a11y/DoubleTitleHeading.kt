@@ -5,12 +5,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineBreak
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-fun DoubleTitleHeading(title: String, description: String, modifier: Modifier = Modifier) {
+fun DoubleTitleHeading(
+  title: String,
+  description: String,
+  modifier: Modifier = Modifier,
+  baseStyle: TextStyle = HedvigTheme.typography.headlineMedium,
+) {
   Column(
     modifier = modifier.semantics(mergeDescendants = true) {
       heading()
@@ -18,13 +24,11 @@ fun DoubleTitleHeading(title: String, description: String, modifier: Modifier = 
   ) {
     HedvigText(
       text = title,
-      style = HedvigTheme.typography.headlineMedium.copy(
-        lineBreak = LineBreak.Heading,
-      ),
+      style = baseStyle.copy(lineBreak = LineBreak.Heading),
     )
     HedvigText(
       text = description,
-      style = HedvigTheme.typography.headlineMedium.copy(
+      style = baseStyle.copy(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),

@@ -22,10 +22,10 @@ import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
@@ -70,24 +70,17 @@ private fun NotificationPermissionScreen(
     closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-
     Spacer(Modifier.height(16.dp))
-    HedvigText(
-      text = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = sideSpacingModifier.fillMaxWidth(),
-    )
-    HedvigText(
-      text = stringResource(
+    DoubleTitleHeading(
+      stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+      stringResource(
         if (notificationPermissionState.status.isGranted) {
           R.string.CLAIMS_NOTIFICATIONS_ACTIVATED
         } else {
           R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
         },
       ),
-      style = HedvigTheme.typography.headlineMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = sideSpacingModifier.fillMaxWidth(),
+      sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.weight(1f))

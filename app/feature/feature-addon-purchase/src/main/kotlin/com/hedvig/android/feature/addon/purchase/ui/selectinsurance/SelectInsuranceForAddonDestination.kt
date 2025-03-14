@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
@@ -33,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
@@ -126,18 +125,10 @@ private fun SelectInsuranceForAddonContentScreen(
     },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    HedvigText(
-      style = HedvigTheme.typography.headlineMedium.copy(
-        lineBreak = LineBreak.Heading,
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
-      text = stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
-      modifier = Modifier.padding(horizontal = 16.dp),
+    DoubleTitleHeading(
+      stringResource(R.string.ADDON_FLOW_TITLE),
+      stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
+      Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))

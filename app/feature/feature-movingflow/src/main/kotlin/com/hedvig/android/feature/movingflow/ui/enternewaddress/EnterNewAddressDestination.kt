@@ -50,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labe
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -127,9 +128,9 @@ private fun EnterNewAddressScreen(
       MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
       Box(
         modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .fillMaxWidth()
+            .weight(1f)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -172,17 +173,12 @@ private fun EnterNewAddressScreen(
   }
   Column(
     modifier
-      .clearFocusOnTap()
-      .padding(horizontal = 16.dp),
+        .clearFocusOnTap()
+        .padding(horizontal = 16.dp),
   ) {
-    HedvigText(
-      text = stringResource(R.string.insurance_details_change_address_button),
-      style = HedvigTheme.typography.bodyMedium,
-    )
-    HedvigText(
-      text = stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
+    DoubleTitleHeading(
+      stringResource(R.string.insurance_details_change_address_button),
+      stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -348,11 +344,11 @@ private fun DatePickerField(
     )
     Box(
       Modifier
-        .matchParentSize()
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .clickable(enabled = !shouldDisableInput) {
-          showDatePicker = true
-        },
+          .matchParentSize()
+          .clip(HedvigTheme.shapes.cornerLarge)
+          .clickable(enabled = !shouldDisableInput) {
+              showDatePicker = true
+          },
     )
   }
 }
