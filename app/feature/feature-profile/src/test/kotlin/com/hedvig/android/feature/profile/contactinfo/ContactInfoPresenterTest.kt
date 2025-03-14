@@ -37,31 +37,41 @@ class ContactInfoPresenterTest {
     get() = testApolloClientRule.apolloClient
 
   @Test
-  fun `Changing the info to a new valid input should be reflected in the state after it `() = runTest {
+  fun `Changing the info to a new valid input should be reflected in the state after it`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
+    val originalEmail = "test@hedvig.com"
+    val originalPhoneNumber = "+123"
+    val alteredEmail = "test@hedvig.co"
+    val alteredPhoneNumber = "+123456"
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
       ContactInformationQuery.Data {
         this.currentMember = this.buildMember {
-          this.phoneNumber = "+123"
-          this.email = "test@hedvig.com"
+          this.phoneNumber = originalPhoneNumber
+          this.email = originalEmail
         }
       },
     )
     presenter.test(ContactInfoUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
       with(awaitItem()) {
-        assertThat(this.content!!.phoneNumberState.text).isEqualTo("+123")
-        assertThat(this.content!!.emailState.text).isEqualTo("test@hedvig.com")
-        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber("+123"))
-        assertThat(this.content!!.uploadedEmail).isEqualTo(Email("test@hedvig.com"))
+        assertThat(this.content!!.phoneNumberState.text).isEqualTo(originalPhoneNumber)
+        assertThat(this.content!!.emailState.text).isEqualTo(originalEmail)
+        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(originalPhoneNumber))
+        assertThat(this.content!!.uploadedEmail).isEqualTo(Email(originalEmail))
         assertThat(this.content!!.submittingUpdatedInfo).isEqualTo(false)
         assertThat(this.content!!.canSubmit).isEqualTo(false)
-        content!!.phoneNumberState.edit { append("456") }
-        content!!.emailState.edit { delete(length - 1, length) }
-        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber("+123"))
-        assertThat(this.content!!.uploadedEmail).isEqualTo(Email("test@hedvig.com"))
+        content!!.phoneNumberState.edit {
+          delete(0, length)
+          append(alteredPhoneNumber)
+        }
+        content!!.emailState.edit {
+          delete(0, length)
+          append(alteredEmail)
+        }
+        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(originalPhoneNumber))
+        assertThat(this.content!!.uploadedEmail).isEqualTo(Email(originalEmail))
         assertThat(this.content!!.canSubmit).isEqualTo(true)
       }
       sendEvent(ContactInfoEvent.SubmitData)
@@ -72,35 +82,36 @@ class ContactInfoPresenterTest {
         assertThat(canSubmit).isFalse()
       }
       apolloClient.registerSuspendingTestResponse(
-        MemberUpdateEmailMutation("test@hedvig.co"),
+        MemberUpdateEmailMutation(alteredEmail),
         MemberUpdateEmailMutation.Data {
           this.memberUpdateEmail = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
-              this.phoneNumber = "+123"
-              this.email = "test@hedvig.co"
+              this.phoneNumber = originalPhoneNumber
+              this.email = alteredEmail
             }
           }
         },
       )
       apolloClient.registerSuspendingTestResponse(
-        MemberUpdatePhoneNumberMutation("+123456"),
+        MemberUpdatePhoneNumberMutation(alteredPhoneNumber),
         MemberUpdatePhoneNumberMutation.Data {
           this.memberUpdatePhoneNumber = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
-              this.phoneNumber = "+123456"
-              this.email = "test@hedvig.com"
+              this.phoneNumber = alteredPhoneNumber
+              this.email = originalEmail
             }
           }
         },
       )
       with(awaitItem().content!!) {
-        assertThat(this.content!!.phoneNumberState.text).isEqualTo("+123456")
-        assertThat(this.content!!.emailState.text).isEqualTo("test@hedvig.co")
-        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber("+123456"))
-        assertThat(this.content!!.uploadedEmail).isEqualTo(Email("test@hedvig.co"))
+        assertThat(this.content!!.phoneNumberState.text).isEqualTo(alteredPhoneNumber)
+        assertThat(this.content!!.emailState.text).isEqualTo(alteredEmail)
+        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(alteredPhoneNumber))
+        assertThat(this.content!!.uploadedEmail).isEqualTo(Email(alteredEmail))
         assertThat(this.content!!.submittingUpdatedInfo).isFalse()
+        assertThat(this.content!!.canSubmit).isFalse()
       }
     }
   }
