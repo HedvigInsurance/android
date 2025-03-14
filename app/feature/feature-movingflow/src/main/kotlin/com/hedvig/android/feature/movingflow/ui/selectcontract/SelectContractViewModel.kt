@@ -86,62 +86,64 @@ internal class SelectContractPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      either {
-        val moveIntentCreate = apolloClient
-          .mutation(MoveIntentV2CreateMutation())
-          .safeExecute()
-          .mapLeft(::ErrorMessage)
-          .mapLeft { SelectContractState.Error.GenericError(it) }
-          .map { it.moveIntentCreate }
-          .bind()
-        val moveIntent = ensureNotNull(moveIntentCreate.moveIntent) {
-          val userError = moveIntentCreate.userError?.message
-          if (userError == null) {
-            SelectContractState.Error.GenericError(
-              ErrorMessage(
-                "Unknown MoveIntentV2CreateMutation error",
-              ),
-            )
-          } else {
-            SelectContractState.Error.UserPresentable(userError)
-          }
-        }
-        moveIntent
-      }.fold(
-        ifLeft = { error ->
-          currentState = error
-        },
-        ifRight = { intent ->
-          val currentAddressesSize = intent.currentHomeAddresses.size
-          when {
-            currentAddressesSize > 1 -> {
-              currentState = Content(
-                intent = intent,
-                selectedAddress = null,
-                navigateToHousingType = false,
-                buttonLoading = false,
+      if (lastState !is Content) {
+        either {
+          val moveIntentCreate = apolloClient
+            .mutation(MoveIntentV2CreateMutation())
+            .safeExecute()
+            .mapLeft(::ErrorMessage)
+            .mapLeft { SelectContractState.Error.GenericError(it) }
+            .map { it.moveIntentCreate }
+            .bind()
+          val moveIntent = ensureNotNull(moveIntentCreate.moveIntent) {
+            val userError = moveIntentCreate.userError?.message
+            if (userError == null) {
+              SelectContractState.Error.GenericError(
+                ErrorMessage(
+                  "Unknown MoveIntentV2CreateMutation error",
+                ),
               )
+            } else {
+              SelectContractState.Error.UserPresentable(userError)
             }
-
-            currentAddressesSize == 1 -> {
-              Snapshot.withMutableSnapshot {
-                submittingAddressId = intent.currentHomeAddresses[0].id
-                currentState = Redirecting(
+          }
+          moveIntent
+        }.fold(
+          ifLeft = { error ->
+            currentState = error
+          },
+          ifRight = { intent ->
+            val currentAddressesSize = intent.currentHomeAddresses.size
+            when {
+              currentAddressesSize > 1 -> {
+                currentState = Content(
                   intent = intent,
-                  selectedAddress = intent.currentHomeAddresses[0],
+                  selectedAddress = null,
                   navigateToHousingType = false,
+                  buttonLoading = false,
+                )
+              }
+
+              currentAddressesSize == 1 -> {
+                Snapshot.withMutableSnapshot {
+                  submittingAddressId = intent.currentHomeAddresses[0].id
+                  currentState = Redirecting(
+                    intent = intent,
+                    selectedAddress = intent.currentHomeAddresses[0],
+                    navigateToHousingType = false,
+                  )
+                }
+              }
+
+              else -> {
+                currentState = SelectContractState.Error.GenericError(
+                  ErrorMessage("empty current addresses list"),
                 )
               }
             }
-
-            else -> {
-              currentState = SelectContractState.Error.GenericError(
-                ErrorMessage("empty current addresses list"),
-              )
-            }
-          }
-        },
-      )
+          },
+        )
+      }
     }
     return currentState
   }
