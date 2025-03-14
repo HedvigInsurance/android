@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.profile.contactinfo
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.delete
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -115,4 +116,78 @@ class ContactInfoPresenterTest {
       }
     }
   }
+
+  @Test
+  fun `Allowing sumbission should depend on if the input is valid and is different from the original input`() =
+    runTest {
+      val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+      val presenter = ContactInfoPresenter(Provider { repository })
+      val originalEmail = "test@hedvig.com"
+      val originalPhoneNumber = "+123"
+      val validEmails = listOf(
+        "test@hedvig.co",
+        "a@hedvig.c",
+        "a@h.c",
+      )
+      val validPhoneNumbers = listOf(
+        "+1234",
+        "+1",
+        "1",
+        "+1234567890123",
+        "1234567890123",
+        "+123 456 789 0123",
+        "123 456 789 0123",
+      )
+      val invalidEmails = listOf(
+        "test@hedvig .com",
+        "a@a",
+        "a@a@a.com",
+        " ",
+        "",
+      )
+      val invalidPhoneNumbers = listOf(
+        "++1234",
+        "+1234a",
+        "+",
+        " ",
+        "",
+      )
+      presenter.test(
+        ContactInfoUiState.Content(
+          phoneNumberState = TextFieldState(originalPhoneNumber),
+          emailState = TextFieldState(originalEmail),
+          uploadedPhoneNumber = PhoneNumber(originalPhoneNumber),
+          uploadedEmail = Email(originalEmail),
+          submittingUpdatedInfo = false,
+        ),
+      ) {
+        with(awaitItem().content!!) {
+          assertThat(canSubmit).isFalse()
+          phoneNumberState.replaceTextWith(validPhoneNumbers.first())
+          assertThat(canSubmit).isTrue()
+          for (invalidEmail in invalidEmails) {
+            emailState.replaceTextWith(invalidEmail)
+            assertThat(canSubmit).isFalse()
+          }
+          emailState.replaceTextWith(validEmails.first())
+          assertThat(canSubmit).isTrue()
+          for (invalidPhoneNumber in invalidPhoneNumbers) {
+            phoneNumberState.replaceTextWith(invalidPhoneNumber)
+            println("Stelios invalidPhoneNumber:$invalidPhoneNumber")
+            assertThat(canSubmit).isFalse()
+          }
+          phoneNumberState.replaceTextWith(validPhoneNumbers.first())
+          assertThat(canSubmit).isTrue()
+          emailState.replaceTextWith(originalEmail)
+          assertThat(canSubmit).isTrue()
+          phoneNumberState.replaceTextWith(originalPhoneNumber)
+          assertThat(canSubmit).isFalse()
+        }
+      }
+    }
+}
+
+private fun TextFieldState.replaceTextWith(text: String) = this.edit {
+  delete(0, length)
+  append(text)
 }

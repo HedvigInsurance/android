@@ -5,10 +5,8 @@ import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.validation.isValidEmail
-import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
-import com.hedvig.android.logger.logcat
 
 internal interface ContactInfoRepository {
   suspend fun contactInfo(): Either<ErrorMessage, ContactInformation>
@@ -40,7 +38,7 @@ internal data class ContactInformation(
   @JvmInline
   value class Email(val value: String) {
     init {
-      require(validateEmail(value).isSuccessful) {
+      require(isValidEmail(value)) {
         "Email $value is invalid"
       }
     }
@@ -49,7 +47,6 @@ internal data class ContactInformation(
       private val invalidInputErrorMessage = { email: String? -> "Email [$email] must be a valid email address" }
 
       fun fromString(input: String?): Either<ErrorMessage, Email> {
-        logcat { "Checking email input$input" }
         return when {
           input.isNullOrBlank() -> ErrorMessage(invalidInputErrorMessage(input)).left()
           !isValidEmail(input) -> ErrorMessage(invalidInputErrorMessage(input)).left()
@@ -72,7 +69,6 @@ internal data class ContactInformation(
 
     companion object {
       private val phoneNumberRegex = Regex("""([+]?\d+)""")
-      val Empty = PhoneNumber("")
       private val invalidInputErrorMessage = { phoneNumber: String ->
         "Phone number [$phoneNumber] must contain only numbers with an optional '+' in the beginning"
       }
@@ -88,7 +84,7 @@ internal data class ContactInformation(
 
       fun fromString(input: String?): Either<ErrorMessage, PhoneNumber> {
         return when {
-          input.isNullOrBlank() -> PhoneNumber.Empty.right()
+          input.isNullOrBlank() -> ErrorMessage("Empty phone number").left()
           input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
           input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
           else -> ErrorMessage(invalidInputErrorMessage(input)).left()
