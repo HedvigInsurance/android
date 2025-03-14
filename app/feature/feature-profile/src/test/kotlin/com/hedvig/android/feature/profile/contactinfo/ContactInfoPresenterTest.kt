@@ -5,11 +5,13 @@ import androidx.compose.foundation.text.input.delete
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
+import com.hedvig.android.apollo.test.registerSuspendingTestNetworkError
 import com.hedvig.android.apollo.test.registerSuspendingTestResponse
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.NoopNetworkCacheManager
@@ -118,7 +120,7 @@ class ContactInfoPresenterTest {
   }
 
   @Test
-  fun `Allowing sumbission should depend on if the input is valid and is different from the original input`() =
+  fun `Allowing submission should depend on if the input is valid and is different from the original input`() =
     runTest {
       val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
       val presenter = ContactInfoPresenter(Provider { repository })
@@ -173,7 +175,6 @@ class ContactInfoPresenterTest {
           assertThat(canSubmit).isTrue()
           for (invalidPhoneNumber in invalidPhoneNumbers) {
             phoneNumberState.replaceTextWith(invalidPhoneNumber)
-            println("Stelios invalidPhoneNumber:$invalidPhoneNumber")
             assertThat(canSubmit).isFalse()
           }
           phoneNumberState.replaceTextWith(validPhoneNumbers.first())
@@ -183,8 +184,34 @@ class ContactInfoPresenterTest {
           phoneNumberState.replaceTextWith(originalPhoneNumber)
           assertThat(canSubmit).isFalse()
         }
+        awaitUnchanged()
       }
     }
+
+  @Test
+  fun `Retrying does fetch the new state after an initial failure`() = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(Provider { repository })
+    presenter.test(ContactInfoUiState.Error) {
+      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Error)
+      // By default, coming back to a failed screen should automatically trigger a refresh and go into a loading state
+      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
+      apolloClient.registerSuspendingTestNetworkError(ContactInformationQuery())
+      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Error)
+      sendEvent(ContactInfoEvent.RetryLoadData)
+      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
+      apolloClient.registerSuspendingTestResponse(
+        ContactInformationQuery(),
+        ContactInformationQuery.Data {
+          this.currentMember = this.buildMember {
+            this.phoneNumber = "+123"
+            this.email = "test@hedvig.com"
+          }
+        },
+      )
+      assertThat(awaitItem()).isInstanceOf<ContactInfoUiState.Content>()
+    }
+  }
 }
 
 private fun TextFieldState.replaceTextWith(text: String) = this.edit {

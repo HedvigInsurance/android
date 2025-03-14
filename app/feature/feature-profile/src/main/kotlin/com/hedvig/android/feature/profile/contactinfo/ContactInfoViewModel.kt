@@ -99,7 +99,7 @@ internal class ContactInfoPresenter(
     var uploadedPhoneNumber: PhoneNumber? by remember { mutableStateOf(lastState.content?.uploadedPhoneNumber) }
 
     var refetchDataIteration by remember { mutableIntStateOf(0) }
-    var fetchDataError by remember { mutableStateOf(false) }
+    var fetchDataError by remember { mutableStateOf(lastState is ContactInfoUiState.Error) }
 
     var submittingData: Pair<PhoneNumber, Email>? by remember { mutableStateOf(null) }
     var submissionError by remember { mutableStateOf<Boolean>(false) }
