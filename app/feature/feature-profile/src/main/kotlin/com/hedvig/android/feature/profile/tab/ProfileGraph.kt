@@ -7,10 +7,10 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
-import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
@@ -50,8 +50,8 @@ fun NavGraphBuilder.profileGraph(
         navigateToEurobonus = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
         },
-        navigateToMyInfo = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.MyInfo) }
+        navigateToContactInfo = {
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.ContactInfo) }
         },
         navigateToAboutApp = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.AboutApp) }
@@ -81,11 +81,11 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ProfileDestinations.MyInfo>(
+    navdestination<ProfileDestinations.ContactInfo>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
     ) {
       val viewModel: ContactInfoViewModel = koinViewModel()
-      MyInfoDestination(
+      ContactInfoDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
       )

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.profile.myinfo
+package com.hedvig.android.feature.profile.contactinfo
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,30 +33,30 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent
-import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState
-import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import hedvig.resources.R
 
 @Composable
-internal fun MyInfoDestination(viewModel: ContactInfoViewModel, navigateUp: () -> Unit) {
+internal fun ContactInfoDestination(viewModel: ContactInfoViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  MyInfoScreen(
+  ContactInfoScreen(
     uiState = uiState,
     updateEmailAndPhoneNumber = {
-      viewModel.emit(ContactInfoEvent.SubmitData)
+      viewModel.emit(SubmitData)
     },
     reload = {
-      viewModel.emit(ContactInfoEvent.RetryLoadData)
+      viewModel.emit(RetryLoadData)
     },
     navigateUp = navigateUp,
   )
 }
 
 @Composable
-private fun MyInfoScreen(
+private fun ContactInfoScreen(
   uiState: ContactInfoUiState,
   updateEmailAndPhoneNumber: () -> Unit,
   reload: () -> Unit,
@@ -95,7 +95,7 @@ private fun SuccessState(
   focusManager: FocusManager,
 ) {
   Spacer(Modifier.height(16.dp))
-  MyInfoTextField(
+  ContactInfoTextField(
     textFieldState = uiState.phoneNumberState,
     labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
     errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
@@ -109,7 +109,7 @@ private fun SuccessState(
     keyboardActionHandler = null,
   )
   Spacer(Modifier.height(4.dp))
-  MyInfoTextField(
+  ContactInfoTextField(
     textFieldState = uiState.emailState,
     labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
     errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
@@ -144,7 +144,7 @@ private fun SuccessState(
 }
 
 @Composable
-private fun MyInfoTextField(
+private fun ContactInfoTextField(
   textFieldState: TextFieldState,
   labelText: String,
   errorText: String?,
@@ -172,13 +172,13 @@ private fun MyInfoTextField(
 
 @HedvigPreview
 @Composable
-private fun PreviewMyInfoScreen(
+private fun PreviewContactInfoScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withErrors: Boolean,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      MyInfoScreen(
-        uiState = ContactInfoUiState.Content(
+      ContactInfoScreen(
+        uiState = Content(
           rememberTextFieldState(),
           rememberTextFieldState(),
           PhoneNumber("072102103".takeIf { !withErrors } ?: ""),
