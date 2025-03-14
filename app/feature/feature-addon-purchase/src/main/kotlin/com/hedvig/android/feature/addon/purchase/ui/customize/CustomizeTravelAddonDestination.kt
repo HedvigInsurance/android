@@ -291,7 +291,7 @@ private fun CustomizeTravelAddonScreenContent(
 
 @Composable
 private fun CustomizeTravelAddonCard(
-  uiState: CustomizeTravelAddonState.Success,
+  uiState: Success,
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
@@ -329,16 +329,6 @@ private fun CustomizeTravelAddonCard(
           .takeIf { it >= 0 },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
       ) { onDismissRequest ->
-        val listOfOptions = uiState.travelAddonOffer.addonOptions.map { option ->
-          ExpandedRadioOptionData(
-            chosenState = if (uiState.currentlyChosenOptionInDialog == option) Chosen else NotChosen,
-            title = option.displayName,
-            premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price),
-            onRadioOptionClick = {
-              onChooseOptionInDialog(option)
-            },
-          )
-        }
         DropdownContent(
           onContinueButtonClick = {
             onChooseSelectedOption()
@@ -348,8 +338,10 @@ private fun CustomizeTravelAddonCard(
             onDismissRequest()
           },
           title = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_TITLE),
-          data = listOfOptions,
           subTitle = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE),
+          addonOptions = uiState.travelAddonOffer.addonOptions,
+          currentlyChosenOptionInDialog = uiState.currentlyChosenOptionInDialog,
+          onChooseOptionInDialog = { option -> onChooseOptionInDialog(option) },
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -420,9 +412,21 @@ private fun DropdownContent(
   subTitle: String,
   onContinueButtonClick: () -> Unit,
   onCancelButtonClick: () -> Unit,
-  data: List<ExpandedRadioOptionData>,
+  addonOptions: NonEmptyList<TravelAddonQuote>,
+  currentlyChosenOptionInDialog: TravelAddonQuote?,
+  onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val data = addonOptions.map { option ->
+    ExpandedRadioOptionData(
+      chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
+      title = option.displayName,
+      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price),
+      onRadioOptionClick = {
+        onChooseOptionInDialog(option)
+      },
+    )
+  }
   Column(
     modifier
       .padding(16.dp)
@@ -491,6 +495,24 @@ private fun ExpandedOptionContent(title: String, premium: String, radioButtonIco
           )
         },
         spaceBetween = 8.dp,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDropdownContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DropdownContent(
+        title = "title",
+        subTitle = "subTitle",
+        onContinueButtonClick = {},
+        onCancelButtonClick = {},
+        addonOptions = fakeTravelAddon.addonOptions,
+        currentlyChosenOptionInDialog = fakeTravelAddon.addonOptions.first(),
+        onChooseOptionInDialog = {},
       )
     }
   }
