@@ -67,7 +67,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
@@ -247,7 +247,7 @@ private fun CustomizeTravelAddonScreenContent(
     },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.ADDON_FLOW_TITLE),
       stringResource(R.string.ADDON_FLOW_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),

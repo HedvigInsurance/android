@@ -53,7 +53,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -125,7 +125,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
     },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.TIER_COMPARISON_TITLE),
       stringResource(R.string.TIER_COMPARISON_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),

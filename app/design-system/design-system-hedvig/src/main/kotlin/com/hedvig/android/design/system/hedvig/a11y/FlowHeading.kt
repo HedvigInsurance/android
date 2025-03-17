@@ -11,7 +11,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-fun DoubleTitleHeading(
+fun FlowHeading(
   title: String,
   description: String?,
   modifier: Modifier = Modifier,

@@ -50,7 +50,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -142,7 +142,7 @@ private fun AreYouSureScreen(
     },
   ) {
     Spacer(Modifier.height(8.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
       stringResource(id = R.string.TERMINATION_FLOW_SUMMARY_SUBTITLE),
       modifier.padding(horizontal = 16.dp),

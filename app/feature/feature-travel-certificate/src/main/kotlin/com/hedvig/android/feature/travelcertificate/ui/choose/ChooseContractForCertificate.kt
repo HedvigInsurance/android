@@ -98,7 +98,7 @@ private fun ChooseContractForCertificate(
           onOptionClick = { contractId ->
             selectedContractId = contractId
           },
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(

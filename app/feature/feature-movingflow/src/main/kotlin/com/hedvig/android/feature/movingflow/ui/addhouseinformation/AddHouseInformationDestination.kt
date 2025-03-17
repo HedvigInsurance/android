@@ -73,7 +73,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
@@ -193,7 +193,7 @@ private fun AddHouseInformationScreen(
     )
   }
   Column(modifier.padding(horizontal = 16.dp)) {
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.insurance_details_change_address_button),
       stringResource(R.string.CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE),
     )

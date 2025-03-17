@@ -31,7 +31,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
@@ -125,7 +125,7 @@ private fun SelectInsuranceForAddonContentScreen(
     },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.ADDON_FLOW_TITLE),
       stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),

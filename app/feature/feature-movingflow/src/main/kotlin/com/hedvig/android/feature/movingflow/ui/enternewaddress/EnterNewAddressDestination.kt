@@ -50,7 +50,7 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labe
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -128,9 +128,9 @@ private fun EnterNewAddressScreen(
       MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
       Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -173,10 +173,10 @@ private fun EnterNewAddressScreen(
   }
   Column(
     modifier
-        .clearFocusOnTap()
-        .padding(horizontal = 16.dp),
+      .clearFocusOnTap()
+      .padding(horizontal = 16.dp),
   ) {
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.insurance_details_change_address_button),
       stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
     )
@@ -344,11 +344,11 @@ private fun DatePickerField(
     )
     Box(
       Modifier
-          .matchParentSize()
-          .clip(HedvigTheme.shapes.cornerLarge)
-          .clickable(enabled = !shouldDisableInput) {
-              showDatePicker = true
-          },
+        .matchParentSize()
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .clickable(enabled = !shouldDisableInput) {
+          showDatePicker = true
+        },
     )
   }
 }
