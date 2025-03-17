@@ -29,6 +29,7 @@ import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
@@ -264,6 +265,14 @@ private val notificationModule = module {
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Chat,
+    )
+  } bind NotificationSender::class
+  single<ClaimClosedNotificationSender> {
+    ClaimClosedNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Payments, // todo: it is related to pay-outs
     )
   } bind NotificationSender::class
   single<ContactInfoSender> {
