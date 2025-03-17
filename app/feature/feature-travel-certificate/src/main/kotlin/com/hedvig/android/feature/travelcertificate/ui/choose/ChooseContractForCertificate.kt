@@ -28,6 +28,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractUiState.Success
@@ -74,12 +75,10 @@ private fun ChooseContractForCertificate(
         modifier = Modifier.clearFocusOnTap(),
       ) {
         Spacer(Modifier.height(8.dp))
-        HedvigText(
-          text = stringResource(R.string.travel_certificate_select_contract_title),
-          style = HedvigTheme.typography.headlineMedium.copy(
-            lineBreak = LineBreak.Heading,
-          ),
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        FlowHeading(
+          stringResource(R.string.travel_certificate_select_contract_title),
+          null,
+          Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))

@@ -31,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
@@ -90,10 +91,10 @@ private fun TravelCertificateTravellersInput(
           navigateUp = navigateUp,
         ) {
           Spacer(Modifier.height(8.dp))
-          HedvigText(
-            text = stringResource(id = R.string.travel_certificate_who_is_traveling),
-            style = HedvigTheme.typography.headlineMedium,
-            modifier = Modifier
+          FlowHeading(
+            stringResource(id = R.string.travel_certificate_who_is_traveling),
+            null,
+            Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
           )
