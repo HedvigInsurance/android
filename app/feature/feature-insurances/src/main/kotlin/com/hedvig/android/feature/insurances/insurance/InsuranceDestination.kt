@@ -245,12 +245,7 @@ private fun InsuranceScreenContent(
           ContractsSection(
             imageLoader = imageLoader,
             onInsuranceCardClick = onInsuranceCardClick,
-            contracts = uiState.contracts,
-          )
-          ContractsSection(
-            imageLoader = imageLoader,
-            onInsuranceCardClick = onInsuranceCardClick,
-            contracts = uiState.pendingContracts,
+            contracts = uiState.contracts + uiState.pendingContracts,
           )
           if (uiState.travelAddonBannerInfo != null) {
             TravelAddonBanner(

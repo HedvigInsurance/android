@@ -16,7 +16,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.datetime.LocalDate
 import octopus.ContractsToTerminateQuery
 
 interface GetTerminatableContractsUseCase {
@@ -48,11 +47,10 @@ data class TerminatableInsurance(
   val displayName: String,
   val contractExposure: String,
   val contractGroup: ContractGroup,
-  val activateFrom: LocalDate,
 )
 
 private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
-  return activeContracts
+  val active = activeContracts
     .filter {
       it.terminationDate == null
     }
@@ -62,7 +60,15 @@ private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancella
         displayName = it.currentAgreement.productVariant.displayName,
         contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
         contractExposure = it.exposureDisplayName,
-        activateFrom = it.currentAgreement.activeFrom,
       )
     }
+  val pending = pendingContracts.map {
+    TerminatableInsurance(
+      id = it.id,
+      displayName = it.productVariant.displayName,
+      contractGroup = it.productVariant.typeOfContract.toContractGroup(),
+      contractExposure = it.exposureDisplayName,
+    )
+  }
+  return active + pending
 }
