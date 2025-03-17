@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -169,7 +168,7 @@ private fun DefaultToggle(
       ) {
         HedvigText(
           text = labelText,
-          style = size.size.textStyle.copy(lineBreak = LineBreak.Heading),
+          style = size.size.textStyle,
           color = labelColor,
         )
       }
@@ -190,7 +189,7 @@ private fun DefaultToggle(
         )
       }
     },
-    spaceBetween = 12.dp,
+    spaceBetween = 4.dp,
     modifier = modifier.padding(size.size.contentPadding),
   )
 }

@@ -193,7 +193,6 @@ private fun MemberChargeDetailsScreen(
           }
 
           HorizontalItemsWithMaximumSpaceTaken(
-            spaceBetween = 8.dp,
             startSlot = {
               HedvigText(stringResource(R.string.payment_details_receipt_card_total))
             },
@@ -234,7 +233,6 @@ private fun MemberChargeDetailsScreen(
               )
             },
             modifier = Modifier.padding(vertical = 16.dp),
-            spaceBetween = 8.dp,
           )
 
           when (uiState.paymentDetails.memberCharge.status) {
@@ -298,7 +296,6 @@ private fun MemberChargeDetailsScreen(
                   )
                 },
                 modifier = Modifier.padding(vertical = 16.dp),
-                spaceBetween = 8.dp,
               )
               HorizontalDivider()
 
@@ -315,7 +312,6 @@ private fun MemberChargeDetailsScreen(
                   )
                 },
                 modifier = Modifier.padding(vertical = 16.dp),
-                spaceBetween = 8.dp,
               )
               HorizontalDivider()
 
@@ -332,7 +328,6 @@ private fun MemberChargeDetailsScreen(
                   )
                 },
                 modifier = Modifier.padding(vertical = 16.dp),
-                spaceBetween = 8.dp,
               )
               HorizontalDivider()
 
@@ -346,7 +341,6 @@ private fun MemberChargeDetailsScreen(
                     color = HedvigTheme.colorScheme.textSecondary,
                   )
                 },
-                spaceBetween = 8.dp,
                 modifier = Modifier.padding(vertical = 16.dp),
               )
             }

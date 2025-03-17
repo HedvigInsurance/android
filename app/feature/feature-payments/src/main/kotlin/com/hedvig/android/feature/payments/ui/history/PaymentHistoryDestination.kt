@@ -160,7 +160,6 @@ private fun PaymentHistorySuccessScreen(
               modifier = Modifier
                 .clickable { onChargeClicked(charge.id) }
                 .padding(16.dp),
-              spaceBetween = 8.dp,
             )
           }
         }

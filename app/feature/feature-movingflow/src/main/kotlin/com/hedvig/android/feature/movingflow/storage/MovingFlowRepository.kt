@@ -24,25 +24,8 @@ internal class MovingFlowRepository(
     return movingFlowStorage.getMovingFlowState()
   }
 
-  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, moveFromAddressId: String) {
-    movingFlowStorage.setMovingFlowState(
-      MovingFlowState.fromFragments(
-        moveIntent,
-        null,
-        moveFromAddressId,
-      ),
-    )
-  }
-
-  suspend fun updateWithHousingType(housingType: HousingType) {
-    movingFlowStorage.editMovingFlowState { existingState ->
-      val propertyState = existingState.mapOfPropertyStates[housingType]
-      val updatedState = existingState.copy(
-        housingType = housingType,
-        propertyState = propertyState,
-      )
-      updatedState
-    }
+  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, housingType: HousingType) {
+    movingFlowStorage.setMovingFlowState(MovingFlowState.fromFragments(moveIntent, null, housingType))
   }
 
   suspend fun updateWithPropertyInput(
@@ -89,11 +72,6 @@ internal class MovingFlowRepository(
                 )
               },
             )
-          }
-
-          null -> {
-            logcat { "tried to update withPropertyInput but propertyState is null" }
-            null
           }
         },
       )

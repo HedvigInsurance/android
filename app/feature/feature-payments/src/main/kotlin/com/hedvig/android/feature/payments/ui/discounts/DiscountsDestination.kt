@@ -135,7 +135,6 @@ private fun DiscountsScreen(
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
-        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
         },
@@ -221,7 +220,6 @@ private fun ForeverSection(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     HorizontalItemsWithMaximumSpaceTaken(
-      spaceBetween = 8.dp,
       startSlot = {
         HedvigText(
           stringResource(R.string.PAYMENTS_REFERRALS_INFO_TITLE),

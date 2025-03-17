@@ -9,8 +9,7 @@ import com.hedvig.android.feature.movingflow.storage.MovingFlowStorage
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
-import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractViewModel
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
+import com.hedvig.android.feature.movingflow.ui.start.StartViewModel
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
@@ -23,13 +22,8 @@ val movingFlowModule = module {
   single<MovingFlowRepository> {
     MovingFlowRepository(get<MovingFlowStorage>())
   }
-  viewModel<HousingTypeViewModel> {
-    HousingTypeViewModel(
-      get<MovingFlowRepository>(),
-    )
-  }
-  viewModel<SelectContractViewModel> {
-    SelectContractViewModel(
+  viewModel<StartViewModel> {
+    StartViewModel(
       get<ApolloClient>(),
       get<MovingFlowRepository>(),
     )

@@ -42,41 +42,43 @@ import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionG
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.Content
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.GenericError
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.UserPresentable
+import com.hedvig.android.feature.movingflow.ui.start.StartUiState.Content
+import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError
+import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError.GenericError
+import com.hedvig.android.feature.movingflow.ui.start.StartUiState.StartError.UserPresentable
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import octopus.feature.movingflow.MoveIntentV2CreateMutation
 
 @Composable
-internal fun HousingTypeDestination(
-  viewModel: HousingTypeViewModel,
+internal fun StartDestination(
+  viewModel: StartViewModel,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToNextStep: () -> Unit,
+  onNavigateToNextStep: (String) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content) {
     LaunchedEffect(uiState.navigateToNextStep) {
       if (uiState.navigateToNextStep != false) {
-        viewModel.emit(HousingTypeEvent.NavigatedToNextStep)
-        onNavigateToNextStep()
+        viewModel.emit(StartEvent.NavigatedToNextStep)
+        onNavigateToNextStep(uiState.initiatedMovingIntent.id)
       }
     }
   }
-  HousingTypeScreen(
+  StartScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     exitFlow = exitFlow,
-    onDismissStartError = { viewModel.emit(HousingTypeEvent.DismissStartError) },
-    onSelectHousingType = { viewModel.emit(HousingTypeEvent.SelectHousingType(it)) },
-    onSubmitHousingType = { viewModel.emit(HousingTypeEvent.SubmitHousingType) },
+    onDismissStartError = { viewModel.emit(StartEvent.DismissStartError) },
+    onSelectHousingType = { viewModel.emit(StartEvent.SelectHousingType(it)) },
+    onSubmitHousingType = { viewModel.emit(StartEvent.SubmitHousingType) },
   )
 }
 
 @Composable
-private fun HousingTypeScreen(
-  uiState: HousingTypeUiState,
+private fun StartScreen(
+  uiState: StartUiState,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
   onDismissStartError: () -> Unit,
@@ -94,7 +96,7 @@ private fun HousingTypeScreen(
         propagateMinConstraints = true,
       ) {
         when (uiState) {
-          is HousingTypeError -> {
+          is StartError -> {
             HedvigErrorSection(
               onButtonClick = onDismissStartError,
               title = when (uiState) {
@@ -112,7 +114,7 @@ private fun HousingTypeScreen(
             StartContentScreen(uiState, onSelectHousingType, onSubmitHousingType)
           }
 
-          HousingTypeUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+          StartUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
         }
       }
     }
@@ -186,11 +188,11 @@ internal fun HousingType.stringResource() = when (this) {
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceDestinationAnimation(
-  @PreviewParameter(StartUiStateProvider::class) state: HousingTypeUiState,
+  @PreviewParameter(StartUiStateProvider::class) state: StartUiState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      HousingTypeScreen(
+      StartScreen(
         uiState = state,
         {},
         {},
@@ -202,19 +204,47 @@ private fun PreviewInsuranceDestinationAnimation(
   }
 }
 
-private class StartUiStateProvider : CollectionPreviewParameterProvider<HousingTypeUiState>(
+private class StartUiStateProvider : CollectionPreviewParameterProvider<StartUiState>(
   listOf(
     GenericError(ErrorMessage("Unknown MoveIntentV2CreateMutation error")),
-    HousingTypeUiState.Loading,
+    StartUiState.Loading,
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
       oldHomeInsuranceDuration = 30,
       navigateToNextStep = false,
     ),
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries[1],
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
       oldHomeInsuranceDuration = null,
       navigateToNextStep = false,
       buttonLoading = false,
@@ -222,6 +252,20 @@ private class StartUiStateProvider : CollectionPreviewParameterProvider<HousingT
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
+      initiatedMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent(
+        __typename = "",
+        id = "id",
+        minMovingDate = LocalDate(2024, 11, 5),
+        maxMovingDate = LocalDate(2024, 12, 31),
+        maxHouseNumberCoInsured = null,
+        maxHouseSquareMeters = null,
+        maxApartmentNumberCoInsured = null,
+        maxApartmentSquareMeters = null,
+        isApartmentAvailableforStudent = null,
+        extraBuildingTypes = listOf(),
+        suggestedNumberCoInsured = 2,
+        currentHomeAddresses = listOf(),
+      ),
       oldHomeInsuranceDuration = null,
       navigateToNextStep = false,
       buttonLoading = true,
