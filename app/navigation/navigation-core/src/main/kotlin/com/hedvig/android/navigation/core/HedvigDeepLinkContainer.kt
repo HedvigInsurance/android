@@ -163,4 +163,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     travelCertificate.first(),
     changeTierWithoutContractId.first(),
     changeTierWithContractId.first(),
+    claimDetails.first(),
   )
