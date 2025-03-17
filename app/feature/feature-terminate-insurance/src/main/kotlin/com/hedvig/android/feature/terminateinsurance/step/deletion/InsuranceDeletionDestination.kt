@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.terminateinsurance.step.deletion
 
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -31,12 +33,10 @@ internal fun InsuranceDeletionDestination(
   TerminationScaffold(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-  ) {
-    HedvigText(
-      style = HedvigTheme.typography.headlineMedium.copy(
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
-      text = stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_INFORMATION),
+  ) { title ->
+    FlowHeading(
+      title,
+      stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_INFORMATION),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
