@@ -11,9 +11,9 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-fun DoubleTitleHeading(
+fun FlowHeading(
   title: String,
-  description: String,
+  description: String?,
   modifier: Modifier = Modifier,
   baseStyle: TextStyle = HedvigTheme.typography.headlineMedium,
 ) {
@@ -26,12 +26,14 @@ fun DoubleTitleHeading(
       text = title,
       style = baseStyle.copy(lineBreak = LineBreak.Heading),
     )
-    HedvigText(
-      text = description,
-      style = baseStyle.copy(
-        lineBreak = LineBreak.Heading,
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
-    )
+    if (description != null) {
+      HedvigText(
+        text = description,
+        style = baseStyle.copy(
+          lineBreak = LineBreak.Heading,
+          color = HedvigTheme.colorScheme.textSecondary,
+        ),
+      )
+    }
   }
 }

@@ -20,7 +20,7 @@ import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import hedvig.resources.R
 
@@ -44,7 +44,7 @@ internal fun TravelInsurancePlusExplanationDestination(travelPerilData: List<Tra
 @Composable
 private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, navigateUp: () -> Unit) {
   HedvigScaffold(navigateUp) {
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
       stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
       Modifier.fillMaxWidth().padding(horizontal = 18.dp),

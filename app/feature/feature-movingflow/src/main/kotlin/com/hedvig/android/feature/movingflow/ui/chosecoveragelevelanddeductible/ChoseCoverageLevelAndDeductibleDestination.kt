@@ -67,7 +67,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -178,7 +178,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onCompareCoverageClicked: () -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.TIER_FLOW_TITLE),
       stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
     )
@@ -406,7 +406,7 @@ private fun CommonChoiceDialogContent(
       .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       firstText,
       secondText,
       baseStyle = HedvigTheme.typography.bodySmall,

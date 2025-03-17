@@ -110,7 +110,7 @@ private class PledgeAcceptingSliderStateImpl(
 
   override fun Modifier.sliderSemantics(acceptLabel: String): Modifier {
     return this.semantics(mergeDescendants = true) {
-      onClick(acceptLabel) {
+      onClick(label = acceptLabel) {
         safeSetXOffset(anchors.positionOf(Accepted))
         true
       }
@@ -232,7 +232,7 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
       .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
       .onSizeChanged(state::updateAnchors)
       .then(with(state) { Modifier.containerDraggableModifier() })
-      .then(with(state) { Modifier.sliderSemantics("accept the terms") }),
+      .then(with(state) { Modifier.sliderSemantics(stringResource(R.string.TALKBACK_ACCEPT)) }),
   ) {
     HedvigText(
       text = text,

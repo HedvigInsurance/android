@@ -25,7 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.DoubleTitleHeading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
@@ -71,7 +71,7 @@ private fun NotificationPermissionScreen(
   ) { sideSpacingModifier ->
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     Spacer(Modifier.height(16.dp))
-    DoubleTitleHeading(
+    FlowHeading(
       stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
       stringResource(
         if (notificationPermissionState.status.isGranted) {

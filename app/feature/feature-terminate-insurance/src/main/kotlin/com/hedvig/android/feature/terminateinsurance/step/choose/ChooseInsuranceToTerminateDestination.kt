@@ -38,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
@@ -110,13 +111,10 @@ private fun ChooseInsuranceToTerminateScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
         textForInfoIcon = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
-      ) {
-        HedvigText(
-          style = HedvigTheme.typography.headlineMedium.copy(
-            lineBreak = LineBreak.Heading,
-            color = HedvigTheme.colorScheme.textSecondary,
-          ),
-          text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
+      ) { title ->
+        FlowHeading(
+          title,
+          stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
