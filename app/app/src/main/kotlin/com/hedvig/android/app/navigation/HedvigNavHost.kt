@@ -411,7 +411,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigateToConversation(backStackEntry, conversationId)
     },
     applicationId = hedvigBuildConstants.appId,
-    hedvigDeepLinkContainer = hedvigDeepLinkContainer
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   travelCertificateGraph(
     navigator = navigator,

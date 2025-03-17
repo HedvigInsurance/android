@@ -10,6 +10,8 @@ import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
 import androidx.core.app.PendingIntentCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
+import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.logger.logcat
@@ -40,9 +42,14 @@ class ClaimClosedNotificationSender(
       FLAG_UPDATE_CURRENT,
       true,
     )
+    val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
+    val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
+    logcat { "Mariia: remoteMessage ${remoteMessage.data}" }
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(ic_hedvig_h)
+      .setContentTitle(title)
+      .setContentText(body)
       .setPriority(PRIORITY_MAX)
       .setAutoCancel(true)
       .setCategory(CATEGORY_EVENT)
