@@ -31,16 +31,15 @@ import octopus.type.MoveExtraBuildingType.UNKNOWN__
 internal data class MovingFlowState(
   val id: String,
   val moveFromAddressId: String,
-  val housingType: HousingType?,
+  val housingType: HousingType,
   val addressInfo: AddressInfo,
   val movingDateState: MovingDateState,
-  val propertyState: PropertyState?,
+  val propertyState: PropertyState,
   val movingFlowQuotes: MovingFlowQuotes?,
   // If in the flow there was a quote selected once, we persist that selection so that it's pre-selected when going
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
   val oldAddressCoverageDurationDays: Int?,
-  val mapOfPropertyStates: Map<HousingType, MovingFlowState.PropertyState>,
 ) {
   @Serializable
   data class AddressInfo(
@@ -163,16 +162,13 @@ internal data class MovingFlowState(
 internal fun MovingFlowState.Companion.fromFragments(
   moveIntentFragment: MoveIntentFragment,
   moveIntentQuotesFragment: MoveIntentQuotesFragment?,
-  moveFromAddressId: String,
+  housingType: HousingType,
 ): MovingFlowState {
-  val currentHomeAddress = moveIntentFragment.currentHomeAddresses.firstOrNull { it.id == moveFromAddressId }
-    ?: moveIntentFragment.currentHomeAddresses.first()
-  val suggestedCoInsured = currentHomeAddress.suggestedNumberCoInsured
   val houseState = with(moveIntentFragment) {
     MovingFlowState.PropertyState.HouseState(
       numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
         maxNumberCoInsured = maxHouseNumberCoInsured,
-        suggestedNumberCoInsured = suggestedCoInsured,
+        suggestedNumberCoInsured = suggestedNumberCoInsured,
       ),
       squareMetersState = MovingFlowState.SquareMetersState(
         maxSquareMeters = maxHouseSquareMeters,
@@ -192,7 +188,7 @@ internal fun MovingFlowState.Companion.fromFragments(
       MovingFlowState.PropertyState.ApartmentState(
         numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
           maxNumberCoInsured = maxApartmentNumberCoInsured,
-          suggestedNumberCoInsured = suggestedCoInsured,
+          suggestedNumberCoInsured = suggestedNumberCoInsured,
         ),
         squareMetersState = MovingFlowState.SquareMetersState(
           maxSquareMeters = maxApartmentSquareMeters,
@@ -206,25 +202,24 @@ internal fun MovingFlowState.Companion.fromFragments(
       )
     }
   }
-  val mapOfPropertyStates = mapOf(
-    HousingType.ApartmentOwn to apartmentState(ApartmentState.ApartmentType.BRF),
-    HousingType.ApartmentRent to apartmentState(ApartmentState.ApartmentType.RENT),
-    HousingType.Villa to houseState,
-  )
+  val propertyState = when (housingType) {
+    HousingType.ApartmentOwn -> apartmentState(ApartmentState.ApartmentType.BRF)
+    HousingType.ApartmentRent -> apartmentState(ApartmentState.ApartmentType.RENT)
+    HousingType.Villa -> houseState
+  }
   return MovingFlowState(
     id = moveIntentFragment.id,
-    moveFromAddressId = moveFromAddressId,
-    housingType = null,
+    moveFromAddressId = moveIntentFragment.currentHomeAddresses.first().id,
+    housingType = housingType,
     addressInfo = AddressInfo(null, null),
     movingDateState = MovingFlowState.MovingDateState(
       selectedMovingDate = null,
-      allowedMovingDateRange = currentHomeAddress.minMovingDate..currentHomeAddress.maxMovingDate,
+      allowedMovingDateRange = moveIntentFragment.minMovingDate..moveIntentFragment.maxMovingDate,
     ),
-    propertyState = null,
-    mapOfPropertyStates = mapOfPropertyStates,
+    propertyState = propertyState,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
     lastSelectedHomeQuoteId = null,
-    oldAddressCoverageDurationDays = currentHomeAddress.oldAddressCoverageDurationDays,
+    oldAddressCoverageDurationDays = moveIntentFragment.currentHomeAddresses.first().oldAddressCoverageDurationDays,
   )
 }
 

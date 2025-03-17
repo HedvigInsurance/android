@@ -1,19 +1,17 @@
 # Consider inlining this fragment
 fragment MoveIntentFragment on MoveIntent {
   id
+  minMovingDate
+  maxMovingDate
   maxHouseNumberCoInsured
   maxHouseSquareMeters
   maxApartmentNumberCoInsured
   maxApartmentSquareMeters
   isApartmentAvailableforStudent
   extraBuildingTypes
+  suggestedNumberCoInsured
   currentHomeAddresses {
     id
     oldAddressCoverageDurationDays
-    displayTitle
-    displaySubtitle
-    suggestedNumberCoInsured
-    maxMovingDate
-    minMovingDate
   }
 }

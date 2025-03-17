@@ -547,7 +547,6 @@ private fun ClaimTypeAndDatesSection(
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
       HorizontalItemsWithMaximumSpaceTaken(
-        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
             text = stringResource(R.string.claim_status_claim_details_type),
@@ -573,7 +572,6 @@ private fun ClaimTypeAndDatesSection(
               textAlign = TextAlign.End,
             )
           },
-          spaceBetween = 8.dp,
         )
       }
 
@@ -590,7 +588,6 @@ private fun ClaimTypeAndDatesSection(
               textAlign = TextAlign.End,
             )
           },
-          spaceBetween = 8.dp,
         )
       }
     }

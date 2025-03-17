@@ -75,7 +75,6 @@ internal fun TerminationInfoCardDate(
     shape = HedvigTheme.shapes.cornerLarge,
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
-      spaceBetween = 8.dp,
       startSlot = {
         Column {
           HedvigText(

@@ -108,7 +108,6 @@ internal fun PaymentDetailExpandableCard(
             Spacer(Modifier.height(16.dp))
 
             HorizontalItemsWithMaximumSpaceTaken(
-              spaceBetween = 8.dp,
               startSlot = {
                 HedvigText(
                   text = it.toString(dateTimeFormatter),
@@ -143,7 +142,6 @@ internal fun PaymentDetailExpandableCard(
           Spacer(Modifier.height(16.dp))
           Row {
             HorizontalItemsWithMaximumSpaceTaken(
-              spaceBetween = 8.dp,
               startSlot = {
                 HedvigText(stringResource(id = R.string.PAYMENTS_SUBTOTAL))
               },

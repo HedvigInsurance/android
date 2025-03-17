@@ -209,7 +209,6 @@ private fun SingleItemCheckoutScreen(
     }
     Spacer(Modifier.height(16.dp))
     HorizontalItemsWithMaximumSpaceTaken(
-      spaceBetween = 8.dp,
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
@@ -281,7 +280,6 @@ private fun SingleItemCheckoutScreen(
           }
         }
       },
-      spaceBetween = 8.dp,
     )
     CheckoutMethods(
       availableCheckoutMethods = uiState.availableCheckoutMethods,

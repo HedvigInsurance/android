@@ -150,7 +150,6 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
             endSlot = {
               HedvigText(text = right, textAlign = TextAlign.End)
             },
-            spaceBetween = 8.dp,
           )
         }
       }
