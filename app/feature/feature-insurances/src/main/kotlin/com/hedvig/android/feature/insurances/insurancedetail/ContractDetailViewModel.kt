@@ -64,7 +64,7 @@ internal class ContractDetailPresenter(
           },
           ifRight = { contract ->
             val noTerminationDateYet = when (contract) {
-              is AbstractInsuranceContract.PendingInsuranceContract -> true // TODO()
+              is AbstractInsuranceContract.PendingInsuranceContract -> true
               is InsuranceContract -> contract.terminationDate == null
             }
             currentState = ContractDetailsUiState.Success(
