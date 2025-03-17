@@ -28,10 +28,15 @@ internal class GetContractForContractIdUseCaseImpl(
         .invoke()
         .map { insuranceContractResult ->
           either {
-            val contract = insuranceContractResult
+            val result = insuranceContractResult
               .mapLeft { GetContractForContractIdError.GenericError(it) }
               .bind()
+            val contract = result
+              .contracts
               .firstOrNull { it.id == contractId }
+            val pendingContract = result
+              .pendingContracts
+              .firstOrNull { it.id == contractId } // TODO here!!
             ensureNotNull(contract) {
               GetContractForContractIdError.NoContractFound(
                 ErrorMessage("No contract found with id: $contractId").also {

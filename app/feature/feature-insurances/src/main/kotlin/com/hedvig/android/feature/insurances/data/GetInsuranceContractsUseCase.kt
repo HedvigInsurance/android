@@ -28,14 +28,14 @@ import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
+  fun invoke(): Flow<Either<ErrorMessage, AllContractsData>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, AllContractsData>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
         flow {
@@ -79,7 +79,17 @@ internal class GetInsuranceContractsUseCaseImpl(
             isMovingFlowEnabled = isMovingEnabledForMember,
           )
         }
-        terminatedContracts + activeContracts
+
+        val pendingContracts = insuranceQueryData.currentMember.pendingContracts.map {
+          it.toPendingContract(
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+          )
+        }
+        AllContractsData(
+          terminatedContracts + activeContracts,
+          pendingContracts,
+        )
       }
     }
   }
@@ -89,6 +99,27 @@ private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String 
   currentMember.firstName,
   currentMember.lastName,
 )
+
+private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPendingContract(
+  contractHolderDisplayName: String,
+  contractHolderSSN: String?,
+): PendingInsuranceContract {
+  return PendingInsuranceContract(
+    id = this.id,
+    tierName = this.productVariant.displayNameTier,
+    displayName = this.productVariant.displayName,
+    contractHolderDisplayName = contractHolderDisplayName,
+    contractHolderSSN = contractHolderSSN,
+    exposureDisplayName = exposureDisplayName,
+    productVariant = this.productVariant.toProductVariant(),
+    displayItems = this.displayItems.map {
+      InsuranceAgreement.DisplayItem(
+        it.displayTitle,
+        it.displayValue,
+      )
+    }
+  )
+}
 
 private fun ContractFragment.toContract(
   isTerminated: Boolean,
@@ -167,4 +198,9 @@ private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsur
   activatesOn = activatesOn,
   terminatesOn = terminatesOn,
   hasMissingInfo = hasMissingInfo,
+)
+
+data class AllContractsData(
+  val contracts: List<InsuranceContract>,
+  val pendingContracts: List<PendingInsuranceContract>,
 )

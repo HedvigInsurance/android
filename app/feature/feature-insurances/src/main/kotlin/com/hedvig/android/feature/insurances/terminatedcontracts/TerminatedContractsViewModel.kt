@@ -11,6 +11,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.insurances.data.AllContractsData
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.LogPriority
@@ -51,7 +52,7 @@ internal class TerminatedContractsPresenter(
       getInsuranceContractsUseCaseProvider
         .provide()
         .invoke()
-        .onEach { result: Either<ErrorMessage, List<InsuranceContract>> ->
+        .onEach { result: Either<ErrorMessage, AllContractsData> ->
           result.onLeft { errorMessage ->
             logcat(LogPriority.INFO, errorMessage.throwable) {
               "Terminated contracts failed to load ${errorMessage.message}"
@@ -60,7 +61,9 @@ internal class TerminatedContractsPresenter(
         }
         .collectLatest { insuranceContractResult ->
           either {
-            val terminatedContracts = insuranceContractResult.bind().filter(InsuranceContract::isTerminated)
+            val terminatedContracts = insuranceContractResult.bind()
+              .contracts
+              .filter(InsuranceContract::isTerminated)
             if (terminatedContracts.isEmpty()) {
               logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
               TerminatedContractsUiState.NoTerminatedInsurances

@@ -13,6 +13,20 @@ query InsuranceContracts($addonsEnabled: Boolean!) {
     activeContracts {
       ...ContractFragment
     }
+
+    pendingContracts {
+      id
+      premium {
+        ...MoneyFragment
+      }
+      productVariant {
+        ...ProductVariantFragment
+      }
+      exposureDisplayName
+      displayItems {
+        ...AgreementDisplayItemFragment
+      }
+    }
   }
 }
 

@@ -20,6 +20,7 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.AllContractsData
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -494,6 +495,7 @@ internal class InsurancePresenterTest {
       isLoading = false,
       isRetrying = false,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(),
     )
     presenter.test(initialState) {
       awaitItem().also { uiState ->
@@ -514,12 +516,12 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val contracts = Turbine<List<InsuranceContract>>()
 
-    override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    override fun invoke(): Flow<Either<ErrorMessage, AllContractsData>> {
       return flow {
         emit(
           raceN(
             { errorMessages.awaitItem() },
-            { contracts.awaitItem() },
+            { AllContractsData(contracts.awaitItem(), listOf()) },
           ),
         )
       }

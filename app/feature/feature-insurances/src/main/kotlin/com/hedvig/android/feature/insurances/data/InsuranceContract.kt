@@ -28,6 +28,17 @@ data class InsuranceContract(
   val tierName: String?,
 )
 
+data class PendingInsuranceContract(
+  val id: String,
+  val tierName: String?,
+  val displayName: String,
+  val contractHolderDisplayName: String,
+  val contractHolderSSN: String?,
+  val exposureDisplayName: String,
+  val productVariant: ProductVariant,
+  val displayItems: List<DisplayItem>
+)
+
 data class Addon(
   val addonVariant: AddonVariant,
 )
