@@ -17,10 +17,10 @@ import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.PendingInsuranceContract
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
-import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.PendingInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -164,8 +164,8 @@ private fun loadInsuranceData(
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
     either {
       val result = contractsResult.bind()
-      val contracts = result.contracts
-      val pendingContracts = result.pendingContracts
+      val contracts = result.filterIsInstance<InsuranceContract>()
+      val pendingContracts = result.filterIsInstance<PendingInsuranceContract>()
       val crossSellsData = crossSellsDataResult.bind()
       val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
       val insuranceCards = contracts.filterNot(InsuranceContract::isTerminated)

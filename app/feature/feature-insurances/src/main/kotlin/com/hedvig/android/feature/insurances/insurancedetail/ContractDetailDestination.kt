@@ -60,11 +60,12 @@ import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
-import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -178,6 +179,16 @@ private fun ContractDetailScreen(
         }
 
         is ContractDetailsUiState.Success -> {
+          val contract = state.insuranceContract
+          val productVariant = when (contract) {
+            is AbstractInsuranceContract.InsuranceContract -> contract.currentInsuranceAgreement.productVariant
+            is AbstractInsuranceContract.PendingInsuranceContract -> contract.productVariant
+          }
+          val displayItems = when (contract) {
+            is AbstractInsuranceContract.InsuranceContract -> contract.currentInsuranceAgreement.displayItems
+            is AbstractInsuranceContract.PendingInsuranceContract -> contract.displayItems
+          }
+          val isNotPending = contract is AbstractInsuranceContract.InsuranceContract
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
@@ -202,10 +213,9 @@ private fun ContractDetailScreen(
               key = 1,
               contentType = "InsuranceCard",
             ) {
-              val contract = state.insuranceContract
               InsuranceCard(
                 chips = contract.createChips(),
-                topText = contract.currentInsuranceAgreement.productVariant.displayName,
+                topText = productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -243,60 +253,52 @@ private fun ContractDetailScreen(
                 when (pageIndex) {
                   0 -> {
                     YourInfoTab(
-                      coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
+                      coverageItems = displayItems
                         .map { it.title to it.value },
-                      coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
-                      allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
-                      contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
-                      contractHolderSSN = state.insuranceContract.contractHolderSSN,
-                      allowChangeAddress = state.insuranceContract.supportsAddressChange,
+                      coInsured = if (isNotPending) contract.currentInsuranceAgreement.coInsured else listOf(),
+                      allowEditCoInsured = if (isNotPending) contract.supportsEditCoInsured else false,
+                      contractHolderDisplayName = contract.contractHolderDisplayName,
+                      contractHolderSSN = contract.contractHolderSSN,
+                      allowChangeAddress = if (isNotPending) contract.supportsAddressChange else false,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
-                      allowChangeTier = state.insuranceContract.supportsTierChange,
+                      allowChangeTier = if (isNotPending) contract.supportsTierChange else false,
                       onChangeTierClick = {
-                        onChangeTierClick(state.insuranceContract.id)
+                        onChangeTierClick(contract.id)
                       },
                       onEditCoInsuredClick = {
-                        onEditCoInsuredClick(state.insuranceContract.id)
+                        onEditCoInsuredClick(contract.id)
                       },
                       onMissingInfoClick = {
-                        onMissingInfoClick(state.insuranceContract.id)
+                        onMissingInfoClick(contract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
                       onNavigateToNewConversation = onNavigateToNewConversation,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
-                        val contractGroup =
-                          state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
-                        val contractDisplayName =
-                          state.insuranceContract.currentInsuranceAgreement.productVariant.displayName
                         onCancelInsuranceClick(
                           CancelInsuranceData(
-                            contractId = state.insuranceContract.id,
-                            contractDisplayName = contractDisplayName,
-                            contractExposure = state.insuranceContract.exposureDisplayName,
-                            contractGroup = contractGroup,
-                            activateFrom = state.insuranceContract.currentInsuranceAgreement.activeFrom,
+                            contractId = contract.id,
                           ),
                         )
                       },
-                      upcomingChangesInsuranceAgreement = state.insuranceContract.upcomingInsuranceAgreement,
-                      isTerminated = state.insuranceContract.isTerminated,
+                      upcomingChangesInsuranceAgreement = if (isNotPending) contract.upcomingInsuranceAgreement else null,
+                      isTerminated = if (isNotPending) contract.isTerminated else false,
                     )
                   }
 
                   1 -> {
                     CoverageTab(
-                      state.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
-                      state.insuranceContract.currentInsuranceAgreement.productVariant.perils,
-                      state.insuranceContract.currentInsuranceAgreement.addons,
+                      productVariant.insurableLimits,
+                      productVariant.perils,
+                      if (isNotPending) contract.currentInsuranceAgreement.addons else null,
                     )
                   }
 
                   2 -> {
                     DocumentsTab(
-                      documents = state.insuranceContract.getAllDocuments(),
+                      documents = if (isNotPending) contract.getAllDocuments() else productVariant.documents,
                       onDocumentClicked = openUrl,
-                      addons = state.insuranceContract.currentInsuranceAgreement.addons,
+                      addons = if (isNotPending) contract.currentInsuranceAgreement.addons else null,
                     )
                   }
 
@@ -311,9 +313,9 @@ private fun ContractDetailScreen(
   }
 }
 
-private fun <T> horizontalPagerSpringSpec(visibilityThreshhold: T? = null) = spring<T>(
+private fun <T> horizontalPagerSpringSpec(visibilityThreshold: T? = null) = spring<T>(
   stiffness = Spring.StiffnessMediumLow,
-  visibilityThreshold = visibilityThreshhold,
+  visibilityThreshold = visibilityThreshold,
 )
 
 @Composable

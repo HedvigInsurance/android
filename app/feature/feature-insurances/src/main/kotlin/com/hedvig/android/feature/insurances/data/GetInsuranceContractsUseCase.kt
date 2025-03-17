@@ -12,6 +12,9 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.PendingInsuranceContract
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -28,14 +31,14 @@ import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(): Flow<Either<ErrorMessage, AllContractsData>>
+  fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(): Flow<Either<ErrorMessage, AllContractsData>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
         flow {
@@ -86,10 +89,7 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderSSN = contractHolderSSN,
           )
         }
-        AllContractsData(
-          terminatedContracts + activeContracts,
-          pendingContracts,
-        )
+        terminatedContracts + activeContracts + pendingContracts
       }
     }
   }
@@ -117,7 +117,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
         it.displayTitle,
         it.displayValue,
       )
-    }
+    },
   )
 }
 
@@ -198,9 +198,4 @@ private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsur
   activatesOn = activatesOn,
   terminatesOn = terminatesOn,
   hasMissingInfo = hasMissingInfo,
-)
-
-data class AllContractsData(
-  val contracts: List<InsuranceContract>,
-  val pendingContracts: List<PendingInsuranceContract>,
 )

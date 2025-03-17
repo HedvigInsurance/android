@@ -20,11 +20,11 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.AllContractsData
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
@@ -516,12 +516,12 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val contracts = Turbine<List<InsuranceContract>>()
 
-    override fun invoke(): Flow<Either<ErrorMessage, AllContractsData>> {
+    override fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>> {
       return flow {
         emit(
           raceN(
             { errorMessages.awaitItem() },
-            { AllContractsData(contracts.awaitItem(), listOf()) },
+            { contracts.awaitItem() },
           ),
         )
       }

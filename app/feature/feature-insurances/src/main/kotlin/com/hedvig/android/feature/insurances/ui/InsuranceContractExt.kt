@@ -11,62 +11,80 @@ import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
-import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 @Composable
-internal fun InsuranceContract.createChips(): List<ChipUiData> {
+internal fun AbstractInsuranceContract.createChips(): List<ChipUiData> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-  return listOfNotNull(
-    tierName?.let {
-      ChipUiData(chipText = it, chipType = TIER)
-    },
-    terminationDate?.let { terminationDate ->
-      val text = if (terminationDate == today) {
-        if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
-          stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
-        } else {
-          stringResource(R.string.CONTRACT_STATUS_TERMINATED_TODAY)
-        }
-      } else if (terminationDate < today) {
-        stringResource(R.string.CONTRACT_STATUS_TERMINATED)
-      } else {
-        if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
-          stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE, terminationDate)
-        } else {
-          stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
-        }
+  val listOfChips =
+    when (this) {
+      is AbstractInsuranceContract.PendingInsuranceContract -> {
+        val text = stringResource(R.string.CONTRACT_STATUS_PENDING)
+        listOfNotNull(
+          tierName?.let {
+            ChipUiData(chipText = it, chipType = TIER)
+          },
+          ChipUiData(chipText = text, chipType = GENERAL),
+        )
       }
-      ChipUiData(text, GENERAL)
-    },
-    upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
-      val text = stringResource(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
-      ChipUiData(text, GENERAL)
-    },
-    inceptionDate.let { inceptionDate ->
-      if (inceptionDate > today) {
-        val text = stringResource(R.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
-        ChipUiData(text, GENERAL)
-      } else if (terminationDate == null) {
-        val text = stringResource(id = R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
-        ChipUiData(text, GENERAL)
-      } else {
-        null
-      }
-    },
-  )
+      is AbstractInsuranceContract.InsuranceContract -> listOfNotNull(
+        tierName?.let {
+          ChipUiData(chipText = it, chipType = TIER)
+        },
+        terminationDate?.let { terminationDate ->
+          val text = if (terminationDate == today) {
+            if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+              stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
+            } else {
+              stringResource(R.string.CONTRACT_STATUS_TERMINATED_TODAY)
+            }
+          } else if (terminationDate < today) {
+            stringResource(R.string.CONTRACT_STATUS_TERMINATED)
+          } else {
+            if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+              stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE, terminationDate)
+            } else {
+              stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
+            }
+          }
+          ChipUiData(text, GENERAL)
+        },
+        upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
+          val text = stringResource(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
+          ChipUiData(text, GENERAL)
+        },
+        inceptionDate.let { inceptionDate ->
+          if (inceptionDate > today) {
+            val text = stringResource(R.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+            ChipUiData(text, GENERAL)
+          } else if (terminationDate == null) {
+            val text = stringResource(id = R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+            ChipUiData(text, GENERAL)
+          } else {
+            null
+          }
+        },
+      )
+    }
+  return listOfChips
 }
 
 @Composable
-internal fun InsuranceContract.createPainter(): Painter {
-  return if (isTerminated) {
-    ColorPainter(Color.Black.copy(alpha = 0.7f))
-  } else {
-    currentInsuranceAgreement.productVariant.contractGroup
-      .toDrawableRes()
-      .let { drawableRes -> painterResource(id = drawableRes) }
+internal fun AbstractInsuranceContract.createPainter(): Painter {
+  val productVariant = when (this) {
+    is AbstractInsuranceContract.PendingInsuranceContract -> productVariant
+    is AbstractInsuranceContract.InsuranceContract -> currentInsuranceAgreement.productVariant
+  }
+  return when (this) {
+    is AbstractInsuranceContract.InsuranceContract if isTerminated ->
+      ColorPainter(Color.Black.copy(alpha = 0.7f))
+    else ->
+      productVariant.contractGroup
+        .toDrawableRes()
+        .let { drawableRes -> painterResource(id = drawableRes) }
   }
 }

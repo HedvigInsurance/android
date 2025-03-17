@@ -10,34 +10,43 @@ import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
-data class InsuranceContract(
-  val id: String,
-  val displayName: String,
-  val contractHolderDisplayName: String,
-  val contractHolderSSN: String?,
-  val exposureDisplayName: String,
-  val inceptionDate: LocalDate,
-  val terminationDate: LocalDate?,
-  val currentInsuranceAgreement: InsuranceAgreement,
-  val upcomingInsuranceAgreement: InsuranceAgreement?,
-  val renewalDate: LocalDate?,
-  val supportsAddressChange: Boolean,
-  val supportsEditCoInsured: Boolean,
-  val supportsTierChange: Boolean,
-  val isTerminated: Boolean,
-  val tierName: String?,
-)
+sealed interface AbstractInsuranceContract {
+  val id: String
+  val tierName: String?
+  val displayName: String
+  val contractHolderDisplayName: String
+  val contractHolderSSN: String?
+  val exposureDisplayName: String
 
-data class PendingInsuranceContract(
-  val id: String,
-  val tierName: String?,
-  val displayName: String,
-  val contractHolderDisplayName: String,
-  val contractHolderSSN: String?,
-  val exposureDisplayName: String,
-  val productVariant: ProductVariant,
-  val displayItems: List<DisplayItem>
-)
+  data class InsuranceContract(
+    override val id: String,
+    override val displayName: String,
+    override val contractHolderDisplayName: String,
+    override val contractHolderSSN: String?,
+    override val exposureDisplayName: String,
+    val inceptionDate: LocalDate,
+    val terminationDate: LocalDate?,
+    val currentInsuranceAgreement: InsuranceAgreement,
+    val upcomingInsuranceAgreement: InsuranceAgreement?,
+    val renewalDate: LocalDate?,
+    val supportsAddressChange: Boolean,
+    val supportsEditCoInsured: Boolean,
+    val supportsTierChange: Boolean,
+    val isTerminated: Boolean,
+    override val tierName: String?,
+  ) : AbstractInsuranceContract
+
+  data class PendingInsuranceContract(
+    override val id: String,
+    override val tierName: String?,
+    override val displayName: String,
+    override val contractHolderDisplayName: String,
+    override val contractHolderSSN: String?,
+    override val exposureDisplayName: String,
+    val productVariant: ProductVariant,
+    val displayItems: List<DisplayItem>,
+  ) : AbstractInsuranceContract
+}
 
 data class Addon(
   val addonVariant: AddonVariant,

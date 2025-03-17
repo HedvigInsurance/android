@@ -46,6 +46,7 @@ class GetInsuranceContractsUseCaseImplTest {
             activeContracts = listOf(
               buildContractWithTier(true),
             )
+            pendingContracts = listOf()
           }
         },
       )
@@ -65,6 +66,7 @@ class GetInsuranceContractsUseCaseImplTest {
             activeContracts = listOf(
               buildContractWithTier(false),
             )
+            pendingContracts = listOf()
           }
         },
       )
@@ -116,7 +118,12 @@ class GetInsuranceContractsUseCaseImplTest {
       )
       val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
-        it.first().supportsTierChange
+        val first = it.first()
+        if (first is AbstractInsuranceContract.InsuranceContract) {
+          first.supportsTierChange
+        } else {
+          false
+        }
       }.isTrue()
     }
 
@@ -137,7 +144,12 @@ class GetInsuranceContractsUseCaseImplTest {
       )
       val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
-        it.first().supportsTierChange
+        val first = it.first()
+        if (first is AbstractInsuranceContract.InsuranceContract) {
+          first.supportsTierChange
+        } else {
+          true
+        }
       }.isFalse()
     }
 }

@@ -69,8 +69,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
+import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -246,6 +247,11 @@ private fun InsuranceScreenContent(
             onInsuranceCardClick = onInsuranceCardClick,
             contracts = uiState.contracts,
           )
+          ContractsSection(
+            imageLoader = imageLoader,
+            onInsuranceCardClick = onInsuranceCardClick,
+            contracts = uiState.pendingContracts,
+          )
           if (uiState.travelAddonBannerInfo != null) {
             TravelAddonBanner(
               travelAddonBannerInfo = uiState.travelAddonBannerInfo,
@@ -292,7 +298,7 @@ private fun InsuranceScreenContent(
 
 @Composable
 private fun ContractsSection(
-  contracts: List<InsuranceContract>,
+  contracts: List<AbstractInsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -319,15 +325,22 @@ private fun ContractsSection(
 
 @Composable
 private fun InsuranceCard(
-  contract: InsuranceContract,
+  contract: AbstractInsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
+  val topText = when (contract) {
+    is InsuranceContract ->
+      contract.currentInsuranceAgreement.productVariant.displayName
+
+    is AbstractInsuranceContract.PendingInsuranceContract ->
+      contract.displayName
+  }
   InsuranceCard(
     backgroundImageUrl = null,
     chips = contract.createChips(),
-    topText = contract.currentInsuranceAgreement.productVariant.displayName,
+    topText = topText,
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
     modifier = modifier
@@ -411,6 +424,7 @@ private fun PreviewInsuranceScreen(
           isLoading = false,
           isRetrying = false,
           travelAddonBannerInfo = null,
+          pendingContracts = listOf(previewPendingContract),
         ),
         {},
         {},
@@ -461,6 +475,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -472,6 +487,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
       contracts =
@@ -498,6 +514,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         eligibleInsurancesIds = nonEmptyListOf("id"),
         bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
       ),
+      pendingContracts = listOf(),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -509,6 +526,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -535,6 +553,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -546,6 +565,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -557,8 +577,31 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
+      pendingContracts = listOf(previewPendingContract),
     ),
   ),
+)
+
+private val previewPendingContract = AbstractInsuranceContract.PendingInsuranceContract(
+  "1",
+  "Test",
+  displayName = "Test pending display name",
+  exposureDisplayName = "Pending street",
+  contractHolderSSN = null,
+  contractHolderDisplayName = "Pending holder name",
+  productVariant = ProductVariant(
+    displayName = "",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = null,
+    perils = listOf(),
+    insurableLimits = listOf(),
+    documents = listOf(),
+    displayTierName = "Standard",
+    tierDescription = "Our most standard coverage",
+    termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
+  ),
+  displayItems = listOf(),
 )
 
 private val previewInsurance = InsuranceContract(

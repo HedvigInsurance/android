@@ -1,3 +1,8 @@
+import kotlin.text.set
+import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -7,6 +12,12 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+}
+
+kotlin {
+  compilerOptions {
+    freeCompilerArgs.add("-Xwhen-guards")
+  }
 }
 
 android {
