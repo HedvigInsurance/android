@@ -5,7 +5,6 @@ query ContractsToTerminate {
       exposureDisplayName
       terminationDate
       currentAgreement {
-        activeFrom
         productVariant {
           displayName
           typeOfContract
