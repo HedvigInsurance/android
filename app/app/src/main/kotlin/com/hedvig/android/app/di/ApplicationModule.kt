@@ -272,7 +272,7 @@ private val notificationModule = module {
       get<Context>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
-      HedvigNotificationChannel.Payments, // todo: it is related to pay-outs
+      HedvigNotificationChannel.Payments,
     )
   } bind NotificationSender::class
   single<ContactInfoSender> {

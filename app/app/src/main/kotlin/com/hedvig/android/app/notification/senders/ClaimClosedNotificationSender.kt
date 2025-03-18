@@ -4,16 +4,14 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.CATEGORY_EVENT
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
 import androidx.core.app.PendingIntentCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
-import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -32,6 +30,7 @@ class ClaimClosedNotificationSender(
     val intentUri = if (claimId != null) {
       hedvigDeepLinkContainer.claimDetails.first().replace("{claimId}", claimId)
     } else {
+      logcat(LogPriority.WARN) { "ClaimClosedNotificationSender: claimId from remoteMessage is null" }
       hedvigDeepLinkContainer.home.first()
     }.toUri()
     logcat { "ChatNotificationSender sending notification with deeplink uri:$intentUri" }
@@ -42,9 +41,8 @@ class ClaimClosedNotificationSender(
       FLAG_UPDATE_CURRENT,
       true,
     )
-    val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
-    val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
-    logcat { "Mariia: remoteMessage ${remoteMessage.data}" }
+    val title = remoteMessage.titleFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(ic_hedvig_h)
@@ -52,7 +50,6 @@ class ClaimClosedNotificationSender(
       .setContentText(body)
       .setPriority(PRIORITY_MAX)
       .setAutoCancel(true)
-      .setCategory(CATEGORY_EVENT)
       .setVisibility(VISIBILITY_PRIVATE)
       .setContentIntent(claimClosedPendingIntent)
       .build()
