@@ -1,0 +1,7 @@
+mutation ClaimAcknowledgeClosedStatus($claimId: ID!) {
+  claimAcknowledgeClosedStatus(id: $claimId) {
+    userError {
+      message
+    }
+  }
+}
