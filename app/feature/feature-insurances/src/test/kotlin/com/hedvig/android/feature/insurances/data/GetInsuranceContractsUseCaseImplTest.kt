@@ -119,11 +119,11 @@ class GetInsuranceContractsUseCaseImplTest {
       val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
         val first = it.first()
-        if (first is InsuranceContract.EstablishedInsuranceContract) {
-          first.supportsTierChange
-        } else {
-          false
+        val result = when (first) {
+          is InsuranceContract.EstablishedInsuranceContract -> first.supportsTierChange
+          is InsuranceContract.PendingInsuranceContract -> false
         }
+        result
       }.isTrue()
     }
 
@@ -145,11 +145,11 @@ class GetInsuranceContractsUseCaseImplTest {
       val result = subjectUseCase.invoke().first()
       assertk.assertThat(result).isRight().transform {
         val first = it.first()
-        if (first is InsuranceContract.EstablishedInsuranceContract) {
-          first.supportsTierChange
-        } else {
-          true
+        val result = when (first) {
+          is InsuranceContract.EstablishedInsuranceContract -> first.supportsTierChange
+          is InsuranceContract.PendingInsuranceContract -> true
         }
+        result
       }.isFalse()
     }
 }
