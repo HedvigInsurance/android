@@ -48,6 +48,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
   val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
+      spaceBetween = 8.dp,
       startSlot = {
         Row {
           HighlightLabel(

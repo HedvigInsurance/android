@@ -59,6 +59,7 @@ internal class GetInsuranceContractsUseCaseImpl(
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
         val isMovingEnabledForMember =
           insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true && isMovingFlowFlagEnabled
+
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
             isTerminated = true,
