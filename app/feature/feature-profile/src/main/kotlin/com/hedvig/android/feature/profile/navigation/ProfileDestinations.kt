@@ -17,7 +17,7 @@ internal sealed interface ProfileDestinations {
   data object Eurobonus : ProfileDestinations, Destination
 
   @Serializable
-  data object MyInfo : ProfileDestinations, Destination
+  data object ContactInfo : ProfileDestinations, Destination
 
   @Serializable
   data object AboutApp : ProfileDestinations, Destination

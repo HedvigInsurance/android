@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
@@ -33,8 +38,10 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
@@ -94,35 +101,16 @@ fun HedvigTextField(
     label = { HedvigText(text = labelText) },
     suffix = suffix,
     leadingContent = leadingContent,
-    trailingContent = when {
-      trailingContent != null -> {
-        trailingContent
-      }
-      errorState.isError -> {
-        { ErrorTrailingIcon(trailingIconColor) }
-      }
-
-      readOnly -> {
-        { ReadOnlyTrailingIcon(trailingIconColor) }
-      }
-
-      isFocused && text.isNotEmpty() -> {
-        {
-          IsNotEmptyTrailingIcon(
-            trailingIconColor,
-            {
-              if (enabled && !readOnly) {
-                onValueChange("")
-              }
-            },
-          )
-        }
-      }
-
-      else -> {
-        null
-      }
-    },
+    trailingContent = TrailingContent(
+      trailingContent = trailingContent,
+      errorState = errorState,
+      trailingIconColor = trailingIconColor,
+      readOnly = readOnly,
+      isFocused = isFocused,
+      text = text,
+      enabled = enabled,
+      clearText = { onValueChange("") },
+    ),
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
@@ -138,6 +126,47 @@ fun HedvigTextField(
     minLines = minLines,
     interactionSource = interactionSource,
   )
+}
+
+@Composable
+private fun TrailingContent(
+  trailingContent: @Composable() (() -> Unit)?,
+  errorState: ErrorState,
+  trailingIconColor: Color,
+  readOnly: Boolean,
+  isFocused: Boolean,
+  text: String,
+  enabled: Boolean,
+  clearText: () -> Unit,
+) = when {
+  trailingContent != null -> {
+    trailingContent
+  }
+
+  errorState.isError -> {
+    { ErrorTrailingIcon(trailingIconColor) }
+  }
+
+  readOnly -> {
+    { ReadOnlyTrailingIcon(trailingIconColor) }
+  }
+
+  isFocused && text.isNotEmpty() -> {
+    {
+      IsNotEmptyTrailingIcon(
+        trailingIconColor,
+        {
+          if (enabled && !readOnly) {
+            clearText()
+          }
+        },
+      )
+    }
+  }
+
+  else -> {
+    null
+  }
 }
 
 @Composable
@@ -185,35 +214,16 @@ fun HedvigTextField(
     label = { HedvigText(text = labelText) },
     suffix = suffix,
     leadingContent = leadingContent,
-    trailingContent = when {
-      trailingContent != null -> {
-        trailingContent
-      }
-      errorState.isError -> {
-        { ErrorTrailingIcon(trailingIconColor) }
-      }
-
-      readOnly -> {
-        { ReadOnlyTrailingIcon(trailingIconColor) }
-      }
-
-      isFocused && textValue.text.isNotEmpty() -> {
-        {
-          IsNotEmptyTrailingIcon(
-            trailingIconColor,
-            {
-              if (enabled && !readOnly) {
-                onValueChange(TextFieldValue(""))
-              }
-            },
-          )
-        }
-      }
-
-      else -> {
-        null
-      }
-    },
+    trailingContent = TrailingContent(
+      trailingContent = trailingContent,
+      errorState = errorState,
+      trailingIconColor = trailingIconColor,
+      readOnly = readOnly,
+      isFocused = isFocused,
+      text = textValue.text,
+      enabled = enabled,
+      clearText = { onValueChange(TextFieldValue("")) },
+    ),
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
@@ -277,6 +287,70 @@ fun HedvigTextField(
     maxLines = maxLines,
     minLines = minLines,
     interactionSource = interactionSource ?: remember { MutableInteractionSource() },
+  )
+}
+
+@Composable
+fun HedvigTextField(
+  state: TextFieldState,
+  labelText: String,
+  textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
+  modifier: Modifier = Modifier,
+  suffix: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
+  errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  inputTransformation: InputTransformation? = null,
+  onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardActions: KeyboardActionHandler? = null,
+  lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+) {
+  val configuration = HedvigTextFieldDefaults.configuration()
+  val size = textFieldSize.size
+  val colors = HedvigTextFieldDefaults.colors()
+  val trailingIconColor by colors.trailingContentColor(
+    readOnly = readOnly,
+    enabled = enabled,
+    isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
+  )
+  val isFocused by interactionSource.collectIsFocusedAsState()
+  HedvigTextField(
+    state = state,
+    colors = colors,
+    configuration = configuration,
+    size = size,
+    modifier = modifier,
+    enabled = enabled,
+    readOnly = readOnly,
+    label = { HedvigText(text = labelText) },
+    suffix = suffix,
+    leadingContent = leadingContent,
+    trailingContent = TrailingContent(
+      trailingContent = trailingContent,
+      errorState = errorState,
+      trailingIconColor = trailingIconColor,
+      readOnly = readOnly,
+      isFocused = isFocused,
+      text = state.text.toString(),
+      enabled = enabled,
+      clearText = { state.clearText() },
+    ),
+    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
+      { HedvigText(text = errorState.message) }
+    } else {
+      null
+    },
+    isError = errorState.isError,
+    inputTransformation = inputTransformation,
+    onTextLayout = onTextLayout,
+    lineLimits = lineLimits,
+    keyboardOptions = keyboardOptions,
+    keyboardActions = keyboardActions,
+    interactionSource = interactionSource,
   )
 }
 
@@ -680,6 +754,66 @@ private fun HedvigTextField(
 
 @Composable
 private fun HedvigTextField(
+  state: TextFieldState,
+  colors: HedvigTextFieldColors,
+  configuration: HedvigTextFieldConfiguration,
+  size: HedvigTextFieldSize,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  inputTransformation: InputTransformation? = null,
+  label: @Composable (() -> Unit)? = null,
+  suffix: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
+  supportingText: @Composable (() -> Unit)? = null,
+  isError: Boolean = false,
+  onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardActions: KeyboardActionHandler? = null,
+  lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+) {
+  CompositionLocalProvider(LocalTextSelectionColors provides colors.selectionColors) {
+    BasicTextField(
+      state = state,
+      modifier = modifier,
+      enabled = enabled,
+      readOnly = readOnly,
+      inputTransformation = inputTransformation,
+      textStyle = size.textStyle.merge(color = colors.textColor(state.text.toString(), enabled, isError).value),
+      keyboardOptions = keyboardOptions,
+      onKeyboardAction = keyboardActions,
+      lineLimits = lineLimits,
+      onTextLayout = onTextLayout,
+      interactionSource = interactionSource,
+      cursorBrush = SolidColor(colors.cursorColor),
+      decorator = @Composable { innerTextField ->
+        HedvigTextFieldDecorationBox(
+          value = state.text.toString(),
+          colors = colors,
+          configuration = configuration,
+          size = size,
+          // Consider adapting this to the new TextFieldState API if it's required for some reason
+          visualTransformation = VisualTransformation.None,
+          innerTextField = innerTextField,
+          label = label,
+          suffix = suffix,
+          leadingContent = leadingContent,
+          trailingContent = trailingContent,
+          supportingText = supportingText,
+          enabled = enabled,
+          isError = isError,
+          readOnly = readOnly,
+          interactionSource = interactionSource,
+        )
+      },
+    )
+  }
+}
+
+@Composable
+private fun HedvigTextField(
   value: TextFieldValue,
   onValueChange: (TextFieldValue) -> Unit,
   colors: HedvigTextFieldColors,
@@ -722,7 +856,7 @@ private fun HedvigTextField(
       cursorBrush = SolidColor(colors.cursorColor),
       decorationBox = @Composable { innerTextField ->
         HedvigTextFieldDecorationBox(
-          value = value.text, // todo: not sure here
+          value = value.text,
           colors = colors,
           configuration = configuration,
           size = size,
