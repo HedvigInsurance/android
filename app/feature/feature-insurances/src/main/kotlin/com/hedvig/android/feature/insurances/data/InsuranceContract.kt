@@ -10,15 +10,24 @@ import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
-sealed interface AbstractInsuranceContract {
+sealed interface InsuranceContract {
   val id: String
   val tierName: String?
   val displayName: String
   val contractHolderDisplayName: String
   val contractHolderSSN: String?
   val exposureDisplayName: String
+  val productVariant: ProductVariant
+  val displayItems: List<DisplayItem>
+  val coInsured: List<InsuranceAgreement.CoInsured>
+  val supportsEditCoInsured: Boolean
+  val supportsAddressChange: Boolean
+  val supportsTierChange: Boolean
+  val upcomingInsuranceAgreement: InsuranceAgreement?
+  val isTerminated: Boolean
+  val addons: List<Addon>?
 
-  data class InsuranceContract(
+  data class EstablishedInsuranceContract(
     override val id: String,
     override val displayName: String,
     override val contractHolderDisplayName: String,
@@ -27,14 +36,19 @@ sealed interface AbstractInsuranceContract {
     val inceptionDate: LocalDate,
     val terminationDate: LocalDate?,
     val currentInsuranceAgreement: InsuranceAgreement,
-    val upcomingInsuranceAgreement: InsuranceAgreement?,
+    override val upcomingInsuranceAgreement: InsuranceAgreement?,
     val renewalDate: LocalDate?,
-    val supportsAddressChange: Boolean,
-    val supportsEditCoInsured: Boolean,
-    val supportsTierChange: Boolean,
-    val isTerminated: Boolean,
+    override val supportsAddressChange: Boolean,
+    override val supportsEditCoInsured: Boolean,
+    override val supportsTierChange: Boolean,
+    override val isTerminated: Boolean,
     override val tierName: String?,
-  ) : AbstractInsuranceContract
+  ) : InsuranceContract {
+    override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
+    override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
+    override val coInsured: List<InsuranceAgreement.CoInsured> = currentInsuranceAgreement.coInsured
+    override val addons: List<Addon>? = currentInsuranceAgreement.addons
+  }
 
   data class PendingInsuranceContract(
     override val id: String,
@@ -43,9 +57,17 @@ sealed interface AbstractInsuranceContract {
     override val contractHolderDisplayName: String,
     override val contractHolderSSN: String?,
     override val exposureDisplayName: String,
-    val productVariant: ProductVariant,
-    val displayItems: List<DisplayItem>,
-  ) : AbstractInsuranceContract
+    override val productVariant: ProductVariant,
+    override val displayItems: List<DisplayItem>,
+  ) : InsuranceContract {
+    override val coInsured: List<InsuranceAgreement.CoInsured> = listOf()
+    override val supportsEditCoInsured: Boolean = false
+    override val supportsAddressChange: Boolean = false
+    override val supportsTierChange: Boolean = false
+    override val upcomingInsuranceAgreement: InsuranceAgreement? = null
+    override val isTerminated: Boolean = false
+    override val addons: List<Addon>? = null
+  }
 }
 
 data class Addon(

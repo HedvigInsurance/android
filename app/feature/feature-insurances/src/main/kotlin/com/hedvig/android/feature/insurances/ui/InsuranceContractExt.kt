@@ -11,18 +11,18 @@ import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 @Composable
-internal fun AbstractInsuranceContract.createChips(): List<ChipUiData> {
+internal fun InsuranceContract.createChips(): List<ChipUiData> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
   val listOfChips =
     when (this) {
-      is AbstractInsuranceContract.PendingInsuranceContract -> {
+      is InsuranceContract.PendingInsuranceContract -> {
         val text = stringResource(R.string.CONTRACT_STATUS_PENDING)
         listOfNotNull(
           tierName?.let {
@@ -31,7 +31,7 @@ internal fun AbstractInsuranceContract.createChips(): List<ChipUiData> {
           ChipUiData(chipText = text, chipType = GENERAL),
         )
       }
-      is AbstractInsuranceContract.InsuranceContract -> listOfNotNull(
+      is InsuranceContract.EstablishedInsuranceContract -> listOfNotNull(
         tierName?.let {
           ChipUiData(chipText = it, chipType = TIER)
         },
@@ -74,13 +74,13 @@ internal fun AbstractInsuranceContract.createChips(): List<ChipUiData> {
 }
 
 @Composable
-internal fun AbstractInsuranceContract.createPainter(): Painter {
+internal fun InsuranceContract.createPainter(): Painter {
   val productVariant = when (this) {
-    is AbstractInsuranceContract.PendingInsuranceContract -> productVariant
-    is AbstractInsuranceContract.InsuranceContract -> currentInsuranceAgreement.productVariant
+    is InsuranceContract.PendingInsuranceContract -> productVariant
+    is InsuranceContract.EstablishedInsuranceContract -> currentInsuranceAgreement.productVariant
   }
   return when (this) {
-    is AbstractInsuranceContract.InsuranceContract if isTerminated ->
+    is InsuranceContract.EstablishedInsuranceContract if isTerminated ->
       ColorPainter(Color.Black.copy(alpha = 0.7f))
     else ->
       productVariant.contractGroup

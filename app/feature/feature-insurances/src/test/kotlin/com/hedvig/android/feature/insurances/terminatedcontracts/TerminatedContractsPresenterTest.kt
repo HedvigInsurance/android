@@ -11,9 +11,9 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.flow.Flow
@@ -118,7 +118,7 @@ class TerminatedContractsPresenterTest {
       getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
       assertThat(awaitItem()).isEqualTo(
         TerminatedContractsUiState.Success(
-          insuranceContracts = getInsuranceContractsUseCase.getTerminatedInsurances(),
+          establishedInsuranceContracts = getInsuranceContractsUseCase.getTerminatedInsurances(),
         ),
       )
     }
@@ -133,7 +133,7 @@ class TerminatedContractsPresenterTest {
       getInsuranceContractsUseCase.addTerminatedAndActiveInsurancesToResponse()
       assertThat(awaitItem()).isEqualTo(
         TerminatedContractsUiState.Success(
-          insuranceContracts = getInsuranceContractsUseCase.getTerminatedInsurances(),
+          establishedInsuranceContracts = getInsuranceContractsUseCase.getTerminatedInsurances(),
         ),
       )
     }
@@ -153,9 +153,9 @@ class TerminatedContractsPresenterTest {
   }
 
   internal class FakeGetInsuranceContractsUseCase() : GetInsuranceContractsUseCase {
-    private val responseTurbine = Turbine<Either<ErrorMessage, List<InsuranceContract>>>()
+    private val responseTurbine = Turbine<Either<ErrorMessage, List<EstablishedInsuranceContract>>>()
 
-    override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    override fun invoke(): Flow<Either<ErrorMessage, List<EstablishedInsuranceContract>>> {
       return responseTurbine.asChannel().receiveAsFlow()
     }
 
@@ -184,7 +184,7 @@ class TerminatedContractsPresenterTest {
     fun getAnotherSetOfTerminatedInsurances() = (terminatedInsurances + listOf(extraTerminatedInsurance))
 
     private val terminatedInsurances = listOf(
-      InsuranceContract(
+      EstablishedInsuranceContract(
         "contractId1",
         "displayName#1",
         exposureDisplayName = "Test exposure",
@@ -221,7 +221,7 @@ class TerminatedContractsPresenterTest {
         supportsTierChange = true,
         tierName = "STANDARD",
       ),
-      InsuranceContract(
+      EstablishedInsuranceContract(
         "contractId2",
         "displayName#2",
         exposureDisplayName = "Test exposure",
@@ -260,7 +260,7 @@ class TerminatedContractsPresenterTest {
       ),
     )
 
-    private val extraTerminatedInsurance = InsuranceContract(
+    private val extraTerminatedInsurance = EstablishedInsuranceContract(
       "contractId3",
       "displayName#3",
       exposureDisplayName = "Test exposure 3",
@@ -299,7 +299,7 @@ class TerminatedContractsPresenterTest {
     )
 
     private val activeInsurances = listOf(
-      InsuranceContract(
+      EstablishedInsuranceContract(
         "contractId4",
         "displayName#1",
         exposureDisplayName = "Test exposure",
@@ -336,7 +336,7 @@ class TerminatedContractsPresenterTest {
         supportsTierChange = true,
         tierName = "STANDARD",
       ),
-      InsuranceContract(
+      EstablishedInsuranceContract(
         "contractId4",
         "displayName#2",
         exposureDisplayName = "Test exposure",

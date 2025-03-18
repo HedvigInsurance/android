@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -64,8 +64,8 @@ internal class ContractDetailPresenter(
           },
           ifRight = { contract ->
             val noTerminationDateYet = when (contract) {
-              is AbstractInsuranceContract.PendingInsuranceContract -> true
-              is InsuranceContract -> contract.terminationDate == null
+              is InsuranceContract.PendingInsuranceContract -> true
+              is EstablishedInsuranceContract -> contract.terminationDate == null
             }
             currentState = ContractDetailsUiState.Success(
               insuranceContract = contract,
@@ -81,7 +81,7 @@ internal class ContractDetailPresenter(
 
 internal sealed interface ContractDetailsUiState {
   data class Success(
-    val insuranceContract: AbstractInsuranceContract,
+    val insuranceContract: InsuranceContract,
     val allowTerminatingInsurance: Boolean,
   ) : ContractDetailsUiState
 

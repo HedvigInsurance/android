@@ -20,11 +20,11 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
@@ -45,8 +45,8 @@ internal class InsurancePresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val validContracts: List<InsuranceContract> = listOf(
-    InsuranceContract(
+  private val validContracts: List<EstablishedInsuranceContract> = listOf(
+    EstablishedInsuranceContract(
       "contractId#1",
       "displayName#1",
       exposureDisplayName = "Test exposure",
@@ -83,7 +83,7 @@ internal class InsurancePresenterTest {
       supportsTierChange = true,
       tierName = "STANDARD",
     ),
-    InsuranceContract(
+    EstablishedInsuranceContract(
       id = "contractId#2",
       displayName = "displayName#2",
       exposureDisplayName = "Test exposure",
@@ -121,8 +121,8 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
     ),
   )
-  private val terminatedContracts: List<InsuranceContract> = listOf(
-    InsuranceContract(
+  private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
+    EstablishedInsuranceContract(
       id = "contractId#3",
       displayName = "displayName#3",
       exposureDisplayName = "Test exposure",
@@ -159,7 +159,7 @@ internal class InsurancePresenterTest {
       supportsTierChange = true,
       tierName = "STANDARD",
     ),
-    InsuranceContract(
+    EstablishedInsuranceContract(
       id = "contractId#4",
       displayName = "displayName#4",
       exposureDisplayName = "Test exposure",
@@ -235,7 +235,7 @@ internal class InsurancePresenterTest {
           assertThat(uiState.isLoading).isFalse()
           assertThat(uiState.isRetrying).isFalse()
           assertThat(uiState.quantityOfCancelledInsurances)
-            .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
+            .isEqualTo(validContracts.count(EstablishedInsuranceContract::isTerminated))
           assertThat(uiState.contracts.map { it.id }).containsSubList(validContracts.map { it.id })
           assertThat(uiState.crossSells.map { it.id }).containsSubList(validCrossSells.map { it.id })
           assertThat(uiState.showNotificationBadge)
@@ -339,7 +339,7 @@ internal class InsurancePresenterTest {
         assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.isRetrying).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances)
-          .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
+          .isEqualTo(validContracts.count(EstablishedInsuranceContract::isTerminated))
       }
     }
   }
@@ -365,10 +365,12 @@ internal class InsurancePresenterTest {
       getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
       awaitItem().also { uiState ->
         assertAll {
-          assertThat(uiState.contracts.map(InsuranceContract::id))
-            .containsSubList(allContracts.filterNot(InsuranceContract::isTerminated).map(InsuranceContract::id))
+          assertThat(uiState.contracts.map(EstablishedInsuranceContract::id))
+            .containsSubList(
+              allContracts.filterNot(EstablishedInsuranceContract::isTerminated).map(EstablishedInsuranceContract::id),
+            )
           assertThat(uiState.quantityOfCancelledInsurances)
-            .isEqualTo(allContracts.count(InsuranceContract::isTerminated))
+            .isEqualTo(allContracts.count(EstablishedInsuranceContract::isTerminated))
         }
       }
     }
@@ -514,9 +516,9 @@ internal class InsurancePresenterTest {
 
   private class FakeGetInsuranceContractsUseCase : GetInsuranceContractsUseCase {
     val errorMessages = Turbine<ErrorMessage>()
-    val contracts = Turbine<List<InsuranceContract>>()
+    val contracts = Turbine<List<EstablishedInsuranceContract>>()
 
-    override fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>> {
+    override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
       return flow {
         emit(
           raceN(

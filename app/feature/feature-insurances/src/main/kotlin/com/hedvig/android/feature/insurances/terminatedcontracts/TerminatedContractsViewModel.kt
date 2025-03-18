@@ -11,9 +11,9 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -52,7 +52,7 @@ internal class TerminatedContractsPresenter(
       getInsuranceContractsUseCaseProvider
         .provide()
         .invoke()
-        .onEach { result: Either<ErrorMessage, List<AbstractInsuranceContract>> ->
+        .onEach { result: Either<ErrorMessage, List<InsuranceContract>> ->
           result.onLeft { errorMessage ->
             logcat(LogPriority.INFO, errorMessage.throwable) {
               "Terminated contracts failed to load ${errorMessage.message}"
@@ -62,7 +62,7 @@ internal class TerminatedContractsPresenter(
         .collectLatest { insuranceContractResult ->
           either {
             val terminatedContracts = insuranceContractResult.bind()
-              .filterIsInstance<InsuranceContract>().filter { it.isTerminated }
+              .filterIsInstance<EstablishedInsuranceContract>().filter { it.isTerminated }
             if (terminatedContracts.isEmpty()) {
               logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
               TerminatedContractsUiState.NoTerminatedInsurances
@@ -85,7 +85,7 @@ internal class TerminatedContractsPresenter(
 
 internal sealed interface TerminatedContractsUiState {
   data class Success(
-    val insuranceContracts: List<InsuranceContract>,
+    val establishedInsuranceContracts: List<EstablishedInsuranceContract>,
   ) : TerminatedContractsUiState
 
   data object NoTerminatedInsurances : TerminatedContractsUiState

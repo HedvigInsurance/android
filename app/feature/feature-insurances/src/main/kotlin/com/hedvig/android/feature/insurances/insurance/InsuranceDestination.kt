@@ -69,9 +69,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -293,7 +293,7 @@ private fun InsuranceScreenContent(
 
 @Composable
 private fun ContractsSection(
-  contracts: List<AbstractInsuranceContract>,
+  contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -320,16 +320,16 @@ private fun ContractsSection(
 
 @Composable
 private fun InsuranceCard(
-  contract: AbstractInsuranceContract,
+  contract: InsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
   val topText = when (contract) {
-    is InsuranceContract ->
+    is EstablishedInsuranceContract ->
       contract.currentInsuranceAgreement.productVariant.displayName
 
-    is AbstractInsuranceContract.PendingInsuranceContract ->
+    is InsuranceContract.PendingInsuranceContract ->
       contract.displayName
   }
   InsuranceCard(
@@ -577,7 +577,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
   ),
 )
 
-private val previewPendingContract = AbstractInsuranceContract.PendingInsuranceContract(
+private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
   "1",
   "Test",
   displayName = "Test pending display name",
@@ -599,7 +599,7 @@ private val previewPendingContract = AbstractInsuranceContract.PendingInsuranceC
   displayItems = listOf(),
 )
 
-private val previewInsurance = InsuranceContract(
+private val previewInsurance = EstablishedInsuranceContract(
   "1",
   "Test123",
   exposureDisplayName = "",

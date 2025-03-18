@@ -5,8 +5,8 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 internal interface GetContractForContractIdUseCase {
-  fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, AbstractInsuranceContract>>
+  fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>>
 }
 
 internal class GetContractForContractIdUseCaseImpl(
   private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
 ) : GetContractForContractIdUseCase {
-  override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, AbstractInsuranceContract>> {
+  override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
     return flow {
       getInsuranceContractsUseCaseProvider
         .provide()

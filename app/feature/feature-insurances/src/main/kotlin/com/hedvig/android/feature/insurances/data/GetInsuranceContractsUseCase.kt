@@ -12,9 +12,8 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.PendingInsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -31,14 +30,14 @@ import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>>
+  fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override fun invoke(): Flow<Either<ErrorMessage, List<AbstractInsuranceContract>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
         flow {
@@ -127,8 +126,8 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
-): InsuranceContract {
-  return InsuranceContract(
+): EstablishedInsuranceContract {
+  return EstablishedInsuranceContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
     displayName = currentAgreement.productVariant.displayName,

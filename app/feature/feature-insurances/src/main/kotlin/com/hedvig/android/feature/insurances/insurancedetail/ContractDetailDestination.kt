@@ -60,12 +60,12 @@ import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract
-import com.hedvig.android.feature.insurances.data.AbstractInsuranceContract.InsuranceContract
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -180,15 +180,6 @@ private fun ContractDetailScreen(
 
         is ContractDetailsUiState.Success -> {
           val contract = state.insuranceContract
-          val productVariant = when (contract) {
-            is AbstractInsuranceContract.InsuranceContract -> contract.currentInsuranceAgreement.productVariant
-            is AbstractInsuranceContract.PendingInsuranceContract -> contract.productVariant
-          }
-          val displayItems = when (contract) {
-            is AbstractInsuranceContract.InsuranceContract -> contract.currentInsuranceAgreement.displayItems
-            is AbstractInsuranceContract.PendingInsuranceContract -> contract.displayItems
-          }
-          val isNotPending = contract is AbstractInsuranceContract.InsuranceContract
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
@@ -215,7 +206,7 @@ private fun ContractDetailScreen(
             ) {
               InsuranceCard(
                 chips = contract.createChips(),
-                topText = productVariant.displayName,
+                topText = contract.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -253,15 +244,15 @@ private fun ContractDetailScreen(
                 when (pageIndex) {
                   0 -> {
                     YourInfoTab(
-                      coverageItems = displayItems
+                      coverageItems = contract.displayItems
                         .map { it.title to it.value },
-                      coInsured = if (isNotPending) contract.currentInsuranceAgreement.coInsured else listOf(),
-                      allowEditCoInsured = if (isNotPending) contract.supportsEditCoInsured else false,
+                      coInsured = contract.coInsured,
+                      allowEditCoInsured = contract.supportsEditCoInsured,
                       contractHolderDisplayName = contract.contractHolderDisplayName,
                       contractHolderSSN = contract.contractHolderSSN,
-                      allowChangeAddress = if (isNotPending) contract.supportsAddressChange else false,
+                      allowChangeAddress = contract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
-                      allowChangeTier = if (isNotPending) contract.supportsTierChange else false,
+                      allowChangeTier = contract.supportsTierChange,
                       onChangeTierClick = {
                         onChangeTierClick(contract.id)
                       },
@@ -281,24 +272,27 @@ private fun ContractDetailScreen(
                           ),
                         )
                       },
-                      upcomingChangesInsuranceAgreement = if (isNotPending) contract.upcomingInsuranceAgreement else null,
-                      isTerminated = if (isNotPending) contract.isTerminated else false,
+                      upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
+                      isTerminated = contract.isTerminated,
                     )
                   }
 
                   1 -> {
                     CoverageTab(
-                      productVariant.insurableLimits,
-                      productVariant.perils,
-                      if (isNotPending) contract.currentInsuranceAgreement.addons else null,
+                      contract.productVariant.insurableLimits,
+                      contract.productVariant.perils,
+                      contract.addons,
                     )
                   }
 
                   2 -> {
                     DocumentsTab(
-                      documents = if (isNotPending) contract.getAllDocuments() else productVariant.documents,
+                      documents = when (contract) {
+                        is InsuranceContract.PendingInsuranceContract -> contract.productVariant.documents
+                        is EstablishedInsuranceContract -> contract.getAllDocuments()
+                      },
                       onDocumentClicked = openUrl,
-                      addons = if (isNotPending) contract.currentInsuranceAgreement.addons else null,
+                      addons = contract.addons,
                     )
                   }
 
@@ -319,7 +313,7 @@ private fun <T> horizontalPagerSpringSpec(visibilityThreshold: T? = null) = spri
 )
 
 @Composable
-private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
+private fun EstablishedInsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
   addAll(currentInsuranceAgreement.productVariant.documents)
   if (currentInsuranceAgreement.certificateUrl != null) {
     val certificate = InsuranceVariantDocument(
@@ -354,7 +348,7 @@ private fun PreviewContractDetailScreen() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ContractDetailScreen(
         uiState = Success(
-          InsuranceContract(
+          EstablishedInsuranceContract(
             "1",
             "Test123",
             tierName = "Premium",
