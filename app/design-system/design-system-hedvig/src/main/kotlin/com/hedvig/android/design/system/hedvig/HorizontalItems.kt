@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
 /**
@@ -19,8 +18,8 @@ import kotlin.math.max
 fun HorizontalItemsWithMaximumSpaceTaken(
   startSlot: @Composable () -> Unit,
   endSlot: @Composable () -> Unit,
+  spaceBetween: Dp,
   modifier: Modifier = Modifier,
-  spaceBetween: Dp = 0.dp,
 ) {
   Layout(
     content = {

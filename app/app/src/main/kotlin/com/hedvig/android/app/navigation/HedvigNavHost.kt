@@ -58,7 +58,7 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
-import com.hedvig.android.feature.movingflow.MovingFlowGraphDestination
+import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.ClaimsFlowGraphDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
@@ -125,8 +125,9 @@ internal fun HedvigNavHost(
   }
 
   fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
-    hedvigAppState.navController.navigate(MovingFlowGraphDestination, navOptions)
+    hedvigAppState.navController.navigate(SelectContractForMoving, navOptions)
   }
+
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
     hedvigAppState.navController.navigate(ImageViewer(imageUrl, cacheKey))
   }
@@ -363,6 +364,7 @@ internal fun HedvigNavHost(
             navigateToMovingFlow()
             return@onNavigateToQuickLink
           }
+
           is QuickLinkCoInsuredAddInfo -> CoInsuredAddInfo(quickLinkDestination.contractId)
           is QuickLinkCoInsuredAddOrRemove -> CoInsuredAddOrRemove(quickLinkDestination.contractId)
           QuickLinkConnectPayment -> TrustlyDestination

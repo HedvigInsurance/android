@@ -258,6 +258,7 @@ fun QuoteCard(
           HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
         },
         endSlot = premium,
+        spaceBetween = 8.dp,
       )
       underTitleContent()
       AnimatedVisibility(
@@ -404,6 +405,7 @@ private fun QuoteCard(
       }
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
+        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
             text = stringResource(R.string.TIER_FLOW_TOTAL),
