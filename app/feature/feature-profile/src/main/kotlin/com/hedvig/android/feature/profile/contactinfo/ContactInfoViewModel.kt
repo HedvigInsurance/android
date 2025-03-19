@@ -70,8 +70,21 @@ internal sealed interface ContactInfoUiState {
     private val phoneNumberIsDifferentFromUploadedPhoneNumber: Boolean
       get() = uploadedPhoneNumber.valueForTextField != phoneNumberState.text
 
+    private val emailIsDeletingKnownInfo: Boolean
+      get() = when (uploadedEmail) {
+        null -> false
+        else -> emailState.text.isBlank()
+      }
+    private val phoneNumberIsDeletingKnownInfo: Boolean
+      get() = when (uploadedPhoneNumber) {
+        null -> false
+        else -> phoneNumberState.text.isBlank()
+      }
+
     val canSubmit: Boolean
       get() = (emailIsDifferentFromUploadedEmail || phoneNumberIsDifferentFromUploadedPhoneNumber) &&
+        !emailIsDeletingKnownInfo &&
+        !phoneNumberIsDeletingKnownInfo &&
         !emailHasError &&
         !phoneNumberHasError &&
         !submittingUpdatedInfo
