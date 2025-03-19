@@ -10,7 +10,9 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -24,8 +26,11 @@ fun NavGraphBuilder.claimDetailsGraph(
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
   navigator: Navigator,
   applicationId: String,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
-  navdestination<ClaimDetailDestination.ClaimOverviewDestination> { backStackEntry ->
+  navdestination<ClaimDetailDestination.ClaimOverviewDestination>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimDetails),
+  ) { backStackEntry ->
     val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
