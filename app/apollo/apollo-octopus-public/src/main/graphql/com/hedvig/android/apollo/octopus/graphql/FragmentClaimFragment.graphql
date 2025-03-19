@@ -25,4 +25,6 @@ fragment ClaimFragment on Claim {
   }
   incidentDate
   submittedAt
+  appealInstructionsUrl
+  isUploadingFilesEnabled
 }
