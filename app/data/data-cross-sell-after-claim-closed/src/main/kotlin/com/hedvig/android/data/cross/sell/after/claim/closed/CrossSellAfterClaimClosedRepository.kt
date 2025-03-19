@@ -20,7 +20,7 @@ interface CrossSellAfterClaimClosedRepository {
   suspend fun showedCrossSellAfterClaim()
 }
 
-internal class CrossSellAfterClaimClosedRepositoryImpl(
+class CrossSellAfterClaimClosedRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : CrossSellAfterClaimClosedRepository {
   /**
