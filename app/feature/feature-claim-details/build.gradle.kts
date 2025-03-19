@@ -44,7 +44,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
-  implementation(projects.dataCrossSellafterClaimClosed)
+  implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)

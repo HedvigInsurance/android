@@ -172,7 +172,7 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)
-  implementation(projects.dataCrossSellafterClaimClosed)
+  implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
