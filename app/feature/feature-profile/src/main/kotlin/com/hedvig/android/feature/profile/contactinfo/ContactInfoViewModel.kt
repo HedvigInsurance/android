@@ -176,7 +176,10 @@ internal class ContactInfoPresenter(
             ifLeft = { error ->
               when (error) {
                 // no-op
-                UpdateFailure.NoChanges -> {}
+                UpdateFailure.NoChanges -> {
+                  submittingData = null
+                }
+
                 is UpdateFailure.Error -> {
                   Snapshot.withMutableSnapshot {
                     submissionError = true
