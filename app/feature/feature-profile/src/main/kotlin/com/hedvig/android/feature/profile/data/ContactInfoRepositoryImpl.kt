@@ -37,21 +37,21 @@ internal class ContactInfoRepositoryImpl(
   }
 
   override suspend fun updateInfo(
-    phoneNumber: PhoneNumber,
-    email: Email,
+    phoneNumber: PhoneNumber?,
+    email: Email?,
     originalNumber: PhoneNumber,
     originalEmail: Email,
   ): Either<UpdateFailure, ContactInformation> {
     return parZip(
       {
-        if (email != originalEmail) {
+        if (email != null && email != originalEmail) {
           updateEmail(email)
         } else {
           NoChanges.left()
         }
       },
       {
-        if (phoneNumber != originalNumber) {
+        if (phoneNumber != null && phoneNumber != originalNumber) {
           updatePhoneNumber(phoneNumber)
         } else {
           NoChanges.left()
@@ -59,10 +59,13 @@ internal class ContactInfoRepositoryImpl(
       },
     ) { emailResult, phoneNumberResult ->
       either {
-        val resultEmail = emailResult.getOrNull()?.email ?: phoneNumberResult.getOrNull()?.email
-        val resultPhoneNumber = phoneNumberResult.getOrNull()?.phoneNumber ?: emailResult.getOrNull()?.phoneNumber
-        if (resultPhoneNumber != null && resultEmail != null) {
-          return@either ContactInformation(resultPhoneNumber, resultEmail)
+        val emailResultContactInformation = emailResult.getOrNull() ?: phoneNumberResult.getOrNull()
+        val phoneNumberResultContactInformation = phoneNumberResult.getOrNull() ?: emailResult.getOrNull()
+        if (emailResultContactInformation != null && phoneNumberResultContactInformation != null) {
+          return@either ContactInformation(
+            phoneNumber = phoneNumberResultContactInformation.phoneNumber,
+            email = emailResultContactInformation.email,
+          )
         }
         raise(UpdateFailure.merge(emailResult.leftOrNull(), phoneNumberResult.leftOrNull()))
       }

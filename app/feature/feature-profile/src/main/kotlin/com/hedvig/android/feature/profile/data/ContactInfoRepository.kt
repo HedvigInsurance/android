@@ -12,8 +12,8 @@ internal interface ContactInfoRepository {
   suspend fun contactInfo(): Either<ErrorMessage, ContactInformation>
 
   suspend fun updateInfo(
-    phoneNumber: PhoneNumber,
-    email: Email,
+    phoneNumber: PhoneNumber?,
+    email: Email?,
     originalNumber: PhoneNumber,
     originalEmail: Email,
   ): Either<UpdateFailure, ContactInformation>
@@ -32,8 +32,8 @@ internal interface ContactInfoRepository {
 }
 
 internal data class ContactInformation(
-  val phoneNumber: PhoneNumber,
-  val email: Email,
+  val phoneNumber: PhoneNumber?,
+  val email: Email?,
 ) {
   @JvmInline
   value class Email(val value: String) {
@@ -46,11 +46,16 @@ internal data class ContactInformation(
     companion object {
       private val invalidInputErrorMessage = { email: String? -> "Email [$email] must be a valid email address" }
 
-      fun fromString(input: String?): Either<ErrorMessage, Email> {
+      /**
+       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid email
+       * returns [Either.Right] with an [Email] if the input is a valid email
+       * returns [Either.Right] with a [null] [Email] if the input is null or empty
+       */
+      fun fromString(input: String?): Either<ErrorMessage, Email?> {
         return when {
-          input.isNullOrBlank() -> ErrorMessage(invalidInputErrorMessage(input)).left()
-          !isValidEmail(input) -> ErrorMessage(invalidInputErrorMessage(input)).left()
-          else -> Email(input).right()
+          input.isNullOrBlank() -> null.right()
+          isValidEmail(input) -> Email(input).right()
+          else -> ErrorMessage(invalidInputErrorMessage(input)).left()
         }
       }
     }
@@ -77,14 +82,19 @@ internal data class ContactInformation(
         "Phone number [$phoneNumber] cannot contain whitespaces"
       }
 
-      fun fromStringAfterTrimmingWhitespaces(input: String?): Either<ErrorMessage, PhoneNumber> {
+      fun fromStringAfterTrimmingWhitespaces(input: String?): Either<ErrorMessage, PhoneNumber?> {
         val inputWithoutWhitespaces = input?.filterNot { it.isWhitespace() }
         return fromString(inputWithoutWhitespaces)
       }
 
-      fun fromString(input: String?): Either<ErrorMessage, PhoneNumber> {
+      /**
+       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number
+       * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
+       * returns [Either.Right] with a [null] [PhoneNumber] if the input is null or empty
+       */
+      fun fromString(input: String?): Either<ErrorMessage, PhoneNumber?> {
         return when {
-          input.isNullOrBlank() -> ErrorMessage("Empty phone number").left()
+          input.isNullOrBlank() -> null.right()
           input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
           input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
           else -> ErrorMessage(invalidInputErrorMessage(input)).left()
@@ -93,3 +103,15 @@ internal data class ContactInformation(
     }
   }
 }
+
+/**
+ * Defaults to an empty [String] since a textField needs to have at least an empty input if the [Email] is null
+ */
+internal val Email?.valueForTextField: String
+  get() = this?.value ?: ""
+
+/**
+ * Defaults to an empty [String] since a textField needs to have at least an empty input if the [PhoneNumber] is null
+ */
+internal val PhoneNumber?.valueForTextField: String
+  get() = this?.value ?: ""

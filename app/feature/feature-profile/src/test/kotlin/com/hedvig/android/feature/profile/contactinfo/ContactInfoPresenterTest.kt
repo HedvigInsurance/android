@@ -9,6 +9,8 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.apollo.test.registerSuspendingTestNetworkError
@@ -28,8 +30,10 @@ import octopus.type.buildMember
 import octopus.type.buildMemberMutationOutput
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @OptIn(ApolloExperimental::class)
+@RunWith(TestParameterInjector::class)
 class ContactInfoPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
@@ -124,6 +128,8 @@ class ContactInfoPresenterTest {
         "test@hedvig.co",
         "a@hedvig.c",
         "a@h.c",
+        "",
+        " ",
       )
       val validPhoneNumbers = listOf(
         "+1234",
@@ -133,20 +139,18 @@ class ContactInfoPresenterTest {
         "1234567890123",
         "+123 456 789 0123",
         "123 456 789 0123",
+        "",
+        " ",
       )
       val invalidEmails = listOf(
         "test@hedvig .com",
         "a@a",
         "a@a@a.com",
-        " ",
-        "",
       )
       val invalidPhoneNumbers = listOf(
         "++1234",
         "+1234a",
         "+",
-        " ",
-        "",
       )
       presenter.test(
         ContactInfoUiState.Content(
@@ -204,6 +208,80 @@ class ContactInfoPresenterTest {
         },
       )
       assertThat(awaitItem()).isInstanceOf<ContactInfoUiState.Content>()
+    }
+  }
+
+  @Test
+  fun `Backend returning empty or null info should result in an empty but valid UI state`(
+    @TestParameter withNullablePhoneNumber: Boolean,
+  ) = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(Provider { repository })
+    val backendEmail = ""
+    val backendPhoneNumber = "".takeIf { !withNullablePhoneNumber }
+    apolloClient.registerSuspendingTestResponse(
+      ContactInformationQuery(),
+      ContactInformationQuery.Data {
+        this.currentMember = this.buildMember {
+          this.phoneNumber = backendPhoneNumber
+          this.email = backendEmail
+        }
+      },
+    )
+    presenter.test(ContactInfoUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
+      with(awaitItem()) {
+        assertThat(this.content!!.phoneNumberState.text).isEqualTo("")
+        assertThat(this.content!!.emailState.text).isEqualTo("")
+        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(null)
+        assertThat(this.content!!.uploadedEmail).isEqualTo(null)
+        assertThat(this.content!!.submittingUpdatedInfo).isEqualTo(false)
+        assertThat(this.content!!.canSubmit).isEqualTo(false)
+//        content!!.phoneNumberState.setTextAndPlaceCursorAtEnd(alteredPhoneNumber)
+//        content!!.emailState.setTextAndPlaceCursorAtEnd(alteredEmail)
+//        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(backendPhoneNumber))
+//        assertThat(this.content!!.uploadedEmail).isEqualTo(Email(backendEmail))
+//        assertThat(this.content!!.canSubmit).isEqualTo(true)
+      }
+//      sendEvent(ContactInfoEvent.SubmitData)
+//      with(awaitItem().content!!) {
+//        assertThat(emailHasError).isFalse()
+//        assertThat(phoneNumberHasError).isFalse()
+//        assertThat(submittingUpdatedInfo).isTrue()
+//        assertThat(canSubmit).isFalse()
+//      }
+//      apolloClient.registerSuspendingTestResponse(
+//        MemberUpdateEmailMutation(alteredEmail),
+//        MemberUpdateEmailMutation.Data {
+//          this.memberUpdateEmail = this.buildMemberMutationOutput {
+//            this.userError = null
+//            this.member = this.buildMember {
+//              this.phoneNumber = backendPhoneNumber
+//              this.email = alteredEmail
+//            }
+//          }
+//        },
+//      )
+//      apolloClient.registerSuspendingTestResponse(
+//        MemberUpdatePhoneNumberMutation(alteredPhoneNumber),
+//        MemberUpdatePhoneNumberMutation.Data {
+//          this.memberUpdatePhoneNumber = this.buildMemberMutationOutput {
+//            this.userError = null
+//            this.member = this.buildMember {
+//              this.phoneNumber = alteredPhoneNumber
+//              this.email = backendEmail
+//            }
+//          }
+//        },
+//      )
+//      with(awaitItem().content!!) {
+//        assertThat(this.content!!.phoneNumberState.text).isEqualTo(alteredPhoneNumber)
+//        assertThat(this.content!!.emailState.text).isEqualTo(alteredEmail)
+//        assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(alteredPhoneNumber))
+//        assertThat(this.content!!.uploadedEmail).isEqualTo(Email(alteredEmail))
+//        assertThat(this.content!!.submittingUpdatedInfo).isFalse()
+//        assertThat(this.content!!.canSubmit).isFalse()
+//      }
     }
   }
 }
