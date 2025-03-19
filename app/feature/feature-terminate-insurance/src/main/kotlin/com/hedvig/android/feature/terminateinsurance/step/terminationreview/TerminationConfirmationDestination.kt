@@ -224,6 +224,7 @@ private fun AreYouSureSheetContent(
             dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
           )
       },
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
