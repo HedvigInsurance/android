@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,10 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -48,10 +53,14 @@ import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
-import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.File
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -60,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
@@ -74,8 +84,10 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTime
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
@@ -249,62 +261,17 @@ private fun ClaimDetailContentScreen(
     },
     isVisible = showFileTypeSelectBottomSheet,
   )
-  Column {
-    if (uiState.files.isNotEmpty()) {
-      DynamicFilesGridBetweenOtherThings(
-        belowGridContent = {
-          AfterGridContent(
-            uiState = uiState,
-            onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
-            onDismissUploadError = onDismissUploadError,
-            downloadFromUrl = downloadFromUrl,
-          )
-        },
-        aboveGridContent = {
-          BeforeGridContent(
-            uiState = uiState,
-            hasUnreadMessages = hasUnreadMessages,
-            navigateToConversation = navigateToConversation,
-          )
-        },
-        files = uiState.files,
-        imageLoader = imageLoader,
-        onClickFile = { fileId ->
-          val url = uiState.files.firstOrNull { it.id == fileId }?.url
-          if (url != null) {
-            openUrl(url)
-          }
-        },
-        onRemoveFile = null,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-          .only(
-            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-          ).asPaddingValues(),
-      )
-    } else {
-      Column(
-        Modifier.padding(
-          PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-            .only(
-              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-            ).asPaddingValues(),
-        ).verticalScroll(rememberScrollState()),
-      ) {
-        BeforeGridContent(
-          uiState = uiState,
-          hasUnreadMessages = hasUnreadMessages,
-          navigateToConversation = navigateToConversation,
-        )
-        AfterGridContent(
-          uiState = uiState,
-          onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
-          onDismissUploadError = onDismissUploadError,
-          downloadFromUrl = downloadFromUrl,
-        )
-      }
-    }
-  }
+  NonDynamicGrid(
+    uiState = uiState,
+    openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    onDismissUploadError = onDismissUploadError,
+    imageLoader = imageLoader,
+    downloadFromUrl = downloadFromUrl,
+    hasUnreadMessages = hasUnreadMessages,
+    navigateToConversation = navigateToConversation,
+    onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
+  )
 }
 
 @Composable
@@ -317,10 +284,100 @@ private fun ClaimDetailTopAppBar(navigateUp: () -> Unit) {
 }
 
 @Composable
+private fun NonDynamicGrid(
+  uiState: ClaimDetailUiState.Content,
+  openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onDismissUploadError: () -> Unit,
+  imageLoader: ImageLoader,
+  downloadFromUrl: (String) -> Unit,
+  hasUnreadMessages: Boolean,
+  onAddFilesButtonClick: () -> Unit,
+  navigateToConversation: (() -> Unit)?,
+) {
+  val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  ExplanationBottomSheet(explanationBottomSheetState)
+  Column(
+    Modifier
+      .padding(
+        PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+          .only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+          ).asPaddingValues(),
+      )
+      .verticalScroll(rememberScrollState()),
+  ) {
+    BeforeGridContent(
+      uiState = uiState,
+      hasUnreadMessages = hasUnreadMessages,
+      navigateToConversation = navigateToConversation,
+      onExplanationButtonClick = { explanationBottomSheetState.show(Unit) },
+    )
+    if (uiState.files.isNotEmpty()) {
+      LazyVerticalGrid(
+        columns = GridCells.Adaptive(109.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 8.dp),
+        modifier = Modifier.height(109.dp),
+      ) {
+        items(
+          items = uiState.files,
+          key = { it.id },
+        ) { uiFile ->
+          File(
+            id = uiFile.id,
+            name = uiFile.name,
+            path = uiFile.localPath ?: uiFile.url,
+            mimeType = uiFile.mimeType,
+            imageLoader = imageLoader,
+            onRemoveFile = null,
+            onClickFile = { fileId ->
+              val url = uiState.files.firstOrNull { it.id == fileId }?.url
+              if (url != null) {
+                openUrl(url)
+              }
+            },
+            onNavigateToImageViewer = onNavigateToImageViewer,
+          )
+        }
+      }
+    }
+    AfterGridContent(
+      uiState = uiState,
+      onAddFilesButtonClick = onAddFilesButtonClick,
+      onDismissUploadError = onDismissUploadError,
+      downloadFromUrl = downloadFromUrl,
+    )
+  }
+}
+
+@Composable
+internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) { _ ->
+    HedvigText(
+      text = stringResource(id = R.string.claim_status_claim_details_info_text),
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_close_button),
+      buttonSize = Large,
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
 private fun BeforeGridContent(
   uiState: ClaimDetailUiState.Content,
   hasUnreadMessages: Boolean,
   navigateToConversation: (() -> Unit)?,
+  onExplanationButtonClick: () -> Unit,
 ) {
   Column {
     Spacer(Modifier.height(8.dp))
@@ -345,21 +402,26 @@ private fun BeforeGridContent(
               style = HedvigTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  HedvigText(
-                    text = stringResource(R.string.claim_status_detail_message_view_body),
-                    style = HedvigTheme.typography.bodySmall,
-                  )
-                }
-              },
-              endSlot = {
-                if (navigateToConversation != null) {
+            if (navigateToConversation != null) {
+              HorizontalDivider()
+              Spacer(Modifier.height(16.dp))
+              HorizontalItemsWithMaximumSpaceTaken(
+                modifier = Modifier
+                  .clip(HedvigTheme.shapes.cornerXSmall)
+                  .clickable {
+                    navigateToConversation()
+                  },
+                startSlot = {
+                  Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                  ) {
+                    HedvigText(
+                      text = stringResource(R.string.claim_status_detail_message_view_body),
+                      style = HedvigTheme.typography.bodySmall,
+                    )
+                  }
+                },
+                endSlot = {
                   Row(
                     horizontalArrangement = Arrangement.End,
                   ) {
@@ -375,19 +437,45 @@ private fun BeforeGridContent(
                       )
                     }
                   }
-                }
-              },
-              spaceBetween = 8.dp,
-            )
+                },
+                spaceBetween = 8.dp,
+              )
+            }
           }
         }
       }
     }
     Spacer(Modifier.height(24.dp))
-    HedvigText(
-      stringResource(R.string.claim_status_claim_details_title),
-      Modifier.padding(horizontal = 2.dp),
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          HedvigText(
+            stringResource(R.string.claim_status_claim_details_title),
+            Modifier.padding(horizontal = 2.dp),
+          )
+        }
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+        ) {
+          IconButton(
+            onClick = onExplanationButtonClick,
+            modifier = Modifier.size(40.dp),
+          ) {
+            Icon(
+              imageVector = HedvigIcons.InfoOutline,
+              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              modifier = Modifier.size(24.dp),
+            )
+          }
+        }
+      },
+      spaceBetween = 8.dp,
     )
+
     Spacer(Modifier.height(8.dp))
     ClaimTypeAndDatesSection(
       claimType = uiState.claimType,
@@ -769,16 +857,16 @@ private fun PreviewClaimDetailScreen(
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
-//          files = List(6) { index ->
-//            UiFile(
-//              id = index.toString(),
-//              name = "test#$index".let { if (index == 2) it.repeat(10) else it },
-//              mimeType = "",
-//              url = index.toString(),
-//              localPath = null,
-//            )
-//          },
-          files = listOf(),
+          files = List(6) { index ->
+            UiFile(
+              id = index.toString(),
+              name = "test#$index".let { if (index == 2) it.repeat(10) else it },
+              mimeType = "",
+              url = index.toString(),
+              localPath = null,
+            )
+          },
+          // files = listOf(),
           isUploadingFile = false,
           uploadUri = "",
           uploadError = null,
@@ -791,7 +879,7 @@ private fun PreviewClaimDetailScreen(
           downloadError = null,
           isLoadingPdf = false,
           appealInstructionsUrl = "dd",
-          isUploadingFilesEnabled = true,
+          isUploadingFilesEnabled = false,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
