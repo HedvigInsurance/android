@@ -109,6 +109,7 @@ internal class GetClaimDetailUiStateUseCase(
         ClaimOutcome.PAID -> ClaimDetailUiState.Content.ClaimOutcome.PAID
         ClaimOutcome.NOT_COMPENSATED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED
         ClaimOutcome.NOT_COVERED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED
+        ClaimOutcome.UNRESPONSIVE,
         ClaimOutcome.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
