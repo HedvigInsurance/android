@@ -283,9 +283,7 @@ private fun ClaimDetailContentScreen(
 }
 
 @Composable
-private fun ClaimDetailTopAppBar(
-  navigateUp: () -> Unit,
-) {
+private fun ClaimDetailTopAppBar(navigateUp: () -> Unit) {
   TopAppBar(
     title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
     actionType = BACK,
@@ -352,12 +350,10 @@ private fun BeforeGridContent(
                       )
                     }
                   }
-
                 }
               },
               spaceBetween = 8.dp,
             )
-
           }
         }
       }
@@ -446,7 +442,7 @@ private fun AfterGridContent(
         onDismiss = onDismissUploadError,
       )
     }
-    if(uiState.termsConditionsUrl != null || uiState.appealInstructionsUrl != null) {
+    if (uiState.termsConditionsUrl != null || uiState.appealInstructionsUrl != null) {
       HedvigText(
         stringResource(R.string.claim_status_detail_documents_title),
         Modifier.padding(horizontal = 2.dp),
@@ -505,11 +501,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
 }
 
 @Composable
-private fun AppealInstructionCard(
-  onClick: () -> Unit,
-  isLoading: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
   HedvigCard(onClick = onClick) {
     Row(
       modifier,
@@ -591,6 +583,7 @@ private fun statusParagraphText(
     }
 
     ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
+    ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(R.string.claim_outcome_unresponsive_support_text)
   }
 
   ClaimDetailUiState.Content.ClaimStatus.REOPENED -> {

@@ -174,7 +174,7 @@ internal sealed interface ClaimDetailUiState {
     val downloadError: Boolean?,
     val isLoadingPdf: Boolean,
     val appealInstructionsUrl: String?,
-    val isUploadingFilesEnabled: Boolean
+    val isUploadingFilesEnabled: Boolean,
   ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
@@ -195,6 +195,7 @@ internal sealed interface ClaimDetailUiState {
       NOT_COMPENSATED,
       NOT_COVERED,
       UNKNOWN,
+      UNRESPONSIVE
     }
 
     companion object
