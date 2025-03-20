@@ -13,10 +13,10 @@ internal class GetHelpCenterTopicUseCaseImpl(
 ) : GetHelpCenterTopicUseCase {
   override suspend fun invoke(topicId: String): Either<HelpCenterTopicError, FAQTopic> {
     return either {
-      val memberFaqs = getHelpCenterFAQUseCase.invoke()
+      val memberFaq = getHelpCenterFAQUseCase.invoke()
         .mapLeft { HelpCenterTopicError.GenericError(it) }
         .bind()
-      val topic = memberFaqs.topics.firstOrNull { it.id == topicId }
+      val topic = memberFaq.topics.firstOrNull { it.id == topicId }
       if (topic == null) {
         raise(HelpCenterTopicError.NoTopicFound)
       } else {
