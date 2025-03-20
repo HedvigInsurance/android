@@ -39,8 +39,8 @@ internal class ContactInfoRepositoryImpl(
   override suspend fun updateInfo(
     phoneNumber: PhoneNumber?,
     email: Email?,
-    originalNumber: PhoneNumber,
-    originalEmail: Email,
+    originalNumber: PhoneNumber?,
+    originalEmail: Email?,
   ): Either<UpdateFailure, ContactInformation> {
     return parZip(
       {

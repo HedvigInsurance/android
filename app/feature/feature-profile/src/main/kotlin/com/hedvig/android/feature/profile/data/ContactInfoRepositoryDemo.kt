@@ -20,8 +20,8 @@ internal class ContactInfoRepositoryDemo : ContactInfoRepository {
   override suspend fun updateInfo(
     phoneNumber: PhoneNumber?,
     email: Email?,
-    originalNumber: PhoneNumber,
-    originalEmail: Email,
+    originalNumber: PhoneNumber?,
+    originalEmail: Email?,
   ): Either<UpdateFailure, ContactInformation> {
     contactInformation = contactInformation.copy(
       email = email,

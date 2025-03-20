@@ -169,8 +169,8 @@ internal class ContactInfoPresenter(
           .updateInfo(
             phoneNumber = submittingPhoneNumber,
             email = submittingEmail,
-            originalNumber = uploadedPhoneNumber!!,
-            originalEmail = uploadedEmail!!,
+            originalNumber = uploadedPhoneNumber,
+            originalEmail = uploadedEmail,
           )
           .fold(
             ifLeft = { error ->
