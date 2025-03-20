@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -171,7 +172,7 @@ private fun ClaimDetailScreen(
             logcat { "ChatFileState sending filePicker uris:$resultingUriList" }
             onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
           }
-          ClaimDetailScreen(
+          ClaimDetailContentScreen(
             uiState = uiState,
             onDismissUploadError = onDismissUploadError,
             openUrl = openUrl,
@@ -186,7 +187,12 @@ private fun ClaimDetailScreen(
           )
         }
 
-        ClaimDetailUiState.Error -> HedvigErrorSection(onButtonClick = retry)
+        ClaimDetailUiState.Error -> {
+          Spacer(Modifier.weight(1f))
+          HedvigErrorSection(onButtonClick = retry)
+          Spacer(Modifier.weight(1f))
+        }
+
         ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
       }
     }
@@ -194,7 +200,7 @@ private fun ClaimDetailScreen(
 }
 
 @Composable
-private fun ClaimDetailScreen(
+private fun ClaimDetailContentScreen(
   uiState: ClaimDetailUiState.Content,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -547,6 +553,7 @@ private fun ClaimTypeAndDatesSection(
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
       HorizontalItemsWithMaximumSpaceTaken(
+        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
             text = stringResource(R.string.claim_status_claim_details_type),
@@ -572,6 +579,7 @@ private fun ClaimTypeAndDatesSection(
               textAlign = TextAlign.End,
             )
           },
+          spaceBetween = 8.dp,
         )
       }
 
@@ -588,18 +596,55 @@ private fun ClaimTypeAndDatesSection(
               textAlign = TextAlign.End,
             )
           },
+          spaceBetween = 8.dp,
         )
       }
     }
   }
 }
 
+@HedvigPreview
+@Composable
+private fun PreviewClaimDetailScreen(
+  @PreviewParameter(
+    ClaimDetailUiStateProvider::class,
+  ) uiState: ClaimDetailUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ClaimDetailScreen(
+        uiState = uiState,
+        openUrl = {},
+        imageLoader = rememberPreviewImageLoader(),
+        onDismissUploadError = {},
+        downloadFromUrl = {},
+        sharePdf = {},
+        onDismissDownloadError = {},
+        onNavigateToImageViewer = { _, _ -> },
+        appPackageId = "",
+        retry = { },
+        navigateUp = {},
+        navigateToConversation = {},
+        onFilesToUploadSelected = { list, s -> },
+      )
+    }
+  }
+}
+
+private class ClaimDetailUiStateProvider :
+  CollectionPreviewParameterProvider<ClaimDetailUiState>(
+    listOf(
+      ClaimDetailUiState.Loading,
+      ClaimDetailUiState.Error,
+    ),
+  )
+
 @HedvigMultiScreenPreview
 @Composable
 private fun PreviewClaimDetailScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ClaimDetailScreen(
+      ClaimDetailContentScreen(
         uiState = ClaimDetailUiState.Content(
           claimId = "id",
           conversationId = "idd",

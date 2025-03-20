@@ -6,9 +6,9 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
+import com.hedvig.android.feature.NoopNetworkCacheManager
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.SubPrefError
 import com.hedvig.android.feature.profile.data.SubPrefSuccess
@@ -28,7 +28,7 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager(),
+      NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       isSwedishMarket = true,
@@ -54,7 +54,7 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager(),
+      NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       isSwedishMarket = true,
@@ -83,7 +83,7 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager(),
+      NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       isSwedishMarket = true,
@@ -112,7 +112,7 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager(),
+      NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       isSwedishMarket = true,
@@ -143,7 +143,7 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       settingsDataStore,
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager(),
+      NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       isSwedishMarket = true,
@@ -165,10 +165,6 @@ class SettingsPresenterTest {
       sendEvent(SettingsEvent.ChangeTheme(Theme.DARK))
     }
   }
-}
-
-private class NoopNetworkCacheManager : NetworkCacheManager {
-  override fun clearCache() {}
 }
 
 private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePreferenceToBackendUseCase {
