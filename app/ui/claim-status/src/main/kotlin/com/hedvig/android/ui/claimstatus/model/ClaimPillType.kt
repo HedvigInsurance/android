@@ -39,6 +39,7 @@ sealed interface ClaimPillType {
           }
           ClaimOutcome.NOT_COMPENSATED -> listOf(Closed.GenericClosed, Closed.NotCompensated)
           ClaimOutcome.NOT_COVERED -> listOf(Closed.GenericClosed, Closed.NotCovered)
+          ClaimOutcome.UNRESPONSIVE,
           ClaimOutcome.UNKNOWN__,
           null,
           -> emptyList()

@@ -84,7 +84,7 @@ fun FirstVetScreen(
                 text = section.buttonTitle
                   ?: stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
                 onClick = {
-                  val url = section.url ?: "https://app.adjust.com/11u5tuxu"
+                  val url = section.url ?: "https://firstvet-se.go.link/kHxkt"
                   context.startActivity(
                     Intent(Intent.ACTION_VIEW, Uri.parse(url)),
                   )
