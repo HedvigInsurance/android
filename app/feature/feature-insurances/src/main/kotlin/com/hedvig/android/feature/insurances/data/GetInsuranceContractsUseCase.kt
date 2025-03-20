@@ -12,6 +12,8 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -59,6 +61,7 @@ internal class GetInsuranceContractsUseCaseImpl(
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
         val isMovingEnabledForMember =
           insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true && isMovingFlowFlagEnabled
+
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
             isTerminated = true,
@@ -78,7 +81,14 @@ internal class GetInsuranceContractsUseCaseImpl(
             isMovingFlowEnabled = isMovingEnabledForMember,
           )
         }
-        terminatedContracts + activeContracts
+
+        val pendingContracts = insuranceQueryData.currentMember.pendingContracts.map {
+          it.toPendingContract(
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+          )
+        }
+        terminatedContracts + activeContracts + pendingContracts
       }
     }
   }
@@ -89,14 +99,35 @@ private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String 
   currentMember.lastName,
 )
 
+private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPendingContract(
+  contractHolderDisplayName: String,
+  contractHolderSSN: String?,
+): PendingInsuranceContract {
+  return PendingInsuranceContract(
+    id = this.id,
+    tierName = this.productVariant.displayNameTier,
+    displayName = this.productVariant.displayName,
+    contractHolderDisplayName = contractHolderDisplayName,
+    contractHolderSSN = contractHolderSSN,
+    exposureDisplayName = exposureDisplayName,
+    productVariant = this.productVariant.toProductVariant(),
+    displayItems = this.displayItems.map {
+      InsuranceAgreement.DisplayItem(
+        it.displayTitle,
+        it.displayValue,
+      )
+    },
+  )
+}
+
 private fun ContractFragment.toContract(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
-): InsuranceContract {
-  return InsuranceContract(
+): EstablishedInsuranceContract {
+  return EstablishedInsuranceContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
     displayName = currentAgreement.productVariant.displayName,

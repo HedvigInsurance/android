@@ -315,8 +315,8 @@ private fun CoverageCard(
         }
       }
       HorizontalItemsWithMaximumSpaceTaken(
-        { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
-        {
+        startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
+        endSlot = {
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -326,6 +326,7 @@ private fun CoverageCard(
             modifier = Modifier.wrapContentWidth(Alignment.End),
           )
         },
+        spaceBetween = 8.dp,
         Modifier.fillMaxWidth(),
       )
     }

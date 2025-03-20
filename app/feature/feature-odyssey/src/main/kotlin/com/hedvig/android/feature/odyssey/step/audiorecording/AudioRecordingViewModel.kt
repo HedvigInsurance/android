@@ -5,10 +5,15 @@ import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimflow.AudioContent
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
-import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.NotRecording
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.Playback
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.PrerecordedWithAudioContent
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.AudioRecording.Recording
+import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.ScreenMode
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
@@ -21,30 +26,80 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 internal class AudioRecordingViewModel(
-  private val flowId: FlowId,
-  audioContent: AudioContent?,
+  private val audioRecording: ClaimFlowDestination.AudioRecording,
   private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
   private var recorder: MediaRecorder? = null
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
+  private val incomingAudioContent = audioRecording.audioContent
+  private val incomingFreeText = audioRecording.freeText
 
-  private val _uiState: MutableStateFlow<AudioRecordingUiState> = MutableStateFlow(
-    if (audioContent != null) {
-      AudioRecordingUiState.PrerecordedWithAudioContent(audioContent)
+  private val currentFreeText: MutableStateFlow<String?> = MutableStateFlow(incomingFreeText)
+
+  private val _uiState: MutableStateFlow<WhatHappenedUiState> = MutableStateFlow(
+    if (incomingAudioContent != null) {
+      PrerecordedWithAudioContent(incomingAudioContent)
+    } else if (incomingFreeText != null) {
+      WhatHappenedUiState.FreeTextDescription(freeText = incomingFreeText, showOverlay = false)
     } else {
-      AudioRecordingUiState.NotRecording
+      NotRecording
     },
   )
   val uiState = _uiState.asStateFlow()
 
   fun submitAudioFile(audioFile: File) {
-    val uiState = _uiState.value as? AudioRecordingUiState.Playback ?: return
+    val uiState = _uiState.value as? Playback ?: return
     if (uiState.hasError || uiState.isLoading) return
     _uiState.update { uiState.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.submitAudioRecording(flowId, audioFile).fold(
+      claimFlowRepository.submitAudioRecording(audioRecording.flowId, audioFile).fold(
+        ifLeft = {
+          _uiState.update {
+            uiState.copy(isLoading = false, hasError = true)
+          }
+        },
+        ifRight = { claimFlowStep ->
+          _uiState.update {
+            uiState.copy(isLoading = false, nextStep = claimFlowStep)
+          }
+        },
+      )
+    }
+  }
+
+  fun updateFreeText(text: String?) {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    _uiState.update {
+      uiState.copy(freeText = text, hasError = false)
+    }
+    currentFreeText.update {
+      text
+    }
+  }
+
+  fun onLaunchFullScreenOverlay() {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    _uiState.update {
+      uiState.copy(showOverlay = true)
+    }
+  }
+
+  fun onCloseFullScreenOverlay() {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    _uiState.update {
+      uiState.copy(showOverlay = false)
+    }
+  }
+
+  fun submitFreeText() {
+    val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
+    val currentText = uiState.freeText
+    if (uiState.hasError || uiState.isLoading || currentText == null) return
+    _uiState.update { uiState.copy(isLoading = true) }
+    viewModelScope.launch {
+      claimFlowRepository.submitFreeTextInsteadOfAudio(currentText).fold(
         ifLeft = {
           _uiState.update {
             uiState.copy(isLoading = false, hasError = true)
@@ -60,11 +115,11 @@ internal class AudioRecordingViewModel(
   }
 
   fun submitAudioUrl(audioUrl: AudioUrl) {
-    val uiState = _uiState.value as? AudioRecordingUiState.PrerecordedWithAudioContent ?: return
+    val uiState = _uiState.value as? PrerecordedWithAudioContent ?: return
     if (uiState.hasError || uiState.isLoading) return
     _uiState.update { uiState.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.submitAudioUrl(flowId, audioUrl).fold(
+      claimFlowRepository.submitAudioUrl(audioRecording.flowId, audioUrl).fold(
         ifLeft = {
           _uiState.update {
             uiState.copy(isLoading = false, hasError = true)
@@ -79,11 +134,21 @@ internal class AudioRecordingViewModel(
     }
   }
 
+  fun switchMode(mode: ScreenMode) {
+    when (mode) {
+      ScreenMode.RECORDING -> redo()
+      ScreenMode.FREE_TEXT -> _uiState.update {
+        WhatHappenedUiState.FreeTextDescription(freeText = currentFreeText.value, showOverlay = false)
+      }
+    }
+  }
+
   fun showedError() {
     _uiState.update { oldUiState ->
       when (oldUiState) {
-        is AudioRecordingUiState.Playback -> oldUiState.copy(hasError = false)
-        is AudioRecordingUiState.PrerecordedWithAudioContent -> oldUiState.copy(hasError = false)
+        is Playback -> oldUiState.copy(hasError = false)
+        is PrerecordedWithAudioContent -> oldUiState.copy(hasError = false)
+        is WhatHappenedUiState.FreeTextDescription -> oldUiState.copy(hasError = false)
         else -> oldUiState
       }
     }
@@ -91,9 +156,11 @@ internal class AudioRecordingViewModel(
 
   fun handledNextStepNavigation() {
     val uiState = _uiState.value
-    if (uiState is AudioRecordingUiState.Playback) {
+    if (uiState is Playback) {
       _uiState.update { uiState.copy(nextStep = null) }
-    } else if (uiState is AudioRecordingUiState.PrerecordedWithAudioContent) {
+    } else if (uiState is PrerecordedWithAudioContent) {
+      _uiState.update { uiState.copy(nextStep = null) }
+    } else if (uiState is WhatHappenedUiState.FreeTextDescription) {
       _uiState.update { uiState.copy(nextStep = null) }
     }
   }
@@ -114,14 +181,14 @@ internal class AudioRecordingViewModel(
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         prepare()
         start()
-        _uiState.value = AudioRecordingUiState.Recording(emptyList(), clock.now(), filePath)
+        _uiState.value = Recording(emptyList(), clock.now(), filePath)
       }
       timer = Timer()
       timer?.schedule(
         timerTask {
           recorder?.maxAmplitude?.let { amplitude ->
             _uiState.update { vs ->
-              if (vs is AudioRecordingUiState.Recording) {
+              if (vs is Recording) {
                 vs.copy(amplitudes = vs.amplitudes + amplitude)
               } else {
                 vs
@@ -137,14 +204,14 @@ internal class AudioRecordingViewModel(
 
   fun stopRecording() {
     val currentState = uiState.value
-    if (currentState !is AudioRecordingUiState.Recording) {
+    if (currentState !is WhatHappenedUiState.AudioRecording.Recording) {
       throw IllegalStateException("Must be in Recording-state to stop recording")
     }
     cleanup()
     player = MediaPlayer().apply {
       setDataSource(currentState.filePath)
       setOnPreparedListener {
-        _uiState.value = AudioRecordingUiState.Playback(
+        _uiState.value = Playback(
           filePath = currentState.filePath,
           isPlaying = false,
           isPrepared = true,
@@ -156,7 +223,7 @@ internal class AudioRecordingViewModel(
       }
       setOnCompletionListener {
         // Bail if the user has backed out of the playback-state
-        val currentPlaybackState = uiState.value as? AudioRecordingUiState.Playback ?: return@setOnCompletionListener
+        val currentPlaybackState = uiState.value as? Playback ?: return@setOnCompletionListener
         cleanupTimer()
         _uiState.value = currentPlaybackState.copy(isPlaying = false)
       }
@@ -167,7 +234,7 @@ internal class AudioRecordingViewModel(
   fun redo() {
     if (_uiState.value.isLoading) return
     cleanup()
-    _uiState.value = AudioRecordingUiState.NotRecording
+    _uiState.value = NotRecording
   }
 
   override fun onCleared() {
@@ -201,12 +268,14 @@ internal class AudioRecordingViewModel(
   }
 }
 
-internal sealed interface AudioRecordingUiState {
+internal sealed interface WhatHappenedUiState {
   val canSubmit: Boolean
     get() {
       val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
       val prerecordedCanSubmit = this is PrerecordedWithAudioContent && nextStep == null && !isLoading && !hasError
-      return playbackCanSubmit || prerecordedCanSubmit
+      val freeTextCanSubmit =
+        this is FreeTextDescription && nextStep == null && !isLoading && !hasError && !this.freeText.isNullOrEmpty()
+      return playbackCanSubmit || prerecordedCanSubmit || freeTextCanSubmit
     }
 
   val nextStep: ClaimFlowStep?
@@ -218,28 +287,43 @@ internal sealed interface AudioRecordingUiState {
   val hasError: Boolean
     get() = false
 
-  object NotRecording : AudioRecordingUiState
-
-  data class Recording(
-    val amplitudes: List<Int>,
-    val startedAt: Instant,
-    val filePath: String,
-  ) : AudioRecordingUiState
-
-  data class PrerecordedWithAudioContent(
-    val audioContent: AudioContent,
+  data class FreeTextDescription(
+    val freeText: String?,
+    val showOverlay: Boolean,
     override val nextStep: ClaimFlowStep? = null,
     override val isLoading: Boolean = false,
     override val hasError: Boolean = false,
-  ) : AudioRecordingUiState
+  ) : WhatHappenedUiState
 
-  data class Playback(
-    val filePath: String,
-    val isPlaying: Boolean,
-    val isPrepared: Boolean,
-    val amplitudes: List<Int>,
-    override val nextStep: ClaimFlowStep?,
-    override val isLoading: Boolean,
-    override val hasError: Boolean,
-  ) : AudioRecordingUiState
+  sealed interface AudioRecording : WhatHappenedUiState {
+    data object NotRecording : AudioRecording
+
+    data class Recording(
+      val amplitudes: List<Int>,
+      val startedAt: Instant,
+      val filePath: String,
+    ) : AudioRecording
+
+    data class PrerecordedWithAudioContent(
+      val audioContent: AudioContent,
+      override val nextStep: ClaimFlowStep? = null,
+      override val isLoading: Boolean = false,
+      override val hasError: Boolean = false,
+    ) : AudioRecording
+
+    data class Playback(
+      val filePath: String,
+      val isPlaying: Boolean,
+      val isPrepared: Boolean,
+      val amplitudes: List<Int>,
+      override val nextStep: ClaimFlowStep?,
+      override val isLoading: Boolean,
+      override val hasError: Boolean,
+    ) : AudioRecording
+  }
+
+  enum class ScreenMode {
+    RECORDING,
+    FREE_TEXT,
+  }
 }

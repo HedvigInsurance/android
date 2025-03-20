@@ -27,6 +27,9 @@ sealed interface ClaimFlowDestination {
     val flowId: FlowId,
     val questions: List<String>,
     val audioContent: AudioContent?,
+    val freeTextAvailable: Boolean,
+    val freeText: String?,
+    val freeTextQuestions: List<String>,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
@@ -81,6 +84,7 @@ sealed interface ClaimFlowDestination {
   @Serializable
   data class SelectContract(
     val options: List<LocalContractContractOption>,
+    val selectedOptionId: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<List<LocalContractContractOption>>())
@@ -199,6 +203,7 @@ sealed interface ClaimFlowDestination {
     val selectedItemProblems: List<String>?,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
+    val freeText: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
@@ -296,7 +301,8 @@ data class LocationOption(
 @Serializable
 data class LocalContractContractOption(
   val id: String,
-  val displayName: String,
+  val displayTitle: String,
+  val displaySubtitle: String,
 )
 
 @Serializable

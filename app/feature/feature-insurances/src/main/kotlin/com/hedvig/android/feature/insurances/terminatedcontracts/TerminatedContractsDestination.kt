@@ -26,7 +26,7 @@ import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -65,17 +65,20 @@ private fun TerminatedContractsScreen(
       TerminatedContractsUiState.Error -> {
         HedvigErrorSection(retry)
       }
+
       TerminatedContractsUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
+
       TerminatedContractsUiState.NoTerminatedInsurances -> {
         HedvigErrorSection(
           buttonText = stringResource(R.string.general_back_button),
           onButtonClick = navigateUp,
         )
       }
+
       is TerminatedContractsUiState.Success -> {
-        for ((index, contract) in uiState.insuranceContracts.withIndex()) {
+        for ((index, contract) in uiState.establishedInsuranceContracts.withIndex()) {
           InsuranceCard(
             chips = contract.createChips(),
             topText = contract.currentInsuranceAgreement.productVariant.displayName,
@@ -89,7 +92,7 @@ private fun TerminatedContractsScreen(
               },
             isLoading = false,
           )
-          if (index != uiState.insuranceContracts.lastIndex) {
+          if (index != uiState.establishedInsuranceContracts.lastIndex) {
             Spacer(Modifier.height(8.dp))
           }
         }
@@ -120,7 +123,7 @@ private class PreviewTerminatedContractsUiStateProvider :
       TerminatedContractsUiState.Error,
       TerminatedContractsUiState.Success(
         listOf(
-          InsuranceContract(
+          EstablishedInsuranceContract(
             "1",
             "Test123",
             tierName = "Premium",

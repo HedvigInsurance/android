@@ -135,6 +135,7 @@ internal data class ClaimSummaryInfoUiState(
   val itemProblems: List<ItemProblem>,
   val submittedContent: SubmittedContent?,
   val files: List<UiFile>,
+  val freeText: String?,
 ) {
   fun itemDetailPairs(resources: Resources, locale: Locale): List<Pair<String, String>> {
     return buildList {
@@ -146,23 +147,32 @@ internal data class ClaimSummaryInfoUiState(
       val incidentTypeText = if (itemProblems.isNotEmpty()) {
         itemProblems.joinToString { it.displayName }
       } else {
-        "-"
+        null
       }
-      add(resources.getString(R.string.CLAIMS_DAMAGES) to incidentTypeText)
+      if (incidentTypeText != null) {
+        add(resources.getString(R.string.CLAIMS_DAMAGES) to incidentTypeText)
+      }
+
       // Skadedatum
       val incidentDateText = if (dateOfIncident != null) {
         dateOfIncident.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
       } else {
-        "-"
+        null
       }
-      add(resources.getString(R.string.claims_item_screen_date_of_incident_button) to incidentDateText)
+      if (incidentDateText != null) {
+        add(resources.getString(R.string.claims_item_screen_date_of_incident_button) to incidentDateText)
+      }
+
       // Plats
       val locationText = if (locationOption != null) {
         locationOption.displayName
       } else {
-        "-"
+        null
       }
-      add(resources.getString(R.string.claims_location_screen_title) to locationText)
+      if (locationText != null) {
+        add(resources.getString(R.string.claims_location_screen_title) to locationText)
+      }
+
       // Modell
       if (itemType != null) {
         val isKnownBrand = (itemType as? ItemType.Brand)?.itemBrand?.asKnown() != null
@@ -177,16 +187,21 @@ internal data class ClaimSummaryInfoUiState(
       val purchaseDateText = if (dateOfPurchase != null) {
         dateOfPurchase.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
       } else {
-        "-"
+        null
       }
-      add(resources.getString(R.string.claims_item_screen_date_of_purchase_button) to purchaseDateText)
+      if (purchaseDateText != null) {
+        add(resources.getString(R.string.claims_item_screen_date_of_purchase_button) to purchaseDateText)
+      }
+
       // Inköpspris
       val purchasePriceText = if (priceOfPurchase?.amount != null) {
         "${priceOfPurchase.amount!!.toInt()} ${priceOfPurchase.currencyCode}"
       } else {
-        "-"
+        null
       }
-      add(resources.getString(R.string.claims_payout_purchase_price) to purchasePriceText)
+      if (purchasePriceText != null) {
+        add(resources.getString(R.string.claims_payout_purchase_price) to purchasePriceText)
+      }
     }
   }
 
@@ -243,6 +258,7 @@ internal data class ClaimSummaryInfoUiState(
           ?: emptyList(),
         files = summary.files,
         submittedContent = summary.submittedContent,
+        freeText = summary.freeText,
       )
     }
   }

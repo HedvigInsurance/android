@@ -13,6 +13,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -60,7 +61,8 @@ internal class TerminatedContractsPresenter(
         }
         .collectLatest { insuranceContractResult ->
           either {
-            val terminatedContracts = insuranceContractResult.bind().filter(InsuranceContract::isTerminated)
+            val terminatedContracts = insuranceContractResult.bind()
+              .filterIsInstance<EstablishedInsuranceContract>().filter { it.isTerminated }
             if (terminatedContracts.isEmpty()) {
               logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
               TerminatedContractsUiState.NoTerminatedInsurances
@@ -83,7 +85,7 @@ internal class TerminatedContractsPresenter(
 
 internal sealed interface TerminatedContractsUiState {
   data class Success(
-    val insuranceContracts: List<InsuranceContract>,
+    val establishedInsuranceContracts: List<EstablishedInsuranceContract>,
   ) : TerminatedContractsUiState
 
   data object NoTerminatedInsurances : TerminatedContractsUiState

@@ -309,6 +309,7 @@ private fun TravelCertificatesList(
       }
 
       HorizontalItemsWithMaximumSpaceTaken(
+        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
             text = dateTimeFormatter.format(certificate.startDate.toJavaLocalDate()),
