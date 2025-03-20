@@ -19,7 +19,8 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
-import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -40,7 +41,8 @@ internal sealed interface InsuranceScreenEvent {
 }
 
 internal data class InsuranceUiState(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<EstablishedInsuranceContract>,
+  val pendingContracts: List<PendingInsuranceContract>,
   val crossSells: List<CrossSell>,
   val travelAddonBannerInfo: TravelAddonBannerInfo?,
   val showNotificationBadge: Boolean,
@@ -53,6 +55,7 @@ internal data class InsuranceUiState(
   companion object {
     val initialState = InsuranceUiState(
       contracts = listOf(),
+      pendingContracts = listOf(),
       crossSells = listOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
@@ -136,6 +139,7 @@ internal class InsurancePresenter(
 
     return InsuranceUiState(
       contracts = insuranceData.contracts,
+      pendingContracts = insuranceData.pendingContracts,
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
@@ -159,10 +163,12 @@ private fun loadInsuranceData(
     getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB),
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
     either {
-      val contracts = contractsResult.bind()
+      val result = contractsResult.bind()
+      val contracts = result.filterIsInstance<EstablishedInsuranceContract>()
+      val pendingContracts = result.filterIsInstance<PendingInsuranceContract>()
       val crossSellsData = crossSellsDataResult.bind()
       val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
-      val insuranceCards = contracts.filterNot(InsuranceContract::isTerminated)
+      val insuranceCards = contracts.filterNot(EstablishedInsuranceContract::isTerminated)
 
       val crossSells = crossSellsData.map { crossSell ->
         CrossSell(
@@ -181,8 +187,9 @@ private fun loadInsuranceData(
       }
       InsuranceData(
         contracts = insuranceCards,
+        pendingContracts = pendingContracts,
         crossSells = crossSells,
-        quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
+        quantityOfCancelledInsurances = contracts.count(EstablishedInsuranceContract::isTerminated),
         isEligibleToPerformMovingFlow = contracts.any {
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
@@ -197,7 +204,8 @@ private fun loadInsuranceData(
 }
 
 private data class InsuranceData(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<EstablishedInsuranceContract>,
+  val pendingContracts: List<PendingInsuranceContract>,
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
@@ -211,11 +219,13 @@ private data class InsuranceData(
         quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
         travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+        pendingContracts = uiState.pendingContracts,
       )
     }
 
     val Empty: InsuranceData = InsuranceData(
       contracts = listOf(),
+      pendingContracts = listOf(),
       crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,

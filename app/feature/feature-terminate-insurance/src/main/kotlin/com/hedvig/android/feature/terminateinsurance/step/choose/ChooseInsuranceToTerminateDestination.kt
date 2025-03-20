@@ -42,7 +42,6 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ChooseInsuranceToTerminateDestination(
@@ -214,14 +213,12 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
             displayName = "HomeownerInsurance",
             contractExposure = "Opulullegatan 19",
             contractGroup = ContractGroup.HOUSE,
-            activateFrom = LocalDate(2024, 6, 27),
           ),
           TerminatableInsurance(
             id = "3",
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
             contractGroup = ContractGroup.HOUSE,
-            activateFrom = LocalDate(2024, 6, 27),
           ),
         ),
         selectedInsurance = null,
@@ -236,14 +233,12 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
             displayName = "HomeownerInsurance",
             contractExposure = "Opulullegatan 19",
             contractGroup = ContractGroup.HOUSE,
-            activateFrom = LocalDate(2024, 6, 27),
           ),
           TerminatableInsurance(
             id = "3",
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
             contractGroup = ContractGroup.HOUSE,
-            activateFrom = LocalDate(2024, 6, 27),
           ),
         ),
         selectedInsurance = TerminatableInsurance(
@@ -251,7 +246,6 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
           displayName = "Tenant Insurance",
           contractExposure = "Bullegatan 23",
           contractGroup = ContractGroup.HOUSE,
-          activateFrom = LocalDate(2024, 6, 27),
         ),
         isNavigationStepLoading = true,
         navigationStepFailedToLoad = true,

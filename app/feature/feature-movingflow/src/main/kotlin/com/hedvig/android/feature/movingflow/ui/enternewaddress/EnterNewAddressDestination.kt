@@ -341,6 +341,13 @@ private fun DatePickerField(
       labelText = stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
+      errorState = if (input.validationError != null) {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
+          input.validationError!!.string(),
+        )
+      } else {
+        HedvigTextFieldDefaults.ErrorState.NoError
+      },
     )
     Box(
       Modifier
@@ -356,7 +363,7 @@ private fun DatePickerField(
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
   return when (this) {
-    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_STREET_ERROR)
     is InvalidMovingDate -> {
       when (this) {
         is InvalidMovingDate.InvalidChoice -> {

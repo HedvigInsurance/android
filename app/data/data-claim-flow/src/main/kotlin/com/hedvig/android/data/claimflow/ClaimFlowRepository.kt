@@ -77,6 +77,8 @@ interface ClaimFlowRepository {
 
   suspend fun submitLocation(location: String?): Either<ErrorMessage, ClaimFlowStep>
 
+  suspend fun submitFreeTextInsteadOfAudio(freeText: String): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitContract(contract: String?): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitDateOfOccurrenceAndLocation(
@@ -145,13 +147,16 @@ internal class ClaimFlowRepositoryImpl(
       logcat { "Uploading file with flowId:$flowId and audio file name:${audioFile.name}" }
       val audioUrl: AudioUrl = uploadAudioFile(flowId.value, audioFile)
       logcat { "Uploaded audio file, resulting url:$audioUrl" }
-      nextClaimFlowStepWithAudioUrl(audioUrl)
+      nextClaimFlowStepWithAudioUrl(
+        audioUrl,
+        freeText = null,
+      )
     }
   }
 
   override suspend fun submitAudioUrl(flowId: FlowId, audioUrl: AudioUrl): Either<ErrorMessage, ClaimFlowStep> {
     return either {
-      nextClaimFlowStepWithAudioUrl(audioUrl)
+      nextClaimFlowStepWithAudioUrl(audioUrl, freeText = null)
     }
   }
 
@@ -176,6 +181,12 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+    }
+  }
+
+  override suspend fun submitFreeTextInsteadOfAudio(freeText: String): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      nextClaimFlowStepWithAudioUrl(audioUrl = null, freeText = freeText)
     }
   }
 
@@ -362,9 +373,18 @@ internal class ClaimFlowRepositoryImpl(
     return AudioUrl(result.audioUrl)
   }
 
-  private suspend fun Raise<ErrorMessage>.nextClaimFlowStepWithAudioUrl(audioUrl: AudioUrl): ClaimFlowStep {
+  private suspend fun Raise<ErrorMessage>.nextClaimFlowStepWithAudioUrl(
+    audioUrl: AudioUrl?,
+    freeText: String?,
+  ): ClaimFlowStep {
     val result = apolloClient
-      .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContextStorage.getContext()))
+      .mutation(
+        FlowClaimAudioRecordingNextMutation(
+          audioUrl = audioUrl?.value,
+          freeText = freeText,
+          context = claimFlowContextStorage.getContext(),
+        ),
+      )
       .safeExecute(::ErrorMessage)
       .bind()
       .flowClaimAudioRecordingNext
@@ -380,7 +400,14 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
 ): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
-      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
+      ClaimFlowStep.ClaimAudioRecordingStep(
+        flowId = flowId,
+        questions = questions,
+        audioContent = audioContent,
+        freeTextAvailable = freeTextAvailable,
+        freeText = freeText,
+        freeTextQuestions = freeTextQuestions,
+      )
     }
 
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
@@ -449,6 +476,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         selectedItemProblems = singleItemStep?.selectedItemProblems,
         fileUploads = fileUploadStep?.uploads,
         signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
+        freeText = audioRecordingStep?.freeText,
       )
     }
 
@@ -461,6 +489,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
+      selectedOptionId,
     )
 
     is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(

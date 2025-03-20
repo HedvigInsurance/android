@@ -29,6 +29,9 @@ fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep {
   audioContent {
     ...AudioContentFragment
   }
+  freeTextQuestions
+  freeTextAvailable
+  freeText
 }
 
 fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
@@ -158,9 +161,11 @@ fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
 
 fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
   id
+  selectedOptionId
   options {
     id
-    displayName
+    displayTitle
+    displaySubtitle
   }
 }
 

@@ -49,6 +49,8 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Height
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
@@ -148,25 +150,42 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
             endSlot = {
               HedvigText(text = right, textAlign = TextAlign.End)
             },
+            spaceBetween = 8.dp,
           )
         }
       }
     }
     Spacer(Modifier.height(24.dp))
-    HedvigText(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
-    when (uiState.claimSummaryInfoUiState.submittedContent) {
-      is SubmittedContent.Audio -> {
-        val signedAudioUrl =
-          uiState.claimSummaryInfoUiState.submittedContent.signedAudioURL
-        Spacer(Modifier.height(8.dp))
-        val audioPlayer = rememberAudioPlayer(
-          playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl),
-        )
-        HedvigAudioPlayer(audioPlayer = audioPlayer)
-      }
-
-      else -> {}
+    if (uiState.claimSummaryInfoUiState.freeText != null) {
+      FreeTextDisplay(
+        onClick = {},
+        showCount = false,
+        height = Height.Limited(80.dp),
+        freeTextValue = uiState.claimSummaryInfoUiState.freeText,
+        freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+      )
+      Spacer(Modifier.height(8.dp))
     }
+    Spacer(Modifier.height(8.dp))
+    if (uiState.claimSummaryInfoUiState.submittedContent != null || !uiState.claimSummaryInfoUiState.files.isEmpty()) {
+      HedvigText(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
+    }
+    if (uiState.claimSummaryInfoUiState.submittedContent != null) {
+      when (uiState.claimSummaryInfoUiState.submittedContent) {
+        is SubmittedContent.Audio -> {
+          val signedAudioUrl =
+            uiState.claimSummaryInfoUiState.submittedContent.signedAudioURL
+          Spacer(Modifier.height(8.dp))
+          val audioPlayer = rememberAudioPlayer(
+            playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl),
+          )
+          HedvigAudioPlayer(audioPlayer = audioPlayer)
+        }
+
+        else -> {}
+      }
+    }
+
     Spacer(Modifier.height(8.dp))
   }
 }
@@ -234,6 +253,7 @@ private fun PreviewClaimSummaryScreen() {
               )
             },
             submittedContent = null,
+            freeText = "eeeeeeeeeeFreeeeeeeeeeeeeeeeeeee",
           ),
           claimSummaryStatusUiState = ClaimSummaryStatusUiState(
             isLoading = false,
