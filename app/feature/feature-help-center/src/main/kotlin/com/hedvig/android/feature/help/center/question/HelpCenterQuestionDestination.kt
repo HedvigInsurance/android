@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -46,6 +47,7 @@ internal fun HelpCenterQuestionDestination(
   helpCenterQuestionViewModel: HelpCenterQuestionViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
   val uiState by helpCenterQuestionViewModel.uiState.collectAsStateWithLifecycle()
@@ -53,14 +55,21 @@ internal fun HelpCenterQuestionDestination(
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = stringResource(R.string.HC_TITLE),
-        onClick = onNavigateBack,
+        onClick = onNavigateUp,
       )
       when (val state = uiState) {
         HelpCenterQuestionUiState.Failure -> {
           FailureScreen(
-            reload = {
-              helpCenterQuestionViewModel.emit(HelpCenterQuestionEvent.Reload)
-            },
+            onClick = { helpCenterQuestionViewModel.emit(HelpCenterQuestionEvent.Reload) },
+            errorText = stringResource(R.string.GENERAL_ERROR_BODY),
+            buttonText = stringResource(R.string.GENERAL_RETRY),
+          )
+        }
+        HelpCenterQuestionUiState.NoQuestionFound -> {
+          FailureScreen(
+            onClick = dropUnlessResumed { onNavigateBack() },
+            errorText = stringResource(R.string.HC_QUESTION_NOT_FOUND),
+            buttonText = stringResource(R.string.general_back_button),
           )
         }
 
@@ -79,24 +88,22 @@ internal fun HelpCenterQuestionDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit) {
-  Column {
-    HedvigErrorSection(
-      onButtonClick = reload,
-      title = stringResource(R.string.HC_QUESTION_NOT_FOUND),
-      subTitle = null,
-      buttonText = stringResource(R.string.GENERAL_RETRY),
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
-        .windowInsetsPadding(
-          WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Horizontal +
-              WindowInsetsSides.Bottom,
-          ),
+private fun FailureScreen(onClick: () -> Unit, errorText: String, buttonText: String) {
+  HedvigErrorSection(
+    onButtonClick = onClick,
+    title = errorText,
+    subTitle = null,
+    buttonText = buttonText,
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Bottom,
         ),
-    )
-  }
+      ),
+  )
 }
 
 @Composable
