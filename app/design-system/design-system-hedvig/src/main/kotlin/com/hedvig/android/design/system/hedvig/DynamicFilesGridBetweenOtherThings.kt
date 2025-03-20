@@ -179,7 +179,7 @@ private fun FilesLazyVerticalGrid(
 }
 
 @Composable
-private fun File(
+fun File(
   id: String,
   name: String,
   path: String?,

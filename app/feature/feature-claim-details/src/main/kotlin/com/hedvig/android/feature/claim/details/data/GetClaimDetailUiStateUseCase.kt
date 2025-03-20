@@ -113,6 +113,8 @@ internal class GetClaimDetailUiStateUseCase(
         ClaimOutcome.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+
+        ClaimOutcome.UNRESPONSIVE -> ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE
       },
       uploadUri = claim.targetFileUploadUri,
       isUploadingFile = false,
@@ -125,6 +127,8 @@ internal class GetClaimDetailUiStateUseCase(
       savedFileUri = null,
       downloadError = null,
       isLoadingPdf = false,
+      appealInstructionsUrl = claim.appealInstructionsUrl,
+      isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
     )
   }
 
