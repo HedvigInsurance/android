@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -248,37 +250,60 @@ private fun ClaimDetailContentScreen(
     isVisible = showFileTypeSelectBottomSheet,
   )
   Column {
-    DynamicFilesGridBetweenOtherThings(
-      belowGridContent = {
+    if (uiState.files.isNotEmpty()) {
+      DynamicFilesGridBetweenOtherThings(
+        belowGridContent = {
+          AfterGridContent(
+            uiState = uiState,
+            onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
+            onDismissUploadError = onDismissUploadError,
+            downloadFromUrl = downloadFromUrl,
+          )
+        },
+        aboveGridContent = {
+          BeforeGridContent(
+            uiState = uiState,
+            hasUnreadMessages = hasUnreadMessages,
+            navigateToConversation = navigateToConversation,
+          )
+        },
+        files = uiState.files,
+        imageLoader = imageLoader,
+        onClickFile = { fileId ->
+          val url = uiState.files.firstOrNull { it.id == fileId }?.url
+          if (url != null) {
+            openUrl(url)
+          }
+        },
+        onRemoveFile = null,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+          .only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+          ).asPaddingValues(),
+      )
+    } else {
+      Column(
+        Modifier.padding(
+          PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+            .only(
+              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+            ).asPaddingValues(),
+        ).verticalScroll(rememberScrollState()),
+      ) {
+        BeforeGridContent(
+          uiState = uiState,
+          hasUnreadMessages = hasUnreadMessages,
+          navigateToConversation = navigateToConversation,
+        )
         AfterGridContent(
           uiState = uiState,
           onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
           onDismissUploadError = onDismissUploadError,
           downloadFromUrl = downloadFromUrl,
         )
-      },
-      aboveGridContent = {
-        BeforeGridContent(
-          uiState = uiState,
-          hasUnreadMessages = hasUnreadMessages,
-          navigateToConversation = navigateToConversation,
-        )
-      },
-      files = uiState.files,
-      imageLoader = imageLoader,
-      onClickFile = { fileId ->
-        val url = uiState.files.firstOrNull { it.id == fileId }?.url
-        if (url != null) {
-          openUrl(url)
-        }
-      },
-      onRemoveFile = null,
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-        .only(
-          WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-        ).asPaddingValues(),
-    )
+      }
+    }
   }
 }
 
@@ -443,6 +468,7 @@ private fun AfterGridContent(
       )
     }
     if (uiState.termsConditionsUrl != null || uiState.appealInstructionsUrl != null) {
+      Spacer(Modifier.height(16.dp))
       HedvigText(
         stringResource(R.string.claim_status_detail_documents_title),
         Modifier.padding(horizontal = 2.dp),
@@ -583,7 +609,9 @@ private fun statusParagraphText(
     }
 
     ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
-    ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(R.string.claim_outcome_unresponsive_support_text)
+    ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(
+      R.string.claim_outcome_unresponsive_support_text,
+    )
   }
 
   ClaimDetailUiState.Content.ClaimStatus.REOPENED -> {
@@ -763,7 +791,7 @@ private fun PreviewClaimDetailScreen(
           downloadError = null,
           isLoadingPdf = false,
           appealInstructionsUrl = "dd",
-          isUploadingFilesEnabled = false,
+          isUploadingFilesEnabled = true,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),

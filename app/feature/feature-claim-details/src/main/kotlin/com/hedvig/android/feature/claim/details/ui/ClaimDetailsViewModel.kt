@@ -195,7 +195,7 @@ internal sealed interface ClaimDetailUiState {
       NOT_COMPENSATED,
       NOT_COVERED,
       UNKNOWN,
-      UNRESPONSIVE
+      UNRESPONSIVE,
     }
 
     companion object
