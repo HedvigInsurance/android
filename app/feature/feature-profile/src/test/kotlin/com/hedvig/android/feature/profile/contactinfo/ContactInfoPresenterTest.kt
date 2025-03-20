@@ -169,7 +169,6 @@ class ContactInfoPresenterTest {
           assertThat(canSubmit).isTrue()
           for (invalidEmail in invalidEmails) {
             emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
-            println("Stelios invalidEmail:$invalidEmail")
             assertThat(canSubmit).isFalse()
           }
           emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
@@ -216,12 +215,12 @@ class ContactInfoPresenterTest {
 
   @Test
   fun `Backend returning empty or null info should result in an empty but valid UI state`(
-    @TestParameter withNullablePhoneNumber: Boolean,
+    @TestParameter testingNullPhoneNumber: Boolean,
   ) = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
     val backendEmail = ""
-    val backendPhoneNumber = "".takeIf { !withNullablePhoneNumber }
+    val backendPhoneNumber = "".takeIf { !testingNullPhoneNumber }
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
       ContactInformationQuery.Data {
@@ -245,13 +244,15 @@ class ContactInfoPresenterTest {
   }
 
   @Test
-  fun `Can submit new contact info with one piece of info being null if it was null already anyway`(
-    @TestParameter testingPhoneNumber: Boolean,
+  fun `Trying to edit contact info when one of the two is originally null should still work`(
+    @TestParameter testingNullPhoneNumber: Boolean,
   ) = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
-    val backendEmail = "test@hedvig.com".takeIf { testingPhoneNumber } ?: ""
-    val backendPhoneNumber = "+123".takeIf { !testingPhoneNumber }
+    val backendEmail = "test@hedvig.com".takeIf { testingNullPhoneNumber } ?: ""
+    val backendPhoneNumber = "+123".takeIf { !testingNullPhoneNumber }
+    val newPhoneNumber = "123"
+    val newEmail = "new@hedvig.com"
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
       ContactInformationQuery.Data {
@@ -264,7 +265,7 @@ class ContactInfoPresenterTest {
     presenter.test(ContactInfoUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
       with(awaitItem()) {
-        if (testingPhoneNumber) {
+        if (testingNullPhoneNumber) {
           assertThat(this.content!!.uploadedPhoneNumber).isNull()
           assertThat(this.content!!.uploadedEmail).isNotNull()
         } else {
@@ -272,19 +273,63 @@ class ContactInfoPresenterTest {
           assertThat(this.content!!.uploadedEmail).isNull()
         }
         assertThat(this.content!!.canSubmit).isEqualTo(false)
-        if (testingPhoneNumber) {
-          this.content!!.phoneNumberState.setTextAndPlaceCursorAtEnd("123")
+        if (testingNullPhoneNumber) {
+          this.content!!.emailState.setTextAndPlaceCursorAtEnd(newEmail)
         } else {
-          this.content!!.emailState.setTextAndPlaceCursorAtEnd("test@hedvig.com")
+          this.content!!.phoneNumberState.setTextAndPlaceCursorAtEnd(newPhoneNumber)
         }
         assertThat(this.content!!.canSubmit).isEqualTo(true)
+        sendEvent(ContactInfoEvent.SubmitData)
+        assertThat(awaitItem().content!!.submittingUpdatedInfo).isTrue()
+        if (testingNullPhoneNumber) {
+          apolloClient.registerSuspendingTestResponse(
+            MemberUpdateEmailMutation(newEmail),
+            MemberUpdateEmailMutation.Data {
+              this.memberUpdateEmail = this.buildMemberMutationOutput {
+                this.userError = null
+                this.member = this.buildMember {
+                  this.phoneNumber = backendPhoneNumber
+                  this.email = newEmail
+                }
+              }
+            },
+          )
+        } else {
+          apolloClient.registerSuspendingTestResponse(
+            MemberUpdatePhoneNumberMutation(newPhoneNumber),
+            MemberUpdatePhoneNumberMutation.Data {
+              this.memberUpdatePhoneNumber = this.buildMemberMutationOutput {
+                this.userError = null
+                this.member = this.buildMember {
+                  this.phoneNumber = newPhoneNumber
+                  this.email = backendEmail
+                }
+              }
+            },
+          )
+        }
+        with(awaitItem()) {
+          if (testingNullPhoneNumber) {
+            assertThat(this.content!!.phoneNumberState.text).isEqualTo("")
+            assertThat(this.content!!.emailState.text).isEqualTo(newEmail)
+            assertThat(this.content!!.uploadedPhoneNumber).isNull()
+            assertThat(this.content!!.uploadedEmail).isEqualTo(Email(newEmail))
+          } else {
+            assertThat(this.content!!.phoneNumberState.text).isEqualTo(newPhoneNumber)
+            assertThat(this.content!!.emailState.text).isEqualTo("")
+            assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(newPhoneNumber))
+            assertThat(this.content!!.uploadedEmail).isNull()
+          }
+          assertThat(this.content!!.submittingUpdatedInfo).isFalse()
+          assertThat(this.content!!.canSubmit).isFalse()
+        }
       }
     }
   }
 
   @Test
   fun `Can not submit new contact info if that would mean deleting some previously present info`(
-    @TestParameter nullPhoneNumber: Boolean,
+    @TestParameter testingPhoneNumber: Boolean,
   ) = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
