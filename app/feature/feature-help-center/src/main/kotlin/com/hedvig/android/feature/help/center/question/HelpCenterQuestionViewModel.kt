@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.GetHelpCenterQuestionUseCase
+import com.hedvig.android.feature.help.center.data.HelpCenterQuestionError.GenericError
+import com.hedvig.android.feature.help.center.data.HelpCenterQuestionError.NoQuestionFound
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -41,11 +43,14 @@ private class HelpCenterQuestionPresenter(
 
     LaunchedEffect(loadIteration) {
       if (questionId == null) {
-        currentState = HelpCenterQuestionUiState.Failure
+        currentState = HelpCenterQuestionUiState.NoQuestionFound
       } else {
         getHelpCenterQuestionUseCase.invoke(questionId).fold(
-          ifLeft = {
-            currentState = HelpCenterQuestionUiState.Failure
+          ifLeft = { error ->
+            when (error) {
+              is GenericError -> currentState = HelpCenterQuestionUiState.Failure
+              NoQuestionFound -> currentState = HelpCenterQuestionUiState.NoQuestionFound
+            }
           },
           ifRight = { item ->
             currentState = HelpCenterQuestionUiState.Success(
@@ -70,4 +75,6 @@ internal sealed interface HelpCenterQuestionUiState {
   data object Loading : HelpCenterQuestionUiState
 
   data object Failure : HelpCenterQuestionUiState
+
+  data object NoQuestionFound : HelpCenterQuestionUiState
 }
