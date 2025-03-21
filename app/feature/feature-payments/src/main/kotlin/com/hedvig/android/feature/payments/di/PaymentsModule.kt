@@ -24,6 +24,7 @@ import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import kotlinx.datetime.Clock
 import org.koin.core.module.dsl.viewModel
@@ -34,6 +35,7 @@ val paymentsModule = module {
     AddDiscountUseCaseImpl(
       get<ApolloClient>(),
       get<NetworkCacheManager>(),
+      get<FeatureManager>(),
     )
   }
   single<GetPaymentsHistoryUseCase> {
