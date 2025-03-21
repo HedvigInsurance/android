@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -99,6 +100,7 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
+          travelAddonBannerInfo = successData.travelAddonBannerInfo,
         )
       }
     }
@@ -132,6 +134,7 @@ internal sealed interface HomeUiState {
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
+    val travelAddonBannerInfo: TravelAddonBannerInfo?,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
@@ -151,6 +154,7 @@ private data class SuccessData(
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
+  val travelAddonBannerInfo: TravelAddonBannerInfo?,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -165,6 +169,7 @@ private data class SuccessData(
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
+        travelAddonBannerInfo = lastState.travelAddonBannerInfo,
       )
     }
 
@@ -200,6 +205,7 @@ private data class SuccessData(
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
+        travelAddonBannerInfo = homeData.travelBannerInfo,
       )
     }
   }

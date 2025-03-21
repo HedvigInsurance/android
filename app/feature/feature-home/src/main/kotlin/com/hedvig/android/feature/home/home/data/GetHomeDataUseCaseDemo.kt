@@ -23,6 +23,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       showHelpCenter = true,
       firstVetSections = listOf(),
       crossSells = listOf(),
+      travelBannerInfo = null,
     ).right(),
   )
 }

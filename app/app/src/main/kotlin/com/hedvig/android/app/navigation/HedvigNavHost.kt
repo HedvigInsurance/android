@@ -189,6 +189,9 @@ internal fun HedvigNavHost(
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
       navigator = navigator,
+      onNavigateToAddonPurchaseFlow = { ids ->
+        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
+      },
     )
     insuranceGraph(
       nestedGraphs = {
