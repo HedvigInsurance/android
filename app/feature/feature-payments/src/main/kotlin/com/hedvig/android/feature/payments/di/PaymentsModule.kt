@@ -86,6 +86,7 @@ val paymentsModule = module {
     DiscountsViewModel(
       get<GetDiscountsOverviewUseCase>(),
       get<AddDiscountUseCase>(),
+      get<FeatureManager>(),
     )
   }
 
