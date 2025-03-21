@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -122,7 +123,7 @@ fun TopAppBar(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             IconButton(
-              onClick = onActionClick,
+              onClick = dropUnlessResumed { onActionClick() },
               modifier = Modifier.size(24.dp),
               content = {
                 Icon(
