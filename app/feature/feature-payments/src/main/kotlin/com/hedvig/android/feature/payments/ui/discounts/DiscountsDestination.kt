@@ -142,21 +142,11 @@ private fun DiscountsScreen(
           HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
         },
         endSlot = {
-          Icon(
-            imageVector = HedvigIcons.InfoFilled,
-            tint = HedvigTheme.colorScheme.fillSecondary,
-            contentDescription = "Info icon",
-            modifier = Modifier
-              .wrapContentSize(Alignment.CenterEnd)
-              .size(16.dp)
-              .clip(HedvigTheme.shapes.cornerXLarge)
-              .clickable { showInfoBottomSheet = true }
-              .minimumInteractiveComponentSize(),
-          )
           if (uiState.allowAddingCampaignCode) {
             Icon(
               imageVector = HedvigIcons.InfoFilled,
               tint = HedvigTheme.colorScheme.fillSecondary,
+              contentDescription = null,
               modifier = Modifier
                 .wrapContentSize(Alignment.CenterEnd)
                 .size(16.dp)
