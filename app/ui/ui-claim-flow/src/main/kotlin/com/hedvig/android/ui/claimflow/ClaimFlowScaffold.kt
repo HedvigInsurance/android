@@ -121,7 +121,8 @@ fun ClaimFlowScaffold(
           errorSnackbarState = errorSnackbarState,
           modifier = Modifier
             .align(Alignment.BottomCenter)
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(horizontal = 16.dp),
         )
       }
     }

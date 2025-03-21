@@ -32,6 +32,7 @@ import com.hedvig.android.feature.odyssey.step.notificationpermission.Notificati
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractDestination
+import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractEvent
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
@@ -100,7 +101,8 @@ fun NavGraphBuilder.claimFlowGraph(
     navdestination<ClaimFlowDestination.AudioRecording>(
       ClaimFlowDestination.AudioRecording,
     ) { backStackEntry ->
-      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
+      val audioRecording = this
+      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(audioRecording) }
       AudioRecordingDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
@@ -113,6 +115,8 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
+        freeTextAvailable = this.freeTextAvailable,
+        freeTextQuestions = this.freeTextQuestions,
       )
     }
     navdestination<ClaimFlowDestination.DateOfOccurrence>(
@@ -240,7 +244,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
-          viewModel.handledNextStepNavigation()
+          viewModel.emit(SelectContractEvent.HandledNextStepNavigation)
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,

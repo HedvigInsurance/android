@@ -13,6 +13,7 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -45,6 +46,7 @@ internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -66,16 +68,17 @@ internal class GetHomeDataUseCaseImpl(
       },
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
       getMemberRemindersUseCase.invoke(),
-      combine(
-        featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
-        featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-      ) { isChatDisabled, isHelpCenterEnabled -> isChatDisabled to isHelpCenterEnabled },
+      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
+      featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+      crossSellAfterClaimClosedRepository.shouldShowCrossSellAfterClaim(),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
       isEligibleToShowTheChatIconResult,
       memberReminders,
-      (isChatDisabled, isHelpCenterEnabled),
+      isChatDisabled,
+      isHelpCenterEnabled,
+      shouldShowCrossSellAfterClaim,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -144,6 +147,7 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          forceShowCrossSells = crossSells.takeIf { shouldShowCrossSellAfterClaim },
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -233,6 +237,7 @@ internal data class HomeData(
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
+  val forceShowCrossSells: List<CrossSell>?,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,
@@ -270,4 +275,29 @@ internal data class HomeData(
   }
 
   companion object
+}
+
+/**
+ * The reason this exists is because the standard combine function only allows up to 5 generic flows.
+ */
+public fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
+  flow: Flow<T1>,
+  flow2: Flow<T2>,
+  flow3: Flow<T3>,
+  flow4: Flow<T4>,
+  flow5: Flow<T5>,
+  flow6: Flow<T6>,
+  flow7: Flow<T7>,
+  transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
+): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
+  @Suppress("UNCHECKED_CAST")
+  transform(
+    args[0] as T1,
+    args[1] as T2,
+    args[2] as T3,
+    args[3] as T4,
+    args[4] as T5,
+    args[5] as T6,
+    args[6] as T7,
+  )
 }

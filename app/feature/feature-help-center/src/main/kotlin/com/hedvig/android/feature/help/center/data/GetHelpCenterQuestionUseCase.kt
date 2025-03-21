@@ -5,21 +5,32 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 
 internal interface GetHelpCenterQuestionUseCase {
-  suspend fun invoke(questionId: String): Either<ErrorMessage, FAQItem>
+  suspend fun invoke(questionId: String): Either<HelpCenterQuestionError, FAQItem>
 }
 
 internal class GetHelpCenterQuestionUseCaseImpl(
   val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
 ) : GetHelpCenterQuestionUseCase {
-  override suspend fun invoke(questionId: String): Either<ErrorMessage, FAQItem> {
+  override suspend fun invoke(questionId: String): Either<HelpCenterQuestionError, FAQItem> {
     return either {
-      val result = getHelpCenterFAQUseCase.invoke()
-        .getOrNull()?.topics?.flatMap { it.commonFAQ + it.otherFAQ }?.firstOrNull { it.id == questionId }
-      if (result == null) {
-        raise(ErrorMessage())
+      val memberFaq = getHelpCenterFAQUseCase.invoke()
+        .mapLeft { HelpCenterQuestionError.GenericError(it) }
+        .bind()
+      val question = memberFaq
+        .topics
+        .flatMap { it.commonFAQ + it.otherFAQ }
+        .firstOrNull { it.id == questionId }
+      if (question == null) {
+        raise(HelpCenterQuestionError.NoQuestionFound)
       } else {
-        result
+        question
       }
     }
   }
+}
+
+internal sealed interface HelpCenterQuestionError {
+  object NoQuestionFound : HelpCenterQuestionError
+
+  data class GenericError(val errorMessage: ErrorMessage) : HelpCenterQuestionError, ErrorMessage by errorMessage
 }

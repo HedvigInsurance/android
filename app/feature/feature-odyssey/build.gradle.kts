@@ -4,6 +4,7 @@ plugins {
 }
 
 hedvig {
+  apollo("octopus")
   serialization()
   compose()
 }
@@ -47,6 +48,10 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.uiClaimFlow)
   implementation(projects.uiEmergency)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

@@ -50,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labe
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -175,14 +176,9 @@ private fun EnterNewAddressScreen(
       .clearFocusOnTap()
       .padding(horizontal = 16.dp),
   ) {
-    HedvigText(
-      text = stringResource(R.string.insurance_details_change_address_button),
-      style = HedvigTheme.typography.bodyMedium,
-    )
-    HedvigText(
-      text = stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      stringResource(R.string.insurance_details_change_address_button),
+      stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -345,6 +341,13 @@ private fun DatePickerField(
       labelText = stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
+      errorState = if (input.validationError != null) {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
+          input.validationError!!.string(),
+        )
+      } else {
+        HedvigTextFieldDefaults.ErrorState.NoError
+      },
     )
     Box(
       Modifier
@@ -360,7 +363,7 @@ private fun DatePickerField(
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
   return when (this) {
-    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_STREET_ERROR)
     is InvalidMovingDate -> {
       when (this) {
         is InvalidMovingDate.InvalidChoice -> {

@@ -9,7 +9,7 @@ interface NetworkCacheManager {
   fun clearCache()
 }
 
-internal class NetworkCacheManagerImpl(
+internal class ApolloNetworkCacheManager(
   private val apolloClient: ApolloClient,
 ) : NetworkCacheManager {
   override fun clearCache() {

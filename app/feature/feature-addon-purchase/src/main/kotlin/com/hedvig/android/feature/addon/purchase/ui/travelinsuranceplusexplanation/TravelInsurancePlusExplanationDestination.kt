@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Medium
@@ -21,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import hedvig.resources.R
 
@@ -44,19 +44,10 @@ internal fun TravelInsurancePlusExplanationDestination(travelPerilData: List<Tra
 @Composable
 private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, navigateUp: () -> Unit) {
   HedvigScaffold(navigateUp) {
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 18.dp),
-    )
-    HedvigText(
-      text = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 18.dp),
+    FlowHeading(
+      stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
+      stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
+      Modifier.fillMaxWidth().padding(horizontal = 18.dp),
     )
     Spacer(Modifier.height(32.dp))
     HighlightLabel(

@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
@@ -59,16 +59,10 @@ private fun HonestyPledgeScreen(
     closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
-    HedvigText(
-      text = stringResource(R.string.HONESTY_PLEDGE_TITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-    )
-    HedvigText(
-      text = stringResource(R.string.HONESTY_PLEDGE_DESCRIPTION),
-      style = HedvigTheme.typography.headlineMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = sideSpacingModifier.fillMaxWidth(),
+    FlowHeading(
+      stringResource(R.string.HONESTY_PLEDGE_TITLE),
+      stringResource(R.string.HONESTY_PLEDGE_DESCRIPTION),
+      sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))

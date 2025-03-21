@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.10.10"
+    versionName = "12.10.11"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -172,6 +172,7 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)
+  implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)

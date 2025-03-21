@@ -29,6 +29,7 @@ import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
@@ -52,6 +53,7 @@ import com.hedvig.android.data.addons.di.dataAddonsModule
 import com.hedvig.android.data.changetier.di.dataChangeTierModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
+import com.hedvig.android.data.cross.sell.after.claim.closed.di.crossSellAfterClaimClosedModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
@@ -266,6 +268,14 @@ private val notificationModule = module {
       HedvigNotificationChannel.Chat,
     )
   } bind NotificationSender::class
+  single<ClaimClosedNotificationSender> {
+    ClaimClosedNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Payments,
+    )
+  } bind NotificationSender::class
   single<ContactInfoSender> {
     ContactInfoSender(
       get<Context>(),
@@ -354,11 +364,10 @@ val applicationModule = module {
       addonPurchaseModule,
       apolloAuthListenersModule,
       appModule,
-      videoPlayerModule,
       authModule,
       buildConstantsModule,
-      chooseTierModule,
       chatModule,
+      chooseTierModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
@@ -368,6 +377,8 @@ val applicationModule = module {
       connectPaymentTrustlyModule,
       coreAppReviewModule,
       coreCommonModule,
+      crossSellAfterClaimClosedModule,
+      dataAddonsModule,
       dataChangeTierModule,
       dataConversationsModule,
       dataPayingMemberModule,
@@ -410,7 +421,7 @@ val applicationModule = module {
       terminationDataModule,
       trackingDatadogModule,
       travelCertificateModule,
-      dataAddonsModule,
+      videoPlayerModule,
     ),
   )
 }

@@ -21,7 +21,14 @@ import octopus.fragment.FlowClaimSingleItemStepFragment
 fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
-      ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
+      ClaimFlowDestination.AudioRecording(
+        flowId = flowId,
+        questions = questions,
+        audioContent = audioContent?.toAudioContent(),
+        freeTextAvailable = freeTextAvailable,
+        freeText = freeText,
+        freeTextQuestions = freeTextQuestions,
+      )
     }
 
     is ClaimFlowStep.ClaimDateOfOccurrenceStep -> {
@@ -89,6 +96,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
         submittedContent = signedAudioUrl?.let {
           SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
+        freeText = freeText,
       )
     }
 
@@ -113,6 +121,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
     is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
       options = options.map { it.toLocalOptions() },
+      selectedOptionId = selectedOptionId,
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
@@ -156,7 +165,11 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
 }
 
 private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(): LocalContractContractOption {
-  return LocalContractContractOption(id, displayName)
+  return LocalContractContractOption(
+    id = id,
+    displayTitle = displayTitle,
+    displaySubtitle = displaySubtitle ?: " ",
+  )
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {

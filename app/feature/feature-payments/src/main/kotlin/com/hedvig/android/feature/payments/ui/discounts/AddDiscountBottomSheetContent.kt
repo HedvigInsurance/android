@@ -89,7 +89,7 @@ private fun AddDiscountBottomSheetPreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddDiscountBottomSheetContent(
         isLoading = false,
-        errorMessage = null,
+        errorMessage = stringResource(id = R.string.something_went_wrong),
         onAddDiscount = {},
         onDismiss = {},
       )

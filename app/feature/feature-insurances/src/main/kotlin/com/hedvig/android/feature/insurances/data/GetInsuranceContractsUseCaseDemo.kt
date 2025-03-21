@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
@@ -14,7 +15,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(
       listOf(
-        InsuranceContract(
+        EstablishedInsuranceContract(
           "1",
           "Test123",
           exposureDisplayName = "Test exposure",

@@ -30,6 +30,7 @@ internal class UnleashFeatureFlagProvider(
             "enable_video_player_in_chat_messages",
             false,
           )
+          Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign", false)
         }
       }.distinctUntilChanged()
   }
