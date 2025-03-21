@@ -126,7 +126,9 @@ private fun DiscountsScreen(
         onAddDiscount = { code ->
           onSubmitDiscountCode(code)
         },
-        errorMessage = uiState.discountError,
+        errorMessage = uiState.discountError?.let { discountError ->
+          discountError.message ?: stringResource(R.string.something_went_wrong)
+        },
         isLoading = uiState.isAddingDiscount,
         onDismiss = onDismissBottomSheet,
       )
