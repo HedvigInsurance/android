@@ -27,4 +27,5 @@ fragment ClaimFragment on Claim {
   submittedAt
   appealInstructionsUrl
   isUploadingFilesEnabled
+  infoText
 }

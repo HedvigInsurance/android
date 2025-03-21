@@ -175,6 +175,7 @@ internal sealed interface ClaimDetailUiState {
     val isLoadingPdf: Boolean,
     val appealInstructionsUrl: String?,
     val isUploadingFilesEnabled: Boolean,
+    val infoText: String?,
   ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent

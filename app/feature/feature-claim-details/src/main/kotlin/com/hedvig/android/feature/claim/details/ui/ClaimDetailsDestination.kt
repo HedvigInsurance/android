@@ -67,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -77,6 +78,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
@@ -381,6 +383,14 @@ private fun BeforeGridContent(
 ) {
   Column {
     Spacer(Modifier.height(8.dp))
+    if (uiState.infoText != null) {
+      HedvigNotificationCard(
+        modifier = Modifier.fillMaxWidth(),
+        message = uiState.infoText,
+        priority = NotificationDefaults.NotificationPriority.Info,
+      )
+      Spacer(Modifier.height(8.dp))
+    }
     HedvigCard {
       ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
     }
@@ -880,6 +890,7 @@ private fun PreviewClaimDetailScreen(
           isLoadingPdf = false,
           appealInstructionsUrl = "dd",
           isUploadingFilesEnabled = false,
+          infoText = "If you have more receipts related to this claim, you can upload more on this page.",
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
