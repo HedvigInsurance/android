@@ -617,6 +617,7 @@ private fun CrossSellBottomSheet(
         TravelAddonBanner(
           travelAddonBannerInfo = travelAddonBannerInfo,
           launchAddonPurchaseFlow = {
+            state.dismiss()
             onNavigateToAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
           },
           modifier = Modifier
