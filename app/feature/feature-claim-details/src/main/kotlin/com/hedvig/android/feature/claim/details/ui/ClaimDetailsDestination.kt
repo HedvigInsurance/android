@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -394,62 +395,45 @@ private fun BeforeGridContent(
       ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
     }
     Spacer(Modifier.height(8.dp))
-    HedvigCard {
-      Column {
-        val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
-        if (!claimIsInUndeterminedState) {
-          Column(
-            Modifier.padding(
-              start = 18.dp,
-              end = 18.dp,
-              top = 16.dp,
-              bottom = 18.dp,
-            ),
-          ) {
-            HedvigText(
-              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
-              style = HedvigTheme.typography.bodySmall,
-            )
+    if (!uiState.claimIsInUndeterminedState) {
+      HedvigCard {
+        Column(Modifier.padding(16.dp)) {
+          HedvigText(
+            text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+            style = HedvigTheme.typography.bodySmall,
+          )
+          if (navigateToConversation != null) {
             Spacer(Modifier.height(16.dp))
-            if (navigateToConversation != null) {
-              HorizontalDivider()
-              Spacer(Modifier.height(16.dp))
-              HorizontalItemsWithMaximumSpaceTaken(
-                modifier = Modifier
-                  .clip(HedvigTheme.shapes.cornerXSmall)
-                  .clickable {
-                    navigateToConversation()
-                  },
-                startSlot = {
-                  Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                  ) {
-                    HedvigText(
-                      text = stringResource(R.string.claim_status_detail_message_view_body),
-                      style = HedvigTheme.typography.bodySmall,
-                    )
-                  }
-                },
-                endSlot = {
-                  Row(
-                    horizontalArrangement = Arrangement.End,
-                  ) {
-                    IconButton(onClick = navigateToConversation, Modifier.size(40.dp)) {
-                      Icon(
-                        imageVector = HedvigIcons.Chat,
-                        contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-                        tint = HedvigTheme.colorScheme.signalGreyElement,
-                        modifier = Modifier
-                          .size(32.dp)
-                          .notificationCircle(hasUnreadMessages)
-                          .clip(CircleShape),
-                      )
-                    }
-                  }
-                },
-                spaceBetween = 8.dp,
-              )
-            }
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            HorizontalItemsWithMaximumSpaceTaken(
+              modifier = Modifier
+                .clip(HedvigTheme.shapes.cornerXSmall)
+                .clickable(onClick = navigateToConversation),
+              startSlot = {
+                HedvigText(
+                  text = stringResource(R.string.claim_status_detail_message_view_body),
+                  style = HedvigTheme.typography.bodySmall,
+                  modifier = Modifier.wrapContentSize(Alignment.CenterStart),
+                )
+              },
+              endSlot = {
+                IconButton(
+                  onClick = navigateToConversation,
+                  modifier = Modifier.size(40.dp).wrapContentSize(Alignment.CenterEnd),
+                ) {
+                  Icon(
+                    imageVector = HedvigIcons.Chat,
+                    contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+                    tint = HedvigTheme.colorScheme.signalGreyElement,
+                    modifier = Modifier
+                      .size(32.dp)
+                      .notificationCircle(hasUnreadMessages)
+                  )
+                }
+              },
+              spaceBetween = 8.dp,
+            )
           }
         }
       }
