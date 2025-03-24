@@ -8,6 +8,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
@@ -30,6 +31,7 @@ import octopus.type.InsuranceDocumentType
 
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
+  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
 ) {
   fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
@@ -52,6 +54,9 @@ internal class GetClaimDetailUiStateUseCase(
           val claim: ClaimsQuery.Data.CurrentMember.Claim? =
             claimsQueryData.currentMember.claims.firstOrNull { it.id == claimId }
           ensureNotNull(claim) { Error.NoClaimFound }
+          if (claim.showClaimClosedFlow) {
+            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claimId)
+          }
           ClaimDetailUiState.Content.fromClaim(claim, claim.conversation)
         }
       }
@@ -65,7 +70,6 @@ internal class GetClaimDetailUiStateUseCase(
     val memberFreeText = claim.memberFreeText
 
     val claimType: String? = claim.claimType
-    val incidentDate = claim.incidentDate
     val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
     val insuranceDisplayName = claim.productVariant?.displayName
     val termsConditionsUrl =
@@ -119,7 +123,6 @@ internal class GetClaimDetailUiStateUseCase(
       isUploadingFile = false,
       uploadError = null,
       claimType = claimType,
-      incidentDate = incidentDate,
       insuranceDisplayName = insuranceDisplayName,
       submittedAt = submittedAt,
       termsConditionsUrl = termsConditionsUrl,
@@ -129,6 +132,9 @@ internal class GetClaimDetailUiStateUseCase(
       appealInstructionsUrl = claim.appealInstructionsUrl,
       isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
       infoText = claim.infoText,
+      displayItems = claim.displayItems.map {
+        it.displayTitle to it.displayValue
+      },
     )
   }
 

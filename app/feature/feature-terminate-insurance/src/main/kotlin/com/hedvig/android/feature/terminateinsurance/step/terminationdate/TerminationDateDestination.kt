@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.Checkbox
@@ -27,6 +26,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
@@ -78,13 +78,10 @@ private fun TerminationDateScreen(
   TerminationScaffold(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-  ) {
-    HedvigText(
-      style = HedvigTheme.typography.headlineMedium.copy(
-        lineBreak = LineBreak.Heading,
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
-      text = stringResource(id = R.string.TERMINATION_DATE_TEXT),
+  ) { title ->
+    FlowHeading(
+      title,
+      stringResource(id = R.string.TERMINATION_DATE_TEXT),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,7 +43,7 @@ internal fun TerminationScaffold(
   closeTerminationFlow: () -> Unit,
   modifier: Modifier = Modifier,
   textForInfoIcon: String? = null,
-  content: @Composable ColumnScope.() -> Unit,
+  content: @Composable ColumnScope.(headingTitle: String) -> Unit,
 ) {
   var showExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
   if (textForInfoIcon != null) {
@@ -84,13 +83,7 @@ internal fun TerminationScaffold(
       )
     },
   ) {
-    Spacer(modifier = Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    content()
+    content(stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE))
   }
 }
 

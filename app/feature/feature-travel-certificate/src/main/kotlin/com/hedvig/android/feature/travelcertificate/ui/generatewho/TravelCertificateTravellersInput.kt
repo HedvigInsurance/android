@@ -14,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
@@ -26,11 +25,11 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
@@ -90,10 +89,10 @@ private fun TravelCertificateTravellersInput(
           navigateUp = navigateUp,
         ) {
           Spacer(Modifier.height(8.dp))
-          HedvigText(
-            text = stringResource(id = R.string.travel_certificate_who_is_traveling),
-            style = HedvigTheme.typography.headlineMedium,
-            modifier = Modifier
+          FlowHeading(
+            stringResource(id = R.string.travel_certificate_who_is_traveling),
+            null,
+            Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
           )

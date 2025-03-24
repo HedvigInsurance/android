@@ -19,12 +19,17 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
+import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Loading
+import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Error
+import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Fetching
+import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Idle
 import com.hedvig.android.feature.profile.data.ContactInfoRepository
-import com.hedvig.android.feature.profile.data.ContactInfoRepository.UpdateFailure.Error
-import com.hedvig.android.feature.profile.data.ContactInfoRepository.UpdateFailure.NoChanges
+import com.hedvig.android.feature.profile.data.ContactInfoRepository.UpdateFailure
 import com.hedvig.android.feature.profile.data.ContactInformation
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
+import com.hedvig.android.feature.profile.data.valueForTextField
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -46,13 +51,13 @@ internal sealed interface ContactInfoUiState {
   data class Content(
     val phoneNumberState: TextFieldState,
     val emailState: TextFieldState,
-    val uploadedPhoneNumber: PhoneNumber,
-    val uploadedEmail: Email,
+    val uploadedPhoneNumber: PhoneNumber?,
+    val uploadedEmail: Email?,
     val submittingUpdatedInfo: Boolean,
   ) : ContactInfoUiState {
-    private val phoneNumber: Either<ErrorMessage, PhoneNumber>
+    private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
       get() = PhoneNumber.fromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
-    private val email: Either<ErrorMessage, Email>
+    private val email: Either<ErrorMessage, Email?>
       get() = Email.fromString(emailState.text.toString())
 
     val phoneNumberHasError: Boolean
@@ -60,8 +65,26 @@ internal sealed interface ContactInfoUiState {
     val emailHasError: Boolean
       get() = email.isLeft()
 
+    private val emailIsDifferentFromUploadedEmail: Boolean
+      get() = uploadedEmail.valueForTextField != emailState.text
+    private val phoneNumberIsDifferentFromUploadedPhoneNumber: Boolean
+      get() = uploadedPhoneNumber.valueForTextField != phoneNumberState.text
+
+    private val emailIsDeletingKnownInfo: Boolean
+      get() = when (uploadedEmail) {
+        null -> false
+        else -> emailState.text.isBlank()
+      }
+    private val phoneNumberIsDeletingKnownInfo: Boolean
+      get() = when (uploadedPhoneNumber) {
+        null -> false
+        else -> phoneNumberState.text.isBlank()
+      }
+
     val canSubmit: Boolean
-      get() = (emailState.text != uploadedEmail.value || phoneNumberState.text != uploadedPhoneNumber.value) &&
+      get() = (emailIsDifferentFromUploadedEmail || phoneNumberIsDifferentFromUploadedPhoneNumber) &&
+        !emailIsDeletingKnownInfo &&
+        !phoneNumberIsDeletingKnownInfo &&
         !emailHasError &&
         !phoneNumberHasError &&
         !submittingUpdatedInfo
@@ -99,26 +122,36 @@ internal class ContactInfoPresenter(
     var uploadedPhoneNumber: PhoneNumber? by remember { mutableStateOf(lastState.content?.uploadedPhoneNumber) }
 
     var refetchDataIteration by remember { mutableIntStateOf(0) }
-    var fetchDataError by remember { mutableStateOf(lastState is ContactInfoUiState.Error) }
 
-    var submittingData: Pair<PhoneNumber, Email>? by remember { mutableStateOf(null) }
+    var submittingData: Pair<PhoneNumber?, Email?>? by remember { mutableStateOf(null) }
     var submissionError by remember { mutableStateOf<Boolean>(false) }
 
+    var dataFetchingState by remember {
+      mutableStateOf(
+        when (lastState) {
+          is Content -> DataFetchingState.Idle
+          ContactInfoUiState.Error -> DataFetchingState.Error
+          Loading -> DataFetchingState.Fetching
+        },
+      )
+    }
+
     val updateStateWithFetchedContactInformation = { contactInformation: ContactInformation ->
+      dataFetchingState = DataFetchingState.Idle
       uploadedEmail = contactInformation.email
       uploadedPhoneNumber = contactInformation.phoneNumber
-      email.setTextAndPlaceCursorAtEnd(contactInformation.email.value)
-      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber.value)
+      email.setTextAndPlaceCursorAtEnd(contactInformation.email.valueForTextField)
+      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber.valueForTextField)
     }
 
     LaunchedEffect(refetchDataIteration) {
       if (refetchDataIteration == 0 && lastState is ContactInfoUiState.Content) {
         return@LaunchedEffect
       }
-      fetchDataError = false
+      dataFetchingState = DataFetchingState.Fetching
       repository.provide().contactInfo().fold(
         ifLeft = {
-          fetchDataError = true
+          dataFetchingState = DataFetchingState.Error
         },
         ifRight = { contactInformation ->
           Snapshot.withMutableSnapshot {
@@ -136,15 +169,18 @@ internal class ContactInfoPresenter(
           .updateInfo(
             phoneNumber = submittingPhoneNumber,
             email = submittingEmail,
-            originalNumber = uploadedPhoneNumber!!,
-            originalEmail = uploadedEmail!!,
+            originalNumber = uploadedPhoneNumber,
+            originalEmail = uploadedEmail,
           )
           .fold(
             ifLeft = { error ->
               when (error) {
                 // no-op
-                NoChanges -> {}
-                is Error -> {
+                UpdateFailure.NoChanges -> {
+                  submittingData = null
+                }
+
+                is UpdateFailure.Error -> {
                   Snapshot.withMutableSnapshot {
                     submissionError = true
                     submittingData = null
@@ -182,18 +218,22 @@ internal class ContactInfoPresenter(
       }
     }
 
-    return if (fetchDataError) {
-      ContactInfoUiState.Error
-    } else if (uploadedEmail == null || uploadedPhoneNumber == null) {
-      ContactInfoUiState.Loading
-    } else {
-      ContactInfoUiState.Content(
+    return when (dataFetchingState) {
+      Error -> ContactInfoUiState.Error
+      Fetching -> ContactInfoUiState.Loading
+      Idle -> ContactInfoUiState.Content(
         emailState = email,
         phoneNumberState = phoneNumber,
-        uploadedEmail = uploadedEmail!!,
-        uploadedPhoneNumber = uploadedPhoneNumber!!,
+        uploadedEmail = uploadedEmail,
+        uploadedPhoneNumber = uploadedPhoneNumber,
         submittingUpdatedInfo = submittingData != null,
       )
     }
   }
+}
+
+private enum class DataFetchingState {
+  Idle,
+  Fetching,
+  Error,
 }

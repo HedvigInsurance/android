@@ -26,7 +26,6 @@ import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
@@ -168,7 +167,6 @@ internal sealed interface ClaimDetailUiState {
     val isUploadingFile: Boolean,
     val uploadError: String?,
     val claimType: String?,
-    val incidentDate: LocalDate?,
     val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
     val termsConditionsUrl: String?,
@@ -178,6 +176,7 @@ internal sealed interface ClaimDetailUiState {
     val appealInstructionsUrl: String?,
     val isUploadingFilesEnabled: Boolean,
     val infoText: String?,
+    val displayItems: List<Pair<String, String>>,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 

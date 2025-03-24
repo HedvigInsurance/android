@@ -24,6 +24,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       firstVetSections = listOf(),
       crossSells = listOf(),
       travelBannerInfo = null,
+      forceShowCrossSells = emptyList(),
     ).right(),
   )
 }

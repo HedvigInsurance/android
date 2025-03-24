@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -21,13 +20,13 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractUiState.Success
@@ -74,12 +73,10 @@ private fun ChooseContractForCertificate(
         modifier = Modifier.clearFocusOnTap(),
       ) {
         Spacer(Modifier.height(8.dp))
-        HedvigText(
-          text = stringResource(R.string.travel_certificate_select_contract_title),
-          style = HedvigTheme.typography.headlineMedium.copy(
-            lineBreak = LineBreak.Heading,
-          ),
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        FlowHeading(
+          stringResource(R.string.travel_certificate_select_contract_title),
+          null,
+          Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
@@ -98,7 +95,7 @@ private fun ChooseContractForCertificate(
           onOptionClick = { contractId ->
             selectedContractId = contractId
           },
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(

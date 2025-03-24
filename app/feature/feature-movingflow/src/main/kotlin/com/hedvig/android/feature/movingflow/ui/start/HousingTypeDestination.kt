@@ -30,7 +30,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
@@ -40,6 +39,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.Content
@@ -127,14 +127,9 @@ private fun StartContentScreen(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.padding(horizontal = 16.dp)) {
-    HedvigText(
-      text = stringResource(R.string.insurance_details_change_address_button),
-      style = HedvigTheme.typography.bodyMedium,
-    )
-    HedvigText(
-      text = stringResource(R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      stringResource(R.string.insurance_details_change_address_button),
+      stringResource(R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))

@@ -20,9 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -34,6 +35,11 @@ import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
+import com.hedvig.android.feature.help.center.data.FAQTopic
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Failure
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Loading
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.NoTopicFound
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
@@ -45,12 +51,37 @@ internal fun HelpCenterTopicDestination(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
   val uiState by helpCenterTopicViewModel.uiState.collectAsStateWithLifecycle()
+  val showNavigateToInboxButton by showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle()
+  HelpCenterTopicScreen(
+    uiState = uiState,
+    showNavigateToInboxButton = showNavigateToInboxButton,
+    onNavigateUp = onNavigateUp,
+    onReload = { helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload) },
+    onNavigateBack = onNavigateBack,
+    onNavigateToQuestion = onNavigateToQuestion,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
+  )
+}
+
+@Composable
+private fun HelpCenterTopicScreen(
+  uiState: HelpCenterTopicUiState,
+  showNavigateToInboxButton: Boolean,
+  onNavigateUp: () -> Unit,
+  onReload: () -> Unit,
+  onNavigateBack: () -> Unit,
+  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     val state = uiState
-    val title = if (state is HelpCenterTopicUiState.Success) {
+    val title = if (state is Success) {
       state.topic.title
     } else {
       stringResource(R.string.HC_TITLE)
@@ -58,23 +89,31 @@ internal fun HelpCenterTopicDestination(
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = title,
-        onClick = onNavigateBack,
+        onClick = onNavigateUp,
       )
       when (state) {
-        HelpCenterTopicUiState.Failure -> {
+        Failure -> {
           FailureScreen(
-            reload = {
-              helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload)
-            },
+            onClick = onReload,
+            errorText = stringResource(R.string.GENERAL_ERROR_BODY),
+            buttonText = stringResource(R.string.GENERAL_RETRY),
           )
         }
 
-        HelpCenterTopicUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-        is HelpCenterTopicUiState.Success -> {
+        NoTopicFound -> {
+          FailureScreen(
+            onClick = dropUnlessResumed { onNavigateBack() },
+            errorText = stringResource(R.string.HC_TOPIC_NOT_FOUND),
+            buttonText = stringResource(R.string.general_back_button),
+          )
+        }
+
+        Loading -> HedvigFullScreenCenterAlignedProgress()
+        is Success -> {
           HelpCenterTopicScreen(
             commonQuestions = state.topic.commonFAQ,
             allQuestions = state.topic.commonFAQ + state.topic.otherFAQ,
-            showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
+            showNavigateToInboxButton = showNavigateToInboxButton,
             onNavigateToQuestion = onNavigateToQuestion,
             onNavigateToInbox = onNavigateToInbox,
             onNavigateToNewConversation = onNavigateToNewConversation,
@@ -87,24 +126,22 @@ internal fun HelpCenterTopicDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit) {
-  Column {
-    HedvigErrorSection(
-      onButtonClick = reload,
-      title = stringResource(R.string.HC_TOPIC_NOT_FOUND),
-      subTitle = null,
-      buttonText = stringResource(R.string.GENERAL_RETRY),
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
-        .windowInsetsPadding(
-          WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Horizontal +
-              WindowInsetsSides.Bottom,
-          ),
+private fun FailureScreen(onClick: () -> Unit, errorText: String, buttonText: String) {
+  HedvigErrorSection(
+    onButtonClick = onClick,
+    title = errorText,
+    subTitle = null,
+    buttonText = buttonText,
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Bottom,
         ),
-    )
-  }
+      ),
+  )
 }
 
 @Composable
@@ -120,7 +157,7 @@ private fun HelpCenterTopicScreen(
   Column {
     if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
       HedvigErrorSection(
-        onButtonClick = onNavigateBack,
+        onButtonClick = dropUnlessResumed { onNavigateBack() },
         title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
         subTitle = null,
         buttonText = stringResource(R.string.general_back_button),
@@ -184,60 +221,51 @@ private fun HelpCenterTopicScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterTopicScreen(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(HelpCenterTopicUiStateProvider::class) uiState: HelpCenterTopicUiState,
 ) {
-  val hasQuestions = input.second
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
-        if (hasQuestions) {
-          listOf(
-            FAQItem(
-              "id1",
-              stringResource(R.string.HC_CLAIMS_Q_01),
-              stringResource(R.string.HC_CLAIMS_A_01),
-            ),
-            FAQItem(
-              "id2",
-              stringResource(R.string.HC_CLAIMS_Q_02),
-              stringResource(R.string.HC_CLAIMS_A_02),
-            ),
-          )
-        } else {
-          listOf()
-        },
-        if (hasQuestions) {
-          listOf(
-            FAQItem(
-              "id1",
-              stringResource(R.string.HC_CLAIMS_Q_01),
-              stringResource(R.string.HC_CLAIMS_A_01),
-            ),
-            FAQItem(
-              "id2",
-              stringResource(R.string.HC_CLAIMS_Q_02),
-              stringResource(R.string.HC_CLAIMS_A_02),
-            ),
-            FAQItem(
-              "id3",
-              stringResource(R.string.HC_CLAIMS_Q_03),
-              stringResource(R.string.HC_CLAIMS_A_03),
-            ),
-            FAQItem(
-              "id4",
-              stringResource(R.string.HC_CLAIMS_Q_04),
-              stringResource(R.string.HC_CLAIMS_A_04),
-            ),
-          )
-        } else {
-          listOf()
-        },
-        true,
+        uiState,
+        false,
         {},
         {},
+        {},
+        { _ -> },
         {},
         {},
       )
     }
   }
 }
+
+private class HelpCenterTopicUiStateProvider : CollectionPreviewParameterProvider<HelpCenterTopicUiState>(
+  listOf(
+    HelpCenterTopicUiState.Loading,
+    HelpCenterTopicUiState.Failure,
+    HelpCenterTopicUiState.NoTopicFound,
+    HelpCenterTopicUiState.Success(
+      FAQTopic("id", "title", emptyList(), emptyList()),
+    ),
+    HelpCenterTopicUiState.Success(
+      FAQTopic(
+        "id",
+        "title",
+        List(2) {
+          FAQItem(
+            "$it",
+            "Question $it",
+            "Answer $it",
+          )
+        },
+        List(4) {
+          FAQItem(
+            "$it",
+            "Question $it",
+            "Answer $it",
+          )
+        },
+      ),
+    ),
+  ),
+)

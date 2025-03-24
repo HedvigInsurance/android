@@ -23,13 +23,13 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -111,9 +111,9 @@ private fun TravelCertificateDateInput(
         navigateUp = navigateUp,
       ) {
         Spacer(Modifier.height(8.dp))
-        HedvigText(
-          text = stringResource(R.string.travel_certificate_when_is_your_trip),
-          style = HedvigTheme.typography.headlineMedium,
+        FlowHeading(
+          stringResource(R.string.travel_certificate_when_is_your_trip),
+          null,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
