@@ -597,11 +597,12 @@ private fun CrossSellBottomSheet(
     }
   }
   LaunchedEffect(state) {
-    snapshotFlow { state.data }
-      .filterNotNull()
+    snapshotFlow { state.isVisible }
       .distinctUntilChanged()
-      .collect {
-        markCrossSellsNotificationAsSeen()
+      .collect {isVisible ->
+        if (isVisible) {
+          markCrossSellsNotificationAsSeen()
+        }
       }
   }
   HedvigBottomSheet(
