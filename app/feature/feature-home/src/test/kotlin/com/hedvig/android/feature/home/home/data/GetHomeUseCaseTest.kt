@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.home.home.data
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.raise.either
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -21,7 +23,13 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepositoryImpl
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
@@ -35,7 +43,9 @@ import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -62,6 +72,34 @@ import org.junit.runner.RunWith
 internal class GetHomeUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
+
+  val travelBannerProvider = GetTravelAddonBannerInfoUseCaseProvider(
+    demoManager = object : DemoManager {
+      override fun isDemoMode(): Flow<Boolean> {
+        return flowOf(false)
+      }
+
+      override suspend fun setDemoMode(demoMode: Boolean) {}
+    },
+    demoImpl = object : GetTravelAddonBannerInfoUseCase {
+      override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+        return flowOf(
+          either {
+            null
+          },
+        )
+      }
+    },
+    prodImpl = object : GetTravelAddonBannerInfoUseCase {
+      override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+        return flowOf(
+          either {
+            null
+          },
+        )
+      }
+    },
+  )
 
   @get:Rule
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
@@ -92,6 +130,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
+      getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
     )
     val testId = "test"
 
@@ -141,6 +180,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
+      travelBannerProvider,
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -717,6 +757,7 @@ internal class GetHomeUseCaseTest {
       faetureManager,
       testClock,
       timeZone,
+      travelBannerProvider,
     )
   }
 }

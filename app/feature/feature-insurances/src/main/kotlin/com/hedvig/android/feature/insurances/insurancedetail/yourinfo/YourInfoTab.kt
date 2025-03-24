@@ -41,8 +41,10 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.datepicker.toValidLocalDate
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
@@ -220,8 +222,9 @@ internal fun CoverageRows(coverageRowItems: List<Pair<String, String>>, modifier
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.padding(vertical = 16.dp),
           ) {
+            val secondTextAsDate = secondText.toValidLocalDate(getLocale())
             HedvigText(
-              text = secondText,
+              text = secondTextAsDate ?: secondText,
               color = HedvigTheme.colorScheme.textSecondary,
               textAlign = TextAlign.End,
             )

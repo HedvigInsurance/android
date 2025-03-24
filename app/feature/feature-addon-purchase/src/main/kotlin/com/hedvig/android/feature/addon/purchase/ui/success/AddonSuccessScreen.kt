@@ -33,7 +33,8 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
   val locale = getLocale()
   val formattedDate = remember(activationDate, locale) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(activationDate.toJavaLocalDate())
+    HedvigDateTimeFormatterDefaults
+      .dateMonthAndYear(locale).format(activationDate.toJavaLocalDate())
   }
   Column(
     modifier = Modifier

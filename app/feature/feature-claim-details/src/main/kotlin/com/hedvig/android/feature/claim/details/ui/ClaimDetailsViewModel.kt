@@ -13,6 +13,8 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -24,7 +26,6 @@ import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
@@ -166,14 +167,19 @@ internal sealed interface ClaimDetailUiState {
     val isUploadingFile: Boolean,
     val uploadError: String?,
     val claimType: String?,
-    val incidentDate: LocalDate?,
     val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
     val termsConditionsUrl: String?,
     val savedFileUri: File?,
     val downloadError: Boolean?,
     val isLoadingPdf: Boolean,
+    val appealInstructionsUrl: String?,
+    val isUploadingFilesEnabled: Boolean,
+    val infoText: String?,
+    val displayItems: List<Pair<String, String>>,
   ) : ClaimDetailUiState {
+    val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
+
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
 
@@ -193,6 +199,7 @@ internal sealed interface ClaimDetailUiState {
       NOT_COMPENSATED,
       NOT_COVERED,
       UNKNOWN,
+      UNRESPONSIVE,
     }
 
     companion object
