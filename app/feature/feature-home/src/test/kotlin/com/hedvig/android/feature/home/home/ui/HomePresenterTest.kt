@@ -119,6 +119,7 @@ internal class HomePresenterTest {
           crossSells = listOf(),
           forceShowCrossSells = emptyList(),
           firstVetSections = listOf(),
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -145,6 +146,7 @@ internal class HomePresenterTest {
           chatAction = HomeTopBarAction.ChatAction,
           forceShowCrossSells = emptyList(),
           hasUnseenChatMessages = false,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -177,6 +179,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -194,6 +197,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           forceShowCrossSells = emptyList(),
           crossSellsAction = null,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -249,6 +253,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           crossSells = listOf(),
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem())
@@ -283,6 +288,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -298,6 +304,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           forceShowCrossSells = emptyList(),
           crossSellsAction = null,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -335,6 +342,7 @@ internal class HomePresenterTest {
           ),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -350,6 +358,7 @@ internal class HomePresenterTest {
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           forceShowCrossSells = emptyList(),
           crossSellsAction = null,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -386,6 +395,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -401,6 +411,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           forceShowCrossSells = emptyList(),
           crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -430,6 +441,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -445,6 +457,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           forceShowCrossSells = emptyList(),
           crossSellsAction = null,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -474,6 +487,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           forceShowCrossSells = emptyList(),
           showHelpCenter = false,
+          travelBannerInfo = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -489,6 +503,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           forceShowCrossSells = emptyList(),
           crossSellsAction = null,
+          travelAddonBannerInfo = null
         ),
       )
     }
@@ -515,5 +530,6 @@ internal class HomePresenterTest {
     firstVetSections = listOf(),
     forceShowCrossSells = emptyList(),
     crossSells = listOf(),
+    travelBannerInfo = null
   )
 }
