@@ -97,6 +97,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToQuestion = { question ->
           navigateToQuestion(question, navigator, backStackEntry)
         },
+        onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
@@ -113,6 +114,7 @@ fun NavGraphBuilder.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         helpCenterQuestionViewModel = helpCenterQuestionViewModel,
       )

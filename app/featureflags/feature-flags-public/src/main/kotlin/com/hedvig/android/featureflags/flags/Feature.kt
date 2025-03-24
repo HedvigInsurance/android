@@ -23,4 +23,5 @@ enum class Feature(
   ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES(
     "When enabled, it allows the chat to show media in inline video players in the chat messages",
   ),
+  DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
 }

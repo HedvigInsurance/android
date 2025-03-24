@@ -67,6 +67,7 @@ import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -84,6 +85,7 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.plus
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
@@ -119,7 +121,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
@@ -190,23 +194,16 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  var crossSellsForBottomSheet by remember { mutableStateOf<List<CrossSell>?>(null) }
   val travelBannerInfo = uiState.safeCast<Success>()?.travelAddonBannerInfo
-  if (crossSellsForBottomSheet != null || travelBannerInfo != null) {
-    val list = crossSellsForBottomSheet
-    if (list != null) {
-      LaunchedEffect(Unit) {
-        markCrossSellsNotificationAsSeen()
-      }
-      CrossSellBottomSheet(
-        crossSells = list,
-        onDismissed = { crossSellsForBottomSheet = null },
-        onCrossSellClick = openUrl,
-        travelAddonBannerInfo = travelBannerInfo,
-        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
-      )
-    }
-  }
+  val crossSellBottomSheetState = rememberHedvigBottomSheetState<List<CrossSell>>()
+  CrossSellBottomSheet(
+    state = crossSellBottomSheetState,
+    forceShowCrossSells = uiState.forceShowCrossSells,
+    markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
+    onCrossSellClick = openUrl,
+    travelAddonBannerInfo = travelBannerInfo,
+    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+  )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -269,9 +266,7 @@ private fun HomeScreen(
               )
 
               is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
-                onClick = {
-                  crossSellsForBottomSheet = action.crossSells
-                },
+                onClick = { crossSellBottomSheetState.show(action.crossSells) },
               )
 
               is HomeTopBarAction.FirstVetAction -> {
@@ -589,16 +584,29 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 
 @Composable
 private fun CrossSellBottomSheet(
-  crossSells: List<CrossSell>,
+  state: HedvigBottomSheetState<List<CrossSell>>,
   travelAddonBannerInfo: TravelAddonBannerInfo?,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
-  onDismissed: () -> Unit,
+  forceShowCrossSells: List<CrossSell>?,
+  markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
+  LaunchedEffect(forceShowCrossSells) {
+    if (forceShowCrossSells?.isNotEmpty() == true) {
+      state.show(forceShowCrossSells)
+    }
+  }
+  LaunchedEffect(state) {
+    snapshotFlow { state.data }
+      .filterNotNull()
+      .distinctUntilChanged()
+      .collect {
+        markCrossSellsNotificationAsSeen()
+      }
+  }
   HedvigBottomSheet(
-    isVisible = true,
-    onVisibleChange = { onDismissed() },
-    content = {
+    hedvigBottomSheetState = state,
+    content = { crossSells ->
       CrossSellsSection(
         showNotificationBadge = false,
         crossSells = crossSells,
@@ -609,7 +617,6 @@ private fun CrossSellBottomSheet(
         TravelAddonBanner(
           travelAddonBannerInfo = travelAddonBannerInfo,
           launchAddonPurchaseFlow = {
-            onDismissed()
             onNavigateToAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
           },
           modifier = Modifier
@@ -707,6 +714,7 @@ private fun PreviewHomeScreen(
             ),
           ),
           chatAction = ChatAction,
+          forceShowCrossSells = emptyList(),
           travelAddonBannerInfo = TravelAddonBannerInfo(
             title = "Title",
             description = "description",

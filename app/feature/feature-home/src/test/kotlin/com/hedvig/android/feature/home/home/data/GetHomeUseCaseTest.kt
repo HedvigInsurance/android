@@ -23,6 +23,7 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepositoryImpl
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -87,6 +88,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
+      CrossSellAfterClaimClosedRepositoryImpl(apolloClient),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -135,6 +137,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
+      CrossSellAfterClaimClosedRepositoryImpl(apolloClient),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -710,6 +713,7 @@ internal class GetHomeUseCaseTest {
       apolloClient,
       HasAnyActiveConversationUseCase(apolloClient),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
+      CrossSellAfterClaimClosedRepositoryImpl(apolloClient),
       faetureManager,
       testClock,
       timeZone,
