@@ -32,7 +32,6 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepositoryImpl
-
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -75,30 +74,31 @@ internal class GetHomeUseCaseTest {
   val testLogcatLogger = TestLogcatLoggingRule()
 
   val travelBannerProvider = GetTravelAddonBannerInfoUseCaseProvider(
-    demoManager = object: DemoManager {
+    demoManager = object : DemoManager {
       override fun isDemoMode(): Flow<Boolean> {
         return flowOf(false)
       }
+
       override suspend fun setDemoMode(demoMode: Boolean) {}
-
     },
-    demoImpl = object : GetTravelAddonBannerInfoUseCase{
+    demoImpl = object : GetTravelAddonBannerInfoUseCase {
       override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
-        return flowOf(either {
-          null
-        })
+        return flowOf(
+          either {
+            null
+          },
+        )
       }
-
     },
     prodImpl = object : GetTravelAddonBannerInfoUseCase {
       override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
         return flowOf(
           either {
             null
-          }
+          },
         )
       }
-    }
+    },
   )
 
   @get:Rule
@@ -130,7 +130,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
-      getTravelAddonBannerInfoUseCaseProvider =travelBannerProvider
+      getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
     )
     val testId = "test"
 
@@ -180,7 +180,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
-      travelBannerProvider
+      travelBannerProvider,
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -757,7 +757,7 @@ internal class GetHomeUseCaseTest {
       faetureManager,
       testClock,
       timeZone,
-      travelBannerProvider
+      travelBannerProvider,
     )
   }
 }

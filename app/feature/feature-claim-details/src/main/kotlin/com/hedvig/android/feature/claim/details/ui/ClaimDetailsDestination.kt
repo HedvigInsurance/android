@@ -82,7 +82,8 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.toValidLocalDate
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -103,9 +104,7 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -487,10 +486,8 @@ private fun BeforeGridContent(
     )
 
     Spacer(Modifier.height(8.dp))
-    ClaimTypeAndDatesSection(
-      claimType = uiState.claimType,
-      submitDate = uiState.submittedAt.date,
-      incidentDate = uiState.incidentDate,
+    DisplayItemsSection(
+      displayItems = uiState.displayItems,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 2.dp),
@@ -728,60 +725,24 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 }
 
 @Composable
-private fun ClaimTypeAndDatesSection(
-  claimType: String?,
-  submitDate: LocalDate?,
-  incidentDate: LocalDate?,
-  modifier: Modifier = Modifier,
-) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+private fun DisplayItemsSection(displayItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        spaceBetween = 8.dp,
-        startSlot = {
-          HedvigText(
-            text = stringResource(R.string.claim_status_claim_details_type),
-          )
-        },
-        endSlot = {
-          HedvigText(
-            text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
-            textAlign = TextAlign.End,
-          )
-        },
-      )
-      if (incidentDate != null) {
+      for (item in displayItems) {
         HorizontalItemsWithMaximumSpaceTaken(
+          spaceBetween = 8.dp,
           startSlot = {
             HedvigText(
-              text = stringResource(R.string.claim_status_claim_details_incident_date),
+              text = item.first,
             )
           },
           endSlot = {
+            val valueAsValidDate = item.second.toValidLocalDate(getLocale())
             HedvigText(
-              text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
+              text = valueAsValidDate ?: item.second,
               textAlign = TextAlign.End,
             )
           },
-          spaceBetween = 8.dp,
-        )
-      }
-
-      if (submitDate != null) {
-        HorizontalItemsWithMaximumSpaceTaken(
-          startSlot = {
-            HedvigText(
-              text = stringResource(R.string.claim_status_claim_details_submitted),
-            )
-          },
-          endSlot = {
-            HedvigText(
-              text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
-              textAlign = TextAlign.End,
-            )
-          },
-          spaceBetween = 8.dp,
         )
       }
     }
@@ -881,7 +842,6 @@ private fun PreviewClaimDetailScreen(
           uploadUri = "",
           uploadError = null,
           claimType = "Theft",
-          incidentDate = LocalDate(2023, 1, 2),
           submittedAt = LocalDateTime(2023, 1, 5, 12, 35),
           insuranceDisplayName = "Home insurance",
           termsConditionsUrl = "url",
@@ -891,6 +851,10 @@ private fun PreviewClaimDetailScreen(
           appealInstructionsUrl = "dd",
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",
+          displayItems = listOf(
+            "Type" to "Respiratory disorder",
+            "Submitted" to "2025-02-03",
+          ),
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),

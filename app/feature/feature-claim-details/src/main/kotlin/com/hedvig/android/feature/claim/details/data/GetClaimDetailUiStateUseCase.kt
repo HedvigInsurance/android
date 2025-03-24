@@ -70,7 +70,6 @@ internal class GetClaimDetailUiStateUseCase(
     val memberFreeText = claim.memberFreeText
 
     val claimType: String? = claim.claimType
-    val incidentDate = claim.incidentDate
     val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
     val insuranceDisplayName = claim.productVariant?.displayName
     val termsConditionsUrl =
@@ -114,7 +113,6 @@ internal class GetClaimDetailUiStateUseCase(
         ClaimOutcome.PAID -> ClaimDetailUiState.Content.ClaimOutcome.PAID
         ClaimOutcome.NOT_COMPENSATED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED
         ClaimOutcome.NOT_COVERED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED
-        ClaimOutcome.UNRESPONSIVE,
         ClaimOutcome.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
@@ -125,7 +123,6 @@ internal class GetClaimDetailUiStateUseCase(
       isUploadingFile = false,
       uploadError = null,
       claimType = claimType,
-      incidentDate = incidentDate,
       insuranceDisplayName = insuranceDisplayName,
       submittedAt = submittedAt,
       termsConditionsUrl = termsConditionsUrl,
@@ -135,6 +132,9 @@ internal class GetClaimDetailUiStateUseCase(
       appealInstructionsUrl = claim.appealInstructionsUrl,
       isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
       infoText = claim.infoText,
+      displayItems = claim.displayItems.map {
+        it.displayTitle to it.displayValue
+      },
     )
   }
 
