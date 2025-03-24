@@ -17,6 +17,7 @@ import java.time.format.DateTimeParseException
 import java.time.format.SignStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
+import kotlinx.datetime.TimeZone
 
 /**
  * Example output: "16 Jan 2023"
@@ -105,7 +106,7 @@ fun String.toValidLocalDate(locale: Locale): String? {
   }
   val dateTime = try {
     val instant = Instant.parse(this)
-    val date = instant.atZone(ZoneId.of("UTC")).toLocalDate()
+    val date = instant.atZone(ZoneId.of(TimeZone.currentSystemDefault().id)).toLocalDate()
     // todo: not sure about UTC here ^
     date.format(hedvigDateTimeFormatter(locale))
   } catch (e: Exception) {

@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -93,8 +92,6 @@ import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCardContent
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
@@ -428,7 +425,7 @@ private fun BeforeGridContent(
                     tint = HedvigTheme.colorScheme.signalGreyElement,
                     modifier = Modifier
                       .size(32.dp)
-                      .notificationCircle(hasUnreadMessages)
+                      .notificationCircle(hasUnreadMessages),
                   )
                 }
               },
