@@ -126,7 +126,9 @@ private fun DiscountsScreen(
         onAddDiscount = { code ->
           onSubmitDiscountCode(code)
         },
-        errorMessage = uiState.discountError,
+        errorMessage = uiState.discountError?.let { discountError ->
+          discountError.message ?: stringResource(R.string.something_went_wrong)
+        },
         isLoading = uiState.isAddingDiscount,
         onDismiss = onDismissBottomSheet,
       )
@@ -135,21 +137,24 @@ private fun DiscountsScreen(
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
+        spaceBetween = 8.dp,
         startSlot = {
           HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
         },
         endSlot = {
-          Icon(
-            imageVector = HedvigIcons.InfoFilled,
-            tint = HedvigTheme.colorScheme.fillSecondary,
-            contentDescription = "Info icon",
-            modifier = Modifier
-              .wrapContentSize(Alignment.CenterEnd)
-              .size(16.dp)
-              .clip(HedvigTheme.shapes.cornerXLarge)
-              .clickable { showInfoBottomSheet = true }
-              .minimumInteractiveComponentSize(),
-          )
+          if (uiState.allowAddingCampaignCode) {
+            Icon(
+              imageVector = HedvigIcons.InfoFilled,
+              tint = HedvigTheme.colorScheme.fillSecondary,
+              contentDescription = null,
+              modifier = Modifier
+                .wrapContentSize(Alignment.CenterEnd)
+                .size(16.dp)
+                .clip(HedvigTheme.shapes.cornerXLarge)
+                .clickable { showInfoBottomSheet = true }
+                .minimumInteractiveComponentSize(),
+            )
+          }
         },
       )
 
@@ -165,14 +170,16 @@ private fun DiscountsScreen(
         DiscountRows(discounts)
       }
 
-      Spacer(modifier = Modifier.height(16.dp))
-      HedvigButton(
-        buttonStyle = ButtonStyle.Secondary,
-        modifier = Modifier.fillMaxWidth(),
-        enabled = true,
-        text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
-        onClick = { onShowBottomSheet() },
-      )
+      if (uiState.allowAddingCampaignCode) {
+        Spacer(modifier = Modifier.height(16.dp))
+        HedvigButton(
+          buttonStyle = ButtonStyle.Secondary,
+          modifier = Modifier.fillMaxWidth(),
+          enabled = true,
+          text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
+          onClick = { onShowBottomSheet() },
+        )
+      }
       if (uiState.foreverInformation != null) {
         Spacer(modifier = Modifier.height(32.dp))
         ForeverSection(uiState.foreverInformation, navigateToForever, Modifier)
@@ -220,6 +227,7 @@ private fun ForeverSection(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     HorizontalItemsWithMaximumSpaceTaken(
+      spaceBetween = 8.dp,
       startSlot = {
         HedvigText(
           stringResource(R.string.PAYMENTS_REFERRALS_INFO_TITLE),
@@ -341,6 +349,7 @@ private fun PaymentDetailsScreenPreview(
             UiMoney(23.0, UiCurrencyCode.SEK),
             UiMoney(10.0, UiCurrencyCode.SEK),
           ).takeIf { hasForeverAndDiscounts },
+          allowAddingCampaignCode = true,
         ),
         navigateUp = {},
         onShowBottomSheet = {},

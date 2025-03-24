@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterTopicUseCase
+import com.hedvig.android.feature.help.center.data.HelpCenterTopicError.GenericError
+import com.hedvig.android.feature.help.center.data.HelpCenterTopicError.NoTopicFound
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -40,11 +42,14 @@ private class HelpCenterTopicPresenter(
 
     LaunchedEffect(loadIteration) {
       if (topicId == null) {
-        currentState = HelpCenterTopicUiState.Failure
+        currentState = HelpCenterTopicUiState.NoTopicFound
       } else {
         getHelpCenterTopicUseCase.invoke(topicId).fold(
-          ifLeft = {
-            currentState = HelpCenterTopicUiState.Failure
+          ifLeft = { error ->
+            when (error) {
+              is GenericError -> currentState = HelpCenterTopicUiState.Failure
+              NoTopicFound -> currentState = HelpCenterTopicUiState.NoTopicFound
+            }
           },
           ifRight = { topic ->
             currentState = HelpCenterTopicUiState.Success(
@@ -69,4 +74,6 @@ internal sealed interface HelpCenterTopicUiState {
   data object Loading : HelpCenterTopicUiState
 
   data object Failure : HelpCenterTopicUiState
+
+  data object NoTopicFound : HelpCenterTopicUiState
 }

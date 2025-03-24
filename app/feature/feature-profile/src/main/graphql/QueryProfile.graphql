@@ -1,5 +1,0 @@
-query Profile {
-  currentMember {
-    ...MemberDataFragment
-  }
-}

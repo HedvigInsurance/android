@@ -39,20 +39,16 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
-import com.hedvig.android.design.system.hedvig.icon.Close
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
@@ -61,6 +57,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -105,10 +102,10 @@ private fun TerminationConfirmationScreen(
       type = uiState.terminationType,
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.extraCoverageItems,
-      modifier = Modifier.fillMaxSize(),
       navigateUp = navigateBack,
       closeTerminationFlow = closeTerminationFlow,
       onContinue = onContinue,
+      modifier = Modifier.fillMaxSize(),
     )
   }
 }
@@ -118,49 +115,28 @@ private fun AreYouSureScreen(
   type: TerminationType,
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
-  modifier: Modifier = Modifier,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinue: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val areYouSureSheetState = rememberHedvigBottomSheetState<Unit>()
   AreYouSureSheet(state = areYouSureSheetState, type = type, confirmCancellation = onContinue)
-  HedvigScaffold(
+  TerminationScaffold(
     navigateUp = navigateUp,
-    topAppBarActions = {
-      IconButton(
-        modifier = Modifier.size(24.dp),
-        onClick = closeTerminationFlow,
-        content = {
-          Icon(
-            imageVector = HedvigIcons.Close,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-  ) {
-    Spacer(Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = modifier.padding(horizontal = 16.dp),
+    closeTerminationFlow = closeTerminationFlow,
+    modifier = modifier,
+  ) { title ->
+    FlowHeading(
+      title,
+      stringResource(id = R.string.TERMINATION_FLOW_SUMMARY_SUBTITLE),
+      Modifier.padding(horizontal = 16.dp),
     )
-    HedvigText(
-      text = stringResource(id = R.string.TERMINATION_FLOW_SUMMARY_SUBTITLE),
-      style = HedvigTheme.typography.headlineMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(
-      Modifier
-        .weight(1f)
-        .heightIn(min = 8.dp),
-    )
+    Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
     InsuranceInfoCard(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
-      modifier = modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -224,6 +200,7 @@ private fun AreYouSureSheetContent(
             dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
           )
       },
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(

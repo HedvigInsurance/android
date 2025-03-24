@@ -79,7 +79,7 @@ import hedvig.resources.R
 @Composable
 internal fun ProfileDestination(
   navigateToEurobonus: () -> Unit,
-  navigateToMyInfo: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
@@ -96,7 +96,7 @@ internal fun ProfileDestination(
     uiState = uiState,
     reload = { viewModel.emit(ProfileUiEvent.Reload) },
     navigateToEurobonus = navigateToEurobonus,
-    navigateToMyInfo = navigateToMyInfo,
+    navigateToContactInfo = navigateToContactInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
     navigateToTravelCertificate = navigateToTravelCertificate,
@@ -116,7 +116,7 @@ private fun ProfileScreen(
   uiState: ProfileUiState,
   reload: () -> Unit,
   navigateToEurobonus: () -> Unit,
-  navigateToMyInfo: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
@@ -171,7 +171,7 @@ private fun ProfileScreen(
       }
       ProfileRows(
         profileUiState = uiState,
-        showMyInfo = navigateToMyInfo,
+        showContactInfo = navigateToContactInfo,
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
@@ -230,7 +230,7 @@ private fun ProfileScreen(
 @Composable
 private fun ProfileRows(
   profileUiState: ProfileUiState,
-  showMyInfo: () -> Unit,
+  showContactInfo: () -> Unit,
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
@@ -249,7 +249,7 @@ private fun ProfileRows(
         is ProfileUiState.Success -> {
           ProfileItemRows(
             profileUiState = state,
-            showMyInfo = showMyInfo,
+            showContactInfo = showContactInfo,
             showSettings = showSettings,
             showAboutApp = showAboutApp,
             navigateToEurobonus = navigateToEurobonus,
@@ -293,7 +293,7 @@ private fun ColumnScope.ProfileItemRowsPlaceholders() {
 @Composable
 private fun ColumnScope.ProfileItemRows(
   profileUiState: ProfileUiState.Success,
-  showMyInfo: () -> Unit,
+  showContactInfo: () -> Unit,
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
@@ -302,7 +302,7 @@ private fun ColumnScope.ProfileItemRows(
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.ID,
-    onClick = showMyInfo,
+    onClick = showContactInfo,
     isLoading = false,
   )
   if (profileUiState.travelCertificateAvailable) {

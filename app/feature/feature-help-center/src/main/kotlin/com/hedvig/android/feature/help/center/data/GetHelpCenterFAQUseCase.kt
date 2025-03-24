@@ -43,7 +43,8 @@ internal class GetHelpCenterFAQUseCaseImpl(
         .safeExecute(::ErrorMessage)
         .onLeft { logcat(LogPriority.ERROR) { "Could not fetch contracts ${it.message}" } }
         .bind()
-        .currentMember.memberFAQ
+        .currentMember
+        .memberFAQ
       MemberFAQ(
         commonFAQ = result.commonFAQ.map { item ->
           item.toFAQItem()

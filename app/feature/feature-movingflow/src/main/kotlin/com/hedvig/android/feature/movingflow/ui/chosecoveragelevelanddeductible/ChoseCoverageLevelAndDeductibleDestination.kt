@@ -67,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -177,14 +178,9 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onCompareCoverageClicked: () -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
-    HedvigText(
-      text = stringResource(R.string.TIER_FLOW_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-    )
-    HedvigText(
-      text = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-      style = HedvigTheme.typography.bodyMedium,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      stringResource(R.string.TIER_FLOW_TITLE),
+      stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -319,8 +315,8 @@ private fun CoverageCard(
         }
       }
       HorizontalItemsWithMaximumSpaceTaken(
-        { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
-        {
+        startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
+        endSlot = {
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -330,6 +326,7 @@ private fun CoverageCard(
             modifier = Modifier.wrapContentWidth(Alignment.End),
           )
         },
+        spaceBetween = 8.dp,
         Modifier.fillMaxWidth(),
       )
     }
@@ -410,14 +407,10 @@ private fun CommonChoiceDialogContent(
       .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
-    HedvigText(
-      text = firstText,
-      style = HedvigTheme.typography.bodySmall,
-    )
-    HedvigText(
-      text = secondText,
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      firstText,
+      secondText,
+      baseStyle = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(12.dp))
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

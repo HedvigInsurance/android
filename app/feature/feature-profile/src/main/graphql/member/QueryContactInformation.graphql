@@ -1,0 +1,10 @@
+query ContactInformation {
+  currentMember {
+    ...ContactInformation
+  }
+}
+
+fragment ContactInformation on Member {
+  phoneNumber
+  email
+}

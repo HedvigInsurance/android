@@ -44,6 +44,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
+  implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
@@ -51,5 +52,4 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-
 }

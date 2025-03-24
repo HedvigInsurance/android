@@ -117,6 +117,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           showHelpCenter = false,
           crossSells = listOf(),
+          forceShowCrossSells = emptyList(),
           firstVetSections = listOf(),
         ).right(),
       )
@@ -142,6 +143,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           chatAction = HomeTopBarAction.ChatAction,
+          forceShowCrossSells = emptyList(),
           hasUnseenChatMessages = false,
         ),
       )
@@ -173,6 +175,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -189,6 +192,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
+          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
         ),
       )
@@ -243,6 +247,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           crossSells = listOf(),
         ).right(),
       )
@@ -276,6 +281,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -290,6 +296,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
+          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
         ),
       )
@@ -326,6 +333,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(
             firstVet,
           ),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -340,6 +348,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
+          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
         ),
       )
@@ -375,6 +384,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(crossSell),
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -389,6 +399,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
+          forceShowCrossSells = emptyList(),
           crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
         ),
       )
@@ -417,6 +428,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -431,6 +443,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
+          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
         ),
       )
@@ -459,6 +472,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
+          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
         ).right(),
       )
@@ -473,6 +487,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
+          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
         ),
       )
@@ -498,6 +513,7 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
+    forceShowCrossSells = emptyList(),
     crossSells = listOf(),
   )
 }

@@ -12,7 +12,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
@@ -241,7 +241,7 @@ class ContractDetailPresenterTest {
   }
 
   internal class FakeGetContractForContractIdUseCase : GetContractForContractIdUseCase {
-    private val insuranceWithNoTerminationDate = InsuranceContract(
+    private val insuranceWithNoTerminationDate = EstablishedInsuranceContract(
       "contractId1",
       "displayName#1",
       exposureDisplayName = "Test exposure",
@@ -279,7 +279,7 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
     )
 
-    private val insuranceWithTerminationDate = InsuranceContract(
+    private val insuranceWithTerminationDate = EstablishedInsuranceContract(
       "contractId1",
       "displayName#1",
       exposureDisplayName = "Test exposure",
@@ -317,9 +317,9 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
     )
 
-    private val responseTurbine = Turbine<Either<GetContractForContractIdError, InsuranceContract>>()
+    private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()
 
-    override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
+    override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, EstablishedInsuranceContract>> {
       return responseTurbine.asChannel().receiveAsFlow()
     }
 

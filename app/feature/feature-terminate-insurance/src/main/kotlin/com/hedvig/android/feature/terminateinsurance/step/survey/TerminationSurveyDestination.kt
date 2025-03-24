@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import androidx.compose.animation.AnimatedContent
@@ -21,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -41,7 +41,6 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
@@ -53,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.InfoType
@@ -165,7 +165,7 @@ private fun TerminationSurveyScreen(
       TerminationScaffold(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-      ) {
+      ) { title ->
         if (uiState.showEmptyQuotesDialog) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
@@ -174,12 +174,9 @@ private fun TerminationSurveyScreen(
             EmptyQuotesDialogContent(closeEmptyQuotesDialog)
           }
         }
-        HedvigText(
-          style = HedvigTheme.typography.headlineMedium.copy(
-            lineBreak = LineBreak.Heading,
-            color = HedvigTheme.colorScheme.textSecondary,
-          ),
-          text = stringResource(id = R.string.TERMINATION_SURVEY_SUBTITLE),
+        FlowHeading(
+          title,
+          stringResource(id = R.string.TERMINATION_SURVEY_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -193,16 +190,14 @@ private fun TerminationSurveyScreen(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
           ) {
-            val subTitle = stringResource(R.string.GENERAL_ERROR_BODY)
-            val title = stringResource(R.string.something_went_wrong)
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = title,
+              text = stringResource(R.string.something_went_wrong),
               iconStyle = ERROR,
-              description = subTitle,
+              description = stringResource(R.string.GENERAL_ERROR_BODY),
             )
             Spacer(Modifier.height(16.dp))
           }
