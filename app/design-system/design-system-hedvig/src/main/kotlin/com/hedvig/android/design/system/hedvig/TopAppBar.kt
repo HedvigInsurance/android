@@ -25,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -62,9 +60,7 @@ fun TopAppBar(
         TopAppBarActionType.CLOSE -> stringResource(R.string.general_close_button)
       }
       IconButton(
-        modifier = Modifier.size(24.dp).semantics {
-          contentDescription = description
-        },
+        modifier = Modifier.size(24.dp),
         onClick = onActionClick,
         content = {
           Icon(
@@ -72,7 +68,7 @@ fun TopAppBar(
               TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft
               TopAppBarActionType.CLOSE -> HedvigIcons.Close
             },
-            contentDescription = null,
+            contentDescription = description,
           )
         },
       )
@@ -138,16 +134,14 @@ fun TopAppBar(
           ) {
             IconButton(
               onClick = dropUnlessResumed { onActionClick() },
-              modifier = Modifier.size(24.dp).semantics {
-                contentDescription = description
-              },
+              modifier = Modifier.size(24.dp),
               content = {
                 Icon(
                   imageVector = when (actionType) {
                     TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft
                     TopAppBarActionType.CLOSE -> HedvigIcons.Close
                   },
-                  contentDescription = null,
+                  contentDescription = description,
                   tint = TopAppBarTokens.ContentColor.value,
                 )
               },
