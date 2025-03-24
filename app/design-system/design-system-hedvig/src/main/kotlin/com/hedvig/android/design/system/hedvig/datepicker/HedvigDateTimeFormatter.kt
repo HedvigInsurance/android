@@ -91,30 +91,6 @@ object HedvigDateTimeFormatterDefaults {
 }
 
 /**
- * To correctly display displayItems that have date as a value.
- * Some come as date (insurance details), some come as date with timestamp (claim details).
- */
-fun String.toValidLocalDate(locale: Locale): String? {
-  val date = try {
-    val pattern = "yyyy-MM-dd"
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    val date = LocalDate.parse(this, formatter)
-    date.format(hedvigDateTimeFormatter(locale))
-  } catch (e: DateTimeParseException) {
-    null
-  }
-  val dateTime = try {
-    val instant = Instant.parse(this)
-    val date = instant.atZone(ZoneId.of("UTC")).toLocalDate()
-    // todo: not sure about UTC here ^
-    date.format(hedvigDateTimeFormatter(locale))
-  } catch (e: Exception) {
-    null
-  }
-  return date ?: dateTime
-}
-
-/**
  * Example output: "2021.07.01"
  */
 @SuppressLint("NewApi")

@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
+import octopus.fragment.AgreementDisplayItemFragment
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
@@ -111,12 +113,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     contractHolderSSN = contractHolderSSN,
     exposureDisplayName = exposureDisplayName,
     productVariant = this.productVariant.toProductVariant(),
-    displayItems = this.displayItems.map {
-      InsuranceAgreement.DisplayItem(
-        it.displayTitle,
-        it.displayValue,
-      )
-    },
+    displayItems = this.displayItems.map { it.toDisplayItem() },
   )
 }
 
@@ -141,10 +138,7 @@ private fun ContractFragment.toContract(
       activeFrom = currentAgreement.activeFrom,
       activeTo = currentAgreement.activeTo,
       displayItems = currentAgreement.displayItems.map {
-        InsuranceAgreement.DisplayItem(
-          it.displayTitle,
-          it.displayValue,
-        )
+        it.toDisplayItem()
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
@@ -158,12 +152,7 @@ private fun ContractFragment.toContract(
       InsuranceAgreement(
         activeFrom = it.activeFrom,
         activeTo = it.activeTo,
-        displayItems = it.displayItems.map {
-          InsuranceAgreement.DisplayItem(
-            it.displayTitle,
-            it.displayValue,
-          )
-        },
+        displayItems = it.displayItems.map { it.toDisplayItem() },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
         coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
@@ -178,6 +167,10 @@ private fun ContractFragment.toContract(
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
   )
+}
+
+private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
+  return DisplayItem.fromStrings(displayTitle, displayValue)
 }
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {
