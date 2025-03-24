@@ -23,7 +23,13 @@ fragment ClaimFragment on Claim {
       url
     }
   }
-  incidentDate
-  submittedAt
   showClaimClosedFlow
+  appealInstructionsUrl
+  isUploadingFilesEnabled
+  infoText
+  submittedAt
+  displayItems {
+    displayTitle
+    displayValue
+  }
 }

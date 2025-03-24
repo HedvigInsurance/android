@@ -7,8 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
+import java.lang.Exception
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.DateTimeParseException
 import java.time.format.SignStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
@@ -83,6 +88,30 @@ object HedvigDateTimeFormatterDefaults {
   fun yearMonthDateAndTime(locale: Locale): DateTimeFormatter {
     return yearMonthDateAndTime.toFormatter(locale)
   }
+}
+
+/**
+ * To correctly display displayItems that have date as a value.
+ * Some come as date (insurance details), some come as date with timestamp (claim details).
+ */
+fun String.toValidLocalDate(locale: Locale): String? {
+  val date = try {
+    val pattern = "yyyy-MM-dd"
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    val date = LocalDate.parse(this, formatter)
+    date.format(hedvigDateTimeFormatter(locale))
+  } catch (e: DateTimeParseException) {
+    null
+  }
+  val dateTime = try {
+    val instant = Instant.parse(this)
+    val date = instant.atZone(ZoneId.of("UTC")).toLocalDate()
+    // todo: not sure about UTC here ^
+    date.format(hedvigDateTimeFormatter(locale))
+  } catch (e: Exception) {
+    null
+  }
+  return date ?: dateTime
 }
 
 /**
