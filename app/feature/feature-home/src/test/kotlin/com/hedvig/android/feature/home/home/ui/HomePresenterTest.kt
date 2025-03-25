@@ -14,7 +14,9 @@ import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -40,6 +42,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -66,6 +69,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -90,6 +94,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -159,6 +164,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -210,6 +216,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -233,6 +240,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -270,6 +278,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -317,6 +326,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     val firstVet = FirstVetSection(
@@ -371,6 +381,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     val crossSell = CrossSell(
@@ -424,6 +435,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -470,6 +482,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
+      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -532,4 +545,18 @@ internal class HomePresenterTest {
     crossSells = listOf(),
     travelBannerInfo = null,
   )
+}
+
+private class NoopCrossSellAfterClaimClosedRepository : CrossSellAfterClaimClosedRepository {
+  override fun shouldShowCrossSellAfterClaim(): Flow<Boolean> {
+    TODO("No-op")
+  }
+
+  override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
+    TODO("No-op")
+  }
+
+  override suspend fun showedCrossSellAfterClaim() {
+    // no-op
+  }
 }
