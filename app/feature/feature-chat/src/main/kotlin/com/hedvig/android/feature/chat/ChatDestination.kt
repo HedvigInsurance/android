@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -205,12 +207,16 @@ private fun ChatTopAppBar(
         )
         .wrapContentHeight(Alignment.CenterVertically),
     ) {
+      val headingModifier = Modifier.semantics(mergeDescendants = true) {
+        heading()
+      }
       when (uiState) {
         is Loaded -> {
           when (val topAppBarText = uiState.topAppBarText) {
-            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE),
+              modifier = headingModifier)
             NewConversation -> {
-              Column {
+              Column(modifier = headingModifier) {
                 HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
                 HedvigText(
                   stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
@@ -220,7 +226,7 @@ private fun ChatTopAppBar(
             }
 
             is ClaimConversation -> {
-              Column {
+              Column(modifier = headingModifier) {
                 HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
                 val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
                 HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
@@ -228,7 +234,7 @@ private fun ChatTopAppBar(
             }
 
             is ServiceConversation -> {
-              Column {
+              Column(modifier = headingModifier) {
                 HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
                 val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
                 HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
@@ -237,7 +243,7 @@ private fun ChatTopAppBar(
           }
         }
 
-        else -> HedvigText(stringResource(R.string.CHAT_TITLE))
+        else -> HedvigText(stringResource(R.string.CHAT_TITLE),modifier = headingModifier)
       }
     }
   }
