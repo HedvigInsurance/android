@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
-import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -160,9 +159,14 @@ private fun ConversationCard(
     is Header.ClaimConversation -> header.claimType
     Header.ServiceConversation -> null
   }
-  //val check = stringResource(R.string.TALKBACK_CONVERSATION_DESCRIPTION)
   val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
-  val cardVoiceDescription = "Conversation about ${title}, ${subtitle?.let{it} ?: ""}. Last message at $formattedVoiceDescription."
+  val cardVoiceDescription = stringResource(
+    R.string.TALKBACK_CONVERSATION_DESCRIPTION,
+    "$title, ${subtitle?.let{
+      it
+    } ?: ""}",
+    formattedVoiceDescription,
+  )
   Surface(
     modifier = modifier.semantics(mergeDescendants = true) {
       contentDescription = cardVoiceDescription

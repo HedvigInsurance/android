@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.chat.ui
 
-import android.content.Context
-import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
