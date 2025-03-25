@@ -11,6 +11,9 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
@@ -50,6 +53,7 @@ internal class GetHomeDataUseCaseImpl(
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
+  private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
@@ -67,7 +71,13 @@ internal class GetHomeDataUseCaseImpl(
         }
       },
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
-      getMemberRemindersUseCase.invoke(),
+      combine(
+        getMemberRemindersUseCase.invoke(),
+        flow {
+          val useCase = getTravelAddonBannerInfoUseCaseProvider.provide()
+          useCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).collect(this)
+        },
+      ) { memberReminders, travelBannerInfo -> memberReminders to travelBannerInfo },
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
       crossSellAfterClaimClosedRepository.shouldShowCrossSellAfterClaim(),
@@ -75,7 +85,7 @@ internal class GetHomeDataUseCaseImpl(
       homeQueryDataResult,
       unreadMessageCountResult,
       isEligibleToShowTheChatIconResult,
-      memberReminders,
+      (memberReminders, travelBannerInfo),
       isChatDisabled,
       isHelpCenterEnabled,
       shouldShowCrossSellAfterClaim,
@@ -140,6 +150,7 @@ internal class GetHomeDataUseCaseImpl(
               section.url,
             )
           } ?: emptyList()
+        val travelBannerInfo = travelBannerInfo.getOrNull()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -151,6 +162,7 @@ internal class GetHomeDataUseCaseImpl(
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
+          travelBannerInfo = travelBannerInfo,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(throwable = error.throwable) { "GetHomeDataUseCase failed with $error" }
@@ -241,6 +253,7 @@ internal data class HomeData(
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,
+  val travelBannerInfo: TravelAddonBannerInfo?,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

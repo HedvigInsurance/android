@@ -18,6 +18,11 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
@@ -49,15 +54,17 @@ import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 
 @Composable
 internal fun YourInfoTab(
-  coverageItems: List<Pair<String, String>>,
-  coInsured: List<InsuranceAgreement.CoInsured>,
+  coverageItems: List<DisplayItem>,
+  coInsured: List<CoInsured>,
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
@@ -108,8 +115,7 @@ internal fun YourInfoTab(
           id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
           dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
-        sections = upcomingChangesInsuranceAgreement.displayItems
-          .map { it.title to it.value },
+        sections = upcomingChangesInsuranceAgreement.displayItems,
         onNavigateToNewConversation = {
           upcomingChangesBottomSheet.dismiss()
           onNavigateToNewConversation()
@@ -202,16 +208,16 @@ internal fun YourInfoTab(
 }
 
 @Composable
-internal fun CoverageRows(coverageRowItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
+internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
-    coverageRowItems.forEachIndexed { index, (firstText, secondText) ->
+    coverageRowItems.forEachIndexed { index, displayItem ->
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 16.dp),
           ) {
-            HedvigText(firstText)
+            HedvigText(displayItem.title)
           }
         },
         endSlot = {
@@ -220,8 +226,13 @@ internal fun CoverageRows(coverageRowItems: List<Pair<String, String>>, modifier
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.padding(vertical = 16.dp),
           ) {
+            val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
-              text = secondText,
+              text = when (val item = displayItem.value) {
+                is Date -> formatter.format(item.date.toJavaLocalDate())
+                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Text -> item.text
+              },
               color = HedvigTheme.colorScheme.textSecondary,
               textAlign = TextAlign.End,
             )
@@ -397,10 +408,10 @@ private fun PreviewYourInfoTab() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       YourInfoTab(
         coverageItems = listOf(
-          "Address".repeat(4) to "Bellmansgatan 19A",
-          "Postal code" to "118 47".repeat(6),
-          "Type" to "Homeowner",
-          "Size" to "56 m2",
+          DisplayItem("Address".repeat(4), DisplayItem.DisplayItemValue.Text("Bellmansgatan 19A")),
+          DisplayItem("Postal code", DisplayItem.DisplayItemValue.Text("118 47".repeat(6))),
+          DisplayItem("Type", DisplayItem.DisplayItemValue.Text("Homeowner")),
+          DisplayItem("Size", DisplayItem.DisplayItemValue.Text("56 m2")),
         ),
         coInsured = listOf(
           InsuranceAgreement.CoInsured(
@@ -429,9 +440,9 @@ private fun PreviewYourInfoTab() {
           activeFrom = LocalDate.fromEpochDays(200),
           activeTo = LocalDate.fromEpochDays(300),
           displayItems = listOf(
-            InsuranceAgreement.DisplayItem(
+            DisplayItem(
               title = "test title",
-              value = "test value",
+              value = DisplayItemValue.Text("test value"),
             ),
           ),
           productVariant = ProductVariant(

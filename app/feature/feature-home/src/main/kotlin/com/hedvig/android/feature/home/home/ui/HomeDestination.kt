@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,14 +55,18 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.crosssells.CrossSellsSection
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -123,6 +128,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
+import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun HomeDestination(
@@ -137,6 +143,7 @@ internal fun HomeDestination(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -156,6 +163,7 @@ internal fun HomeDestination(
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
+    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
 }
 
@@ -176,6 +184,7 @@ private fun HomeScreen(
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -186,12 +195,15 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
+  val travelBannerInfo = uiState.safeCast<Success>()?.travelAddonBannerInfo
   val crossSellBottomSheetState = rememberHedvigBottomSheetState<List<CrossSell>>()
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     forceShowCrossSells = uiState.forceShowCrossSells,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openUrl,
+    travelAddonBannerInfo = travelBannerInfo,
+    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -574,6 +586,8 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 @Composable
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<List<CrossSell>>,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   forceShowCrossSells: List<CrossSell>?,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
@@ -594,14 +608,59 @@ private fun CrossSellBottomSheet(
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
     content = { crossSells ->
-      CrossSellsSection(
-        showNotificationBadge = false,
+      CrossSellsSheetContent(
         crossSells = crossSells,
+        travelAddonBannerInfo = travelAddonBannerInfo,
         onCrossSellClick = onCrossSellClick,
+        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        dismissSheet = { state.dismiss() },
       )
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     },
+  )
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.CrossSellsSheetContent(
+  crossSells: List<CrossSell>,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  onCrossSellClick: (String) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  dismissSheet: () -> Unit,
+) {
+  CrossSellsSection(
+    showNotificationBadge = false,
+    crossSells = crossSells,
+    onCrossSellClick = onCrossSellClick,
+  )
+  if (travelAddonBannerInfo != null) {
+    Spacer(Modifier.height(24.dp))
+    TravelAddonBanner(
+      travelAddonBannerInfo = travelAddonBannerInfo,
+      launchAddonPurchaseFlow = { eligibleInsurancesIds ->
+        dismissSheet()
+        onNavigateToAddonPurchaseFlow(eligibleInsurancesIds)
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+}
+
+@Composable
+private fun TravelAddonBanner(
+  travelAddonBannerInfo: TravelAddonBannerInfo,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  FeatureAddonBanner(
+    modifier = modifier,
+    title = travelAddonBannerInfo.title,
+    description = travelAddonBannerInfo.description,
+    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    labels = travelAddonBannerInfo.labels,
+    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds) },
   )
 }
 
@@ -675,6 +734,13 @@ private fun PreviewHomeScreen(
           ),
           chatAction = ChatAction,
           forceShowCrossSells = emptyList(),
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            title = "Title",
+            description = "description",
+            labels = listOf("Label"),
+            eligibleInsurancesIds = nonEmptyListOf("id"),
+            bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+          ),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -690,7 +756,32 @@ private fun PreviewHomeScreen(
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
+        onNavigateToAddonPurchaseFlow = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column {
+        CrossSellsSheetContent(
+          crossSells = listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            title = "Title",
+            description = "description",
+            labels = listOf("Label"),
+            eligibleInsurancesIds = nonEmptyListOf("id"),
+            bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+          ),
+          onCrossSellClick = {},
+          onNavigateToAddonPurchaseFlow = {},
+          dismissSheet = {},
+        )
+      }
     }
   }
 }

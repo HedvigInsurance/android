@@ -1,8 +1,3 @@
-import kotlin.text.set
-import org.gradle.kotlin.dsl.add
-import org.gradle.kotlin.dsl.invoke
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.android.library")
@@ -45,6 +40,7 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataDisplayItems)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)

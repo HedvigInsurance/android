@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.dataContractAndroid)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
+  implementation(projects.dataAddons)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)

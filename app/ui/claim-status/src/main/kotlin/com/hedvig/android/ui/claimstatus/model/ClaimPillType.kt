@@ -20,6 +20,8 @@ sealed interface ClaimPillType {
     data object NotCovered : Closed
 
     data object Paid : Closed
+
+    data object Unresponsive : Closed
   }
 
   companion object {
@@ -43,6 +45,8 @@ sealed interface ClaimPillType {
           ClaimOutcome.UNKNOWN__,
           null,
           -> emptyList()
+
+          ClaimOutcome.UNRESPONSIVE -> listOf(Closed.GenericClosed, Closed.Unresponsive)
         }
       }
       ClaimStatus.REOPENED -> listOf(Claim)

@@ -244,8 +244,7 @@ private fun ContractDetailScreen(
                 when (pageIndex) {
                   0 -> {
                     YourInfoTab(
-                      coverageItems = contract.displayItems
-                        .map { it.title to it.value },
+                      coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
                       allowEditCoInsured = contract.supportsEditCoInsured,
                       contractHolderDisplayName = contract.contractHolderDisplayName,

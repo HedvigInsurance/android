@@ -86,8 +86,12 @@ fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, withInfoIcon: Boolea
       uiState.insuranceDisplayName
     } else {
       val formattedDate = HedvigDateTimeFormatterDefaults
-        .monthDateAndYear(getLocale())
-        .format(uiState.submittedDate.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
+        .dateMonthAndYear(getLocale())
+        .format(
+          uiState.submittedDate.toLocalDateTime(
+            TimeZone.currentSystemDefault(),
+          ).toJavaLocalDateTime(),
+        )
       "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
     }
     HedvigText(
