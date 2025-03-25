@@ -53,7 +53,6 @@ import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Resting
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -92,7 +91,6 @@ private class PledgeAcceptingSliderStateImpl(
   override var xOffset: Float by mutableFloatStateOf(0f)
 
   private val draggableState = DraggableState { delta ->
-    logcat { "Stelios delta:$delta xOffset:$xOffset isInAcceptedPosition:$isInAcceptedPosition" }
     if (isInAcceptedPosition) return@DraggableState
     cancelOnDragStoppedJob()
     safeSetXOffset(xOffset + delta)
