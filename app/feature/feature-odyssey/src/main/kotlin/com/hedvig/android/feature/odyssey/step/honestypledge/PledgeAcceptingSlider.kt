@@ -53,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Resting
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -76,8 +77,6 @@ private interface PledgeAcceptingSliderState {
 
   fun Modifier.containerDraggableModifier(): Modifier
 
-  fun Modifier.thumbDraggableModifier(): Modifier
-
   fun updateAnchors(layoutSize: IntSize)
 
   @Composable
@@ -93,6 +92,7 @@ private class PledgeAcceptingSliderStateImpl(
   override var xOffset: Float by mutableFloatStateOf(0f)
 
   private val draggableState = DraggableState { delta ->
+    logcat { "Stelios delta:$delta xOffset:$xOffset isInAcceptedPosition:$isInAcceptedPosition" }
     if (isInAcceptedPosition) return@DraggableState
     cancelOnDragStoppedJob()
     safeSetXOffset(xOffset + delta)
@@ -125,17 +125,6 @@ private class PledgeAcceptingSliderStateImpl(
       onDragStarted = { offset ->
         safeSetXOffset(offset.x.minus(circleDiameterPx / 2))
       },
-      onDragStopped = { velocity ->
-        onDragStopped(velocity)
-      },
-    )
-  }
-
-  override fun Modifier.thumbDraggableModifier(): Modifier {
-    return this.draggable(
-      state = draggableState,
-      orientation = Horizontal,
-      startDragImmediately = true,
       onDragStopped = { velocity ->
         onDragStopped(velocity)
       },
@@ -248,7 +237,6 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
     Box(
       Modifier
         .offset { IntOffset(state.xOffset.roundToInt(), 0) }
-        .then(with(state) { Modifier.thumbDraggableModifier() })
         .size(circleDiameter)
         .padding(4.dp)
         .background({ boxColor }, CircleShape),
