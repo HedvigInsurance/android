@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -597,37 +598,55 @@ private fun CrossSellBottomSheet(
     }
   }
   LaunchedEffect(state) {
-    snapshotFlow { state.data }
-      .filterNotNull()
+    snapshotFlow { state.isVisible }
       .distinctUntilChanged()
-      .collect {
-        markCrossSellsNotificationAsSeen()
+      .collect {isVisible ->
+        if (isVisible) {
+          markCrossSellsNotificationAsSeen()
+        }
       }
   }
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
     content = { crossSells ->
-      CrossSellsSection(
-        showNotificationBadge = false,
+      CrossSellsSheetContent(
         crossSells = crossSells,
+        travelAddonBannerInfo = travelAddonBannerInfo,
         onCrossSellClick = onCrossSellClick,
+        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        dismissSheet = { state.dismiss() },
       )
-      if (travelAddonBannerInfo != null) {
-        Spacer(Modifier.height(24.dp))
-        TravelAddonBanner(
-          travelAddonBannerInfo = travelAddonBannerInfo,
-          launchAddonPurchaseFlow = {
-            state.dismiss()
-            onNavigateToAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
-          },
-          modifier = Modifier
-            .fillMaxWidth(),
-        )
-      }
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     },
   )
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.CrossSellsSheetContent(
+  crossSells: List<CrossSell>,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  onCrossSellClick: (String) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  dismissSheet: () -> Unit,
+) {
+  CrossSellsSection(
+    showNotificationBadge = false,
+    crossSells = crossSells,
+    onCrossSellClick = onCrossSellClick,
+  )
+  if (travelAddonBannerInfo != null) {
+    Spacer(Modifier.height(24.dp))
+    TravelAddonBanner(
+      travelAddonBannerInfo = travelAddonBannerInfo,
+      launchAddonPurchaseFlow = { eligibleInsurancesIds ->
+        dismissSheet()
+        onNavigateToAddonPurchaseFlow(eligibleInsurancesIds)
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable
@@ -740,6 +759,30 @@ private fun PreviewHomeScreen(
         markCrossSellsNotificationAsSeen = {},
         onNavigateToAddonPurchaseFlow = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column {
+        CrossSellsSheetContent(
+          crossSells = listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            title = "Title",
+            description = "description",
+            labels = listOf("Label"),
+            eligibleInsurancesIds = nonEmptyListOf("id"),
+            bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+          ),
+          onCrossSellClick = {},
+          onNavigateToAddonPurchaseFlow = {},
+          dismissSheet = {},
+        )
+      }
     }
   }
 }

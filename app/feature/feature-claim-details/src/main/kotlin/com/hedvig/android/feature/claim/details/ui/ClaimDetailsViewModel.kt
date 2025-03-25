@@ -12,7 +12,10 @@ import arrow.fx.coroutines.parMap
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -174,8 +177,10 @@ internal sealed interface ClaimDetailUiState {
     val appealInstructionsUrl: String?,
     val isUploadingFilesEnabled: Boolean,
     val infoText: String?,
-    val displayItems: List<Pair<String, String>>,
+    val displayItems: List<DisplayItem>,
   ) : ClaimDetailUiState {
+    val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
+
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
 

@@ -21,11 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -55,6 +55,11 @@ import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -82,8 +87,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
-import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.toValidLocalDate
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -92,8 +96,6 @@ import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCardContent
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
@@ -105,6 +107,8 @@ import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -394,62 +398,47 @@ private fun BeforeGridContent(
       ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
     }
     Spacer(Modifier.height(8.dp))
-    HedvigCard {
-      Column {
-        val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
-        if (!claimIsInUndeterminedState) {
-          Column(
-            Modifier.padding(
-              start = 18.dp,
-              end = 18.dp,
-              top = 16.dp,
-              bottom = 18.dp,
-            ),
-          ) {
-            HedvigText(
-              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
-              style = HedvigTheme.typography.bodySmall,
-            )
+    if (!uiState.claimIsInUndeterminedState) {
+      HedvigCard {
+        Column(Modifier.padding(16.dp)) {
+          HedvigText(
+            text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+            style = HedvigTheme.typography.bodySmall,
+          )
+          if (navigateToConversation != null) {
             Spacer(Modifier.height(16.dp))
-            if (navigateToConversation != null) {
-              HorizontalDivider()
-              Spacer(Modifier.height(16.dp))
-              HorizontalItemsWithMaximumSpaceTaken(
-                modifier = Modifier
-                  .clip(HedvigTheme.shapes.cornerXSmall)
-                  .clickable {
-                    navigateToConversation()
-                  },
-                startSlot = {
-                  Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                  ) {
-                    HedvigText(
-                      text = stringResource(R.string.claim_status_detail_message_view_body),
-                      style = HedvigTheme.typography.bodySmall,
-                    )
-                  }
-                },
-                endSlot = {
-                  Row(
-                    horizontalArrangement = Arrangement.End,
-                  ) {
-                    IconButton(onClick = navigateToConversation, Modifier.size(40.dp)) {
-                      Icon(
-                        imageVector = HedvigIcons.Chat,
-                        contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-                        tint = HedvigTheme.colorScheme.signalGreyElement,
-                        modifier = Modifier
-                          .size(32.dp)
-                          .notificationCircle(hasUnreadMessages)
-                          .clip(CircleShape),
-                      )
-                    }
-                  }
-                },
-                spaceBetween = 8.dp,
-              )
-            }
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            HorizontalItemsWithMaximumSpaceTaken(
+              modifier = Modifier
+                .clip(HedvigTheme.shapes.cornerXSmall)
+                .clickable(onClick = navigateToConversation),
+              startSlot = {
+                HedvigText(
+                  text = stringResource(R.string.claim_status_detail_message_view_body),
+                  style = HedvigTheme.typography.bodySmall,
+                  modifier = Modifier.wrapContentSize(Alignment.CenterStart),
+                )
+              },
+              endSlot = {
+                IconButton(
+                  onClick = navigateToConversation,
+                  modifier = Modifier
+                    .size(40.dp)
+                    .wrapContentSize(Alignment.CenterEnd),
+                ) {
+                  Icon(
+                    imageVector = HedvigIcons.Chat,
+                    contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+                    tint = HedvigTheme.colorScheme.signalGreyElement,
+                    modifier = Modifier
+                      .size(32.dp)
+                      .notificationCircle(hasUnreadMessages),
+                  )
+                }
+              },
+              spaceBetween = 8.dp,
+            )
           }
         }
       }
@@ -725,21 +714,23 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 }
 
 @Composable
-private fun DisplayItemsSection(displayItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
+private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
-      for (item in displayItems) {
+      for (displayItem in displayItems) {
         HorizontalItemsWithMaximumSpaceTaken(
           spaceBetween = 8.dp,
           startSlot = {
-            HedvigText(
-              text = item.first,
-            )
+            HedvigText(text = displayItem.title)
           },
           endSlot = {
-            val valueAsValidDate = item.second.toValidLocalDate(getLocale())
+            val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
-              text = valueAsValidDate ?: item.second,
+              text = when (val item = displayItem.value) {
+                is Date -> formatter.format(item.date.toJavaLocalDate())
+                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Text -> item.text
+              },
               textAlign = TextAlign.End,
             )
           },
@@ -771,7 +762,7 @@ private fun PreviewClaimDetailScreen(
         retry = { },
         navigateUp = {},
         navigateToConversation = {},
-        onFilesToUploadSelected = { list, s -> },
+        onFilesToUploadSelected = { _, _ -> },
       )
     }
   }
@@ -852,8 +843,8 @@ private fun PreviewClaimDetailScreen(
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",
           displayItems = listOf(
-            "Type" to "Respiratory disorder",
-            "Submitted" to "2025-02-03",
+            DisplayItem("Type", DisplayItem.DisplayItemValue.Text("Respiratory disorder")),
+            DisplayItem("Submitted", DisplayItem.DisplayItemValue.Text("2025-02-03")),
           ),
         ),
         openUrl = {},

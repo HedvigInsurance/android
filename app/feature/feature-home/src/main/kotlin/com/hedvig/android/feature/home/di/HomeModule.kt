@@ -50,6 +50,7 @@ val homeModule = module {
       get<GetHomeDataUseCaseProvider>(),
       get<SeenImportantMessagesStorage>(),
       get<CrossSellCardNotificationBadgeServiceProvider>(),
+      get<CrossSellAfterClaimClosedRepository>(),
       get<ApplicationScope>(),
     )
   }
