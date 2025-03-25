@@ -346,7 +346,7 @@ private fun ExtraBuildingsCard(
                   },
                   enabled = !shouldDisableInput,
                 ) {
-                  Icon(HedvigIcons.Close, null, Modifier.size(16.dp))
+                  Icon(HedvigIcons.Close, stringResource(R.string.GENERAL_REMOVE), Modifier.size(16.dp))
                 }
               }
             }

@@ -160,7 +160,7 @@ internal class GetHomeDataUseCaseImpl(
           hasUnseenChatMessages = hasUnseenChatMessages,
           forceShowCrossSells = crossSells.takeIf {
             shouldShowCrossSellAfterClaim
-                                                  },
+          },
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
