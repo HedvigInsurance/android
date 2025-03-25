@@ -158,7 +158,9 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          forceShowCrossSells = crossSells.takeIf { shouldShowCrossSellAfterClaim },
+          forceShowCrossSells = crossSells.takeIf {
+            shouldShowCrossSellAfterClaim
+                                                  },
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
