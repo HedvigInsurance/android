@@ -55,6 +55,11 @@ import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -82,8 +87,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
-import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.toValidLocalDate
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -103,6 +107,8 @@ import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -417,7 +423,9 @@ private fun BeforeGridContent(
               endSlot = {
                 IconButton(
                   onClick = navigateToConversation,
-                  modifier = Modifier.size(40.dp).wrapContentSize(Alignment.CenterEnd),
+                  modifier = Modifier
+                    .size(40.dp)
+                    .wrapContentSize(Alignment.CenterEnd),
                 ) {
                   Icon(
                     imageVector = HedvigIcons.Chat,
@@ -706,21 +714,23 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 }
 
 @Composable
-private fun DisplayItemsSection(displayItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
+private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
-      for (item in displayItems) {
+      for (displayItem in displayItems) {
         HorizontalItemsWithMaximumSpaceTaken(
           spaceBetween = 8.dp,
           startSlot = {
-            HedvigText(
-              text = item.first,
-            )
+            HedvigText(text = displayItem.title)
           },
           endSlot = {
-            val valueAsValidDate = item.second.toValidLocalDate(getLocale())
+            val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
-              text = valueAsValidDate ?: item.second,
+              text = when (val item = displayItem.value) {
+                is Date -> formatter.format(item.date.toJavaLocalDate())
+                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Text -> item.text
+              },
               textAlign = TextAlign.End,
             )
           },
@@ -752,7 +762,7 @@ private fun PreviewClaimDetailScreen(
         retry = { },
         navigateUp = {},
         navigateToConversation = {},
-        onFilesToUploadSelected = { list, s -> },
+        onFilesToUploadSelected = { _, _ -> },
       )
     }
   }
@@ -833,8 +843,8 @@ private fun PreviewClaimDetailScreen(
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",
           displayItems = listOf(
-            "Type" to "Respiratory disorder",
-            "Submitted" to "2025-02-03",
+            DisplayItem("Type", DisplayItem.DisplayItemValue.Text("Respiratory disorder")),
+            DisplayItem("Submitted", DisplayItem.DisplayItemValue.Text("2025-02-03")),
           ),
         ),
         openUrl = {},

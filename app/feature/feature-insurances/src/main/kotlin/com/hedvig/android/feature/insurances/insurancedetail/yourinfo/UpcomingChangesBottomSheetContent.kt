@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -27,7 +29,7 @@ import hedvig.resources.R
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
-  sections: List<Pair<String, String>>,
+  sections: List<DisplayItem>,
   onNavigateToNewConversation: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -74,9 +76,7 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       UpcomingChangesBottomSheetContent(
         infoText = "Test",
-        sections = listOf(
-          "1" to "2",
-        ),
+        sections = listOf(DisplayItem("1", DisplayItemValue.Text("2"))),
         onDismiss = {},
         onNavigateToNewConversation = {},
         modifier = Modifier.padding(horizontal = 16.dp),

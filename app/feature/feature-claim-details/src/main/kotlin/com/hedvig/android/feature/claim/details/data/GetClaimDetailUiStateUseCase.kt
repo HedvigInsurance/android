@@ -9,6 +9,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
+import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
@@ -133,7 +134,7 @@ internal class GetClaimDetailUiStateUseCase(
       isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
       infoText = claim.infoText,
       displayItems = claim.displayItems.map {
-        it.displayTitle to it.displayValue
+        DisplayItem.fromStrings(it.displayTitle, it.displayValue)
       },
     )
   }

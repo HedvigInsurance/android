@@ -2,9 +2,9 @@ package com.hedvig.android.feature.insurances.data
 
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.InsuranceAgreement.DisplayItem
 import java.time.format.DateTimeFormatter
 import kotlin.String
 import kotlinx.datetime.LocalDate
@@ -84,11 +84,6 @@ data class InsuranceAgreement(
   val creationCause: CreationCause,
   val addons: List<Addon>?,
 ) {
-  data class DisplayItem(
-    val title: String,
-    val value: String,
-  )
-
   data class CoInsured(
     private val ssn: String?,
     private val birthDate: LocalDate?,
