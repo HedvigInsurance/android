@@ -76,8 +76,6 @@ private interface PledgeAcceptingSliderState {
 
   fun Modifier.containerDraggableModifier(): Modifier
 
-  fun Modifier.thumbDraggableModifier(): Modifier
-
   fun updateAnchors(layoutSize: IntSize)
 
   @Composable
@@ -125,17 +123,6 @@ private class PledgeAcceptingSliderStateImpl(
       onDragStarted = { offset ->
         safeSetXOffset(offset.x.minus(circleDiameterPx / 2))
       },
-      onDragStopped = { velocity ->
-        onDragStopped(velocity)
-      },
-    )
-  }
-
-  override fun Modifier.thumbDraggableModifier(): Modifier {
-    return this.draggable(
-      state = draggableState,
-      orientation = Horizontal,
-      startDragImmediately = true,
       onDragStopped = { velocity ->
         onDragStopped(velocity)
       },
@@ -248,7 +235,6 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
     Box(
       Modifier
         .offset { IntOffset(state.xOffset.roundToInt(), 0) }
-        .then(with(state) { Modifier.thumbDraggableModifier() })
         .size(circleDiameter)
         .padding(4.dp)
         .background({ boxColor }, CircleShape),
