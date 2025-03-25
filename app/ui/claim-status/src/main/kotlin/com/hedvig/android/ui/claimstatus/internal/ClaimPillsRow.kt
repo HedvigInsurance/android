@@ -14,6 +14,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.*
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.Surface
@@ -46,10 +47,11 @@ private fun ClaimPill(type: ClaimPillType) {
   val text = when (type) {
     is ClaimPillType.Closed -> {
       when (type) {
-        ClaimPillType.Closed.GenericClosed -> stringResource(R.string.home_claim_card_pill_claim)
-        ClaimPillType.Closed.NotCompensated -> stringResource(R.string.claim_decision_not_compensated)
-        ClaimPillType.Closed.NotCovered -> stringResource(R.string.claim_decision_not_covered)
-        ClaimPillType.Closed.Paid -> stringResource(R.string.claim_decision_paid)
+        GenericClosed -> stringResource(R.string.home_claim_card_pill_claim)
+        NotCompensated -> stringResource(R.string.claim_decision_not_compensated)
+        NotCovered -> stringResource(R.string.claim_decision_not_covered)
+        Paid -> stringResource(R.string.claim_decision_paid)
+        ClaimPillType.Closed.Unresponsive -> stringResource(R.string.claim_decision_unresponsive)
       }
     }
 
@@ -61,10 +63,11 @@ private fun ClaimPill(type: ClaimPillType) {
     ClaimPillType.Claim -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
     is ClaimPillType.Closed -> {
       when (type) {
-        ClaimPillType.Closed.GenericClosed -> HighlightLabelDefaults.HighlightColor.Grey(DARK)
-        ClaimPillType.Closed.NotCompensated -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
-        ClaimPillType.Closed.NotCovered -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
-        ClaimPillType.Closed.Paid -> HighlightLabelDefaults.HighlightColor.Grey(DARK)
+        GenericClosed -> Grey(DARK)
+        NotCompensated -> Grey(MEDIUM, true)
+        NotCovered -> Grey(MEDIUM, true)
+        Paid -> Grey(DARK)
+        ClaimPillType.Closed.Unresponsive -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
       }
     }
 

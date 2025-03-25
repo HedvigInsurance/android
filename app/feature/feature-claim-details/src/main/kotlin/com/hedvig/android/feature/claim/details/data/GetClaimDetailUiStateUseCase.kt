@@ -9,6 +9,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
+import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
@@ -70,7 +71,6 @@ internal class GetClaimDetailUiStateUseCase(
     val memberFreeText = claim.memberFreeText
 
     val claimType: String? = claim.claimType
-    val incidentDate = claim.incidentDate
     val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
     val insuranceDisplayName = claim.productVariant?.displayName
     val termsConditionsUrl =
@@ -114,22 +114,28 @@ internal class GetClaimDetailUiStateUseCase(
         ClaimOutcome.PAID -> ClaimDetailUiState.Content.ClaimOutcome.PAID
         ClaimOutcome.NOT_COMPENSATED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED
         ClaimOutcome.NOT_COVERED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED
-        ClaimOutcome.UNRESPONSIVE,
         ClaimOutcome.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+
+        ClaimOutcome.UNRESPONSIVE -> ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE
       },
       uploadUri = claim.targetFileUploadUri,
       isUploadingFile = false,
       uploadError = null,
       claimType = claimType,
-      incidentDate = incidentDate,
       insuranceDisplayName = insuranceDisplayName,
       submittedAt = submittedAt,
       termsConditionsUrl = termsConditionsUrl,
       savedFileUri = null,
       downloadError = null,
       isLoadingPdf = false,
+      appealInstructionsUrl = claim.appealInstructionsUrl,
+      isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
+      infoText = claim.infoText,
+      displayItems = claim.displayItems.map {
+        DisplayItem.fromStrings(it.displayTitle, it.displayValue)
+      },
     )
   }
 
