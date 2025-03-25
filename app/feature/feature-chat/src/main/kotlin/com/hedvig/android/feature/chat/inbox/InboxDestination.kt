@@ -21,7 +21,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -42,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.Header
@@ -189,9 +193,13 @@ private fun ConversationCard(
               )
             } else {
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(getLocale())
+              val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
               HedvigText(
                 text = formattedLastMessageSent,
                 style = HedvigTheme.typography.label,
+                modifier = Modifier.semantics {
+                  contentDescription = formattedVoiceDescription
+                }
               )
             }
           }
