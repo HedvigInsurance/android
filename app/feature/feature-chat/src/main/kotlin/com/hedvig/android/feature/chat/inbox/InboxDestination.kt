@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -148,8 +150,23 @@ private fun ConversationCard(
   onConversationClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val title = when (conversation.header) {
+    Header.Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
+    is Header.ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
+    Header.ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
+  }
+  val subtitle = when (val header = conversation.header) {
+    Header.Legacy -> null
+    is Header.ClaimConversation -> header.claimType
+    Header.ServiceConversation -> null
+  }
+  //val check = stringResource(R.string.TALKBACK_CONVERSATION_DESCRIPTION)
+  val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
+  val cardVoiceDescription = "Conversation about ${title}, ${subtitle?.let{it} ?: ""}. Last message at $formattedVoiceDescription."
   Surface(
-    modifier = modifier,
+    modifier = modifier.semantics(mergeDescendants = true) {
+      contentDescription = cardVoiceDescription
+    },
     onClick = { onConversationClick(conversation.conversationId) },
     color = if (conversation.hasNewMessages) {
       HedvigTheme.colorScheme.surfacePrimary
@@ -161,16 +178,15 @@ private fun ConversationCard(
     Column(
       modifier = Modifier
         .padding(horizontal = 16.dp)
-        .padding(top = 16.dp, bottom = 18.dp),
+        .padding(top = 16.dp, bottom = 18.dp)
+        .semantics {
+          hideFromAccessibility()
+        },
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         {
           HedvigText(
-            text = when (conversation.header) {
-              Header.Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
-              is Header.ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
-              Header.ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
-            },
+            text = title,
             style = HedvigTheme.typography.bodySmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -193,24 +209,18 @@ private fun ConversationCard(
               )
             } else {
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(getLocale())
-              val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
               HedvigText(
                 text = formattedLastMessageSent,
                 style = HedvigTheme.typography.label,
-                modifier = Modifier.semantics {
-                  contentDescription = formattedVoiceDescription
-                }
+//                modifier = Modifier.semantics {
+//                  hideFromAccessibility()
+//                }
               )
             }
           }
         },
         spaceBetween = 8.dp,
       )
-      val subtitle = when (val header = conversation.header) {
-        Header.Legacy -> null
-        is Header.ClaimConversation -> header.claimType
-        Header.ServiceConversation -> null
-      }
       if (subtitle != null) {
         HedvigText(
           text = subtitle,
