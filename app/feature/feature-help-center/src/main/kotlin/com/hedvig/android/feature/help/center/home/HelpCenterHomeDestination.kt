@@ -655,7 +655,7 @@ private fun ClearSearchIcon(
   ) {
     Icon(
       HedvigIcons.Close,
-      contentDescription = null,
+      contentDescription = stringResource(R.string.GENERAL_REMOVE),
       tint = tint,
     )
   }

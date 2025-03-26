@@ -96,7 +96,12 @@ private fun MovingFlowTopAppBar(
             exitFlow()
           }
         },
-        content = { Icon(imageVector = HedvigIcons.Close, contentDescription = null) },
+        content = {
+          Icon(
+            imageVector = HedvigIcons.Close,
+            contentDescription = stringResource(R.string.general_close_button),
+          )
+        },
       )
     },
   )

@@ -118,7 +118,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.general_close_button),
           )
         },
       )

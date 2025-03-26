@@ -124,7 +124,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
@@ -600,7 +599,7 @@ private fun CrossSellBottomSheet(
   LaunchedEffect(state) {
     snapshotFlow { state.isVisible }
       .distinctUntilChanged()
-      .collect {isVisible ->
+      .collect { isVisible ->
         if (isVisible) {
           markCrossSellsNotificationAsSeen()
         }
