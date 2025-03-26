@@ -154,5 +154,3 @@ jobs:
         with:
           name: Pull Request-Build
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-      - name: Upload mapping files to datadog
-        run: "./gradlew uploadMappingDebug --no-configuration-cache"
