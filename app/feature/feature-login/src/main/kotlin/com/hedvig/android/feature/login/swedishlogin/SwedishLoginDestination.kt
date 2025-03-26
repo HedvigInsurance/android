@@ -181,7 +181,7 @@ private fun SwedishLoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          val qrCodeDescription = stringResource(R.string.TALK_BACK_QR_CODE_DESCRIPTION)
+          val qrCodeDescription = stringResource(R.string.TALKBACK_QR_CODE_DESCRIPTION)
           QRCode(
             autoStartToken = uiState.bankIdLiveQrCodeData,
             modifier = Modifier

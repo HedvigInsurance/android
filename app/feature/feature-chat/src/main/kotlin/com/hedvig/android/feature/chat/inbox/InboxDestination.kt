@@ -162,9 +162,7 @@ private fun ConversationCard(
   val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
   val cardVoiceDescription = stringResource(
     R.string.TALKBACK_CONVERSATION_DESCRIPTION,
-    "$title, ${subtitle?.let{
-      it
-    } ?: ""}",
+    "$title, ${subtitle ?: ""}",
     formattedVoiceDescription,
   )
   Surface(
