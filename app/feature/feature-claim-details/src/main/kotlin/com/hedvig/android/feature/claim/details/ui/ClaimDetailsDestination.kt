@@ -56,7 +56,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
@@ -516,7 +515,7 @@ private fun AfterGridContent(
 ) {
   Column {
     if (uiState.isUploadingFilesEnabled) {
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(24.dp))
       HedvigText(
         text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
         textAlign = TextAlign.Center,
@@ -542,7 +541,7 @@ private fun AfterGridContent(
           isLoading = uiState.isUploadingFile,
         )
       }
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(24.dp))
     }
     if (uiState.uploadError != null) {
       ErrorDialog(
