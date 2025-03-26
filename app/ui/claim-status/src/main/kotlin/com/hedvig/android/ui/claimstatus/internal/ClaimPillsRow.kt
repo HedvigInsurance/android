@@ -47,7 +47,7 @@ private fun ClaimPill(type: ClaimPillType) {
   val text = when (type) {
     is ClaimPillType.Closed -> {
       when (type) {
-        GenericClosed -> stringResource(R.string.home_claim_card_pill_claim)
+        GenericClosed -> stringResource(R.string.claim_status_detail_closed)
         NotCompensated -> stringResource(R.string.claim_decision_not_compensated)
         NotCovered -> stringResource(R.string.claim_decision_not_covered)
         Paid -> stringResource(R.string.claim_decision_paid)

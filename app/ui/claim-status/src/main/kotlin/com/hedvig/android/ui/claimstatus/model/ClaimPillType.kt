@@ -35,6 +35,7 @@ sealed interface ClaimPillType {
           when (claim.outcome) {
             ClaimOutcome.PAID -> {
               buildList {
+                add(Closed.GenericClosed)
                 add(Closed.Paid)
                 val payoutAmount = claim.payoutAmount
                 if (payoutAmount != null) {
@@ -47,13 +48,13 @@ sealed interface ClaimPillType {
             ClaimOutcome.UNRESPONSIVE -> listOf(Closed.GenericClosed, Closed.Unresponsive)
             ClaimOutcome.UNKNOWN__,
             null,
-            -> emptyList()
+            -> listOf(Closed.GenericClosed)
           }
         }
         ClaimStatus.REOPENED -> listOf(Claim)
         ClaimStatus.UNKNOWN__,
         null,
-        -> emptyList()
+        -> listOf(Claim)
       }
     }
   }
