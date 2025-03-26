@@ -462,6 +462,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       ClaimFlowStep.ClaimSummaryStep(
         flowId = flowId,
         claimTypeTitle = title,
+        claimSubtitle = subtitle,
         location = locationStep.location,
         options = locationStep.options,
         dateOfOccurrence = dateOfOccurrenceStep.dateOfOccurrence,

@@ -72,6 +72,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
     is ClaimFlowStep.ClaimSummaryStep -> {
       ClaimFlowDestination.Summary(
         claimTypeTitle = claimTypeTitle,
+        subTitle = this.claimSubtitle,
         selectedLocation = location,
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,

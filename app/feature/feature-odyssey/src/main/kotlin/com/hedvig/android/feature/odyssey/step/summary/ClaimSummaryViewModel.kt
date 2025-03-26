@@ -127,6 +127,7 @@ internal data class ClaimSummaryStatusUiState(
 internal data class ClaimSummaryInfoUiState(
   // e.g "Broken Phone"
   val claimTypeTitle: String?,
+  val claimSubtitle: String?,
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
   val itemType: ItemType?,
@@ -142,6 +143,10 @@ internal data class ClaimSummaryInfoUiState(
       // Ärende
       if (claimTypeTitle != null) {
         add(resources.getString(R.string.CLAIMS_CASE) to claimTypeTitle)
+      }
+      //Subtitle
+      if (claimSubtitle != null) {
+        add("Description" to claimSubtitle)
       }
       // Skadetyp
       val incidentTypeText = if (itemProblems.isNotEmpty()) {
@@ -259,6 +264,7 @@ internal data class ClaimSummaryInfoUiState(
         files = summary.files,
         submittedContent = summary.submittedContent,
         freeText = summary.freeText,
+        claimSubtitle = summary.subTitle
       )
     }
   }
