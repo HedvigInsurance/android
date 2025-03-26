@@ -67,7 +67,6 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
-import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -76,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -562,7 +562,7 @@ private fun AfterGridContent(
       TermsConditionsCard(
         onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
         modifier = Modifier.padding(16.dp),
-        isLoading = uiState.isLoadingPdf,
+        isLoading = uiState.termsConditionsUrl == uiState.isLoadingPdf,
       )
       Spacer(Modifier.height(8.dp))
     }
@@ -570,7 +570,7 @@ private fun AfterGridContent(
       AppealInstructionCard(
         onClick = { downloadFromUrl(uiState.appealInstructionsUrl) },
         modifier = Modifier.padding(16.dp),
-        isLoading = uiState.isLoadingPdf,
+        isLoading = uiState.appealInstructionsUrl == uiState.isLoadingPdf,
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -597,7 +597,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            HedvigCircularProgressIndicator()
+            HedvigThreeDotsProgressIndicator()
           }
         }
       } else {
@@ -629,7 +629,7 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            HedvigCircularProgressIndicator()
+            HedvigThreeDotsProgressIndicator()
           }
         }
       } else {
@@ -837,7 +837,7 @@ private fun PreviewClaimDetailScreen(
           termsConditionsUrl = "url",
           savedFileUri = null,
           downloadError = null,
-          isLoadingPdf = false,
+          isLoadingPdf = null,
           appealInstructionsUrl = "dd",
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",
