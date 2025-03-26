@@ -71,3 +71,5 @@ jobs:
           track: internal
           mappingFile: app/app/build/outputs/mapping/release/mapping.txt
           status: completed
+      - name: Upload mapping files to datadog
+        run: "./gradlew uploadMappingRelease --no-configuration-cache"

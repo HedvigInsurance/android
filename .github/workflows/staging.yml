@@ -68,3 +68,5 @@ jobs:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           file: ${{ steps.sign_app.outputs.signedReleaseFile }}
           groups: android-testers
+      - name: Upload mapping files to datadog
+        run: "./gradlew uploadMappingStaging --no-configuration-cache"

@@ -52,7 +52,7 @@ android {
     }
 
     val release by getting {
-//      signingConfig = debug.signingConfig // uncomment to run release build locally
+      signingConfig = debug.signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -232,6 +232,10 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
+}
+
+datadog {
+  site = "EU1"
 }
 
 easylauncher {
