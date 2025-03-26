@@ -214,9 +214,6 @@ private fun ConversationCard(
               HedvigText(
                 text = formattedLastMessageSent,
                 style = HedvigTheme.typography.label,
-//                modifier = Modifier.semantics {
-//                  hideFromAccessibility()
-//                }
               )
             }
           }
