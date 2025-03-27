@@ -187,6 +187,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
           navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
         },
         onNavigateToFinishedScreen = { moveDate ->
+          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
           navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
             typedPopUpTo<MovingFlowGraphDestination> {
               inclusive = true
