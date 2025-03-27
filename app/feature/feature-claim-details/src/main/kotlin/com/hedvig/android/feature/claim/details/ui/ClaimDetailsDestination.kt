@@ -397,17 +397,21 @@ private fun BeforeGridContent(
       ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
     }
     Spacer(Modifier.height(8.dp))
-    if (!uiState.claimIsInUndeterminedState) {
+    if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
       HedvigCard {
         Column(Modifier.padding(16.dp)) {
-          HedvigText(
-            text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
-            style = HedvigTheme.typography.bodySmall,
-          )
-          if (navigateToConversation != null) {
+          if (!uiState.claimIsInUndeterminedState) {
+            HedvigText(
+              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+              style = HedvigTheme.typography.bodySmall,
+            )
+          }
+          if (navigateToConversation != null && !uiState.claimIsInUndeterminedState) {
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
+          }
+          if (navigateToConversation != null) {
             HorizontalItemsWithMaximumSpaceTaken(
               modifier = Modifier
                 .clip(HedvigTheme.shapes.cornerXSmall)
@@ -442,68 +446,68 @@ private fun BeforeGridContent(
         }
       }
     }
-    Spacer(Modifier.height(24.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          HedvigText(
-            stringResource(R.string.claim_status_claim_details_title),
-            Modifier.padding(horizontal = 2.dp),
-          )
-        }
-      },
-      endSlot = {
-        Row(
-          horizontalArrangement = Arrangement.End,
-        ) {
-          IconButton(
-            onClick = onExplanationButtonClick,
-            modifier = Modifier.size(40.dp),
-          ) {
-            Icon(
-              imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        }
-      },
-      spaceBetween = 8.dp,
-    )
-
-    Spacer(Modifier.height(8.dp))
-    DisplayItemsSection(
-      displayItems = uiState.displayItems,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 2.dp),
-    )
-    Spacer(Modifier.height(24.dp))
-    HedvigText(
-      stringResource(R.string.claim_status_detail_uploaded_files_info_title),
-      Modifier.padding(horizontal = 2.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    when (uiState.submittedContent) {
-      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-      }
-
-      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
-        HedvigCard(Modifier.fillMaxWidth()) {
-          HedvigText(
-            uiState.submittedContent.text,
-            Modifier.padding(16.dp),
-          )
-        }
-      }
-
-      else -> {}
-    }
-    Spacer(Modifier.height(8.dp))
   }
+  Spacer(Modifier.height(24.dp))
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        HedvigText(
+          stringResource(R.string.claim_status_claim_details_title),
+          Modifier.padding(horizontal = 2.dp),
+        )
+      }
+    },
+    endSlot = {
+      Row(
+        horizontalArrangement = Arrangement.End,
+      ) {
+        IconButton(
+          onClick = onExplanationButtonClick,
+          modifier = Modifier.size(40.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.InfoOutline,
+            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
+    },
+    spaceBetween = 8.dp,
+  )
+
+  Spacer(Modifier.height(8.dp))
+  DisplayItemsSection(
+    displayItems = uiState.displayItems,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 2.dp),
+  )
+  Spacer(Modifier.height(24.dp))
+  HedvigText(
+    stringResource(R.string.claim_status_detail_uploaded_files_info_title),
+    Modifier.padding(horizontal = 2.dp),
+  )
+  Spacer(Modifier.height(8.dp))
+  when (uiState.submittedContent) {
+    is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+      ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
+    }
+
+    is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+      HedvigCard(Modifier.fillMaxWidth()) {
+        HedvigText(
+          uiState.submittedContent.text,
+          Modifier.padding(16.dp),
+        )
+      }
+    }
+
+    else -> {}
+  }
+  Spacer(Modifier.height(8.dp))
 }
 
 @Composable
