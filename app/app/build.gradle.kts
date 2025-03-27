@@ -234,6 +234,10 @@ dependencies {
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 
+datadog {
+  site = "EU1"
+}
+
 easylauncher {
   buildTypes.register("staging") {
     setFilters(
