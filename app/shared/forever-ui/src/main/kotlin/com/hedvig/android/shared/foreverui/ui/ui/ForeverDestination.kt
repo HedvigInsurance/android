@@ -39,6 +39,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -191,7 +193,10 @@ internal fun LoadingForeverContent() {
       modifier = Modifier
         .height(64.dp)
         .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
     ) {
       HedvigText(
         text = stringResource(R.string.TAB_REFERRALS_TITLE),
@@ -271,7 +276,10 @@ internal fun ForeverContent(
         modifier = Modifier
           .height(64.dp)
           .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+          .padding(horizontal = 16.dp)
+          .semantics(mergeDescendants = true) {
+            heading()
+          },
       ) {
         HedvigText(
           text = stringResource(R.string.TAB_REFERRALS_TITLE),

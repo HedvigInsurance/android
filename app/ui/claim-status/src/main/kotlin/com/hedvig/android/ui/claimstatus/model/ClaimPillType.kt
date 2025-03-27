@@ -1,7 +1,6 @@
 package com.hedvig.android.ui.claimstatus.model
 
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.logger.logcat
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
@@ -27,7 +26,6 @@ sealed interface ClaimPillType {
 
   companion object {
     fun fromClaimFragment(claim: ClaimFragment): List<ClaimPillType> {
-      logcat { "Mariia:claim type: ${claim.claimType} claim.status ${claim.status}  claim.outcome: ${claim.outcome}" }
       return when (claim.status) {
         ClaimStatus.CREATED -> listOf(Claim)
         ClaimStatus.IN_PROGRESS -> listOf(Claim)
