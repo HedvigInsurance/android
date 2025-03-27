@@ -129,7 +129,7 @@ internal class GetClaimDetailUiStateUseCase(
       termsConditionsUrl = termsConditionsUrl,
       savedFileUri = null,
       downloadError = null,
-      isLoadingPdf = false,
+      isLoadingPdf = null,
       appealInstructionsUrl = claim.appealInstructionsUrl,
       isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
       infoText = claim.infoText,

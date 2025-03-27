@@ -83,14 +83,14 @@ private class ClaimDetailPresenter(
         .fold(
           ifLeft = { errorMessage ->
             logcat(LogPriority.ERROR) { "Downloading terms and conditions failed:$errorMessage" }
-            content = content?.copy(downloadError = true, isLoadingPdf = false)
+            content = content?.copy(downloadError = true, isLoadingPdf = null)
             downloadingUrl = null
           },
           ifRight = { uri ->
             logcat(
               LogPriority.INFO,
             ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
-            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = false)
+            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
             downloadingUrl = null
           },
         )
@@ -123,7 +123,7 @@ private class ClaimDetailPresenter(
         ClaimDetailsEvent.Retry -> loadIteration++
         ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
         is ClaimDetailsEvent.DownloadPdf -> {
-          content = content?.copy(isLoadingPdf = true)
+          content = content?.copy(isLoadingPdf = event.url)
           downloadingUrl = event.url
         }
         ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
@@ -173,7 +173,7 @@ internal sealed interface ClaimDetailUiState {
     val termsConditionsUrl: String?,
     val savedFileUri: File?,
     val downloadError: Boolean?,
-    val isLoadingPdf: Boolean,
+    val isLoadingPdf: String?,
     val appealInstructionsUrl: String?,
     val isUploadingFilesEnabled: Boolean,
     val infoText: String?,
