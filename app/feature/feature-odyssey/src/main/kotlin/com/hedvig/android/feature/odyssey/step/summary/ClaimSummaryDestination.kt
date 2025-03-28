@@ -254,6 +254,7 @@ private fun PreviewClaimSummaryScreen() {
             },
             submittedContent = null,
             freeText = "eeeeeeeeeeFreeeeeeeeeeeeeeeeeeee",
+            claimSubtitle = "Subtitle"
           ),
           claimSummaryStatusUiState = ClaimSummaryStatusUiState(
             isLoading = false,
