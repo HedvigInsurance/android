@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
+  implementation(projects.coreResources)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.zoomable)
   implementation(projects.composeUi)

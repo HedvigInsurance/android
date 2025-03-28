@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -52,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
+import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -679,7 +681,7 @@ private fun ReadOnlyTrailingIcon(tint: Color) {
 @Composable
 private fun IsNotEmptyTrailingIcon(tint: Color, onClick: () -> Unit) {
   IconButton(onClick, Modifier.size(24.dp)) {
-    Icon(HedvigIcons.Close, null, tint = tint)
+    Icon(HedvigIcons.Close, stringResource(R.string.GENERAL_REMOVE), tint = tint)
   }
 }
 

@@ -37,7 +37,9 @@ class CrossSellAfterClaimClosedRepositoryImpl(
       .safeExecute(::ErrorMessage)
       .map { response ->
         either {
-          val userError = response.claimAcknowledgeClosedStatus?.userError
+          val userError = response
+            .claimAcknowledgeClosedStatus
+            ?.userError
           if (userError != null) {
             logcat(LogPriority.ERROR) { "ClaimAcknowledgeClosedStatusMutation failed: ${userError.message}" }
             raise(ErrorMessage(userError.message))
