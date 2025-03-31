@@ -108,7 +108,7 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
 
 private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
   MemberActionWithDetails.SickAbroadAction {
-  val partners = this?.partners?.map {
+  val partners = this?.deflectPartners?.map {
     DeflectPartner(
       id = it.id,
       imageUrl = it.imageUrl,
