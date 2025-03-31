@@ -79,7 +79,9 @@ internal sealed interface MovingFlowDestinations {
   }
 }
 
-fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
+fun NavGraphBuilder.movingFlowGraph(
+  navController: NavController,
+  goToChat: () -> Unit) {
   navdestination<SelectContractForMoving> {
     SelectContractDestination(
       viewModel = koinViewModel<SelectContractViewModel>(),
@@ -94,6 +96,7 @@ fun NavGraphBuilder.movingFlowGraph(navController: NavController) {
           }
         }
       },
+      goToChat = goToChat
     )
   }
 
