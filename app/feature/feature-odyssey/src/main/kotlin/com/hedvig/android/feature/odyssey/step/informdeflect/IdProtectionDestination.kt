@@ -113,7 +113,7 @@ private fun DeflectIdProtectionScreen(
                   modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
-                    .height(40.dp),
+                    .height((partner.preferredImageHeight ?: 40).dp),
                 )
                 PartnerTitleAndDescription(partner.title, partner.description)
                 when (val buttonsState = partner.buttonsState) {
@@ -291,6 +291,7 @@ private fun PreviewDeflectIdProtectionScreen() {
               imageUrl = "imageUrl",
               phoneNumber = "004600460046",
               url = "url".takeIf { index == 0 },
+              preferredImageHeight = null,
             ),
           )
         },

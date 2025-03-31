@@ -234,6 +234,7 @@ fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
   imageUrl
   url
   phoneNumber
+  preferredImageHeight
 }
 
 fragment FlowClaimFileUploadFragment on FlowClaimFileUploadStep {

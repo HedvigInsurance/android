@@ -26,6 +26,7 @@ private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: (
     emergencyUrl = partners.firstNotNullOfOrNull { it.url },
     navigateUp = navigateUp,
     openUrl = openUrl,
+    preferredPartnerImageHeight = partners.firstNotNullOfOrNull { it.preferredImageHeight },
   )
 }
 
@@ -39,6 +40,7 @@ private fun DeflectEmergencyScreenPreview() {
         imageUrl = "test",
         phoneNumber = "1234",
         url = "test",
+        preferredImageHeight = null,
       ),
     ),
     navigateUp = {},

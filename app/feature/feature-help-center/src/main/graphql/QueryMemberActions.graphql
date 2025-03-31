@@ -22,6 +22,7 @@ query MemberActions {
           imageUrl
           phoneNumber
           url
+          preferredImageHeight
         }
       }
     }

@@ -122,7 +122,7 @@ private fun DeflectTowingScreen(
               modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
-                .height(40.dp),
+                .height((partner.preferredImageHeight ?: 40).dp),
             )
             Spacer(Modifier.height(16.dp))
             HedvigText(
@@ -258,12 +258,14 @@ private fun PreviewDeflectTowingScreen() {
             imageUrl = "test",
             phoneNumber = "1234",
             url = "test",
+            preferredImageHeight = null,
           ),
           DeflectPartner(
             id = "2",
             imageUrl = "test2",
             phoneNumber = "4321",
             url = "test2",
+            preferredImageHeight = null,
           ),
         ),
         onNavigateToNewConversation = {},

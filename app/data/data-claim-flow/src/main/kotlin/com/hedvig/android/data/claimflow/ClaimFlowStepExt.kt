@@ -246,6 +246,7 @@ private fun FlowClaimDeflectPartnerFragment.toLocalPartner(): DeflectPartner {
     imageUrl = imageUrl ?: "",
     phoneNumber = phoneNumber,
     url = url,
+    preferredImageHeight = preferredImageHeight,
   )
 }
 
