@@ -136,6 +136,9 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageGif
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageMedia
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Text
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
@@ -482,6 +485,27 @@ private fun ChatBubble(
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
+  val description = chatMessage?.let{
+    val sender = stringResource(
+      when (it.sender) {
+        Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
+        Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
+      },
+    )
+    val message = when (it) {
+      is Text -> it.text
+      is File -> stringResource(R.string.CHAT_SENT_A_FILE)
+      is Unknown -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
+      is ChatMessageFile -> stringResource(R.string.CHAT_SENT_A_FILE)
+      is ChatMessageGif -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
+      is CbmChatMessage.ChatMessageText -> it.text
+      is ChatMessageMedia -> stringResource(R.string.CHAT_SENT_A_FILE)
+      is ChatMessagePhoto -> stringResource(R.string.CHAT_SENT_A_PHOTO)
+      is ChatMessageText -> it.text
+    }
+  }
+
+
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
