@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
-import coil.compose.AsyncImage
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -44,7 +43,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
@@ -118,16 +116,7 @@ private fun DeflectGlassDamageScreen(
             contentColor = HedvigTheme.colorScheme.fillPrimary,
           ) {
             Column(Modifier.padding(16.dp)) {
-              AsyncImage(
-                model = partner.imageUrl,
-                contentDescription = null,
-                imageLoader = imageLoader,
-                placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
-                modifier = Modifier
-                  .padding(16.dp)
-                  .fillMaxWidth()
-                  .height((partner.preferredImageHeight ?: 40).dp),
-              )
+              PartnerImage(partner, imageLoader, Modifier.padding(16.dp))
               Spacer(Modifier.height(16.dp))
               HedvigText(
                 text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL),

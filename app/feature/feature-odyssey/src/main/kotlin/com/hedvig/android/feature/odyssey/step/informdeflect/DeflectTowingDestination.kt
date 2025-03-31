@@ -114,16 +114,7 @@ private fun DeflectTowingScreen(
             .padding(horizontal = 16.dp),
         ) {
           Column(Modifier.padding(16.dp)) {
-            AsyncImage(
-              model = partner.imageUrl,
-              contentDescription = null,
-              imageLoader = imageLoader,
-              placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
-              modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .height((partner.preferredImageHeight ?: 40).dp),
-            )
+            PartnerImage(partner, imageLoader, Modifier.padding(16.dp))
             Spacer(Modifier.height(16.dp))
             HedvigText(
               text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
