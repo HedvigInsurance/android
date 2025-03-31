@@ -274,7 +274,11 @@ private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
     }
   }
   IconButton({ showExitDialog = true }) {
-    Icon(HedvigIcons.Close, null, Modifier.size(24.dp))
+    Icon(
+      HedvigIcons.Close,
+      stringResource(R.string.general_close_button),
+      Modifier.size(24.dp),
+    )
   }
 }
 
