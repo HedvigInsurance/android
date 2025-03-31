@@ -1,6 +1,8 @@
 package com.hedvig.android.design.system.hedvig.datepicker
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -12,6 +14,16 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
+import kotlinx.datetime.Instant
+
+fun formatInstantForTalkBack(context: Context, instant: Instant): String {
+  val timeInMillis = instant.toEpochMilliseconds()
+  return DateUtils.formatDateTime(
+    context,
+    timeInMillis,
+    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_YEAR,
+  )
+}
 
 /**
  * Example output: "16 Jan 2023"

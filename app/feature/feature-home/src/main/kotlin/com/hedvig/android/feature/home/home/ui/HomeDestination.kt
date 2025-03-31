@@ -54,8 +54,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.withStateAtLeast
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
@@ -65,6 +68,7 @@ import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -591,9 +595,12 @@ private fun CrossSellBottomSheet(
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
-  LaunchedEffect(forceShowCrossSells) {
-    if (forceShowCrossSells?.isNotEmpty() == true) {
-      state.show(forceShowCrossSells)
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(forceShowCrossSells, lifecycle) {
+    lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+      if (forceShowCrossSells?.isNotEmpty() == true) {
+        state.show(forceShowCrossSells)
+      }
     }
   }
   LaunchedEffect(state) {
@@ -628,10 +635,14 @@ private fun ColumnScope.CrossSellsSheetContent(
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   dismissSheet: () -> Unit,
 ) {
+  HedvigText(stringResource(R.string.CROSS_SELL_TITLE))
+  HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), color = HedvigTheme.colorScheme.textSecondary)
+  Spacer(Modifier.height(24.dp))
   CrossSellsSection(
     showNotificationBadge = false,
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
+    withSubHeader = false,
   )
   if (travelAddonBannerInfo != null) {
     Spacer(Modifier.height(24.dp))
@@ -644,7 +655,14 @@ private fun ColumnScope.CrossSellsSheetContent(
       modifier = Modifier.fillMaxWidth(),
     )
   }
-  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.height(24.dp))
+  HedvigButton(
+    text = stringResource(R.string.general_close_button),
+    onClick = dismissSheet,
+    enabled = true,
+    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+    modifier = Modifier.fillMaxSize(),
+  )
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 

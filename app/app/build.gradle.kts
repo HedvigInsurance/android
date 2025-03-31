@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.11.1"
+    versionName = "12.11.4"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -232,6 +232,10 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
+}
+
+datadog {
+  site = "EU1"
 }
 
 easylauncher {

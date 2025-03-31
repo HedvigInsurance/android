@@ -185,6 +185,7 @@ private fun MarketingScreen(
         }
       }
       if (uiState is MarketingUiState.Success) {
+        val description = stringResource(R.string.market_language_screen_choose_language_label)
         IconButton(
           onClick = { showPreferencesSheet = true },
           modifier = Modifier
@@ -197,7 +198,7 @@ private fun MarketingScreen(
             Market.NO -> HedvigIcons.FlagNorway
             Market.DK -> HedvigIcons.FlagDenmark
           }
-          Image(flagImageVector, null)
+          Image(flagImageVector, description)
         }
       }
       if (uiState is MarketingUiState.Loading) {

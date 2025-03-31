@@ -8,7 +8,7 @@
    Generate your own at GitHub > Settings > Developer Settings > PAT > Tokens (Classic) > Generate New Token > Give the read:packages permission    
    Append (or create) your global gradle.properties in:
     - `~/.gradle/gradle.properties`
-   Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
+   Look inside [ci-prebuild](scripts/ci-prebuild.sh) for inspiration.
 3. Download the schema (required to consume any changes in schema as well):
     `./gradlew downloadOctopusApolloSchemaFromIntrospection`
 4. Download lokalise translations (required to consume latest translations as well):
