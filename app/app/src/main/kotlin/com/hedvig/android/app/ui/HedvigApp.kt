@@ -152,10 +152,8 @@ internal fun HedvigApp(
  */
 @Composable
 private fun HedvigTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme(darkTheme = darkTheme) {
-    com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
-      content()
-    }
+  com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
+    content()
   }
 }
 

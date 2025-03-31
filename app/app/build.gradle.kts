@@ -161,7 +161,6 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)

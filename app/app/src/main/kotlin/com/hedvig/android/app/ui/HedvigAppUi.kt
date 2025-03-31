@@ -28,7 +28,6 @@ import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.material3.MaterialSurface
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
@@ -51,36 +50,34 @@ internal fun HedvigAppUi(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  MaterialSurface {
-    Surface(
-      color = HedvigTheme.colorScheme.backgroundPrimary,
-      contentColor = HedvigTheme.colorScheme.textPrimary,
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    contentColor = HedvigTheme.colorScheme.textPrimary,
+  ) {
+    NavigationSuite(
+      navigationSuiteType = hedvigAppState.navigationSuiteType,
+      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+      currentDestination = hedvigAppState.currentDestination,
+      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
     ) {
-      NavigationSuite(
-        navigationSuiteType = hedvigAppState.navigationSuiteType,
-        topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-        topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
-        currentDestination = hedvigAppState.currentDestination,
-        onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
-      ) {
-        HedvigNavHost(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          externalNavigator = externalNavigator,
-          finishApp = finishApp,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = openUrl,
-          imageLoader = imageLoader,
-          simpleVideoCache = simpleVideoCache,
-          market = market,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-          modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .animatedNavigationBarInsetsConsumption(hedvigAppState),
-        )
-      }
+      HedvigNavHost(
+        hedvigAppState = hedvigAppState,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        externalNavigator = externalNavigator,
+        finishApp = finishApp,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openUrl = openUrl,
+        imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
+        market = market,
+        languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
+        modifier = Modifier
+          .fillMaxHeight()
+          .weight(1f)
+          .animatedNavigationBarInsetsConsumption(hedvigAppState),
+      )
     }
   }
 }
