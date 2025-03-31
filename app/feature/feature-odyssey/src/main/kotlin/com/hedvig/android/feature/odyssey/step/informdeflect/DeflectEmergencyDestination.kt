@@ -23,12 +23,13 @@ internal fun DeflectEmergencyDestination(
 
 @Composable
 private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: () -> Unit, openUrl: (String) -> Unit) {
+  val partner = partners.firstOrNull()
   EmergencyScreen(
-    emergencyNumber = partners.firstNotNullOfOrNull { it.phoneNumber },
-    emergencyUrl = partners.firstNotNullOfOrNull { it.url },
+    emergencyNumber = partner?.phoneNumber,
+    emergencyUrl = partner?.url,
     navigateUp = navigateUp,
     openUrl = openUrl,
-    preferredPartnerImageHeight = partners.firstNotNullOfOrNull { it.preferredImageHeight },
+    preferredPartnerImageHeight = partner?.preferredImageHeight,
   )
 }
 
