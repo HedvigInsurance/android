@@ -15,7 +15,6 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.Serializable
 import octopus.MemberActionsQuery
 
 internal interface GetMemberActionsUseCase {
@@ -85,7 +84,6 @@ internal sealed interface MemberActionWithDetails {
   ) : MemberActionWithDetails
 }
 
-@Serializable
 internal data class DeflectPartner(
   val id: String,
   val imageUrl: String?,
