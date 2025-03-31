@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
-
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectIdProtectionStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
@@ -102,6 +101,7 @@ sealed interface ClaimFlowStep {
     val signedAudioUrl: String?,
     val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
     val freeText: String?,
+    val selectedContractExposure: String?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(

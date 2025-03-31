@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.odyssey.step.summary
 
 import android.content.res.Resources
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.uidata.UiFile
@@ -129,6 +128,7 @@ internal data class ClaimSummaryInfoUiState(
   // e.g "Broken Phone"
   val claimTypeTitle: String?,
   val claimSubtitle: String?,
+  val selectedContractExposure: String?,
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
   val itemType: ItemType?,
@@ -145,14 +145,14 @@ internal data class ClaimSummaryInfoUiState(
       if (claimTypeTitle != null) {
         add(resources.getString(R.string.CLAIMS_CASE) to claimTypeTitle)
       }
-      //Subtitle
+      // Subtitle
       if (claimSubtitle != null) {
         add(resources.getString(R.string.CLAIMS_SUMMARY_WHAT_IS_ABOUT) to claimSubtitle)
       }
-//      //TODO: details, when we'll get SelectContractStep with summary
-//      if (selectedContractExposure != null) {
-//        add(resources.getString(R.string.CLAIMS_SUMMARY_DETAIL_INFO) to selectedContractExposure)
-//      }
+
+      if (selectedContractExposure != null) {
+        add(resources.getString(R.string.CLAIMS_SUMMARY_DETAIL_INFO) to selectedContractExposure)
+      }
       // Skadetyp
       val incidentTypeText = if (itemProblems.isNotEmpty()) {
         itemProblems.joinToString { it.displayName }
@@ -269,7 +269,8 @@ internal data class ClaimSummaryInfoUiState(
         files = summary.files,
         submittedContent = summary.submittedContent,
         freeText = summary.freeText,
-        claimSubtitle = summary.subTitle
+        claimSubtitle = summary.subTitle,
+        selectedContractExposure = summary.selectedContractExposure,
       )
     }
   }

@@ -205,6 +205,7 @@ sealed interface ClaimFlowDestination {
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
     val freeText: String?,
+    val selectedContractExposure: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(

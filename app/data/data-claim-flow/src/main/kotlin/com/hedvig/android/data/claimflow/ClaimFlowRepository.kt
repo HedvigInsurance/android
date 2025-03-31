@@ -478,6 +478,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         fileUploads = fileUploadStep?.uploads,
         signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
         freeText = audioRecordingStep?.freeText,
+        selectedContractExposure = null, // TODO: map selectContractStep here when we'll have the schema
       )
     }
 

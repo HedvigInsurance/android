@@ -98,6 +98,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
           SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
         freeText = freeText,
+        selectedContractExposure = selectedContractExposure,
       )
     }
 
