@@ -54,8 +54,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.withStateAtLeast
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
@@ -592,9 +595,12 @@ private fun CrossSellBottomSheet(
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
-  LaunchedEffect(forceShowCrossSells) {
-    if (forceShowCrossSells?.isNotEmpty() == true) {
-      state.show(forceShowCrossSells)
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(forceShowCrossSells, lifecycle) {
+    lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+      if (forceShowCrossSells?.isNotEmpty() == true) {
+        state.show(forceShowCrossSells)
+      }
     }
   }
   LaunchedEffect(state) {
