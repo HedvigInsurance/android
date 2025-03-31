@@ -436,7 +436,8 @@ private fun Either<MessageSendError, *>.onError(
 }
 
 private fun isAccessibilityEnabled(context: Context): Boolean {
-  val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+//  val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+//  val enabled = accessibilityManager.getEnabledAccessibilityServiceList()
   val enabledServices = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
   val accessibilityEnabled = Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
   return accessibilityEnabled && enabledServices != null
