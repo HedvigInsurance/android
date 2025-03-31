@@ -44,6 +44,7 @@ internal fun SelectContractDestination(
   viewModel: SelectContractViewModel,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
+  goToChat: () -> Unit,
   onNavigateToNextStep: (moveIntentId: String, popUpDestination: Boolean) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,6 +63,7 @@ internal fun SelectContractDestination(
     reload = { viewModel.emit(SelectContractEvent.RetryLoadData) },
     selectInsurance = { address -> viewModel.emit(SelectContractEvent.SelectContract(address)) },
     submitChoice = { viewModel.emit(SelectContractEvent.SubmitContract) },
+    goToChat = goToChat
   )
 }
 
@@ -70,6 +72,7 @@ private fun SelectContractScreen(
   uiState: SelectContractState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
+  goToChat: () -> Unit,
   closeFlow: () -> Unit,
   submitChoice: () -> Unit,
   selectInsurance: (address: MoveIntentFragment.CurrentHomeAddress) -> Unit,
@@ -80,11 +83,17 @@ private fun SelectContractScreen(
         navigateUp = navigateUp,
       ) {
         HedvigErrorSection(
-          onButtonClick = reload,
-          subTitle = if (uiState is SelectContractState.Error.UserPresentable) {
-            uiState.message
-          } else {
-            stringResource(R.string.GENERAL_ERROR_BODY)
+          buttonText = when (uiState) {
+            is SelectContractState.Error.UserPresentable -> stringResource(R.string.open_chat)
+            else -> stringResource(R. string. GENERAL_RETRY)
+          },
+          onButtonClick = when (uiState) {
+            is SelectContractState.Error.UserPresentable -> goToChat
+            else -> reload
+          },
+          subTitle = when (uiState) {
+            is SelectContractState.Error.UserPresentable -> uiState.message
+           else -> stringResource(R.string.GENERAL_ERROR_BODY)
           },
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
@@ -184,6 +193,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
