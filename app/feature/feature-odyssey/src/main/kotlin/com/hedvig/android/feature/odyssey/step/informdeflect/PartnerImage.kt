@@ -12,18 +12,14 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
 
 @Composable
-internal fun PartnerImage(
-    partner: DeflectPartner,
-    imageLoader: ImageLoader,
-    modifier: Modifier = Modifier,
-) {
-    AsyncImage(
-        model = partner.imageUrl,
-        contentDescription = null,
-        imageLoader = imageLoader,
-        placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
-        modifier = modifier
-            .fillMaxWidth()
-            .height((partner.preferredImageHeight ?: 40).dp),
-    )
+internal fun PartnerImage(partner: DeflectPartner, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+  AsyncImage(
+    model = partner.imageUrl,
+    contentDescription = null,
+    imageLoader = imageLoader,
+    placeholder = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary),
+    modifier = modifier
+      .fillMaxWidth()
+      .height((partner.preferredImageHeight ?: 40).dp),
+  )
 }
