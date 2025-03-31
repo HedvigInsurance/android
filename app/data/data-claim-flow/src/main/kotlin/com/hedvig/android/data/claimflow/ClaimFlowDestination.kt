@@ -389,8 +389,6 @@ data class IdProtectionDeflectPartner(
   val partner: DeflectPartner,
   private val urlButtonTitle: String?,
 ) {
-  val preferredImageHeight: Int? = partner.preferredImageHeight
-
   val buttonsState: ButtonsState = when {
     urlButtonTitle != null && partner.url != null && partner.phoneNumber != null -> ButtonsState.Both(
       phoneNumber = partner.phoneNumber,
@@ -400,7 +398,7 @@ data class IdProtectionDeflectPartner(
 
     urlButtonTitle != null && partner.url != null -> ButtonsState.Url(
       url = partner.url,
-      urlButtonTitle = urlButtonTitle
+      urlButtonTitle = urlButtonTitle,
     )
     partner.phoneNumber != null -> ButtonsState.PhoneNumber(partner.phoneNumber)
     else -> ButtonsState.None
