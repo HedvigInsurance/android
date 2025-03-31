@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.ui.emergency.EmergencyScreen
 
 @Composable
@@ -32,18 +34,22 @@ private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: (
 
 @HedvigPreview
 @Composable
-private fun DeflectEmergencyScreenPreview() {
-  DeflectEmergencyScreen(
-    partners = listOf(
-      DeflectPartner(
-        id = "1",
-        imageUrl = "test",
-        phoneNumber = "1234",
-        url = "test",
-        preferredImageHeight = null,
-      ),
-    ),
-    navigateUp = {},
-    openUrl = {},
-  )
+private fun PreviewDeflectEmergencyScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DeflectEmergencyScreen(
+        partners = listOf(
+          DeflectPartner(
+            id = "1",
+            imageUrl = "test",
+            phoneNumber = "1234",
+            url = "test",
+            preferredImageHeight = null,
+          ),
+        ),
+        navigateUp = {},
+        openUrl = {},
+      )
+    }
+  }
 }
