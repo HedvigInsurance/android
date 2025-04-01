@@ -80,7 +80,7 @@ val chatModule = module {
       chatRepository = get<GetCbmChatRepositoryProvider>(),
       featureManager = get<FeatureManager>(),
       clock = get<Clock>(),
-      context = get<Context>()
+      context = get<Context>(),
     )
   }
 }

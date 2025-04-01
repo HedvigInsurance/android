@@ -2,6 +2,7 @@ package com.hedvig.android.feature.chat
 
 import android.content.Context
 import android.net.Uri
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,10 +15,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
-import android.view.accessibility.AccessibilityManager
-import android.provider.Settings
 import androidx.compose.ui.platform.AndroidUiDispatcher
-import androidx.compose.ui.platform.LocalContext
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -93,15 +91,13 @@ internal class CbmChatViewModel(
         chatRepository = chatRepository,
         clock = clock,
         scope = coroutineScope,
-
       ),
       chatDao = chatDao,
       chatRepository = chatRepository,
       featureManager = featureManager,
-      context
+      context,
     ),
     coroutineScope = coroutineScope,
-
   )
 
 @OptIn(ExperimentalPagingApi::class)
@@ -161,7 +157,7 @@ internal class CbmChatPresenter(
     var hideBanner by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
     val a11yOn = isAccessibilityEnabled(context)
-    val enableInlineMediaPlayer by remember(featureManager ) {
+    val enableInlineMediaPlayer by remember(featureManager) {
       if (!a11yOn) {
         featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
       } else {
@@ -442,7 +438,11 @@ private fun Either<MessageSendError, *>.onError(
 private fun isAccessibilityEnabled(context: Context): Boolean {
 //  val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
 //  val enabled = accessibilityManager.getEnabledAccessibilityServiceList()
-  val enabledServices = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-  val accessibilityEnabled = Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
+  val enabledServices = Settings.Secure.getString(
+    context.contentResolver,
+    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+  )
+  val accessibilityEnabled =
+    Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
   return accessibilityEnabled && enabledServices != null
 }
