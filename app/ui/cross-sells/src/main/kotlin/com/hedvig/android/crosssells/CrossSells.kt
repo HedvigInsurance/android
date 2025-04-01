@@ -49,9 +49,12 @@ fun CrossSellsSection(
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   modifier: Modifier = Modifier,
+  withSubHeader: Boolean = true,
 ) {
   Column(modifier) {
-    CrossSellsSubHeaderWithDivider(showNotificationBadge)
+    if (withSubHeader) {
+      CrossSellsSubHeaderWithDivider(showNotificationBadge)
+    }
     for ((index, crossSell) in crossSells.withIndex()) {
       CrossSellItem(crossSell, onCrossSellClick)
       if (index != crossSells.lastIndex) {
