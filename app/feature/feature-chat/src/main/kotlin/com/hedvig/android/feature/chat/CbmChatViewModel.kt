@@ -79,6 +79,7 @@ internal class CbmChatViewModel(
   chatRepository: Provider<CbmChatRepository>,
   featureManager: FeatureManager,
   clock: Clock,
+  context: Context,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -92,12 +93,15 @@ internal class CbmChatViewModel(
         chatRepository = chatRepository,
         clock = clock,
         scope = coroutineScope,
+
       ),
       chatDao = chatDao,
       chatRepository = chatRepository,
       featureManager = featureManager,
+      context
     ),
     coroutineScope = coroutineScope,
+
   )
 
 @OptIn(ExperimentalPagingApi::class)
@@ -137,6 +141,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val chatRepository: Provider<CbmChatRepository>,
   private val featureManager: FeatureManager,
+  private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -155,9 +160,8 @@ internal class CbmChatPresenter(
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
     var hideBanner by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     val a11yOn = isAccessibilityEnabled(context)
-    val enableInlineMediaPlayer by remember(featureManager,a11yOn ) {
+    val enableInlineMediaPlayer by remember(featureManager ) {
       if (!a11yOn) {
         featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
       } else {
