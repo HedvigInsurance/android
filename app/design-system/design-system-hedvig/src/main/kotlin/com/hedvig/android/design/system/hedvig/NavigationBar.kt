@@ -195,7 +195,7 @@ private fun NavigationContainer(modifier: Modifier = Modifier, content: @Composa
   CompositionLocalProvider(LocalDensity provides fontCappedDensity) {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = modifier.semantics{
+      modifier = modifier.semantics {
         this.traversalIndex = 0f
       },
     ) {

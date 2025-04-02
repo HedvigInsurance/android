@@ -89,8 +89,11 @@ private fun AboutAppScreen(
         HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
       },
       endSlot = {
-        HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,)
+        HedvigText(
+          memberId ?: "",
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
       },
     )
     HorizontalItemsWithMaximumSpaceTaken(
