@@ -14,6 +14,7 @@ import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.DontShow
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Error
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Loading
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,6 +39,7 @@ fun CrossSellSheet(
 
         is Content -> {
           lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+            logcat { "CrossSellSheet showing after a succesful flow" }
             sheetState.show(uiState.crossSellSheetData)
           }
         }

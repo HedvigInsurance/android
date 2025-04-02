@@ -1,5 +1,6 @@
 package com.hedvig.android.data.cross.sell.after.flow
 
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -21,10 +22,12 @@ class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   override fun shouldShowCrossSellSheet(): Flow<Boolean> = shouldShowCrossSellSheet
 
   override fun completedCrossSellTriggeringSelfServiceSuccessfully() {
+    logcat { "CrossSellAfterFlowRepository: completedCrossSellTriggeringSelfServiceSuccessfully" }
     shouldShowCrossSellSheet.value = true
   }
 
   override fun showedCrossSellSheet() {
+    logcat { "CrossSellAfterFlowRepository: showedCrossSellSheet" }
     shouldShowCrossSellSheet.value = false
   }
 }
