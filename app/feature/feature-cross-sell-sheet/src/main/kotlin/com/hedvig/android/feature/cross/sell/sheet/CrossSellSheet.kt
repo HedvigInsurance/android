@@ -4,7 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.withStateAtLeast
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content
@@ -24,7 +27,8 @@ fun CrossSellSheet(
   if (isInScreenEligibleForCrossSells) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sheetState = rememberHedvigBottomSheetState<CrossSellSheetData>()
-    LaunchedEffect(uiState) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(uiState, lifecycle) {
       @Suppress("NAME_SHADOWING")
       when (val uiState = uiState) {
         DontShow,
@@ -32,7 +36,11 @@ fun CrossSellSheet(
         Loading,
         -> sheetState.dismiss()
 
-        is Content -> sheetState.show(uiState.crossSellSheetData)
+        is Content -> {
+          lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+            sheetState.show(uiState.crossSellSheetData)
+          }
+        }
       }
     }
     LaunchedEffect(sheetState, viewModel) {
