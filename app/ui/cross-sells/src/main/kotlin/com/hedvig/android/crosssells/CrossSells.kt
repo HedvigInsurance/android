@@ -5,13 +5,18 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -27,11 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.dropUnlessResumed
+import arrow.core.nonEmptyListOf
+import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
+import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -42,6 +56,111 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
+
+data class CrossSellSheetData(
+  val crossSells: List<CrossSell>,
+  val travelAddonBannerInfo: TravelAddonBannerInfo?,
+)
+
+@Composable
+fun CrossSellSheet(
+  state: HedvigBottomSheetState<CrossSellSheetData>,
+  onCrossSellClick: (String) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = state,
+    content = { crossSellSheetData ->
+      CrossSellsSheetContent(
+        crossSells = crossSellSheetData.crossSells,
+        travelAddonBannerInfo = crossSellSheetData.travelAddonBannerInfo,
+        onCrossSellClick = onCrossSellClick,
+        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        dismissSheet = { state.dismiss() },
+      )
+    },
+  )
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.CrossSellsSheetContent(
+  crossSells: List<CrossSell>,
+  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  onCrossSellClick: (String) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  dismissSheet: () -> Unit,
+) {
+  HedvigText(stringResource(R.string.CROSS_SELL_TITLE))
+  HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), color = HedvigTheme.colorScheme.textSecondary)
+  Spacer(Modifier.height(24.dp))
+  CrossSellsSection(
+    showNotificationBadge = false,
+    crossSells = crossSells,
+    onCrossSellClick = onCrossSellClick,
+    withSubHeader = false,
+  )
+  if (travelAddonBannerInfo != null) {
+    Spacer(Modifier.height(24.dp))
+    TravelAddonBanner(
+      travelAddonBannerInfo = travelAddonBannerInfo,
+      launchAddonPurchaseFlow = { eligibleInsurancesIds ->
+        dismissSheet()
+        onNavigateToAddonPurchaseFlow(eligibleInsurancesIds)
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+  Spacer(Modifier.height(24.dp))
+  HedvigButton(
+    text = stringResource(R.string.general_close_button),
+    onClick = dismissSheet,
+    enabled = true,
+    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+    modifier = Modifier.fillMaxSize(),
+  )
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+}
+
+@Composable
+private fun TravelAddonBanner(
+  travelAddonBannerInfo: TravelAddonBannerInfo,
+  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  FeatureAddonBanner(
+    modifier = modifier,
+    title = travelAddonBannerInfo.title,
+    description = travelAddonBannerInfo.description,
+    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    labels = travelAddonBannerInfo.labels,
+    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds) },
+  )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column {
+        CrossSellsSheetContent(
+          crossSells = listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            title = "Title",
+            description = "description",
+            labels = listOf("Label"),
+            eligibleInsurancesIds = nonEmptyListOf("id"),
+            bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
+          ),
+          onCrossSellClick = {},
+          onNavigateToAddonPurchaseFlow = {},
+          dismissSheet = {},
+        )
+      }
+    }
+  }
+}
 
 @Composable
 fun CrossSellsSection(
