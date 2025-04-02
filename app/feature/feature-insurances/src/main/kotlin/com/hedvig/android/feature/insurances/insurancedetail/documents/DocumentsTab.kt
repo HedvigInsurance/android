@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -31,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.insurances.data.Addon
+import hedvig.resources.R
 
 @Composable
 internal fun DocumentsTab(
@@ -40,11 +44,15 @@ internal fun DocumentsTab(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
+    val docDescription = stringResource(R.string.TALKBACK_DOCUMENT)
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url) },
         title = document.displayName,
         subtitle = null,
+        modifier = Modifier.semantics (mergeDescendants = true){
+          contentDescription = docDescription
+        }
       )
       if (index != documents.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -78,10 +86,11 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?,
+                         modifier:Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
-    modifier = Modifier
+    modifier = modifier
       .padding(horizontal = 16.dp)
       .heightIn(min = 56.dp),
   ) {
