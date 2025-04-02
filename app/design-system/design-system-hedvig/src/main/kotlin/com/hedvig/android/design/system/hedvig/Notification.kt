@@ -21,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -65,6 +68,7 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextS
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
 import com.hedvig.android.design.system.internals.InternalSnackBar
 import com.hedvig.android.design.system.internals.SnackBarColors
+import hedvig.resources.R
 
 @Composable
 fun HedvigNotificationCard(
@@ -97,8 +101,11 @@ fun HedvigNotificationCard(
   buttonLoading: Boolean = false,
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
+  val description = stringResource(R.string.TALKBACK_NOTIFICATION_CARD)
   Surface(
-    modifier = modifier,
+    modifier = modifier.semantics(mergeDescendants = true) {
+      contentDescription = description
+    },
     shape = NotificationDefaults.shape,
     color = priority.colors.containerColor,
     border = priority.colors.borderColor,

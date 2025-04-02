@@ -63,7 +63,7 @@ internal fun SelectContractDestination(
     reload = { viewModel.emit(SelectContractEvent.RetryLoadData) },
     selectInsurance = { address -> viewModel.emit(SelectContractEvent.SelectContract(address)) },
     submitChoice = { viewModel.emit(SelectContractEvent.SubmitContract) },
-    goToChat = goToChat
+    goToChat = goToChat,
   )
 }
 
@@ -85,7 +85,7 @@ private fun SelectContractScreen(
         HedvigErrorSection(
           buttonText = when (uiState) {
             is SelectContractState.Error.UserPresentable -> stringResource(R.string.open_chat)
-            else -> stringResource(R. string. GENERAL_RETRY)
+            else -> stringResource(R.string.GENERAL_RETRY)
           },
           onButtonClick = when (uiState) {
             is SelectContractState.Error.UserPresentable -> goToChat
@@ -93,7 +93,7 @@ private fun SelectContractScreen(
           },
           subTitle = when (uiState) {
             is SelectContractState.Error.UserPresentable -> uiState.message
-           else -> stringResource(R.string.GENERAL_ERROR_BODY)
+            else -> stringResource(R.string.GENERAL_ERROR_BODY)
           },
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
@@ -193,7 +193,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
