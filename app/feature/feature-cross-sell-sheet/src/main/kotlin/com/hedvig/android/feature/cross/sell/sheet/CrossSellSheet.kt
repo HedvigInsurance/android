@@ -35,7 +35,7 @@ fun CrossSellSheet(
         DontShow,
         is Error,
         Loading,
-        -> sheetState.dismiss()
+        -> {}
 
         is Content -> {
           lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
