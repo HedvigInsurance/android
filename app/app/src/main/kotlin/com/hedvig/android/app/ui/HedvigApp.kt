@@ -117,7 +117,7 @@ internal fun HedvigApp(
           navHostController.navigate(
             AddonPurchaseGraphDestination(
               insuranceIds,
-              TravelAddonBannerSource.TRAVEL_CERTIFICATES, // TODO find a way to mark this better
+              TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
             ),
           )
         },

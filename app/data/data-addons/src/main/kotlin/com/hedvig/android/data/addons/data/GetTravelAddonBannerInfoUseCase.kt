@@ -35,7 +35,9 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
       TravelAddonBannerSource.DEEPLINK,
       -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
 
-      TravelAddonBannerSource.INSURANCES_TAB -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
+      TravelAddonBannerSource.INSURANCES_TAB,
+      TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
+      -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
     }
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
@@ -95,5 +97,6 @@ data class TravelAddonBannerInfo(
 enum class TravelAddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
+  AFTER_FINISHING_SUCCESSFUL_FLOW,
   DEEPLINK,
 }

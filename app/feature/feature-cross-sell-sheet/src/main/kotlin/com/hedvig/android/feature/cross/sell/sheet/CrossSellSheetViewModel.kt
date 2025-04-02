@@ -135,7 +135,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
             }
           }
         },
-      getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.INSURANCES_TAB),
+      getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW),
     ) { crossSells, travelAddonBannerInfo ->
       either {
         CrossSellSheetData(crossSells.bind(), travelAddonBannerInfo.bind())
