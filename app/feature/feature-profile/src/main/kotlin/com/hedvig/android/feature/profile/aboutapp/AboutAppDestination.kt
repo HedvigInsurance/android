@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import hedvig.resources.R
@@ -80,40 +80,43 @@ private fun AboutAppScreen(
       }
     }
     Spacer(Modifier.height(16.dp))
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
+    HorizontalItemsWithMaximumSpaceTaken(
+      spaceBetween = 8.dp,
       modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
-    ) {
-      HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-      SelectionContainer {
-        HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
-      }
-    }
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
+      startSlot = {
+        HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+      },
+      endSlot = {
+        HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,)
+      },
+    )
+    HorizontalItemsWithMaximumSpaceTaken(
       modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
-    ) {
-      HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-      HedvigText(
-        text = buildString {
-          append(appVersionName)
-          if (!isProduction) {
-            append(" (")
-            append(appVersionCode)
-            append(")")
-          }
-        },
-        color = HedvigTheme.colorScheme.textSecondary,
-        textAlign = TextAlign.End,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
+      startSlot = {
+        HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
+      },
+      endSlot = {
+        HedvigText(
+          text = buildString {
+            append(appVersionName)
+            if (!isProduction) {
+              append(" (")
+              append(appVersionCode)
+              append(")")
+            }
+          },
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      },
+      spaceBetween = 8.dp,
+    )
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
