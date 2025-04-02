@@ -189,6 +189,7 @@ sealed interface ClaimFlowDestination {
   @Serializable
   data class Summary(
     val claimTypeTitle: String,
+    val subTitle: String?,
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
@@ -204,6 +205,7 @@ sealed interface ClaimFlowDestination {
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
     val freeText: String?,
+    val selectedContractExposure: String?,
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(

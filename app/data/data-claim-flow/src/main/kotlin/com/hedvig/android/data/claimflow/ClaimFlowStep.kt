@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
-import octopus.fragment.ClaimFlowStepFragment.FlowClaimDeflectIDProtectionStepCurrentStep.Partner
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectIdProtectionStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
@@ -86,6 +85,7 @@ sealed interface ClaimFlowStep {
   data class ClaimSummaryStep(
     override val flowId: FlowId,
     val claimTypeTitle: String,
+    val claimSubtitle: String?,
     val location: String?,
     val options: List<FlowClaimLocationStepFragment.Option>,
     val dateOfOccurrence: LocalDate?,
@@ -101,6 +101,7 @@ sealed interface ClaimFlowStep {
     val signedAudioUrl: String?,
     val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
     val freeText: String?,
+    val selectedContractExposure: String?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(

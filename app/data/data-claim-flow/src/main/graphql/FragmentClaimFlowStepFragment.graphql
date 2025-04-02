@@ -134,6 +134,7 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
 fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
   id
   title
+  subtitle
   locationStep {
     ...FlowClaimLocationStepFragment
   }
@@ -148,6 +149,9 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
   }
   audioRecordingStep {
     ...FlowClaimAudioRecordingStepFragment
+  }
+  selectContractStep {
+    ...FlowClaimContractSelectStepFragment
   }
 }
 
