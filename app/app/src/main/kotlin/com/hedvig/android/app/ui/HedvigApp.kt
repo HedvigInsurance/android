@@ -32,8 +32,11 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
+import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
 import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
@@ -106,6 +109,18 @@ internal fun HedvigApp(
       val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
+      )
+      CrossSellSheet(
+        isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
+        onCrossSellClick = deepLinkFirstUriHandler::openUri,
+        onNavigateToAddonPurchaseFlow = { insuranceIds ->
+          navHostController.navigate(
+            AddonPurchaseGraphDestination(
+              insuranceIds,
+              TravelAddonBannerSource.TRAVEL_CERTIFICATES, // TODO find a way to mark this better
+            ),
+          )
+        },
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(

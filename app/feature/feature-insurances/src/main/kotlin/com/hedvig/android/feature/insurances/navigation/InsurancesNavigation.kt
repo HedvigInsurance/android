@@ -29,3 +29,7 @@ val insurancesBottomNavPermittedDestinations: List<KClass<out Destination>> = li
   InsurancesDestinations.InsuranceContractDetail::class,
   InsurancesDestinations.TerminatedInsurances::class,
 )
+
+val insurancesCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
+  InsurancesDestinations.InsuranceContractDetail::class,
+)

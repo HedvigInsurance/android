@@ -11,6 +11,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowContextStorage
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowRepositoryImpl
 import com.hedvig.android.data.claimflow.OdysseyService
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -26,6 +27,7 @@ val claimFlowDataModule = module {
       get<ClaimFlowContextStorage>(),
       get<NetworkCacheManager>(),
       get<SelfServiceCompletedEventManager>(),
+      get<CrossSellAfterFlowRepository>(),
     )
   }
   single<ClaimFlowContextStorage> { ClaimFlowContextStorage(get<DataStore<Preferences>>()) }
