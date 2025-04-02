@@ -20,6 +20,7 @@ dependencies {
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
   implementation(projects.dataContractAndroid)
+  implementation(projects.dataContractPublic)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)

@@ -65,8 +65,8 @@ import com.hedvig.android.crosssells.CrossSellSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.contract.android.CrossSell
-import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton

@@ -14,7 +14,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.featureflags.FeatureManager

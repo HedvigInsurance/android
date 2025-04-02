@@ -17,5 +17,6 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataAddons)
   implementation(projects.dataContractAndroid)
+  implementation(projects.dataContractPublic)
   implementation(projects.designSystemHedvig)
 }
