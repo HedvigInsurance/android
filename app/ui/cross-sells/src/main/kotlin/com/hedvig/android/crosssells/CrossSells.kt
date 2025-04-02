@@ -119,6 +119,7 @@ private fun ColumnScope.CrossSellsSheetContent(
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
     modifier = Modifier.fillMaxSize(),
   )
+  Spacer(Modifier.height(8.dp))
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
