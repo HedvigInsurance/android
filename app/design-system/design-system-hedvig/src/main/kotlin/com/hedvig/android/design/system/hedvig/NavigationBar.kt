@@ -40,6 +40,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -194,7 +195,9 @@ private fun NavigationContainer(modifier: Modifier = Modifier, content: @Composa
   CompositionLocalProvider(LocalDensity provides fontCappedDensity) {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = modifier,
+      modifier = modifier.semantics{
+        this.traversalIndex = 0f
+      },
     ) {
       content()
     }
