@@ -31,7 +31,10 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
 ) : GetTravelAddonBannerInfoUseCase {
   override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
     val mappedSource = when (source) {
-      TravelAddonBannerSource.TRAVEL_CERTIFICATES, TravelAddonBannerSource.DEEPLINK -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
+      TravelAddonBannerSource.TRAVEL_CERTIFICATES,
+      TravelAddonBannerSource.DEEPLINK,
+      -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
+
       TravelAddonBannerSource.INSURANCES_TAB -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
     }
     return combine(
@@ -72,7 +75,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
           description = bannerData.descriptionDisplayName,
           labels = bannerData.badges,
           eligibleInsurancesIds = nonEmptyContracts,
-          bannerSource = mappedSource,
+          bannerSource = source,
         )
       }
     }
@@ -84,7 +87,7 @@ data class TravelAddonBannerInfo(
   val description: String,
   val labels: List<String>,
   val eligibleInsurancesIds: NonEmptyList<String>,
-  val bannerSource: UpsellTravelAddonFlow,
+  val bannerSource: TravelAddonBannerSource,
 )
 
 @Serializable

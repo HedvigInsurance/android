@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
@@ -57,7 +58,6 @@ import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -378,7 +378,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
-          bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+          bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
         ),
       ),
       SuccessDownloadingHistory(

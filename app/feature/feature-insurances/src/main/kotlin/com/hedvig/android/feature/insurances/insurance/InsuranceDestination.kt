@@ -52,6 +52,7 @@ import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParameter
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
@@ -512,7 +513,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
         eligibleInsurancesIds = nonEmptyListOf("id"),
-        bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
+        bannerSource = TravelAddonBannerSource.INSURANCES_TAB,
       ),
       pendingContracts = listOf(),
     ),

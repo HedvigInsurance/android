@@ -66,6 +66,7 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.contract.android.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -757,7 +758,7 @@ private fun PreviewHomeScreen(
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
-            bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+            bannerSource = TravelAddonBannerSource.INSURANCES_TAB,
           ),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),

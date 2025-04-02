@@ -200,7 +200,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
           description = "Description",
           labels = listOf("60 days"),
           eligibleInsurancesIds = nonEmptyListOf("ContractId"),
-          bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
+          bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
         ),
       )
   }
