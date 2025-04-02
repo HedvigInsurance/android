@@ -40,8 +40,7 @@ internal class AddonSummaryPresenter(
   private val summaryParameters: SummaryParameters,
   private val submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
   private val addonPurchaseSource: TravelAddonBannerSource,
-) :
-  MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
+) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
     var submitIteration by remember { mutableIntStateOf(0) }
@@ -68,7 +67,7 @@ internal class AddonSummaryPresenter(
             // todo: not really passing UserError message here. Should we? Or should we maybe redirect to chat in
             // the case of final failure?
           },
-          ifRight = { date ->
+          ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
             currentState =
               initialState.copy(activationDateForSuccessfullyPurchasedAddon = summaryParameters.activationDate)

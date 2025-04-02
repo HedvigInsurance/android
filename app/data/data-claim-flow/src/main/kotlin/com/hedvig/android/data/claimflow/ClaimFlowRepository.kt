@@ -16,6 +16,7 @@ import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
@@ -120,6 +121,7 @@ internal class ClaimFlowRepositoryImpl(
   private val claimFlowContextStorage: ClaimFlowContextStorage,
   private val networkCacheManager: NetworkCacheManager,
   private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
+  private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
@@ -138,7 +140,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimStart
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -168,7 +174,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -180,7 +190,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -198,7 +212,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -219,7 +237,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -231,7 +253,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -263,7 +289,11 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -314,7 +344,11 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
       networkCacheManager.clearCache()
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -332,7 +366,11 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimConfirmEmergencyNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -350,7 +388,11 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+        crossSellAfterFlowRepository,
+      )
     }
   }
 
@@ -390,13 +432,18 @@ internal class ClaimFlowRepositoryImpl(
       .flowClaimAudioRecordingNext
     logcat { "Submitted audio file to GQL with URL $audioUrl" }
     claimFlowContextStorage.saveContext(result.context)
-    return result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+    return result.currentStep.toClaimFlowStep(
+      FlowId(result.id),
+      selfServiceCompletedEventManager,
+      crossSellAfterFlowRepository,
+    )
   }
 }
 
 private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
   flowId: FlowId,
   selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
+  crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
@@ -483,6 +530,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> {
       selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
+      crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully()
       ClaimFlowStep.ClaimSuccessStep(flowId)
     }
 
