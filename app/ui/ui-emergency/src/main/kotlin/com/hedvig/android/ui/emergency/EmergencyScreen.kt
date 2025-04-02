@@ -40,6 +40,7 @@ fun EmergencyScreen(
   emergencyNumber: String?,
   emergencyUrl: String?,
   openUrl: (String) -> Unit,
+  preferredPartnerImageHeight: Int?,
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -77,7 +78,7 @@ fun EmergencyScreen(
               contentDescription = null,
               modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height((preferredPartnerImageHeight ?: 80).dp),
             )
             Spacer(Modifier.height(24.dp))
             HedvigText(
@@ -214,6 +215,7 @@ private fun PreviewEmergencyScreen() {
       EmergencyScreen(
         emergencyNumber = "123456",
         emergencyUrl = "url",
+        preferredPartnerImageHeight = null,
         navigateUp = {},
         openUrl = {},
       )

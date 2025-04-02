@@ -9,6 +9,7 @@ import com.hedvig.android.ui.emergency.EmergencyScreen
 internal fun EmergencyDestination(
   emergencyNumber: String?,
   emergencyUrl: String?,
+  preferredPartnerImageHeight: Int?,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -18,5 +19,6 @@ internal fun EmergencyDestination(
     modifier = Modifier.fillMaxSize(),
     openUrl = openUrl,
     emergencyUrl = emergencyUrl,
+    preferredPartnerImageHeight = preferredPartnerImageHeight,
   )
 }

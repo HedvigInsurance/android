@@ -386,23 +386,21 @@ data class IdProtectionDeflectPartner(
   val title: String?,
   val description: String?,
   val info: String?,
+  val partner: DeflectPartner,
   private val urlButtonTitle: String?,
-  private val partner: DeflectPartner,
 ) {
-  val id: String = partner.id
-  val imageUrl: String = partner.imageUrl
-  private val phoneNumber: String? = partner.phoneNumber
-  private val url: String? = partner.url
-
   val buttonsState: ButtonsState = when {
-    urlButtonTitle != null && url != null && phoneNumber != null -> ButtonsState.Both(
-      phoneNumber = phoneNumber,
-      url = url,
+    urlButtonTitle != null && partner.url != null && partner.phoneNumber != null -> ButtonsState.Both(
+      phoneNumber = partner.phoneNumber,
+      url = partner.url,
       urlButtonTitle = urlButtonTitle,
     )
 
-    urlButtonTitle != null && url != null -> ButtonsState.Url(url = url, urlButtonTitle = urlButtonTitle)
-    phoneNumber != null -> ButtonsState.PhoneNumber(phoneNumber)
+    urlButtonTitle != null && partner.url != null -> ButtonsState.Url(
+      url = partner.url,
+      urlButtonTitle = urlButtonTitle,
+    )
+    partner.phoneNumber != null -> ButtonsState.PhoneNumber(partner.phoneNumber)
     else -> ButtonsState.None
   }
 
@@ -423,6 +421,7 @@ data class DeflectPartner(
   val imageUrl: String,
   val phoneNumber: String?,
   val url: String?,
+  val preferredImageHeight: Int?,
 )
 
 @Serializable
