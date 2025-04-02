@@ -19,7 +19,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
-import octopus.CrossSellsQuery
+import octopus.BottomSheetCrossSellsQuery
 import octopus.type.CrossSellType
 
 internal class CrossSellSheetViewModel(
@@ -99,7 +99,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
   override suspend fun invoke(): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return combine(
       apolloClient
-        .query(CrossSellsQuery())
+        .query(BottomSheetCrossSellsQuery())
         .safeFlow(::ErrorMessage)
         .map { response ->
           response.map { data ->

@@ -1,4 +1,4 @@
-query CrossSells {
+query BottomSheetCrossSells {
   currentMember {
     crossSells {
       id
