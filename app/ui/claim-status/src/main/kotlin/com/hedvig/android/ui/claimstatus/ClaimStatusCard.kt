@@ -51,7 +51,7 @@ fun ClaimStatusCard(
   HedvigCard(
     onClick = { onClick(uiState.id) },
     modifier = modifier
-      .semantics {
+      .semantics(mergeDescendants = true){
         contentDescription = description
       },
   ) {
@@ -69,6 +69,22 @@ fun ClaimStatusCard(
       )
       Spacer(Modifier.height(16.dp))
     }
+  }
+}
+
+@Composable
+fun ClaimStatusCard(
+  uiState: ClaimStatusCardUiState,
+  modifier: Modifier = Modifier,
+) {
+  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS_CARD)
+  HedvigCard(
+    modifier = modifier
+      .semantics(mergeDescendants = true) {
+        contentDescription = description
+      },
+  ) {
+    ClaimStatusCardContent(uiState, withInfoIcon = false, Modifier.padding(16.dp))
   }
 }
 

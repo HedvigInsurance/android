@@ -96,7 +96,7 @@ import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.ui.claimstatus.ClaimStatusCardContent
+import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
@@ -393,9 +393,7 @@ private fun BeforeGridContent(
       )
       Spacer(Modifier.height(8.dp))
     }
-    HedvigCard {
-      ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
-    }
+    ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
     Spacer(Modifier.height(8.dp))
     if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
       HedvigCard {
