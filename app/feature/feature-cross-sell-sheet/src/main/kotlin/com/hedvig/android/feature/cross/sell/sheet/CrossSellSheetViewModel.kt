@@ -38,10 +38,14 @@ import octopus.type.CrossSellType
 internal class CrossSellSheetViewModel(
   private val getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
-) : MoleculeViewModel<Unit, CrossSellSheetState>(
+) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
     CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
   )
+
+sealed interface CrossSellSheetEvent {
+  data object CrossSellSheetShown : CrossSellSheetEvent
+}
 
 sealed interface CrossSellSheetState {
   data object Loading : CrossSellSheetState
@@ -56,10 +60,21 @@ sealed interface CrossSellSheetState {
 private class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
-) : MoleculePresenter<Unit, CrossSellSheetState> {
+) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
-  override fun MoleculePresenterScope<Unit>.present(lastState: CrossSellSheetState): CrossSellSheetState {
+  override fun MoleculePresenterScope<CrossSellSheetEvent>.present(
+    lastState: CrossSellSheetState,
+  ): CrossSellSheetState {
     var state by remember { mutableStateOf(lastState) }
+
+    CollectEvents { event ->
+      when (event) {
+        CrossSellSheetEvent.CrossSellSheetShown -> {
+          crossSellAfterFlowRepository.showedCrossSellSheet()
+        }
+      }
+    }
+
     LaunchedEffect(Unit) {
       crossSellAfterFlowRepository.shouldShowCrossSellSheet().transformLatest { shouldShow ->
         if (!shouldShow) {
