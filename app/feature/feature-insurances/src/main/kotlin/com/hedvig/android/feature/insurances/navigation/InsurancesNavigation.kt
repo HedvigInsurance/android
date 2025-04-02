@@ -31,5 +31,6 @@ val insurancesBottomNavPermittedDestinations: List<KClass<out Destination>> = li
 )
 
 val insurancesCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
+  InsurancesDestination.Insurances::class,
   InsurancesDestinations.InsuranceContractDetail::class,
 )
