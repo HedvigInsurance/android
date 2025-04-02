@@ -150,7 +150,9 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
   audioRecordingStep {
     ...FlowClaimAudioRecordingStepFragment
   }
-
+  selectContractStep {
+    ...FlowClaimContractSelectStepFragment
+  }
 }
 
 fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
