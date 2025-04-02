@@ -260,9 +260,10 @@ private fun ChatOptions(
         onClick = expandChatOptions,
         modifier = Modifier.size(buttonSize),
       ) {
+        val description = stringResource(R.string.TALKBACK_OPEN_SENDING_OPTIONS)
         Icon(
           imageVector = HedvigIcons.ChevronRight,
-          contentDescription = "Open sending options",
+          contentDescription = description,
           modifier = Modifier.size(20.dp),
         )
       }
