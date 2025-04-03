@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -83,17 +82,16 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?,
-                         modifier:Modifier = Modifier) {
-  val docDescription = stringResource(R.string.TALKBACK_DOCUMENT,title)
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?, modifier: Modifier = Modifier) {
+  val docDescription = stringResource(R.string.TALKBACK_DOCUMENT, title)
   HedvigCard(
     onClick = onClick,
     modifier = modifier
       .padding(horizontal = 16.dp)
       .heightIn(min = 56.dp)
       .clearAndSetSemantics {
-      contentDescription = docDescription
-    },
+        contentDescription = docDescription
+      },
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
