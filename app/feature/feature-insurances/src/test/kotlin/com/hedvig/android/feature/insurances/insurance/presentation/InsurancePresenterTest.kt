@@ -554,6 +554,5 @@ internal class InsurancePresenterTest {
     "desc",
     listOf(),
     nonEmptyListOf("id"),
-    bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
   )
 }

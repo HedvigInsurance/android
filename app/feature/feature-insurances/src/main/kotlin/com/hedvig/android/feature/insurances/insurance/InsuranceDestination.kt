@@ -512,7 +512,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
         eligibleInsurancesIds = nonEmptyListOf("id"),
-        bannerSource = TravelAddonBannerSource.INSURANCES_TAB,
       ),
       pendingContracts = listOf(),
     ),

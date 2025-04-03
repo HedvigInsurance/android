@@ -152,7 +152,6 @@ private fun PreviewCrossSellsSheetContent() {
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
-            bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
           ),
           onCrossSellClick = {},
           onNavigateToAddonPurchaseFlow = {},

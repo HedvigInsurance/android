@@ -378,7 +378,6 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
-          bannerSource = TravelAddonBannerSource.TRAVEL_CERTIFICATES,
         ),
       ),
       SuccessDownloadingHistory(

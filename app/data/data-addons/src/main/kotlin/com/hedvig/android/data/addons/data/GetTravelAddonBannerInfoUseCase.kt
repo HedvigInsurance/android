@@ -77,7 +77,6 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
           description = bannerData.descriptionDisplayName,
           labels = bannerData.badges,
           eligibleInsurancesIds = nonEmptyContracts,
-          bannerSource = source,
         )
       }
     }
@@ -89,7 +88,6 @@ data class TravelAddonBannerInfo(
   val description: String,
   val labels: List<String>,
   val eligibleInsurancesIds: NonEmptyList<String>,
-  val bannerSource: TravelAddonBannerSource,
 )
 
 @Serializable

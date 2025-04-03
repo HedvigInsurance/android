@@ -64,7 +64,6 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.crosssells.CrossSellSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -691,7 +690,6 @@ private fun PreviewHomeScreen(
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
-            bannerSource = TravelAddonBannerSource.INSURANCES_TAB,
           ),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
