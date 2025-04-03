@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -32,15 +35,22 @@ import hedvig.resources.R
 
 @Composable
 internal fun ClaimProgressRow(claimProgressItemsUiState: List<ClaimProgressSegment>, modifier: Modifier = Modifier) {
+  val currentStatus =
+    claimProgressItemsUiState.lastOrNull { it.type == ACTIVE }?.text ?: stringResource(R.string.TALKBACK_UNKNOWN)
+  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS, currentStatus)
   Row(
-    modifier = modifier,
+    modifier = modifier.semantics {
+      contentDescription = description
+    },
     horizontalArrangement = Arrangement.spacedBy(6.dp),
   ) {
     for (claimProgressSegment in claimProgressItemsUiState) {
       ClaimProgress(
         segmentText = claimProgressSegment.text,
         type = claimProgressSegment.type,
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f).semantics {
+          hideFromAccessibility()
+        },
       )
     }
   }

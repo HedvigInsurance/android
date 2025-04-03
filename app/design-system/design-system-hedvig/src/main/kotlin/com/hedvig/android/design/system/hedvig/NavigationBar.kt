@@ -36,6 +36,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -83,6 +88,7 @@ fun NavigationBar(
         .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
     ) {
       for (destination in destinations) {
+        val name = stringResource(destination.titleTextId())
         val selected = getIsCurrentlySelected(destination)
         NavigationItem(
           icon = if (selected) {
@@ -90,7 +96,7 @@ fun NavigationBar(
           } else {
             destination.unselectedIcon()
           },
-          text = stringResource(destination.titleTextId()),
+          text = name,
           withNotification = destination in destinationsWithNotifications,
           selected = selected,
           onClick = { onNavigateToDestination(destination) },
@@ -100,7 +106,11 @@ fun NavigationBar(
             top = NavigationBarTokens.ItemTopPadding,
             bottom = NavigationBarTokens.ItemBottomPadding,
           ),
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f)
+            .semantics {
+              role = Role.Tab
+              this.selected = selected
+            },
         )
       }
     }
@@ -165,6 +175,10 @@ fun NavigationRail(
             top = NavigationRailTokens.ItemTopPadding,
             bottom = NavigationRailTokens.ItemBottomPadding,
           ),
+          modifier = Modifier.semantics {
+            role = Role.Tab
+            this.selected = selected
+          },
         )
       }
     }
@@ -181,7 +195,9 @@ private fun NavigationContainer(modifier: Modifier = Modifier, content: @Composa
   CompositionLocalProvider(LocalDensity provides fontCappedDensity) {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = modifier,
+      modifier = modifier.semantics{
+        this.traversalIndex = 0f
+      },
     ) {
       content()
     }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
@@ -45,9 +47,13 @@ fun ClaimStatusCard(
   onClick: (claimId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS_CARD)
   HedvigCard(
     onClick = { onClick(uiState.id) },
-    modifier = modifier,
+    modifier = modifier
+      .semantics {
+        contentDescription = description
+      },
   ) {
     Column {
       ClaimStatusCardContent(uiState, withInfoIcon = true, Modifier.padding(16.dp))
