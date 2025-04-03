@@ -74,7 +74,8 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
   ) {
     EditCoInsuredSuccessDestination(
       date = date,
-      popBackstack = navigator::popBackStack,
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
     )
   }
 }

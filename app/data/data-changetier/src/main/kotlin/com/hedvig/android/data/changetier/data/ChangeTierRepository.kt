@@ -6,6 +6,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import octopus.ChangeTierDeductibleCommitIntentMutation
@@ -30,6 +31,7 @@ interface ChangeTierRepository {
 internal class ChangeTierRepositoryImpl(
   private val createChangeTierDeductibleIntentUseCase: CreateChangeTierDeductibleIntentUseCase,
   private val changeTierQuoteStorage: ChangeTierQuoteStorage,
+  private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val apolloClient: ApolloClient,
 ) : ChangeTierRepository {
   override suspend fun startChangeTierIntentAndGetQuotesId(
@@ -72,6 +74,7 @@ internal class ChangeTierRepositoryImpl(
           logcat(ERROR) { "Tried to submit change tier quoteId: $quoteId but got error: $left" }
         }
         .bind()
+      crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully()
     }
   }
 

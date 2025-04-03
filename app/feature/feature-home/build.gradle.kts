@@ -41,6 +41,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.crossSells)
   implementation(projects.dataContractAndroid)
+  implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataAddons)

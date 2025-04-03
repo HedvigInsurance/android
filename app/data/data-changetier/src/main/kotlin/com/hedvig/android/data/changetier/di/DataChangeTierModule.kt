@@ -9,6 +9,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCaseImpl
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.dsl.module
 
@@ -26,6 +27,7 @@ val dataChangeTierModule = module {
     ChangeTierRepositoryImpl(
       createChangeTierDeductibleIntentUseCase = get<CreateChangeTierDeductibleIntentUseCase>(),
       changeTierQuoteStorage = get<ChangeTierQuoteStorage>(),
+      crossSellAfterFlowRepository = get<CrossSellAfterFlowRepository>(),
       apolloClient = get<ApolloClient>(),
     )
   }

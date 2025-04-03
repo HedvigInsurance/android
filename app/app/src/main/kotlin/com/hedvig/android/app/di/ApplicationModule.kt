@@ -54,6 +54,7 @@ import com.hedvig.android.data.changetier.di.dataChangeTierModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.cross.sell.after.claim.closed.di.crossSellAfterClaimClosedModule
+import com.hedvig.android.data.cross.sell.after.flow.di.dataCrossSellAfterFlowModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
@@ -69,6 +70,7 @@ import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
+import com.hedvig.android.feature.cross.sell.sheet.di.featureCrossSellSheetModule
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.help.center.di.helpCenterModule
@@ -381,6 +383,7 @@ val applicationModule = module {
       dataAddonsModule,
       dataChangeTierModule,
       dataConversationsModule,
+      dataCrossSellAfterFlowModule,
       dataPayingMemberModule,
       dataStoreModule,
       databaseAndroidModule,
@@ -393,6 +396,7 @@ val applicationModule = module {
       deleteAccountModule,
       demoModule,
       editCoInsuredModule,
+      featureCrossSellSheetModule,
       featureManagerModule,
       fileUploadModule,
       firebaseNotificationModule,

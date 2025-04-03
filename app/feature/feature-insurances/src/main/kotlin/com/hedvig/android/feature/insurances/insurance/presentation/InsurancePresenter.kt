@@ -16,7 +16,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract

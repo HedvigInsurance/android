@@ -200,19 +200,17 @@ private fun EditCoInsuredScreen(
           }
 
           Spacer(Modifier.weight(1f))
-          Column {
-            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-              Spacer(Modifier.height(8.dp))
-              HedvigButton(
-                text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
-                onClick = onCommitChanges,
-                enabled = true,
-                isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .fillMaxWidth(),
-              )
-            }
+          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+            Spacer(Modifier.height(8.dp))
+            HedvigButton(
+              text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
+              onClick = onCommitChanges,
+              enabled = true,
+              isLoading = uiState.listState.isCommittingUpdate,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            )
           }
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(

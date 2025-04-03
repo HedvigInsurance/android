@@ -18,20 +18,18 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 internal class CustomizeTravelAddonViewModel(
   insuranceId: String,
   getTravelAddonOfferUseCase: GetTravelAddonOfferUseCase,
-) :
-  MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeTravelAddonState>(
-      initialState = CustomizeTravelAddonState.Loading,
-      presenter = CustomizeTravelAddonPresenter(
-        getTravelAddonOfferUseCase = getTravelAddonOfferUseCase,
-        insuranceId = insuranceId,
-      ),
-    )
+) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeTravelAddonState>(
+    initialState = CustomizeTravelAddonState.Loading,
+    presenter = CustomizeTravelAddonPresenter(
+      getTravelAddonOfferUseCase = getTravelAddonOfferUseCase,
+      insuranceId = insuranceId,
+    ),
+  )
 
 internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
   private val getTravelAddonOfferUseCase: GetTravelAddonOfferUseCase,
-) :
-  MoleculePresenter<CustomizeTravelAddonEvent, CustomizeTravelAddonState> {
+) : MoleculePresenter<CustomizeTravelAddonEvent, CustomizeTravelAddonState> {
   @Composable
   override fun MoleculePresenterScope<CustomizeTravelAddonEvent>.present(
     lastState: CustomizeTravelAddonState,
@@ -71,6 +69,7 @@ internal class CustomizeTravelAddonPresenter(
           val state = currentState as? CustomizeTravelAddonState.Success ?: return@CollectEvents
           currentState = state.copy(summaryParamsToNavigateFurther = null)
         }
+
         CustomizeTravelAddonEvent.SubmitSelected -> {
           val state = currentState as? CustomizeTravelAddonState.Success ?: return@CollectEvents
           currentState = state.copy(

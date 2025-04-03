@@ -8,7 +8,7 @@ dependencies {
   api(libs.apollo.runtime)
   api(libs.arrow.core)
   api(libs.coroutines.core)
+  api(projects.coreCommonPublic)
 
   implementation(libs.apollo.normalizedCache)
-  implementation(projects.coreCommonPublic)
 }
