@@ -101,7 +101,11 @@ fun HedvigNotificationCard(
   buttonLoading: Boolean = false,
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
-  val description = stringResource(R.string.TALKBACK_NOTIFICATION_CARD)
+  val description = when (priority) {
+    Attention, Error, Info -> stringResource(R.string.TALKBACK_NOTIFICATION_CARD)
+    Campaign, NotificationPriority.InfoInline,NotificationPriority.NeutralToast -> ""
+  }
+
   Surface(
     modifier = modifier.semantics(mergeDescendants = true) {
       contentDescription = description
