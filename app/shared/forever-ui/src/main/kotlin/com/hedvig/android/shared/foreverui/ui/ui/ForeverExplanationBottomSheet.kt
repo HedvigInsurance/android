@@ -27,12 +27,13 @@ import hedvig.resources.R
 @Composable
 internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<UiMoney>) {
   HedvigBottomSheet(sheetState) { discount ->
+    val description = stringResource(R.string.TALKBACK_BOTTOM_SHEET_ANNOUNCEMENT)
     Column(
       Modifier.semantics(
         mergeDescendants = true,
       ) {
         this.liveRegion = LiveRegionMode.Assertive
-        contentDescription = "Scroll down with two fingers to close"
+        contentDescription = description
       },
     ) {
       HedvigText(
