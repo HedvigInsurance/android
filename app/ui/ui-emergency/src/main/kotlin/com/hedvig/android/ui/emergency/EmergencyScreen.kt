@@ -193,6 +193,10 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
       stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
     stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to
       stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL),
   )
   Column(modifier) {
     AccordionList(mapToAccordionData(faqList))
