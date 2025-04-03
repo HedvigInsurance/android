@@ -43,4 +43,6 @@ internal sealed interface HelpCenterDestinations {
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
   HelpCenterDestinations.HelpCenter::class,
+  HelpCenterDestinations.Topic::class,
+  HelpCenterDestinations.Question::class,
 )
