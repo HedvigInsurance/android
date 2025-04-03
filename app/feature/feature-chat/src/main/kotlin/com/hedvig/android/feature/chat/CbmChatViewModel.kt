@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.chat
 
+import android.content.Context
 import android.net.Uri
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +62,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -74,6 +77,7 @@ internal class CbmChatViewModel(
   chatRepository: Provider<CbmChatRepository>,
   featureManager: FeatureManager,
   clock: Clock,
+  context: Context,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -91,6 +95,7 @@ internal class CbmChatViewModel(
       chatDao = chatDao,
       chatRepository = chatRepository,
       featureManager = featureManager,
+      context,
     ),
     coroutineScope = coroutineScope,
   )
@@ -132,6 +137,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val chatRepository: Provider<CbmChatRepository>,
   private val featureManager: FeatureManager,
+  private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -150,8 +156,13 @@ internal class CbmChatPresenter(
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
     var hideBanner by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
+    val a11yOn = isAccessibilityEnabled(context)
     val enableInlineMediaPlayer by remember(featureManager) {
-      featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
+      if (!a11yOn) {
+        featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
+      } else {
+        flowOf(false)
+      }
     }.collectAsState(false)
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
@@ -422,4 +433,14 @@ private fun Either<MessageSendError, *>.onError(
 
     is Either.Right<*> -> {}
   }
+}
+
+private fun isAccessibilityEnabled(context: Context): Boolean {
+  val enabledServices = Settings.Secure.getString(
+    context.contentResolver,
+    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+  )
+  val accessibilityEnabled =
+    Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
+  return accessibilityEnabled && enabledServices != null
 }

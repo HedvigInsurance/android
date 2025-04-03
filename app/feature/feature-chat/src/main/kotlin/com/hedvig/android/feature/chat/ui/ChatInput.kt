@@ -41,6 +41,8 @@ import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -164,10 +166,13 @@ private fun ChatInput(
             .padding(start = 12.dp),
         ) { innerTextField ->
           if (text.isEmpty()) {
+            val description = stringResource(R.string.TALKBACK_WRITE_HERE)
             HedvigText(
               text = stringResource(R.string.CHAT_INPUT_PLACEHOLDER),
               style = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
-              modifier = Modifier.alpha(0.60f),
+              modifier = Modifier.alpha(0.60f).semantics {
+                contentDescription = description
+              },
             )
           }
           innerTextField()
@@ -231,21 +236,21 @@ private fun ChatOptions(
         ChatClickableSquare(
           onClick = takePicture,
           imageVector = HedvigIcons.Camera,
-          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          contentDescription = stringResource(R.string.TALKBACK_TAKE_PHOTO),
           chatShape = shape,
           outlineColor = outlineColor,
         )
         ChatClickableSquare(
           onClick = selectMedia,
           imageVector = HedvigIcons.Image,
-          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          contentDescription = stringResource(R.string.TALKBACK_ADD_IMAGES),
           chatShape = shape,
           outlineColor = outlineColor,
         )
         ChatClickableSquare(
           onClick = selectFile,
           imageVector = HedvigIcons.Document,
-          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          contentDescription = stringResource(R.string.TALKBACK_ADD_DOCUMENTS),
           chatShape = shape,
           outlineColor = outlineColor,
         )
@@ -255,9 +260,10 @@ private fun ChatOptions(
         onClick = expandChatOptions,
         modifier = Modifier.size(buttonSize),
       ) {
+        val description = stringResource(R.string.TALKBACK_OPEN_SENDING_OPTIONS)
         Icon(
           imageVector = HedvigIcons.ChevronRight,
-          contentDescription = null,
+          contentDescription = description,
           modifier = Modifier.size(20.dp),
         )
       }
