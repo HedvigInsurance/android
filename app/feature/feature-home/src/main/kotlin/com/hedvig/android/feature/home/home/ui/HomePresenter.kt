@@ -12,7 +12,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -30,7 +29,6 @@ internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
-  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -51,7 +49,6 @@ internal class HomePresenter(
 
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch {
-            crossSellAfterClaimClosedRepository.showedCrossSellAfterClaim()
             crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen()
           }
         }
@@ -104,7 +101,6 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
-          forceShowCrossSells = successData.forceShowCrossSells,
           travelAddonBannerInfo = successData.travelAddonBannerInfo,
         )
       }
@@ -130,9 +126,6 @@ internal sealed interface HomeUiState {
   val hasUnseenChatMessages: Boolean
     get() = false
 
-  val forceShowCrossSells: List<CrossSell>?
-    get() = null
-
   data class Success(
     override val isReloading: Boolean = false,
     val homeText: HomeText,
@@ -145,7 +138,6 @@ internal sealed interface HomeUiState {
     val travelAddonBannerInfo: TravelAddonBannerInfo?,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
-    override val forceShowCrossSells: List<CrossSell>?,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -163,7 +155,6 @@ private data class SuccessData(
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
-  val forceShowCrossSells: List<CrossSell>?,
   val travelAddonBannerInfo: TravelAddonBannerInfo?,
 ) {
   companion object {
@@ -179,7 +170,6 @@ private data class SuccessData(
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
-        forceShowCrossSells = lastState.forceShowCrossSells,
         travelAddonBannerInfo = lastState.travelAddonBannerInfo,
       )
     }
@@ -216,7 +206,6 @@ private data class SuccessData(
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
-        forceShowCrossSells = homeData.forceShowCrossSells,
         travelAddonBannerInfo = homeData.travelBannerInfo,
       )
     }

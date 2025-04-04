@@ -36,8 +36,8 @@ sealed interface CrossSellInfoType {
 
     data class ClaimInfo(
       val id: String,
-      val status: String,
-      val type: String,
+      val status: String?,
+      val type: String?,
       val typeOfContract: String?,
     )
   }

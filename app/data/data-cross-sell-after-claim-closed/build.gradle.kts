@@ -14,4 +14,5 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.dataCrossSellAfterFlow)
 }

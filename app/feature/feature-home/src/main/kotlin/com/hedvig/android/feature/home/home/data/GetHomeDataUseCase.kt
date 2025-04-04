@@ -16,7 +16,6 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -49,7 +48,6 @@ internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -77,7 +75,6 @@ internal class GetHomeDataUseCaseImpl(
       },
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-      crossSellAfterClaimClosedRepository.shouldShowCrossSellAfterClaim(),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
@@ -86,7 +83,6 @@ internal class GetHomeDataUseCaseImpl(
       travelBannerInfo,
       isChatDisabled,
       isHelpCenterEnabled,
-      shouldShowCrossSellAfterClaim,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -156,9 +152,6 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          forceShowCrossSells = crossSells.takeIf {
-            shouldShowCrossSellAfterClaim
-          },
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -249,7 +242,6 @@ internal data class HomeData(
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
-  val forceShowCrossSells: List<CrossSell>?,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,
@@ -293,7 +285,7 @@ internal data class HomeData(
 /**
  * The reason this exists is because the standard combine function only allows up to 5 generic flows.
  */
-public fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
+public fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
   flow: Flow<T1>,
   flow2: Flow<T2>,
   flow3: Flow<T3>,
@@ -301,9 +293,8 @@ public fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
   flow5: Flow<T5>,
   flow6: Flow<T6>,
   flow7: Flow<T7>,
-  flow8: Flow<T8>,
-  transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R,
-): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7, flow8) { args: Array<*> ->
+  transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
+): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
   @Suppress("UNCHECKED_CAST")
   transform(
     args[0] as T1,
@@ -313,6 +304,5 @@ public fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
     args[4] as T5,
     args[5] as T6,
     args[6] as T7,
-    args[7] as T8,
   )
 }
