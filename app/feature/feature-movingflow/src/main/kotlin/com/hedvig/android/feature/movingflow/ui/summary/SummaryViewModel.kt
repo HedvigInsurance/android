@@ -153,7 +153,7 @@ internal class SummaryPresenter(
                 }
               } else {
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-                  CrossSellInfoType.ClaimFlow,
+                  CrossSellInfoType.MovingFlow,
                 )
                 Snapshot.withMutableSnapshot {
                   submitChangesWithData = null
