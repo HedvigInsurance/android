@@ -19,11 +19,7 @@ sealed interface CrossSellInfoType {
   val attributes: Map<String, Any?>?
     get() = null
 
-  data object Home : CrossSellInfoType {
-    override val loggableName: String = "home"
-  }
-
-  data class Claim(
+  data class ClosedClaim(
     val info: ClaimInfo,
   ) : CrossSellInfoType {
     override val loggableName: String = "claim"
@@ -55,11 +51,7 @@ sealed interface CrossSellInfoType {
   }
 
   data object EditCoInsured : CrossSellInfoType {
-    override val loggableName: String = "coInsured"
-  }
-
-  data object ClaimFlow : CrossSellInfoType {
-    override val loggableName: String = "moveFlow"
+    override val loggableName: String = "editCoInsured"
   }
 
   data object MovingFlow : CrossSellInfoType {
