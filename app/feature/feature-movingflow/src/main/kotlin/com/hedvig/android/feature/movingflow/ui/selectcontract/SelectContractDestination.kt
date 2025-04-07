@@ -91,9 +91,9 @@ private fun SelectContractScreen(
             is SelectContractState.Error.UserPresentable -> goToChat
             else -> reload
           },
-          title =  when (uiState) {
+          title = when (uiState) {
             is SelectContractState.Error.UserPresentable -> stringResource(R.string.GENERAL_CONTACT_US_TITLE)
-            else ->  stringResource(R.string.something_went_wrong)
+            else -> stringResource(R.string.something_went_wrong)
           },
           subTitle = when (uiState) {
             is SelectContractState.Error.UserPresentable -> uiState.message

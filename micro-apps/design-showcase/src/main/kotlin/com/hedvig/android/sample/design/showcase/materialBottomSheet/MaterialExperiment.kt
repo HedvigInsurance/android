@@ -38,10 +38,11 @@ internal fun MaterialExperiment() {
   }
   var showBottomSheetTwo by remember { mutableStateOf(false) }
   if (showBottomSheetTwo) {
-    LongSheetWithTextAndButtonsCustomDescription({
-      showBottomSheetTwo = false
-    },
-      )
+    LongSheetWithTextAndButtonsCustomDescription(
+      {
+        showBottomSheetTwo = false
+      },
+    )
   }
   Column(
     Modifier.fillMaxSize().padding(16.dp),
@@ -64,8 +65,10 @@ internal fun MaterialExperiment() {
       text = "Open bottom sheet with text and buttons",
       modifier = Modifier.fillMaxWidth(),
     )
-    HedvigText("Quite long text that we don't want to be read by TalkBack " +
-      "if the bottom sheet is expanded.")
+    HedvigText(
+      "Quite long text that we don't want to be read by TalkBack " +
+        "if the bottom sheet is expanded.",
+    )
   }
 }
 
@@ -82,8 +85,8 @@ private fun LongSheetWithEditTextDefaultDescriptions(onDismissRequest: () -> Uni
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
-            verticalAlignment = Alignment.CenterVertically
-            ) {
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
             HedvigText("Yellow daffodils")
           }
         },
@@ -106,7 +109,8 @@ private fun LongSheetWithEditTextDefaultDescriptions(onDismissRequest: () -> Uni
 @Composable
 private fun LongSheetWithTextAndButtonsCustomDescription(
   onDismissRequest: () -> Unit,
-  sheetState: SheetState = rememberModalBottomSheetState()) {
+  sheetState: SheetState = rememberModalBottomSheetState(),
+) {
   val description = when (sheetState.currentValue) {
     SheetValue.Hidden -> "modal sheet hidden"
     SheetValue.Expanded -> "modal sheet expanded"
@@ -116,10 +120,10 @@ private fun LongSheetWithTextAndButtonsCustomDescription(
     onDismissRequest = onDismissRequest,
     sheetState = sheetState,
     modifier = Modifier.semantics(
-      mergeDescendants = true
-    ){
+      mergeDescendants = true,
+    ) {
       contentDescription = description
-    }
+    },
   ) {
     Column(
       Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
@@ -129,7 +133,7 @@ private fun LongSheetWithTextAndButtonsCustomDescription(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             HedvigText("Blue daffodils")
           }
@@ -147,7 +151,7 @@ private fun LongSheetWithTextAndButtonsCustomDescription(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             HedvigText("Space daffodils")
           }
@@ -165,7 +169,7 @@ private fun LongSheetWithTextAndButtonsCustomDescription(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             HedvigText("Alien daffodils")
           }
@@ -198,7 +202,6 @@ private fun EditTextForSheet() {
     textFieldSize = TextFieldSize.Medium,
   )
 }
-
 
 private val LOREM_IPSUM =
   """
