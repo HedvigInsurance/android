@@ -38,10 +38,10 @@ class CrossSellAfterClaimClosedRepositoryImpl(
           crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
             CrossSellInfoType.ClosedClaim(
               ClaimInfo(
-                claim.id,
-                claim.status?.name,
-                claim.claimType,
-                claim.productVariant?.typeOfContract,
+                id = claim.id,
+                status = claim.status?.name,
+                type = claim.claimType,
+                typeOfContract = claim.productVariant?.typeOfContract,
               ),
             ),
           )

@@ -14,16 +14,22 @@ interface CrossSellAfterFlowRepository {
   fun showedCrossSellSheet(type: CrossSellInfoType?)
 }
 
-sealed interface CrossSellInfoType {
-  val loggableName: String
-  val attributes: Map<String, Any?>?
-    get() = null
+sealed class CrossSellInfoType() {
+  abstract val loggableName: String
+  protected abstract val extraInfo: Map<String, Any?>?
+  val attributes: Map<String, Any?>
+    get() = buildMap {
+      this.put("type", loggableName)
+      if (extraInfo != null) {
+        this.put("info", extraInfo)
+      }
+    }
 
   data class ClosedClaim(
     val info: ClaimInfo,
-  ) : CrossSellInfoType {
+  ) : CrossSellInfoType() {
     override val loggableName: String = "claim"
-    override val attributes: Map<String, Any?>? = with(info) {
+    override val extraInfo: Map<String, Any?>? = with(info) {
       buildMap {
         this.put("id", id)
         this.put("status", status)
@@ -42,20 +48,24 @@ sealed interface CrossSellInfoType {
     )
   }
 
-  data object ChangeTier : CrossSellInfoType {
+  data object ChangeTier : CrossSellInfoType() {
     override val loggableName: String = "changeTier"
+    override val extraInfo: Map<String, Any?>? = null
   }
 
-  data object Addon : CrossSellInfoType {
+  data object Addon : CrossSellInfoType() {
     override val loggableName: String = "addon"
+    override val extraInfo: Map<String, Any?>? = null
   }
 
-  data object EditCoInsured : CrossSellInfoType {
+  data object EditCoInsured : CrossSellInfoType() {
     override val loggableName: String = "editCoInsured"
+    override val extraInfo: Map<String, Any?>? = null
   }
 
-  data object MovingFlow : CrossSellInfoType {
+  data object MovingFlow : CrossSellInfoType() {
     override val loggableName: String = "moveFlow"
+    override val extraInfo: Map<String, Any?>? = null
   }
 }
 
@@ -74,12 +84,12 @@ class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   }
 
   override fun showedCrossSellSheet(type: CrossSellInfoType?) {
-    logcat { "CrossSellAfterFlowRepository: showedCrossSellSheet" }
+    logcat { "CrossSellAfterFlowRepository: showedCrossSellSheet type:$type" }
     if (type != null) {
       logAction(
         ActionType.CUSTOM,
         type.loggableName,
-        type.attributes ?: emptyMap(),
+        type.attributes,
       )
     }
     shouldShowCrossSellSheet.value = null
