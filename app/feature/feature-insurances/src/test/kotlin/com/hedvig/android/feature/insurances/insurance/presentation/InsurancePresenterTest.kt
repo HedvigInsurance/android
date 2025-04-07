@@ -35,7 +35,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
-import octopus.type.UpsellTravelAddonFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -555,6 +554,5 @@ internal class InsurancePresenterTest {
     "desc",
     listOf(),
     nonEmptyListOf("id"),
-    bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
   )
 }
