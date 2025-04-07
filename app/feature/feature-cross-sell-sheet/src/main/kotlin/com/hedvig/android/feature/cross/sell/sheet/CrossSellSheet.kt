@@ -32,27 +32,39 @@ fun CrossSellSheet(
     LaunchedEffect(uiState, lifecycle) {
       @Suppress("NAME_SHADOWING")
       when (val uiState = uiState) {
-        DontShow,
-        is Error,
-        Loading,
-        -> {}
-
         is Content -> {
           lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
             logcat { "CrossSellSheet showing after a succesful flow" }
             sheetState.show(uiState.crossSellSheetData)
           }
         }
+
+        DontShow,
+        is Error,
+        Loading,
+        -> {
+        }
       }
     }
-    LaunchedEffect(sheetState, viewModel) {
-      snapshotFlow { sheetState.isVisible }
-        .distinctUntilChanged()
-        .collect { isVisible ->
-          if (isVisible) {
-            viewModel.emit(CrossSellSheetEvent.CrossSellSheetShown)
-          }
+    @Suppress("NAME_SHADOWING")
+    when (uiState) {
+      Loading,
+      DontShow,
+      is Error,
+      -> {
+      }
+
+      is Content -> {
+        LaunchedEffect(sheetState, viewModel) {
+          snapshotFlow { sheetState.isVisible }
+            .distinctUntilChanged()
+            .collect { isVisible ->
+              if (isVisible) {
+                viewModel.emit(CrossSellSheetEvent.CrossSellSheetShown)
+              }
+            }
         }
+      }
     }
     com.hedvig.android.crosssells.CrossSellSheet(
       state = sheetState,

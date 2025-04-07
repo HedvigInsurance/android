@@ -5,10 +5,8 @@ import arrow.core.Either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
@@ -25,6 +23,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepositoryImpl
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -89,7 +88,7 @@ class ChangeTierRepositoryImplTest {
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       changeTierQuoteStorage = storage,
     )
-    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheet().first()).isFalse()
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first()).isNull()
     testApolloClientRule.apolloClient.registerTestResponse(
       ChangeTierDeductibleCommitIntentMutation(testId),
       ChangeTierDeductibleCommitIntentMutation.Data {
@@ -100,7 +99,8 @@ class ChangeTierRepositoryImplTest {
     )
     val result = repository.submitChangeTierQuote(testId)
     assertThat(result).isRight().isEqualTo(Unit)
-    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheet().first()).isTrue()
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
+      .isEqualTo(CrossSellInfoType.ChangeTier)
   }
 
   @Test

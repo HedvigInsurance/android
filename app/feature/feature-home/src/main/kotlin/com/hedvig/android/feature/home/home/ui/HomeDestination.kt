@@ -52,15 +52,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.withStateAtLeast
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.crosssells.CrossSellSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
@@ -192,14 +188,11 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  val travelBannerInfo = uiState.safeCast<Success>()?.travelAddonBannerInfo
   val crossSellBottomSheetState = rememberHedvigBottomSheetState<CrossSellSheetData>()
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
-    forceShowCrossSells = uiState.forceShowCrossSells,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openUrl,
-    travelAddonBannerInfo = travelBannerInfo,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
   Box(Modifier.fillMaxSize()) {
@@ -585,20 +578,10 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 @Composable
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
-  travelAddonBannerInfo: TravelAddonBannerInfo?,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
-  forceShowCrossSells: List<CrossSell>?,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(forceShowCrossSells, lifecycle) {
-    lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
-      if (forceShowCrossSells?.isNotEmpty() == true) {
-        state.show(CrossSellSheetData(forceShowCrossSells, travelAddonBannerInfo))
-      }
-    }
-  }
   LaunchedEffect(state) {
     snapshotFlow { state.isVisible }
       .distinctUntilChanged()
@@ -684,7 +667,6 @@ private fun PreviewHomeScreen(
             ),
           ),
           chatAction = ChatAction,
-          forceShowCrossSells = emptyList(),
           travelAddonBannerInfo = TravelAddonBannerInfo(
             title = "Title",
             description = "description",

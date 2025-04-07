@@ -2,8 +2,7 @@ package data
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
-import assertk.assertions.isTrue
+import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
@@ -16,6 +15,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepositoryImpl
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCaseImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
@@ -77,10 +77,11 @@ class SubmitAddonPurchaseUseCaseImplTest {
   fun `if BE response is good return Unit and mark the flow as complete`() = runTest {
     val crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl()
     val sut = SubmitAddonPurchaseUseCaseImpl(apolloClientWithGoodResponseNullError, crossSellAfterFlowRepository)
-    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheet().first()).isFalse()
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first()).isNull()
     val result = sut.invoke(testId, testId)
     assertThat(result).isRight().isEqualTo(Unit)
-    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheet().first()).isTrue()
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
+      .isEqualTo(CrossSellInfoType.Addon)
   }
 
   @Test

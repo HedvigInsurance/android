@@ -17,6 +17,7 @@ fragment ClaimFragment on Claim {
   }
   claimType
   productVariant {
+    typeOfContract
     displayName
     documents {
       type

@@ -21,6 +21,7 @@ import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -54,7 +55,7 @@ sealed interface CrossSellSheetState {
 
   data class Error(val errorMessage: ErrorMessage) : CrossSellSheetState
 
-  data class Content(val crossSellSheetData: CrossSellSheetData) : CrossSellSheetState
+  data class Content(val crossSellSheetData: CrossSellSheetData, val infoType: CrossSellInfoType) : CrossSellSheetState
 }
 
 private class CrossSellSheetPresenter(
@@ -69,15 +70,15 @@ private class CrossSellSheetPresenter(
 
     CollectEvents { event ->
       when (event) {
-        CrossSellSheetEvent.CrossSellSheetShown -> {
-          crossSellAfterFlowRepository.showedCrossSellSheet()
+        is CrossSellSheetEvent.CrossSellSheetShown -> {
+          crossSellAfterFlowRepository.showedCrossSellSheet((state as? CrossSellSheetState.Content)?.infoType)
         }
       }
     }
 
     LaunchedEffect(Unit) {
-      crossSellAfterFlowRepository.shouldShowCrossSellSheet().transformLatest { shouldShow ->
-        if (!shouldShow) {
+      crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().transformLatest { infoType ->
+        if (infoType == null) {
           emit(CrossSellSheetState.DontShow)
           return@transformLatest
         }
@@ -85,7 +86,7 @@ private class CrossSellSheetPresenter(
           getCrossSellSheetDataUseCaseProvider.provide().invoke().mapLatest { result ->
             result.fold(
               ifLeft = { error -> CrossSellSheetState.Error(error) },
-              ifRight = { data -> CrossSellSheetState.Content(data) },
+              ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
             )
           },
         )

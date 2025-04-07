@@ -5,7 +5,6 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -25,7 +24,6 @@ val homeModule = module {
       get<ApolloClient>(),
       get<HasAnyActiveConversationUseCase>(),
       get<GetMemberRemindersUseCase>(),
-      get<CrossSellAfterClaimClosedRepository>(),
       get<FeatureManager>(),
       get<Clock>(),
       get<TimeZone>(),
@@ -50,7 +48,6 @@ val homeModule = module {
       get<GetHomeDataUseCaseProvider>(),
       get<SeenImportantMessagesStorage>(),
       get<CrossSellCardNotificationBadgeServiceProvider>(),
-      get<CrossSellAfterClaimClosedRepository>(),
       get<ApplicationScope>(),
     )
   }
