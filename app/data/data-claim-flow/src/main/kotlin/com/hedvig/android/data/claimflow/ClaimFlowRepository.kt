@@ -462,6 +462,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       ClaimFlowStep.ClaimSummaryStep(
         flowId = flowId,
         claimTypeTitle = title,
+        claimSubtitle = subtitle,
         location = locationStep.location,
         options = locationStep.options,
         dateOfOccurrence = dateOfOccurrenceStep.dateOfOccurrence,
@@ -477,6 +478,9 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         fileUploads = fileUploadStep?.uploads,
         signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
         freeText = audioRecordingStep?.freeText,
+        selectedContractExposure = selectContractStep?.options?.firstOrNull{
+          it.id==selectContractStep?.selectedOptionId
+        }?.displaySubtitle
       )
     }
 

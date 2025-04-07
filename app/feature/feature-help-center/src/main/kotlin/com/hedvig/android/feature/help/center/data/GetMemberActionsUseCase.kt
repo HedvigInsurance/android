@@ -89,6 +89,7 @@ internal data class DeflectPartner(
   val imageUrl: String?,
   val phoneNumber: String?,
   val url: String?,
+  val preferredImageHeight: Int?,
 )
 
 private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction():
@@ -108,12 +109,13 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
 
 private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
   MemberActionWithDetails.SickAbroadAction {
-  val partners = this?.partners?.map {
+  val partners = this?.deflectPartners?.map {
     DeflectPartner(
       id = it.id,
       imageUrl = it.imageUrl,
       phoneNumber = it.phoneNumber,
       url = it.url,
+      preferredImageHeight = it.preferredImageHeight,
     )
   }
   return MemberActionWithDetails.SickAbroadAction(partners)

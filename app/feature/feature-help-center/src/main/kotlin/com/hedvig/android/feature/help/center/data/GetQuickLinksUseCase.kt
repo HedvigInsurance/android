@@ -101,7 +101,7 @@ internal class GetQuickLinksUseCase(
       if (memberActionOptions.firstVetAction?.sections?.isNotEmpty() == true) {
         add(
           StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.InnerHelpCenterDestination.FirstVet(
+            quickLinkDestination = InnerHelpCenterDestination.FirstVet(
               sections = memberActionOptions.firstVetAction.sections,
             ),
             titleRes = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE,
@@ -110,11 +110,13 @@ internal class GetQuickLinksUseCase(
         )
       }
       if (memberActionOptions.sickAbroadAction?.partners?.isNotEmpty() == true) {
+        val deflectPartner = memberActionOptions.sickAbroadAction.partners[0]
         add(
           StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad(
-              emergencyNumber = memberActionOptions.sickAbroadAction.partners[0].phoneNumber,
-              emergencyUrl = memberActionOptions.sickAbroadAction.partners[0].url,
+            quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
+              emergencyNumber = deflectPartner.phoneNumber,
+              emergencyUrl = deflectPartner.url,
+              preferredPartnerImageHeight = deflectPartner.preferredImageHeight,
             ),
             titleRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
@@ -171,15 +173,16 @@ sealed interface QuickLinkDestination {
 
     data object ChooseInsuranceForEditCoInsured : OuterDestination
   }
+}
 
-  sealed interface InnerHelpCenterDestination : QuickLinkDestination {
-    data class QuickLinkSickAbroad(
-      val emergencyNumber: String?,
-      val emergencyUrl: String?,
-    ) : InnerHelpCenterDestination
+internal sealed interface InnerHelpCenterDestination : QuickLinkDestination {
+  data class QuickLinkSickAbroad(
+    val emergencyNumber: String?,
+    val emergencyUrl: String?,
+    val preferredPartnerImageHeight: Int?,
+  ) : InnerHelpCenterDestination
 
-    data class FirstVet(
-      val sections: List<FirstVetSection>,
-    ) : InnerHelpCenterDestination
-  }
+  data class FirstVet(
+    val sections: List<FirstVetSection>,
+  ) : InnerHelpCenterDestination
 }

@@ -40,6 +40,7 @@ fun EmergencyScreen(
   emergencyNumber: String?,
   emergencyUrl: String?,
   openUrl: (String) -> Unit,
+  preferredPartnerImageHeight: Int?,
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -77,7 +78,7 @@ fun EmergencyScreen(
               contentDescription = null,
               modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height((preferredPartnerImageHeight ?: 80).dp),
             )
             Spacer(Modifier.height(24.dp))
             HedvigText(
@@ -192,6 +193,10 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
       stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
     stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to
       stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL),
   )
   Column(modifier) {
     AccordionList(mapToAccordionData(faqList))
@@ -214,6 +219,7 @@ private fun PreviewEmergencyScreen() {
       EmergencyScreen(
         emergencyNumber = "123456",
         emergencyUrl = "url",
+        preferredPartnerImageHeight = null,
         navigateUp = {},
         openUrl = {},
       )
