@@ -53,4 +53,5 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
+  implementation(projects.designSystemApi)
 }
