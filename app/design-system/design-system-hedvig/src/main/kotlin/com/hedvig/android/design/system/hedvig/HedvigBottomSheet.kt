@@ -42,7 +42,7 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable
-fun HedvigBottomSheet( // todo: this one works fine
+fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
   contentPadding: PaddingValues? = null,
@@ -52,7 +52,9 @@ fun HedvigBottomSheet( // todo: this one works fine
   val sheetState = rememberHedvigBottomSheetState<Unit>(scope)
   if (isVisible) {
     InternalHedvigBottomSheet(
-      onVisibleChange = onVisibleChange,
+      onDismissRequest = {
+        onVisibleChange(false)
+      },
       contentPadding = contentPadding,
       content = content,
       sheetState = sheetState,
@@ -72,14 +74,14 @@ fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable
-fun <T> HedvigBottomSheet( // todo: this one is 1 frame late, so it doesn't roll up properly
+fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   if (hedvigBottomSheetState.isVisible) {
     InternalHedvigBottomSheet(
-      onVisibleChange = {},
+      onDismissRequest = {},
       contentPadding = contentPadding,
       sheetState = hedvigBottomSheetState,
     ) {
@@ -93,7 +95,7 @@ fun <T> HedvigBottomSheet( // todo: this one is 1 frame late, so it doesn't roll
 @OptIn(ExperimentalSheetApi::class)
 @Composable
 private fun <T> InternalHedvigBottomSheet(
-  onVisibleChange: (Boolean) -> Unit,
+  onDismissRequest: () -> Unit,
   contentPadding: PaddingValues? = null,
   sheetState: HedvigBottomSheetState<T>,
   content: @Composable ColumnScope.() -> Unit,
@@ -106,9 +108,7 @@ private fun <T> InternalHedvigBottomSheet(
     }
   }
   BottomSheet(
-    onDismissRequest = {
-      onVisibleChange(false)
-    },
+    onDismissRequest = onDismissRequest,
     modifier = Modifier,
     sheetState = sheetState,
     shape = bottomSheetShape.shape,
