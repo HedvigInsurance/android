@@ -640,8 +640,10 @@ private fun ColumnScope.CrossSellsSheetContent(
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  HedvigText(stringResource(R.string.CROSS_SELL_TITLE))
-  HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), color = HedvigTheme.colorScheme.textSecondary)
+  Column(Modifier.semantics(mergeDescendants = true) {}) {
+    HedvigText(stringResource(R.string.CROSS_SELL_TITLE))
+    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), color = HedvigTheme.colorScheme.textSecondary)
+  }
   Spacer(Modifier.height(24.dp))
   CrossSellsSection(
     showNotificationBadge = false,
