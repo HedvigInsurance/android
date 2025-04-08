@@ -262,8 +262,10 @@ private fun SummaryScreen(
           }
         }
       }
-      Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
+      if (content.summaryInfo.moveMtaQuotes.isNotEmpty()) {
+        Spacer(Modifier.height(16.dp))
+        HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
+      }
       Spacer(Modifier.height(16.dp))
       with(LocalDensity.current) {
         Spacer(Modifier.height(bottomAttachedContentHeightPx.toDp()))
