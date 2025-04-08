@@ -343,7 +343,7 @@ private fun DateOfPurchase(uiState: DatePickerUiState, canInteract: Boolean, mod
 private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   val focusRequester = remember { FocusRequester() }
   MonetaryAmountInput(
-    value = uiState.uiMoney.amount?.toString() ?: "",
+    value = uiState.uiMoney.amount?.toString() ?: "", //todo: think how to add voiceDescription
     hintText = stringResource(R.string.claims_payout_purchase_price),
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },

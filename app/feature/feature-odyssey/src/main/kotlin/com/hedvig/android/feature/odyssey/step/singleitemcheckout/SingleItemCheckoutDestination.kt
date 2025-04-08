@@ -125,7 +125,7 @@ private fun SingleItemCheckoutScreen(
       modifier = sideSpacingModifier,
     ) {
       HedvigText(
-        text = uiState.compensation.payoutAmount.toString(),
+        text = uiState.compensation.payoutAmount.toString(), //todo: think how to add voiceDescription
         style = HedvigTheme.typography.displaySmall,
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -184,14 +184,14 @@ private fun SingleItemCheckoutScreen(
             stringResource(
               R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
               uiState.modelDisplayName,
-            ) to uiState.compensation.repairCost.toString(),
+            ) to uiState.compensation.repairCost.toString(), //todo: think how to add voiceDescription
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
           )
 
           is ValueCompensation -> listOf(
-            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(),
-            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(),
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
+            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(), //todo: think how to add voiceDescription
+            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(), //todo: think how to add voiceDescription
+            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(), //todo: think how to add voiceDescription
           )
         }
         for ((left, right) in pairs) {
@@ -225,7 +225,7 @@ private fun SingleItemCheckoutScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           HedvigText(
-            text = uiState.compensation.payoutAmount.toString(),
+            text = uiState.compensation.payoutAmount.toString(), //todo: think how to add voiceDescription
             modifier = Modifier.padding(end = 16.dp),
             color = HedvigTheme.colorScheme.textSecondary,
           )
@@ -300,7 +300,7 @@ private fun SingleItemCheckoutScreen(
       Spacer(Modifier.height(16.dp))
     }
     HedvigButton(
-      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
+      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()), //todo: think how to add voiceDescription
       onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
       enabled = true,
       modifier = sideSpacingModifier.fillMaxWidth(),

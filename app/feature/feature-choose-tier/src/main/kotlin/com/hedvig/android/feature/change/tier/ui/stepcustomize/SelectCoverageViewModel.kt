@@ -154,7 +154,7 @@ internal class SelectCoveragePresenter(
                 chosenQuoteInDialog = current
                 currentPartialState = PartialUiState.Success(
                   contractData = ContractData(
-                    activeDisplayPremium = current.premium.toString(),
+                    activeDisplayPremium = current.premium.toString(), //todo: think how to add voiceDescription
                     contractGroup = current.productVariant.contractGroup,
                     contractDisplayName = current.productVariant.displayName,
                     contractDisplaySubtitle = currentContractData.currentExposureName,

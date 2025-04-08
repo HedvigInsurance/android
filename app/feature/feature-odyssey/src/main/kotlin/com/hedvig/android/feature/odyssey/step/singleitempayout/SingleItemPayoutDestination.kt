@@ -194,7 +194,7 @@ private fun BoxScope.PaidOutContent(
       modifier = Modifier.padding(16.dp),
     ) {
       HedvigText(
-        text = paidOutAmount.toString(),
+        text = paidOutAmount.toString(), //todo: think how to add voiceDescription
         textAlign = TextAlign.Center,
         style = HedvigTheme.typography.displaySmall,
       )

@@ -29,7 +29,7 @@ internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<Ui
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(id = R.string.referrals_info_sheet_body, discount.toString()),
+      text = stringResource(id = R.string.referrals_info_sheet_body, discount.toString()), //todo: think how to add voiceDescription
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
         .fillMaxWidth(),

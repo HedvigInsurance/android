@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
@@ -18,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.GenericClosed
@@ -59,6 +62,10 @@ private fun ClaimPill(type: ClaimPillType) {
     is ClaimPillType.PaymentAmount -> type.uiMoney.toString()
     ClaimPillType.Unknown -> stringResource(R.string.home_claim_card_pill_claim)
   }
+  val voiceDescription = when (type) {
+    is ClaimPillType.Closed,ClaimPillType.Claim,ClaimPillType.Unknown -> text
+    is ClaimPillType.PaymentAmount -> type.uiMoney.getDescription()
+  }
   val color: HighlightLabelDefaults.HighlightColor = when (type) {
     ClaimPillType.Claim -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
     is ClaimPillType.Closed -> {
@@ -74,7 +81,10 @@ private fun ClaimPill(type: ClaimPillType) {
     is ClaimPillType.PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
     ClaimPillType.Unknown -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
   }
-  HighlightLabel(text, HighlightLabelDefaults.HighLightSize.Small, color)
+  HighlightLabel(text, HighlightLabelDefaults.HighLightSize.Small, color,
+    modifier  = Modifier.semantics{
+      contentDescription = voiceDescription
+    })
 }
 
 @HedvigPreview

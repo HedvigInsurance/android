@@ -290,7 +290,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
       formatStartDate(uiState.activationDate),
     ),
-    premium = uiState.quote.premium.toString(),
+    premium = uiState.quote.premium.toString(), //todo: think how to add voiceDescription. to the quoteCard?
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -332,10 +332,9 @@ private fun AddonCard(
     displayName = addonQuote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    // todo: here we don't want to show insurable limits for addons, that may change later
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
-    premium = addonQuote.premium.toString(),
+    premium = addonQuote.premium.toString(), //todo: think how to add voiceDescription. to the quote card?
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
