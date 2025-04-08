@@ -47,12 +47,12 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer

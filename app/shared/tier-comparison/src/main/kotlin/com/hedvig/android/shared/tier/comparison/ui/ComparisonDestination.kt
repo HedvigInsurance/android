@@ -104,9 +104,12 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   val selectedComparisonRowBottomSheetState = rememberHedvigBottomSheetState<CoverageLevel.ComparisonItem>()
   HedvigBottomSheet(
     hedvigBottomSheetState = selectedComparisonRowBottomSheetState,
-    contentPadding = PaddingValues(horizontal = 24.dp),
   ) { comparisonRow ->
-    ComparisonRowBottomSheetContent(comparisonRow, { selectedComparisonRowBottomSheetState.dismiss() })
+    ComparisonRowBottomSheetContent(
+      comparisonItem = comparisonRow,
+      dismissSheet = { selectedComparisonRowBottomSheetState.dismiss() },
+      modifier = Modifier.padding(horizontal = 24.dp),
+    )
   }
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -247,8 +250,12 @@ private fun CoverageLevelRow(
 }
 
 @Composable
-private fun ComparisonRowBottomSheetContent(comparisonItem: CoverageLevel.ComparisonItem, dismissSheet: () -> Unit) {
-  Column {
+private fun ComparisonRowBottomSheetContent(
+  comparisonItem: CoverageLevel.ComparisonItem,
+  dismissSheet: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier) {
     HedvigText(text = comparisonItem.title)
     Spacer(Modifier.height(2.dp))
     HedvigText(

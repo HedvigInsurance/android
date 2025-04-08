@@ -48,10 +48,7 @@ internal fun EditCodeBottomSheet(
 ) {
   DismissSheetOnSuccessfulCodeChangeEffect(sheetState, referralCodeSuccessfullyChanged)
   ClearErrorOnSheetDismissedEffect(sheetState, showedReferralCodeSubmissionError)
-  HedvigBottomSheet(
-    hedvigBottomSheetState = sheetState,
-    contentPadding = null,
-  ) { initialCode ->
+  HedvigBottomSheet(hedvigBottomSheetState = sheetState) { initialCode ->
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var textFieldValue by remember {
