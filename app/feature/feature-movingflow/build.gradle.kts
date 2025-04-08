@@ -31,6 +31,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
+  implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)

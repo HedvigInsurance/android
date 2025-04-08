@@ -59,6 +59,7 @@ val movingFlowModule = module {
       get(),
       get(),
       get(),
+      get(),
     )
   }
 }

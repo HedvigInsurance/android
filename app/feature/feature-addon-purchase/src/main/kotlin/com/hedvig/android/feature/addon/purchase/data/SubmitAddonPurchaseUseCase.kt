@@ -5,6 +5,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.UpsellTravelAddonActivateMutation
@@ -15,6 +17,7 @@ internal interface SubmitAddonPurchaseUseCase {
 
 internal class SubmitAddonPurchaseUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : SubmitAddonPurchaseUseCase {
   override suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, Unit> {
     return either {
@@ -27,6 +30,7 @@ internal class SubmitAddonPurchaseUseCaseImpl(
           if (result.upsellTravelAddonActivate.userError != null) {
             raise(ErrorMessage(result.upsellTravelAddonActivate.userError.message))
           }
+          crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(CrossSellInfoType.Addon)
         },
       )
     }
