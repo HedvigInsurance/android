@@ -56,7 +56,7 @@ internal class GetClaimDetailUiStateUseCase(
             claimsQueryData.currentMember.claims.firstOrNull { it.id == claimId }
           ensureNotNull(claim) { Error.NoClaimFound }
           if (claim.showClaimClosedFlow) {
-            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claimId)
+            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
           }
           ClaimDetailUiState.Content.fromClaim(claim, claim.conversation)
         }
@@ -129,7 +129,7 @@ internal class GetClaimDetailUiStateUseCase(
       termsConditionsUrl = termsConditionsUrl,
       savedFileUri = null,
       downloadError = null,
-      isLoadingPdf = false,
+      isLoadingPdf = null,
       appealInstructionsUrl = claim.appealInstructionsUrl,
       isUploadingFilesEnabled = claim.isUploadingFilesEnabled,
       infoText = claim.infoText,

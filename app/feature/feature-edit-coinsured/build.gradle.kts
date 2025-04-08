@@ -32,6 +32,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)

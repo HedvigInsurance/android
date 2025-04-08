@@ -65,6 +65,9 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -103,6 +106,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -133,9 +137,11 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageGif
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageMedia
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Text
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
@@ -482,6 +488,7 @@ private fun ChatBubble(
   modifier: Modifier = Modifier,
 ) {
   val chatMessage = uiChatMessage?.chatMessage
+  val description = getMessageDescription(chatMessage)
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
@@ -497,7 +504,10 @@ private fun ChatBubble(
               text = "HHHHHHHHHH",
               modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .withoutPlacement(),
+                .withoutPlacement()
+                .semantics {
+                  hideFromAccessibility()
+                },
             )
           }
         }
@@ -512,7 +522,9 @@ private fun ChatBubble(
               text = chatMessage.text,
               onUrlClicked = openUrl,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).semantics {
+                hideFromAccessibility()
+              },
             )
           }
         }
@@ -527,6 +539,8 @@ private fun ChatBubble(
                 isFailedToBeSentMessage = false,
                 modifier = Modifier.clickable {
                   onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                }.semantics {
+                  hideFromAccessibility()
                 },
               )
             }
@@ -544,9 +558,17 @@ private fun ChatBubble(
                   onGoFullWidth = onGoFullWidth,
                   onGoDefaultWidth = onGoDefaultWidth,
                   showingFullWidth = showingFullWidth,
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
                 )
               } else {
-                AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
+                AttachedFileMessage(
+                  onClick = { openUrl(chatMessage.url) },
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
+                )
               }
             }
 
@@ -558,13 +580,20 @@ private fun ChatBubble(
                 isFailedToBeSentMessage = false,
                 modifier = Modifier.clickable {
                   openUrl(chatMessage.url)
+                }.semantics {
+                  hideFromAccessibility()
                 },
               )
             }
 
             ChatMessageFile.MimeType.OTHER,
             -> {
-              AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
+              AttachedFileMessage(
+                onClick = { openUrl(chatMessage.url) },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
+              )
             }
           }
         }
@@ -575,6 +604,9 @@ private fun ChatBubble(
             imageLoader = imageLoader,
             cacheKey = chatMessage.gifUrl,
             isFailedToBeSentMessage = false,
+            modifier = Modifier.semantics {
+              hideFromAccessibility()
+            },
           )
         }
 
@@ -587,6 +619,9 @@ private fun ChatBubble(
                 contentColor = HedvigTheme.colorScheme.signalRedText,
                 onClick = {
                   onRetrySendChatMessage(chatMessage.id)
+                },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
                 },
               ) {
                 Row(
@@ -611,6 +646,9 @@ private fun ChatBubble(
                 chatMessage.uri,
                 onRetrySendChatMessage,
                 imageLoader,
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
               )
             }
 
@@ -620,6 +658,9 @@ private fun ChatBubble(
                 chatMessage.uri,
                 onRetrySendChatMessage,
                 imageLoader,
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
               )
             }
           }
@@ -628,8 +669,38 @@ private fun ChatBubble(
     },
     uiChatMessage = uiChatMessage,
     chatItemIndex = chatItemIndex,
-    modifier = modifier,
+    modifier = modifier.semantics(mergeDescendants = true) {
+      contentDescription = description
+    },
   )
+}
+
+@Composable
+private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
+  return chatMessage?.let {
+    val context = LocalContext.current
+    val sender = stringResource(
+      when (it.sender) {
+        Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
+        Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
+      },
+    )
+    val time = formatInstantForTalkBack(context, it.sentAt)
+    when (it) {
+      is ChatMessageFile -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
+      // At [%s:formattedInstant], [%s:sender] sent a file with type: [%s:mimeType], double tap to open.
+      is ChatMessageGif -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
+      // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
+      is CbmChatMessage.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
+      // "at $instant, $sender said: $it.text."
+      is FailedToBeSent.ChatMessageMedia -> stringResource(R.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+      // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
+      is FailedToBeSent.ChatMessagePhoto -> stringResource(R.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+      // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
+      is FailedToBeSent.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
+    }
+  } ?: ""
 }
 
 @Composable
@@ -638,6 +709,7 @@ private fun FailedToBeSentUri(
   messageUri: Uri,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   imageLoader: ImageLoader,
+  modifier: Modifier,
 ) {
   val image = HedvigIcons.Refresh
   val retryIconPainter = rememberVectorPainter(
@@ -656,7 +728,7 @@ private fun FailedToBeSentUri(
     imageLoader = imageLoader,
     isRetryable = true,
     isFailedToBeSentMessage = true,
-    modifier = Modifier
+    modifier = modifier
       .clip(HedvigTheme.shapes.cornerLarge)
       .clickable { onRetrySendChatMessage(messageId) }
       .drawWithContent {
@@ -683,10 +755,11 @@ private fun AttachedFileMessage(
   onClick: () -> Unit,
   containerColor: Color = Color.Transparent,
   borderColor: Color = LocalContentColor.current,
+  modifier: Modifier,
 ) {
   val shape = HedvigTheme.shapes.cornerLarge
   Box(
-    Modifier
+    modifier
       .drawWithCache {
         val stroke = Stroke(1.dp.toPx())
         val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
@@ -921,7 +994,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
           imageVector = HedvigIcons.InfoFilled,
           contentDescription = null,
           tint = HedvigTheme.colorScheme.signalRedElement,
-          modifier = Modifier.size(16.dp),
+          modifier = Modifier.size(16.dp).semantics {
+            hideFromAccessibility()
+          },
         )
       }
     }
@@ -950,7 +1025,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         },
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.then(
+        modifier = Modifier.semantics {
+          hideFromAccessibility()
+        }.then(
           if (chatMessage == null) {
             Modifier.hedvigPlaceholder(
               visible = true,

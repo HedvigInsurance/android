@@ -77,7 +77,7 @@ internal fun TerminationScaffold(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.general_close_button),
           )
         },
       )

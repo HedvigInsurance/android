@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -31,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.insurances.data.Addon
+import hedvig.resources.R
 
 @Composable
 internal fun DocumentsTab(
@@ -78,12 +82,16 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?) {
+private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?, modifier: Modifier = Modifier) {
+  val docDescription = stringResource(R.string.TALKBACK_DOCUMENT, title)
   HedvigCard(
     onClick = onClick,
-    modifier = Modifier
+    modifier = modifier
       .padding(horizontal = 16.dp)
-      .heightIn(min = 56.dp),
+      .heightIn(min = 56.dp)
+      .clearAndSetSemantics {
+        contentDescription = docDescription
+      },
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,

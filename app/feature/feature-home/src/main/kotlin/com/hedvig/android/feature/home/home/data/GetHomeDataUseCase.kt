@@ -14,9 +14,8 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -49,7 +48,6 @@ internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -71,24 +69,20 @@ internal class GetHomeDataUseCaseImpl(
         }
       },
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
-      combine(
-        getMemberRemindersUseCase.invoke(),
-        flow {
-          val useCase = getTravelAddonBannerInfoUseCaseProvider.provide()
-          useCase.invoke(TravelAddonBannerSource.INSURANCES_TAB).collect(this)
-        },
-      ) { memberReminders, travelBannerInfo -> memberReminders to travelBannerInfo },
+      getMemberRemindersUseCase.invoke(),
+      flow {
+        emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(TravelAddonBannerSource.INSURANCES_TAB))
+      },
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-      crossSellAfterClaimClosedRepository.shouldShowCrossSellAfterClaim(),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
       isEligibleToShowTheChatIconResult,
-      (memberReminders, travelBannerInfo),
+      memberReminders,
+      travelBannerInfo,
       isChatDisabled,
       isHelpCenterEnabled,
-      shouldShowCrossSellAfterClaim,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -158,7 +152,6 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          forceShowCrossSells = crossSells.takeIf { shouldShowCrossSellAfterClaim },
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -249,7 +242,6 @@ internal data class HomeData(
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
-  val forceShowCrossSells: List<CrossSell>?,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,

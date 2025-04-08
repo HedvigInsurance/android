@@ -35,6 +35,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -50,9 +52,10 @@ import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParameter
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
@@ -84,7 +87,6 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun InsuranceDestination(
@@ -225,7 +227,10 @@ private fun InsuranceScreenContent(
       modifier = Modifier
         .height(64.dp)
         .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
     ) {
       HedvigText(
         text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
@@ -507,7 +512,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
         eligibleInsurancesIds = nonEmptyListOf("id"),
-        bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
       ),
       pendingContracts = listOf(),
     ),

@@ -3,6 +3,7 @@ package com.hedvig.android.feature.addon.purchase.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
@@ -64,6 +65,7 @@ val addonPurchaseModule = module {
   single<SubmitAddonPurchaseUseCase> {
     SubmitAddonPurchaseUseCaseImpl(
       apolloClient = get<ApolloClient>(),
+      crossSellAfterFlowRepository = get<CrossSellAfterFlowRepository>(),
     )
   }
 }

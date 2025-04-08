@@ -15,6 +15,8 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
@@ -42,6 +44,7 @@ internal class SummaryViewModel(
   savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
+  crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
@@ -49,6 +52,7 @@ internal class SummaryViewModel(
       summaryRoute = savedStateHandle.toRoute<Summary>(),
       movingFlowRepository = movingFlowRepository,
       apolloClient = apolloClient,
+      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       featureManager = featureManager,
     ),
   )
@@ -57,6 +61,7 @@ internal class SummaryPresenter(
   private val summaryRoute: Summary,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
+  private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
@@ -147,6 +152,9 @@ internal class SummaryPresenter(
                   submitChangesError = SubmitError.WithMessage(userErrorMessage)
                 }
               } else {
+                crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
+                  CrossSellInfoType.MovingFlow,
+                )
                 Snapshot.withMutableSnapshot {
                   submitChangesWithData = null
                   navigateToFinishedScreenWithDate = submitChangesDataValue.forDate

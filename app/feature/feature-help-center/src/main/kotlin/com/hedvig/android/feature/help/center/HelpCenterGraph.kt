@@ -4,9 +4,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
+import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
+import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.FirstVet
+import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.QuickLinkSickAbroad
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.FirstVet
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
@@ -52,7 +53,7 @@ fun NavGraphBuilder.helpCenterGraph(
               onNavigateToQuickLink(backStackEntry, destination)
             }
 
-            is QuickLinkDestination.InnerHelpCenterDestination -> {
+            is InnerHelpCenterDestination -> {
               when (destination) {
                 is FirstVet -> {
                   with(navigator) {
@@ -66,6 +67,7 @@ fun NavGraphBuilder.helpCenterGraph(
                       Emergency(
                         destination.emergencyNumber,
                         destination.emergencyUrl,
+                        destination.preferredPartnerImageHeight,
                       ),
                     )
                   }
@@ -132,6 +134,7 @@ fun NavGraphBuilder.helpCenterGraph(
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
         emergencyUrl = emergencyUrl,
+        preferredPartnerImageHeight = preferredPartnerImageHeight,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
       )

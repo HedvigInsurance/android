@@ -56,7 +56,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
@@ -68,7 +67,6 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
-import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -77,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -97,7 +96,7 @@ import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.ui.claimstatus.ClaimStatusCardContent
+import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
@@ -394,21 +393,23 @@ private fun BeforeGridContent(
       )
       Spacer(Modifier.height(8.dp))
     }
-    HedvigCard {
-      ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
-    }
+    ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
     Spacer(Modifier.height(8.dp))
-    if (!uiState.claimIsInUndeterminedState) {
+    if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
       HedvigCard {
         Column(Modifier.padding(16.dp)) {
-          HedvigText(
-            text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
-            style = HedvigTheme.typography.bodySmall,
-          )
-          if (navigateToConversation != null) {
+          if (!uiState.claimIsInUndeterminedState) {
+            HedvigText(
+              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+              style = HedvigTheme.typography.bodySmall,
+            )
+          }
+          if (navigateToConversation != null && !uiState.claimIsInUndeterminedState) {
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
+          }
+          if (navigateToConversation != null) {
             HorizontalItemsWithMaximumSpaceTaken(
               modifier = Modifier
                 .clip(HedvigTheme.shapes.cornerXSmall)
@@ -443,68 +444,68 @@ private fun BeforeGridContent(
         }
       }
     }
-    Spacer(Modifier.height(24.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          HedvigText(
-            stringResource(R.string.claim_status_claim_details_title),
-            Modifier.padding(horizontal = 2.dp),
-          )
-        }
-      },
-      endSlot = {
-        Row(
-          horizontalArrangement = Arrangement.End,
-        ) {
-          IconButton(
-            onClick = onExplanationButtonClick,
-            modifier = Modifier.size(40.dp),
-          ) {
-            Icon(
-              imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        }
-      },
-      spaceBetween = 8.dp,
-    )
-
-    Spacer(Modifier.height(8.dp))
-    DisplayItemsSection(
-      displayItems = uiState.displayItems,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 2.dp),
-    )
-    Spacer(Modifier.height(24.dp))
-    HedvigText(
-      stringResource(R.string.claim_status_detail_uploaded_files_info_title),
-      Modifier.padding(horizontal = 2.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    when (uiState.submittedContent) {
-      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-      }
-
-      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
-        HedvigCard(Modifier.fillMaxWidth()) {
-          HedvigText(
-            uiState.submittedContent.text,
-            Modifier.padding(16.dp),
-          )
-        }
-      }
-
-      else -> {}
-    }
-    Spacer(Modifier.height(8.dp))
   }
+  Spacer(Modifier.height(24.dp))
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        HedvigText(
+          stringResource(R.string.claim_status_claim_details_title),
+          Modifier.padding(horizontal = 2.dp),
+        )
+      }
+    },
+    endSlot = {
+      Row(
+        horizontalArrangement = Arrangement.End,
+      ) {
+        IconButton(
+          onClick = onExplanationButtonClick,
+          modifier = Modifier.size(40.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.InfoOutline,
+            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
+    },
+    spaceBetween = 8.dp,
+  )
+
+  Spacer(Modifier.height(8.dp))
+  DisplayItemsSection(
+    displayItems = uiState.displayItems,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 2.dp),
+  )
+  Spacer(Modifier.height(24.dp))
+  HedvigText(
+    stringResource(R.string.claim_status_detail_uploaded_files_info_title),
+    Modifier.padding(horizontal = 2.dp),
+  )
+  Spacer(Modifier.height(8.dp))
+  when (uiState.submittedContent) {
+    is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+      ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
+    }
+
+    is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+      HedvigCard(Modifier.fillMaxWidth()) {
+        HedvigText(
+          uiState.submittedContent.text,
+          Modifier.padding(16.dp),
+        )
+      }
+    }
+
+    else -> {}
+  }
+  Spacer(Modifier.height(8.dp))
 }
 
 @Composable
@@ -516,7 +517,7 @@ private fun AfterGridContent(
 ) {
   Column {
     if (uiState.isUploadingFilesEnabled) {
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(24.dp))
       HedvigText(
         text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
         textAlign = TextAlign.Center,
@@ -542,7 +543,7 @@ private fun AfterGridContent(
           isLoading = uiState.isUploadingFile,
         )
       }
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(24.dp))
     }
     if (uiState.uploadError != null) {
       ErrorDialog(
@@ -563,7 +564,7 @@ private fun AfterGridContent(
       TermsConditionsCard(
         onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
         modifier = Modifier.padding(16.dp),
-        isLoading = uiState.isLoadingPdf,
+        isLoading = uiState.termsConditionsUrl == uiState.isLoadingPdf,
       )
       Spacer(Modifier.height(8.dp))
     }
@@ -571,7 +572,7 @@ private fun AfterGridContent(
       AppealInstructionCard(
         onClick = { downloadFromUrl(uiState.appealInstructionsUrl) },
         modifier = Modifier.padding(16.dp),
-        isLoading = uiState.isLoadingPdf,
+        isLoading = uiState.appealInstructionsUrl == uiState.isLoadingPdf,
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -598,7 +599,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            HedvigCircularProgressIndicator()
+            HedvigThreeDotsProgressIndicator()
           }
         }
       } else {
@@ -630,7 +631,7 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            HedvigCircularProgressIndicator()
+            HedvigThreeDotsProgressIndicator()
           }
         }
       } else {
@@ -838,7 +839,7 @@ private fun PreviewClaimDetailScreen(
           termsConditionsUrl = "url",
           savedFileUri = null,
           downloadError = null,
-          isLoadingPdf = false,
+          isLoadingPdf = null,
           appealInstructionsUrl = "dd",
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",

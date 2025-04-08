@@ -72,6 +72,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
     is ClaimFlowStep.ClaimSummaryStep -> {
       ClaimFlowDestination.Summary(
         claimTypeTitle = claimTypeTitle,
+        subTitle = this.claimSubtitle,
         selectedLocation = location,
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,
@@ -97,6 +98,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
           SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
         freeText = freeText,
+        selectedContractExposure = selectedContractExposure,
       )
     }
 
@@ -246,6 +248,7 @@ private fun FlowClaimDeflectPartnerFragment.toLocalPartner(): DeflectPartner {
     imageUrl = imageUrl ?: "",
     phoneNumber = phoneNumber,
     url = url,
+    preferredImageHeight = preferredImageHeight,
   )
 }
 

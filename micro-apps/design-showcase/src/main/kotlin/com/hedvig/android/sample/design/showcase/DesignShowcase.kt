@@ -3,6 +3,7 @@ package com.hedvig.android.sample.design.showcase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.hedvig.android.sample.design.showcase.DesignShowcase.*
 import com.hedvig.android.sample.design.showcase.accordion.AccordionShowCase
 import com.hedvig.android.sample.design.showcase.bigcard.BigCardShowcase
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
@@ -14,6 +15,7 @@ import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.list.ClickableListShowcase
+import com.hedvig.android.sample.design.showcase.materialBottomSheet.MaterialExperiment
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
 import com.hedvig.android.sample.design.showcase.peril.PerilsShowcase
 import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
@@ -26,68 +28,54 @@ import com.hedvig.android.sample.design.showcase.topbar.TopAppBarShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
+  val showcase = ShowMaterialBottomSheet
   Box(modifier) {
-    if (showIcons) {
-      ShowcaseIcons()
-    } else if (showButton) {
-      ShowcaseButton()
-    } else if (showBottomSheet) {
-      ShowcaseBottomSheet()
-    } else if (showStepper) {
-      StepperShowcase()
-    } else if (showTextField) {
-      ShowcaseTextField()
-    } else if (showRadio) {
-      ShowCaseRadioGroups()
-    } else if (showToggle) {
-      ToggleShowcase()
-    } else if (showDialog) {
-      DialogShowcase()
-    } else if (showDatePicker) {
-      DatePickerShowcase()
-    } else if (showFreeTextOverlay) {
-      FreeTextShowcase()
-    } else if (showHighLight) {
-      HighlightShowcase()
-    } else if (showProgressBar) {
-      ProgressBarShowcase()
-    } else if (showSnacks) {
-      NotificationsSnackbarShowcase()
-    } else if (showTabs) {
-      TabsShowcase()
-    } else if (showPerils) {
-      PerilsShowcase()
-    } else if (showAccordion) {
-      AccordionShowCase()
-    } else if (showClickableList) {
-      ClickableListShowcase()
-    } else if (showDropdown) {
-      DropdownShowcase()
-    } else if (showTopBar) {
-      TopAppBarShowcase()
-    } else if (showBigCard) {
-      BigCardShowcase()
+    when (showcase) {
+      ShowIcons -> ShowcaseIcons()
+      ShowButton -> ShowcaseButton()
+      ShowBottomSheet -> ShowcaseBottomSheet()
+      ShowStepper -> StepperShowcase()
+      ShowTextField -> ShowcaseTextField()
+      ShowRadio -> ShowCaseRadioGroups()
+      ShowToggle -> ToggleShowcase()
+      ShowDialog -> DialogShowcase()
+      ShowDatePicker -> DatePickerShowcase()
+      ShowFreeTextOverlay -> FreeTextShowcase()
+      ShowHighLight -> HighlightShowcase()
+      ShowProgressBar -> ProgressBarShowcase()
+      ShowSnacks -> NotificationsSnackbarShowcase()
+      ShowTabs -> TabsShowcase()
+      ShowPerils -> PerilsShowcase()
+      ShowAccordion -> AccordionShowCase()
+      ShowClickableList -> ClickableListShowcase()
+      ShowDropdown -> DropdownShowcase()
+      ShowTopBar -> TopAppBarShowcase()
+      ShowBigCard -> BigCardShowcase()
+      ShowMaterialBottomSheet -> MaterialExperiment()
     }
   }
 }
 
-private val showStepper = false
-private val showIcons = false
-private val showButton = false
-private val showTextField = false
-private val showBottomSheet = false
-private val showRadio = false
-private val showToggle = false
-private val showDialog = false
-private val showDatePicker = false
-private val showFreeTextOverlay = false
-private val showHighLight = false
-private val showProgressBar = false
-private val showPerils = false
-private val showAccordion = false
-private val showSnacks = false
-private val showTabs = true
-private val showClickableList = false
-private val showTopBar = false
-private val showDropdown = false
-private val showBigCard = false
+enum class DesignShowcase {
+  ShowStepper,
+  ShowIcons,
+  ShowButton,
+  ShowTextField,
+  ShowBottomSheet,
+  ShowRadio,
+  ShowToggle,
+  ShowDialog,
+  ShowDatePicker,
+  ShowFreeTextOverlay,
+  ShowHighLight,
+  ShowProgressBar,
+  ShowPerils,
+  ShowAccordion,
+  ShowSnacks,
+  ShowTabs,
+  ShowClickableList,
+  ShowTopBar,
+  ShowDropdown,
+  ShowBigCard,
+  ShowMaterialBottomSheet,
+}

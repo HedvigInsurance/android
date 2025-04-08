@@ -3,6 +3,7 @@ package com.hedvig.android.feature.help.center.navigation
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.SerialName
@@ -30,7 +31,11 @@ internal sealed interface HelpCenterDestinations {
   ) : HelpCenterDestinations, Destination
 
   @Serializable
-  data class Emergency(val emergencyNumber: String?, val emergencyUrl: String?) : HelpCenterDestinations, Destination
+  data class Emergency(
+    val emergencyNumber: String?,
+    val emergencyUrl: String?,
+    val preferredPartnerImageHeight: Int?,
+  ) : HelpCenterDestinations, Destination
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations, Destination {
@@ -39,3 +44,9 @@ internal sealed interface HelpCenterDestinations {
     }
   }
 }
+
+val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
+  HelpCenterDestinations.HelpCenter::class,
+  HelpCenterDestinations.Topic::class,
+  HelpCenterDestinations.Question::class,
+)

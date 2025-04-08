@@ -14,9 +14,7 @@ import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
-import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.contract.android.CrossSell
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -42,7 +40,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -69,7 +66,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -94,7 +90,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -122,7 +117,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           showHelpCenter = false,
           crossSells = listOf(),
-          forceShowCrossSells = emptyList(),
           firstVetSections = listOf(),
           travelBannerInfo = null,
         ).right(),
@@ -149,7 +143,6 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           chatAction = HomeTopBarAction.ChatAction,
-          forceShowCrossSells = emptyList(),
           hasUnseenChatMessages = false,
           travelAddonBannerInfo = null,
         ),
@@ -164,7 +157,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -183,7 +175,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -201,7 +192,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
         ),
@@ -216,7 +206,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -240,7 +229,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -259,7 +247,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           crossSells = listOf(),
           travelBannerInfo = null,
         ).right(),
@@ -278,7 +265,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
 
@@ -295,7 +281,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -311,7 +296,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
         ),
@@ -326,7 +310,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     val firstVet = FirstVetSection(
@@ -350,7 +333,6 @@ internal class HomePresenterTest {
           firstVetSections = listOf(
             firstVet,
           ),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -366,7 +348,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
-          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
         ),
@@ -381,7 +362,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     val crossSell = CrossSell(
@@ -404,7 +384,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(crossSell),
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -420,7 +399,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          forceShowCrossSells = emptyList(),
           crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
           travelAddonBannerInfo = null,
         ),
@@ -435,7 +413,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -451,7 +428,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -467,7 +443,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
-          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
         ),
@@ -482,7 +457,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
-      NoopCrossSellAfterClaimClosedRepository(),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -498,7 +472,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
-          forceShowCrossSells = emptyList(),
           showHelpCenter = false,
           travelBannerInfo = null,
         ).right(),
@@ -514,7 +487,6 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          forceShowCrossSells = emptyList(),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
         ),
@@ -541,22 +513,7 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    forceShowCrossSells = emptyList(),
     crossSells = listOf(),
     travelBannerInfo = null,
   )
-}
-
-private class NoopCrossSellAfterClaimClosedRepository : CrossSellAfterClaimClosedRepository {
-  override fun shouldShowCrossSellAfterClaim(): Flow<Boolean> {
-    TODO("No-op")
-  }
-
-  override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
-    TODO("No-op")
-  }
-
-  override suspend fun showedCrossSellAfterClaim() {
-    // no-op
-  }
 }

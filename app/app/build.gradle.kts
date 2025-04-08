@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.11.1"
+    versionName = "12.11.5"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -173,6 +173,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
+  implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
@@ -189,6 +190,7 @@ dependencies {
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)
@@ -232,6 +234,10 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
+}
+
+datadog {
+  site = "EU1"
 }
 
 easylauncher {
