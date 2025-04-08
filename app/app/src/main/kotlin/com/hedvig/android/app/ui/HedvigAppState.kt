@@ -35,6 +35,7 @@ import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
@@ -349,6 +350,7 @@ private val crossSellBottomSheetPermittingDestinations: List<KClass<out Destinat
   // 4. Change tier
   addAll(insurancesCrossSellBottomSheetPermittingDestinations)
   addAll(helpCenterCrossSellBottomSheetPermittingDestinations)
+  addAll(travelCertificateCrossSellBottomSheetPermittingDestinations)
   // One could finish those flows after a deep link, so the app's start destination must also be included
   addAll(homeCrossSellBottomSheetPermittingDestinations)
 }
