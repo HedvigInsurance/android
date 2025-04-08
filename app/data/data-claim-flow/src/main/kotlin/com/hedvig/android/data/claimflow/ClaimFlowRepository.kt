@@ -511,9 +511,9 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         fileUploads = fileUploadStep?.uploads,
         signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
         freeText = audioRecordingStep?.freeText,
-        selectedContractExposure = selectContractStep?.options?.firstOrNull{
-          it.id==selectContractStep?.selectedOptionId
-        }?.displaySubtitle
+        selectedContractExposure = selectContractStep?.options?.firstOrNull {
+          it.id == selectContractStep?.selectedOptionId
+        }?.displaySubtitle,
       )
     }
 

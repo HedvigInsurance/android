@@ -28,6 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -233,8 +236,11 @@ private fun CrossSellItem(
   isLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  val description = "$crossSellTitle $crossSellSubtitle"
   Row(
-    modifier = modifier.heightIn(64.dp),
+    modifier = modifier.heightIn(64.dp).semantics(true) {
+      contentDescription = description
+    },
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
@@ -250,7 +256,9 @@ private fun CrossSellItem(
     )
     Spacer(Modifier.width(16.dp))
     Column(
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).semantics {
+        hideFromAccessibility()
+      },
       verticalArrangement = Arrangement.Center,
     ) {
       HedvigText(

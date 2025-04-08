@@ -32,6 +32,10 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -173,7 +177,11 @@ fun HedvigTabRow(
               textStyle = tabSize.textStyle,
               tabTextColor = tabStyle.colors.textColor,
               contentPadding = tabSize.tabPadding,
-              modifier = Modifier.clip(tabSize.tabShape),
+              modifier = Modifier.clip(tabSize.tabShape)
+                .semantics {
+                  role = Role.Tab
+                  this.selected = tabRowState.selectedTabIndex == index
+                },
             )
           }
         },
