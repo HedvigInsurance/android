@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextAlign.Companion
@@ -67,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
@@ -327,7 +330,7 @@ private fun CustomizationCard(
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
             title = pair.first.tierDisplayName ?: "-",
-            premium = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
+            premium = pair.second,
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
               onChooseTierInDialogClick(pair.first)
@@ -384,7 +387,7 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+                    premium = quote.premium,
                     tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
@@ -418,12 +421,21 @@ private fun CustomizationCard(
         },
         spaceBetween = 8.dp,
         endSlot = {
+          val description =
+            newDisplayPremium?.let {
+              stringResource(R.string.TALKBACK_PER_MONTH,it)
+            } ?: ""
           HedvigText(
             text =
-              newDisplayPremium?.let { stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, it) }
+              newDisplayPremium?.let { stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                it) }
                 ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics {
+              contentDescription = description
+            }
           )
         },
       )
@@ -468,17 +480,23 @@ private fun DropdownContent(
     )
     Spacer(Modifier.height(24.dp))
     data.forEachIndexed { index, option ->
-      RadioOption(
+      val tierDescription = option.tierDescription ?: ""
+      val premiumDescription = option.premium.getDescription()
+      val description = option.title + tierDescription + premiumDescription
+        RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
         optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
-            premium = option.premium,
+            premium = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, option.premium.toString()),
             comment = option.tierDescription,
             radioButtonIcon = radioButtonIcon,
           )
         },
+        modifier = Modifier.semantics{
+          contentDescription = description
+        }
       )
       if (index != data.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -505,7 +523,7 @@ private data class ExpandedRadioOptionData(
   val onRadioOptionClick: () -> Unit,
   val chosenState: ChosenState,
   val title: String,
-  val premium: String,
+  val premium: UiMoney,
   val tierDescription: String?,
 )
 
@@ -627,7 +645,7 @@ private fun PreviewDropdownContent() {
             {},
             Chosen,
             "Title",
-            "Premium",
+            UiMoney(231.0, SEK),
             "TierDescription",
           )
         },
@@ -694,7 +712,7 @@ private val dataForPreview = ContractData(
   contractGroup = ContractGroup.HOMEOWNER,
   contractDisplayName = "Home Homeowner",
   contractDisplaySubtitle = "Addressvägen 777",
-  activeDisplayPremium = "449 kr/mo",
+  activeDisplayPremium = UiMoney(449.0, SEK),
 )
 
 private val quotesForPreview = listOf(

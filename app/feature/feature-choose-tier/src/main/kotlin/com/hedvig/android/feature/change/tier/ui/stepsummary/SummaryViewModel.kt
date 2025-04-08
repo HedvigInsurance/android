@@ -114,7 +114,7 @@ private class SummaryPresenter(
               } else {
                 val currentContract = ContractData(
                   contractGroup = currentQuoteToChange.productVariant.contractGroup,
-                  activeDisplayPremium = currentQuoteToChange.premium.toString(), //todo: think how to add voiceDescription
+                  activeDisplayPremium = currentQuoteToChange.premium,
                   contractDisplayName = currentQuoteToChange.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 )

@@ -18,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -53,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
@@ -299,16 +302,25 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       )
     },
     underTitleContent = {
+      val description = uiState.currentContractData.activeDisplayPremium?.let {
+        stringResource(
+          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          it.getDescription())
+      } ?: ""
+
       HedvigText(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(top = 2.dp),
+          .padding(top = 2.dp)
+          .semantics {
+            contentDescription = description
+          },
         textAlign = TextAlign.End,
         text = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
           stringResource(
             R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            uiState.currentContractData.activeDisplayPremium.toString(),
+            uiState.currentContractData.activeDisplayPremium.toString(), //todo: think how to add voiceDescription. to the quoteCard?
           ),
         ),
         style = HedvigTheme.typography.label,
@@ -402,7 +414,7 @@ private class ChooseInsuranceUiStateProvider :
           contractGroup = ContractGroup.HOMEOWNER,
           contractDisplayName = "Home Homeowner",
           contractDisplaySubtitle = "Addressvägen 777",
-          activeDisplayPremium = "449 kr",
+          activeDisplayPremium = UiMoney(449.0, SEK),
         ),
         activationDate = LocalDate(2024, 5, 1),
         quote = TierDeductibleQuote(
