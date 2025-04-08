@@ -1,43 +1,33 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.icon.ArrowDown
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
-import com.hedvig.android.design.system.internals.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
 import eu.wewox.modalsheet.ExperimentalSheetApi
 
 @OptIn(ExperimentalSheetApi::class)
@@ -45,21 +35,21 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
-  contentPadding: PaddingValues? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val scope = rememberCoroutineScope()
-  val sheetState = rememberHedvigBottomSheetState<Unit>(scope)
-  if (isVisible) {
-    InternalHedvigBottomSheet(
-      onDismissRequest = {
-        onVisibleChange(false)
-      },
-      contentPadding = contentPadding,
-      content = content,
-      sheetState = sheetState,
-    )
+  val sheetState = rememberHedvigBottomSheetState<Unit>()
+  LaunchedEffect(isVisible) {
+    if (isVisible) {
+      sheetState.show()
+    } else {
+      sheetState.dismiss()
+    }
   }
+  InternalHedvigBottomSheet(
+    onDismissRequest = { onVisibleChange(false) },
+    content = content,
+    sheetState = sheetState,
+  )
 }
 
 fun HedvigBottomSheetState<Unit>.show() {
@@ -68,26 +58,25 @@ fun HedvigBottomSheetState<Unit>.show() {
 
 @Composable
 fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
-  val scope = rememberCoroutineScope()
-  return rememberHedvigBottomSheetState(scope)
+  return rememberInternalHedvigBottomSheetState()
 }
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
-  contentPadding: PaddingValues? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
-  if (hedvigBottomSheetState.isVisible) {
-    InternalHedvigBottomSheet(
-      onDismissRequest = {},
-      contentPadding = contentPadding,
-      sheetState = hedvigBottomSheetState,
-    ) {
-      if (hedvigBottomSheetState.data != null) {
-        content(hedvigBottomSheetState.data!!)
-      }
+  InternalHedvigBottomSheet(
+    onDismissRequest = {
+      // Purposefully left empty, as this callback is called *after* the sheet has finished animating to the hidden
+      // state. HedvigBottomSheetState has logic internally which observes that state to turn the isVisible flag to
+      // false automaticaly.
+    },
+    sheetState = hedvigBottomSheetState,
+  ) {
+    if (hedvigBottomSheetState.data != null) {
+      content(hedvigBottomSheetState.data!!)
     }
   }
 }
@@ -96,17 +85,9 @@ fun <T> HedvigBottomSheet(
 @Composable
 private fun <T> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
-  contentPadding: PaddingValues? = null,
   sheetState: HedvigBottomSheetState<T>,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val scrollState = rememberScrollState()
-  var scrollDown by remember { mutableStateOf(false) }
-  LaunchedEffect(scrollDown) {
-    if (scrollDown) {
-      scrollState.animateScrollTo(scrollState.maxValue)
-    }
-  }
   BottomSheet(
     onDismissRequest = onDismissRequest,
     modifier = Modifier,
@@ -115,41 +96,17 @@ private fun <T> InternalHedvigBottomSheet(
     scrimColor = bottomSheetColors.scrimColor,
     containerColor = bottomSheetColors.bottomSheetBackgroundColor,
     contentColor = bottomSheetColors.contentColor,
-    dragHandle = null,
+    dragHandle = {
+      DragHandle(
+        modifier = Modifier
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally)
+          .padding(top = 8.dp, bottom = 20.dp),
+      )
+    },
   ) {
-    Box(Modifier) {
-      Column(
-        modifier = Modifier
-          .then(
-            if (contentPadding != null) {
-              Modifier.padding(contentPadding)
-            } else {
-              Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
-            },
-          )
-          .verticalScroll(scrollState),
-      ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        DragHandle(
-          modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        content()
-      }
-      Crossfade(
-        modifier = Modifier
-          .align(Alignment.BottomEnd)
-          .padding(horizontal = 32.dp, vertical = 16.dp),
-        targetState = scrollDown,
-      ) { animatedScrollDown ->
-        if (scrollState.canScrollForward && !animatedScrollDown) {
-          HintArrowDown(
-            onClick = { scrollDown = true },
-          )
-        }
-      }
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+      content()
     }
   }
 }
@@ -165,24 +122,6 @@ private fun DragHandle(modifier: Modifier = Modifier) {
         color = bottomSheetColors.chipColor,
       ),
   )
-}
-
-@Composable
-private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Row(modifier = modifier) {
-    IconButton(
-      onClick = onClick,
-      modifier = Modifier
-        .clip(CircleShape)
-        .background(bottomSheetColors.arrowBackgroundColor),
-    ) {
-      Icon(
-        HedvigIcons.ArrowDown,
-        null,
-        tint = bottomSheetColors.arrowColor,
-      )
-    }
-  }
 }
 
 @Immutable
