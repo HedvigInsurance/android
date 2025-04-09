@@ -1,4 +1,4 @@
-package com.hedvig.android.design.system.hedvig
+package com.hedvig.android.compose.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.Dp
