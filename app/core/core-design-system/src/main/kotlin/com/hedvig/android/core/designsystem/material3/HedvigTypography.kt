@@ -1,20 +1,13 @@
 package com.hedvig.android.core.designsystem.material3
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.core.designsystem.component.tokens.HedvigTypographyKeyTokens
 import com.hedvig.android.core.designsystem.theme.SansStandard
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 
@@ -136,53 +129,3 @@ internal val HedvigTypography: Typography
  */
 private val Float.percentage: Float
   get() = this / 100
-
-private fun Typography.fromToken(value: HedvigTypographyKeyTokens): TextStyle {
-  return when (value) {
-    HedvigTypographyKeyTokens.DisplayLarge -> displayLarge
-    HedvigTypographyKeyTokens.DisplayMedium -> displayMedium
-    HedvigTypographyKeyTokens.DisplaySmall -> displaySmall
-    HedvigTypographyKeyTokens.HeadlineLarge -> headlineLarge
-    HedvigTypographyKeyTokens.HeadlineMedium -> headlineMedium
-    HedvigTypographyKeyTokens.HeadlineSmall -> headlineSmall
-    HedvigTypographyKeyTokens.TitleLarge -> titleLarge
-    HedvigTypographyKeyTokens.TitleMedium -> titleMedium
-    HedvigTypographyKeyTokens.TitleSmall -> titleSmall
-    HedvigTypographyKeyTokens.BodyLarge -> bodyLarge
-    HedvigTypographyKeyTokens.BodyMedium -> bodyMedium
-    HedvigTypographyKeyTokens.BodySmall -> bodySmall
-    HedvigTypographyKeyTokens.LabelLarge -> labelLarge
-    HedvigTypographyKeyTokens.LabelMedium -> labelMedium
-    HedvigTypographyKeyTokens.LabelSmall -> labelSmall
-  }
-}
-
-@Composable
-@ReadOnlyComposable
-internal fun HedvigTypographyKeyTokens.toTextStyle(): TextStyle {
-  return MaterialTheme.typography.fromToken(this)
-}
-
-@Preview
-@Composable
-private fun PreviewTypography() {
-  Surface {
-    Column {
-      Text("Display Large", style = HedvigTypography.displayLarge)
-      Text("Display Medium", style = HedvigTypography.displayMedium)
-      Text("Display Small", style = HedvigTypography.displaySmall)
-      Text("Headline Large", style = HedvigTypography.headlineLarge)
-      Text("Headline Medium", style = HedvigTypography.headlineMedium)
-      Text("Headline Small", style = HedvigTypography.headlineSmall)
-      Text("Title Large", style = HedvigTypography.titleLarge)
-      Text("Title Medium", style = HedvigTypography.titleMedium)
-      Text("Title Small", style = HedvigTypography.titleSmall)
-      Text("Body Large", style = HedvigTypography.bodyLarge)
-      Text("Body Medium", style = HedvigTypography.bodyMedium)
-      Text("Body Small", style = HedvigTypography.bodySmall)
-      Text("Label Large", style = HedvigTypography.labelLarge)
-      Text("Label Medium", style = HedvigTypography.labelMedium)
-      Text("Label Small", style = HedvigTypography.labelSmall)
-    }
-  }
-}
