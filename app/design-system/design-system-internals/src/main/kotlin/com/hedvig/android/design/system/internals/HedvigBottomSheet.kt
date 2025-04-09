@@ -61,7 +61,7 @@ fun <T> BottomSheet(
 
 @Composable
 fun <T> rememberInternalHedvigBottomSheetState(): HedvigBottomSheetState<T> {
-  val materialState = rememberModalBottomSheetState()
+  val materialState = rememberModalBottomSheetState(true)
   val scope = rememberCoroutineScope()
   val hedvigBottomSheetState: HedvigBottomSheetStateImpl<T> = remember(materialState, scope) {
     HedvigBottomSheetStateImpl(materialState, scope)
