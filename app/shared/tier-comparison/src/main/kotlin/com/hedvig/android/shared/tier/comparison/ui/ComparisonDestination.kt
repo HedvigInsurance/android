@@ -25,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -180,6 +183,11 @@ private fun CoverageLevelRow(
       if (index != 0) {
         HorizontalDivider(Modifier.padding(contentPadding))
       }
+      val coveredDescription = when (item.coveredStatus) {
+        Checkmark -> stringResource(R.string.TALKBACK_COVERED)
+        is Description -> item.coveredStatus.description
+      }
+      val itemDescription = "${item.title}, $coveredDescription"
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           val inlinePlusIconId = "plus"
@@ -240,7 +248,11 @@ private fun CoverageLevelRow(
         modifier = Modifier
           .clickable { onCoverageClicked(item) }
           .padding(contentPadding)
-          .padding(horizontal = 4.dp, vertical = 16.dp),
+          .padding(horizontal = 4.dp, vertical = 16.dp)
+          .clearAndSetSemantics {
+            contentDescription = itemDescription
+          }
+        ,
       )
     }
   }
