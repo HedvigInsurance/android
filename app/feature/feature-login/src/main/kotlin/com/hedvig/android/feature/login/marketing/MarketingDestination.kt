@@ -101,6 +101,7 @@ private fun MarketingScreen(
   HedvigBottomSheet(
     isVisible = (showPreferencesSheet && uiState is MarketingUiState.Success),
     onVisibleChange = { showPreferencesSheet = it },
+    contentPadding = PaddingValues(0.dp),
   ) {
     if (uiState is MarketingUiState.Success) {
       PreferencesSheetContent(
