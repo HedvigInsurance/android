@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -443,14 +444,15 @@ private fun CustomizationCard(
         },
       )
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
-        val voiceDescription =
-          newDisplayPremium?.let {
-            val perMonth =
-              stringResource(R.string.TALKBACK_PER_MONTH, it.getDescription())
-            stringResource(
-              R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth,
+        val voicePerMonth =
+          stringResource(R.string.TALKBACK_PER_MONTH, data.activeDisplayPremium.getDescription())
+        val voiceDescription = stringResource(
+              R.string.TIER_FLOW_PREVIOUS_PRICE, voicePerMonth,
             )
-          } ?: ""
+        val perMonth = stringResource(
+          R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          data.activeDisplayPremium,
+        )
         HedvigText(
           modifier = Modifier
             .fillMaxWidth()
@@ -458,12 +460,26 @@ private fun CustomizationCard(
               contentDescription = voiceDescription
             },
           textAlign = Companion.End,
-          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, data.activeDisplayPremium),
+          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
     }
+  }
+}
+
+@Composable
+private fun Deductible.getVoiceDescription(): String {
+  val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
+  return if (percentageNotZero && deductibleAmount != null) {
+    "${deductibleAmount.getDescription()} + $deductiblePercentage%"
+  } else if (percentageNotZero) {
+    "$deductiblePercentage%"
+  } else if (deductibleAmount!=null) {
+    deductibleAmount.getDescription()
+  } else {
+    ""
   }
 }
 
@@ -496,8 +512,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(24.dp))
     data.forEachIndexed { index, option ->
       val tierDescription = option.tierDescription ?: ""
-      val premiumDescription = option.premium.getDescription()
-      val description = option.title + tierDescription + premiumDescription
+      val price = stringResource(R.string.TALKBACK_PRICE)
+      val premiumDescription = stringResource(R.string.TALKBACK_PER_MONTH, option.premium.getDescription())
+      val voiceDescription = "${option.title}, ${tierDescription}, $price: $premiumDescription"
       RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
@@ -509,8 +526,8 @@ private fun DropdownContent(
             radioButtonIcon = radioButtonIcon,
           )
         },
-        modifier = Modifier.semantics {
-          contentDescription = description
+        modifier = Modifier.semantics(mergeDescendants = true) {
+          contentDescription = voiceDescription
         },
       )
       if (index != data.lastIndex) {
@@ -572,7 +589,9 @@ private fun ExpandedOptionContent(
   comment: String?,
   radioButtonIcon: @Composable () -> Unit,
 ) {
-  Row {
+  Row(Modifier.semantics{
+    hideFromAccessibility()
+  }) {
     radioButtonIcon()
     Spacer(Modifier.width(8.dp))
     Column(Modifier.weight(1f)) {
@@ -587,6 +606,9 @@ private fun ExpandedOptionContent(
           )
         },
         spaceBetween = 8.dp,
+        Modifier.semantics{
+          hideFromAccessibility()
+        }
       )
       if (comment != null) {
         Spacer(Modifier.height(4.dp))
