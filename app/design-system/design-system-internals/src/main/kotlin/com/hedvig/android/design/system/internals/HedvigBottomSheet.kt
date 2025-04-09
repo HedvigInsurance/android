@@ -1,6 +1,11 @@
 package com.hedvig.android.design.system.internals
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -15,6 +20,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +32,7 @@ fun <T> BottomSheet(
   onDismissRequest: () -> Unit,
   modifier: Modifier,
   sheetState: HedvigBottomSheetState<T>,
+  contentPadding: PaddingValues,
   shape: Shape,
   containerColor: Color,
   contentColor: Color,
@@ -39,6 +46,9 @@ fun <T> BottomSheet(
       onDismissRequest = onDismissRequest,
       modifier = modifier,
       sheetState = state,
+      contentWindowInsets = {
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom) + contentPadding
+      },
       shape = shape,
       containerColor = containerColor,
       contentColor = contentColor,

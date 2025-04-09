@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +34,7 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
+  contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val sheetState = rememberHedvigBottomSheetState<Unit>()
@@ -48,6 +48,7 @@ fun HedvigBottomSheet(
   InternalHedvigBottomSheet(
     onDismissRequest = { onVisibleChange(false) },
     content = content,
+    contentPadding = contentPadding,
     sheetState = sheetState,
   )
 }
@@ -65,6 +66,7 @@ fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
+  contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   InternalHedvigBottomSheet(
@@ -73,6 +75,7 @@ fun <T> HedvigBottomSheet(
       // state. HedvigBottomSheetState has logic internally which observes that state to turn the isVisible flag to
       // false automaticaly.
     },
+    contentPadding = contentPadding,
     sheetState = hedvigBottomSheetState,
   ) {
     if (hedvigBottomSheetState.data != null) {
@@ -86,6 +89,7 @@ fun <T> HedvigBottomSheet(
 private fun <T> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
   sheetState: HedvigBottomSheetState<T>,
+  contentPadding: PaddingValues,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BottomSheet(
@@ -96,6 +100,7 @@ private fun <T> InternalHedvigBottomSheet(
     scrimColor = bottomSheetColors.scrimColor,
     containerColor = bottomSheetColors.bottomSheetBackgroundColor,
     contentColor = bottomSheetColors.contentColor,
+    contentPadding = contentPadding,
     dragHandle = {
       DragHandle(
         modifier = Modifier
