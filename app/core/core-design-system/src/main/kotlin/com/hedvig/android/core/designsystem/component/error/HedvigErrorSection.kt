@@ -55,7 +55,7 @@ fun HedvigErrorSection(
     }
     Icon(
       imageVector = Icons.Hedvig.WarningFilled,
-      contentDescription = null,
+      contentDescription = stringResource(R.string.VOICE_OVER_WARNING_IMAGE_DESCRIPTION),
       tint = MaterialTheme.colorScheme.warningElement,
     )
     Spacer(Modifier.height(16.dp))
