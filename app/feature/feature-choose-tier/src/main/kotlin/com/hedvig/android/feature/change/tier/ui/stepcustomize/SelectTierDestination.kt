@@ -332,7 +332,8 @@ private fun CustomizationCard(
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
             title = pair.first.tierDisplayName ?: "-",
-            premium = pair.second,
+            premiumUiMoney = pair.second,
+            premiumString = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
               onChooseTierInDialogClick(pair.first)
@@ -389,7 +390,8 @@ private fun CustomizationCard(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = quote.premium,
+                    premiumUiMoney = quote.premium,
+                    premiumString = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
                     tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
@@ -511,7 +513,7 @@ private fun DropdownContent(
     data.forEachIndexed { index, option ->
       val tierDescription = option.tierDescription ?: ""
       val price = stringResource(R.string.TALKBACK_PRICE)
-      val premiumDescription = option.premium.getPerMonthDescription()
+      val premiumDescription = option.premiumUiMoney.getPerMonthDescription()
       val voiceDescription = "${option.title}, $tierDescription, $price: $premiumDescription"
       RadioOption(
         chosenState = option.chosenState,
@@ -519,7 +521,7 @@ private fun DropdownContent(
         optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
-            premium = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, option.premium.toString()),
+            premium = option.premiumString,
             comment = option.tierDescription,
             radioButtonIcon = radioButtonIcon,
           )
@@ -553,7 +555,8 @@ private data class ExpandedRadioOptionData(
   val onRadioOptionClick: () -> Unit,
   val chosenState: ChosenState,
   val title: String,
-  val premium: UiMoney,
+  val premiumUiMoney: UiMoney,
+  val premiumString: String,
   val tierDescription: String?,
 )
 
@@ -683,7 +686,9 @@ private fun PreviewDropdownContent() {
             Chosen,
             "Title",
             UiMoney(231.0, SEK),
+            "from 231 kr/mo",
             "TierDescription",
+
           )
         },
       )
