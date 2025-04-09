@@ -423,25 +423,40 @@ private fun CustomizationCard(
         endSlot = {
           val description =
             newDisplayPremium?.let {
-              stringResource(R.string.TALKBACK_PER_MONTH,it)
+              stringResource(R.string.TALKBACK_PER_MONTH, it.getDescription())
             } ?: ""
           HedvigText(
             text =
-              newDisplayPremium?.let { stringResource(
+            newDisplayPremium?.let {
+              stringResource(
                 R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                it) }
-                ?: "-",
+                it,
+              )
+            }
+              ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
             modifier = Modifier.semantics {
               contentDescription = description
-            }
+            },
           )
         },
       )
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
+        val voiceDescription =
+          newDisplayPremium?.let {
+            val perMonth =
+              stringResource(R.string.TALKBACK_PER_MONTH, it.getDescription())
+            stringResource(
+              R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth,
+            )
+          } ?: ""
         HedvigText(
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+              contentDescription = voiceDescription
+            },
           textAlign = Companion.End,
           text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, data.activeDisplayPremium),
           style = HedvigTheme.typography.label,
@@ -483,7 +498,7 @@ private fun DropdownContent(
       val tierDescription = option.tierDescription ?: ""
       val premiumDescription = option.premium.getDescription()
       val description = option.title + tierDescription + premiumDescription
-        RadioOption(
+      RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
         optionContent = { radioButtonIcon ->
@@ -494,9 +509,9 @@ private fun DropdownContent(
             radioButtonIcon = radioButtonIcon,
           )
         },
-        modifier = Modifier.semantics{
+        modifier = Modifier.semantics {
           contentDescription = description
-        }
+        },
       )
       if (index != data.lastIndex) {
         Spacer(Modifier.height(4.dp))
