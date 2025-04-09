@@ -63,7 +63,7 @@ private fun ClaimPill(type: ClaimPillType) {
     ClaimPillType.Unknown -> stringResource(R.string.home_claim_card_pill_claim)
   }
   val voiceDescription = when (type) {
-    is ClaimPillType.Closed,ClaimPillType.Claim,ClaimPillType.Unknown -> text
+    is ClaimPillType.Closed, ClaimPillType.Claim, ClaimPillType.Unknown -> text
     is ClaimPillType.PaymentAmount -> type.uiMoney.getDescription()
   }
   val color: HighlightLabelDefaults.HighlightColor = when (type) {
@@ -81,10 +81,14 @@ private fun ClaimPill(type: ClaimPillType) {
     is ClaimPillType.PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
     ClaimPillType.Unknown -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
   }
-  HighlightLabel(text, HighlightLabelDefaults.HighLightSize.Small, color,
-    modifier  = Modifier.semantics{
+  HighlightLabel(
+    text,
+    HighlightLabelDefaults.HighLightSize.Small,
+    color,
+    modifier = Modifier.semantics {
       contentDescription = voiceDescription
-    })
+    },
+  )
 }
 
 @HedvigPreview

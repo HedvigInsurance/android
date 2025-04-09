@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -251,8 +250,7 @@ private fun CoverageLevelRow(
           .padding(horizontal = 4.dp, vertical = 16.dp)
           .clearAndSetSemantics {
             contentDescription = itemDescription
-          }
-        ,
+          },
       )
     }
   }

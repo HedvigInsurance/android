@@ -293,7 +293,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
       formatStartDate(uiState.activationDate),
     ),
-    premium = uiState.quote.premium.toString(), //todo: think how to add voiceDescription. to the quoteCard?
+    premium = uiState.quote.premium.toString(), // todo: think how to add voiceDescription. to the quoteCard?
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -305,7 +305,8 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       val description = uiState.currentContractData.activeDisplayPremium?.let {
         stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
-          it.getDescription())
+          it.getDescription(),
+        )
       } ?: ""
 
       HedvigText(
@@ -320,7 +321,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
           R.string.TIER_FLOW_PREVIOUS_PRICE,
           stringResource(
             R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            uiState.currentContractData.activeDisplayPremium.toString(), //todo: think how to add voiceDescription. to the quoteCard?
+            uiState.currentContractData.activeDisplayPremium.toString(), // todo: think how to add voiceDescription. to the quoteCard?
           ),
         ),
         style = HedvigTheme.typography.label,
@@ -346,7 +347,7 @@ private fun AddonCard(
     insurableLimits = emptyList(),
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
-    premium = addonQuote.premium.toString(), //todo: think how to add voiceDescription. to the quote card?
+    premium = addonQuote.premium.toString(), // todo: think how to add voiceDescription. to the quote card?
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(

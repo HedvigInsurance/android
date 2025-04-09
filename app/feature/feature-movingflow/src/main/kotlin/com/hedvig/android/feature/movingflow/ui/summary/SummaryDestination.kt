@@ -290,7 +290,7 @@ private fun SummaryScreen(
           },
           endSlot = {
             AnimatedContent(
-              targetState = content.summaryInfo.totalPremium.toString(), //todo: think how to add voiceDescription
+              targetState = content.summaryInfo.totalPremium.toString(), // todo: think how to add voiceDescription
               transitionSpec = {
                 slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
               },
@@ -331,7 +331,7 @@ private fun QuoteCard(
   QuoteCard(
     productVariant = quote.productVariant,
     subtitle = subtitle,
-    premium = quote.premium.toString(), //todo: think how to add voiceDescription
+    premium = quote.premium.toString(), // todo: think how to add voiceDescription
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -444,7 +444,7 @@ private fun AddonQuoteCard(
     insurableLimits = emptyList(),
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
-    premium = quote.premium.toString(), //todo: think how to add voiceDescription
+    premium = quote.premium.toString(), // todo: think how to add voiceDescription
     isExcluded = when (quote) {
       is HomeAddonQuote -> quote.isExcludedByUser
       is MtaAddonQuote -> false

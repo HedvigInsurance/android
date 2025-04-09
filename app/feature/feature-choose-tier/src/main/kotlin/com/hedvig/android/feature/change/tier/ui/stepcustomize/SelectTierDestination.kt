@@ -428,13 +428,13 @@ private fun CustomizationCard(
             } ?: ""
           HedvigText(
             text =
-            newDisplayPremium?.let {
-              stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                it,
-              )
-            }
-              ?: "-",
+              newDisplayPremium?.let {
+                stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  it,
+                )
+              }
+                ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
             modifier = Modifier.semantics {
@@ -447,8 +447,9 @@ private fun CustomizationCard(
         val voicePerMonth =
           stringResource(R.string.TALKBACK_PER_MONTH, data.activeDisplayPremium.getDescription())
         val voiceDescription = stringResource(
-              R.string.TIER_FLOW_PREVIOUS_PRICE, voicePerMonth,
-            )
+          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          voicePerMonth,
+        )
         val perMonth = stringResource(
           R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
           data.activeDisplayPremium,
@@ -476,7 +477,7 @@ private fun Deductible.getVoiceDescription(): String {
     "${deductibleAmount.getDescription()} + $deductiblePercentage%"
   } else if (percentageNotZero) {
     "$deductiblePercentage%"
-  } else if (deductibleAmount!=null) {
+  } else if (deductibleAmount != null) {
     deductibleAmount.getDescription()
   } else {
     ""
@@ -514,7 +515,7 @@ private fun DropdownContent(
       val tierDescription = option.tierDescription ?: ""
       val price = stringResource(R.string.TALKBACK_PRICE)
       val premiumDescription = stringResource(R.string.TALKBACK_PER_MONTH, option.premium.getDescription())
-      val voiceDescription = "${option.title}, ${tierDescription}, $price: $premiumDescription"
+      val voiceDescription = "${option.title}, $tierDescription, $price: $premiumDescription"
       RadioOption(
         chosenState = option.chosenState,
         onClick = option.onRadioOptionClick,
@@ -589,9 +590,11 @@ private fun ExpandedOptionContent(
   comment: String?,
   radioButtonIcon: @Composable () -> Unit,
 ) {
-  Row(Modifier.semantics{
-    hideFromAccessibility()
-  }) {
+  Row(
+    Modifier.semantics {
+      hideFromAccessibility()
+    },
+  ) {
     radioButtonIcon()
     Spacer(Modifier.width(8.dp))
     Column(Modifier.weight(1f)) {
@@ -606,9 +609,9 @@ private fun ExpandedOptionContent(
           )
         },
         spaceBetween = 8.dp,
-        Modifier.semantics{
+        Modifier.semantics {
           hideFromAccessibility()
-        }
+        },
       )
       if (comment != null) {
         Spacer(Modifier.height(4.dp))

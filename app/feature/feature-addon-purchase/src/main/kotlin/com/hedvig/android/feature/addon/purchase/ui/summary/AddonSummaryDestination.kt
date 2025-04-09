@@ -241,7 +241,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
           HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.quote.price, //todo: voiceover description!
+              uiState.quote.price, // todo: voiceover description!
             ),
           )
         } else {

@@ -37,7 +37,7 @@ internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<Ui
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
         .fillMaxWidth()
-        .semantics{
+        .semantics {
           contentDescription = voiceOverDescription
         },
     )

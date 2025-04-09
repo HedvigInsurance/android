@@ -198,8 +198,9 @@ private fun ForeverSection(
   navigateToForever: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) { //todo: think how to add voiceDescription - WHAT ABOUT OTHER PAYMENTS??
-    val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString() //todo: think how to add voiceDescription
+  Column(modifier) {
+    // todo: think how to add voiceDescription - WHAT ABOUT OTHER PAYMENTS??
+    val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString() // todo: think how to add voiceDescription
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     HedvigBottomSheet(
       isVisible = showForeverInfoBottomSheet,

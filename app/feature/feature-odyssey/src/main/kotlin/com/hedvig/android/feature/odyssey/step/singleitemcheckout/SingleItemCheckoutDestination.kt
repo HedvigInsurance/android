@@ -25,6 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -64,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
@@ -124,13 +130,17 @@ private fun SingleItemCheckoutScreen(
     HedvigCard(
       modifier = sideSpacingModifier,
     ) {
+      val payoutVoiceover = uiState.compensation.payoutAmount.getDescription()
       HedvigText(
-        text = uiState.compensation.payoutAmount.toString(), //todo: think how to add voiceDescription
+        text = uiState.compensation.payoutAmount.toString(),
         style = HedvigTheme.typography.displaySmall,
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
-          .padding(6.dp),
+          .padding(6.dp)
+          .semantics {
+            contentDescription = payoutVoiceover
+          },
       )
     }
     Spacer(Modifier.height(24.dp))
@@ -181,27 +191,51 @@ private fun SingleItemCheckoutScreen(
       Column(sideSpacingModifier) {
         val pairs = when (uiState.compensation) {
           is RepairCompensation -> listOf(
-            stringResource(
-              R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
-              uiState.modelDisplayName,
-            ) to uiState.compensation.repairCost.toString(), //todo: think how to add voiceDescription
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
+            RepairPair(
+              stringResource(
+                R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
+                uiState.modelDisplayName,
+              ),
+              uiState.compensation.repairCost.toString(),
+              uiState.compensation.repairCost,
+            ),
+            RepairPair(
+              stringResource(R.string.claims_payout_age_deductable),
+              "-" + uiState.compensation.deductible.toString(),
+              uiState.compensation.deductible,
+            ),
           )
 
           is ValueCompensation -> listOf(
-            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(), //todo: think how to add voiceDescription
-            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(), //todo: think how to add voiceDescription
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(), //todo: think how to add voiceDescription
+            RepairPair(
+              stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE),
+              uiState.compensation.price.toString(),
+              uiState.compensation.price,
+            ),
+            RepairPair(
+              stringResource(R.string.claims_payout_age_deduction),
+              "-" + uiState.compensation.depreciation.toString(),
+              uiState.compensation.depreciation,
+            ),
+            RepairPair(
+              stringResource(R.string.claims_payout_age_deductable),
+              "-" + uiState.compensation.deductible.toString(),
+              uiState.compensation.deductible,
+            ),
           )
         }
-        for ((left, right) in pairs) {
+        for (pair in pairs) {
+          val voiceDescription = pair.getVoiceDescription()
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              HedvigText(left)
+              HedvigText(pair.label)
             },
             spaceBetween = 8.dp,
             endSlot = {
-              HedvigText(right, textAlign = TextAlign.End)
+              HedvigText(pair.amountText, textAlign = TextAlign.End)
+            },
+            modifier = Modifier.clearAndSetSemantics {
+              contentDescription = voiceDescription
             },
           )
         }
@@ -224,9 +258,14 @@ private fun SingleItemCheckoutScreen(
             Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
         ) {
+          val voiceoverDescription = uiState.compensation.payoutAmount.getDescription()
           HedvigText(
-            text = uiState.compensation.payoutAmount.toString(), //todo: think how to add voiceDescription
-            modifier = Modifier.padding(end = 16.dp),
+            text = uiState.compensation.payoutAmount.toString(),
+            modifier = Modifier
+              .padding(end = 16.dp)
+              .semantics {
+                contentDescription = voiceoverDescription
+              },
             color = HedvigTheme.colorScheme.textSecondary,
           )
         }
@@ -299,15 +338,34 @@ private fun SingleItemCheckoutScreen(
       )
       Spacer(Modifier.height(16.dp))
     }
+    val payoutDescription =
+      stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.getDescription())
     HedvigButton(
-      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()), //todo: think how to add voiceDescription
+      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
       onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
       enabled = true,
-      modifier = sideSpacingModifier.fillMaxWidth(),
+      modifier = sideSpacingModifier
+        .fillMaxWidth()
+        .clearAndSetSemantics {
+          contentDescription = payoutDescription
+          role = Role.Button
+        },
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
+}
+
+private data class RepairPair(
+  val label: String,
+  val amountText: String,
+  val amountMoney: UiMoney,
+)
+
+@Composable
+private fun RepairPair.getVoiceDescription(): String {
+  val amountDescription = this.amountMoney.getDescription()
+  return "${this.label}, $amountDescription"
 }
 
 @Suppress("UnusedReceiverParameter")

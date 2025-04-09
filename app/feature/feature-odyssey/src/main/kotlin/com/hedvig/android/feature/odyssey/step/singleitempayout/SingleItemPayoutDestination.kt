@@ -26,6 +26,8 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -44,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -193,10 +196,14 @@ private fun BoxScope.PaidOutContent(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier.padding(16.dp),
     ) {
+      val payoutVoiceover = paidOutAmount.getDescription()
       HedvigText(
-        text = paidOutAmount.toString(), //todo: think how to add voiceDescription
+        text = paidOutAmount.toString(),
         textAlign = TextAlign.Center,
         style = HedvigTheme.typography.displaySmall,
+        modifier = Modifier.semantics {
+          contentDescription = payoutVoiceover
+        },
       )
       Spacer(Modifier.height(16.dp))
       HedvigText(
