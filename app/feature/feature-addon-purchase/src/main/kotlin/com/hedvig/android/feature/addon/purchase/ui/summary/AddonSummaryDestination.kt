@@ -16,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -39,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
@@ -114,7 +117,7 @@ private fun AddonSummaryScreen(
 private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp,
-    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE), // todo: change copy here mb?
+    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     val locale = getLocale()
     val formattedDate = remember(uiState.activationDate, locale) {
@@ -226,7 +229,20 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = {
       Row(horizontalArrangement = Arrangement.End) {
+        val newPricePerMonth = stringResource(R.string.TALKBACK_PER_MONTH, uiState.quote.price.getDescription())
+        val newPriceDescription = stringResource(
+          R.string.TALKBACK_YOUR_NEW_PRICE,
+          newPricePerMonth,
+        )
         if (uiState.currentTravelAddon != null) {
+          val previousPricePerMonth = stringResource(
+            R.string.TALKBACK_PER_MONTH,
+            uiState.currentTravelAddon.price.getDescription(),
+          )
+          val previousPriceDescription = stringResource(
+            R.string.TIER_FLOW_PREVIOUS_PRICE,
+            previousPricePerMonth,
+          )
           HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -236,13 +252,19 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               textDecoration = TextDecoration.LineThrough,
               color = HedvigTheme.colorScheme.textSecondary,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = previousPriceDescription
+            },
           )
           Spacer(Modifier.width(8.dp))
           HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.quote.price, // todo: voiceover description!
+              uiState.quote.price,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = newPriceDescription
+            },
           )
         } else {
           HedvigText(
@@ -250,6 +272,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               uiState.quote.price,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = newPriceDescription
+            },
           )
         }
       }

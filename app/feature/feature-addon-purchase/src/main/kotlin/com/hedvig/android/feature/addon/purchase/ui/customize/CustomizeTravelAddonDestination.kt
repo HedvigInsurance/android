@@ -25,6 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -68,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
@@ -358,6 +363,7 @@ private data class ExpandedRadioOptionData(
   val chosenState: ChosenState,
   val title: String,
   val premium: String,
+  val voiceoverDescription: String,
 )
 
 @Composable
@@ -422,6 +428,7 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   val data = addonOptions.map { option ->
+    val pricePerMonth = stringResource(R.string.TALKBACK_PER_MONTH, option.price.getDescription())
     ExpandedRadioOptionData(
       chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
       title = option.displayName,
@@ -429,6 +436,7 @@ private fun DropdownContent(
       onRadioOptionClick = {
         onChooseOptionInDialog(option)
       },
+      voiceoverDescription = "${option.displayName}, $pricePerMonth",
     )
   }
   Column(
@@ -456,9 +464,13 @@ private fun DropdownContent(
         optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
-            premium = option.premium, // todo: voice over???
+            premium = option.premium,
             radioButtonIcon = radioButtonIcon,
           )
+        },
+        modifier = Modifier.clearAndSetSemantics {
+          contentDescription = option.voiceoverDescription
+          role = Role.RadioButton
         },
       )
       if (index != data.lastIndex) {
