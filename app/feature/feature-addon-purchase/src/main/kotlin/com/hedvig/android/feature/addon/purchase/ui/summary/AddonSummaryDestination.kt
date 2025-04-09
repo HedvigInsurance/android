@@ -41,7 +41,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
@@ -229,16 +229,13 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = {
       Row(horizontalArrangement = Arrangement.End) {
-        val newPricePerMonth = stringResource(R.string.TALKBACK_PER_MONTH, uiState.quote.price.getDescription())
+        val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
         val newPriceDescription = stringResource(
           R.string.TALKBACK_YOUR_NEW_PRICE,
           newPricePerMonth,
         )
         if (uiState.currentTravelAddon != null) {
-          val previousPricePerMonth = stringResource(
-            R.string.TALKBACK_PER_MONTH,
-            uiState.currentTravelAddon.price.getDescription(),
-          )
+          val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
           val previousPriceDescription = stringResource(
             R.string.TIER_FLOW_PREVIOUS_PRICE,
             previousPricePerMonth,

@@ -77,7 +77,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -298,7 +298,7 @@ private fun SummaryScreen(
                 slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
               },
             ) { premium ->
-              val voiceoverDescription = stringResource(R.string.TALKBACK_PER_MONTH, premium.getDescription())
+              val voiceoverDescription = premium.getPerMonthDescription()
               HedvigText(
                 text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
                 textAlign = TextAlign.End,

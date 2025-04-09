@@ -72,7 +72,7 @@ import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
@@ -428,7 +428,7 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   val data = addonOptions.map { option ->
-    val pricePerMonth = stringResource(R.string.TALKBACK_PER_MONTH, option.price.getDescription())
+    val pricePerMonth = option.price.getPerMonthDescription()
     ExpandedRadioOptionData(
       chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
       title = option.displayName,

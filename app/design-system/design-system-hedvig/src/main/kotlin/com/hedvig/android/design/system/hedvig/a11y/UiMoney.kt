@@ -16,3 +16,8 @@ fun UiMoney?.getDescription(): String {
   }
 }
 // todo: danish, norw?
+
+@Composable
+fun UiMoney?.getPerMonthDescription(): String {
+  return stringResource(R.string.TALKBACK_PER_MONTH, this.getDescription())
+}

@@ -71,6 +71,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
@@ -422,10 +423,7 @@ private fun CustomizationCard(
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val description =
-            newDisplayPremium?.let {
-              stringResource(R.string.TALKBACK_PER_MONTH, it.getDescription())
-            } ?: ""
+          val description = newDisplayPremium?.getPerMonthDescription() ?: ""
           HedvigText(
             text =
               newDisplayPremium?.let {
@@ -444,8 +442,7 @@ private fun CustomizationCard(
         },
       )
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
-        val voicePerMonth =
-          stringResource(R.string.TALKBACK_PER_MONTH, data.activeDisplayPremium.getDescription())
+        val voicePerMonth = data.activeDisplayPremium.getPerMonthDescription()
         val voiceDescription = stringResource(
           R.string.TIER_FLOW_PREVIOUS_PRICE,
           voicePerMonth,
@@ -471,7 +468,7 @@ private fun CustomizationCard(
 }
 
 @Composable
-private fun Deductible.getVoiceDescription(): String {
+private fun Deductible.getVoiceDescription(): String { // todo: use this
   val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
   return if (percentageNotZero && deductibleAmount != null) {
     "${deductibleAmount.getDescription()} + $deductiblePercentage%"
@@ -514,7 +511,7 @@ private fun DropdownContent(
     data.forEachIndexed { index, option ->
       val tierDescription = option.tierDescription ?: ""
       val price = stringResource(R.string.TALKBACK_PRICE)
-      val premiumDescription = stringResource(R.string.TALKBACK_PER_MONTH, option.premium.getDescription())
+      val premiumDescription = option.premium.getPerMonthDescription()
       val voiceDescription = "${option.title}, $tierDescription, $price: $premiumDescription"
       RadioOption(
         chosenState = option.chosenState,
