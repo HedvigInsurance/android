@@ -24,11 +24,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun EditCoInsuredSuccessDestination(
-  date: LocalDate?,
-  navigateUp: () -> Unit,
-  navigateBack: () -> Unit,
-) {
+internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () -> Unit, navigateBack: () -> Unit) {
   HedvigScaffold(navigateUp = navigateUp, Modifier.fillMaxSize()) {
     Spacer(Modifier.height(8.dp))
     Box(
