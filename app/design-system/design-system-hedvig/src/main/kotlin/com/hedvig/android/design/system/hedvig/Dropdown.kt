@@ -37,6 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -252,7 +255,9 @@ private fun DropdownSelector(
   containerColor: Color? = null,
 ) {
   Column(
-    modifier = modifier,
+    modifier = modifier.semantics(true) {
+      role = Role.DropdownList
+    },
   ) {
     Surface(
       shape = size.shape,
@@ -336,7 +341,7 @@ private fun DropdownSelector(
               }
               Icon(
                 icon,
-                "",
+                "", // todo: check here
                 tint = dropdownColors.chevronColor(isEnabled),
               )
             }
