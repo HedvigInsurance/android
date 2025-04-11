@@ -224,6 +224,7 @@ private fun SummarySuccessScreen(
         },
         spaceBetween = 8.dp,
         endSlot = {
+          val voiceDescription = uiState.total.getPerMonthDescription()
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -231,6 +232,9 @@ private fun SummarySuccessScreen(
             ),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics{
+              contentDescription = voiceDescription
+            }
           )
         },
       )
@@ -296,7 +300,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
       formatStartDate(uiState.activationDate),
     ),
-    premium = uiState.quote.premium.toString(), // todo: think how to add voiceDescription. to the quoteCard?
+    premium = uiState.quote.premium,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -359,7 +363,7 @@ private fun AddonCard(
     insurableLimits = emptyList(),
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
-    premium = addonQuote.premium.toString(), // todo: think how to add voiceDescription. to the quote card?
+    premium = addonQuote.premium,
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(

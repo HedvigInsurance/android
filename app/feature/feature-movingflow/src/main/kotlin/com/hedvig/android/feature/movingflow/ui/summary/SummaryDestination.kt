@@ -338,7 +338,7 @@ private fun QuoteCard(
   QuoteCard(
     productVariant = quote.productVariant,
     subtitle = subtitle,
-    premium = quote.premium.toString(), // todo: think how to add voiceDescription
+    premium = quote.premium,
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -451,7 +451,7 @@ private fun AddonQuoteCard(
     insurableLimits = emptyList(),
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
-    premium = quote.premium.toString(), // todo: think how to add voiceDescription
+    premium = quote.premium,
     isExcluded = when (quote) {
       is HomeAddonQuote -> quote.isExcludedByUser
       is MtaAddonQuote -> false
