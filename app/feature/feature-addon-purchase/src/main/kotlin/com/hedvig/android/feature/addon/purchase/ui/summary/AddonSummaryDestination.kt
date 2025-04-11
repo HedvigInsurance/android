@@ -158,6 +158,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       )
       Spacer(Modifier.height(24.dp))
       HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.semantics(true){},
         startSlot = {
           HedvigText(
             stringResource(R.string.TIER_FLOW_TOTAL),
@@ -179,10 +180,14 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
               uiState.totalPriceChange,
             )
           }
+          val voiceDescription = uiState.totalPriceChange.getPerMonthDescription()
           HedvigText(
             text = text,
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics(true){
+              contentDescription = voiceDescription
+            }
           )
         },
       )
@@ -228,12 +233,14 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     },
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = {
-      Row(horizontalArrangement = Arrangement.End) {
-        val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
-        val newPriceDescription = stringResource(
-          R.string.TALKBACK_YOUR_NEW_PRICE,
-          newPricePerMonth,
-        )
+      val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
+      val newPriceDescription = stringResource(
+        R.string.TALKBACK_YOUR_NEW_PRICE,
+        newPricePerMonth,
+      )
+      Row(horizontalArrangement = Arrangement.End,
+        modifier = Modifier.semantics(true){}) {
+
         if (uiState.currentTravelAddon != null) {
           val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
           val previousPriceDescription = stringResource(
@@ -270,7 +277,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               uiState.quote.price,
             ),
             modifier = Modifier.semantics {
-              contentDescription = newPriceDescription
+              contentDescription = newPricePerMonth
             },
           )
         }
