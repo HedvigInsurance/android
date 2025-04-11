@@ -127,7 +127,7 @@ private fun IconPreview() {
     ) {
       Image(
         imageVector = HedvigIcons.ArrowUp,
-        contentDescription = null,
+        contentDescription = com.hedvig.android.compose.ui.EmptyContentDescription,
         modifier = Modifier
           .width((24.0).dp)
           .height((24.0).dp),

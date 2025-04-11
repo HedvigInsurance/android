@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.SecondaryAlt
@@ -123,7 +124,7 @@ fun HedvigNotificationCard(
           ) {
             Icon(
               imageVector = priority.icon,
-              contentDescription = null,
+              contentDescription = EmptyContentDescription,
               tint = priority.colors.iconColor,
               modifier = Modifier.size(18.dp),
             )
@@ -229,7 +230,7 @@ fun HedvigSnackbar(
     icon = {
       Icon(
         imageVector = priority.icon,
-        contentDescription = null,
+        contentDescription = EmptyContentDescription,
         tint = priority.colors.iconColor,
         modifier = Modifier.size(18.dp),
       )

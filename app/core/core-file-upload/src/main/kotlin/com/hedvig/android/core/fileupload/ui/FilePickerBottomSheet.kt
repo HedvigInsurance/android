@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -109,7 +110,7 @@ private fun ClickableOption(text: String, icon: ImageVector, onClick: () -> Unit
         modifier = Modifier.weight(1f),
       )
       Spacer(Modifier.width(8.dp))
-      Icon(imageVector = icon, contentDescription = null)
+      Icon(imageVector = icon, contentDescription = EmptyContentDescription)
     }
   }
 }

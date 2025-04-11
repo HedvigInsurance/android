@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.arrow.core)
+  implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataAddons)

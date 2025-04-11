@@ -37,6 +37,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
@@ -245,7 +246,7 @@ private fun CrossSellItem(
   ) {
     Image(
       painter = painterResource(id = type.iconRes()),
-      contentDescription = null,
+      contentDescription = EmptyContentDescription,
       modifier = Modifier
         .size(48.dp)
         .hedvigPlaceholder(

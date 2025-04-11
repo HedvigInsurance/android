@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.icon.ForeverFilled
 import com.hedvig.android.design.system.hedvig.icon.ForeverOutline
@@ -238,7 +239,7 @@ private fun NavigationItem(
     Box {
       Icon(
         imageVector = icon,
-        contentDescription = null,
+        contentDescription = EmptyContentDescription,
         tint = if (selected) {
           NavigationTokens.IconColor.value
         } else {
