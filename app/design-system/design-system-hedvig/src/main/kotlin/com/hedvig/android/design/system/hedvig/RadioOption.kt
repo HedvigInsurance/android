@@ -123,8 +123,8 @@ fun RadioOption(
   val interactionSource = remember { MutableInteractionSource() }
   val clickableModifier =
     modifier
+      .semantics(true) { role = Role.RadioButton }
       .clip(size.shape)
-      .semantics { role = Role.RadioButton }
       .clickable(
         enabled = when (lockedState) {
           Locked -> false
@@ -164,7 +164,8 @@ fun RadioOptionRightAligned(
   RadioOption(
     chosenState = chosenState,
     onClick = onClick,
-    modifier = modifier,
+    modifier = modifier
+      .semantics(true) { role = Role.RadioButton },
     lockedState = lockedState,
     size = size,
     optionContent = { radioButtonIcon ->
@@ -196,8 +197,8 @@ fun RadioOption(
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val clickableModifier = if (onClick != null) {
     modifier
+      .semantics(true) { role = Role.RadioButton }
       .clip(radioOptionSize.size(radioOptionStyle).shape)
-      .semantics { role = Role.RadioButton }
       .clickable(
         enabled = when (lockedState) {
           Locked -> false
@@ -209,7 +210,7 @@ fun RadioOption(
         onClick()
       }
   } else {
-    modifier.semantics { role = Role.RadioButton }
+    modifier.semantics(true) { role = Role.RadioButton }
   }
   Surface(
     modifier = clickableModifier,

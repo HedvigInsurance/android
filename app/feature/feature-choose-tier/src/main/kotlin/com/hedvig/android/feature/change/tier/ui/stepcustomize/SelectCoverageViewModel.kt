@@ -154,7 +154,7 @@ internal class SelectCoveragePresenter(
                 chosenQuoteInDialog = current
                 currentPartialState = PartialUiState.Success(
                   contractData = ContractData(
-                    activeDisplayPremium = current.premium.toString(),
+                    activeDisplayPremium = current.premium,
                     contractGroup = current.productVariant.contractGroup,
                     contractDisplayName = current.productVariant.displayName,
                     contractDisplaySubtitle = currentContractData.currentExposureName,
@@ -315,5 +315,5 @@ internal data class ContractData(
   val contractGroup: ContractGroup,
   val contractDisplayName: String,
   val contractDisplaySubtitle: String,
-  val activeDisplayPremium: String?,
+  val activeDisplayPremium: UiMoney?,
 )
