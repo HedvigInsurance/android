@@ -237,7 +237,7 @@ fun QuoteCard(
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
       Row(
-        Modifier.semantics(mergeDescendants = true){}
+        Modifier.semantics(mergeDescendants = true) {},
       ) {
         if (contractGroup != null) {
           Image(
@@ -383,13 +383,15 @@ private fun QuoteCard(
         if (contractGroup != null) {
           Image(
             painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null, //CHECKED
+            contentDescription = null, // CHECKED
             modifier = Modifier.size(48.dp),
           )
           Spacer(modifier = Modifier.width(12.dp))
         }
-        Column(Modifier.weight(1f)
-          .semantics(mergeDescendants = true) {},) {
+        Column(
+          Modifier.weight(1f)
+            .semantics(mergeDescendants = true) {},
+        ) {
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
               HedvigText(
@@ -474,15 +476,15 @@ private fun QuoteCard(
           Spacer(Modifier.height(16.dp))
           Column(
             modifier = Modifier.semantics(true) {},
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+          ) {
             HorizontalDivider()
             if (displayItems.isNotEmpty()) {
               Column {
                 HedvigText(
                   stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE),
                 )
-                Column(
-                ) {
+                Column {
                   for (displayItem in displayItems) {
                     InfoRow(displayItem.title, displayItem.value)
                   }
@@ -491,7 +493,7 @@ private fun QuoteCard(
             }
             if (insurableLimits.isNotEmpty()) {
               Column(
-                modifier = Modifier.semantics(true) {}
+                modifier = Modifier.semantics(true) {},
               ) {
                 HedvigText(
                   stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
@@ -510,11 +512,11 @@ private fun QuoteCard(
               Column {
                 HedvigText(
                   stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE),
-                  modifier = Modifier.semantics(true) {}
+                  modifier = Modifier.semantics(true) {},
                 )
                 Column(
                   verticalArrangement = Arrangement.spacedBy(6.dp),
-                  modifier = Modifier.semantics(true) {}
+                  modifier = Modifier.semantics(true) {},
                 ) {
                   for (document in documents) {
                     val uriHandler = LocalUriHandler.current
@@ -554,7 +556,7 @@ private fun QuoteCard(
                         val density = LocalDensity.current
                         Icon(
                           imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = null, //CHECKED
+                          contentDescription = null, // CHECKED
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)

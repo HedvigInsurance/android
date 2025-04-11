@@ -158,7 +158,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       )
       Spacer(Modifier.height(24.dp))
       HorizontalItemsWithMaximumSpaceTaken(
-        modifier = Modifier.semantics(true){},
+        modifier = Modifier.semantics(true) {},
         startSlot = {
           HedvigText(
             stringResource(R.string.TIER_FLOW_TOTAL),
@@ -185,9 +185,9 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
             text = text,
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.semantics(true){
+            modifier = Modifier.semantics(true) {
               contentDescription = voiceDescription
-            }
+            },
           )
         },
       )
@@ -238,9 +238,10 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
         R.string.TALKBACK_YOUR_NEW_PRICE,
         newPricePerMonth,
       )
-      Row(horizontalArrangement = Arrangement.End,
-        modifier = Modifier.semantics(true){}) {
-
+      Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.semantics(true) {},
+      ) {
         if (uiState.currentTravelAddon != null) {
           val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
           val previousPriceDescription = stringResource(

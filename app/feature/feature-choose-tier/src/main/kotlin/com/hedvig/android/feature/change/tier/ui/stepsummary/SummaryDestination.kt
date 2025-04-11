@@ -18,9 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -57,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -232,9 +229,9 @@ private fun SummarySuccessScreen(
             ),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.semantics{
+            modifier = Modifier.semantics {
               contentDescription = voiceDescription
-            }
+            },
           )
         },
       )
@@ -309,18 +306,17 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       )
     },
     underTitleContent = {
-      UnderTitleContent(uiState.currentContractData.activeDisplayPremium,
-        modifier = Modifier.semantics(mergeDescendants = true){})
+      UnderTitleContent(
+        uiState.currentContractData.activeDisplayPremium,
+        modifier = Modifier.semantics(mergeDescendants = true) {},
+      )
     },
-    modifier = modifier
+    modifier = modifier,
   )
 }
 
 @Composable
-private fun UnderTitleContent(
-  activeDisplayPremium: UiMoney?,
-  modifier: Modifier = Modifier
-) {
+private fun UnderTitleContent(activeDisplayPremium: UiMoney?, modifier: Modifier = Modifier) {
   val description = activeDisplayPremium?.let {
     stringResource(
       R.string.TIER_FLOW_PREVIOUS_PRICE,

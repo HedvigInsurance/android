@@ -18,8 +18,8 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import hedvig.resources.R
 
 @Composable

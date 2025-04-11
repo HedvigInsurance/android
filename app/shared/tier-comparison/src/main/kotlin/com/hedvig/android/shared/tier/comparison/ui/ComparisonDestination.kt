@@ -106,7 +106,7 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   val selectedComparisonRowBottomSheetState = rememberHedvigBottomSheetState<CoverageLevel.ComparisonItem>()
   HedvigBottomSheet(
     hedvigBottomSheetState = selectedComparisonRowBottomSheetState,
-    contentPadding = PaddingValues(horizontal = 16.dp)
+    contentPadding = PaddingValues(horizontal = 16.dp),
   ) { comparisonRow ->
     ComparisonRowBottomSheetContent(
       comparisonItem = comparisonRow,
