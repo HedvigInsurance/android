@@ -32,8 +32,11 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
+import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
 import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
@@ -107,6 +110,18 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
+      CrossSellSheet(
+        isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
+        onCrossSellClick = deepLinkFirstUriHandler::openUri,
+        onNavigateToAddonPurchaseFlow = { insuranceIds ->
+          navHostController.navigate(
+            AddonPurchaseGraphDestination(
+              insuranceIds,
+              TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
+            ),
+          )
+        },
+      )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(
           LocalUriHandler provides deepLinkFirstUriHandler,
@@ -137,10 +152,8 @@ internal fun HedvigApp(
  */
 @Composable
 private fun HedvigTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
-  com.hedvig.android.core.designsystem.theme.HedvigTheme(darkTheme = darkTheme) {
-    com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
-      content()
-    }
+  com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
+    content()
   }
 }
 

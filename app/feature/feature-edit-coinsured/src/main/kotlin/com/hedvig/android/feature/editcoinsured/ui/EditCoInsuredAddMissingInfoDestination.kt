@@ -27,7 +27,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -39,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
@@ -200,19 +200,17 @@ private fun EditCoInsuredScreen(
           }
 
           Spacer(Modifier.weight(1f))
-          Column {
-            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-              Spacer(Modifier.height(8.dp))
-              HedvigButton(
-                text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
-                onClick = onCommitChanges,
-                enabled = true,
-                isLoading = uiState.listState.isCommittingUpdate,
-                modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .fillMaxWidth(),
-              )
-            }
+          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+            Spacer(Modifier.height(8.dp))
+            HedvigButton(
+              text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
+              onClick = onCommitChanges,
+              enabled = true,
+              isLoading = uiState.listState.isCommittingUpdate,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            )
           }
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(

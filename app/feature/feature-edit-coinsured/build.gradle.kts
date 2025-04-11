@@ -32,6 +32,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
@@ -53,4 +54,5 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
+  implementation(projects.designSystemApi)
 }

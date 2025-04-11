@@ -3,6 +3,7 @@ package data
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.right
+import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -21,15 +22,20 @@ import com.hedvig.android.data.changetier.data.ChangeTierQuoteStorage
 import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepositoryImpl
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCommitIntentMutation
+import octopus.type.buildChangeTierDeductibleCommitIntentOutput
 import oldTestQuote
 import org.junit.Rule
 import org.junit.Test
 import testQuote
 
+@OptIn(ApolloExperimental::class)
 class ChangeTierRepositoryImplTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
@@ -39,7 +45,6 @@ class ChangeTierRepositoryImplTest {
 
   private val testId = "testId"
 
-  @OptIn(ApolloExperimental::class)
   private val apolloClientWithBadResponseToSubmit: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
@@ -50,7 +55,6 @@ class ChangeTierRepositoryImplTest {
       )
     }
 
-  @OptIn(ApolloExperimental::class)
   private val apolloClientWithGoodResponseToSubmit: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
@@ -61,16 +65,42 @@ class ChangeTierRepositoryImplTest {
     }
 
   @Test
-  fun `if submitChangeTierQuote() get bad response return ErrorMessage`() = runTest {
+  fun `if submitChangeTierQuote() fails, return ErrorMessage`() = runTest {
     val storage = ChangeTierQuoteStorageImpl()
     val repository = ChangeTierRepositoryImpl(
       apolloClient = apolloClientWithBadResponseToSubmit,
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
+      crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       changeTierQuoteStorage = storage,
     )
     val result = repository.submitChangeTierQuote(testId)
-    assertk.assertThat(result)
+    assertThat(result)
       .isLeft()
+  }
+
+  @Test
+  fun `if submitChangeTierQuote() suceeds, cross sell is triggered`() = runTest {
+    val storage = ChangeTierQuoteStorageImpl()
+    val crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl()
+    val repository = ChangeTierRepositoryImpl(
+      apolloClient = apolloClientWithGoodResponseToSubmit,
+      createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
+      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+      changeTierQuoteStorage = storage,
+    )
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first()).isNull()
+    testApolloClientRule.apolloClient.registerTestResponse(
+      ChangeTierDeductibleCommitIntentMutation(testId),
+      ChangeTierDeductibleCommitIntentMutation.Data {
+        changeTierDeductibleCommitIntent = buildChangeTierDeductibleCommitIntentOutput {
+          this.userError = null
+        }
+      },
+    )
+    val result = repository.submitChangeTierQuote(testId)
+    assertThat(result).isRight().isEqualTo(Unit)
+    assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
+      .isEqualTo(CrossSellInfoType.ChangeTier)
   }
 
   @Test
@@ -80,12 +110,13 @@ class ChangeTierRepositoryImplTest {
     val repository = ChangeTierRepositoryImpl(
       apolloClient = apolloClientWithGoodResponseToSubmit,
       createChangeTierDeductibleIntentUseCase = useCase,
+      crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       changeTierQuoteStorage = storage,
     )
     storage.insertAll(listOf(oldTestQuote))
     val previousState =
       storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }
-    assertk.assertThat(previousState).isNotNull()
+    assertThat(previousState).isNotNull()
     useCase.intentTurbine.add(
       ChangeTierDeductibleIntent(
         LocalDate(2024, 11, 11),
@@ -94,7 +125,7 @@ class ChangeTierRepositoryImplTest {
     )
     repository.startChangeTierIntentAndGetQuotesId(testId, SELF_SERVICE)
     val result = storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }
-    assertk.assertThat(result).isNull()
+    assertThat(result).isNull()
   }
 
   @Test
@@ -103,11 +134,12 @@ class ChangeTierRepositoryImplTest {
     val repository = ChangeTierRepositoryImpl(
       apolloClient = apolloClientWithGoodResponseToSubmit,
       changeTierQuoteStorage = storage,
+      crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
     storage.putFakeNull()
     val result = repository.getQuoteById(testId)
-    assertk.assertThat(result)
+    assertThat(result)
       .isLeft()
   }
 
@@ -117,11 +149,12 @@ class ChangeTierRepositoryImplTest {
     val repository = ChangeTierRepositoryImpl(
       apolloClient = apolloClientWithGoodResponseToSubmit,
       changeTierQuoteStorage = storage,
+      crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseFake(),
     )
     storage.putFakeQuoteDbModel()
     val result = repository.getQuoteById(testId)
-    assertk.assertThat(result)
+    assertThat(result)
       .isRight()
       .isNotNull()
       .isEqualTo(testQuote)

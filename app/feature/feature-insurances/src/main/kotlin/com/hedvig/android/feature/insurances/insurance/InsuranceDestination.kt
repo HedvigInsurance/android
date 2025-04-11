@@ -54,7 +54,7 @@ import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
@@ -86,7 +86,6 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun InsuranceDestination(
@@ -512,7 +511,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular"),
         eligibleInsurancesIds = nonEmptyListOf("id"),
-        bannerSource = UpsellTravelAddonFlow.APP_ONLY_UPSALE,
       ),
       pendingContracts = listOf(),
     ),

@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.11.4"
+    versionName = "12.11.6"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -161,7 +161,6 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
@@ -173,6 +172,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
+  implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
@@ -189,6 +189,7 @@ dependencies {
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)

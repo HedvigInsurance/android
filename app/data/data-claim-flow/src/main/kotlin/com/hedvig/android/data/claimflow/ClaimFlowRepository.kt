@@ -138,7 +138,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimStart
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -168,7 +171,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -180,7 +186,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -198,7 +207,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -219,7 +231,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -231,7 +246,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -263,7 +281,10 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -314,7 +335,10 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
       networkCacheManager.clearCache()
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -332,7 +356,10 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimConfirmEmergencyNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -350,7 +377,10 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+      result.currentStep.toClaimFlowStep(
+        FlowId(result.id),
+        selfServiceCompletedEventManager,
+      )
     }
   }
 
@@ -390,7 +420,10 @@ internal class ClaimFlowRepositoryImpl(
       .flowClaimAudioRecordingNext
     logcat { "Submitted audio file to GQL with URL $audioUrl" }
     claimFlowContextStorage.saveContext(result.context)
-    return result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+    return result.currentStep.toClaimFlowStep(
+      FlowId(result.id),
+      selfServiceCompletedEventManager,
+    )
   }
 }
 

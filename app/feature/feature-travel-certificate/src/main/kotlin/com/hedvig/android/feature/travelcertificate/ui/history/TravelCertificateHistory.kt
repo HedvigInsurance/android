@@ -57,7 +57,6 @@ import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.UpsellTravelAddonFlow
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -378,7 +377,6 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
-          bannerSource = UpsellTravelAddonFlow.APP_UPSELL_UPGRADE,
         ),
       ),
       SuccessDownloadingHistory(

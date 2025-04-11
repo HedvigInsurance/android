@@ -25,13 +25,17 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
+import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
+import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
@@ -133,6 +137,12 @@ internal class HedvigAppState(
       SharingStarted.WhileSubscribed(5.seconds),
       false,
     )
+
+  val isInScreenEligibleForCrossSells: Boolean
+    @Composable
+    get() {
+      return currentDestination?.isInListOfScreensPermittingCrossSellsSheetToShow() == true
+    }
 
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
@@ -317,12 +327,32 @@ private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): 
   return bottomNavPermittedDestinations.any { this?.typedHasRoute(it) == true }
 }
 
+private fun NavDestination?.isInListOfScreensPermittingCrossSellsSheetToShow(): Boolean {
+  return crossSellBottomSheetPermittingDestinations.any { this?.typedHasRoute(it) == true }
+}
+
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
 private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
+}
+
+/**
+ * Destinations that must show the cross-sell bottom sheet after finishing some flow
+ */
+private val crossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = buildList {
+  // Screens that a member will end up in after finishing any of the following flows
+  // 1. Moving flow
+  // 2. Edit co-insured
+  // 3. Add/Upgrade addon
+  // 4. Change tier
+  addAll(insurancesCrossSellBottomSheetPermittingDestinations)
+  addAll(helpCenterCrossSellBottomSheetPermittingDestinations)
+  addAll(travelCertificateCrossSellBottomSheetPermittingDestinations)
+  // One could finish those flows after a deep link, so the app's start destination must also be included
+  addAll(homeCrossSellBottomSheetPermittingDestinations)
 }
 
 private sealed interface TopLevelDestination {

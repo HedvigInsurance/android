@@ -60,7 +60,6 @@ dependencies {
   implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
-  implementation(libs.androidx.compose.material3)
 }
 
 androidComponents {
