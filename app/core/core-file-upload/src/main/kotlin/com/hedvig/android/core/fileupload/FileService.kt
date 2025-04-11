@@ -109,5 +109,4 @@ private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
 
 class BackendFileLimitException(message: String) : IOException(message)
 
-// TODO Revisit this when and if backend considers adjusting this limit
-private const val backendContentSizeLimit = 48 * 1024 * 1024 // 48 Mb
+private const val backendContentSizeLimit = 512 * 1024 * 1024 // 512 Mb
