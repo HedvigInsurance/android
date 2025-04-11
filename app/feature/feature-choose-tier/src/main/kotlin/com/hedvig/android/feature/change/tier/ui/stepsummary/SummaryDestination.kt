@@ -18,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -53,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
@@ -218,6 +221,7 @@ private fun SummarySuccessScreen(
         },
         spaceBetween = 8.dp,
         endSlot = {
+          val voiceDescription = uiState.total.getPerMonthDescription()
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -225,6 +229,9 @@ private fun SummarySuccessScreen(
             ),
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics {
+              contentDescription = voiceDescription
+            },
           )
         },
       )
@@ -290,7 +297,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
       formatStartDate(uiState.activationDate),
     ),
-    premium = uiState.quote.premium.toString(),
+    premium = uiState.quote.premium,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -299,23 +306,41 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       )
     },
     underTitleContent = {
-      HedvigText(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 2.dp),
-        textAlign = TextAlign.End,
-        text = stringResource(
-          R.string.TIER_FLOW_PREVIOUS_PRICE,
-          stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            uiState.currentContractData.activeDisplayPremium.toString(),
-          ),
-        ),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
+      UnderTitleContent(
+        uiState.currentContractData.activeDisplayPremium,
+        modifier = Modifier.semantics(mergeDescendants = true) {},
       )
     },
     modifier = modifier,
+  )
+}
+
+@Composable
+private fun UnderTitleContent(activeDisplayPremium: UiMoney?, modifier: Modifier = Modifier) {
+  val description = activeDisplayPremium?.let {
+    stringResource(
+      R.string.TIER_FLOW_PREVIOUS_PRICE,
+      it.getPerMonthDescription(),
+    )
+  } ?: ""
+
+  HedvigText(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(top = 2.dp)
+      .semantics {
+        contentDescription = description
+      },
+    textAlign = TextAlign.End,
+    text = stringResource(
+      R.string.TIER_FLOW_PREVIOUS_PRICE,
+      stringResource(
+        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        activeDisplayPremium.toString(),
+      ),
+    ),
+    style = HedvigTheme.typography.label,
+    color = HedvigTheme.colorScheme.textSecondary,
   )
 }
 
@@ -332,10 +357,9 @@ private fun AddonCard(
     displayName = addonQuote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    // todo: here we don't want to show insurable limits for addons, that may change later
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
-    premium = addonQuote.premium.toString(),
+    premium = addonQuote.premium,
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
@@ -403,7 +427,7 @@ private class ChooseInsuranceUiStateProvider :
           contractGroup = ContractGroup.HOMEOWNER,
           contractDisplayName = "Home Homeowner",
           contractDisplaySubtitle = "Addressvägen 777",
-          activeDisplayPremium = "449 kr",
+          activeDisplayPremium = UiMoney(449.0, SEK),
         ),
         activationDate = LocalDate(2024, 5, 1),
         quote = TierDeductibleQuote(

@@ -23,6 +23,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantPublic)

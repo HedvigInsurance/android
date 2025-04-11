@@ -40,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -75,6 +77,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -292,15 +295,19 @@ private fun SummaryScreen(
           },
           endSlot = {
             AnimatedContent(
-              targetState = content.summaryInfo.totalPremium.toString(),
+              targetState = content.summaryInfo.totalPremium,
               transitionSpec = {
                 slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
               },
             ) { premium ->
+              val voiceoverDescription = premium.getPerMonthDescription()
               HedvigText(
-                text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium),
+                text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
                 textAlign = TextAlign.End,
-                modifier = Modifier.wrapContentWidth(Alignment.End),
+                modifier = Modifier.wrapContentWidth(Alignment.End)
+                  .semantics {
+                    contentDescription = voiceoverDescription
+                  },
               )
             }
           },
@@ -333,7 +340,7 @@ private fun QuoteCard(
   QuoteCard(
     productVariant = quote.productVariant,
     subtitle = subtitle,
-    premium = quote.premium.toString(),
+    premium = quote.premium,
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -446,7 +453,7 @@ private fun AddonQuoteCard(
     insurableLimits = emptyList(),
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
-    premium = quote.premium.toString(),
+    premium = quote.premium,
     isExcluded = when (quote) {
       is HomeAddonQuote -> quote.isExcludedByUser
       is MtaAddonQuote -> false
