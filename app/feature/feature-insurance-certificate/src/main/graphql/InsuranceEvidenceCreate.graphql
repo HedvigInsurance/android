@@ -1,0 +1,10 @@
+mutation InsuranceEvidenceCreate($input: InsuranceEvidenceInput!) {
+  insuranceEvidenceCreate(input: $input) {
+    userError {
+      message
+    }
+    insuranceEvidenceInformation {
+      signedUrl
+    }
+  }
+}

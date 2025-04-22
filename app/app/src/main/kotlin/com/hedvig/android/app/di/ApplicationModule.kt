@@ -75,6 +75,7 @@ import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.feature.home.di.homeModule
+import com.hedvig.android.feature.insurance.certificate.di.insuranceEvidenceModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.movingflow.di.movingFlowModule
@@ -404,6 +405,7 @@ val applicationModule = module {
       helpCenterModule,
       homeModule,
       insurancesModule,
+      insuranceEvidenceModule,
       languageAuthListenersModule,
       languageMigrationModule,
       languageModule,
