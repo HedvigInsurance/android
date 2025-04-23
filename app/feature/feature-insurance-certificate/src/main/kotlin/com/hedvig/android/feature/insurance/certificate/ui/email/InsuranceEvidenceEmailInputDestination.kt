@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurance.certificate.ui.email
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -35,9 +37,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -117,9 +121,6 @@ private fun InsuranceEvidenceEmailSuccessScreen(
   navigateUp: () -> Unit,
   onChangeEmail: (email: String) -> Unit,
 ) {
-  var emailInput by remember {
-    mutableStateOf(uiState.email ?: "")
-  }
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   ExplanationBottomSheet(explanationBottomSheetState)
   HedvigScaffold(
@@ -140,6 +141,40 @@ private fun InsuranceEvidenceEmailSuccessScreen(
       )
     },
   ) {
+    Box(Modifier.weight(1f)) {
+      SuccessContent(
+        uiState = uiState,
+        onSubmit = onSubmit,
+        onChangeEmail = onChangeEmail,
+      )
+      Column(
+        Modifier.fillMaxWidth(),
+      ) {
+        HedvigTooltip(
+          message = stringResource(R.string.TOAST_READ_MORE),
+          showTooltip = true,
+          beakDirection = TopEnd,
+          tooltipShown = {},
+          modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .align(Alignment.End),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun SuccessContent(
+  uiState: InsuranceEvidenceEmailInputState.Success,
+  onChangeEmail: (email: String) -> Unit,
+  onSubmit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var emailInput by remember {
+    mutableStateOf(uiState.email ?: "")
+  }
+  Column(modifier) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
       stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
@@ -170,7 +205,6 @@ private fun InsuranceEvidenceEmailSuccessScreen(
     Spacer(Modifier.height(16.dp))
   }
 }
-
 
 @Composable
 private fun EmailTextField(
