@@ -2,11 +2,14 @@ package com.hedvig.android.feature.insurance.certificate.ui.email
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,11 +22,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
@@ -32,8 +39,10 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import hedvig.resources.R
 
 @Composable
@@ -111,6 +120,8 @@ private fun InsuranceEvidenceEmailSuccessScreen(
   var emailInput by remember {
     mutableStateOf(uiState.email ?: "")
   }
+  val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  ExplanationBottomSheet(explanationBottomSheetState)
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -118,7 +129,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
       IconButton(
         modifier = Modifier.size(24.dp),
         onClick = {
-          TODO() //show info bottom sheet
+          explanationBottomSheetState.show(Unit)
         },
         content = {
           Icon(
@@ -184,6 +195,33 @@ private fun EmailTextField(
   )
 }
 
+@Composable
+internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) { discount ->
+    HedvigText(
+      text = stringResource(id = R.string.INSURANCE_EVIDENCE_READ_MORE_TITLE),
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigText(
+      text = stringResource(id = R.string.INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION),
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_close_button),
+      buttonSize = Large,
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
 
 @HedvigPreview
 @Composable
@@ -213,11 +251,11 @@ private class InsuranceEvidenceEmailInputStateProvider :
       ),
       InsuranceEvidenceEmailInputState.Success(
         email = "myemail@email",
-        emailValidationErrorMessage = R.string.PROFILE_MY_INFO_INVALID_EMAIL
+        emailValidationErrorMessage = R.string.PROFILE_MY_INFO_INVALID_EMAIL,
       ),
       InsuranceEvidenceEmailInputState.Success(
         email = "",
-        emailValidationErrorMessage = R.string.travel_certificate_email_empty_error
+        emailValidationErrorMessage = R.string.travel_certificate_email_empty_error,
       ),
       InsuranceEvidenceEmailInputState.Failure,
       InsuranceEvidenceEmailInputState.Loading,
