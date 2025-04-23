@@ -37,7 +37,6 @@ internal class InsuranceEvidenceEmailInputPresenter(
   ): InsuranceEvidenceEmailInputState {
     var loadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
-    var generalErrorMessage by remember { mutableStateOf<Int?>(null) }
     var generateCertificateInputData by remember { mutableStateOf<String?>(null) }
 
     CollectEvents { event ->
