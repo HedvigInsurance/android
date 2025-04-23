@@ -36,6 +36,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
     lastState: InsuranceEvidenceEmailInputState,
   ): InsuranceEvidenceEmailInputState {
     var loadIteration by remember { mutableIntStateOf(0) }
+    var generateIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
     var generateCertificateInputData by remember { mutableStateOf<String?>(null) }
 
@@ -47,6 +48,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
           validateEmail(email).isSuccessful
         ) {
           generateCertificateInputData = email
+          generateIteration++
           currentState = successScreenState.copy(emailValidationErrorMessage = null)
         } else {
           val invalidEmailErrorMessage = if (successScreenState.email.isNullOrEmpty()) {
@@ -95,7 +97,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
       )
     }
 
-    LaunchedEffect(generateCertificateInputData) {
+    LaunchedEffect(generateIteration,generateCertificateInputData) {
       val emailToSubmit = generateCertificateInputData
       if (emailToSubmit == null) return@LaunchedEffect
       val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@LaunchedEffect
