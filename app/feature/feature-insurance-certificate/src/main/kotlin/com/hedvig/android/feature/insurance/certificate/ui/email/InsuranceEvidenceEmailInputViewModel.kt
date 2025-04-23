@@ -75,6 +75,13 @@ internal class InsuranceEvidenceEmailInputPresenter(
         InsuranceEvidenceEmailInputEvent.Submit -> {
           validateInputAndContinue()
         }
+
+        InsuranceEvidenceEmailInputEvent.ClearErrorMessage -> {
+          val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@CollectEvents
+          currentState = successScreenState.copy(
+            generatingErrorMessage = null
+          )
+        }
       }
     }
 
@@ -136,6 +143,8 @@ internal sealed interface InsuranceEvidenceEmailInputEvent {
   data object Submit : InsuranceEvidenceEmailInputEvent
 
   data object RetryLoadData : InsuranceEvidenceEmailInputEvent
+
+  data object ClearErrorMessage: InsuranceEvidenceEmailInputEvent
 
   data object ClearNavigation : InsuranceEvidenceEmailInputEvent
 }

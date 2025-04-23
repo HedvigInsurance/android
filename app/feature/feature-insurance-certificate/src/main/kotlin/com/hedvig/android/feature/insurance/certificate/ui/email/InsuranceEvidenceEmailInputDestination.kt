@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigSnackbar
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -40,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
@@ -72,6 +75,9 @@ internal fun InsuranceEvidenceEmailInputDestination(
     onClearNavigation = {
       viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearNavigation)
     },
+    showedErrorMessage = {
+      viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearErrorMessage)
+    }
   )
 }
 
@@ -84,6 +90,7 @@ private fun InsuranceEvidenceEmailInputScreen(
   onChangeEmail: (email: String) -> Unit,
   onClearNavigation: () -> Unit,
   onSubmit: () -> Unit,
+  showedErrorMessage:  () -> Unit,
 ) {
   when (uiState) {
     InsuranceEvidenceEmailInputState.Failure -> {
@@ -109,6 +116,7 @@ private fun InsuranceEvidenceEmailInputScreen(
         onSubmit = onSubmit,
         navigateUp = navigateUp,
         onChangeEmail = onChangeEmail,
+        showedErrorMessage = showedErrorMessage
       )
     }
   }
@@ -119,6 +127,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
   uiState: InsuranceEvidenceEmailInputState.Success,
   onSubmit: () -> Unit,
   navigateUp: () -> Unit,
+  showedErrorMessage:  () -> Unit,
   onChangeEmail: (email: String) -> Unit,
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -148,7 +157,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
         onChangeEmail = onChangeEmail,
       )
       Column(
-        Modifier.fillMaxWidth(),
+        Modifier.fillMaxSize(),
       ) {
         HedvigTooltip(
           message = stringResource(R.string.TOAST_READ_MORE),
@@ -158,6 +167,18 @@ private fun InsuranceEvidenceEmailSuccessScreen(
           modifier = Modifier
             .padding(horizontal = 8.dp)
             .align(Alignment.End),
+        )
+      }
+      if (uiState.generatingErrorMessage!=null) {
+        HedvigSnackbar(
+          snackbarText = stringResource(uiState.generatingErrorMessage),
+          showSnackbar = true,
+          showedSnackbar = showedErrorMessage,
+          priority = NotificationPriority.Attention,
+          modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(16.dp),
         )
       }
     }
@@ -272,6 +293,7 @@ private fun PreviewInsuranceEvidenceEmailInputScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
