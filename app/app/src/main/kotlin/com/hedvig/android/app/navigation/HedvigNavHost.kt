@@ -54,6 +54,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewer
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerGraph
+import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
@@ -434,6 +435,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         ),
       )
     },
+  )
+  insuranceEvidenceGraph(
+    navigator = navigator,
+    applicationId = hedvigBuildConstants.appId,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
