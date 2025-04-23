@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurance.certificate.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCaseImpl
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialDataUseCase
@@ -18,10 +19,12 @@ val insuranceEvidenceModule = module {
   viewModel<InsuranceEvidenceEmailInputViewModel> {
     InsuranceEvidenceEmailInputViewModel(
       generateInsuranceEvidenceUseCase = get<GenerateInsuranceEvidenceUseCase>(),
-      getEmailUseCase = get<GetInsuranceEvidenceInitialDataUseCase>()
+      getEmailUseCase = get<GetInsuranceEvidenceInitialDataUseCase>(),
     )
   }
   viewModel<InsuranceEvidenceOverviewViewModel> {
-    InsuranceEvidenceOverviewViewModel()
+    InsuranceEvidenceOverviewViewModel(
+      get<DownloadPdfUseCase>(),
+    )
   }
 }

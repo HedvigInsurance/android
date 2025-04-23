@@ -16,8 +16,8 @@ interface GenerateInsuranceEvidenceUseCase {
 }
 
 internal class GenerateInsuranceEvidenceUseCaseImpl(
-  val apolloClient: ApolloClient
-): GenerateInsuranceEvidenceUseCase {
+  val apolloClient: ApolloClient,
+) : GenerateInsuranceEvidenceUseCase {
   override suspend fun invoke(email: String): Either<ErrorMessage, String> = either {
     val input = InsuranceEvidenceInput(
       email = email,
@@ -36,11 +36,11 @@ internal class GenerateInsuranceEvidenceUseCaseImpl(
       .getOrNull()
     val userError = result?.insuranceEvidenceCreate?.userError?.message
     val url = result?.insuranceEvidenceCreate?.insuranceEvidenceInformation?.signedUrl
-    if (userError!=null) {
+    if (userError != null) {
       raise(ErrorMessage(userError))
-    } else if (url==null) {
+    } else if (url == null) {
       logcat(
-        priority = LogPriority.ERROR
+        priority = LogPriority.ERROR,
       ) {
         "GetInsuranceEvidenceUseCase: Could not create insurance evidence, insuranceEvidenceInformation is null"
       }

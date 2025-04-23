@@ -23,10 +23,7 @@ class InsuranceEvidenceNotificationSender(
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override suspend fun sendNotification(
-    type: String,
-    remoteMessage: RemoteMessage,
-  ) {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val intentUri = hedvigDeepLinkContainer.insuranceEvidence.first().toUri()
     logcat { "InsuranceEvidenceNotificationSender sending notification with deeplink uri:$intentUri" }
     val intent: PendingIntent? = PendingIntentCompat.getActivity(
@@ -60,13 +57,8 @@ class InsuranceEvidenceNotificationSender(
     return notificationType == NOTIFICATION_TYPE_INSURANCE_EVIDENCE
   }
 
-
   companion object {
     private const val INSURANCE_EVIDENCE_NOTIFICATION_ID = 91760
     private const val NOTIFICATION_TYPE_INSURANCE_EVIDENCE = "INSURANCE_EVIDENCE"
   }
 }
-
-
-
-

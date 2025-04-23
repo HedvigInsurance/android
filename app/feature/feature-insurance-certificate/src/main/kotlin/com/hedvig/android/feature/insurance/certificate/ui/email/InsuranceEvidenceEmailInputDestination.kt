@@ -198,6 +198,7 @@ private fun SuccessContent(
       stringResource(id = R.string.CERTIFICATES_CREATE_CERTIFICATE),
       onClick = onSubmit,
       enabled = true,
+      isLoading = uiState.buttonLoading,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -255,7 +256,6 @@ internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
-
 
 @HedvigPreview
 @Composable

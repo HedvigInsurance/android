@@ -276,7 +276,7 @@ private fun HomeScreen(
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowGotQuestionsTooltip by produceState(false) {
-          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context) //is this a good name for a boolean though
+          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context) // is this a good name for a boolean though
           value = daysSinceLastTooltipShown
         }
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)

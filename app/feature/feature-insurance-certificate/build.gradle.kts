@@ -20,6 +20,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)

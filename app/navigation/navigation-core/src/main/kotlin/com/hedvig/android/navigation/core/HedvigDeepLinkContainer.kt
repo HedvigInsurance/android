@@ -169,5 +169,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     changeTierWithoutContractId.first(),
     changeTierWithContractId.first(),
     claimDetails.first(),
-    insuranceEvidence.first()
+    insuranceEvidence.first(),
   )
