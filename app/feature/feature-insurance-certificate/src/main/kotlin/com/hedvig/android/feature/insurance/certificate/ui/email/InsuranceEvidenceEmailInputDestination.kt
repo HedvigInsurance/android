@@ -77,7 +77,7 @@ internal fun InsuranceEvidenceEmailInputDestination(
     },
     showedErrorMessage = {
       viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearErrorMessage)
-    }
+    },
   )
 }
 
@@ -90,7 +90,7 @@ private fun InsuranceEvidenceEmailInputScreen(
   onChangeEmail: (email: String) -> Unit,
   onClearNavigation: () -> Unit,
   onSubmit: () -> Unit,
-  showedErrorMessage:  () -> Unit,
+  showedErrorMessage: () -> Unit,
 ) {
   when (uiState) {
     InsuranceEvidenceEmailInputState.Failure -> {
@@ -116,7 +116,7 @@ private fun InsuranceEvidenceEmailInputScreen(
         onSubmit = onSubmit,
         navigateUp = navigateUp,
         onChangeEmail = onChangeEmail,
-        showedErrorMessage = showedErrorMessage
+        showedErrorMessage = showedErrorMessage,
       )
     }
   }
@@ -127,7 +127,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
   uiState: InsuranceEvidenceEmailInputState.Success,
   onSubmit: () -> Unit,
   navigateUp: () -> Unit,
-  showedErrorMessage:  () -> Unit,
+  showedErrorMessage: () -> Unit,
   onChangeEmail: (email: String) -> Unit,
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -169,7 +169,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
             .align(Alignment.End),
         )
       }
-      if (uiState.generatingErrorMessage!=null) {
+      if (uiState.generatingErrorMessage != null) {
         HedvigSnackbar(
           snackbarText = stringResource(uiState.generatingErrorMessage),
           showSnackbar = true,
@@ -293,7 +293,7 @@ private fun PreviewInsuranceEvidenceEmailInputScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }

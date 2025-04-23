@@ -88,7 +88,7 @@ internal sealed interface InsuranceEvidenceOverviewState {
 
   data class Success(
     val insuranceEvidenceUri: File?,
-    val isButtonLoading: Boolean = false
+    val isButtonLoading: Boolean = false,
   ) : InsuranceEvidenceOverviewState
 }
 

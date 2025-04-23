@@ -80,7 +80,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
         InsuranceEvidenceEmailInputEvent.ClearErrorMessage -> {
           val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@CollectEvents
           currentState = successScreenState.copy(
-            generatingErrorMessage = null
+            generatingErrorMessage = null,
           )
         }
       }
@@ -97,7 +97,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
       )
     }
 
-    LaunchedEffect(generateIteration,generateCertificateInputData) {
+    LaunchedEffect(generateIteration, generateCertificateInputData) {
       val emailToSubmit = generateCertificateInputData
       if (emailToSubmit == null) return@LaunchedEffect
       val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@LaunchedEffect
@@ -145,7 +145,7 @@ internal sealed interface InsuranceEvidenceEmailInputEvent {
 
   data object RetryLoadData : InsuranceEvidenceEmailInputEvent
 
-  data object ClearErrorMessage: InsuranceEvidenceEmailInputEvent
+  data object ClearErrorMessage : InsuranceEvidenceEmailInputEvent
 
   data object ClearNavigation : InsuranceEvidenceEmailInputEvent
 }
