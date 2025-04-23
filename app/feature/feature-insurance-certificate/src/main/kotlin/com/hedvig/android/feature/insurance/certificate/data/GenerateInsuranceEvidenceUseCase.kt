@@ -11,14 +11,13 @@ import com.hedvig.android.logger.logcat
 import octopus.InsuranceEvidenceCreateMutation
 import octopus.type.InsuranceEvidenceInput
 
-interface GetInsuranceEvidenceUseCase {
+interface GenerateInsuranceEvidenceUseCase {
   suspend fun invoke(email: String): Either<ErrorMessage, String>
 }
 
-
-internal class  GetInsuranceEvidenceUseCaseImpl(
+internal class GenerateInsuranceEvidenceUseCaseImpl(
   val apolloClient: ApolloClient
-): GetInsuranceEvidenceUseCase {
+): GenerateInsuranceEvidenceUseCase {
   override suspend fun invoke(email: String): Either<ErrorMessage, String> = either {
     val input = InsuranceEvidenceInput(
       email = email,

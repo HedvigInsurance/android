@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurance.certificate.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.compose.ui.platform.LocalContext
 import com.hedvig.android.core.common.android.sharePDF
+import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputDestination
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputViewModel
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
@@ -26,16 +27,15 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.insuranceEvidence),
     ) { navBackStackEntry ->
         val viewModel: InsuranceEvidenceEmailInputViewModel = koinViewModel()
-        val localContext = LocalContext.current
-//        InsuranceEvidenceEmailInputDestination(
-//          viewModel = viewModel,
-//          navigateUp = navigator::navigateUp,
-//          onNavigateToShowCertificate = { url ->
-//            with(navigator) {
-//              navBackStackEntry.navigate(InsuranceEvidenceDestination.ShowCertificate(url))
-//            }
-//          },
-//        )
+        InsuranceEvidenceEmailInputDestination(
+          viewModel = viewModel,
+          navigateUp = navigator::navigateUp,
+          navigateToShowCertificate = { url ->
+            with(navigator) {
+              navBackStackEntry.navigate(InsuranceEvidenceDestination.ShowCertificate(url))
+            }
+          }
+        )
     }
     navdestination<InsuranceEvidenceDestination.ShowCertificate> {
         val viewModel: InsuranceEvidenceOverviewViewModel = koinViewModel()
