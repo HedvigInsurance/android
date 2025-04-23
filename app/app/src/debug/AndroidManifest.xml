@@ -16,10 +16,10 @@
       - -es "body" "Body"
     ```
     -->
-    <!--<receiver
-      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
-      android:exported="true"
-      android:permission="@null"
-      tools:replace="android:permission" />-->
+<!--    <receiver-->
+<!--      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"-->
+<!--      android:exported="true"-->
+<!--      android:permission="@null"-->
+<!--      tools:replace="android:permission" />-->
   </application>
 </manifest>

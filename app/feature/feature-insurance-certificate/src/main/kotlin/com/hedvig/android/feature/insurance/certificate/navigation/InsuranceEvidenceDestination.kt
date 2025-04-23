@@ -10,10 +10,7 @@ data object InsuranceEvidenceGraphDestination : Destination
 internal sealed interface InsuranceEvidenceDestination {
 
   @Serializable
-  data class InsuranceEvidenceEmailInput(
-    val email: String,
-  ) : InsuranceEvidenceDestination, Destination {
-  }
+  data object InsuranceEvidenceEmailInput: InsuranceEvidenceDestination, Destination
 
   @Serializable
   data class ShowCertificate(
