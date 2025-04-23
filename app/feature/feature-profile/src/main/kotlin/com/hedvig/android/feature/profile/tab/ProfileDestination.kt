@@ -84,7 +84,7 @@ internal fun ProfileDestination(
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -101,7 +101,7 @@ internal fun ProfileDestination(
     navigateToContactInfo = navigateToContactInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
-    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToCertificates = navigateToCertificates,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
@@ -121,7 +121,7 @@ private fun ProfileScreen(
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -180,7 +180,7 @@ private fun ProfileScreen(
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
-        navigateToTravelCertificate = navigateToTravelCertificate,
+        navigateToCertificates = navigateToCertificates,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -239,7 +239,7 @@ private fun ProfileRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
 ) {
   AnimatedContent(
     targetState = profileUiState,
@@ -258,7 +258,8 @@ private fun ProfileRows(
             showSettings = showSettings,
             showAboutApp = showAboutApp,
             navigateToEurobonus = navigateToEurobonus,
-            navigateToTravelCertificate = navigateToTravelCertificate,
+            navigateToCertificates = navigateToCertificates,
+
           )
         }
       }
@@ -275,7 +276,7 @@ private fun ColumnScope.ProfileItemRowsPlaceholders() {
     onClick = {},
   )
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    title = stringResource(R.string.profile_certificates_title),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
@@ -302,7 +303,7 @@ private fun ColumnScope.ProfileItemRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
 ) {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -310,11 +311,11 @@ private fun ColumnScope.ProfileItemRows(
     onClick = showContactInfo,
     isLoading = false,
   )
-  if (profileUiState.travelCertificateAvailable) {
+  if (profileUiState.travelCertificateAvailable || profileUiState.insuranceEvidenceAvailable) {
     ProfileRow(
-      title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+      title = stringResource(R.string.profile_certificates_title),
       icon = HedvigIcons.MultipleDocuments,
-      onClick = dropUnlessResumed { navigateToTravelCertificate() },
+      onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
     )
   }
@@ -341,7 +342,7 @@ private fun ColumnScope.ProfileItemRows(
 }
 
 @Composable
-private fun ProfileRow(
+internal fun ProfileRow(
   title: String,
   icon: ImageVector,
   onClick: () -> Unit,
@@ -408,16 +409,19 @@ private class ProfileUiStateProvider :
       ProfileUiState.Loading,
       ProfileUiState.Success(
         travelCertificateAvailable = true,
+        insuranceEvidenceAvailable = false
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
         travelCertificateAvailable = true,
+        insuranceEvidenceAvailable = false
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
         travelCertificateAvailable = false,
+        insuranceEvidenceAvailable = false
       ),
       ProfileUiState.Loading,
     ),

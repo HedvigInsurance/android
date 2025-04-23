@@ -86,6 +86,7 @@ internal class ProfilePresenter(
             showPaymentScreen = isPaymentScreenFeatureEnabled,
             memberReminders = memberReminders,
             travelCertificateAvailable = travelCertificateAvailability.isRight(),
+            insuranceEvidenceAvailable = false //TODO
           )
         }
       }
@@ -103,6 +104,7 @@ internal class ProfilePresenter(
 internal sealed interface ProfileUiState {
   data class Success(
     val euroBonus: EuroBonus? = null,
+    val insuranceEvidenceAvailable: Boolean,
     val travelCertificateAvailable: Boolean = true,
     val showPaymentScreen: Boolean = false,
     val memberReminders: MemberReminders = MemberReminders(),
