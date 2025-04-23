@@ -7,6 +7,7 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
+import com.hedvig.android.feature.profile.certificates.CertificatesViewModel
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
@@ -48,6 +49,9 @@ val profileModule = module {
       getEurobonusDataUseCase = get<GetEurobonusDataUseCase>(),
       updateEurobonusNumberUseCase = get<UpdateEurobonusNumberUseCase>(),
     )
+  }
+  viewModel<CertificatesViewModel>{
+    CertificatesViewModel()
   }
 
   single<GetEurobonusDataUseCase> {

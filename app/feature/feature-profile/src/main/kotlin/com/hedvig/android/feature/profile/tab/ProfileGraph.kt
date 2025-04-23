@@ -7,12 +7,15 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
+import com.hedvig.android.feature.profile.certificates.CertificatesDestination
+import com.hedvig.android.feature.profile.certificates.CertificatesViewModel
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
+import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
@@ -35,6 +38,7 @@ fun NavGraphBuilder.profileGraph(
   openAppSettings: () -> Unit,
   onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
+  onNavigateToInsuranceEvidence: () -> Unit, //todo
   openUrl: (String) -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
@@ -59,7 +63,7 @@ fun NavGraphBuilder.profileGraph(
         navigateToSettings = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
         },
-        navigateToTravelCertificate = onNavigateToTravelCertificate,
+        navigateToTravelCertificate = onNavigateToTravelCertificate, //TODO: remove from here
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToAddMissingInfo = { contractId ->
           navigateToAddMissingInfo(backStackEntry, contractId)
@@ -104,6 +108,15 @@ fun NavGraphBuilder.profileGraph(
     navdestination<ProfileDestinations.Licenses> {
       LicensesDestination(
         onBackPressed = navigator::navigateUp,
+      )
+    }
+    navdestination<Certificates> {
+      val viewModel: CertificatesViewModel = koinViewModel()
+      CertificatesDestination(
+        viewModel = viewModel,
+        onBackPressed = navigator::navigateUp,
+        onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
+        onNavigateToTravelCertificate = onNavigateToTravelCertificate
       )
     }
     navgraph<ProfileDestinations.SettingsGraph>(
