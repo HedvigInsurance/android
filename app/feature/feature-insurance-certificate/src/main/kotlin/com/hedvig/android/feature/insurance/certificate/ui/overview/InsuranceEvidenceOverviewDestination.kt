@@ -103,6 +103,7 @@ internal fun InsuranceEvidenceOverview(
             }
           },
           enabled = true,
+          isLoading = uiState.isButtonLoading,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),

@@ -53,7 +53,12 @@ internal class InsuranceEvidenceOverviewPresenter(
     LaunchedEffect(dataLoadIteration, certificateUrl) {
       val url = certificateUrl
       if (url != null) {
-        currentState = InsuranceEvidenceOverviewState.Loading
+        val oldState = currentState
+        currentState = when (oldState) {
+          InsuranceEvidenceOverviewState.Failure -> InsuranceEvidenceOverviewState.Loading
+          Loading -> return@LaunchedEffect
+          is InsuranceEvidenceOverviewState.Success -> oldState.copy(isButtonLoading = true)
+        }
         logcat(LogPriority.INFO) { "Downloading insurance evidence with url:$url" }
         downloadPdfUseCase.invoke(url)
           .fold(
@@ -83,6 +88,7 @@ internal sealed interface InsuranceEvidenceOverviewState {
 
   data class Success(
     val insuranceEvidenceUri: File?,
+    val isButtonLoading: Boolean = false
   ) : InsuranceEvidenceOverviewState
 }
 
