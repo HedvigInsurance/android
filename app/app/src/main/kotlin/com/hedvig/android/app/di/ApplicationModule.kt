@@ -33,6 +33,7 @@ import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
+import com.hedvig.android.app.notification.senders.InsuranceEvidenceNotificationSender
 import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
@@ -301,6 +302,15 @@ private val notificationModule = module {
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.CrossSell,
+    )
+  } bind NotificationSender::class
+
+  single<InsuranceEvidenceNotificationSender> {
+    InsuranceEvidenceNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
     )
   } bind NotificationSender::class
 }
