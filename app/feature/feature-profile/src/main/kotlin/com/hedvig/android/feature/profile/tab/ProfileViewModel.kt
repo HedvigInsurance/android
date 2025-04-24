@@ -34,16 +34,16 @@ internal class ProfileViewModel(
   featureManager: FeatureManager,
   logoutUseCase: LogoutUseCase,
 ) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
-    initialState = ProfileUiState.Loading,
-    presenter = ProfilePresenter(
-      getEuroBonusStatusUseCase = getEuroBonusStatusUseCase,
-      checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
-      getMemberRemindersUseCase = getMemberRemindersUseCase,
-      enableNotificationsReminderManager = enableNotificationsReminderManager,
-      featureManager = featureManager,
-      logoutUseCase = logoutUseCase,
-    ),
-  )
+  initialState = ProfileUiState.Loading,
+  presenter = ProfilePresenter(
+    getEuroBonusStatusUseCase = getEuroBonusStatusUseCase,
+    checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
+    getMemberRemindersUseCase = getMemberRemindersUseCase,
+    enableNotificationsReminderManager = enableNotificationsReminderManager,
+    featureManager = featureManager,
+    logoutUseCase = logoutUseCase,
+  ),
+)
 
 internal class ProfilePresenter(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
@@ -101,8 +101,8 @@ internal class ProfilePresenter(
 
 internal sealed interface ProfileUiState {
   data class Success(
+    val certificatesAvailable: Boolean,
     val euroBonus: EuroBonus? = null,
-    val certificatesAvailable: Boolean = true,
     val showPaymentScreen: Boolean = false,
     val memberReminders: MemberReminders = MemberReminders(),
   ) : ProfileUiState
