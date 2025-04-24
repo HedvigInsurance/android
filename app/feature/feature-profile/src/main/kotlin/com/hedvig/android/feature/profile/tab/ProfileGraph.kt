@@ -116,7 +116,7 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: CertificatesViewModel = koinViewModel()
       CertificatesDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
         onNavigateToTravelCertificate = onNavigateToTravelCertificate
       )

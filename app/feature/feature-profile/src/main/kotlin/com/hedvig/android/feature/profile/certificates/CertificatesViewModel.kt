@@ -7,5 +7,14 @@ internal class CertificatesViewModel: MoleculeViewModel<CertificatesEvent,Certif
   presenter = TODO()
 )
 
-internal sealed interface CertificatesState
-internal sealed interface CertificatesEvent
+internal sealed interface CertificatesState {
+  data object Loading: CertificatesState
+  data object Failure: CertificatesState
+  data class Success(
+    val isTravelCertificateAvailable: Boolean,
+    val isInsuranceEvidenceAvailable: Boolean,
+  ): CertificatesState
+}
+internal sealed interface CertificatesEvent {
+  data object Retry: CertificatesEvent
+}
