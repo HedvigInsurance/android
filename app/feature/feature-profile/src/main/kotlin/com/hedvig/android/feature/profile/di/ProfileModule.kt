@@ -11,6 +11,10 @@ import com.hedvig.android.feature.profile.certificates.CertificatesViewModel
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
+import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCaseImpl
+import com.hedvig.android.feature.profile.data.CheckInsuranceEvidenceAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.CheckInsuranceEvidenceAvailabilityUseCaseImpl
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
 import com.hedvig.android.feature.profile.data.ContactInfoRepositoryDemo
@@ -34,10 +38,16 @@ import org.koin.dsl.module
 
 val profileModule = module {
   single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>()) }
+  single<CheckCertificatesAvailabilityUseCase> {
+    CheckCertificatesAvailabilityUseCaseImpl(
+      get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
+      get<CheckInsuranceEvidenceAvailabilityUseCase>()
+    )
+  }
   viewModel<ProfileViewModel> {
     ProfileViewModel(
       get<GetEurobonusStatusUseCase>(),
-      get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
+      get<CheckCertificatesAvailabilityUseCase>(),
       get<GetMemberRemindersUseCase>(),
       get<EnableNotificationsReminderManager>(),
       get<FeatureManager>(),
@@ -50,8 +60,14 @@ val profileModule = module {
       updateEurobonusNumberUseCase = get<UpdateEurobonusNumberUseCase>(),
     )
   }
+  single<CheckInsuranceEvidenceAvailabilityUseCase> {
+    CheckInsuranceEvidenceAvailabilityUseCaseImpl(get<ApolloClient>())
+  }
   viewModel<CertificatesViewModel>{
-    CertificatesViewModel()
+    CertificatesViewModel(
+      get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
+      get<CheckInsuranceEvidenceAvailabilityUseCase>()
+    )
   }
 
   single<GetEurobonusDataUseCase> {

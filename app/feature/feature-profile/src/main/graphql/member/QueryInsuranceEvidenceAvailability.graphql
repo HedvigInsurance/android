@@ -1,0 +1,7 @@
+query InsuranceEvidenceAvailability {
+  currentMember {
+    memberActions {
+      isCreatingOfInsuranceEvidenceEnabled
+    }
+  }
+}

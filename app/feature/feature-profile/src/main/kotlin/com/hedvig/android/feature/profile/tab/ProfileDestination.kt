@@ -311,7 +311,7 @@ private fun ColumnScope.ProfileItemRows(
     onClick = showContactInfo,
     isLoading = false,
   )
-  if (profileUiState.travelCertificateAvailable || profileUiState.insuranceEvidenceAvailable) {
+  if (profileUiState.certificatesAvailable) {
     ProfileRow(
       title = stringResource(R.string.profile_certificates_title),
       icon = HedvigIcons.MultipleDocuments,
@@ -408,20 +408,17 @@ private class ProfileUiStateProvider :
     listOf(
       ProfileUiState.Loading,
       ProfileUiState.Success(
-        travelCertificateAvailable = true,
-        insuranceEvidenceAvailable = false
+        certificatesAvailable= true,
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
-        travelCertificateAvailable = true,
-        insuranceEvidenceAvailable = false
+        certificatesAvailable = true,
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
-        travelCertificateAvailable = false,
-        insuranceEvidenceAvailable = false
+        certificatesAvailable = false,
       ),
       ProfileUiState.Loading,
     ),
