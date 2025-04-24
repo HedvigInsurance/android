@@ -43,6 +43,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -59,7 +60,6 @@ import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -203,7 +203,10 @@ private fun TravelCertificateSuccessScreen(
     },
   ) {
     Box(Modifier.weight(1f)) {
-      Column {
+      Column(
+        Modifier
+          .fillMaxSize(),
+      ) {
         if (historyList.isEmpty()) {
           Spacer(modifier = Modifier.weight(1f))
           EmptyTravelCertificatesScreen()
@@ -243,7 +246,7 @@ private fun TravelCertificateSuccessScreen(
         Spacer(Modifier.height(16.dp))
       }
       Column(
-        Modifier.fillMaxSize(),
+        Modifier.fillMaxWidth(),
       ) {
         HedvigTooltip(
           message = stringResource(R.string.TOAST_READ_MORE),
@@ -251,7 +254,7 @@ private fun TravelCertificateSuccessScreen(
           beakDirection = TopEnd,
           tooltipShown = {},
           modifier = Modifier
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 14.dp)
             .align(Alignment.End),
         )
       }
@@ -278,9 +281,9 @@ private fun TravelAddonBanner(
 }
 
 @Composable
-private fun EmptyTravelCertificatesScreen() {
+private fun EmptyTravelCertificatesScreen(modifier: Modifier = Modifier) {
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
