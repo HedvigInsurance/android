@@ -16,7 +16,6 @@ internal class CheckCertificatesAvailabilityUseCaseImpl(
   private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
   private val checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
 ) : CheckCertificatesAvailabilityUseCase {
-
   override suspend fun invoke(): Either<ErrorMessage, Unit> {
     val combinedResult = combine(
       flow { emit(checkInsuranceEvidenceAvailabilityUseCase.invoke()) },
