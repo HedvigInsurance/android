@@ -41,7 +41,7 @@ val profileModule = module {
   single<CheckCertificatesAvailabilityUseCase> {
     CheckCertificatesAvailabilityUseCaseImpl(
       get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
-      get<CheckInsuranceEvidenceAvailabilityUseCase>()
+      get<CheckInsuranceEvidenceAvailabilityUseCase>(),
     )
   }
   viewModel<ProfileViewModel> {
@@ -63,10 +63,10 @@ val profileModule = module {
   single<CheckInsuranceEvidenceAvailabilityUseCase> {
     CheckInsuranceEvidenceAvailabilityUseCaseImpl(get<ApolloClient>())
   }
-  viewModel<CertificatesViewModel>{
+  viewModel<CertificatesViewModel> {
     CertificatesViewModel(
       get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
-      get<CheckInsuranceEvidenceAvailabilityUseCase>()
+      get<CheckInsuranceEvidenceAvailabilityUseCase>(),
     )
   }
 

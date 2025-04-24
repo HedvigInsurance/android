@@ -327,7 +327,7 @@ internal fun HedvigNavHost(
       },
       onNavigateToInsuranceEvidence = {
         hedvigAppState.navController.navigate(InsuranceEvidenceGraphDestination)
-      }
+      },
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

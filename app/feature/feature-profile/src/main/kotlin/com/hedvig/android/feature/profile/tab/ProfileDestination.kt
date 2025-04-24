@@ -259,7 +259,6 @@ private fun ProfileRows(
             showAboutApp = showAboutApp,
             navigateToEurobonus = navigateToEurobonus,
             navigateToCertificates = navigateToCertificates,
-
           )
         }
       }
@@ -408,7 +407,7 @@ private class ProfileUiStateProvider :
     listOf(
       ProfileUiState.Loading,
       ProfileUiState.Success(
-        certificatesAvailable= true,
+        certificatesAvailable = true,
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(

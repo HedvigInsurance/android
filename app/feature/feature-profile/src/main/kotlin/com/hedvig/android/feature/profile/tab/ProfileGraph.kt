@@ -38,7 +38,7 @@ fun NavGraphBuilder.profileGraph(
   openAppSettings: () -> Unit,
   onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
-  onNavigateToInsuranceEvidence: () -> Unit, //todo
+  onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
@@ -118,7 +118,7 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
-        onNavigateToTravelCertificate = onNavigateToTravelCertificate
+        onNavigateToTravelCertificate = onNavigateToTravelCertificate,
       )
     }
     navgraph<ProfileDestinations.SettingsGraph>(

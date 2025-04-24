@@ -48,7 +48,6 @@ private fun CertificatesScreen(
   onNavigateToTravelCertificate: () -> Unit,
   onRetry: () -> Unit,
 ) {
-
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.profile_certificates_title),
@@ -118,7 +117,6 @@ private fun ColumnScope.CertificatesRowsPlaceholder() {
     isLoading = true,
   )
 }
-
 
 @HedvigPreview
 @Composable

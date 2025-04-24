@@ -19,8 +19,7 @@ internal class CheckCertificatesAvailabilityUseCaseImpl(
       combine(
         flow { emit(checkInsuranceEvidenceAvailabilityUseCase.invoke()) },
         flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
-      )
-      { insuranceEvidenceAvailability, travelCertificateDestinationAvailability ->
+      ) { insuranceEvidenceAvailability, travelCertificateDestinationAvailability ->
         val evidenceAvailable = insuranceEvidenceAvailability.getOrNull()
         val travelCertificateDestinationAvailable = travelCertificateDestinationAvailability.getOrNull()
         if (evidenceAvailable == null && travelCertificateDestinationAvailable == null) {
