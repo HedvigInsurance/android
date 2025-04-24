@@ -2,6 +2,7 @@ package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -57,6 +59,7 @@ import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -199,43 +202,60 @@ private fun TravelCertificateSuccessScreen(
       }
     },
   ) {
-    if (historyList.isEmpty()) {
-      Spacer(modifier = Modifier.weight(1f))
-      EmptyTravelCertificatesScreen()
-    } else {
-      TravelCertificatesList(
-        list = historyList,
-        onCertificateClick = onCertificateClick,
-        showErrorDialog = showErrorDialog,
-        onDismissDownloadCertificateError = onDismissDownloadCertificateError,
-      )
+    Box(Modifier.weight(1f)) {
+      Column {
+        if (historyList.isEmpty()) {
+          Spacer(modifier = Modifier.weight(1f))
+          EmptyTravelCertificatesScreen()
+        } else {
+          TravelCertificatesList(
+            list = historyList,
+            onCertificateClick = onCertificateClick,
+            showErrorDialog = showErrorDialog,
+            onDismissDownloadCertificateError = onDismissDownloadCertificateError,
+          )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if (travelAddonBannerInfo != null) {
+          TravelAddonBanner(
+            travelAddonBannerInfo = travelAddonBannerInfo,
+            launchAddonPurchaseFlow = launchAddonPurchaseFlow,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+        }
+        if (showGenerationButton) {
+          Spacer(Modifier.height(8.dp))
+          HedvigButton(
+            text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
+            onClick = dropUnlessResumed {
+              if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
+            },
+            buttonStyle = Secondary,
+            enabled = true,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+      Column(
+        Modifier.fillMaxSize(),
+      ) {
+        HedvigTooltip(
+          message = stringResource(R.string.TOAST_READ_MORE),
+          showTooltip = true,
+          beakDirection = TopEnd,
+          tooltipShown = {},
+          modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .align(Alignment.End),
+        )
+      }
     }
-    Spacer(modifier = Modifier.weight(1f))
-    if (travelAddonBannerInfo != null) {
-      TravelAddonBanner(
-        travelAddonBannerInfo = travelAddonBannerInfo,
-        launchAddonPurchaseFlow = launchAddonPurchaseFlow,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-    }
-    if (showGenerationButton) {
-      Spacer(Modifier.height(8.dp))
-      HedvigButton(
-        text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-        onClick = dropUnlessResumed {
-          if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
-        },
-        buttonStyle = Secondary,
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
-    Spacer(Modifier.height(16.dp))
   }
 }
 
