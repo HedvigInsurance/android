@@ -209,7 +209,7 @@ private fun TravelCertificateSuccessScreen(
       ) {
         if (historyList.isEmpty()) {
           Spacer(modifier = Modifier.weight(1f))
-          EmptyTravelCertificatesScreen()
+          EmptyTravelCertificatesScreen(Modifier.fillMaxWidth())
         } else {
           TravelCertificatesList(
             list = historyList,
