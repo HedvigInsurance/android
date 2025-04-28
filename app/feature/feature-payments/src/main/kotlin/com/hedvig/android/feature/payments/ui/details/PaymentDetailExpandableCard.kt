@@ -80,31 +80,47 @@ internal fun PaymentDetailExpandableCard(
         ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { HedvigText(displayName) },
+        startSlot = {
+          Column {
+            HedvigText(displayName)
+            HedvigText(
+              text = subtitle,
+              color = HedvigTheme.colorScheme.textSecondary,
+              fontSize = HedvigTheme.typography.label.fontSize,
+              lineHeight = HedvigTheme.typography.label.lineHeight,
+            )
+          }
+        },
         spaceBetween = 8.dp,
         endSlot = {
           Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
           ) {
+            if (totalGrossAmount != totalNetAmount) {
+              HedvigText(
+                text = totalGrossAmount,
+                textAlign = TextAlign.End,
+                textDecoration = TextDecoration.LineThrough,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+              Spacer(Modifier.width(6.dp))
+            }
             HedvigText(
-              text = totalGrossAmount,
+              text = totalNetAmount,
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
+
             Icon(
               imageVector = HedvigIcons.ChevronDown,
               contentDescription = null,
               tint = HedvigTheme.colorScheme.fillSecondary,
-              modifier = Modifier.size(16.dp),
+              modifier = Modifier.size(24.dp),
             )
           }
         },
-      )
-      HedvigText(
-        text = subtitle,
-        color = HedvigTheme.colorScheme.textSecondary,
       )
       AnimatedVisibility(
         visible = isExpanded,
@@ -149,7 +165,11 @@ internal fun PaymentDetailExpandableCard(
           }
           discounts.forEach { discount ->
             Spacer(Modifier.height(16.dp))
-            DiscountRow(discount, labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM))
+            DiscountRow(
+              discount,
+              labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM),
+              showDisplayName = false,
+            )
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
           }

@@ -218,7 +218,10 @@ private fun MemberChargeDetailsScreen(
               },
             )
             Spacer(modifier = Modifier.height(16.dp))
-            DiscountRow(uiState.paymentDetails.memberCharge.referralDiscount)
+            DiscountRow(
+              uiState.paymentDetails.memberCharge.referralDiscount,
+              showDisplayName = false,
+            )
             Spacer(modifier = Modifier.height(16.dp))
           }
           when (uiState.paymentDetails.memberCharge.status) {

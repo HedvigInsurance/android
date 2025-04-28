@@ -32,6 +32,7 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun DiscountRows(
   discounts: List<Discount>,
+  showDisplayName: Boolean,
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
@@ -43,7 +44,12 @@ internal fun DiscountRows(
       if (index != 0) {
         HorizontalDivider()
       }
-      DiscountRow(discount, Modifier.fillMaxWidth(), labelColor)
+      DiscountRow(
+        discount,
+        modifier = Modifier.fillMaxWidth(),
+        labelColor = labelColor,
+        showDisplayName = showDisplayName,
+      )
     }
   }
 }
@@ -51,6 +57,7 @@ internal fun DiscountRows(
 @Composable
 internal fun DiscountRow(
   discount: Discount,
+  showDisplayName: Boolean, // we do not need it for payment details, but do need it for discounts
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
@@ -93,15 +100,17 @@ internal fun DiscountRow(
           horizontalAlignment = Alignment.Start,
         ) {
           discount.displayName?.let {
-            HedvigText(
-              text = it,
-              color = if (discountIsExpired) {
-                HedvigTheme.colorScheme.textDisabled
-              } else {
-                HedvigTheme.colorScheme.textSecondaryTranslucent
-              },
-              style = HedvigTheme.typography.label,
-            )
+            if (showDisplayName) {
+              HedvigText(
+                text = it,
+                color = if (discountIsExpired) {
+                  HedvigTheme.colorScheme.textDisabled
+                } else {
+                  HedvigTheme.colorScheme.textSecondaryTranslucent
+                },
+                style = HedvigTheme.typography.label,
+              )
+            }
           }
           val bottomText = if (discount.isReferral) {
             stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
@@ -164,7 +173,10 @@ private fun DiscountRowsPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
-        DiscountRows(discounts = discountsPreviewData)
+        DiscountRows(
+          discounts = discountsPreviewData,
+          showDisplayName = false,
+        )
       }
     }
   }

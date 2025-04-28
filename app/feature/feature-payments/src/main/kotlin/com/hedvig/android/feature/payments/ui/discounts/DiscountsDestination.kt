@@ -167,7 +167,7 @@ private fun DiscountsScreen(
         )
       } else {
         Spacer(modifier = Modifier.height(16.dp))
-        DiscountRows(discounts)
+        DiscountRows(discounts, showDisplayName = true)
       }
 
       if (uiState.allowAddingCampaignCode) {
