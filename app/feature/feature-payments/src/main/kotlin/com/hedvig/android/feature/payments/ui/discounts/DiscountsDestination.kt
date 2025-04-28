@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.payments.ui.discounts
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,11 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -39,13 +38,14 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
@@ -241,7 +241,7 @@ private fun ForeverSection(
           contentDescription = null,
           modifier = Modifier
             .wrapContentSize(Alignment.CenterEnd)
-            .size(16.dp)
+            .size(24.dp)
             .clip(HedvigTheme.shapes.cornerXLarge)
             .clickable { showForeverInfoBottomSheet = true }
             .minimumInteractiveComponentSize(),
@@ -252,20 +252,24 @@ private fun ForeverSection(
     val context = LocalContext.current
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        HedvigCard(
-          onClick = {
-            context.getSystemService<ClipboardManager>()?.setPrimaryClip(
-              ClipData.newPlainText(null, foreverInformation.foreverCode),
+        Column {
+          Row {
+            HighlightLabel(
+              labelText = foreverInformation.foreverCode,
+              size = HighlightLabelDefaults.HighLightSize.Small,
+              modifier = Modifier
+                .wrapContentWidth(),
+              color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
             )
-          },
-          modifier = Modifier.wrapContentSize(Alignment.TopStart),
-        ) {
+          }
           HedvigText(
-            text = foreverInformation.foreverCode,
-            style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            pluralStringResource(R.plurals.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL, 2,2),
+            //todo: put right args!
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            fontSize = HedvigTheme.typography.label.fontSize
           )
         }
+
       },
       endSlot = {
         Row(
@@ -284,6 +288,7 @@ private fun ForeverSection(
       spaceBetween = 8.dp,
     )
     Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.weight(1f))
     HedvigNotificationCard(
       message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
       priority = NotificationDefaults.NotificationPriority.Campaign,
