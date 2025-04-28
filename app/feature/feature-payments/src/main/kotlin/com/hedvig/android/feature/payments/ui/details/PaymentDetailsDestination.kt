@@ -54,7 +54,6 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
-import com.hedvig.android.feature.payments.ui.discounts.DiscountRows
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 
@@ -147,6 +146,7 @@ private fun MemberChargeDetailsScreen(
               periods = chargeBreakdown.periods,
               isExpanded = selectedCharge == chargeBreakdown,
               onClick = { onCardClick(chargeBreakdown) },
+              discounts = chargeBreakdown.discounts,
             )
             Spacer(modifier = Modifier.height(8.dp))
           }
@@ -184,7 +184,7 @@ private fun MemberChargeDetailsScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
           }
-          if (uiState.paymentDetails.memberCharge.referralDiscount!=null) {
+          if (uiState.paymentDetails.memberCharge.referralDiscount != null) {
             Spacer(modifier = Modifier.height(16.dp))
             HedvigText(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
             Spacer(modifier = Modifier.height(16.dp))

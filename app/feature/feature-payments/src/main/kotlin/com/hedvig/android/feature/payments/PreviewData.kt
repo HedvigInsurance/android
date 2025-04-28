@@ -49,9 +49,9 @@ internal val referralDiscountPreviewData = Discount(
 internal val discountsPreviewData = listOf(
   Discount(
     code = "CAR15",
-    displayName = "Test 1",
-    description = "Desc",
-    expiredState = Discount.ExpiredState.AlreadyExpired(LocalDate(2022, 12, 14)),
+    displayName = null,
+    description = "15% discount for 12 months",
+    expiredState = Discount.ExpiredState.NotExpired,
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
     isReferral = false,
   ),
@@ -59,7 +59,7 @@ internal val discountsPreviewData = listOf(
     code = "HEJHEJ",
     displayName = "Test 4",
     description = "Desc",
-    expiredState = Discount.ExpiredState.NotExpired,
+    expiredState = Discount.ExpiredState.AlreadyExpired(LocalDate(2022, 12, 14)),
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
     isReferral = false,
   ),
@@ -94,7 +94,7 @@ internal val chargeHistoryPreviewData = listOf(
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-    referralDiscount = referralDiscountPreviewData
+    referralDiscount = referralDiscountPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, UiCurrencyCode.SEK),
@@ -122,10 +122,9 @@ internal val chargeHistoryPreviewData = listOf(
         discounts = discountsPreviewData,
       ),
     ),
-
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-    referralDiscount = referralDiscountPreviewData
+    referralDiscount = referralDiscountPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -155,7 +154,7 @@ internal val chargeHistoryPreviewData = listOf(
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-    referralDiscount = referralDiscountPreviewData
+    referralDiscount = referralDiscountPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -185,7 +184,7 @@ internal val chargeHistoryPreviewData = listOf(
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = null,
-    referralDiscount = referralDiscountPreviewData
+    referralDiscount = referralDiscountPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -215,7 +214,7 @@ internal val chargeHistoryPreviewData = listOf(
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-    referralDiscount = referralDiscountPreviewData
+    referralDiscount = referralDiscountPreviewData,
   ),
 )
 

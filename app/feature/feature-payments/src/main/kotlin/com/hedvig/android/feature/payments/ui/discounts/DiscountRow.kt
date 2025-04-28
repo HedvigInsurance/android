@@ -19,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
@@ -29,7 +30,11 @@ import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifier) {
+internal fun DiscountRows(
+  discounts: List<Discount>,
+  modifier: Modifier = Modifier,
+  labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+) {
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -38,13 +43,17 @@ internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifi
       if (index != 0) {
         HorizontalDivider()
       }
-      DiscountRow(discount, Modifier.fillMaxWidth())
+      DiscountRow(discount, Modifier.fillMaxWidth(), labelColor)
     }
   }
 }
 
 @Composable
-internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
+internal fun DiscountRow(
+  discount: Discount,
+  modifier: Modifier = Modifier,
+  labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+) {
   val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
@@ -55,7 +64,7 @@ internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
             labelText = discount.code,
             modifier = Modifier
               .wrapContentWidth(),
-            color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+            color = labelColor,
             size = HighlightLabelDefaults.HighLightSize.Small,
           )
         }
@@ -67,15 +76,16 @@ internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
             color = if (discountIsExpired) {
               HedvigTheme.colorScheme.textDisabled
             } else {
-              HedvigTheme.colorScheme.textSecondary
+              HedvigTheme.colorScheme.textSecondaryTranslucent
             },
             textAlign = TextAlign.End,
+            fontSize = HedvigTheme.typography.bodySmall.fontSize,
             modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
           )
         }
       },
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(4.dp))
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Column(
@@ -88,9 +98,9 @@ internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
               color = if (discountIsExpired) {
                 HedvigTheme.colorScheme.textDisabled
               } else {
-                HedvigTheme.colorScheme.textSecondary
+                HedvigTheme.colorScheme.textSecondaryTranslucent
               },
-              style = HedvigTheme.typography.bodySmall,
+              style = HedvigTheme.typography.label,
             )
           }
           val bottomText = if (discount.isReferral) {
@@ -104,9 +114,9 @@ internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
               color = if (discountIsExpired) {
                 HedvigTheme.colorScheme.textDisabled
               } else {
-                HedvigTheme.colorScheme.textSecondary
+                HedvigTheme.colorScheme.textSecondaryTranslucent
               },
-              style = HedvigTheme.typography.bodySmall,
+              style = HedvigTheme.typography.label,
             )
           }
         }
@@ -121,7 +131,7 @@ internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = HedvigTheme.typography.bodySmall,
+              style = HedvigTheme.typography.label,
               color = HedvigTheme.colorScheme.signalRedElement,
               modifier = Modifier.fillMaxWidth(),
             )

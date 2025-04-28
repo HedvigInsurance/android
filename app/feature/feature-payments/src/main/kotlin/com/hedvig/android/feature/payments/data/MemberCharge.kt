@@ -60,7 +60,7 @@ internal data class MemberCharge(
     val contractDetails: String,
     val grossAmount: UiMoney,
     val periods: List<Period>,
-    val discounts: List<Discount>
+    val discounts: List<Discount>,
   ) {
     @Serializable
     data class Period(
@@ -127,20 +127,20 @@ internal fun MemberChargeFragment.toMemberCharge(
       },
       discounts = chargeBreakdown.discounts?.map { discount ->
         val relatedRedeemedCampaign = redeemedCampaigns.firstOrNull { it.code == discount.code }
-            Discount(
-      code = discount.code,
-      displayName = redeemedCampaigns.firstOrNull {
-        it.code == discount.code
-      }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-      description = relatedRedeemedCampaign?.description,
-      expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
-      amount = UiMoney(
-        discount.discount.amount.unaryMinus(),
-        UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
-      ),
-      isReferral = false,
-    )
-      } ?: listOf()
+        Discount(
+          code = discount.code,
+          displayName = redeemedCampaigns.firstOrNull {
+            it.code == discount.code
+          }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+          description = relatedRedeemedCampaign?.description,
+          expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
+          amount = UiMoney(
+            discount.discount.amount.unaryMinus(),
+            UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
+          ),
+          isReferral = false,
+        )
+      } ?: listOf(),
     )
   },
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),
@@ -152,9 +152,9 @@ internal fun MemberChargeFragment.toMemberCharge(
       expiredState = ExpiredState.NotExpired,
       description = null,
       amount = UiMoney.fromMoneyFragment(it),
-      isReferral = true
+      isReferral = true,
     )
-  }
+  },
 )
 
 internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {

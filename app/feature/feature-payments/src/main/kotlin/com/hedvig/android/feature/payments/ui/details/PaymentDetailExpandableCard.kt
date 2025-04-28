@@ -28,6 +28,8 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -37,7 +39,10 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDat
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
+import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.discountsPreviewData
+import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
@@ -49,6 +54,7 @@ internal fun PaymentDetailExpandableCard(
   subtitle: String,
   totalAmount: String,
   periods: List<MemberCharge.ChargeBreakdown.Period>,
+  discounts: List<Discount>,
   isExpanded: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -139,7 +145,12 @@ internal fun PaymentDetailExpandableCard(
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
           }
-
+          discounts.forEach { discount ->
+            Spacer(Modifier.height(16.dp))
+            DiscountRow(discount, labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM))
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+          }
           Spacer(Modifier.height(16.dp))
           Row {
             HorizontalItemsWithMaximumSpaceTaken(
@@ -229,6 +240,7 @@ private fun PaymentDetailExpandableCardPreview() {
         ),
         isExpanded = false,
         onClick = {},
+        discounts = discountsPreviewData,
       )
     }
   }
@@ -271,6 +283,7 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         ),
         isExpanded = true,
         onClick = {},
+        discounts = discountsPreviewData,
       )
     }
   }
