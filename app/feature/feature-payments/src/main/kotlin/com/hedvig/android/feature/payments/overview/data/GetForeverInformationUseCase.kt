@@ -30,7 +30,7 @@ internal class GetForeverInformationUseCaseImpl(private val apolloClient: Apollo
             .map { it.activeDiscount?.amount ?: 0.0 }
             .sum()
           val currencyCode =
-            filteredReferrals.first().activeDiscount?.currencyCode?.let { UiCurrencyCode.fromCurrencyCode(it) }
+            filteredReferrals.firstOrNull()?.activeDiscount?.currencyCode?.let { UiCurrencyCode.fromCurrencyCode(it) }
               ?: UiCurrencyCode.SEK
           val amountFromReferrals = UiMoney(amount, currencyCode)
           ForeverInformation(
