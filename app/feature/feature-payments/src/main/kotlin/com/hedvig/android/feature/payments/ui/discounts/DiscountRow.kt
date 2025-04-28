@@ -144,8 +144,8 @@ internal fun DiscountRow(
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = HedvigTheme.typography.bodySmall,
-              color = HedvigTheme.colorScheme.textSecondary,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
               modifier = Modifier.fillMaxWidth(),
             )
           }

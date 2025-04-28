@@ -199,33 +199,13 @@ private fun ForeverSection(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString()
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
-    HedvigBottomSheet(
-      isVisible = showForeverInfoBottomSheet,
-      onVisibleChange = { visible ->
-        if (!visible) {
-          showForeverInfoBottomSheet = false
-        }
+    ForeverExplanationBottomSheet(
+      showForeverInfoBottomSheet = showForeverInfoBottomSheet,
+      onClose = {
+        showForeverInfoBottomSheet = false
       },
-    ) {
-      HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
-      HedvigText(
-        text = stringResource(R.string.referrals_info_sheet_body, incentive),
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(id = R.string.general_close_button),
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          showForeverInfoBottomSheet = false
-        },
-      )
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-    }
+    )
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       startSlot = {
@@ -292,6 +272,33 @@ private fun ForeverSection(
         onButtonClick = navigateToForever,
       ),
     )
+  }
+}
+
+@Composable
+internal fun ForeverExplanationBottomSheet(showForeverInfoBottomSheet: Boolean, onClose: () -> Unit) {
+  HedvigBottomSheet(
+    isVisible = showForeverInfoBottomSheet,
+    onVisibleChange = { visible ->
+      if (!visible) {
+        onClose()
+      }
+    },
+  ) {
+    HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
+    HedvigText(
+      text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_close_button),
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+      onClick = onClose,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

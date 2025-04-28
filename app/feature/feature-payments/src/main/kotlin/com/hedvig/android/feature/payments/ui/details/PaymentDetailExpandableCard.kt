@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -52,7 +53,8 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentDetailExpandableCard(
   displayName: String,
   subtitle: String,
-  totalAmount: String,
+  totalGrossAmount: String,
+  totalNetAmount: String,
   periods: List<MemberCharge.ChargeBreakdown.Period>,
   discounts: List<Discount>,
   isExpanded: Boolean,
@@ -87,7 +89,7 @@ internal fun PaymentDetailExpandableCard(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             HedvigText(
-              text = totalAmount,
+              text = totalGrossAmount,
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
@@ -164,8 +166,17 @@ internal fun PaymentDetailExpandableCard(
                   horizontalArrangement = Arrangement.End,
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
+                  if (totalGrossAmount != totalNetAmount) {
+                    HedvigText(
+                      text = totalGrossAmount,
+                      textAlign = TextAlign.End,
+                      textDecoration = TextDecoration.LineThrough,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                    Spacer(Modifier.width(6.dp))
+                  }
                   HedvigText(
-                    text = totalAmount,
+                    text = totalNetAmount,
                     textAlign = TextAlign.End,
                   )
                 }
@@ -211,7 +222,8 @@ private fun PaymentDetailExpandableCardPreview() {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
-        totalAmount = "978 kr",
+        totalGrossAmount = "978 kr",
+        totalNetAmount = "800 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -254,7 +266,8 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
-        totalAmount = "978 kr",
+        totalGrossAmount = "978 kr",
+        totalNetAmount = "800 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, UiCurrencyCode.SEK),

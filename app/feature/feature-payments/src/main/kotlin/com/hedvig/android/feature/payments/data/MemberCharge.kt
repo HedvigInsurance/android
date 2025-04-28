@@ -59,6 +59,7 @@ internal data class MemberCharge(
     val contractDisplayName: String,
     val contractDetails: String,
     val grossAmount: UiMoney,
+    val netAmount: UiMoney,
     val periods: List<Period>,
     val discounts: List<Discount>,
   ) {
@@ -117,6 +118,7 @@ internal fun MemberChargeFragment.toMemberCharge(
       contractDisplayName = chargeBreakdown.displayTitle,
       contractDetails = chargeBreakdown.displaySubtitle ?: "",
       grossAmount = UiMoney.fromMoneyFragment(chargeBreakdown.gross),
+      netAmount = UiMoney.fromMoneyFragment(chargeBreakdown.net),
       periods = chargeBreakdown.periods.map {
         MemberCharge.ChargeBreakdown.Period(
           amount = UiMoney.fromMoneyFragment(it.amount),
