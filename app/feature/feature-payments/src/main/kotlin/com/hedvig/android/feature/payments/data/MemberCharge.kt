@@ -137,7 +137,7 @@ internal fun MemberChargeFragment.toMemberCharge(
           description = relatedRedeemedCampaign?.description,
           expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
           amount = UiMoney(
-            discount.discount.amount.unaryMinus(),
+            discount.discount.amount,
             UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
           ),
           isReferral = false,
@@ -153,7 +153,10 @@ internal fun MemberChargeFragment.toMemberCharge(
       displayName = null,
       expiredState = ExpiredState.NotExpired,
       description = null,
-      amount = UiMoney.fromMoneyFragment(it),
+      amount = UiMoney(
+        it.amount.unaryMinus(),
+        UiCurrencyCode.fromCurrencyCode(it.currencyCode),
+      ),
       isReferral = true,
     )
   },
