@@ -37,6 +37,15 @@ internal val periodsPreviewData = listOf(
   ),
 )
 
+internal val referralDiscountPreviewData = Discount(
+  code = "APAKATT",
+  displayName = null,
+  description = null,
+  expiredState = Discount.ExpiredState.NotExpired,
+  amount = UiMoney(-20.0, UiCurrencyCode.SEK),
+  isReferral = true,
+)
+
 internal val discountsPreviewData = listOf(
   Discount(
     code = "CAR15",
@@ -45,14 +54,6 @@ internal val discountsPreviewData = listOf(
     expiredState = Discount.ExpiredState.AlreadyExpired(LocalDate(2022, 12, 14)),
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
     isReferral = false,
-  ),
-  Discount(
-    code = "APAKATT",
-    displayName = "Test 3",
-    description = "Desc",
-    expiredState = Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-    amount = UiMoney(20.0, UiCurrencyCode.SEK),
-    isReferral = true,
   ),
   Discount(
     code = "HEJHEJ",
@@ -81,17 +82,19 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "ABH 234",
         grossAmount = UiMoney(400.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(300.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
     ),
-    discounts = discountsPreviewData,
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+    referralDiscount = referralDiscountPreviewData
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, UiCurrencyCode.SEK),
@@ -109,17 +112,20 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "ABH 234",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
     ),
-    discounts = discountsPreviewData,
+
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+    referralDiscount = referralDiscountPreviewData
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -137,17 +143,19 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "ABH 234",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
     ),
-    discounts = discountsPreviewData,
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+    referralDiscount = referralDiscountPreviewData
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -165,17 +173,19 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "ABH 234",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
     ),
-    discounts = discountsPreviewData,
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = null,
+    referralDiscount = referralDiscountPreviewData
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -193,17 +203,19 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "ABH 234",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
+        discounts = discountsPreviewData,
       ),
     ),
-    discounts = discountsPreviewData,
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+    referralDiscount = referralDiscountPreviewData
   ),
 )
 
@@ -230,7 +242,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
   }
 
 internal val paymentDetailsPreviewData = MemberCharge(
-  grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+  grossAmount = UiMoney(280.0, UiCurrencyCode.SEK),
   netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
   id = "123",
   status = MemberCharge.MemberChargeStatus.PENDING,
@@ -245,15 +257,17 @@ internal val paymentDetailsPreviewData = MemberCharge(
       contractDetails = "ABH 234",
       grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
       periods = periodsPreviewData,
+      discounts = discountsPreviewData,
     ),
     MemberCharge.ChargeBreakdown(
       contractDisplayName = "Hemforsakring Bostad",
       contractDetails = "Bellmansgatan 19A",
       grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
       periods = periodsPreviewData,
+      discounts = discountsPreviewData,
     ),
   ),
-  discounts = discountsPreviewData,
+  referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
 )
