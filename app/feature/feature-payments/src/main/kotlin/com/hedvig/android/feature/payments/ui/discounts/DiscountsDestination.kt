@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
@@ -55,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
+import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -228,8 +229,52 @@ private fun ForeverSection(
         )
       },
     )
-    Spacer(modifier = Modifier.height(8.dp))
-    val context = LocalContext.current
+    Spacer(modifier = Modifier.height(16.dp))
+    HorizontalDivider()
+    Spacer(modifier = Modifier.height(16.dp))
+    if (foreverInformation.referredBy != null) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Column {
+            Row {
+              HighlightLabel(
+                labelText = foreverInformation.referredBy.name, //todo: check! should be code
+                size = HighlightLabelDefaults.HighLightSize.Small,
+                modifier = Modifier
+                  .wrapContentWidth(),
+                color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+              )
+            }
+            HedvigText( 
+              stringResource(
+                R.string.FOREVER_REFERRAL_INVITED_YOU,
+                foreverInformation.referredBy.name,
+              ),
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+              fontSize = HedvigTheme.typography.label.fontSize,
+            )
+          }
+        },
+        endSlot = {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+          ) {
+            HedvigText(
+              stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                "-${foreverInformation.referredBy.activeDiscount}",
+              ),
+              textAlign = TextAlign.End,
+            )
+          }
+        },
+        spaceBetween = 8.dp,
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      HorizontalDivider()
+      Spacer(modifier = Modifier.height(16.dp))
+    }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Column {
@@ -243,10 +288,13 @@ private fun ForeverSection(
             )
           }
           HedvigText(
-            pluralStringResource(R.plurals.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL, 2,2),
-            //todo: put right args!
+            pluralStringResource(
+              R.plurals.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL,
+              foreverInformation.numberOfReferrals,
+              foreverInformation.numberOfReferrals,
+            ),
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            fontSize = HedvigTheme.typography.label.fontSize
+            fontSize = HedvigTheme.typography.label.fontSize,
           )
         }
 
@@ -259,7 +307,7 @@ private fun ForeverSection(
           HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              "-${foreverInformation.currentMonthlyDiscountFromForever}",
+              "-${foreverInformation.currentMonthlyDiscountFromReferrals}",
             ),
             textAlign = TextAlign.End,
           )
@@ -267,6 +315,7 @@ private fun ForeverSection(
       },
       spaceBetween = 8.dp,
     )
+
     Spacer(modifier = Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     HedvigNotificationCard(
@@ -326,7 +375,7 @@ private fun PaymentDetailsScreenPreview(
                 "description",
                 Discount.ExpiredState.NotExpired,
                 UiMoney(10.0, UiCurrencyCode.SEK),
-                true,
+                false,
               ),
               Discount(
                 "MYDISCOUNT2",
@@ -358,8 +407,15 @@ private fun PaymentDetailsScreenPreview(
           },
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
-            UiMoney(23.0, UiCurrencyCode.SEK),
+            UiMoney(20.0, UiCurrencyCode.SEK),
             UiMoney(10.0, UiCurrencyCode.SEK),
+            numberOfReferrals = 2,
+            referredBy = ReferredByInfo(
+              name = "Sladan",
+              activeDiscount = UiMoney(
+                10.0, UiCurrencyCode.SEK
+              )
+            ),
           ).takeIf { hasForeverAndDiscounts },
           allowAddingCampaignCode = true,
         ),

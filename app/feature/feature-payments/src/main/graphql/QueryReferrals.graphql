@@ -5,6 +5,20 @@ query ForeverInformation {
       monthlyDiscountPerReferral {
         ...MoneyFragment
       }
+      referrals {
+        status
+        activeDiscount {
+          amount
+          currencyCode
+        }
+      }
+      referredBy {
+        name
+        activeDiscount {
+          ...MoneyFragment
+        }
+        status
+      }
     }
     insuranceCost {
       monthlyDiscount {
