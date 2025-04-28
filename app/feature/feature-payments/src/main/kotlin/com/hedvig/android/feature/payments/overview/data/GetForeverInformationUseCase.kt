@@ -36,14 +36,19 @@ internal class GetForeverInformationUseCaseImpl(private val apolloClient: Apollo
           ForeverInformation(
             foreverCode = referralInformation.code,
             currentMonthlyDiscountFromReferrals = amountFromReferrals,
-            potentialDiscountAmountPerNewReferral = UiMoney.fromMoneyFragment(referralInformation.monthlyDiscountPerReferral),
+            potentialDiscountAmountPerNewReferral = UiMoney.fromMoneyFragment(
+              referralInformation.monthlyDiscountPerReferral,
+            ),
             numberOfReferrals = referralInformation.referrals.filter { it.status == MemberReferralStatus.ACTIVE }.size,
             referredBy = with(referralInformation.referredBy) {
-              if (this != null && status == MemberReferralStatus.ACTIVE && activeDiscount != null)
+              if (this != null && status == MemberReferralStatus.ACTIVE && activeDiscount != null) {
                 ReferredByInfo(
                   name = name,
                   activeDiscount = UiMoney.fromMoneyFragment(activeDiscount),
-                ) else null
+                )
+              } else {
+                null
+              }
             },
           )
         }

@@ -99,6 +99,22 @@ internal fun DiscountRow(
           verticalArrangement = Arrangement.Top,
           horizontalAlignment = Alignment.Start,
         ) {
+          val descriptionText = if (discount.isReferral) {
+            stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
+          } else {
+            discount.description
+          }
+          if (descriptionText != null) {
+            HedvigText(
+              text = descriptionText,
+              color = if (discountIsExpired) {
+                HedvigTheme.colorScheme.textDisabled
+              } else {
+                HedvigTheme.colorScheme.textSecondaryTranslucent
+              },
+              style = HedvigTheme.typography.label,
+            )
+          }
           discount.displayName?.let {
             if (showDisplayName) {
               HedvigText(
@@ -111,22 +127,6 @@ internal fun DiscountRow(
                 style = HedvigTheme.typography.label,
               )
             }
-          }
-          val bottomText = if (discount.isReferral) {
-            stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
-          } else {
-            discount.description
-          }
-          if (bottomText != null) {
-            HedvigText(
-              text = bottomText,
-              color = if (discountIsExpired) {
-                HedvigTheme.colorScheme.textDisabled
-              } else {
-                HedvigTheme.colorScheme.textSecondaryTranslucent
-              },
-              style = HedvigTheme.typography.label,
-            )
           }
         }
       },

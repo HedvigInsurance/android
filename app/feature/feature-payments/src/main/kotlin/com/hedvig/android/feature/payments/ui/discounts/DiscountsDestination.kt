@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -135,7 +133,7 @@ private fun DiscountsScreen(
       )
     }
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp).weight(1f)) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         spaceBetween = 8.dp,
@@ -183,12 +181,10 @@ private fun DiscountsScreen(
       }
       if (uiState.foreverInformation != null) {
         Spacer(modifier = Modifier.height(32.dp))
-        ForeverSection(uiState.foreverInformation, navigateToForever, Modifier)
+        ForeverSection(uiState.foreverInformation, navigateToForever)
+      } else {
+        Spacer(modifier = Modifier.height(16.dp))
       }
-      Spacer(modifier = Modifier.height(16.dp))
-      Spacer(
-        modifier = Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues()),
-      )
     }
   }
 }
@@ -199,7 +195,7 @@ private fun ForeverSection(
   navigateToForever: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Column(modifier.fillMaxHeight()) {
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     ForeverExplanationBottomSheet(
       showForeverInfoBottomSheet = showForeverInfoBottomSheet,
@@ -238,14 +234,14 @@ private fun ForeverSection(
           Column {
             Row {
               HighlightLabel(
-                labelText = foreverInformation.referredBy.name, //todo: check! should be code
+                labelText = foreverInformation.referredBy.name.uppercase(), // todo: change! should be code
                 size = HighlightLabelDefaults.HighLightSize.Small,
                 modifier = Modifier
                   .wrapContentWidth(),
                 color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
               )
             }
-            HedvigText( 
+            HedvigText(
               stringResource(
                 R.string.FOREVER_REFERRAL_INVITED_YOU,
                 foreverInformation.referredBy.name,
@@ -297,7 +293,6 @@ private fun ForeverSection(
             fontSize = HedvigTheme.typography.label.fontSize,
           )
         }
-
       },
       endSlot = {
         Row(
@@ -317,7 +312,7 @@ private fun ForeverSection(
     )
 
     Spacer(modifier = Modifier.height(16.dp))
-    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.weight(1f, fill = true))
     HedvigNotificationCard(
       message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
       priority = NotificationDefaults.NotificationPriority.Campaign,
@@ -326,6 +321,7 @@ private fun ForeverSection(
         onButtonClick = navigateToForever,
       ),
     )
+    Spacer(modifier = Modifier.height(16.dp))
   }
 }
 
@@ -413,8 +409,9 @@ private fun PaymentDetailsScreenPreview(
             referredBy = ReferredByInfo(
               name = "Sladan",
               activeDiscount = UiMoney(
-                10.0, UiCurrencyCode.SEK
-              )
+                10.0,
+                UiCurrencyCode.SEK,
+              ),
             ),
           ).takeIf { hasForeverAndDiscounts },
           allowAddingCampaignCode = true,
