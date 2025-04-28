@@ -44,7 +44,7 @@ internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
+internal fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
   val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(

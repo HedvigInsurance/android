@@ -53,6 +53,7 @@ import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
+import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRows
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -183,15 +184,13 @@ private fun MemberChargeDetailsScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
           }
-          //TODO:here - discounts!
-          if (uiState.paymentDetails.memberCharge.discounts.isNotEmpty()) {
+          if (uiState.paymentDetails.memberCharge.referralDiscount!=null) {
             Spacer(modifier = Modifier.height(16.dp))
             HedvigText(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
             Spacer(modifier = Modifier.height(16.dp))
-            DiscountRows(uiState.paymentDetails.memberCharge.discounts)
+            DiscountRow(uiState.paymentDetails.memberCharge.referralDiscount)
             Spacer(modifier = Modifier.height(16.dp))
           }
-
           when (uiState.paymentDetails.memberCharge.status) {
             MemberCharge.MemberChargeStatus.UPCOMING -> {}
             MemberCharge.MemberChargeStatus.SUCCESS ->
