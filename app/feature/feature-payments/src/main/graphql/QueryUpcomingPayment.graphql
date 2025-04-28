@@ -48,13 +48,6 @@ fragment MemberChargeFragment on MemberCharge {
     }
   }
   date
-  discountBreakdown {
-    code
-    isReferral
-    discount {
-      ...MoneyFragment
-    }
-  }
   gross {
     ...MoneyFragment
   }

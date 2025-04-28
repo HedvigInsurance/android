@@ -2,6 +2,8 @@ package com.hedvig.android.feature.payments.data
 
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.data.Discount.ExpiredState
+import kotlin.String
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -21,7 +23,7 @@ internal data class MemberCharge(
   val dueDate: LocalDate,
   val failedCharge: FailedCharge?,
   val chargeBreakdowns: List<ChargeBreakdown>,
-  val discounts: List<Discount>,
+  val referralDiscount: Discount?,
   private val carriedAdjustment: UiMoney?,
   private val settlementAdjustment: UiMoney?,
 ) {
@@ -58,6 +60,7 @@ internal data class MemberCharge(
     val contractDetails: String,
     val grossAmount: UiMoney,
     val periods: List<Period>,
+    val discounts: List<Discount>
   ) {
     @Serializable
     data class Period(
@@ -122,34 +125,36 @@ internal fun MemberChargeFragment.toMemberCharge(
           isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
         )
       },
-    )
-  },
-  discounts = discountBreakdown.map { discountBreakdown ->
-    val code = if (discountBreakdown.isReferral) {
-      referralInformation.code
-    } else if (discountBreakdown.code != null) {
-      discountBreakdown.code!!
-    } else {
-      "-"
-    }
-
-    val relatedRedeemedCampaign = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }
-    Discount(
-      code = code,
+      discounts = chargeBreakdown.discounts?.map { discount ->
+        val relatedRedeemedCampaign = redeemedCampaigns.firstOrNull { it.code == discount.code }
+            Discount(
+      code = discount.code,
       displayName = redeemedCampaigns.firstOrNull {
-        it.code == discountBreakdown.code
+        it.code == discount.code
       }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
       description = relatedRedeemedCampaign?.description,
       expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
       amount = UiMoney(
-        discountBreakdown.discount.amount.unaryMinus(),
-        UiCurrencyCode.fromCurrencyCode(discountBreakdown.discount.currencyCode),
+        discount.discount.amount.unaryMinus(),
+        UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
       ),
-      isReferral = discountBreakdown.isReferral,
+      isReferral = false,
+    )
+      } ?: listOf()
     )
   },
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),
   carriedAdjustment = carriedAdjustment?.let(UiMoney::fromMoneyFragment),
+  referralDiscount = this.referralDiscount?.let {
+    Discount(
+      code = referralInformation.code,
+      displayName = null,
+      expiredState = ExpiredState.NotExpired,
+      description = null,
+      amount = UiMoney.fromMoneyFragment(it),
+      isReferral = true
+    )
+  }
 )
 
 internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
