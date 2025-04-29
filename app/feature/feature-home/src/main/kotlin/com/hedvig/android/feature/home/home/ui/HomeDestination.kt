@@ -276,7 +276,7 @@ private fun HomeScreen(
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowGotQuestionsTooltip by produceState(false) {
-          val tooLongSinceLastTooltipShown = tooLongSinceLastTooltipShown(context) 
+          val tooLongSinceLastTooltipShown = tooLongSinceLastTooltipShown(context)
           value = tooLongSinceLastTooltipShown
         }
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
