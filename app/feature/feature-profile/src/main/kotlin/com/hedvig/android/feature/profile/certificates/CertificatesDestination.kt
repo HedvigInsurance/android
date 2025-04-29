@@ -51,7 +51,6 @@ private fun CertificatesScreen(
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.profile_certificates_title),
-    topAppBarActions = {},
   ) {
     when (uiState) {
       CertificatesState.Failure -> {
