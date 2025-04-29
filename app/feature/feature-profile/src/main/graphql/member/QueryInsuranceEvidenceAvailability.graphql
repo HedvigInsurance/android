@@ -1,6 +1,5 @@
-query InsuranceEvidenceInitialData {
+query InsuranceEvidenceAvailability {
   currentMember {
-    email
     memberActions {
       isCreatingOfInsuranceEvidenceEnabled
     }

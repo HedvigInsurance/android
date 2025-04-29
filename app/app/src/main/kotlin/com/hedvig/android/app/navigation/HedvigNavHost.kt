@@ -54,6 +54,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewer
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerGraph
+import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceGraphDestination
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
@@ -323,6 +324,9 @@ internal fun HedvigNavHost(
       },
       onNavigateToTravelCertificate = {
         hedvigAppState.navController.navigate(TravelCertificateGraphDestination)
+      },
+      onNavigateToInsuranceEvidence = {
+        hedvigAppState.navController.navigate(InsuranceEvidenceGraphDestination)
       },
     )
     cbmChatGraph(
