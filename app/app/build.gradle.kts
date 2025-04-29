@@ -199,6 +199,7 @@ dependencies {
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsurances)
+  implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)

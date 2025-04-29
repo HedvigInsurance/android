@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui.overview
+package com.hedvig.android.feature.insurance.certificate.ui.overview
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,50 +18,47 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewUiState.Success
+import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Success
 import hedvig.resources.R
 import java.io.File
 
 @Composable
-internal fun TravelCertificateOverviewDestination(
-  travelCertificateUrl: TravelCertificateUrl,
-  viewModel: TravelCertificateOverviewViewModel,
+internal fun InsuranceEvidenceOverviewDestination(
+  insuranceEvidenceUrl: String,
+  viewModel: InsuranceEvidenceOverviewViewModel,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
+  onShareInsuranceEvidence: (File) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  TravelCertificateOverview(
-    travelCertificateUrl = travelCertificateUrl,
-    onDownloadCertificate = { viewModel.emit(TravelCertificateOverviewEvent.OnDownloadCertificate(it)) },
+  InsuranceEvidenceOverview(
+    insuranceEvidenceUrl = insuranceEvidenceUrl,
+    onDownloadCertificate = { viewModel.emit(InsuranceEvidenceOverviewEvent.OnDownloadCertificate(it)) },
     navigateUp = navigateUp,
-    onShareTravelCertificate = onShareTravelCertificate,
+    onShareInsuranceEvidence = onShareInsuranceEvidence,
     uiState = uiState,
     onRetry = {
-      viewModel.emit(TravelCertificateOverviewEvent.RetryLoadData)
+      viewModel.emit(InsuranceEvidenceOverviewEvent.RetryLoadData)
     },
   )
 }
 
 @Composable
-internal fun TravelCertificateOverview(
-  travelCertificateUrl: TravelCertificateUrl,
-  onDownloadCertificate: (TravelCertificateUrl) -> Unit,
-  onRetry: () -> Unit,
+internal fun InsuranceEvidenceOverview(
+  uiState: InsuranceEvidenceOverviewState,
+  insuranceEvidenceUrl: String,
+  onDownloadCertificate: (String) -> Unit,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
-  uiState: TravelCertificateOverviewUiState,
+  onShareInsuranceEvidence: (File) -> Unit,
+  onRetry: () -> Unit,
 ) {
   when (uiState) {
-    TravelCertificateOverviewUiState.Failure -> {
+    InsuranceEvidenceOverviewState.Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
         topAppBarActionType = TopAppBarActionType.CLOSE,
@@ -73,14 +70,14 @@ internal fun TravelCertificateOverview(
       }
     }
 
-    TravelCertificateOverviewUiState.Loading -> {
+    InsuranceEvidenceOverviewState.Loading -> {
       HedvigFullScreenCenterAlignedProgress(modifier = Modifier.fillMaxSize())
     }
 
-    is TravelCertificateOverviewUiState.Success -> {
-      LaunchedEffect(uiState.travelCertificateUri) {
-        uiState.travelCertificateUri?.let {
-          onShareTravelCertificate(it)
+    is InsuranceEvidenceOverviewState.Success -> {
+      LaunchedEffect(uiState.insuranceEvidenceUri) {
+        uiState.insuranceEvidenceUri?.let {
+          onShareInsuranceEvidence(it)
         }
       }
       HedvigScaffold(
@@ -91,40 +88,33 @@ internal fun TravelCertificateOverview(
         Spacer(Modifier.weight(1f))
         EmptyState(
           text = stringResource(R.string.CERTIFICATES_EMAIL_SENT),
-          description = stringResource(R.string.travel_certificate_travel_certificate_ready_description),
+          description = stringResource(R.string.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION),
           iconStyle = SUCCESS,
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(
-          message = stringResource(R.string.travel_certificate_download_recommendation),
-          priority = NotificationPriority.Info,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(
-          text = if (uiState.travelCertificateUri != null) {
-            stringResource(R.string.travel_certificate_share_travel_certificate)
-          } else {
-            stringResource(R.string.travel_certificate_download_travel_certificate)
-          },
+          text = stringResource(R.string.CERTIFICATES_DOWNLOAD),
           onClick = {
-            if (uiState.travelCertificateUri != null) {
-              onShareTravelCertificate(uiState.travelCertificateUri)
+            if (uiState.insuranceEvidenceUri != null) {
+              onShareInsuranceEvidence(uiState.insuranceEvidenceUri)
             } else {
-              onDownloadCertificate(travelCertificateUrl)
+              onDownloadCertificate(insuranceEvidenceUrl)
             }
           },
           enabled = true,
+          isLoading = uiState.isButtonLoading,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
         HedvigTextButton(
-          text = stringResource(id = R.string.general_done_button),
+          text = stringResource(id = R.string.general_close_button),
           onClick = navigateUp,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
       }
@@ -134,14 +124,14 @@ internal fun TravelCertificateOverview(
 
 @HedvigPreview
 @Composable
-private fun PreviewTravelCertificateOverview() {
+private fun PreviewInsuranceEvidenceOverview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TravelCertificateOverview(
-        travelCertificateUrl = TravelCertificateUrl(""),
+      InsuranceEvidenceOverview(
+        insuranceEvidenceUrl = "",
         onDownloadCertificate = {},
         navigateUp = {},
-        onShareTravelCertificate = {},
+        onShareInsuranceEvidence = {},
         uiState = Success(null),
         onRetry = {},
       )

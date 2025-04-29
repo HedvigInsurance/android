@@ -1,0 +1,8 @@
+query InsuranceEvidenceInitialData {
+  currentMember {
+    email
+    memberActions {
+      isCreatingOfInsuranceEvidenceEnabled
+    }
+  }
+}

@@ -276,8 +276,8 @@ private fun HomeScreen(
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowGotQuestionsTooltip by produceState(false) {
-          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
-          value = daysSinceLastTooltipShown
+          val tooLongSinceLastTooltipShown = tooLongSinceLastTooltipShown(context)
+          value = tooLongSinceLastTooltipShown
         }
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
@@ -327,7 +327,7 @@ private fun HomeScreen(
   }
 }
 
-private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
+private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
   val currentEpochDay = java.time.LocalDate
     .now()
     .toEpochDay()

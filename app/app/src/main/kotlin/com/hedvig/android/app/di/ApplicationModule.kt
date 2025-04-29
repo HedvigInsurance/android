@@ -33,6 +33,7 @@ import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
+import com.hedvig.android.app.notification.senders.InsuranceEvidenceNotificationSender
 import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
@@ -75,6 +76,7 @@ import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.feature.home.di.homeModule
+import com.hedvig.android.feature.insurance.certificate.di.insuranceEvidenceModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.movingflow.di.movingFlowModule
@@ -302,6 +304,15 @@ private val notificationModule = module {
       HedvigNotificationChannel.CrossSell,
     )
   } bind NotificationSender::class
+
+  single<InsuranceEvidenceNotificationSender> {
+    InsuranceEvidenceNotificationSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
+    )
+  } bind NotificationSender::class
 }
 
 private val clockModule = module {
@@ -404,6 +415,7 @@ val applicationModule = module {
       helpCenterModule,
       homeModule,
       insurancesModule,
+      insuranceEvidenceModule,
       languageAuthListenersModule,
       languageMigrationModule,
       languageModule,
