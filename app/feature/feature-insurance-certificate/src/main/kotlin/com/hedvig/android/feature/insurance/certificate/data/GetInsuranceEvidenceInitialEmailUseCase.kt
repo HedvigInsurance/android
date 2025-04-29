@@ -10,13 +10,13 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import octopus.InsuranceEvidenceInitialDataQuery
 
-internal interface GetInsuranceEvidenceInitialDataUseCase {
+internal interface GetInsuranceEvidenceInitialEmailUseCase {
   suspend fun invoke(): Either<ErrorMessage, String>
 }
 
-internal class GetInsuranceEvidenceInitialDataUseCaseImpl(
+internal class GetInsuranceEvidenceInitialEmailUseCaseImpl(
   val apolloClient: ApolloClient,
-) : GetInsuranceEvidenceInitialDataUseCase {
+) : GetInsuranceEvidenceInitialEmailUseCase {
   override suspend fun invoke(): Either<ErrorMessage, String> = either {
     val result = apolloClient.query(InsuranceEvidenceInitialDataQuery())
       .safeExecute(::ErrorMessage)

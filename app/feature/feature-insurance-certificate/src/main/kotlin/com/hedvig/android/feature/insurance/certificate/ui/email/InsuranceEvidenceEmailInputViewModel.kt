@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
-import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialDataUseCase
+import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputState.Loading
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -18,7 +18,7 @@ import hedvig.resources.R
 
 internal class InsuranceEvidenceEmailInputViewModel(
   generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
-  getEmailUseCase: GetInsuranceEvidenceInitialDataUseCase,
+  getEmailUseCase: GetInsuranceEvidenceInitialEmailUseCase,
 ) : MoleculeViewModel<InsuranceEvidenceEmailInputEvent, InsuranceEvidenceEmailInputState>(
     initialState = Loading,
     presenter = InsuranceEvidenceEmailInputPresenter(
@@ -29,7 +29,7 @@ internal class InsuranceEvidenceEmailInputViewModel(
 
 internal class InsuranceEvidenceEmailInputPresenter(
   private val generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
-  private val getEmailUseCase: GetInsuranceEvidenceInitialDataUseCase,
+  private val getEmailUseCase: GetInsuranceEvidenceInitialEmailUseCase,
 ) : MoleculePresenter<InsuranceEvidenceEmailInputEvent, InsuranceEvidenceEmailInputState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceEvidenceEmailInputEvent>.present(
