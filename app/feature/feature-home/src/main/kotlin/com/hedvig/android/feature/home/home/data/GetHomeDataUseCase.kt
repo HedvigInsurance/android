@@ -56,13 +56,12 @@ internal class GetHomeDataUseCaseImpl(
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val result =
           combine(
             apolloClient.query(HomeQuery())
-              .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
+              .fetchPolicy(FetchPolicy.NetworkOnly )
               .safeFlow(),
             apolloClient.query(UnreadMessageCountQuery())
-              .fetchPolicy(FetchPolicy.CacheAndNetwork)
+              .fetchPolicy(FetchPolicy.NetworkOnly)
               .safeFlow(),
             hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
             getMemberRemindersUseCase.invoke(),
@@ -158,8 +157,8 @@ internal class GetHomeDataUseCaseImpl(
             }
           }.collect { homeDataResult ->
             emit(homeDataResult)
-            delay(5.seconds)
           }
+        delay(5.seconds)
       }
     }
   }
