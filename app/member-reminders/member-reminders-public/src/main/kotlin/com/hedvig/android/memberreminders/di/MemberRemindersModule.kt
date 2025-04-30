@@ -7,8 +7,8 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManagerImpl
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManagerImpl
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCase
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCaseImpl
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -21,8 +21,8 @@ import kotlinx.datetime.Clock
 import org.koin.dsl.module
 
 val memberRemindersModule = module {
-  single<EnableNotificationsReminderManager> {
-    EnableNotificationsReminderManagerImpl(get<DataStore<Preferences>>(), get<Clock>(), get<HedvigBuildConstants>())
+  single<EnableNotificationsReminderSnoozeManager> {
+    EnableNotificationsReminderSnoozeManagerImpl(get<DataStore<Preferences>>(), get<Clock>(), get<HedvigBuildConstants>())
   }
   single<GetConnectPaymentReminderUseCase> {
     GetConnectPaymentReminderUseCaseImpl(
@@ -42,7 +42,7 @@ val memberRemindersModule = module {
   }
   single<GetMemberRemindersUseCase> {
     GetMemberRemindersUseCaseImpl(
-      get<EnableNotificationsReminderManager>(),
+      get<EnableNotificationsReminderSnoozeManager>(),
       get<GetConnectPaymentReminderUseCase>(),
       get<GetUpcomingRenewalRemindersUseCase>(),
       get<GetNeedsCoInsuredInfoRemindersUseCase>(),

@@ -16,7 +16,7 @@ import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.SnoozeNotificationPermission
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -30,7 +30,7 @@ internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   featureManager: FeatureManager,
   logoutUseCase: LogoutUseCase,
 ) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
@@ -39,7 +39,7 @@ internal class ProfileViewModel(
       getEuroBonusStatusUseCase = getEuroBonusStatusUseCase,
       checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
       getMemberRemindersUseCase = getMemberRemindersUseCase,
-      enableNotificationsReminderManager = enableNotificationsReminderManager,
+      enableNotificationsReminderSnoozeManager = enableNotificationsReminderSnoozeManager,
       featureManager = featureManager,
       logoutUseCase = logoutUseCase,
     ),
@@ -49,7 +49,7 @@ internal class ProfilePresenter(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : MoleculePresenter<ProfileUiEvent, ProfileUiState> {
@@ -92,7 +92,7 @@ internal class ProfilePresenter(
 
     LaunchedEffect(snoozeNotificationReminderRequest) {
       if (snoozeNotificationReminderRequest == 0) return@LaunchedEffect
-      enableNotificationsReminderManager.snoozeNotificationReminder()
+      enableNotificationsReminderSnoozeManager.snoozeNotificationReminder()
     }
 
     return currentState
