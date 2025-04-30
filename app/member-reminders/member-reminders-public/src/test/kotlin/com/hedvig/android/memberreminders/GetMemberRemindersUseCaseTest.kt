@@ -16,6 +16,8 @@ import assertk.assertions.isNullOrEmpty
 import com.hedvig.android.memberreminders.MemberReminder.CoInsuredInfo
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Test
@@ -109,8 +111,8 @@ class GetMemberRemindersUseCaseTest {
   class TestGetNeedsCoInsuredInfoRemindersUseCase : GetNeedsCoInsuredInfoRemindersUseCase {
     val turbine = Turbine<Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredInfo>>>()
 
-    override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredInfo>> {
-      return turbine.awaitItem()
+    override fun invoke(): Flow<Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredInfo>>> {
+      return turbine.asChannel().receiveAsFlow()
     }
   }
 }
