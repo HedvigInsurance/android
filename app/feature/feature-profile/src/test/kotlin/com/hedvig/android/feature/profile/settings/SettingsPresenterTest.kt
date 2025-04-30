@@ -14,7 +14,7 @@ import com.hedvig.android.feature.profile.data.SubPrefError
 import com.hedvig.android.feature.profile.data.SubPrefSuccess
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
-import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ import org.junit.Test
 class SettingsPresenterTest {
   @Test
   fun `content stays loading as long as notificationReminder are uninitialized`() = runTest {
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
       FakeSettingsDataStore(),
@@ -49,7 +49,7 @@ class SettingsPresenterTest {
 
   @Test
   fun `when there's a notification reminder, show it`() = runTest {
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
       FakeSettingsDataStore(),
@@ -78,7 +78,7 @@ class SettingsPresenterTest {
 
   @Test
   fun `when there's no notification reminder, keep not showing it`() = runTest {
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
       FakeSettingsDataStore(),
@@ -107,7 +107,7 @@ class SettingsPresenterTest {
 
   @Test
   fun `snoozing the notification correctly reports that to the service`() = runTest {
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
       FakeSettingsDataStore(),
@@ -138,7 +138,7 @@ class SettingsPresenterTest {
   @Test
   fun `changing the theme with an event updates the stored value`() = runTest {
     val settingsDataStore = FakeSettingsDataStore()
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
       settingsDataStore,

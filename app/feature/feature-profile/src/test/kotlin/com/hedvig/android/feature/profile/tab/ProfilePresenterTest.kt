@@ -19,7 +19,7 @@ import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runCurrent
@@ -44,7 +44,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -78,7 +78,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -112,7 +112,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
@@ -139,7 +139,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
@@ -166,7 +166,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
@@ -193,7 +193,7 @@ class ProfilePresenterTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
@@ -221,7 +221,7 @@ class ProfilePresenterTest {
         turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
       },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
@@ -253,7 +253,7 @@ class ProfilePresenterTest {
       euroBonusStatusUseCase,
       travelCertificateAvailabilityUseCase,
       getMemberRemindersUseCase,
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       featureManager,
       noopLogoutUseCase,
     )
@@ -299,7 +299,7 @@ class ProfilePresenterTest {
         turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
       },
       getMemberRemindersUseCase,
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
       noopLogoutUseCase,
     )
@@ -333,7 +333,7 @@ class ProfilePresenterTest {
         turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
       },
       getMemberRemindersUseCase,
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
       noopLogoutUseCase,
     )
@@ -370,7 +370,7 @@ class ProfilePresenterTest {
       getEurobonusStatusUseCase,
       travelCertificateAvailabilityUseCase,
       getMemberRemindersUseCase,
-      TestEnableNotificationsReminderManager(),
+      TestEnableNotificationsReminderSnoozeManager(),
       featureManager,
       noopLogoutUseCase,
     )

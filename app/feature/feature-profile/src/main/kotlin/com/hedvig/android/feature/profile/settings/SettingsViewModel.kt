@@ -8,7 +8,7 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class SettingsViewModel(
@@ -16,7 +16,7 @@ internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
   changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
-  enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   cacheManager: NetworkCacheManager,
   uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
@@ -32,7 +32,7 @@ internal class SettingsViewModel(
     SettingsPresenter(
       languageService = languageService,
       settingsDataStore = settingsDataStore,
-      enableNotificationsReminderManager = enableNotificationsReminderManager,
+      enableNotificationsReminderSnoozeManager = enableNotificationsReminderSnoozeManager,
       cacheManager = cacheManager,
       uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
       changeEmailSubscriptionPreferencesUseCase = changeEmailSubscriptionPreferencesUseCase,

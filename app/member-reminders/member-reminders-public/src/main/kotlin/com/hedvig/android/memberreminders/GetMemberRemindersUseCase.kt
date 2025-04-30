@@ -14,14 +14,14 @@ interface GetMemberRemindersUseCase {
 }
 
 internal class GetMemberRemindersUseCaseImpl(
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val getConnectPaymentReminderUseCase: GetConnectPaymentReminderUseCase,
   private val getUpcomingRenewalRemindersUseCase: GetUpcomingRenewalRemindersUseCase,
   private val getNeedsCoInsuredInfoRemindersUseCase: GetNeedsCoInsuredInfoRemindersUseCase,
 ) : GetMemberRemindersUseCase {
   override fun invoke(): Flow<MemberReminders> {
     return combine(
-      enableNotificationsReminderManager.showNotificationReminder().map { showReminder ->
+      enableNotificationsReminderSnoozeManager.timeToShowNotificationReminder().map { showReminder ->
         if (showReminder) {
           MemberReminder.EnableNotifications()
         } else {
