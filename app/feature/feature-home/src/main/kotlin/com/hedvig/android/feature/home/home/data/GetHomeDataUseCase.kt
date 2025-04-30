@@ -54,111 +54,111 @@ internal class GetHomeDataUseCaseImpl(
   private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
-    return flow {
-      while (currentCoroutineContext().isActive) {
-          combine(
-            apolloClient.query(HomeQuery())
-              .fetchPolicy(FetchPolicy.NetworkOnly )
-              .safeFlow(),
+    return combine(
+      apolloClient.query(HomeQuery())
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
+        .safeFlow(),
+      flow {
+        while (currentCoroutineContext().isActive) {
+          emitAll(
             apolloClient.query(UnreadMessageCountQuery())
-              .fetchPolicy(FetchPolicy.NetworkOnly)
+              .fetchPolicy(FetchPolicy.CacheAndNetwork)
               .safeFlow(),
-            hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
-            getMemberRemindersUseCase.invoke(),
-            flow {
-              emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(TravelAddonBannerSource.INSURANCES_TAB))
+          )
+          delay(5.seconds)
+        }
+      },
+      hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
+      getMemberRemindersUseCase.invoke(),
+      flow {
+        emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(TravelAddonBannerSource.INSURANCES_TAB))
+      },
+      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
+      featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+    ) {
+      homeQueryDataResult,
+      unreadMessageCountResult,
+      isEligibleToShowTheChatIconResult,
+      memberReminders,
+      travelBannerInfo,
+      isChatDisabled,
+      isHelpCenterEnabled,
+      ->
+      either {
+        val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
+        val contractStatus = homeQueryData.currentMember.toContractStatus()
+        val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
+          HomeData.VeryImportantMessage(
+            id = it.id,
+            message = it.message,
+            linkInfo = it.linkInfo?.let { linkInfo ->
+              if (linkInfo.url.isEmpty()) {
+                logcat(LogPriority.ERROR) { "Backend should never return a present linkInfo with an empty url string" }
+                null
+              } else {
+                val buttonText = linkInfo.buttonText.takeIf { it.isNotEmpty() }
+                if (buttonText == null) {
+                  logcat(LogPriority.ERROR) { "Backend should never return a present buttonText with an empty string" }
+                }
+                HomeData.VeryImportantMessage.LinkInfo(
+                  buttonText = buttonText,
+                  link = linkInfo.url,
+                )
+              }
             },
-            featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
-            featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-          ) {
-              homeQueryDataResult,
-              unreadMessageCountResult,
-              isEligibleToShowTheChatIconResult,
-              memberReminders,
-              travelBannerInfo,
-              isChatDisabled,
-              isHelpCenterEnabled,
-            ->
-            either {
-              val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
-              val contractStatus = homeQueryData.currentMember.toContractStatus()
-              val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
-                HomeData.VeryImportantMessage(
-                  id = it.id,
-                  message = it.message,
-                  linkInfo = it.linkInfo?.let { linkInfo ->
-                    if (linkInfo.url.isEmpty()) {
-                      logcat(LogPriority.ERROR) { "Backend should never return a present linkInfo with an empty url string" }
-                      null
-                    } else {
-                      val buttonText = linkInfo.buttonText.takeIf { it.isNotEmpty() }
-                      if (buttonText == null) {
-                        logcat(LogPriority.ERROR) { "Backend should never return a present buttonText with an empty string" }
-                      }
-                      HomeData.VeryImportantMessage.LinkInfo(
-                        buttonText = buttonText,
-                        link = linkInfo.url,
-                      )
-                    }
-                  },
-                )
-              }
-              val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
-                CrossSell(
-                  id = crossSell.id,
-                  title = crossSell.title,
-                  subtitle = crossSell.description,
-                  storeUrl = crossSell.storeUrl,
-                  type = when (crossSell.type) {
-                    CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-                    CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-                    CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-                    CrossSellType.PET -> CrossSell.CrossSellType.PET
-                    CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-                  },
-                )
-              }
-              val showChatIcon = !shouldHideChatButton(
-                isChatDisabledFromKillSwitch = isChatDisabled,
-                isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
-                isHelpCenterEnabled = isHelpCenterEnabled,
-              )
-              val unreadMessageCountData = unreadMessageCountResult.bind()
-              val hasUnseenChatMessages = unreadMessageCountData
-                .currentMember
-                .conversations
-                .map { it.unreadMessageCount }
-                .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
-                .any { it != null && it > 0 }
-              val firstVetActions = homeQueryData.currentMember.memberActions
-                ?.firstVetAction?.sections?.map { section ->
-                  FirstVetSection(
-                    section.buttonTitle,
-                    section.description,
-                    section.title,
-                    section.url,
-                  )
-                } ?: emptyList()
-              val travelBannerInfo = travelBannerInfo.getOrNull()
-              HomeData(
-                contractStatus = contractStatus,
-                claimStatusCardsData = homeQueryData.claimStatusCards(),
-                veryImportantMessages = veryImportantMessages,
-                memberReminders = memberReminders,
-                showChatIcon = showChatIcon,
-                hasUnseenChatMessages = hasUnseenChatMessages,
-                showHelpCenter = isHelpCenterEnabled,
-                firstVetSections = firstVetActions,
-                crossSells = crossSells,
-                travelBannerInfo = travelBannerInfo,
-              )
-            }.onLeft { error: ApolloOperationError ->
-              logcat(throwable = error.throwable) { "GetHomeDataUseCase failed with $error" }
-            }
-          }.collect { homeDataResult ->
-            emit(homeDataResult)
-          }
-        delay(5.seconds)
+          )
+        }
+        val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
+          CrossSell(
+            id = crossSell.id,
+            title = crossSell.title,
+            subtitle = crossSell.description,
+            storeUrl = crossSell.storeUrl,
+            type = when (crossSell.type) {
+              CrossSellType.CAR -> CrossSell.CrossSellType.CAR
+              CrossSellType.HOME -> CrossSell.CrossSellType.HOME
+              CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+              CrossSellType.PET -> CrossSell.CrossSellType.PET
+              CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+            },
+          )
+        }
+        val showChatIcon = !shouldHideChatButton(
+          isChatDisabledFromKillSwitch = isChatDisabled,
+          isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
+          isHelpCenterEnabled = isHelpCenterEnabled,
+        )
+        val unreadMessageCountData = unreadMessageCountResult.bind()
+        val hasUnseenChatMessages = unreadMessageCountData
+          .currentMember
+          .conversations
+          .map { it.unreadMessageCount }
+          .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
+          .any { it != null && it > 0 }
+        val firstVetActions = homeQueryData.currentMember.memberActions
+          ?.firstVetAction?.sections?.map { section ->
+            FirstVetSection(
+              section.buttonTitle,
+              section.description,
+              section.title,
+              section.url,
+            )
+          } ?: emptyList()
+        val travelBannerInfo = travelBannerInfo.getOrNull()
+        HomeData(
+          contractStatus = contractStatus,
+          claimStatusCardsData = homeQueryData.claimStatusCards(),
+          veryImportantMessages = veryImportantMessages,
+          memberReminders = memberReminders,
+          showChatIcon = showChatIcon,
+          hasUnseenChatMessages = hasUnseenChatMessages,
+          showHelpCenter = isHelpCenterEnabled,
+          firstVetSections = firstVetActions,
+          crossSells = crossSells,
+          travelBannerInfo = travelBannerInfo,
+        )
+      }.onLeft { error: ApolloOperationError ->
+        logcat(throwable = error.throwable) { "GetHomeDataUseCase failed with $error" }
       }
     }
   }

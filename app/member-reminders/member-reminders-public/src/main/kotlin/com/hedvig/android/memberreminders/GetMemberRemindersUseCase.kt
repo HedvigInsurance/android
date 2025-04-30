@@ -1,5 +1,6 @@
 package com.hedvig.android.memberreminders
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -45,21 +46,18 @@ internal class GetMemberRemindersUseCaseImpl(
         val upcomingRenewals = getUpcomingRenewalRemindersUseCase.invoke().getOrNull()
         emit(upcomingRenewals)
       },
-      flow {
-        val coInsuredInfo = getNeedsCoInsuredInfoRemindersUseCase.invoke().getOrNull()
-        emit(coInsuredInfo)
-      },
+      getNeedsCoInsuredInfoRemindersUseCase.invoke(),
     ) {
       enableNotifications: MemberReminder.EnableNotifications?,
       connectPayment: MemberReminder.PaymentReminder?,
       upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
-      coInsuredInfo: NonEmptyList<MemberReminder.CoInsuredInfo>?,
+      coInsuredInfoResult: Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>,
       ->
       MemberReminders(
         connectPayment = connectPayment,
         upcomingRenewals = upcomingRenewalReminders,
         enableNotifications = enableNotifications,
-        coInsuredInfo = listOfNotNull(coInsuredInfo?.first()),
+        coInsuredInfo = coInsuredInfoResult.getOrNull(),
       )
     }
   }
