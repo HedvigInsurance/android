@@ -7,17 +7,13 @@ query Discounts {
       id
       onlyApplicableToContracts {
         exposureDisplayName
-      }
-      type
-    }
-    referralInformation {
-      code
-      referrals {
-        activeDiscount {
-          amount
-          currencyCode
+        currentAgreement {
+          productVariant {
+            displayNameShort
+          }
         }
       }
+      type
     }
   }
 }

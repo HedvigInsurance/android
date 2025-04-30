@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -133,7 +135,11 @@ private fun DiscountsScreen(
       )
     }
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp).weight(1f)) {
+    Column(
+      modifier = Modifier.padding(horizontal = 16.dp)
+        .verticalScroll(rememberScrollState())
+        .weight(1f),
+    ) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         spaceBetween = 8.dp,
