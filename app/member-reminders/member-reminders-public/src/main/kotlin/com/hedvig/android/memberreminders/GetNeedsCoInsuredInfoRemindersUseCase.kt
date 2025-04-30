@@ -29,12 +29,9 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
   override fun invoke(): Flow<Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>> {
     return featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).mapLatest { isEditCoInsuredFeatureEnabled ->
       either {
-        logcat { "Maria: GetNeedsCoInsuredInfoRemindersUseCaseImpl 1" }
         if (!isEditCoInsuredFeatureEnabled) {
-          logcat { "Maria: GetNeedsCoInsuredInfoRemindersUseCaseImpl 1.5" }
           raise(CoInsuredInfoReminderError.CoInsuredReminderNotEnabled)
         }
-        logcat { "Maria: GetNeedsCoInsuredInfoRemindersUseCaseImpl 2" }
         val contracts = apolloClient.query(NeedsCoInsuredInfoReminderQuery())
           .fetchPolicy(FetchPolicy.NetworkOnly)
           .safeExecute(::ErrorMessage)
