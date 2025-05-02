@@ -43,7 +43,6 @@ import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -68,7 +67,6 @@ class MainActivity : AppCompatActivity() {
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val imageLoader: ImageLoader by inject()
   private val languageService: LanguageService by inject()
-  private val marketManager: MarketManager by inject()
   private val settingsDataStore: SettingsDataStore by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
@@ -147,7 +145,6 @@ class MainActivity : AppCompatActivity() {
         authTokenService = authTokenService,
         demoManager = demoManager,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        marketManager = marketManager,
         imageLoader = imageLoader,
         simpleVideoCache = simpleVideoCache,
         languageService = languageService,

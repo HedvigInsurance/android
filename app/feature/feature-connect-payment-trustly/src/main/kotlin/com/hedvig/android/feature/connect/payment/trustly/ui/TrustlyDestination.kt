@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.composewebview.AccompanistWebViewClient
 import com.hedvig.android.composewebview.LoadingState
 import com.hedvig.android.composewebview.WebView
@@ -52,7 +51,6 @@ import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascr
 import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.common.Destination
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
@@ -61,26 +59,16 @@ import kotlinx.serialization.Serializable
 data object TrustlyDestination : Destination
 
 @Composable
-internal fun TrustlyDestination(
-  viewModel: TrustlyViewModel,
-  market: Market,
-  navigateUp: () -> Unit,
-  finishTrustlyFlow: () -> Unit,
-  onNavigateToNewConversation: () -> Unit,
-) {
-  if (market != Market.SE) {
-    NonSwedishScreen(navigateUp, onNavigateToNewConversation)
-  } else {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TrustlyScreen(
-      uiState = uiState,
-      navigateUp = navigateUp,
-      connectingCardSucceeded = { viewModel.emit(TrustlyEvent.ConnectingCardSucceeded) },
-      connectingCardFailed = { viewModel.emit(TrustlyEvent.ConnectingCardFailed) },
-      retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
-      finishTrustlyFlow = finishTrustlyFlow,
-    )
-  }
+internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  TrustlyScreen(
+    uiState = uiState,
+    navigateUp = navigateUp,
+    connectingCardSucceeded = { viewModel.emit(TrustlyEvent.ConnectingCardSucceeded) },
+    connectingCardFailed = { viewModel.emit(TrustlyEvent.ConnectingCardFailed) },
+    retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
+    finishTrustlyFlow = finishTrustlyFlow,
+  )
 }
 
 @Composable
@@ -196,11 +184,8 @@ private fun TrustlyBrowser(
     }
   }
 
-  val url = (uiState as? TrustlyUiState.Browsing)?.url
-  LaunchedEffect(url) {
-    if (url != null) {
-      webViewNavigator.loadUrl(url)
-    }
+  LaunchedEffect(uiState.url) {
+    webViewNavigator.loadUrl(uiState.url)
   }
 
   Column {
@@ -245,27 +230,6 @@ private fun TrustlyBrowser(
           drawRect(brushColor, size = Size(size.width * loadingState.progress, size.height))
         }
       }
-    }
-  }
-}
-
-@Composable
-private fun NonSwedishScreen(navigateUp: () -> Unit, onNavigateToNewConversation: () -> Unit) {
-  Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary,
-    modifier = Modifier.fillMaxSize(),
-  ) {
-    Column {
-      TopAppBarWithBack(onClick = dropUnlessResumed { navigateUp() }, title = "")
-      HedvigErrorSection(
-        title = stringResource(R.string.MOVEINTENT_GENERIC_ERROR),
-        subTitle = null,
-        onButtonClick = dropUnlessResumed { onNavigateToNewConversation() },
-        buttonText = stringResource(R.string.open_chat),
-        modifier = Modifier
-          .weight(1f)
-          .fillMaxWidth(),
-      )
     }
   }
 }

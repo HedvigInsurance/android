@@ -36,7 +36,8 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.*
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
@@ -74,7 +75,6 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopBackStack
@@ -92,7 +92,6 @@ internal fun HedvigNavHost(
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
-  market: Market,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   modifier: Modifier = Modifier,
@@ -359,8 +358,6 @@ internal fun HedvigNavHost(
     )
     connectPaymentGraph(
       navigator = navigator,
-      market = market,
-      onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     editCoInsuredGraph(navigator, hedvigDeepLinkContainer = hedvigDeepLinkContainer)

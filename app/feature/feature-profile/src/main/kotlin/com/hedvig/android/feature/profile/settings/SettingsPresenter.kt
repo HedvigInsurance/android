@@ -23,7 +23,6 @@ internal class SettingsPresenter(
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val cacheManager: NetworkCacheManager,
-  private val isSwedishMarket: Boolean,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
@@ -76,7 +75,6 @@ internal class SettingsPresenter(
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
-        showEmailSubscriptionPreferences = isSwedishMarket,
       )
     } else {
       SettingsUiState.Loaded(
@@ -85,7 +83,6 @@ internal class SettingsPresenter(
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
         isSubscribedToEmails = isSubscribedToEmails,
-        showEmailSubscriptionPreferences = isSwedishMarket,
         emailSubscriptionPreferenceError = emailSubscriptionPreferenceError,
       )
     }
@@ -98,12 +95,10 @@ sealed interface SettingsUiState {
   val selectedTheme: Theme?
   val isSubscribedToEmails: Boolean?
   val showNotificationReminder: Boolean?
-  val showEmailSubscriptionPreferences: Boolean
 
   data class Loading(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
-    override val showEmailSubscriptionPreferences: Boolean,
   ) : SettingsUiState {
     override val isSubscribedToEmails: Boolean? = null
     override val selectedTheme: Theme? = null
@@ -116,7 +111,6 @@ sealed interface SettingsUiState {
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
     override val isSubscribedToEmails: Boolean?,
-    override val showEmailSubscriptionPreferences: Boolean,
     val emailSubscriptionPreferenceError: Boolean = false,
   ) : SettingsUiState
 }

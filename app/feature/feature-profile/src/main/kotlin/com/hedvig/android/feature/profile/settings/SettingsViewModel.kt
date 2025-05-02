@@ -22,7 +22,6 @@ internal class SettingsViewModel(
     SettingsUiState.Loading(
       selectedLanguage = languageService.getLanguage(),
       // TODO: MarketCleanup
-      showEmailSubscriptionPreferences = marketManager.market.value == Market.SE,
       languageOptions = Market.SE.availableLanguages,
     ),
     SettingsPresenter(
@@ -32,6 +31,5 @@ internal class SettingsViewModel(
       cacheManager = cacheManager,
       uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
       changeEmailSubscriptionPreferencesUseCase = changeEmailSubscriptionPreferencesUseCase,
-      isSwedishMarket = marketManager.market.value == Market.SE,
     ),
   )
