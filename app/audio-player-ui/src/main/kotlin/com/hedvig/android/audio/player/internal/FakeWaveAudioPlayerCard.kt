@@ -47,6 +47,7 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.AudioPlayerState.Ready.ReadyState
 import com.hedvig.audio.player.data.ProgressPercentage
+import hedvig.resources.R
 
 @Composable
 internal fun FakeWaveAudioPlayerCard(
@@ -74,7 +75,9 @@ internal fun FakeWaveAudioPlayerCard(
     label = "contentColor",
   )
   Surface(
-    modifier = modifier.widthIn(max = 500.dp).fillMaxWidth(),
+    modifier = modifier
+      .widthIn(max = 500.dp)
+      .fillMaxWidth(),
     shape = HedvigTheme.shapes.cornerLarge,
     color = color,
     contentColor = contentColor,
@@ -108,16 +111,16 @@ private fun FakeWaveAudioPlayerContent(
         HedvigNotificationCard(
           content = {
             Column {
-              HedvigText(text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_title))
+              HedvigText(text = stringResource(R.string.claim_status_detail_info_error_title))
               HedvigText(
-                text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_body),
+                text = stringResource(R.string.claim_status_detail_info_error_body),
                 style = HedvigTheme.typography.finePrint,
               )
             }
           },
           priority = NotificationPriority.Attention,
           style = Button(
-            buttonText = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_button),
+            buttonText = stringResource(R.string.claim_status_detail_info_error_button),
             onButtonClick = retryLoadingAudio,
           ),
         )
@@ -190,7 +193,13 @@ private fun ActionOrLoadingIcon(
               AudioPlayerState.Ready.ReadyState.Seeking -> HedvigIcons.Pause
               else -> HedvigIcons.Play
             },
-            contentDescription = null,
+            contentDescription = stringResource(
+              when (audioPlayerState.readyState) {
+                AudioPlayerState.Ready.ReadyState.Playing -> R.string.A11Y_PAUSE
+                AudioPlayerState.Ready.ReadyState.Seeking -> R.string.A11Y_PAUSE
+                else -> R.string.A11Y_PLAY
+              },
+            ),
             modifier = Modifier.size(24.dp),
           )
         }

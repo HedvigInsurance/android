@@ -21,7 +21,7 @@ class EnableNotificationsReminderManagerTest {
   @Test
   fun `Having never snoozed, showing the notification reminder is true`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderSnoozeManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -30,13 +30,13 @@ class EnableNotificationsReminderManagerTest {
       TestHedvigBuildConstants,
     )
 
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isTrue()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isTrue()
   }
 
   @Test
   fun `Right after snoozing, showing the notification reminder is false`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderSnoozeManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -45,15 +45,15 @@ class EnableNotificationsReminderManagerTest {
       TestHedvigBuildConstants,
     )
 
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isTrue()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isTrue()
     enableNotificationsInfoManager.snoozeNotificationReminder()
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isFalse()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isFalse()
   }
 
   @Test
   fun `Snoozing and waiting for 60 days still does not show the notification reminder`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderSnoozeManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -64,13 +64,13 @@ class EnableNotificationsReminderManagerTest {
 
     enableNotificationsInfoManager.snoozeNotificationReminder()
     clock.advanceTimeBy(60.days)
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isFalse()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isFalse()
   }
 
   @Test
   fun `Snoozing and waiting for 60 days + 1 second now asks for the notification reminder to show again`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderSnoozeManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -80,15 +80,15 @@ class EnableNotificationsReminderManagerTest {
     )
 
     enableNotificationsInfoManager.snoozeNotificationReminder()
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isFalse()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isFalse()
     clock.advanceTimeBy(60.days + 1.seconds)
-    assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isTrue()
+    assertThat(enableNotificationsInfoManager.timeToShowNotificationReminder().first()).isTrue()
   }
 
   @Test
   fun `Snoozing and letting 61 days pass many times always returns the right response back`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderSnoozeManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -98,7 +98,7 @@ class EnableNotificationsReminderManagerTest {
     )
 
     val getCurrentReminderStatus: suspend () -> Boolean = {
-      enableNotificationsInfoManager.showNotificationReminder().first()
+      enableNotificationsInfoManager.timeToShowNotificationReminder().first()
     }
     assertThat(getCurrentReminderStatus()).isTrue()
     enableNotificationsInfoManager.snoozeNotificationReminder()

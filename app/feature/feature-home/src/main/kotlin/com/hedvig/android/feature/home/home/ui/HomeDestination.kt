@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
+import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
@@ -65,7 +66,6 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -81,8 +81,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.notificationCircle
-import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -276,8 +276,8 @@ private fun HomeScreen(
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowGotQuestionsTooltip by produceState(false) {
-          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
-          value = daysSinceLastTooltipShown
+          val tooLongSinceLastTooltipShown = tooLongSinceLastTooltipShown(context)
+          value = tooLongSinceLastTooltipShown
         }
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
@@ -327,7 +327,7 @@ private fun HomeScreen(
   }
 }
 
-private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
+private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
   val currentEpochDay = java.time.LocalDate
     .now()
     .toEpochDay()

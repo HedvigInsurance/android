@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -37,6 +39,7 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         ConnectPaymentReminderError.DomainError.NonPayingMember
       }
       val result = apolloClient.query(GetPayinMethodStatusQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .mapLeft(ConnectPaymentReminderError::NetworkError)
         .bind()

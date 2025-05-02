@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)

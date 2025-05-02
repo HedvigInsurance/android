@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -67,7 +68,6 @@ import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
-import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -84,7 +84,7 @@ internal fun ProfileDestination(
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -101,7 +101,7 @@ internal fun ProfileDestination(
     navigateToContactInfo = navigateToContactInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
-    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToCertificates = navigateToCertificates,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
@@ -121,7 +121,7 @@ private fun ProfileScreen(
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -180,7 +180,7 @@ private fun ProfileScreen(
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
-        navigateToTravelCertificate = navigateToTravelCertificate,
+        navigateToCertificates = navigateToCertificates,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -239,7 +239,7 @@ private fun ProfileRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
 ) {
   AnimatedContent(
     targetState = profileUiState,
@@ -258,7 +258,7 @@ private fun ProfileRows(
             showSettings = showSettings,
             showAboutApp = showAboutApp,
             navigateToEurobonus = navigateToEurobonus,
-            navigateToTravelCertificate = navigateToTravelCertificate,
+            navigateToCertificates = navigateToCertificates,
           )
         }
       }
@@ -275,7 +275,7 @@ private fun ColumnScope.ProfileItemRowsPlaceholders() {
     onClick = {},
   )
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    title = stringResource(R.string.profile_certificates_title),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
@@ -302,7 +302,7 @@ private fun ColumnScope.ProfileItemRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
+  navigateToCertificates: () -> Unit,
 ) {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -310,11 +310,11 @@ private fun ColumnScope.ProfileItemRows(
     onClick = showContactInfo,
     isLoading = false,
   )
-  if (profileUiState.travelCertificateAvailable) {
+  if (profileUiState.certificatesAvailable) {
     ProfileRow(
-      title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+      title = stringResource(R.string.profile_certificates_title),
       icon = HedvigIcons.MultipleDocuments,
-      onClick = dropUnlessResumed { navigateToTravelCertificate() },
+      onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
     )
   }
@@ -341,7 +341,7 @@ private fun ColumnScope.ProfileItemRows(
 }
 
 @Composable
-private fun ProfileRow(
+internal fun ProfileRow(
   title: String,
   icon: ImageVector,
   onClick: () -> Unit,
@@ -407,17 +407,17 @@ private class ProfileUiStateProvider :
     listOf(
       ProfileUiState.Loading,
       ProfileUiState.Success(
-        travelCertificateAvailable = true,
+        certificatesAvailable = true,
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
-        travelCertificateAvailable = true,
+        certificatesAvailable = true,
       ),
       ProfileUiState.Loading,
       ProfileUiState.Success(
         euroBonus = EuroBonus("jsdhgwmehg"),
-        travelCertificateAvailable = false,
+        certificatesAvailable = false,
       ),
       ProfileUiState.Loading,
     ),

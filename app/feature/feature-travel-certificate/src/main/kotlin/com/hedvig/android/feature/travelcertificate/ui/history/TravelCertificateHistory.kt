@@ -2,6 +2,7 @@ package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
@@ -37,11 +37,13 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -200,43 +202,63 @@ private fun TravelCertificateSuccessScreen(
       }
     },
   ) {
-    if (historyList.isEmpty()) {
-      Spacer(modifier = Modifier.weight(1f))
-      EmptyTravelCertificatesScreen()
-    } else {
-      TravelCertificatesList(
-        list = historyList,
-        onCertificateClick = onCertificateClick,
-        showErrorDialog = showErrorDialog,
-        onDismissDownloadCertificateError = onDismissDownloadCertificateError,
-      )
+    Box(Modifier.weight(1f)) {
+      Column(
+        Modifier
+          .fillMaxSize(),
+      ) {
+        if (historyList.isEmpty()) {
+          Spacer(modifier = Modifier.weight(1f))
+          EmptyTravelCertificatesScreen(Modifier.fillMaxWidth())
+        } else {
+          TravelCertificatesList(
+            list = historyList,
+            onCertificateClick = onCertificateClick,
+            showErrorDialog = showErrorDialog,
+            onDismissDownloadCertificateError = onDismissDownloadCertificateError,
+          )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if (travelAddonBannerInfo != null) {
+          TravelAddonBanner(
+            travelAddonBannerInfo = travelAddonBannerInfo,
+            launchAddonPurchaseFlow = launchAddonPurchaseFlow,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+        }
+        if (showGenerationButton) {
+          Spacer(Modifier.height(8.dp))
+          HedvigButton(
+            text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
+            onClick = dropUnlessResumed {
+              if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
+            },
+            buttonStyle = Secondary,
+            enabled = true,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+      Column(
+        Modifier.fillMaxWidth(),
+      ) {
+        HedvigTooltip(
+          message = stringResource(R.string.TOAST_READ_MORE),
+          showTooltip = true,
+          beakDirection = TopEnd,
+          tooltipShown = {},
+          modifier = Modifier
+            .padding(horizontal = 14.dp)
+            .align(Alignment.End),
+        )
+      }
     }
-    Spacer(modifier = Modifier.weight(1f))
-    if (travelAddonBannerInfo != null) {
-      TravelAddonBanner(
-        travelAddonBannerInfo = travelAddonBannerInfo,
-        launchAddonPurchaseFlow = launchAddonPurchaseFlow,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-    }
-    if (showGenerationButton) {
-      Spacer(Modifier.height(8.dp))
-      HedvigButton(
-        text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-        onClick = dropUnlessResumed {
-          if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
-        },
-        buttonStyle = Secondary,
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -259,9 +281,9 @@ private fun TravelAddonBanner(
 }
 
 @Composable
-private fun EmptyTravelCertificatesScreen() {
+private fun EmptyTravelCertificatesScreen(modifier: Modifier = Modifier) {
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {

@@ -9,14 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.Either
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
-import com.hedvig.android.feature.profile.data.TravelCertificateAvailabilityError
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.SnoozeNotificationPermission
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -28,18 +28,18 @@ import kotlinx.coroutines.flow.flow
 
 internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
-  checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   featureManager: FeatureManager,
   logoutUseCase: LogoutUseCase,
 ) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
     initialState = ProfileUiState.Loading,
     presenter = ProfilePresenter(
       getEuroBonusStatusUseCase = getEuroBonusStatusUseCase,
-      checkTravelCertificateDestinationAvailabilityUseCase = checkTravelCertificateDestinationAvailabilityUseCase,
+      checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
       getMemberRemindersUseCase = getMemberRemindersUseCase,
-      enableNotificationsReminderManager = enableNotificationsReminderManager,
+      enableNotificationsReminderSnoozeManager = enableNotificationsReminderSnoozeManager,
       featureManager = featureManager,
       logoutUseCase = logoutUseCase,
     ),
@@ -47,10 +47,9 @@ internal class ProfileViewModel(
 
 internal class ProfilePresenter(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
-  private val checkTravelCertificateDestinationAvailabilityUseCase:
-    CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : MoleculePresenter<ProfileUiEvent, ProfileUiState> {
@@ -76,16 +75,16 @@ internal class ProfilePresenter(
         getMemberRemindersUseCase.invoke(),
         featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
-        flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
-      ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
-        ProfileData(memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability)
+        flow { emit(checkCertificatesAvailabilityUseCase.invoke()) },
+      ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, certificatesAvailability ->
+        ProfileData(memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, certificatesAvailability)
       }.collectLatest { profileData ->
         with(profileData) {
           currentState = ProfileUiState.Success(
             euroBonus = eurobonusResponse.getOrNull(),
             showPaymentScreen = isPaymentScreenFeatureEnabled,
             memberReminders = memberReminders,
-            travelCertificateAvailable = travelCertificateAvailability.isRight(),
+            certificatesAvailable = certificatesAvailability.isRight(),
           )
         }
       }
@@ -93,7 +92,7 @@ internal class ProfilePresenter(
 
     LaunchedEffect(snoozeNotificationReminderRequest) {
       if (snoozeNotificationReminderRequest == 0) return@LaunchedEffect
-      enableNotificationsReminderManager.snoozeNotificationReminder()
+      enableNotificationsReminderSnoozeManager.snoozeNotificationReminder()
     }
 
     return currentState
@@ -102,8 +101,8 @@ internal class ProfilePresenter(
 
 internal sealed interface ProfileUiState {
   data class Success(
+    val certificatesAvailable: Boolean,
     val euroBonus: EuroBonus? = null,
-    val travelCertificateAvailable: Boolean = true,
     val showPaymentScreen: Boolean = false,
     val memberReminders: MemberReminders = MemberReminders(),
   ) : ProfileUiState
@@ -123,5 +122,5 @@ private data class ProfileData(
   val memberReminders: MemberReminders,
   val isPaymentScreenFeatureEnabled: Boolean,
   val eurobonusResponse: Either<GetEurobonusError, EuroBonus>,
-  val travelCertificateAvailability: Either<TravelCertificateAvailabilityError, Unit>,
+  val certificatesAvailability: Either<ErrorMessage, Unit>,
 )

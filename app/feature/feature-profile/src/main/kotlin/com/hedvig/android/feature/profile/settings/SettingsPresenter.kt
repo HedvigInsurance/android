@@ -12,7 +12,7 @@ import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.theme.Theme
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 internal class SettingsPresenter(
   private val languageService: LanguageService,
   private val settingsDataStore: SettingsDataStore,
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val cacheManager: NetworkCacheManager,
   private val isSwedishMarket: Boolean,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
@@ -35,8 +35,8 @@ internal class SettingsPresenter(
     val isSubscribedToEmails = settingsDataStore.observeEmailSubscriptionPreference().collectAsState(
       lastState.isSubscribedToEmails,
     ).value
-    val showNotificationReminder = enableNotificationsReminderManager
-      .showNotificationReminder()
+    val showNotificationReminder = enableNotificationsReminderSnoozeManager
+      .timeToShowNotificationReminder()
       .collectAsState(lastState.showNotificationReminder)
       .value
 
@@ -54,7 +54,7 @@ internal class SettingsPresenter(
         }
 
         SettingsEvent.SnoozeNotificationPermissionReminder -> {
-          launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
+          launch { enableNotificationsReminderSnoozeManager.snoozeNotificationReminder() }
         }
 
         is SettingsEvent.ChangeSubscriptionPreference -> {

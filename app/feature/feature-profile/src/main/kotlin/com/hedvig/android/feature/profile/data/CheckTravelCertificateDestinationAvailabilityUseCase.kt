@@ -10,7 +10,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.TravelCertificateAvailabilityQuery
 
-interface CheckTravelCertificateDestinationAvailabilityUseCase {
+internal interface CheckTravelCertificateDestinationAvailabilityUseCase {
   suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit>
 }
 
