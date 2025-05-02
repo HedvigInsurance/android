@@ -1,10 +1,5 @@
 package com.hedvig.android.feature.login.marketing
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -43,8 +37,6 @@ import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
-import com.hedvig.android.design.system.hedvig.HedvigTabRow
-import com.hedvig.android.design.system.hedvig.HedvigTabRowState
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -55,33 +47,27 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
-import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
 import com.hedvig.android.market.Market
-import com.hedvig.android.market.label
 import hedvig.resources.R
 
 @Composable
 internal fun MarketingDestination(
   viewModel: MarketingViewModel,
   appVersionName: String,
-  openWebOnboarding: (Market) -> Unit,
-  navigateToLoginScreen: (Market) -> Unit,
+  openWebOnboarding: () -> Unit,
+  navigateToLoginScreen: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   MarketingScreen(
     uiState = uiState,
     appVersionName = appVersionName,
-    selectMarket = { market -> viewModel.emit(MarketingEvent.SelectMarket(market)) },
     selectLanguage = { language -> viewModel.emit(MarketingEvent.SelectLanguage(language)) },
     openWebOnboarding = openWebOnboarding,
     navigateToLoginScreen = navigateToLoginScreen,
@@ -92,10 +78,9 @@ internal fun MarketingDestination(
 private fun MarketingScreen(
   uiState: MarketingUiState,
   appVersionName: String,
-  selectMarket: (Market) -> Unit,
   selectLanguage: (Language) -> Unit,
-  openWebOnboarding: (Market) -> Unit,
-  navigateToLoginScreen: (Market) -> Unit,
+  openWebOnboarding: () -> Unit,
+  navigateToLoginScreen: () -> Unit,
 ) {
   var showPreferencesSheet by rememberSaveable { mutableStateOf(false) }
   HedvigBottomSheet(
@@ -105,10 +90,9 @@ private fun MarketingScreen(
   ) {
     if (uiState is MarketingUiState.Success) {
       PreferencesSheetContent(
-        chosenMarket = uiState.market,
+        availableLanguages = Market.SE.availableLanguages,
         chosenLanguage = uiState.language,
         appVersionName = appVersionName,
-        selectMarket = selectMarket,
         selectLanguage = selectLanguage,
         dismissSheet = { showPreferencesSheet = false },
       )
@@ -164,7 +148,7 @@ private fun MarketingScreen(
             enabled = uiState is MarketingUiState.Success,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
-                navigateToLoginScreen(market)
+                navigateToLoginScreen()
               }
             },
             modifier = Modifier
@@ -178,7 +162,7 @@ private fun MarketingScreen(
             buttonSize = Large,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
-                openWebOnboarding(market)
+                openWebOnboarding()
               }
             },
           )
@@ -193,12 +177,7 @@ private fun MarketingScreen(
             .padding(vertical = 10.dp, horizontal = 16.dp)
             .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-          val flagImageVector = when (uiState.market) {
-            Market.SE -> HedvigIcons.FlagSweden
-            Market.NO -> HedvigIcons.FlagNorway
-            Market.DK -> HedvigIcons.FlagDenmark
-          }
-          Image(flagImageVector, description)
+          Image(HedvigIcons.FlagSweden, description)
         }
       }
       if (uiState is MarketingUiState.Loading) {
@@ -211,71 +190,36 @@ private fun MarketingScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PreferencesSheetContent(
-  chosenMarket: Market,
+  availableLanguages: List<Language>,
   chosenLanguage: Language,
   appVersionName: String,
-  selectMarket: (Market) -> Unit,
   selectLanguage: (Language) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  val tabRowState = rememberHedvigTabRowState()
   HedvigText(
-    text = stringResource(R.string.LOGIN_MARKET_PICKER_PREFERENCES),
+    text = stringResource(R.string.SETTINGS_LANGUAGE_TITLE),
     textAlign = TextAlign.Center,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(24.dp))
-  PreferencesPagerSelector(tabRowState, Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(16.dp))
-  AnimatedContent(
-    targetState = tabRowState.selectedTabIndex,
-    transitionSpec = {
-      val spec = tween<IntOffset>(durationMillis = 600, easing = FastOutSlowInEasing)
-      if (initialState == 0) {
-        slideIntoContainer(SlideDirection.Start, spec) togetherWith slideOutOfContainer(SlideDirection.Start, spec)
-      } else {
-        slideIntoContainer(SlideDirection.End, spec) togetherWith slideOutOfContainer(SlideDirection.End, spec)
-      }
-    },
-  ) { index ->
-    if (index == 0) {
-      RadioGroup(
-        radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
-          dataList = Market.entries.map { market ->
-            RadioOptionGroupData.RadioOptionGroupDataWithIcon(
-              RadioOptionData(
-                id = market.name,
-                optionText = stringResource(market.label),
-                chosenState = if (market == chosenMarket) ChosenState.Chosen else ChosenState.NotChosen,
-              ),
-              IconResource.Vector(market.flag()),
-            )
-          },
-        ),
-        onOptionClick = { selectMarket(Market.valueOf(it)) },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-    } else {
-      RadioGroup(
-        radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
-          dataList = chosenMarket.availableLanguages.map { language ->
-            RadioOptionGroupData.RadioOptionGroupDataWithIcon(
-              RadioOptionData(
-                id = language.name,
-                optionText = stringResource(language.label),
-                chosenState = if (language == chosenLanguage) ChosenState.Chosen else ChosenState.NotChosen,
-              ),
-              IconResource.Vector(language.flag()),
-            )
-          },
-        ),
-        onOptionClick = { selectLanguage(Language.valueOf(it)) },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-    }
-  }
+  RadioGroup(
+    radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
+      dataList = availableLanguages.map { language ->
+        RadioOptionGroupData.RadioOptionGroupDataWithIcon(
+          RadioOptionData(
+            id = language.name,
+            optionText = stringResource(language.label),
+            chosenState = if (language == chosenLanguage) ChosenState.Chosen else ChosenState.NotChosen,
+          ),
+          IconResource.Vector(language.flag()),
+        )
+      },
+    ),
+    onOptionClick = { selectLanguage(Language.valueOf(it)) },
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
   Spacer(Modifier.height(8.dp))
   HedvigButton(
     text = stringResource(R.string.general_done_button),
@@ -298,35 +242,10 @@ private fun ColumnScope.PreferencesSheetContent(
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
-@Composable
-private fun PreferencesPagerSelector(tabRowState: HedvigTabRowState, modifier: Modifier = Modifier) {
-  HedvigTabRow(
-    tabTitles = listOf(
-      stringResource(R.string.market_picker_modal_title),
-      stringResource(R.string.language_picker_modal_title),
-    ),
-    tabRowState = tabRowState,
-    modifier = modifier,
-    tabStyle = TabDefaults.TabStyle.Filled,
-  )
-}
-
-private fun Market.flag(): ImageVector {
-  return when (this) {
-    Market.SE -> HedvigIcons.FlagSweden
-    Market.NO -> HedvigIcons.FlagNorway
-    Market.DK -> HedvigIcons.FlagDenmark
-  }
-}
-
 private fun Language.flag(): ImageVector {
   return when (this) {
     Language.SV_SE -> HedvigIcons.FlagSweden
     Language.EN_SE -> HedvigIcons.FlagUk
-    Language.NB_NO -> HedvigIcons.FlagNorway
-    Language.EN_NO -> HedvigIcons.FlagUk
-    Language.DA_DK -> HedvigIcons.FlagDenmark
-    Language.EN_DK -> HedvigIcons.FlagUk
   }
 }
 
@@ -335,7 +254,7 @@ private fun Language.flag(): ImageVector {
 private fun PreviewMarketingScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      MarketingScreen(MarketingUiState.Success(Market.SE, Language.EN_SE), "X.Y.Z", {}, {}, {}, {})
+      MarketingScreen(MarketingUiState.Success(Language.EN_SE), "X.Y.Z", {}, {}, {})
     }
   }
 }
@@ -346,7 +265,7 @@ private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
-        PreferencesSheetContent(Market.SE, Language.EN_SE, "X.Y.Z", {}, {}, {})
+        PreferencesSheetContent(Language.entries, Language.EN_SE, "X.Y.Z", {}, {})
       }
     }
   }

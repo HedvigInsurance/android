@@ -38,19 +38,16 @@ fun NavGraphBuilder.loginGraph(
       MarketingDestination(
         viewModel = marketingViewModel,
         appVersionName = appVersionName,
-        openWebOnboarding = { market ->
+        openWebOnboarding = {
           val baseUrl = urlBaseWeb.substringAfter("//")
-          val uri = market.createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
+          // TODO: MarketCleanup
+          val uri = Market.SE.createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
           openUrl(uri)
         },
-        navigateToLoginScreen = { market ->
-          logcat { "Navigating to login screen for market market:$market" }
+        navigateToLoginScreen = {
+          logcat { "Navigating to login screen for market market:${Market.SE}" }
           with(navigator) {
-            when (market) {
-              Market.SE -> backStackEntry.navigate(LoginDestinations.SwedishLogin)
-              Market.NO -> backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
-              Market.DK -> backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
-            }
+            backStackEntry.navigate(LoginDestinations.SwedishLogin)
           }
         },
       )
@@ -107,12 +104,7 @@ private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri
     .appendPath(
       when (language) {
         Language.SV_SE -> "forsakringar"
-        Language.EN_SE,
-        Language.NB_NO,
-        Language.EN_NO,
-        Language.DA_DK,
-        Language.EN_DK,
-        -> "insurances"
+        Language.EN_SE -> "insurances"
       },
     )
     .appendQueryParameter("utm_source", "android")

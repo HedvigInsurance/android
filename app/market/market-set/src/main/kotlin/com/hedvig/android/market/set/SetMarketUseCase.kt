@@ -54,16 +54,13 @@ private fun Language.isEnglishLanguage(): Boolean {
   return this in englishLanguageList
 }
 
-private val englishLanguageList = listOf(Language.EN_SE, Language.EN_DK, Language.EN_NO)
+// TODO: MarketCleanup
+private val englishLanguageList = listOf(Language.EN_SE)
 
 private fun Market.localLanguage() = when (this) {
   Market.SE -> Language.SV_SE
-  Market.NO -> Language.NB_NO
-  Market.DK -> Language.DA_DK
 }
 
 private fun Market.englishLanguage() = when (this) {
   Market.SE -> Language.EN_SE
-  Market.NO -> Language.EN_NO
-  Market.DK -> Language.EN_DK
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+// TODO: MarketCleanup
 class FakeMarketManager(
   initialMarket: Market = Market.SE,
 ) : MarketManager {
