@@ -67,15 +67,13 @@ internal fun DiscountRow(
       spaceBetween = 8.dp,
       startSlot = {
         Column {
-          Row {
-            HighlightLabel(
-              labelText = discount.code,
-              modifier = Modifier
-                .wrapContentWidth(),
-              color = labelColor,
-              size = HighlightLabelDefaults.HighLightSize.Small,
-            )
-          }
+          HighlightLabel(
+            labelText = discount.code,
+            modifier = Modifier
+              .wrapContentWidth(),
+            color = labelColor,
+            size = HighlightLabelDefaults.HighLightSize.Small,
+          )
           Spacer(Modifier.height(4.dp))
           Column(
             verticalArrangement = Arrangement.Top,
