@@ -18,11 +18,7 @@ query ForeverInformation {
           ...MoneyFragment
         }
         status
-      }
-    }
-    insuranceCost {
-      monthlyDiscount {
-        ...MoneyFragment
+        code
       }
     }
   }

@@ -102,14 +102,24 @@ private fun DiscountsScreen(
       ) {
         val discounts = uiState.discounts
         if (!discounts.isEmpty()) {
-          Spacer(modifier = Modifier.height(16.dp))
-          HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
-          Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(24.dp))
           DiscountRows(discounts, showDisplayName = true)
+          Spacer(modifier = Modifier.height(16.dp))
         }
         if (uiState.foreverInformation != null) {
-          Spacer(modifier = Modifier.height(32.dp))
-          ForeverSection(uiState.foreverInformation, navigateToForever)
+          Spacer(modifier = Modifier.height(24.dp))
+          ForeverSection(uiState.foreverInformation)
+          Spacer(modifier = Modifier.height(16.dp))
+          Spacer(Modifier.weight(1f))
+          HedvigNotificationCard(
+            message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+            priority = NotificationDefaults.NotificationPriority.Campaign,
+            style = NotificationDefaults.InfoCardStyle.Button(
+              buttonText = stringResource(R.string.important_message_read_more),
+              onButtonClick = navigateToForever,
+            ),
+          )
+          Spacer(modifier = Modifier.height(16.dp))
         } else {
           Spacer(modifier = Modifier.height(16.dp))
         }
@@ -121,7 +131,6 @@ private fun DiscountsScreen(
 @Composable
 private fun ForeverSection(
   foreverInformation: ForeverInformation,
-  navigateToForever: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxHeight()) {
@@ -163,7 +172,7 @@ private fun ForeverSection(
           Column {
             Row {
               HighlightLabel(
-                labelText = foreverInformation.referredBy.name.uppercase(), // todo: change! should be code
+                labelText = foreverInformation.referredBy.code?.uppercase() ?: foreverInformation.referredBy.name.uppercase(),
                 size = HighlightLabelDefaults.HighLightSize.Small,
                 modifier = Modifier
                   .wrapContentWidth(),
@@ -241,18 +250,6 @@ private fun ForeverSection(
       },
       spaceBetween = 8.dp,
     )
-
-    Spacer(modifier = Modifier.height(16.dp))
-    Spacer(Modifier.weight(1f, fill = true))
-    HedvigNotificationCard(
-      message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
-      priority = NotificationDefaults.NotificationPriority.Campaign,
-      style = NotificationDefaults.InfoCardStyle.Button(
-        buttonText = stringResource(R.string.important_message_read_more),
-        onButtonClick = navigateToForever,
-      ),
-    )
-    Spacer(modifier = Modifier.height(16.dp))
   }
 }
 
@@ -288,13 +285,13 @@ internal fun ForeverExplanationBottomSheet(showForeverInfoBottomSheet: Boolean, 
 private fun PaymentDetailsScreenPreview(
   @PreviewParameter(
     BooleanCollectionPreviewParameterProvider::class,
-  ) hasForeverAndDiscounts: Boolean,
+  ) isLoading: Boolean,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discounts = if (hasForeverAndDiscounts) {
+          discounts =
             listOf(
               Discount(
                 "MYDISCOUNT1",
@@ -328,10 +325,8 @@ private fun PaymentDetailsScreenPreview(
                 UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
-            )
-          } else {
-            emptyList()
-          },
+            ),
+          isLoadingPaymentOverView = isLoading,
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
             UiMoney(20.0, UiCurrencyCode.SEK),
@@ -339,12 +334,13 @@ private fun PaymentDetailsScreenPreview(
             numberOfReferrals = 2,
             referredBy = ReferredByInfo(
               name = "Sladan",
+              code = "UBJSOS",
               activeDiscount = UiMoney(
                 10.0,
                 UiCurrencyCode.SEK,
               ),
             ),
-          ).takeIf { hasForeverAndDiscounts },
+          ),
         ),
         navigateUp = {},
         retry = {},
