@@ -259,7 +259,7 @@ private fun ForeverSection(
         },
         endSlot = {
           Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.End,
           ) {
             HedvigText(
@@ -267,6 +267,7 @@ private fun ForeverSection(
                 R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 "-${foreverInformation.referredBy.activeDiscount}",
               ),
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
               textAlign = TextAlign.End,
             )
           }
@@ -302,7 +303,7 @@ private fun ForeverSection(
       },
       endSlot = {
         Row(
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = Alignment.Top,
           horizontalArrangement = Arrangement.End,
         ) {
           HedvigText(
@@ -310,6 +311,7 @@ private fun ForeverSection(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               "-${foreverInformation.currentMonthlyDiscountFromReferrals}",
             ),
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             textAlign = TextAlign.End,
           )
         }

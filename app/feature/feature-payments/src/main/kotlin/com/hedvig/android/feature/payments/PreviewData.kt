@@ -63,6 +63,14 @@ internal val discountsPreviewData = listOf(
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
     isReferral = false,
   ),
+  Discount(
+    code = "HEJHEJ",
+    displayName = "Test 4",
+    description = "Desc",
+    expiredState = Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2025, 12, 14)),
+    amount = null,
+    isReferral = false,
+  ),
 )
 
 internal val chargeHistoryPreviewData = listOf(
