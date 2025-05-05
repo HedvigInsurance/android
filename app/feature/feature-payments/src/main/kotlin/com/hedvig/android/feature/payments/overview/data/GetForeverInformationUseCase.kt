@@ -45,7 +45,7 @@ internal class GetForeverInformationUseCaseImpl(private val apolloClient: Apollo
                 ReferredByInfo(
                   name = name,
                   activeDiscount = UiMoney.fromMoneyFragment(activeDiscount),
-                  code = code
+                  code = code,
                 )
               } else {
                 null
