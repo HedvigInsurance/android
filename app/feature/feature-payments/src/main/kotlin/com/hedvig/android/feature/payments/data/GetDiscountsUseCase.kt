@@ -36,7 +36,7 @@ internal class GetDiscountsUseCaseImpl(
       .map {
         Discount(
           code = it.code,
-          displayName = it.onlyApplicableToContracts?.firstOrNull()?.currentAgreement?.productVariant?.displayNameShort,
+          displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
           description = it.description,
           expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
           amount = null,

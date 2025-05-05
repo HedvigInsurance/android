@@ -7,11 +7,6 @@ query Discounts {
       id
       onlyApplicableToContracts {
         exposureDisplayName
-        currentAgreement {
-          productVariant {
-            displayNameShort
-          }
-        }
       }
       type
     }
