@@ -35,7 +35,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.marketAndroid)
   implementation(projects.marketCore)
-  implementation(projects.marketSet)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

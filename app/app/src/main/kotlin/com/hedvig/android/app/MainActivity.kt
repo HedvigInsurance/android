@@ -39,7 +39,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
+import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
   private val settingsDataStore: SettingsDataStore by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
-  private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
+  private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
   private val simpleVideoCache: SimpleCache by inject()
 
   private var navController: NavController? = null
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     applicationScope.launch {
       val defaultLocale = getSystemLocale(resources.configuration)
-      languageAndMarketLaunchCheckUseCase.invoke(defaultLocale)
+      languageLaunchCheckUseCase.invoke(defaultLocale)
     }
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {

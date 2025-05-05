@@ -1,14 +1,12 @@
 package com.hedvig.android.language.di
 
-import com.hedvig.android.language.AndroidLanguageAndMarketLaunchCheckUseCase
-import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
+import com.hedvig.android.language.AndroidLanguageLaunchCheckUseCase
+import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.MarketManager
-import com.hedvig.android.market.set.SetMarketUseCase
 import org.koin.dsl.module
 
 val languageMigrationModule = module {
-  single<LanguageAndMarketLaunchCheckUseCase> {
-    AndroidLanguageAndMarketLaunchCheckUseCase(get<MarketManager>(), get<LanguageService>(), get<SetMarketUseCase>())
+  single<LanguageLaunchCheckUseCase> {
+    AndroidLanguageLaunchCheckUseCase(get<LanguageService>())
   }
 }

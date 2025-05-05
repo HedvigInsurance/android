@@ -681,7 +681,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
-          true,
         ),
       ),
     )
@@ -697,7 +696,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
-          false,
         ),
       ),
     )
@@ -734,7 +732,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          false,
         ),
       ),
     )
