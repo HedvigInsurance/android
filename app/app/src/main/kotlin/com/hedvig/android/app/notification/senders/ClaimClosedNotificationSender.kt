@@ -33,7 +33,7 @@ class ClaimClosedNotificationSender(
       logcat(LogPriority.WARN) { "ClaimClosedNotificationSender: claimId from remoteMessage is null" }
       hedvigDeepLinkContainer.home.first()
     }.toUri()
-    logcat { "ChatNotificationSender sending notification with deeplink uri:$intentUri" }
+    logcat { "ClaimClosedNotificationSender sending notification with deeplink uri:$intentUri" }
     val claimClosedPendingIntent: PendingIntent? = PendingIntentCompat.getActivity(
       context,
       0,

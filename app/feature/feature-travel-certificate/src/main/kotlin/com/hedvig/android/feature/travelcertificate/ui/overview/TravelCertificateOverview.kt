@@ -45,6 +45,9 @@ internal fun TravelCertificateOverviewDestination(
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
+    onRetry = {
+      viewModel.emit(TravelCertificateOverviewEvent.RetryLoadData)
+    },
   )
 }
 
@@ -52,6 +55,7 @@ internal fun TravelCertificateOverviewDestination(
 internal fun TravelCertificateOverview(
   travelCertificateUrl: TravelCertificateUrl,
   onDownloadCertificate: (TravelCertificateUrl) -> Unit,
+  onRetry: () -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (File) -> Unit,
   uiState: TravelCertificateOverviewUiState,
@@ -63,7 +67,7 @@ internal fun TravelCertificateOverview(
         topAppBarActionType = TopAppBarActionType.CLOSE,
       ) {
         HedvigErrorSection(
-          onButtonClick = { onDownloadCertificate(travelCertificateUrl) },
+          onButtonClick = onRetry,
           modifier = Modifier.weight(1f),
         )
       }
@@ -86,7 +90,7 @@ internal fun TravelCertificateOverview(
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         EmptyState(
-          text = stringResource(R.string.travel_certificate_travel_certificate_ready),
+          text = stringResource(R.string.CERTIFICATES_EMAIL_SENT),
           description = stringResource(R.string.travel_certificate_travel_certificate_ready_description),
           iconStyle = SUCCESS,
         )
@@ -139,6 +143,7 @@ private fun PreviewTravelCertificateOverview() {
         navigateUp = {},
         onShareTravelCertificate = {},
         uiState = Success(null),
+        onRetry = {},
       )
     }
   }

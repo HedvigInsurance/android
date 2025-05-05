@@ -51,6 +51,8 @@ interface HedvigDeepLinkContainer {
   val changeTierWithContractId: List<String> // The screen where member can change tier and deductible
 
   val claimDetails: List<String> // The screen where member can see the details of a specific claim
+
+  val insuranceEvidence: List<String> // The screen where member can generate insurance evidence
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -134,6 +136,9 @@ internal class HedvigDeepLinkContainerImpl(
   override val claimDetails: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/claim-details?claimId={claimId}"
   }
+  override val insuranceEvidence: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/insurance-evidence"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -164,4 +169,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     changeTierWithoutContractId.first(),
     changeTierWithContractId.first(),
     claimDetails.first(),
+    insuranceEvidence.first(),
   )

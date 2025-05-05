@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.11.6"
+    versionName = "12.11.7"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -199,6 +199,7 @@ dependencies {
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsurances)
+  implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
