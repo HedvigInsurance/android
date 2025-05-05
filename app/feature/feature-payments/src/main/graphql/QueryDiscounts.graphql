@@ -6,7 +6,13 @@ query Discounts {
       expiresAt
       id
       onlyApplicableToContracts {
-        exposureDisplayName
+        currentAgreement {
+          productVariant {
+            displayName
+            displayNameShort
+          }
+        }
+        exposureDisplayNameShort
       }
       type
     }
