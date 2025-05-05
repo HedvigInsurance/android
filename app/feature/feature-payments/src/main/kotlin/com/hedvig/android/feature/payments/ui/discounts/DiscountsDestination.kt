@@ -34,9 +34,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -68,11 +68,9 @@ internal fun DiscountsDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
     uiState = uiState,
-    onDismissBottomSheet = { viewModel.emit(DiscountsEvent.DismissBottomSheet) },
-    onShowBottomSheet = { viewModel.emit(DiscountsEvent.ShowBottomSheet) },
-    onSubmitDiscountCode = { viewModel.emit(DiscountsEvent.OnSubmitDiscountCode(it)) },
     navigateUp = navigateUp,
     navigateToForever = navigateToForever,
+    retry = { viewModel.emit(DiscountsEvent.Retry) },
   )
 }
 
@@ -80,116 +78,41 @@ internal fun DiscountsDestination(
 private fun DiscountsScreen(
   uiState: DiscountsUiState,
   navigateUp: () -> Unit,
-  onShowBottomSheet: () -> Unit,
-  onDismissBottomSheet: () -> Unit,
-  onSubmitDiscountCode: (String) -> Unit,
+  retry: () -> Unit,
   navigateToForever: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
     navigateUp = navigateUp,
   ) {
-    var showInfoBottomSheet by remember { mutableStateOf(false) }
-    HedvigBottomSheet(
-      isVisible = showInfoBottomSheet,
-      onVisibleChange = { visible ->
-        if (!visible) {
-          showInfoBottomSheet = false
-        }
-      },
-    ) {
-      HedvigText(text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
-      HedvigText(
-        text = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
-        color = HedvigTheme.colorScheme.textSecondary,
+    if (uiState.isLoadingPaymentOverView) {
+      HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
+    } else if (uiState.error != null) {
+      HedvigErrorSection(
+        modifier = Modifier.weight(1f),
+        onButtonClick = retry,
+        buttonText = stringResource(R.string.GENERAL_RETRY),
       )
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(id = R.string.general_close_button),
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          showInfoBottomSheet = false
-        },
-      )
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-    }
-    HedvigBottomSheet(
-      isVisible = uiState.showAddDiscountBottomSheet,
-      onVisibleChange = { visible ->
-        if (!visible) {
-          onDismissBottomSheet()
-        }
-      },
-    ) {
-      AddDiscountBottomSheetContent(
-        onAddDiscount = { code ->
-          onSubmitDiscountCode(code)
-        },
-        errorMessage = uiState.discountError?.let { discountError ->
-          discountError.message ?: stringResource(R.string.something_went_wrong)
-        },
-        isLoading = uiState.isAddingDiscount,
-        onDismiss = onDismissBottomSheet,
-      )
-    }
-
-    Column(
-      modifier = Modifier.padding(horizontal = 16.dp)
-        .verticalScroll(rememberScrollState())
-        .weight(1f),
-    ) {
-      Spacer(modifier = Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        spaceBetween = 8.dp,
-        startSlot = {
+    } else {
+      Column(
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .verticalScroll(rememberScrollState())
+          .weight(1f),
+      ) {
+        val discounts = uiState.discounts
+        if (!discounts.isEmpty()) {
+          Spacer(modifier = Modifier.height(16.dp))
           HedvigText(stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE))
-        },
-        endSlot = {
-          if (uiState.allowAddingCampaignCode) {
-            Icon(
-              imageVector = HedvigIcons.InfoFilled,
-              tint = HedvigTheme.colorScheme.fillSecondary,
-              contentDescription = null,
-              modifier = Modifier
-                .wrapContentSize(Alignment.CenterEnd)
-                .size(16.dp)
-                .clip(HedvigTheme.shapes.cornerXLarge)
-                .clickable { showInfoBottomSheet = true }
-                .minimumInteractiveComponentSize(),
-            )
-          }
-        },
-      )
-
-      val discounts = uiState.discounts
-      if (discounts.isEmpty()) {
-        Spacer(modifier = Modifier.height(16.dp))
-        HedvigText(
-          text = stringResource(id = R.string.PAYMENTS_NO_CAMPAIGN_CODE_ADDED),
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      } else {
-        Spacer(modifier = Modifier.height(16.dp))
-        DiscountRows(discounts, showDisplayName = true)
-      }
-
-      if (uiState.allowAddingCampaignCode) {
-        Spacer(modifier = Modifier.height(16.dp))
-        HedvigButton(
-          buttonStyle = ButtonStyle.Secondary,
-          modifier = Modifier.fillMaxWidth(),
-          enabled = true,
-          text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
-          onClick = { onShowBottomSheet() },
-        )
-      }
-      if (uiState.foreverInformation != null) {
-        Spacer(modifier = Modifier.height(32.dp))
-        ForeverSection(uiState.foreverInformation, navigateToForever)
-      } else {
-        Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp))
+          DiscountRows(discounts, showDisplayName = true)
+        }
+        if (uiState.foreverInformation != null) {
+          Spacer(modifier = Modifier.height(32.dp))
+          ForeverSection(uiState.foreverInformation, navigateToForever)
+        } else {
+          Spacer(modifier = Modifier.height(16.dp))
+        }
       }
     }
   }
@@ -422,12 +345,9 @@ private fun PaymentDetailsScreenPreview(
               ),
             ),
           ).takeIf { hasForeverAndDiscounts },
-          allowAddingCampaignCode = true,
         ),
         navigateUp = {},
-        onShowBottomSheet = {},
-        onDismissBottomSheet = {},
-        onSubmitDiscountCode = {},
+        retry = {},
         navigateToForever = {},
       )
     }
