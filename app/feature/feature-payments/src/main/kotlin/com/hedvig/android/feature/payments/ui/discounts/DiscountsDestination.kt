@@ -129,10 +129,7 @@ private fun DiscountsScreen(
 }
 
 @Composable
-private fun ForeverSection(
-  foreverInformation: ForeverInformation,
-  modifier: Modifier = Modifier,
-) {
+private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Modifier = Modifier) {
   Column(modifier.fillMaxHeight()) {
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     ForeverExplanationBottomSheet(
@@ -172,7 +169,8 @@ private fun ForeverSection(
           Column {
             Row {
               HighlightLabel(
-                labelText = foreverInformation.referredBy.code?.uppercase() ?: foreverInformation.referredBy.name.uppercase(),
+                labelText =
+                  foreverInformation.referredBy.code?.uppercase() ?: foreverInformation.referredBy.name.uppercase(),
                 size = HighlightLabelDefaults.HighLightSize.Small,
                 modifier = Modifier
                   .wrapContentWidth(),
