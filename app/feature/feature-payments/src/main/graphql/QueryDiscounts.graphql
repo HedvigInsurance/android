@@ -10,14 +10,5 @@ query Discounts {
       }
       type
     }
-    referralInformation {
-      code
-      referrals {
-        activeDiscount {
-          amount
-          currencyCode
-        }
-      }
-    }
   }
 }
