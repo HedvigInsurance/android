@@ -22,7 +22,11 @@ import org.koin.dsl.module
 
 val memberRemindersModule = module {
   single<EnableNotificationsReminderSnoozeManager> {
-    EnableNotificationsReminderSnoozeManagerImpl(get<DataStore<Preferences>>(), get<Clock>(), get<HedvigBuildConstants>())
+    EnableNotificationsReminderSnoozeManagerImpl(
+      get<DataStore<Preferences>>(),
+      get<Clock>(),
+      get<HedvigBuildConstants>(),
+    )
   }
   single<GetConnectPaymentReminderUseCase> {
     GetConnectPaymentReminderUseCaseImpl(
