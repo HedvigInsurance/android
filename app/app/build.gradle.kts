@@ -30,7 +30,7 @@ android {
 
     vectorDrawables.useSupportLibrary = true
 
-    resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
+    resourceConfigurations.addAll(listOf("en", "en-rSE", "sv-rSE"))
   }
 
   packaging {
