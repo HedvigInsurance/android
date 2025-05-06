@@ -21,7 +21,7 @@ internal class AndroidLanguageLaunchCheckUseCase(
     if (currentSelectedLanguage == null) {
       val defLanguage = Language.from(defLocale.toLanguageTag())
       languageService.setLanguage(defLanguage).also {
-        logcat { "SetMarketUseCase setting language to $it" }
+        logcat { "AndroidLanguageLaunchCheckUseCase setting language to $it" }
       }
     }
     val currentLanguageListAfter = AppCompatDelegate.getApplicationLocales()
