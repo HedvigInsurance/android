@@ -141,7 +141,6 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageMedia
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
-import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Text
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
@@ -520,7 +519,6 @@ private fun ChatBubble(
           ) {
             TextWithClickableUrls(
               text = chatMessage.text,
-              onUrlClicked = openUrl,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).semantics {
                 hideFromAccessibility()

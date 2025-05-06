@@ -8,8 +8,6 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiCurrencyCode
-import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -34,38 +32,22 @@ internal class GetDiscountsUseCaseImpl(
     val discounts = result.currentMember.redeemedCampaigns
       .filter { it.type == RedeemedCampaignType.VOUCHER }
       .map {
+        val applicableContract = it.onlyApplicableToContracts?.firstOrNull()
+        val exposureDisplayName = applicableContract?.exposureDisplayNameShort
+        val originalDisplayName = applicableContract?.currentAgreement?.productVariant?.displayNameShort
+          ?: applicableContract?.currentAgreement?.productVariant?.displayName
+        val displayName = "${originalDisplayName?.let {"$it • "} ?: ""}${exposureDisplayName ?: ""}"
         Discount(
           code = it.code,
-          displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+          displayName = displayName,
           description = it.description,
           expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
           amount = null,
           isReferral = false,
         )
-      } + listOfNotNull(discountFromReferral(result.currentMember.referralInformation))
-
+      }
     discounts
   }
-}
-
-private fun discountFromReferral(
-  referralInformation: DiscountsQuery.Data.CurrentMember.ReferralInformation,
-): Discount? {
-  if (referralInformation.referrals.isEmpty()) {
-    return null
-  }
-  return Discount(
-    code = referralInformation.code,
-    displayName = null,
-    description = null,
-    expiredState = Discount.ExpiredState.NotExpired,
-    amount = UiMoney(
-      referralInformation.referrals.sumOf { it.activeDiscount?.amount?.unaryMinus() ?: 0.0 },
-      referralInformation.referrals.first().activeDiscount?.currencyCode?.let { UiCurrencyCode.fromCurrencyCode(it) }
-        ?: UiCurrencyCode.SEK,
-    ),
-    isReferral = true,
-  )
 }
 
 private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.ExpiredState {
