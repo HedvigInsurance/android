@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -28,6 +29,8 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -37,7 +40,10 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDat
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
+import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.discountsPreviewData
+import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
@@ -47,8 +53,10 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentDetailExpandableCard(
   displayName: String,
   subtitle: String,
-  totalAmount: String,
+  totalGrossAmount: String,
+  totalNetAmount: String,
   periods: List<MemberCharge.ChargeBreakdown.Period>,
+  discounts: List<Discount>,
   isExpanded: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -72,31 +80,47 @@ internal fun PaymentDetailExpandableCard(
         ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { HedvigText(displayName) },
+        startSlot = {
+          Column {
+            HedvigText(displayName)
+            HedvigText(
+              text = subtitle,
+              color = HedvigTheme.colorScheme.textSecondary,
+              fontSize = HedvigTheme.typography.label.fontSize,
+              lineHeight = HedvigTheme.typography.label.lineHeight,
+            )
+          }
+        },
         spaceBetween = 8.dp,
         endSlot = {
           Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
           ) {
+            if (totalGrossAmount != totalNetAmount) {
+              HedvigText(
+                text = totalGrossAmount,
+                textAlign = TextAlign.End,
+                textDecoration = TextDecoration.LineThrough,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+              Spacer(Modifier.width(6.dp))
+            }
             HedvigText(
-              text = totalAmount,
+              text = totalNetAmount,
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
+
             Icon(
               imageVector = HedvigIcons.ChevronDown,
               contentDescription = null,
               tint = HedvigTheme.colorScheme.fillSecondary,
-              modifier = Modifier.size(16.dp),
+              modifier = Modifier.size(24.dp),
             )
           }
         },
-      )
-      HedvigText(
-        text = subtitle,
-        color = HedvigTheme.colorScheme.textSecondary,
       )
       AnimatedVisibility(
         visible = isExpanded,
@@ -139,7 +163,16 @@ internal fun PaymentDetailExpandableCard(
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
           }
-
+          discounts.forEach { discount ->
+            Spacer(Modifier.height(16.dp))
+            DiscountRow(
+              discount,
+              labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM),
+              showDisplayName = false,
+            )
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+          }
           Spacer(Modifier.height(16.dp))
           Row {
             HorizontalItemsWithMaximumSpaceTaken(
@@ -153,8 +186,17 @@ internal fun PaymentDetailExpandableCard(
                   horizontalArrangement = Arrangement.End,
                   verticalAlignment = Alignment.CenterVertically,
                 ) {
+                  if (totalGrossAmount != totalNetAmount) {
+                    HedvigText(
+                      text = totalGrossAmount,
+                      textAlign = TextAlign.End,
+                      textDecoration = TextDecoration.LineThrough,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                    Spacer(Modifier.width(6.dp))
+                  }
                   HedvigText(
-                    text = totalAmount,
+                    text = totalNetAmount,
                     textAlign = TextAlign.End,
                   )
                 }
@@ -200,7 +242,8 @@ private fun PaymentDetailExpandableCardPreview() {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
-        totalAmount = "978 kr",
+        totalGrossAmount = "978 kr",
+        totalNetAmount = "800 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -229,6 +272,7 @@ private fun PaymentDetailExpandableCardPreview() {
         ),
         isExpanded = false,
         onClick = {},
+        discounts = discountsPreviewData,
       )
     }
   }
@@ -242,7 +286,8 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
-        totalAmount = "978 kr",
+        totalGrossAmount = "978 kr",
+        totalNetAmount = "800 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -271,6 +316,7 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         ),
         isExpanded = true,
         onClick = {},
+        discounts = discountsPreviewData,
       )
     }
   }
