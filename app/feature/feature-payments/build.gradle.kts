@@ -45,7 +45,6 @@ dependencies {
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.languageData)
-  implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)
@@ -64,7 +63,6 @@ dependencies {
   testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
-  testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
 }

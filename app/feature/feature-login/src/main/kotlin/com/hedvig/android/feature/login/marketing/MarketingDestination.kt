@@ -54,7 +54,6 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
-import com.hedvig.android.market.Market
 import hedvig.resources.R
 
 @Composable
@@ -90,7 +89,6 @@ private fun MarketingScreen(
   ) {
     if (uiState is MarketingUiState.Success) {
       PreferencesSheetContent(
-        availableLanguages = Market.SE.availableLanguages,
         chosenLanguage = uiState.language,
         appVersionName = appVersionName,
         selectLanguage = selectLanguage,
@@ -190,7 +188,6 @@ private fun MarketingScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PreferencesSheetContent(
-  availableLanguages: List<Language>,
   chosenLanguage: Language,
   appVersionName: String,
   selectLanguage: (Language) -> Unit,
@@ -206,7 +203,7 @@ private fun ColumnScope.PreferencesSheetContent(
   Spacer(Modifier.height(24.dp))
   RadioGroup(
     radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
-      dataList = availableLanguages.map { language ->
+      dataList = Language.entries.map { language ->
         RadioOptionGroupData.RadioOptionGroupDataWithIcon(
           RadioOptionData(
             id = language.name,
@@ -265,7 +262,7 @@ private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
-        PreferencesSheetContent(Language.entries, Language.EN_SE, "X.Y.Z", {}, {})
+        PreferencesSheetContent(Language.EN_SE, "X.Y.Z", {}, {})
       }
     }
   }

@@ -5,13 +5,10 @@ import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBacken
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class SettingsViewModel(
-  marketManager: MarketManager,
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
   changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
@@ -19,11 +16,7 @@ internal class SettingsViewModel(
   cacheManager: NetworkCacheManager,
   uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
-    SettingsUiState.Loading(
-      selectedLanguage = languageService.getLanguage(),
-      // TODO: MarketCleanup
-      languageOptions = Market.SE.availableLanguages,
-    ),
+    SettingsUiState.Loading(selectedLanguage = languageService.getLanguage()),
     SettingsPresenter(
       languageService = languageService,
       settingsDataStore = settingsDataStore,

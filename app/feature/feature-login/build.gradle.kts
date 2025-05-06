@@ -33,8 +33,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.languageAndroid)
   implementation(projects.languageCore)
-  implementation(projects.marketAndroid)
-  implementation(projects.marketCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
@@ -54,6 +52,5 @@ dependencies {
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
-  testImplementation(projects.marketTest)
   testImplementation(projects.moleculeTest)
 }

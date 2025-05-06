@@ -36,7 +36,6 @@ class SettingsPresenterTest {
     settingsPresenter.test(
       SettingsUiState.Loading(
         selectedLanguage = Language.entries.first(),
-        languageOptions = Language.entries,
       ),
     ) {
       assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()

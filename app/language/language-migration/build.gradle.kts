@@ -9,5 +9,4 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.languageCore)
-  implementation(projects.marketCore)
 }

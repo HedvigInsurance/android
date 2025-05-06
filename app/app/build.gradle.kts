@@ -215,7 +215,6 @@ dependencies {
   implementation(projects.languageMigration)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
-  implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

@@ -89,7 +89,6 @@ import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
 import com.hedvig.android.language.di.languageModule
-import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
@@ -419,7 +418,6 @@ val applicationModule = module {
       languageMigrationModule,
       languageModule,
       loginModule,
-      marketManagerModule,
       memberRemindersModule,
       movingFlowModule,
       networkCacheManagerModule,
