@@ -14,7 +14,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.SideEffect
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -36,7 +35,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -122,10 +120,6 @@ class MainActivity : AppCompatActivity() {
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appId)
     setContent {
-      val l = getLocale()
-      SideEffect {
-        logcat { "Stelios l:$l" }
-      }
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
       LifecycleStartEffect(navHostController) {
