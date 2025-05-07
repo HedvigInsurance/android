@@ -5,25 +5,22 @@ import com.hedvig.android.logger.logcat
 import java.util.Locale
 
 /**
- * Runs once on app startup to ensure that the language from the current market is properly set.
+ * Runs once on app startup to ensure that EN or SE languages are properly set on app startup
  * https://developer.android.com/guide/topics/resources/app-languages#impl-overview
  */
 interface LanguageLaunchCheckUseCase {
-  suspend fun invoke(defLocale: Locale)
+  fun invoke(defLocale: Locale)
 }
 
 internal class AndroidLanguageLaunchCheckUseCase(
   private val languageService: LanguageService,
 ) : LanguageLaunchCheckUseCase {
-  override suspend fun invoke(defLocale: Locale) {
+  override fun invoke(defLocale: Locale) {
     val currentSelectedLanguage = languageService.getSelectedLanguage()
     logcat { "LanguageAndMarketLaunchCheckUseCase: currentLanguage: $currentSelectedLanguage" }
-    if (currentSelectedLanguage == null) {
-      val defLanguage = Language.from(defLocale.toLanguageTag())
-      languageService.setLanguage(defLanguage).also {
-        logcat { "AndroidLanguageLaunchCheckUseCase setting language to $it" }
-      }
-    }
+    val defLanguage = Language.from(defLocale.toLanguageTag())
+    logcat { "AndroidLanguageLaunchCheckUseCase setting language to $defLanguage" }
+    languageService.setLanguage(defLanguage)
     val currentLanguageListAfter = AppCompatDelegate.getApplicationLocales()
     logcat { "LanguageAndMarketLaunchCheckUseCase: after check language: $currentLanguageListAfter" }
   }

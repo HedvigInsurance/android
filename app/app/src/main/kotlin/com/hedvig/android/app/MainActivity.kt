@@ -16,7 +16,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.SideEffect
 import androidx.core.content.getSystemService
+import androidx.core.os.ConfigurationCompat
+import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -38,6 +41,7 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -101,10 +105,8 @@ class MainActivity : AppCompatActivity() {
       navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
     )
     super.onCreate(savedInstanceState)
-    applicationScope.launch {
-      val defaultLocale = getSystemLocale(resources.configuration)
-      languageLaunchCheckUseCase.invoke(defaultLocale)
-    }
+    val defaultLocale = getSystemLocale(resources.configuration)
+    languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -126,6 +128,10 @@ class MainActivity : AppCompatActivity() {
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appId)
     setContent {
+      val l = getLocale()
+      SideEffect {
+        logcat { "Stelios l:$l" }
+      }
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
       LifecycleStartEffect(navHostController) {
@@ -249,8 +255,21 @@ private fun Activity.tryShowAppStoreReviewDialog() {
 }
 
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+  val compatLocale = ConfigurationCompat.getLocales(config)
+  val adjustedDefaultLocale = LocaleListCompat.getAdjustedDefault()
+  val otherLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
     Resources.getSystem().configuration.locales[0]
+  } else {
+    TODO("VERSION.SDK_INT < N")
+  }
+  logcat {
+    "Stelios getSystemLocale: compatLocale:$compatLocale, adjustedDefaultLocale:$adjustedDefaultLocale, " +
+      "otherLocale:$otherLocale, config.locale:${config.locale}"
+  }
+  return if (compatLocale.get(0) != null) {
+    compatLocale.get(0)!!
+  } else if (adjustedDefaultLocale[0] != null) {
+    adjustedDefaultLocale[0]!!
   } else {
     config.locale
   }
