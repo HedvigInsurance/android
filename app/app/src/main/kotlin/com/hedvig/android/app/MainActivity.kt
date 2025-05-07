@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.app.assist.AssistContent
-import android.content.Context
-import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -35,7 +33,6 @@ import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -60,7 +57,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-  private val applicationScope: ApplicationScope by inject()
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
   private val featureManager: FeatureManager by inject()
@@ -174,17 +170,6 @@ class MainActivity : AppCompatActivity() {
     outContent.webUri?.let {
       logcat { "Providing a deep link to current screen: $it" }
     }
-  }
-
-  companion object {
-    fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
-      Intent(context, MainActivity::class.java).apply {
-        logcat(LogPriority.INFO) { "MainActivity.newInstance was called. withoutHistory:$withoutHistory" }
-        if (withoutHistory) {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-      }
   }
 }
 
