@@ -18,8 +18,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.SideEffect
 import androidx.core.content.getSystemService
-import androidx.core.os.ConfigurationCompat
-import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -255,21 +253,8 @@ private fun Activity.tryShowAppStoreReviewDialog() {
 }
 
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
-  val compatLocale = ConfigurationCompat.getLocales(config)
-  val adjustedDefaultLocale = LocaleListCompat.getAdjustedDefault()
-  val otherLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
     Resources.getSystem().configuration.locales[0]
-  } else {
-    TODO("VERSION.SDK_INT < N")
-  }
-  logcat {
-    "Stelios getSystemLocale: compatLocale:$compatLocale, adjustedDefaultLocale:$adjustedDefaultLocale, " +
-      "otherLocale:$otherLocale, config.locale:${config.locale}"
-  }
-  return if (compatLocale.get(0) != null) {
-    compatLocale.get(0)!!
-  } else if (adjustedDefaultLocale[0] != null) {
-    adjustedDefaultLocale[0]!!
   } else {
     config.locale
   }
