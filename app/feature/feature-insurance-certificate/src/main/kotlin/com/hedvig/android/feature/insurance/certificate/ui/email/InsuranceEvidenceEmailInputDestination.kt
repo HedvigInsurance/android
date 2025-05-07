@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -155,6 +157,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
         uiState = uiState,
         onSubmit = onSubmit,
         onChangeEmail = onChangeEmail,
+        modifier = Modifier.fillMaxSize()
       )
       Column(
         Modifier.fillMaxSize(),
@@ -195,7 +198,8 @@ private fun SuccessContent(
   var emailInput by remember {
     mutableStateOf(uiState.email ?: "")
   }
-  Column(modifier) {
+  Column(modifier
+    .verticalScroll(rememberScrollState())) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
       stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
