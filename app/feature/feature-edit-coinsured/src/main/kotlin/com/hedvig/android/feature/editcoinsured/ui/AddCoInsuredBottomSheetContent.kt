@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -86,7 +89,9 @@ internal fun AddCoInsuredBottomSheetContent(
   onAddNewCoInsured: () -> Unit,
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
-  Column {
+  Column(
+    modifier = Modifier.verticalScroll(rememberScrollState())
+  ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
@@ -459,7 +464,7 @@ private fun AddBottomSheetContentState.SaveButtonLabel.stringRes() = when (this)
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
