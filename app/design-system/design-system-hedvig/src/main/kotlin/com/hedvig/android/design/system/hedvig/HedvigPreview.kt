@@ -183,8 +183,21 @@ private annotation class HedvigTabletPreview
 )
 annotation class HedvigTabletLandscapePreview
 
+@Preview(
+  name = "lightMode small screen landscape",
+  uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+  device = "spec:width=300dp,height=240dp,dpi=240,orientation=landscape",
+)
+@Preview(
+  name = "lightMode small screen portrait",
+  uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+  device = "spec:width=300dp,height=240dp,dpi=240,orientation=portrait",
+)
+annotation class HedvigVerySmallScreenPreview
+
 @HedvigPreview
 @HedvigLandscapePreview
 @HedvigTabletPreview
 @HedvigTabletLandscapePreview
+@HedvigVerySmallScreenPreview
 annotation class HedvigMultiScreenPreview

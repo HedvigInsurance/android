@@ -42,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorStat
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.HedvigVerySmallScreenPreview
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -157,7 +158,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
         uiState = uiState,
         onSubmit = onSubmit,
         onChangeEmail = onChangeEmail,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
       )
       Column(
         Modifier.fillMaxSize(),
@@ -198,8 +199,10 @@ private fun SuccessContent(
   var emailInput by remember {
     mutableStateOf(uiState.email ?: "")
   }
-  Column(modifier
-    .verticalScroll(rememberScrollState())) {
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
       stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
@@ -282,6 +285,7 @@ internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   }
 }
 
+@HedvigVerySmallScreenPreview
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceEvidenceEmailInputScreen(

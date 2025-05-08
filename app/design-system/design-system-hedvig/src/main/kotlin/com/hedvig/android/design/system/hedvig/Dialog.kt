@@ -243,9 +243,13 @@ fun HedvigDialog(
     onDismissRequest = onDismissRequest,
     properties = dialogProperties,
   ) {
-    HedvigDialogContent(dialogProperties.usePlatformDefaultWidth, applyDefaultPadding, style,
+    HedvigDialogContent(
+      dialogProperties.usePlatformDefaultWidth,
+      applyDefaultPadding,
+      style,
       modifier.verticalScroll(rememberScrollState()),
-      content)
+      content,
+    )
   }
 }
 
