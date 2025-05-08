@@ -62,7 +62,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 
   private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating():Boolean {
     return coInsured?.any {
-      it.hasMissingInfo && it.terminatesOn == null
+      it.hasMissingInfo && it.terminatesOn == null && supportsCoInsured
     } == true
   }
 }
