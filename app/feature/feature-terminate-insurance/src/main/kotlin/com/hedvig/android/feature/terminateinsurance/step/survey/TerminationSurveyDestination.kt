@@ -170,6 +170,7 @@ private fun TerminationSurveyScreen(
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            applyVerticalScroll = true,
           ) {
             EmptyQuotesDialogContent(closeEmptyQuotesDialog)
           }

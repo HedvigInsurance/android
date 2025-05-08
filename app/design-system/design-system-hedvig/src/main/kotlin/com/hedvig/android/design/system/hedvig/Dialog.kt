@@ -66,6 +66,7 @@ fun ErrorDialog(
     style = NoButtons,
     onDismissRequest = onDismiss,
     modifier = modifier,
+    applyVerticalScroll = true,
   ) {
     EmptyState(
       text = title,
@@ -103,6 +104,7 @@ fun HedvigAlertDialog(
       buttonSize = buttonSize,
     ),
     onDismissRequest = onDismissRequest,
+    applyVerticalScroll = true,
     modifier = modifier,
   ) {
     Column(
@@ -233,6 +235,7 @@ fun MultiSelectDialog(
 @Composable
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
+  applyVerticalScroll: Boolean,
   modifier: Modifier = Modifier,
   applyDefaultPadding: Boolean = true,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
@@ -247,7 +250,14 @@ fun HedvigDialog(
       dialogProperties.usePlatformDefaultWidth,
       applyDefaultPadding,
       style,
-      modifier.verticalScroll(rememberScrollState()),
+      modifier
+        .then(
+          if (applyVerticalScroll) {
+            Modifier.verticalScroll(rememberScrollState())
+          } else {
+            Modifier
+          },
+        ),
       content,
     )
   }
@@ -368,6 +378,7 @@ private fun CoreSelectDialog(
   HedvigDialog(
     onDismissRequest = { onDismissRequest.invoke() },
     applyDefaultPadding = false,
+    applyVerticalScroll = false,
   ) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,

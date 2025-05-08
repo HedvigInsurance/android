@@ -46,13 +46,14 @@ fun HedvigErrorSection(
   }
 }
 
-
 @HedvigShortMultiScreenPreview
 @Composable
 fun HedvigErrorSectionPreview() {
   HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = Modifier.fillMaxSize()) {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.fillMaxSize(),
+    ) {
       HedvigErrorSection({})
     }
   }
