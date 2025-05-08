@@ -37,9 +37,11 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.HedvigVerySmallScreenPreview
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -365,7 +367,7 @@ private fun TravelCertificatesList(
   }
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithEmptyList(
   @PreviewParameter(TravelCertificateHistoryUiStatePreviewProvider::class) uiState: CertificateHistoryUiState,
