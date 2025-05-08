@@ -3,6 +3,7 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -42,5 +43,17 @@ fun HedvigErrorSection(
         onButtonClick = onButtonClick,
       ),
     )
+  }
+}
+
+
+@HedvigShortMultiScreenPreview
+@Composable
+fun HedvigErrorSectionPreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.fillMaxSize()) {
+      HedvigErrorSection({})
+    }
   }
 }

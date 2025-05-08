@@ -32,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
@@ -299,10 +300,10 @@ internal fun ClearBottomSheetContentStateOnSheetDismissedEffect(
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun EditCoInsuredScreenErrorPreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Error("Something"),
@@ -325,10 +326,10 @@ private fun EditCoInsuredScreenErrorPreview() {
 }
 
 @Composable
-@HedvigMultiScreenPreview
+@HedvigShortMultiScreenPreview
 private fun EditCoInsuredScreenEditablePreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
@@ -410,10 +411,10 @@ private fun EditCoInsuredScreenEditablePreview() {
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun EditCoInsuredScreenNonEditablePreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
