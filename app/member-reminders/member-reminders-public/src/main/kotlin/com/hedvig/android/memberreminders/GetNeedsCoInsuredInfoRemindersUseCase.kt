@@ -61,11 +61,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
   }
 
   private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating():Boolean {
-    val contract = this
-    logcat { "Mariia: the contract ${contract.id} terminationDate: ${contract.terminationDate} " }
     return coInsured?.any {
-      logcat { "Mariia: coInsured for contract ${contract.id} hasMissingInfo: " +
-        " ${it.hasMissingInfo} terminatesOn: ${it.terminatesOn}" }
       it.hasMissingInfo && it.terminatesOn == null
     } == true
   }
