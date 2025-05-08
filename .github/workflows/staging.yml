@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew :app:assembleStaging"
+        run: "./gradlew :app:bundleStaging"
       - name: Setup build tool version variable
         shell: bash
         run: |
