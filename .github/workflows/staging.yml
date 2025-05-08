@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew :app:assembleStaging"
+        run: "./gradlew :app:bundleStaging"
       - name: Setup build tool version variable
         shell: bash
         run: |
@@ -55,7 +55,7 @@ jobs:
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: app/app/build/outputs/apk/staging
+          releaseDirectory: app/app/build/outputs/bundle/staging
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
