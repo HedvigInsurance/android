@@ -90,7 +90,7 @@ internal fun AddCoInsuredBottomSheetContent(
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   Column(
-    modifier = Modifier.verticalScroll(rememberScrollState())
+    modifier = Modifier
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
