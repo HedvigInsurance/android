@@ -136,11 +136,11 @@ fun rememberPreviewSimpleCache(): Cache {
 }
 
 @Preview(
-  name = "lightMode portrait",
+  name = "00_lightMode portrait",
   uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
 )
 @Preview(
-  name = "nightMode portrait",
+  name = "01_nightMode portrait",
   uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
 )
 annotation class HedvigPreview
@@ -158,6 +158,14 @@ annotation class HedvigPreview
   device = "spec:parent=pixel_5,orientation=landscape",
 )
 private annotation class HedvigLandscapePreview
+
+@Preview(
+  name = "02_lightMode landscape",
+  locale = "en",
+  uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+  device = "spec:parent=pixel_5,orientation=landscape",
+)
+private annotation class HedvigOnlyLightLandscapePreview
 
 @Preview(
   name = "lightMode tablet portrait",
@@ -183,8 +191,21 @@ private annotation class HedvigTabletPreview
 )
 annotation class HedvigTabletLandscapePreview
 
+@Preview(
+  name = "03_lightMode small screen portrait",
+  uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+  device = "spec:width=300dp,height=240dp,dpi=240,orientation=portrait",
+)
+annotation class HedvigVerySmallScreenPreview
+
 @HedvigPreview
 @HedvigLandscapePreview
 @HedvigTabletPreview
 @HedvigTabletLandscapePreview
+@HedvigVerySmallScreenPreview
 annotation class HedvigMultiScreenPreview
+
+@HedvigPreview
+@HedvigOnlyLightLandscapePreview
+@HedvigVerySmallScreenPreview
+annotation class HedvigShortMultiScreenPreview

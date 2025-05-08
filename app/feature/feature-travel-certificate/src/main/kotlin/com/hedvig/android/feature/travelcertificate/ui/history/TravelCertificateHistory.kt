@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,8 +35,8 @@ import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
@@ -205,7 +207,8 @@ private fun TravelCertificateSuccessScreen(
     Box(Modifier.weight(1f)) {
       Column(
         Modifier
-          .fillMaxSize(),
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState()),
       ) {
         if (historyList.isEmpty()) {
           Spacer(modifier = Modifier.weight(1f))
@@ -362,7 +365,7 @@ private fun TravelCertificatesList(
   }
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
 private fun PreviewTravelCertificateHistoryScreenWithEmptyList(
   @PreviewParameter(TravelCertificateHistoryUiStatePreviewProvider::class) uiState: CertificateHistoryUiState,

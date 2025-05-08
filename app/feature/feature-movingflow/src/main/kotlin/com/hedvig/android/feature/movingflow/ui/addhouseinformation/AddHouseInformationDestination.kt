@@ -291,6 +291,7 @@ private fun ExtraBuildingsCard(
       dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
       onDismissRequest = { extraBuildingsDialogOpen = false },
       style = NoButtons,
+      applyVerticalScroll = false,
     ) {
       ExtraBuildingsDialogContent(
         extraBuildings = extraBuildings,
