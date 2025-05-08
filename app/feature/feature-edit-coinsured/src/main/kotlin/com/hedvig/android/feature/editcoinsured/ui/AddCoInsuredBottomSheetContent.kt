@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -86,7 +87,9 @@ internal fun AddCoInsuredBottomSheetContent(
   onAddNewCoInsured: () -> Unit,
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
-  Column {
+  Column(
+    modifier = Modifier,
+  ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
@@ -337,7 +340,7 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f).requiredHeight(64.dp),
+        modifier = Modifier.weight(1f).defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -352,7 +355,7 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f).requiredHeight(64.dp),
+        modifier = Modifier.weight(1f).defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(
@@ -459,7 +462,7 @@ private fun AddBottomSheetContentState.SaveButtonLabel.stringRes() = when (this)
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {

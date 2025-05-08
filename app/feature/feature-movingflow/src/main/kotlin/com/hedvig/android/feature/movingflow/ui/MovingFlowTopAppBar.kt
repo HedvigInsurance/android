@@ -68,6 +68,7 @@ private fun MovingFlowTopAppBar(
         },
         confirmButtonText = stringResource(R.string.GENERAL_YES),
       ),
+      applyVerticalScroll = true,
     ) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         HedvigText(

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorStat
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.HedvigVerySmallScreenPreview
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -155,6 +158,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
         uiState = uiState,
         onSubmit = onSubmit,
         onChangeEmail = onChangeEmail,
+        modifier = Modifier.fillMaxSize(),
       )
       Column(
         Modifier.fillMaxSize(),
@@ -195,7 +199,10 @@ private fun SuccessContent(
   var emailInput by remember {
     mutableStateOf(uiState.email ?: "")
   }
-  Column(modifier) {
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
       stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
@@ -278,6 +285,7 @@ internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   }
 }
 
+@HedvigVerySmallScreenPreview
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceEvidenceEmailInputScreen(
