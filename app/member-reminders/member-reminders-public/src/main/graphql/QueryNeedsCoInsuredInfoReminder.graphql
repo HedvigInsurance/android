@@ -1,6 +1,7 @@
 query NeedsCoInsuredInfoReminder {
   currentMember {
     activeContracts {
+      terminationDate
       id
       coInsured {
         hasMissingInfo

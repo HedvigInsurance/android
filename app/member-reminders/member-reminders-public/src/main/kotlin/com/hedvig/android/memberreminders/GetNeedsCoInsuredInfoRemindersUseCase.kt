@@ -14,6 +14,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -59,8 +60,15 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
     }
   }
 
-  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating() =
-    coInsured?.any { it.hasMissingInfo && it.terminatesOn == null } == true
+  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating():Boolean {
+    val contract = this
+    logcat { "Mariia: the contract ${contract.id} terminationDate: ${contract.terminationDate} " }
+    return coInsured?.any {
+      logcat { "Mariia: coInsured for contract ${contract.id} hasMissingInfo: " +
+        " ${it.hasMissingInfo} terminatesOn: ${it.terminatesOn}" }
+      it.hasMissingInfo && it.terminatesOn == null
+    } == true
+  }
 }
 
 sealed interface CoInsuredInfoReminderError {
