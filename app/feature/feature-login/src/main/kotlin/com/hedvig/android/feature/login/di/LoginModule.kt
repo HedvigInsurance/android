@@ -9,15 +9,13 @@ import com.hedvig.android.feature.login.navigation.LoginDestinations
 import com.hedvig.android.feature.login.otpinput.OtpInputViewModel
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.MarketManager
-import com.hedvig.android.market.set.SetMarketUseCase
 import com.hedvig.authlib.AuthRepository
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val loginModule = module {
   viewModel<MarketingViewModel> {
-    MarketingViewModel(get<MarketManager>(), get<LanguageService>(), get<SetMarketUseCase>())
+    MarketingViewModel(get<LanguageService>())
   }
   viewModel<SwedishLoginViewModel> {
     SwedishLoginViewModel(
@@ -29,7 +27,7 @@ val loginModule = module {
   }
 
   viewModel<GenericAuthViewModel> {
-    GenericAuthViewModel(get<MarketManager>(), get<AuthRepository>())
+    GenericAuthViewModel(get<AuthRepository>())
   }
   viewModel<OtpInputViewModel> { (otpInformation: LoginDestinations.OtpInput.OtpInformation) ->
     OtpInputViewModel(

@@ -32,7 +32,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 
@@ -44,7 +43,6 @@ internal fun HedvigAppUi(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
-  market: Market,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -70,7 +68,6 @@ internal fun HedvigAppUi(
         openUrl = openUrl,
         imageLoader = imageLoader,
         simpleVideoCache = simpleVideoCache,
-        market = market,
         languageService = languageService,
         hedvigBuildConstants = hedvigBuildConstants,
         modifier = Modifier

@@ -6,16 +6,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.Market.DK
-import com.hedvig.android.market.Market.NO
-import com.hedvig.android.market.Market.SE
 
 @Composable
 internal fun GenericAuthDestination(
@@ -33,8 +27,6 @@ internal fun GenericAuthDestination(
     },
     setEmailInput = viewModel::setEmailInput,
     submitEmail = viewModel::submitEmail,
-    setSSNInput = viewModel::setSSNInput,
-    submitSSN = viewModel::submitSSN,
   )
 }
 
@@ -45,8 +37,6 @@ private fun GenericAuthScreen(
   onStartOtpInput: (verifyUrl: String, resendUrl: String) -> Unit,
   setEmailInput: (String) -> Unit,
   submitEmail: () -> Unit,
-  setSSNInput: (String) -> Unit,
-  submitSSN: () -> Unit,
 ) {
   LaunchedEffect(uiState.verifyUrl) {
     val verifyUrl = uiState.verifyUrl ?: return@LaunchedEffect
@@ -59,30 +49,14 @@ private fun GenericAuthScreen(
       color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier.fillMaxSize(),
     ) {
-      val market = uiState.market
-      when (market) {
-        SE -> EmailInputScreen(
-          onUpClick = navigateUp,
-          onInputChanged = setEmailInput,
-          onSubmitEmail = submitEmail,
-          emailInput = uiState.emailInput,
-          error = uiState.error?.let { errorMessage(it) },
-          loading = uiState.loading,
-        )
-
-        NO,
-        DK,
-        -> SSNInputScreen(
-          market = market,
-          onUpClick = navigateUp,
-          onInputChanged = setSSNInput,
-          onSubmitSSN = submitSSN,
-          emailInput = uiState.ssnInput,
-          error = uiState.error?.let { errorMessage(it) },
-          loading = uiState.loading,
-          canSubmitSsn = uiState.canSubmitSsn,
-        )
-      }
+      EmailInputScreen(
+        onUpClick = navigateUp,
+        onInputChanged = setEmailInput,
+        onSubmitEmail = submitEmail,
+        emailInput = uiState.emailInput,
+        error = uiState.error?.let { errorMessage(it) },
+        loading = uiState.loading,
+      )
     }
   }
 }
@@ -111,19 +85,15 @@ private fun errorMessage(error: GenericAuthViewState.TextFieldError): String {
 
 @HedvigPreview
 @Composable
-private fun Preview(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isSe: Boolean,
-) {
+private fun PreviewGenericAuthScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       GenericAuthScreen(
-        GenericAuthViewState(market = if (isSe) Market.SE else Market.DK),
+        GenericAuthViewState(),
         navigateUp = {},
         onStartOtpInput = { _, _ -> },
         setEmailInput = {},
         submitEmail = {},
-        setSSNInput = {},
-        submitSSN = {},
       )
     }
   }

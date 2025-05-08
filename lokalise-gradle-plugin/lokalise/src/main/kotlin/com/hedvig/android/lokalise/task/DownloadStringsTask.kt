@@ -85,12 +85,7 @@ abstract class DownloadStringsTask @Inject constructor(
         "filter_langs",
         buildJsonArray {
           add("en")
-          add("en_SE")
           add("sv_SE")
-          add("en_NO")
-          add("nb_NO")
-          add("en_DK")
-          add("da_DK")
         },
       )
     }

@@ -16,15 +16,12 @@ import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
   private val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
-  private val marketManager: MarketManager,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
@@ -53,7 +50,6 @@ internal class PaymentsPresenter(
           paymentsUiState = PaymentsUiState.Error
         },
         ifRight = { paymentOverview ->
-          val allowChangingConnectedBankAccount = marketManager.market.value == Market.SE
           paymentsUiState = PaymentsUiState.Content(
             isRetrying = false,
             upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
@@ -81,7 +77,6 @@ internal class PaymentsPresenter(
               is Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                 displayName = paymentConnection.displayName,
                 maskedAccountNumber = paymentConnection.displayValue,
-                allowChangingConnectedBankAccount = allowChangingConnectedBankAccount,
               )
 
               Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
@@ -89,7 +84,6 @@ internal class PaymentsPresenter(
               is NeedsSetup -> {
                 PaymentsUiState.Content.ConnectedPaymentInfo.NeedsSetup(
                   dueDateToConnect = paymentConnection.terminationDateIfNotConnected,
-                  allowChangingConnectedBankAccount = allowChangingConnectedBankAccount,
                 )
               }
 
@@ -147,7 +141,6 @@ internal sealed interface PaymentsUiState {
 
       data class NeedsSetup(
         val dueDateToConnect: LocalDate?,
-        val allowChangingConnectedBankAccount: Boolean,
       ) : ConnectedPaymentInfo
 
       data object Pending : ConnectedPaymentInfo
@@ -155,7 +148,6 @@ internal sealed interface PaymentsUiState {
       data class Connected(
         val displayName: String,
         val maskedAccountNumber: String,
-        val allowChangingConnectedBankAccount: Boolean,
       ) : ConnectedPaymentInfo
     }
   }

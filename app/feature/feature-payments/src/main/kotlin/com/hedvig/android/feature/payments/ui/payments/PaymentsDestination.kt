@@ -240,8 +240,7 @@ private fun PaymentsContent(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
     val showConnectedPaymentInfo = uiState is Content &&
-      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup &&
-      uiState.connectedPaymentInfo.allowChangingConnectedBankAccount
+      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup
     AnimatedVisibility(
       visibleState = remember { MutableTransitionState(showConnectedPaymentInfo) }.apply {
         targetState = showConnectedPaymentInfo
@@ -261,24 +260,22 @@ private fun PaymentsContent(
     if (uiState is Content) {
       when (val connectedPaymentInfo = uiState.connectedPaymentInfo) {
         is ConnectedPaymentInfo.Connected -> {
-          if (connectedPaymentInfo.allowChangingConnectedBankAccount) {
-            Spacer(Modifier.weight(1f))
-            HedvigButton(
-              text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-              onClick = onChangeBankAccount,
-              enabled = true,
-              buttonStyle = Secondary,
-              modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .hedvigPlaceholder(
-                  uiState.isRetrying,
-                  shape = HedvigTheme.shapes.cornerSmall,
-                  highlight = PlaceholderHighlight.shimmer(),
-                ),
-            )
-          }
+          Spacer(Modifier.weight(1f))
+          HedvigButton(
+            text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+            onClick = onChangeBankAccount,
+            enabled = true,
+            buttonStyle = Secondary,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .hedvigPlaceholder(
+                uiState.isRetrying,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
+          )
         }
 
         ConnectedPaymentInfo.Pending -> {
@@ -605,7 +602,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
-          true,
         ),
       ),
     )
@@ -622,7 +618,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
-          true,
         ),
       ),
     )
@@ -639,7 +634,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
-          true,
         ),
       ),
     )
@@ -659,7 +653,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
-          true,
         ),
       ),
     )
@@ -688,7 +681,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
-          true,
         ),
       ),
     )
@@ -704,7 +696,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
-          false,
         ),
       ),
     )
@@ -723,7 +714,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          allowChangingConnectedBankAccount = true,
         ),
       ),
     )
@@ -742,7 +732,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          false,
         ),
       ),
     )

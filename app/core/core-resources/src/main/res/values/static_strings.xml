@@ -1,8 +1,4 @@
 <resources>
     <string name="swedish" translatable="false">Svenska</string>
     <string name="english_swedish" translatable="false">English</string>
-    <string name="norwegian" translatable="false">Norsk</string>
-    <string name="english_norwegian" translatable="false">English</string>
-    <string name="danish" translatable="false">Dansk</string>
-    <string name="english_danish" translatable="false">English</string>
 </resources>

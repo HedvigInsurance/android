@@ -18,7 +18,6 @@ import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.market.MarketManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -48,7 +47,6 @@ val helpCenterModule = module {
     GetMemberActionsUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
-      marketManager = get<MarketManager>(),
     )
   }
   viewModel<HelpCenterViewModel> {

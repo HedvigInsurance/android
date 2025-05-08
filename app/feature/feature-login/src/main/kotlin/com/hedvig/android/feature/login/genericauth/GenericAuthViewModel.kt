@@ -2,8 +2,6 @@ package com.hedvig.android.feature.login.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.MarketManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.LoginMethod
@@ -14,25 +12,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class GenericAuthViewModel(
-  private val marketManager: MarketManager,
   private val authRepository: AuthRepository,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(GenericAuthViewState(marketManager.market.value))
+  private val _viewState = MutableStateFlow(GenericAuthViewState())
   val viewState = _viewState.asStateFlow()
 
   fun setEmailInput(value: String) {
     _viewState.update {
       it.copy(
         emailInput = value,
-        error = null,
-      )
-    }
-  }
-
-  fun setSSNInput(value: String) {
-    _viewState.update {
-      it.copy(
-        ssnInput = value,
         error = null,
       )
     }
@@ -46,11 +34,7 @@ internal class GenericAuthViewModel(
           createLoginAttempt = {
             authRepository.startLoginAttempt(
               loginMethod = LoginMethod.OTP,
-              market = when (marketManager.market.value) {
-                Market.SE -> OtpMarket.SE
-                Market.NO -> OtpMarket.NO
-                Market.DK -> OtpMarket.DK
-              },
+              market = OtpMarket.SE,
               personalNumber = null,
               email = emailInput.value,
             )
@@ -59,26 +43,6 @@ internal class GenericAuthViewModel(
       }
     } else {
       _viewState.update { it.copy(error = validate(emailInput)) }
-    }
-  }
-
-  fun submitSSN() {
-    val ssnInput = _viewState.value.ssnInput
-    viewModelScope.launch {
-      createStateFromOtpAttempt(
-        createLoginAttempt = {
-          authRepository.startLoginAttempt(
-            loginMethod = LoginMethod.OTP,
-            market = when (marketManager.market.value) {
-              Market.SE -> OtpMarket.SE
-              Market.NO -> OtpMarket.NO
-              Market.DK -> OtpMarket.DK
-            },
-            personalNumber = ssnInput,
-            email = null,
-          )
-        },
-      )
     }
   }
 
@@ -134,9 +98,7 @@ internal class GenericAuthViewModel(
 }
 
 data class GenericAuthViewState(
-  val market: Market,
   val emailInput: String = "",
-  val ssnInput: String = "",
   val error: TextFieldError? = null,
   val verifyUrl: String? = null,
   val resendUrl: String? = null,
@@ -144,13 +106,6 @@ data class GenericAuthViewState(
 ) {
   val emailInputWithoutWhitespaces: EmailAddressWithTrimmedWhitespaces
     get() = EmailAddressWithTrimmedWhitespaces(emailInput)
-
-  val canSubmitSsn: Boolean
-    get() = when (market) {
-      Market.SE -> error("Should not be able to enter SSN for generic auth for SE")
-      Market.NO -> ssnInput.length == 11
-      Market.DK -> ssnInput.length == 10
-    }
 
   sealed interface TextFieldError {
     data class Message(val message: String) : TextFieldError

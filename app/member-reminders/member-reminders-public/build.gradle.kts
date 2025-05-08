@@ -27,7 +27,6 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.dataPayingMember)
   implementation(projects.featureFlagsPublic)
-  implementation(projects.marketCore)
 
   testImplementation(libs.apollo.annotations)
   testImplementation(libs.apollo.testingSupport)
@@ -42,7 +41,6 @@ dependencies {
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
-  testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.testClock)
 }

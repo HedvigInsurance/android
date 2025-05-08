@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.market.test.FakeMarketManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -68,7 +67,6 @@ class GenericAuthViewModelTest {
         error("Not yet implemented")
       }
     },
-    marketManager = FakeMarketManager(),
   )
 
   @Test

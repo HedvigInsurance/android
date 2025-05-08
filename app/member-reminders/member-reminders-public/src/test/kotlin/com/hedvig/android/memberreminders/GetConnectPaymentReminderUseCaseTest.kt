@@ -9,7 +9,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.enqueueTestNetworkError
 import com.apollographql.apollo.testing.enqueueTestResponse
-import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
@@ -19,14 +18,10 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.Market.SE
-import com.hedvig.android.market.test.FakeMarketManager
 import com.hedvig.android.memberreminders.PaymentReminder.ShowConnectPaymentReminder
 import com.hedvig.android.memberreminders.PaymentReminder.ShowMissingPaymentsReminder
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 import octopus.GetPayinMethodStatusQuery
 import octopus.type.MemberPaymentConnectionStatus
 import octopus.type.buildContract
@@ -52,7 +47,6 @@ class GetConnectPaymentReminderUseCaseTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
       doesHavePayingContractsUseCaseProvider,
-      FakeMarketManager(Market.SE),
     )
     apolloClient.enqueueTestResponse(
       GetPayinMethodStatusQuery(),
@@ -75,7 +69,6 @@ class GetConnectPaymentReminderUseCaseTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
       doesHavePayingContractsUseCaseProvider,
-      FakeMarketManager(Market.SE),
     )
     val terminationDate = LocalDate.parse("2030-01-01")
     apolloClient.enqueueTestResponse(
@@ -105,7 +98,6 @@ class GetConnectPaymentReminderUseCaseTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
       doesHavePayingContractsUseCaseProvider,
-      FakeMarketManager(SE),
     )
     apolloClient.enqueueTestResponse(
       GetPayinMethodStatusQuery(),
@@ -128,7 +120,6 @@ class GetConnectPaymentReminderUseCaseTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
       doesHavePayingContractsUseCaseProvider,
-      FakeMarketManager(SE),
     )
     apolloClient.enqueueTestNetworkError()
 
@@ -144,7 +135,6 @@ class GetConnectPaymentReminderUseCaseTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
       onlyHasNonPayingContractsUseCaseProvider,
-      FakeMarketManager(SE),
     )
 
     val result = getConnectPaymentReminderUseCase.invoke()
@@ -152,23 +142,6 @@ class GetConnectPaymentReminderUseCaseTest {
     assertThat(result)
       .isLeft()
       .isInstanceOf<ConnectPaymentReminderError.DomainError.NonPayingMember>()
-  }
-
-  @Test
-  fun `for a non Swedish market, don't remind them to connect payment`(
-    @TestParameter isDk: Boolean,
-  ) = runTest {
-    val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
-      apolloClient,
-      onlyHasNonPayingContractsUseCaseProvider,
-      FakeMarketManager(if (isDk) Market.DK else Market.NO),
-    )
-
-    val result = getConnectPaymentReminderUseCase.invoke()
-
-    assertThat(result)
-      .isLeft()
-      .isInstanceOf<ConnectPaymentReminderError.DomainError.NotSwedishMarket>()
   }
 
   private val doesHavePayingContractsUseCaseProvider: Provider<GetOnlyHasNonPayingContractsUseCase> = Provider {
