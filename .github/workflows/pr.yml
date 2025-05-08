@@ -145,7 +145,7 @@ jobs:
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: app/app/build/outputs/apk/debug
+          releaseDirectory: app/app/build/outputs/bundle/debug
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
