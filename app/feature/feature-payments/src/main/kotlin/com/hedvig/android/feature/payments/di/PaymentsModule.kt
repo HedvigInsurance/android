@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.payments.di
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
@@ -12,8 +11,6 @@ import com.hedvig.android.feature.payments.data.GetDiscountsUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
-import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
-import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
@@ -24,20 +21,12 @@ import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import kotlinx.datetime.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val paymentsModule = module {
-  single<AddDiscountUseCase> {
-    AddDiscountUseCaseImpl(
-      get<ApolloClient>(),
-      get<NetworkCacheManager>(),
-      get<FeatureManager>(),
-    )
-  }
   single<GetPaymentsHistoryUseCase> {
     GetPaymentsHistoryUseCaseImpl(
       get<ApolloClient>(),
@@ -85,8 +74,6 @@ val paymentsModule = module {
   viewModel<DiscountsViewModel> {
     DiscountsViewModel(
       get<GetDiscountsOverviewUseCase>(),
-      get<AddDiscountUseCase>(),
-      get<FeatureManager>(),
     )
   }
 

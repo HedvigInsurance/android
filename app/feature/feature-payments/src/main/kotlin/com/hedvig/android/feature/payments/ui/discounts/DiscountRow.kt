@@ -19,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
@@ -29,7 +30,12 @@ import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifier) {
+internal fun DiscountRows(
+  discounts: List<Discount>,
+  showDisplayName: Boolean,
+  modifier: Modifier = Modifier,
+  labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+) {
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -38,110 +44,132 @@ internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifi
       if (index != 0) {
         HorizontalDivider()
       }
-      DiscountRow(discount, Modifier.fillMaxWidth())
+      DiscountRow(
+        discount,
+        modifier = Modifier.fillMaxWidth(),
+        labelColor = labelColor,
+        showDisplayName = showDisplayName,
+      )
     }
   }
 }
 
 @Composable
-private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
+internal fun DiscountRow(
+  discount: Discount,
+  showDisplayName: Boolean, // we do not need it for payment details, but do need it for discounts
+  modifier: Modifier = Modifier,
+  labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+) {
   val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       startSlot = {
-        Row {
+        Column {
           HighlightLabel(
             labelText = discount.code,
             modifier = Modifier
               .wrapContentWidth(),
-            color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
+            color = labelColor,
             size = HighlightLabelDefaults.HighLightSize.Small,
           )
+          Spacer(Modifier.height(4.dp))
+          Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+          ) {
+            val descriptionText = if (discount.isReferral) {
+              stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
+            } else {
+              discount.description
+            }
+            if (descriptionText != null) {
+              HedvigText(
+                text = descriptionText,
+                color = if (discountIsExpired) {
+                  HedvigTheme.colorScheme.textDisabled
+                } else {
+                  HedvigTheme.colorScheme.textSecondaryTranslucent
+                },
+                style = HedvigTheme.typography.label,
+              )
+            }
+            discount.displayName?.let {
+              if (showDisplayName) {
+                HedvigText(
+                  text = it,
+                  color = if (discountIsExpired) {
+                    HedvigTheme.colorScheme.textDisabled
+                  } else {
+                    HedvigTheme.colorScheme.textSecondaryTranslucent
+                  },
+                  style = HedvigTheme.typography.label,
+                )
+              }
+            }
+          }
         }
       },
       endSlot = {
-        discount.amount?.let { discountAmount ->
-          HedvigText(
-            text = discountAmount.toString(),
-            color = if (discountIsExpired) {
-              HedvigTheme.colorScheme.textDisabled
-            } else {
-              HedvigTheme.colorScheme.textSecondary
-            },
-            textAlign = TextAlign.End,
-            modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
-          )
+        Column {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+          ) {
+            discount.amount?.let { discountAmount ->
+              HedvigText(
+                text = discountAmount.toString(),
+                color = if (discountIsExpired) {
+                  HedvigTheme.colorScheme.textDisabled
+                } else {
+                  HedvigTheme.colorScheme.textSecondaryTranslucent
+                },
+                textAlign = TextAlign.End,
+                fontSize = HedvigTheme.typography.bodySmall.fontSize,
+                modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
+              )
+            }
+          }
+          Spacer(Modifier.height(4.dp))
+          val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+          when (discount.expiredState) {
+            is Discount.ExpiredState.AlreadyExpired -> {
+              HedvigText(
+                text = stringResource(
+                  id = R.string.PAYMENTS_EXPIRED_DATE,
+                  dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
+                ),
+                textAlign = TextAlign.End,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.signalRedElement,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+
+            is Discount.ExpiredState.ExpiringInTheFuture -> {
+              HedvigText(
+                text = stringResource(
+                  id = R.string.PAYMENTS_VALID_UNTIL,
+                  dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
+                ),
+                textAlign = TextAlign.End,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+
+            Discount.ExpiredState.NotExpired -> {}
+          }
         }
       },
     )
-    Spacer(Modifier.height(8.dp))
+
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        Column(
-          verticalArrangement = Arrangement.Top,
-          horizontalAlignment = Alignment.Start,
-        ) {
-          discount.displayName?.let {
-            HedvigText(
-              text = it,
-              color = if (discountIsExpired) {
-                HedvigTheme.colorScheme.textDisabled
-              } else {
-                HedvigTheme.colorScheme.textSecondary
-              },
-              style = HedvigTheme.typography.bodySmall,
-            )
-          }
-          val bottomText = if (discount.isReferral) {
-            stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
-          } else {
-            discount.description
-          }
-          if (bottomText != null) {
-            HedvigText(
-              text = bottomText,
-              color = if (discountIsExpired) {
-                HedvigTheme.colorScheme.textDisabled
-              } else {
-                HedvigTheme.colorScheme.textSecondary
-              },
-              style = HedvigTheme.typography.bodySmall,
-            )
-          }
-        }
       },
       endSlot = {
-        val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-        when (discount.expiredState) {
-          is Discount.ExpiredState.AlreadyExpired -> {
-            HedvigText(
-              text = stringResource(
-                id = R.string.PAYMENTS_EXPIRED_DATE,
-                dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
-              ),
-              textAlign = TextAlign.End,
-              style = HedvigTheme.typography.bodySmall,
-              color = HedvigTheme.colorScheme.signalRedElement,
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
-
-          is Discount.ExpiredState.ExpiringInTheFuture -> {
-            HedvigText(
-              text = stringResource(
-                id = R.string.PAYMENTS_VALID_UNTIL,
-                dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
-              ),
-              textAlign = TextAlign.End,
-              style = HedvigTheme.typography.bodySmall,
-              color = HedvigTheme.colorScheme.textSecondary,
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
-
-          Discount.ExpiredState.NotExpired -> {}
-        }
       },
       spaceBetween = 16.dp,
     )
@@ -154,7 +182,10 @@ private fun DiscountRowsPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
-        DiscountRows(discounts = discountsPreviewData)
+        DiscountRows(
+          discounts = discountsPreviewData,
+          showDisplayName = false,
+        )
       }
     }
   }

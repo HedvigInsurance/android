@@ -212,7 +212,7 @@ private fun buildListOfTiersAndPremiums(map: Map<Tier, List<TierDeductibleQuote>
   return buildList {
     map.keys.forEach { tier ->
       // show the lowest premium for this coverage (with From... added later)
-      val premium = map[tier]!!.minBy { it.tier.tierLevel }.premium
+      val premium = map[tier]!!.minBy { it.premium.amount }.premium
       add(tier to premium)
     }
   }.sortedBy { pair ->

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
@@ -64,6 +66,7 @@ fun ErrorDialog(
     style = NoButtons,
     onDismissRequest = onDismiss,
     modifier = modifier,
+    applyVerticalScroll = true,
   ) {
     EmptyState(
       text = title,
@@ -101,6 +104,7 @@ fun HedvigAlertDialog(
       buttonSize = buttonSize,
     ),
     onDismissRequest = onDismissRequest,
+    applyVerticalScroll = true,
     modifier = modifier,
   ) {
     Column(
@@ -231,6 +235,7 @@ fun MultiSelectDialog(
 @Composable
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
+  applyVerticalScroll: Boolean,
   modifier: Modifier = Modifier,
   applyDefaultPadding: Boolean = true,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
@@ -241,7 +246,20 @@ fun HedvigDialog(
     onDismissRequest = onDismissRequest,
     properties = dialogProperties,
   ) {
-    HedvigDialogContent(dialogProperties.usePlatformDefaultWidth, applyDefaultPadding, style, modifier, content)
+    HedvigDialogContent(
+      dialogProperties.usePlatformDefaultWidth,
+      applyDefaultPadding,
+      style,
+      modifier
+        .then(
+          if (applyVerticalScroll) {
+            Modifier.verticalScroll(rememberScrollState())
+          } else {
+            Modifier
+          },
+        ),
+      content,
+    )
   }
 }
 
@@ -360,6 +378,7 @@ private fun CoreSelectDialog(
   HedvigDialog(
     onDismissRequest = { onDismissRequest.invoke() },
     applyDefaultPadding = false,
+    applyVerticalScroll = false,
   ) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,

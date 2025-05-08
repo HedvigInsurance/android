@@ -3,9 +3,12 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +31,8 @@ fun HedvigErrorSection(
     verticalArrangement = Arrangement.Center,
     modifier = modifier
       .windowInsetsPadding(windowInsets)
-      .padding(horizontal = 16.dp),
+      .padding(horizontal = 16.dp)
+      .verticalScroll(rememberScrollState()),
   ) {
     EmptyState(
       text = title,
@@ -39,5 +43,18 @@ fun HedvigErrorSection(
         onButtonClick = onButtonClick,
       ),
     )
+  }
+}
+
+@HedvigShortMultiScreenPreview
+@Composable
+fun HedvigErrorSectionPreview() {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.fillMaxSize(),
+    ) {
+      HedvigErrorSection({})
+    }
   }
 }
