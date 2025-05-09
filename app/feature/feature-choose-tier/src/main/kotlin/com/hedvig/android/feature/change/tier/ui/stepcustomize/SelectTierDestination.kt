@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextAlign.Companion
@@ -67,6 +70,9 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
@@ -311,6 +317,14 @@ private fun CustomizationCard(
           add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
         }
       }
+      val hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
+      val chosenTierVoiceDescription = if (chosenTierIndex ==
+        null
+      ) {
+        hintText
+      } else {
+        tiers[chosenTierIndex].first.tierDisplayName ?: hintText
+      }
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = isTierChoiceEnabled,
@@ -319,19 +333,31 @@ private fun CustomizationCard(
           items = tierSimpleItems,
         ),
         size = Small,
-        hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
+        hintText = hintText,
         chosenItemIndex = chosenTierIndex,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
+        modifier = Modifier.accessibilityForDropdown(
+          labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+          selectedValue = chosenTierVoiceDescription,
+          isEnabled = isTierChoiceEnabled,
+        ),
       ) { onDismissRequest ->
         val listOfOptions = tiers.map { pair ->
+          val tierDescription = pair.first.tierDescription ?: ""
+          val price = stringResource(R.string.TALKBACK_PRICE)
+          val premiumDescription = pair.second.getPerMonthDescription()
+          val voiceDescription = "${pair.first.tierDisplayName}, $tierDescription, $price: ${stringResource(
+            R.string.TALKBACK_FROM,
+          )} $premiumDescription"
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
             title = pair.first.tierDisplayName ?: "-",
-            premium = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
+            premiumString = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
             tierDescription = pair.first.tierDescription,
             onRadioOptionClick = {
               onChooseTierInDialogClick(pair.first)
             },
+            voiceoverDescription = voiceDescription,
           )
         }
         DropdownContent(
@@ -365,6 +391,14 @@ private fun CustomizationCard(
             }
           }
         }
+        val hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER)
+        val chosenDeductibleVoiceDescription = if (chosenQuoteIndex ==
+          null
+        ) {
+          hintText
+        } else {
+          quotesForChosenTier[chosenQuoteIndex].deductible?.getVoiceDescription() ?: hintText
+        }
         DropdownWithDialog(
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
           style = Label(
@@ -373,22 +407,32 @@ private fun CustomizationCard(
           ),
           isEnabled = quotesForChosenTier.size > 1,
           size = Small,
-          hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
+          hintText = hintText,
           chosenItemIndex = chosenQuoteIndex,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
+          modifier = Modifier.accessibilityForDropdown(
+            labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            selectedValue = chosenDeductibleVoiceDescription,
+            isEnabled = quotesForChosenTier.size > 1,
+          ),
         ) { onDismissRequest ->
           val listOfOptions = buildList {
             quotesForChosenTier.forEach { quote ->
+              val price = stringResource(R.string.TALKBACK_PRICE)
+              val premiumDescription = quote.premium.getPerMonthDescription()
+              val deductibleDescription = quote.deductible?.getVoiceDescription()
+              val voiceDescription = "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
               quote.deductible?.let {
                 add(
                   ExpandedRadioOptionData(
                     chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
-                    premium = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+                    premiumString = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
                     tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
                     onRadioOptionClick = {
                       onChooseDeductibleInDialogClick(quote)
                     },
+                    voiceoverDescription = voiceDescription,
                   ),
                 )
               }
@@ -418,25 +462,61 @@ private fun CustomizationCard(
         },
         spaceBetween = 8.dp,
         endSlot = {
+          val description = newDisplayPremium?.getPerMonthDescription() ?: ""
           HedvigText(
             text =
-              newDisplayPremium?.let { stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, it) }
+              newDisplayPremium?.let {
+                stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  it,
+                )
+              }
                 ?: "-",
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics {
+              contentDescription = description
+            },
           )
         },
       )
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
+        val voicePerMonth = data.activeDisplayPremium.getPerMonthDescription()
+        val voiceDescription = stringResource(
+          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          voicePerMonth,
+        )
+        val perMonth = stringResource(
+          R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          data.activeDisplayPremium,
+        )
         HedvigText(
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+              contentDescription = voiceDescription
+            },
           textAlign = Companion.End,
-          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, data.activeDisplayPremium),
+          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
     }
+  }
+}
+
+@Composable
+private fun Deductible.getVoiceDescription(): String {
+  val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
+  return if (percentageNotZero && deductibleAmount != null) {
+    "${deductibleAmount.getDescription()} + $deductiblePercentage%"
+  } else if (percentageNotZero) {
+    "$deductiblePercentage%"
+  } else if (deductibleAmount != null) {
+    deductibleAmount.getDescription()
+  } else {
+    ""
   }
 }
 
@@ -474,10 +554,13 @@ private fun DropdownContent(
         optionContent = { radioButtonIcon ->
           ExpandedOptionContent(
             title = option.title,
-            premium = option.premium,
+            premium = option.premiumString,
             comment = option.tierDescription,
             radioButtonIcon = radioButtonIcon,
           )
+        },
+        modifier = Modifier.semantics(mergeDescendants = true) {
+          contentDescription = option.voiceoverDescription
         },
       )
       if (index != data.lastIndex) {
@@ -505,8 +588,9 @@ private data class ExpandedRadioOptionData(
   val onRadioOptionClick: () -> Unit,
   val chosenState: ChosenState,
   val title: String,
-  val premium: String,
+  val premiumString: String,
   val tierDescription: String?,
+  val voiceoverDescription: String,
 )
 
 @Composable
@@ -539,7 +623,11 @@ private fun ExpandedOptionContent(
   comment: String?,
   radioButtonIcon: @Composable () -> Unit,
 ) {
-  Row {
+  Row(
+    Modifier.semantics {
+      hideFromAccessibility()
+    },
+  ) {
     radioButtonIcon()
     Spacer(Modifier.width(8.dp))
     Column(Modifier.weight(1f)) {
@@ -554,6 +642,9 @@ private fun ExpandedOptionContent(
           )
         },
         spaceBetween = 8.dp,
+        Modifier.semantics {
+          hideFromAccessibility()
+        },
       )
       if (comment != null) {
         Spacer(Modifier.height(4.dp))
@@ -627,8 +718,9 @@ private fun PreviewDropdownContent() {
             {},
             Chosen,
             "Title",
-            "Premium",
+            "from 231 kr/mo",
             "TierDescription",
+            voiceoverDescription = " Title, tier description, from 231 kr/mo",
           )
         },
       )
@@ -694,7 +786,7 @@ private val dataForPreview = ContractData(
   contractGroup = ContractGroup.HOMEOWNER,
   contractDisplayName = "Home Homeowner",
   contractDisplaySubtitle = "Addressvägen 777",
-  activeDisplayPremium = "449 kr/mo",
+  activeDisplayPremium = UiMoney(449.0, SEK),
 )
 
 private val quotesForPreview = listOf(
