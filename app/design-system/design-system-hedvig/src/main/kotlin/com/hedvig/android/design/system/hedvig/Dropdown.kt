@@ -96,6 +96,7 @@ fun DropdownWithDialog(
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
+      applyVerticalScroll = true,
     ) {
       Surface(
         color = dropdownColors.containerColor(false).value,
@@ -164,6 +165,7 @@ fun DropdownWithDialog(
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
+      applyVerticalScroll = false,
     ) {
       dialogContent {
         onDoAlongWithDismissRequest?.invoke()
@@ -215,6 +217,7 @@ fun DropdownWithDialog(
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
+      applyVerticalScroll = false,
     ) {
       dialogContent {
         isDialogVisible = false
