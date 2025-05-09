@@ -69,7 +69,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_STAGING }}
           packageName: com.hedvig.test.app
           track: internal
-          mappingFile: app/app/build/outputs/mapping/release/mapping.txt
+          mappingFile: app/app/build/outputs/mapping/staging/mapping.txt
           status: completed
       - uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
