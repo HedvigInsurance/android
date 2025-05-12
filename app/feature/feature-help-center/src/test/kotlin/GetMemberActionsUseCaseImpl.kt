@@ -13,13 +13,6 @@ import com.hedvig.android.feature.help.center.data.MemberAction
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.MarketManager
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import octopus.MemberActionsQuery
 import octopus.type.buildMember
@@ -89,11 +82,9 @@ class GetMemberActionsUseCaseImplTest {
         Feature.PAYMENT_SCREEN to true,
       ),
     )
-    val marketManager = FakeMarketManager()
     val subjectUseCase = GetMemberActionsUseCaseImpl(
       apolloClient = apolloClientWithGoodResponseTierChangeTrue,
       featureManager = featureManager,
-      marketManager = marketManager,
     )
     val result = subjectUseCase.invoke()
     assertk.assertThat(result)
@@ -112,11 +103,9 @@ class GetMemberActionsUseCaseImplTest {
           Feature.PAYMENT_SCREEN to true,
         ),
       )
-      val marketManager = FakeMarketManager()
       val subjectUseCase = GetMemberActionsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseTierChangeFalse,
         featureManager = featureManager,
-        marketManager = marketManager,
       )
       val result = subjectUseCase.invoke()
       assertk.assertThat(result)
@@ -124,13 +113,4 @@ class GetMemberActionsUseCaseImplTest {
         .prop(MemberAction::isTierChangeEnabled)
         .isFalse()
     }
-}
-
-private class FakeMarketManager : MarketManager {
-  override val market: StateFlow<Market>
-    get() = MutableStateFlow(Market.SE).asStateFlow()
-
-  override fun selectedMarket(): Flow<Market?> {
-    return flow { emit(Market.SE) }
-  }
 }

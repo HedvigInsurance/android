@@ -42,7 +42,6 @@ import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -71,7 +70,6 @@ internal fun HedvigApp(
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  marketManager: MarketManager,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -134,7 +132,6 @@ internal fun HedvigApp(
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
             finishApp = finishApp,
-            market = marketManager.market.collectAsStateWithLifecycle().value,
             imageLoader = imageLoader,
             languageService = languageService,
             hedvigBuildConstants = hedvigBuildConstants,

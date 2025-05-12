@@ -83,8 +83,6 @@ import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChatWithDot
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetWithDot
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 
@@ -160,8 +158,6 @@ internal fun ShowcaseIcons(modifier: Modifier = Modifier) {
         Icon(HedvigIcons.WarningOutline, null)
       }
       FlowRow {
-        Image(HedvigIcons.FlagDenmark, null)
-        Image(HedvigIcons.FlagNorway, null)
         Image(HedvigIcons.FlagSweden, null)
         Image(HedvigIcons.FlagUk, null)
       }
