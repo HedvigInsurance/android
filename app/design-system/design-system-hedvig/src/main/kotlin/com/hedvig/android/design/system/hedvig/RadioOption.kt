@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
@@ -122,8 +123,8 @@ fun RadioOption(
   val interactionSource = remember { MutableInteractionSource() }
   val clickableModifier =
     modifier
+      .semantics(true) { role = Role.RadioButton }
       .clip(size.shape)
-      .semantics { role = Role.RadioButton }
       .clickable(
         enabled = when (lockedState) {
           Locked -> false
@@ -163,7 +164,8 @@ fun RadioOptionRightAligned(
   RadioOption(
     chosenState = chosenState,
     onClick = onClick,
-    modifier = modifier,
+    modifier = modifier
+      .semantics(true) { role = Role.RadioButton },
     lockedState = lockedState,
     size = size,
     optionContent = { radioButtonIcon ->
@@ -195,8 +197,8 @@ fun RadioOption(
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val clickableModifier = if (onClick != null) {
     modifier
+      .semantics(true) { role = Role.RadioButton }
       .clip(radioOptionSize.size(radioOptionStyle).shape)
-      .semantics { role = Role.RadioButton }
       .clickable(
         enabled = when (lockedState) {
           Locked -> false
@@ -208,7 +210,7 @@ fun RadioOption(
         onClick()
       }
   } else {
-    modifier.semantics { role = Role.RadioButton }
+    modifier.semantics(true) { role = Role.RadioButton }
   }
   Surface(
     modifier = clickableModifier,
@@ -238,7 +240,7 @@ fun RadioOption(
             is IconResource.Vector -> {
               Icon(
                 imageVector = radioOptionStyle.iconResource.imageVector,
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 tint = Color.Unspecified,
                 modifier = Modifier
                   .size(32.dp),
@@ -248,7 +250,7 @@ fun RadioOption(
             is IconResource.Painter -> {
               Image(
                 painter = painterResource(id = radioOptionStyle.iconResource.painterResId),
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 modifier = Modifier
                   .size(32.dp),
               )

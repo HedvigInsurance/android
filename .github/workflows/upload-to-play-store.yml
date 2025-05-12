@@ -52,7 +52,7 @@ jobs:
           echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
           echo Last build tool version is: $BUILD_TOOL_VERSION
       - uses: r0adkll/sign-android-release@v1
-        name: Sign app APK
+        name: Sign app AAB
         id: sign_app
         with:
           releaseDirectory: app/app/build/outputs/bundle/release

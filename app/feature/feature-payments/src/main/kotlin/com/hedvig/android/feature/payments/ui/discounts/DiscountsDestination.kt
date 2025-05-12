@@ -131,6 +131,7 @@ private fun DiscountsScreen(
 @Composable
 private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Modifier = Modifier) {
   Column(modifier.fillMaxHeight()) {
+    // todo: think how to add voiceDescription - WHAT ABOUT OTHER PAYMENTS??
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
     ForeverExplanationBottomSheet(
       showForeverInfoBottomSheet = showForeverInfoBottomSheet,
