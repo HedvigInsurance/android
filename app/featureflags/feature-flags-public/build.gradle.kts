@@ -12,5 +12,4 @@ dependencies {
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
-  implementation(projects.marketCore)
 }

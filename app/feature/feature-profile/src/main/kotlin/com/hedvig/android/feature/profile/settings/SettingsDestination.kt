@@ -145,19 +145,17 @@ private fun SettingsScreen(
             .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        if (uiState.showEmailSubscriptionPreferences) {
-          EmailSubscriptionWithDialog(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-            onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
-            onSubscribeClick = { changeSubscriptionPreference(true) },
-            isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
-            enabled = true,
-            hasError = uiState.emailSubscriptionPreferenceError,
-          )
-          Spacer(Modifier.height(16.dp))
-        }
+        EmailSubscriptionWithDialog(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+          onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
+          onSubscribeClick = { changeSubscriptionPreference(true) },
+          isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
+          enabled = true,
+          hasError = uiState.emailSubscriptionPreferenceError,
+        )
+        Spacer(Modifier.height(16.dp))
 
         AnimatedVisibility(
           visible = uiState.showNotificationReminder && !notificationPermissionState.status.isGranted,
@@ -375,7 +373,6 @@ fun PreviewSettingsScreen() {
           selectedTheme = SYSTEM_DEFAULT,
           showNotificationReminder = true,
           isSubscribedToEmails = true,
-          showEmailSubscriptionPreferences = true,
           emailSubscriptionPreferenceError = true,
         ),
         notificationPermissionState = object : NotificationPermissionState {

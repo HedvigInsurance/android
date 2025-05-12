@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.app.assist.AssistContent
-import android.content.Context
-import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -34,16 +32,14 @@ import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
+import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -59,7 +55,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-  private val applicationScope: ApplicationScope by inject()
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
   private val featureManager: FeatureManager by inject()
@@ -68,11 +63,10 @@ class MainActivity : AppCompatActivity() {
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val imageLoader: ImageLoader by inject()
   private val languageService: LanguageService by inject()
-  private val marketManager: MarketManager by inject()
   private val settingsDataStore: SettingsDataStore by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
-  private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
+  private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
   private val simpleVideoCache: SimpleCache by inject()
 
   private var navController: NavController? = null
@@ -103,10 +97,8 @@ class MainActivity : AppCompatActivity() {
       navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
     )
     super.onCreate(savedInstanceState)
-    applicationScope.launch {
-      val defaultLocale = getSystemLocale(resources.configuration)
-      languageAndMarketLaunchCheckUseCase.invoke(defaultLocale)
-    }
+    val defaultLocale = getSystemLocale(resources.configuration)
+    languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -147,7 +139,6 @@ class MainActivity : AppCompatActivity() {
         authTokenService = authTokenService,
         demoManager = demoManager,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        marketManager = marketManager,
         imageLoader = imageLoader,
         simpleVideoCache = simpleVideoCache,
         languageService = languageService,
@@ -173,17 +164,6 @@ class MainActivity : AppCompatActivity() {
     outContent.webUri?.let {
       logcat { "Providing a deep link to current screen: $it" }
     }
-  }
-
-  companion object {
-    fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
-      Intent(context, MainActivity::class.java).apply {
-        logcat(LogPriority.INFO) { "MainActivity.newInstance was called. withoutHistory:$withoutHistory" }
-        if (withoutHistory) {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-      }
   }
 }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens
@@ -75,14 +76,14 @@ fun ExpandablePlusCard(
               val iconModifier = Modifier.size(PerilCommonTokens.PlusIconSize)
               Icon(
                 HedvigIcons.Minus,
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 modifier = iconModifier.graphicsLayer {
                   rotationZ = halfRotation
                 },
               )
               Icon(
                 HedvigIcons.Minus,
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 modifier = iconModifier.graphicsLayer {
                   rotationZ = fullRotation
                 },

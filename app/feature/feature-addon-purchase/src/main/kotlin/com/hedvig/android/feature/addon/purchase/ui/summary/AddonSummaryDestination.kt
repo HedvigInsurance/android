@@ -16,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -39,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
@@ -114,7 +117,7 @@ private fun AddonSummaryScreen(
 private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp,
-    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE), // todo: change copy here mb?
+    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     val locale = getLocale()
     val formattedDate = remember(uiState.activationDate, locale) {
@@ -155,6 +158,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       )
       Spacer(Modifier.height(24.dp))
       HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.semantics(true) {},
         startSlot = {
           HedvigText(
             stringResource(R.string.TIER_FLOW_TOTAL),
@@ -176,10 +180,14 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
               uiState.totalPriceChange,
             )
           }
+          val voiceDescription = uiState.totalPriceChange.getPerMonthDescription()
           HedvigText(
             text = text,
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.bodySmall,
+            modifier = Modifier.semantics(true) {
+              contentDescription = voiceDescription
+            },
           )
         },
       )
@@ -225,8 +233,21 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     },
     subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
     premium = {
-      Row(horizontalArrangement = Arrangement.End) {
+      val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
+      val newPriceDescription = stringResource(
+        R.string.TALKBACK_YOUR_NEW_PRICE,
+        newPricePerMonth,
+      )
+      Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.semantics(true) {},
+      ) {
         if (uiState.currentTravelAddon != null) {
+          val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
+          val previousPriceDescription = stringResource(
+            R.string.TIER_FLOW_PREVIOUS_PRICE,
+            previousPricePerMonth,
+          )
           HedvigText(
             stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -236,6 +257,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               textDecoration = TextDecoration.LineThrough,
               color = HedvigTheme.colorScheme.textSecondary,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = previousPriceDescription
+            },
           )
           Spacer(Modifier.width(8.dp))
           HedvigText(
@@ -243,6 +267,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               uiState.quote.price,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = newPriceDescription
+            },
           )
         } else {
           HedvigText(
@@ -250,6 +277,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               uiState.quote.price,
             ),
+            modifier = Modifier.semantics {
+              contentDescription = newPricePerMonth
+            },
           )
         }
       }

@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
@@ -63,6 +64,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.icon.Copy
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
@@ -299,12 +301,20 @@ internal fun ForeverContent(
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigText(
-        text = uiState.foreverData?.currentDiscount?.toString()?.let { "-$it" } ?: "-",
-        textAlign = TextAlign.Center,
-        color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      val discount = uiState.foreverData?.currentDiscount
+      if (discount != null) {
+        val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
+        val discountUiMoneyDescription = discount.getDescription()
+        HedvigText(
+          text = discount.toString().let { "-$it" },
+          textAlign = TextAlign.Center,
+          color = HedvigTheme.colorScheme.textSecondary,
+          modifier = Modifier.fillMaxWidth()
+            .semantics {
+              contentDescription = yourDiscountDescription + discountUiMoneyDescription
+            },
+        )
+      }
       Spacer(Modifier.height(16.dp))
       DiscountPieChart(
         totalPrice = uiState.foreverData?.currentGrossCost?.amount?.toFloat() ?: 0f,

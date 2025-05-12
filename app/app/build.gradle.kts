@@ -26,11 +26,11 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.11.9"
+    versionName = "13.0.0"
 
     vectorDrawables.useSupportLibrary = true
 
-    resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
+    resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
 
   packaging {
@@ -215,8 +215,6 @@ dependencies {
   implementation(projects.languageMigration)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
-  implementation(projects.marketCore)
-  implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

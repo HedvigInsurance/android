@@ -6,7 +6,6 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.HedvigUnleashClient
 import com.hedvig.android.featureflags.flags.UnleashFeatureFlagProvider
-import com.hedvig.android.market.MarketManager
 import org.koin.dsl.module
 
 val featureManagerModule = module {
@@ -14,7 +13,6 @@ val featureManagerModule = module {
     HedvigUnleashClient(
       isProduction = get<HedvigBuildConstants>().isProduction,
       appVersionName = get<HedvigBuildConstants>().appVersionName,
-      marketManager = get<MarketManager>(),
       coroutineScope = get<ApplicationScope>(),
       memberIdService = get<MemberIdService>(),
     )

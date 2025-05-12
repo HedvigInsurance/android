@@ -17,7 +17,7 @@ internal sealed interface LoginDestinations {
   object SwedishLogin : LoginDestinations, Destination
 
   /**
-   * The screen where the Qasa email is added for SE, the SSN for NO and the CPR for DK
+   * The screen where the Qasa email is added for SE
    */
   @Serializable
   object GenericAuthCredentialsInput : LoginDestinations, Destination

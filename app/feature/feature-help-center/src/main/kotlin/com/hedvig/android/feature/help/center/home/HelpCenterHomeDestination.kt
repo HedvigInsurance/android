@@ -55,6 +55,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -237,7 +241,18 @@ private fun HelpCenterHomeScreen(
           )
           Spacer(Modifier.height(24.dp))
           selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
+            val voiceoverDescription = "${stringResource(
+              standaloneQuickLink.titleRes,
+            )}, ${stringResource(
+              standaloneQuickLink.hintTextRes,
+            )}, ${stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_CHOOSE)}"
             RadioOptionRightAligned(
+              modifier = Modifier.clearAndSetSemantics {
+                // had to do that, it didn't grip on role.RadioButton any other way,
+                // just skipped somehow top level composable modifier and its role as RadioButton.
+                contentDescription = voiceoverDescription
+                role = Role.RadioButton
+              },
               chosenState = if (index == selectedIndex) Chosen else NotChosen,
               onClick = {
                 selectedIndex = index

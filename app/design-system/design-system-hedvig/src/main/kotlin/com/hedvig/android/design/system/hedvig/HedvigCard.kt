@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
@@ -105,12 +106,12 @@ fun InsuranceCard(
             shape = HedvigTheme.shapes.cornerXLarge,
             highlight = PlaceholderHighlight.shimmer(),
           ),
-        contentDescription = null,
+        contentDescription = EmptyContentDescription,
       )
     } else {
       AsyncImage(
         model = backgroundImageUrl,
-        contentDescription = null,
+        contentDescription = EmptyContentDescription,
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
@@ -135,7 +136,7 @@ fun InsuranceCard(
         Spacer(Modifier.width(8.dp))
         Icon(
           imageVector = HedvigIcons.HelipadOutline,
-          contentDescription = null,
+          contentDescription = EmptyContentDescription,
           tint = HedvigTheme.colorScheme.fillWhite,
           modifier = Modifier
             .size(24.dp),

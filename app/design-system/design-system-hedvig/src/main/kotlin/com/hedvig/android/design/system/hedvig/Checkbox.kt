@@ -26,13 +26,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Small
@@ -86,25 +91,42 @@ fun Checkbox(
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-  val clickableModifier = if (onClick != null) {
-    modifier
-      .clip(checkboxSize.size(checkboxStyle).shape)
-      .semantics { role = Role.Checkbox }
-      .clickable(
-        enabled = when (lockedState) {
-          Locked -> false
-          NotLocked -> true
-        },
-        interactionSource = interactionSource,
-        indication = LocalIndication.current,
-      ) {
-        onClick()
-      }
-  } else {
-    modifier.semantics { role = Role.Checkbox }
-  }
   Surface(
-    modifier = clickableModifier,
+    modifier = modifier
+      .clearAndSetSemantics {
+        this.role = Role.Checkbox
+        this.contentDescription = optionText
+        this.toggleableState = when (chosenState) {
+          Chosen -> ToggleableState(true)
+          NotChosen -> ToggleableState(false)
+        }
+        onClick {
+          return@onClick if (onClick != null) {
+            onClick()
+            true
+          } else {
+            false
+          }
+        }
+      }
+      .then(
+        if (onClick != null) {
+          Modifier
+            .clip(checkboxSize.size(checkboxStyle).shape)
+            .clickable(
+              enabled = when (lockedState) {
+                Locked -> false
+                NotLocked -> true
+              },
+              interactionSource = interactionSource,
+              indication = LocalIndication.current,
+            ) {
+              onClick()
+            }
+        } else {
+          Modifier
+        },
+      ),
     shape = checkboxSize.size(checkboxStyle).shape,
     color = containerColor,
   ) {
@@ -135,7 +157,7 @@ fun Checkbox(
             is IconResource.Vector -> {
               Icon(
                 imageVector = checkboxStyle.iconResource.imageVector,
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 tint = Color.Unspecified,
                 modifier = Modifier
                   .size(32.dp),
@@ -145,7 +167,7 @@ fun Checkbox(
             is IconResource.Painter -> {
               Image(
                 painter = painterResource(id = checkboxStyle.iconResource.painterResId),
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 modifier = Modifier
                   .size(32.dp),
               )
@@ -251,7 +273,7 @@ fun SelectIndicationSquareBox(
       contentAlignment = Alignment.Center,
     ) {
       if ((currentState == Chosen)) {
-        Icon(HedvigIcons.Checkmark, contentDescription = null, tint = checkIconColor)
+        Icon(HedvigIcons.Checkmark, contentDescription = EmptyContentDescription, tint = checkIconColor)
         // todo: I am not entirely sure this is the right Checkmark icon. It looks differently in figma
       }
     }

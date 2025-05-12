@@ -37,6 +37,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
@@ -69,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
@@ -134,7 +141,7 @@ fun QuoteCard(
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
   productVariant: ProductVariant,
   subtitle: String,
-  premium: String,
+  premium: UiMoney,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
@@ -166,7 +173,7 @@ fun QuoteCard(
   insurableLimits: List<InsurableLimit>,
   documents: List<InsuranceVariantDocument>,
   subtitle: String?,
-  premium: String,
+  premium: UiMoney,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
@@ -229,7 +236,9 @@ fun QuoteCard(
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
-      Row {
+      Row(
+        Modifier.semantics(mergeDescendants = true) {},
+      ) {
         if (contractGroup != null) {
           Image(
             painter = painterResource(contractGroup.toPillow()),
@@ -340,7 +349,7 @@ fun QuoteCard(
 private fun QuoteCard(
   quoteCardState: QuoteCardState,
   subtitle: String?,
-  premium: String,
+  premium: UiMoney,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
@@ -361,23 +370,35 @@ private fun QuoteCard(
     interactionSource = null,
     indication = ripple(bounded = true, radius = 1000.dp),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row {
+    Column(
+      modifier = Modifier
+        .padding(16.dp)
+        .semantics {
+          isTraversalGroup = true
+        },
+    ) {
+      Row(
+        Modifier.semantics(mergeDescendants = true) {},
+      ) {
         if (contractGroup != null) {
           Image(
             painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null,
+            contentDescription = null, // CHECKED
             modifier = Modifier.size(48.dp),
           )
           Spacer(modifier = Modifier.width(12.dp))
         }
-        Column(Modifier.weight(1f)) {
+        Column(
+          Modifier.weight(1f)
+            .semantics(mergeDescendants = true) {},
+        ) {
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
               HedvigText(
                 text = displayName,
                 maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier,
               )
             },
             endSlot = { titleEndSlot() },
@@ -405,6 +426,7 @@ private fun QuoteCard(
       }
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.semantics(true) {},
         spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
@@ -417,6 +439,7 @@ private fun QuoteCard(
           )
         },
         endSlot = {
+          val voiceDescription = premium.getPerMonthDescription()
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -431,11 +454,19 @@ private fun QuoteCard(
             } else {
               LocalTextStyle.current
             },
-            modifier = Modifier.wrapContentWidth(Alignment.End),
+            modifier = Modifier
+              .wrapContentWidth(Alignment.End)
+              .semantics {
+                contentDescription = voiceDescription
+              },
           )
         },
       )
-      underTitleContent()
+      Column(
+        Modifier.semantics(true) {},
+      ) {
+        underTitleContent()
+      }
       AnimatedVisibility(
         visible = quoteCardState.showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),
@@ -443,32 +474,49 @@ private fun QuoteCard(
       ) {
         Column {
           Spacer(Modifier.height(16.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+          Column(
+            modifier = Modifier.semantics(true) {},
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+          ) {
             HorizontalDivider()
             if (displayItems.isNotEmpty()) {
               Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-                for (displayItem in displayItems) {
-                  InfoRow(displayItem.title, displayItem.value)
+                HedvigText(
+                  stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE),
+                )
+                Column {
+                  for (displayItem in displayItems) {
+                    InfoRow(displayItem.title, displayItem.value)
+                  }
                 }
               }
             }
             if (insurableLimits.isNotEmpty()) {
-              Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                for (insurableLimit in insurableLimits) {
-                  InfoRow(
-                    insurableLimit.label,
-                    insurableLimit.limit,
-                  )
+              Column(
+                modifier = Modifier.semantics(true) {},
+              ) {
+                HedvigText(
+                  stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
+                )
+                Column {
+                  for (insurableLimit in insurableLimits) {
+                    InfoRow(
+                      insurableLimit.label,
+                      insurableLimit.limit,
+                    )
+                  }
                 }
               }
             }
             if (documents.isNotEmpty()) {
               Column {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+                HedvigText(
+                  stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE),
+                  modifier = Modifier.semantics(true) {},
+                )
                 Column(
                   verticalArrangement = Arrangement.spacedBy(6.dp),
+                  modifier = Modifier.semantics(true) {},
                 ) {
                   for (document in documents) {
                     val uriHandler = LocalUriHandler.current
@@ -480,6 +528,7 @@ private fun QuoteCard(
                           uriHandler.openUri(document.url)
                         },
                     ) {
+                      val voiceoverDescription = stringResource(R.string.TALKBACK_DOCUMENT, document.displayName)
                       HedvigText(
                         text = stringWithShiftedLabel(
                           text = document.displayName,
@@ -489,7 +538,11 @@ private fun QuoteCard(
                           textFontSize = LocalTextStyle.current.fontSize,
                         ),
                         style = HedvigTheme.typography.bodySmall,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                          .weight(1f)
+                          .semantics {
+                            contentDescription = voiceoverDescription
+                          },
                       )
                       Spacer(Modifier.width(8.dp))
                       LayoutWithoutPlacement(
@@ -503,7 +556,7 @@ private fun QuoteCard(
                         val density = LocalDensity.current
                         Icon(
                           imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = null,
+                          contentDescription = null, // CHECKED
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)
@@ -518,7 +571,14 @@ private fun QuoteCard(
           }
         }
       }
-      underDetailsContent(quoteCardState)
+      Column(
+        modifier = Modifier.semantics {
+          isTraversalGroup = true
+          traversalIndex = 4f
+        },
+      ) {
+        underDetailsContent(quoteCardState)
+      }
     }
   }
 }
@@ -568,7 +628,7 @@ private fun PreviewQuoteCard(
           )
         },
         subtitle = "subtitle",
-        premium = "premium",
+        premium = UiMoney(281.0, UiCurrencyCode.SEK),
         isExcluded = showDetails,
         displayItems = List(5) {
           QuoteDisplayItem(

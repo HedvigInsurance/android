@@ -31,14 +31,11 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
       SettingsUiState.Loading(
         selectedLanguage = Language.entries.first(),
-        languageOptions = Language.entries,
-        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
@@ -57,7 +54,6 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -67,7 +63,6 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
-        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -86,7 +81,6 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -96,7 +90,6 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
-        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -115,7 +108,6 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -125,7 +117,6 @@ class SettingsPresenterTest {
         Theme.entries.first(),
         false,
         isSubscribedToEmails = false,
-        showEmailSubscriptionPreferences = true,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -146,7 +137,6 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -156,7 +146,6 @@ class SettingsPresenterTest {
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
         isSubscribedToEmails = false,
-        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)
