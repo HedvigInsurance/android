@@ -66,7 +66,7 @@ jobs:
       - uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_FILE_CONTENT }}
-          appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
+          appId: ${{ secrets.FIREBASE_STAGING_APP_ID_PACKAGE_COM_HEDVIG_APP }}
           file: ${{ steps.sign_app.outputs.signedReleaseFile }}
           groups: android-testers
       - name: Upload mapping files to datadog
