@@ -33,7 +33,7 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 ## Build Types
 
 * Release: `com.hedvig.app` Build for the customer on Play Store. Using production backend
-* Staging: `com.hedvig.test.app` Build for internal testing using Firebase App Distribution. Using staging backend
+* Staging: `com.hedvig.app` Build for internal testing using Firebase App Distribution. Using staging backend
 * Develop: `com.hedvig.dev.app` Build for development. Using staging backend
 
 ## Module structure

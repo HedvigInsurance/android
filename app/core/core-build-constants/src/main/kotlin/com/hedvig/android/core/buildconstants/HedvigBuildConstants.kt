@@ -44,8 +44,10 @@ interface HedvigBuildConstants {
   /**
    * The id/package name of the application.
    * production -> com.hedvig.app
-   * staging    -> com.hedvig.test.app
+   * staging    -> com.hedvig.app
    * develop    -> com.hedvig.dev.app
+   *
+   * Used to grab the right android:authorities="${applicationId}.provider" to picture access
    */
   val appPackageId: String
 

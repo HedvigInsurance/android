@@ -67,7 +67,7 @@ jobs:
         with:
           releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_STAGING }}
-          packageName: com.hedvig.test.app
+          packageName: com.hedvig.app
           track: internal
           mappingFile: app/app/build/outputs/mapping/staging/mapping.txt
           status: completed
