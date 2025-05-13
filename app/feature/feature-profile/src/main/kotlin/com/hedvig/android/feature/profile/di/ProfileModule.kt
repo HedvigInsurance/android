@@ -30,7 +30,6 @@ import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.ProfileViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import org.koin.core.module.dsl.viewModel
@@ -111,7 +110,6 @@ val profileModule = module {
 
   viewModel<SettingsViewModel> {
     SettingsViewModel(
-      marketManager = get<MarketManager>(),
       languageService = get<LanguageService>(),
       settingsDataStore = get<SettingsDataStore>(),
       enableNotificationsReminderSnoozeManager = get<EnableNotificationsReminderSnoozeManager>(),

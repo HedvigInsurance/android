@@ -14,7 +14,6 @@ import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.Navigator
@@ -38,19 +37,14 @@ fun NavGraphBuilder.loginGraph(
       MarketingDestination(
         viewModel = marketingViewModel,
         appVersionName = appVersionName,
-        openWebOnboarding = { market ->
+        openWebOnboarding = {
           val baseUrl = urlBaseWeb.substringAfter("//")
-          val uri = market.createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
+          val uri = createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
           openUrl(uri)
         },
-        navigateToLoginScreen = { market ->
-          logcat { "Navigating to login screen for market market:$market" }
+        navigateToLoginScreen = {
           with(navigator) {
-            when (market) {
-              Market.SE -> backStackEntry.navigate(LoginDestinations.SwedishLogin)
-              Market.NO -> backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
-              Market.DK -> backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
-            }
+            backStackEntry.navigate(LoginDestinations.SwedishLogin)
           }
         },
       )
@@ -98,7 +92,7 @@ fun NavGraphBuilder.loginGraph(
   }
 }
 
-private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {
+private fun createOnboardingUri(baseUrl: String, language: Language): Uri {
   val webPath = language.webPath()
   val builder = Uri.Builder()
     .scheme("https")
@@ -107,20 +101,12 @@ private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri
     .appendPath(
       when (language) {
         Language.SV_SE -> "forsakringar"
-        Language.EN_SE,
-        Language.NB_NO,
-        Language.EN_NO,
-        Language.DA_DK,
-        Language.EN_DK,
-        -> "insurances"
+        Language.EN_SE -> "insurances"
       },
     )
     .appendQueryParameter("utm_source", "android")
     .appendQueryParameter("utm_medium", "hedvig-app")
-
-  if (this == Market.SE) {
-    builder.appendQueryParameter("utm_campaign", "se")
-  }
+    .appendQueryParameter("utm_campaign", "se")
 
   return builder.build()
 }
