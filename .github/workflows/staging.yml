@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - feature/staging-package-name-same-as-production
   workflow_dispatch:
 
 concurrency:
