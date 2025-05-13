@@ -53,7 +53,7 @@ fun NavGraphBuilder.cbmChatGraph(
       CbmChatDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
-        appPackageId = hedvigBuildConstants.appId,
+        appPackageId = hedvigBuildConstants.appPackageId,
         openUrl = openUrl,
         onNavigateToClaimDetails = onNavigateToClaimDetails,
         onNavigateToImageViewer = onNavigateToImageViewer,

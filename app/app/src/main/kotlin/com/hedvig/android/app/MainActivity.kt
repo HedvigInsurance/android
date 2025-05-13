@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appId)
+    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }

@@ -47,7 +47,7 @@ interface HedvigBuildConstants {
    * staging    -> com.hedvig.test.app
    * develop    -> com.hedvig.dev.app
    */
-  val appId: String
+  val appPackageId: String
 
   /**
    * Returns the result of BuildConfig.DEBUG.

@@ -15,7 +15,7 @@ private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainA
 fun HedvigBuildConstants.intentForNotification(deepLinkUri: Uri?): Intent = Intent().apply {
   action = Intent.ACTION_VIEW
   data = deepLinkUri
-  component = ComponentName(this@intentForNotification.appId, MainActivityFullyQualifiedName)
+  component = ComponentName(this@intentForNotification.appPackageId, MainActivityFullyQualifiedName)
 }
 
 const val DATA_MESSAGE_TITLE = "DATA_MESSAGE_TITLE"
