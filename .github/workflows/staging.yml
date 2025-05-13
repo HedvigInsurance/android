@@ -63,15 +63,6 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
-      - name: Deploy to Play Store Internal-track
-        uses: r0adkll/upload-google-play@v1.1.3
-        with:
-          releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_STAGING }}
-          packageName: com.hedvig.app
-          track: internal
-          mappingFile: app/app/build/outputs/mapping/staging/mapping.txt
-          status: completed
       - uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_FILE_CONTENT }}
