@@ -67,7 +67,7 @@ android {
     }
 
     val staging by creating {
-      applicationIdSuffix = ".test.app"
+      applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
       matchingFallbacks += "release"

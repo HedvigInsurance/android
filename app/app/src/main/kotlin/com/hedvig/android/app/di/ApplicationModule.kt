@@ -221,7 +221,7 @@ private val buildConstantsModule = module {
       override val appVersionName: String = BuildConfig.VERSION_NAME
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
 
-      override val appId: String = BuildConfig.APPLICATION_ID
+      override val appPackageId: String = BuildConfig.APPLICATION_ID
 
       override val isDebug: Boolean = BuildConfig.DEBUG
       override val isProduction: Boolean =
