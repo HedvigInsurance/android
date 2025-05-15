@@ -14,6 +14,7 @@ sealed interface InsuranceContract {
   val id: String
   val tierName: String?
   val displayName: String
+  val backgroundImageUrl: String?
   val contractHolderDisplayName: String
   val contractHolderSSN: String?
   val exposureDisplayName: String
@@ -30,6 +31,7 @@ sealed interface InsuranceContract {
   data class EstablishedInsuranceContract(
     override val id: String,
     override val displayName: String,
+    override val backgroundImageUrl: String? = null,
     override val contractHolderDisplayName: String,
     override val contractHolderSSN: String?,
     override val exposureDisplayName: String,
@@ -54,6 +56,7 @@ sealed interface InsuranceContract {
     override val id: String,
     override val tierName: String?,
     override val displayName: String,
+    override val backgroundImageUrl: String?,
     override val contractHolderDisplayName: String,
     override val contractHolderSSN: String?,
     override val exposureDisplayName: String,

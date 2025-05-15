@@ -109,6 +109,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     id = this.id,
     tierName = this.productVariant.displayNameTier,
     displayName = this.productVariant.displayName,
+    backgroundImageUrl = this.id.backgroundImageUrl(),
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
     exposureDisplayName = exposureDisplayName,
@@ -128,6 +129,7 @@ private fun ContractFragment.toContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
     displayName = currentAgreement.productVariant.displayName,
+    backgroundImageUrl = this.id.backgroundImageUrl(),
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
     exposureDisplayName = exposureDisplayName,
@@ -167,6 +169,20 @@ private fun ContractFragment.toContract(
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
   )
+}
+
+private fun String.backgroundImageUrl(): String? = when (this) {
+  "25ab525c-746f-4f96-8087-e8213d28ab97" -> {
+    @Suppress("ktlint:standard:max-line-length")
+    """https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-c7b8-620a-9870-2a0e979c07fe/raw?se=2025-05-15T17%3A44%3A04Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=eb780365-537d-4279-a878-cae64e33aa9c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T16%3A17%3A51Z&ske=2025-05-16T16%3A17%3A51Z&sks=b&skv=2024-08-04&sig=xSXxr21lU9Ee3I1BWem1LmmSJzDZHVUCkByCH0Ht38Q%3D"""
+  }
+  "ab70963c-beb7-4150-b67d-8f8ea849c51d" -> {
+    @Suppress("ktlint:standard:max-line-length")
+    """https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-9ff8-620a-b4e4-4e0374363e38/raw?se=2025-05-15T17%3A44%3A04Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=eb780365-537d-4279-a878-cae64e33aa9c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T08%3A07%3A49Z&ske=2025-05-16T08%3A07%3A49Z&sks=b&skv=2024-08-04&sig=1HaJRlD4f2jGRnzO0YNd488adiyFX1usych60Zu6tlE%3D"""
+  }
+  else -> {
+    null
+  }
 }
 
 private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {

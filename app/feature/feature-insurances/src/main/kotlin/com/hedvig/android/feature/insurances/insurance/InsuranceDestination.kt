@@ -27,6 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -79,6 +80,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiS
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
@@ -337,7 +339,7 @@ private fun InsuranceCard(
       contract.displayName
   }
   InsuranceCard(
-    backgroundImageUrl = null,
+    backgroundImageUrl = contract.backgroundImageUrl,
     chips = contract.createChips(),
     topText = topText,
     bottomText = contract.exposureDisplayName,
@@ -585,6 +587,7 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
   "Test",
   displayName = "Test pending display name",
   exposureDisplayName = "Pending street",
+  backgroundImageUrl = null,
   contractHolderSSN = null,
   contractHolderDisplayName = "Pending holder name",
   productVariant = ProductVariant(
@@ -603,8 +606,9 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
-  "1",
-  "Test123",
+  id = "1",
+  displayName = "Test123",
+  backgroundImageUrl = null,
   exposureDisplayName = "",
   inceptionDate = LocalDate.fromEpochDays(200),
   terminationDate = LocalDate.fromEpochDays(400),

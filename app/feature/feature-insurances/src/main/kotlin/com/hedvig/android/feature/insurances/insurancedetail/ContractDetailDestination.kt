@@ -205,6 +205,7 @@ private fun ContractDetailScreen(
               contentType = "InsuranceCard",
             ) {
               InsuranceCard(
+                backgroundImageUrl = contract.backgroundImageUrl,
                 chips = contract.createChips(),
                 topText = contract.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
@@ -348,8 +349,9 @@ private fun PreviewContractDetailScreen() {
       ContractDetailScreen(
         uiState = Success(
           EstablishedInsuranceContract(
-            "1",
-            "Test123",
+            id = "1",
+            displayName = "Test123",
+            backgroundImageUrl = null,
             tierName = "Premium",
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),

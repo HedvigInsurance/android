@@ -80,6 +80,7 @@ private fun TerminatedContractsScreen(
       is TerminatedContractsUiState.Success -> {
         for ((index, contract) in uiState.establishedInsuranceContracts.withIndex()) {
           InsuranceCard(
+            backgroundImageUrl = contract.backgroundImageUrl,
             chips = contract.createChips(),
             topText = contract.currentInsuranceAgreement.productVariant.displayName,
             bottomText = contract.exposureDisplayName,
@@ -124,8 +125,9 @@ private class PreviewTerminatedContractsUiStateProvider :
       TerminatedContractsUiState.Success(
         listOf(
           EstablishedInsuranceContract(
-            "1",
-            "Test123",
+            id = "1",
+            displayName = "Test123",
+            backgroundImageUrl = null,
             tierName = "Premium",
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),

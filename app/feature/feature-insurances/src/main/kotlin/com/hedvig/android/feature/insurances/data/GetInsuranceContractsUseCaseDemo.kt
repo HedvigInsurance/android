@@ -16,8 +16,9 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
     return flowOf(
       listOf(
         EstablishedInsuranceContract(
-          "1",
-          "Test123",
+          id = "1",
+          displayName = "Test123",
+          backgroundImageUrl = null,
           exposureDisplayName = "Test exposure",
           inceptionDate = LocalDate.fromEpochDays(200),
           terminationDate = LocalDate.fromEpochDays(400),
