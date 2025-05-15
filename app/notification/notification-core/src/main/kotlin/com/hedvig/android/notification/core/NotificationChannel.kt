@@ -2,9 +2,12 @@ package com.hedvig.android.notification.core
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ContentResolver
 import android.content.Context
+import android.media.AudioAttributes
 import android.os.Build
 import androidx.core.content.getSystemService
+import androidx.core.net.toUri
 import hedvig.resources.R
 
 sealed interface HedvigNotificationChannel {
@@ -19,7 +22,17 @@ sealed interface HedvigNotificationChannel {
         channelId,
         context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
         context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
-      )
+      ) {
+        val soundPath =
+          "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.getPackageName()}/${R.raw.hedvig_notification}"
+        setSound(
+          soundPath.toUri(),
+          AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build(),
+        )
+      }
     }
 
     override val channelId: String = "hedvig-chat"
@@ -82,6 +95,7 @@ private fun setupNotificationChannel(
   channelId: String,
   channelName: String,
   channelDescription: String? = null,
+  channelConfiguration: NotificationChannel.() -> Unit = {},
 ) {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     val notificationManager = context.getSystemService<NotificationManager>() ?: return
@@ -92,6 +106,7 @@ private fun setupNotificationChannel(
         NotificationManager.IMPORTANCE_HIGH,
       ).apply {
         channelDescription?.let { description = it }
+        this.channelConfiguration()
       },
     )
   }
