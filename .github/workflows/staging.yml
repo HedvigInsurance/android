@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - 'makerdays/**'
   workflow_dispatch:
 
 concurrency:
