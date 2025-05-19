@@ -23,7 +23,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Setup JDK 17
-        uses: actions/setup-java@v4.7.0
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: '21'
           distribution: 'zulu'
@@ -53,7 +53,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Setup JDK 17
-        uses: actions/setup-java@v4.7.0
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: '21'
           distribution: 'zulu'
@@ -63,7 +63,7 @@ jobs:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
       - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v4.0.0
+      - uses: yutailang0119/action-android-lint@v5.0.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
         continue-on-error: true
@@ -83,7 +83,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Setup JDK 17
-        uses: actions/setup-java@v4.7.0
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: '21'
           distribution: 'zulu'
@@ -97,7 +97,7 @@ jobs:
         run: ./gradlew ktlintCheck
       - name: Annotate ktlint errors in the PR
         continue-on-error: false
-        uses: yutailang0119/action-ktlint@v4
+        uses: yutailang0119/action-ktlint@v5
         with:
           report-path: build/reports/ktlint/*.xml
   build:
@@ -116,7 +116,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Setup JDK 17
-        uses: actions/setup-java@v4.7.0
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: '21'
           distribution: 'zulu'
