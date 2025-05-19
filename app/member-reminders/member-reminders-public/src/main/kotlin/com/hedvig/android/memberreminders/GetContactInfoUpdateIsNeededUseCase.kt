@@ -32,7 +32,7 @@ internal class GetContactInfoUpdateIsNeededUseCaseImpl(
     return flowOf(
       either {
         null
-             //todo: implement instead the commented out part when BE will be ready
+        // todo: implement instead the commented out part when BE will be ready
       },
     )
   }

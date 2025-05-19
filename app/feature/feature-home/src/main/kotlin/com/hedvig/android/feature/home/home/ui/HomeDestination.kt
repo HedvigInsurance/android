@@ -160,7 +160,7 @@ internal fun HomeDestination(
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
-    navigateToContactInfo = navigateToContactInfo
+    navigateToContactInfo = navigateToContactInfo,
   )
 }
 
@@ -240,7 +240,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
-            navigateToContactInfo = navigateToContactInfo
+            navigateToContactInfo = navigateToContactInfo,
           )
         }
       }
@@ -426,7 +426,7 @@ private fun HomeScreenSuccess(
             onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
-            navigateToContactInfo = navigateToContactInfo
+            navigateToContactInfo = navigateToContactInfo,
           )
         },
         startClaimButton = {
@@ -700,7 +700,7 @@ private fun PreviewHomeScreen(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         onNavigateToAddonPurchaseFlow = {},
-        navigateToContactInfo = {}
+        navigateToContactInfo = {},
       )
     }
   }

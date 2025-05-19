@@ -10,6 +10,9 @@ sealed interface ProfileDestination {
 
   @Serializable
   data object Profile : ProfileDestination, Destination
+
+  @Serializable
+  data object ContactInfo : ProfileDestination, Destination
 }
 
 internal sealed interface ProfileDestinations {
@@ -18,9 +21,6 @@ internal sealed interface ProfileDestinations {
 
   @Serializable
   data object Certificates : ProfileDestinations, Destination
-
-  @Serializable
-  data object ContactInfo : ProfileDestinations, Destination
 
   @Serializable
   data object AboutApp : ProfileDestinations, Destination

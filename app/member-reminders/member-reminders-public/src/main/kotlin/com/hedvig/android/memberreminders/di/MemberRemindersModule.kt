@@ -52,12 +52,12 @@ val memberRemindersModule = module {
       get<GetConnectPaymentReminderUseCase>(),
       get<GetUpcomingRenewalRemindersUseCase>(),
       get<GetNeedsCoInsuredInfoRemindersUseCase>(),
-      get<GetContactInfoUpdateIsNeededUseCase>()
+      get<GetContactInfoUpdateIsNeededUseCase>(),
     )
   }
   single<GetContactInfoUpdateIsNeededUseCase> {
     GetContactInfoUpdateIsNeededUseCaseImpl(
-      get<ApolloClient>()
+      get<ApolloClient>(),
     )
   }
 }

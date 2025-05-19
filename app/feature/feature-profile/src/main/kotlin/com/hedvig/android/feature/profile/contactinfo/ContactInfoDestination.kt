@@ -75,15 +75,20 @@ private fun ContactInfoScreen(
   ) {
     when (uiState) {
       ContactInfoUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgressDebounced(Modifier
-          .weight(1f)
-          .wrapContentHeight())
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
       }
 
       ContactInfoUiState.Error -> {
-        HedvigErrorSection(onButtonClick = reload, modifier = Modifier
-          .weight(1f)
-          .wrapContentHeight())
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
       }
 
       is ContactInfoUiState.Content -> {

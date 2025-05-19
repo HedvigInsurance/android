@@ -85,7 +85,7 @@ fun MemberReminderCards(
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
         modifier = modifier.padding(contentPadding),
-        navigateToContactInfo = navigateToContactInfo
+        navigateToContactInfo = navigateToContactInfo,
       )
     } else if (memberReminders.isNotEmpty()) {
       val pagerState = rememberPagerState(pageCount = { memberReminders.size })
@@ -216,10 +216,7 @@ fun ReminderCardEnableNotifications(
 }
 
 @Composable
-fun ReminderCardUpdateContactInfo(
-  navigateToContactInfo: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: Modifier = Modifier) {
   HedvigNotificationCard(
     message = stringResource(R.string.MISSING_CONTACT_INFO_CARD_TEXT),
     modifier = modifier,
@@ -230,7 +227,6 @@ fun ReminderCardUpdateContactInfo(
     ),
   )
 }
-
 
 @Composable
 private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
