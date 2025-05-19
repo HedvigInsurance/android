@@ -133,7 +133,7 @@ sealed interface MemberReminder {
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
 
-  data class ContactInfoUpdateNeeded(
-    override val id: String = UUID.randomUUID().toString(),
-  ) : MemberReminder
+  data object ContactInfoUpdateNeeded : MemberReminder {
+    override val id: String = UUID.randomUUID().toString()
+  }
 }
