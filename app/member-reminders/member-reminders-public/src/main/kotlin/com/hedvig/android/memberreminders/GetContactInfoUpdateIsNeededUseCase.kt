@@ -32,7 +32,7 @@ internal class GetContactInfoUpdateIsNeededUseCaseImpl(
             .currentMember
             .memberActions
             ?.isContactInfoUpdateNeeded
-          if (isContactInfoUpdateNeeded == true) MemberReminder.ContactInfoUpdateNeeded() else null
+          if (isContactInfoUpdateNeeded == true) MemberReminder.ContactInfoUpdateNeeded else null
         }
       }
   }
