@@ -176,8 +176,8 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
         currentMember = buildMember {
           activeContracts = listOf(
             buildContract {
-              this.id = contractId
-              this.supportsTravelCertificate = contractSupportsTravelCertificate
+              this.id = if (contractSupportsTravelCertificate) contractId else "non-matching ID"
+              this.supportsTravelCertificate = true
             },
           )
           travelCertificateSpecifications = buildTravelCertificateSpecification {
