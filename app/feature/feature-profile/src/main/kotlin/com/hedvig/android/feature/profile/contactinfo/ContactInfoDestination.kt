@@ -69,15 +69,21 @@ private fun ContactInfoScreen(
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     navigateUp = navigateUp,
-    modifier = Modifier.fillMaxSize().clearFocusOnTap(),
+    modifier = Modifier
+      .fillMaxSize()
+      .clearFocusOnTap(),
   ) {
     when (uiState) {
       ContactInfoUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f).wrapContentHeight())
+        HedvigFullScreenCenterAlignedProgressDebounced(Modifier
+          .weight(1f)
+          .wrapContentHeight())
       }
 
       ContactInfoUiState.Error -> {
-        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f).wrapContentHeight())
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier
+          .weight(1f)
+          .wrapContentHeight())
       }
 
       is ContactInfoUiState.Content -> {
@@ -136,21 +142,19 @@ private fun ColumnScope.SuccessState(
     keyboardActionHandler = null,
   )
   Spacer(Modifier.height(16.dp))
-  if (uiState.canSubmit || uiState.submittingUpdatedInfo) {
-    HedvigButton(
-      text = stringResource(R.string.general_save_button),
-      enabled = uiState.canSubmit,
-      onClick = {
-        focusManager.clearFocus()
-        updateEmailAndPhoneNumber()
-      },
-      isLoading = uiState.submittingUpdatedInfo,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxSize(),
-    )
-    Spacer(Modifier.height(16.dp))
-  }
+  HedvigButton(
+    text = stringResource(R.string.general_save_button),
+    enabled = uiState.canSubmit || uiState.submittingUpdatedInfo,
+    onClick = {
+      focusManager.clearFocus()
+      updateEmailAndPhoneNumber()
+    },
+    isLoading = uiState.submittingUpdatedInfo,
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+      .fillMaxSize(),
+  )
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable

@@ -56,6 +56,7 @@ fun NavGraphBuilder.homeGraph(
           }
         },
         onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        navigateToContactInfo = TODO()
       )
     }
     navdestination<HomeDestination.FirstVet>(
