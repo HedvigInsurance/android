@@ -17,6 +17,7 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
+import octopus.type.buildContract
 import octopus.type.buildMember
 import octopus.type.buildTravelCertificateContractSpecification
 import octopus.type.buildTravelCertificateSpecification
@@ -168,14 +169,21 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
         apolloClient,
       )
 
+    val contractId = "contractId"
     apolloClient.enqueueTestResponse(
       TravelCertificateSpecificationsQuery(),
       TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
+          activeContracts = listOf(
+            buildContract {
+              this.id = contractId
+              this.supportsTravelCertificate = contractSupportsTravelCertificate
+            },
+          )
           travelCertificateSpecifications = buildTravelCertificateSpecification {
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
-                contractId = "contractId"
+                this.contractId = contractId
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -192,7 +200,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
       assertThat(result).isRight().isEqualTo(
         com.hedvig.android.feature.travelcertificate.data.TravelCertificateData(
           com.hedvig.android.feature.travelcertificate.data.TravelCertificateData.TravelCertificateSpecification(
-            contractId = "contractId",
+            contractId = contractId,
             email = "email",
             maxDurationDays = 1,
             dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
