@@ -17,7 +17,6 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
-import octopus.type.buildContract
 import octopus.type.buildMember
 import octopus.type.buildTravelCertificateContractSpecification
 import octopus.type.buildTravelCertificateSpecification
@@ -103,7 +102,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
                 contractId = "id"
-                email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -144,7 +142,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
                 contractId = "id"
-                email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -176,16 +173,9 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
       TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           travelCertificateSpecifications = buildTravelCertificateSpecification {
-            activeContracts = listOf(
-              buildContract {
-                id = "contractId"
-                supportsTravelCertificate = contractSupportsTravelCertificate
-              },
-            )
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
                 contractId = "contractId"
-                email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
