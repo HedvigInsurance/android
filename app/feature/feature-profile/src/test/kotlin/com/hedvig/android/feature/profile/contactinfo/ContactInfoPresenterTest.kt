@@ -244,7 +244,6 @@ class ContactInfoPresenterTest {
 
   @Test
   fun `Can not submit new contact info if that would mean deleting some previously present info`(
-    @TestParameter testingNullPhoneNumber: Boolean,
   ) = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
