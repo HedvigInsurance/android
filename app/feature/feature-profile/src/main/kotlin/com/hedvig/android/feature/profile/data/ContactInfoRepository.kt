@@ -11,24 +11,7 @@ import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 internal interface ContactInfoRepository {
   suspend fun contactInfo(): Either<ErrorMessage, ContactInformation>
 
-  suspend fun updateInfo(
-    phoneNumber: PhoneNumber?,
-    email: Email?,
-    originalNumber: PhoneNumber?,
-    originalEmail: Email?,
-  ): Either<UpdateFailure, ContactInformation>
-
-  sealed interface UpdateFailure {
-    data object NoChanges : UpdateFailure
-
-    data class Error(val errorMessage: ErrorMessage) : UpdateFailure, ErrorMessage by errorMessage
-
-    companion object {
-      fun merge(first: UpdateFailure?, second: UpdateFailure?): UpdateFailure {
-        return listOf(first, second).firstOrNull { it is Error } ?: first ?: UpdateFailure.NoChanges
-      }
-    }
-  }
+  suspend fun updateInfo(phoneNumber: PhoneNumber, email: Email): Either<ErrorMessage, ContactInformation>
 }
 
 internal data class ContactInformation(
@@ -58,6 +41,17 @@ internal data class ContactInformation(
           else -> ErrorMessage(invalidInputErrorMessage(input)).left()
         }
       }
+
+      /**
+       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid email or empty string
+       * returns [Either.Right] with an [Email] if the input is a valid email
+       */
+      fun fromStringNotNull(input: String): Either<ErrorMessage, Email> {
+        return when {
+          !input.isBlank() && isValidEmail(input) -> Email(input).right()
+          else -> ErrorMessage(invalidInputErrorMessage(input)).left()
+        }
+      }
     }
   }
 
@@ -82,9 +76,20 @@ internal data class ContactInformation(
         "Phone number [$phoneNumber] cannot contain whitespaces"
       }
 
+      /**
+       * for the phone number we get from the backend, can be null
+       */
       fun fromStringAfterTrimmingWhitespaces(input: String?): Either<ErrorMessage, PhoneNumber?> {
         val inputWithoutWhitespaces = input?.filterNot { it.isWhitespace() }
         return fromString(inputWithoutWhitespaces)
+      }
+
+      /**
+       * for the phone number we're trying to send to backend, cannot be null
+       */
+      fun notNullFromStringAfterTrimmingWhitespaces(input: String): Either<ErrorMessage, PhoneNumber> {
+        val inputWithoutWhitespaces = input.filterNot { it.isWhitespace() }
+        return notNullFromString(inputWithoutWhitespaces)
       }
 
       /**
@@ -97,6 +102,18 @@ internal data class ContactInformation(
           input.isNullOrBlank() -> null.right()
           input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
           input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
+          else -> ErrorMessage(invalidInputErrorMessage(input)).left()
+        }
+      }
+
+      /**
+       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number or blank string
+       * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
+       */
+      fun notNullFromString(input: String): Either<ErrorMessage, PhoneNumber> {
+        return when {
+          input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
+          !input.isBlank() && input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
           else -> ErrorMessage(invalidInputErrorMessage(input)).left()
         }
       }
