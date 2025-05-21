@@ -119,73 +119,72 @@ class ContactInfoPresenterTest {
   }
 
   @Test
-  fun `Allowing submission should depend on if the input is valid`() =
-    runTest {
-      val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-      val presenter = ContactInfoPresenter(Provider { repository })
-      val originalEmail = "test@hedvig.com"
-      val originalPhoneNumber = "+123"
-      val validEmails = listOf(
-        "test@hedvig.co",
-        "a@hedvig.c",
-        "a@h.c",
-      )
-      val validPhoneNumbers = listOf(
-        "+1234",
-        "+1",
-        "1",
-        "+1234567890123",
-        "1234567890123",
-        "+123 456 789 0123",
-        "123 456 789 0123",
-      )
-      val invalidEmails = listOf(
-        "test@hedvig .com",
-        "a@a",
-        "a@a@a.com",
-        "",
-        " ",
-      )
-      val invalidPhoneNumbers = listOf(
-        "++1234",
-        "+1234a",
-        "+",
-        "",
-        " ",
-      )
-      presenter.test(
-        ContactInfoUiState.Content(
-          phoneNumberState = TextFieldState(originalPhoneNumber),
-          emailState = TextFieldState(originalEmail),
-          uploadedPhoneNumber = PhoneNumber(originalPhoneNumber),
-          uploadedEmail = Email(originalEmail),
-          submittingUpdatedInfo = false,
-        ),
-      ) {
-        with(awaitItem().content!!) {
-          assertThat(canSubmit).isTrue()
-          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
-          assertThat(canSubmit).isTrue()
-          for (invalidEmail in invalidEmails) {
-            emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
-            assertThat(canSubmit).isFalse()
-          }
-          emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
-          assertThat(canSubmit).isTrue()
-          for (invalidPhoneNumber in invalidPhoneNumbers) {
-            phoneNumberState.setTextAndPlaceCursorAtEnd(invalidPhoneNumber)
-            assertThat(canSubmit).isFalse()
-          }
-          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
-          assertThat(canSubmit).isTrue()
-          emailState.setTextAndPlaceCursorAtEnd(originalEmail)
-          assertThat(canSubmit).isTrue()
-          phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
-          assertThat(canSubmit).isTrue()
+  fun `Allowing submission should depend on if the input is valid`() = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(Provider { repository })
+    val originalEmail = "test@hedvig.com"
+    val originalPhoneNumber = "+123"
+    val validEmails = listOf(
+      "test@hedvig.co",
+      "a@hedvig.c",
+      "a@h.c",
+    )
+    val validPhoneNumbers = listOf(
+      "+1234",
+      "+1",
+      "1",
+      "+1234567890123",
+      "1234567890123",
+      "+123 456 789 0123",
+      "123 456 789 0123",
+    )
+    val invalidEmails = listOf(
+      "test@hedvig .com",
+      "a@a",
+      "a@a@a.com",
+      "",
+      " ",
+    )
+    val invalidPhoneNumbers = listOf(
+      "++1234",
+      "+1234a",
+      "+",
+      "",
+      " ",
+    )
+    presenter.test(
+      ContactInfoUiState.Content(
+        phoneNumberState = TextFieldState(originalPhoneNumber),
+        emailState = TextFieldState(originalEmail),
+        uploadedPhoneNumber = PhoneNumber(originalPhoneNumber),
+        uploadedEmail = Email(originalEmail),
+        submittingUpdatedInfo = false,
+      ),
+    ) {
+      with(awaitItem().content!!) {
+        assertThat(canSubmit).isTrue()
+        phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
+        assertThat(canSubmit).isTrue()
+        for (invalidEmail in invalidEmails) {
+          emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
+          assertThat(canSubmit).isFalse()
         }
-        awaitUnchanged()
+        emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
+        assertThat(canSubmit).isTrue()
+        for (invalidPhoneNumber in invalidPhoneNumbers) {
+          phoneNumberState.setTextAndPlaceCursorAtEnd(invalidPhoneNumber)
+          assertThat(canSubmit).isFalse()
+        }
+        phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
+        assertThat(canSubmit).isTrue()
+        emailState.setTextAndPlaceCursorAtEnd(originalEmail)
+        assertThat(canSubmit).isTrue()
+        phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
+        assertThat(canSubmit).isTrue()
       }
+      awaitUnchanged()
     }
+  }
 
   @Test
   fun `Retrying does fetch the new state after an initial failure`() = runTest {
@@ -243,8 +242,7 @@ class ContactInfoPresenterTest {
   }
 
   @Test
-  fun `Can not submit new contact info if that would mean deleting some previously present info`(
-  ) = runTest {
+  fun `Can not submit new contact info if that would mean deleting some previously present info`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
     val backendEmail = "test@hedvig.com"

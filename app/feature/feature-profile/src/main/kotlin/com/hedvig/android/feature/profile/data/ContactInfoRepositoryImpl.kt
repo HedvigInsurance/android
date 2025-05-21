@@ -49,7 +49,8 @@ internal class ContactInfoRepositoryImpl(
       }
       val member = response.member
       ensureNotNull(member) {
-        ErrorMessage("UpdateInfo no member data")
+        logcat(ERROR) { "Tried to update contact Info but got null member" }
+        ErrorMessage()
       }
       networkCacheManager.clearCache()
       ContactInformation(
