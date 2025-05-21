@@ -205,6 +205,7 @@ private fun ProfileScreen(
           contentPadding = padding,
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
+          navigateToContactInfo = navigateToContactInfo,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))

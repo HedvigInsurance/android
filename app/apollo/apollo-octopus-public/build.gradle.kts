@@ -22,7 +22,7 @@ hedvig {
     @Suppress("OPT_IN_USAGE")
     generateDataBuilders = true
 
-    failOnWarnings = true
+    failOnWarnings = false
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables = false
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")

@@ -13,6 +13,9 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateData
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateError
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -39,7 +42,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
   @Test
   fun `when the feature flag is on and the network request fails, we get not Error response`() = runTest {
     val travelCertificateUseCase =
-      com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+      GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
       )
 
@@ -48,14 +51,14 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
     assertThat(
       result,
-    ).isLeft().isInstanceOf<com.hedvig.android.feature.travelcertificate.data.TravelCertificateError.Error>()
+    ).isLeft().isInstanceOf<TravelCertificateError.Error>()
   }
 
   @Test
   fun `when the feature flag is on and the network response contains no travel certificate, we get not eligible`() =
     runTest {
       val travelCertificateUseCase =
-        com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+        GetTravelCertificateSpecificationsUseCaseImpl(
           apolloClient,
         )
 
@@ -67,13 +70,13 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
       assertThat(
         result,
-      ).isLeft().isInstanceOf<com.hedvig.android.feature.travelcertificate.data.TravelCertificateError.NotEligible>()
+      ).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
     }
 
   @Test
   fun `when the passed contractId is wrong, we get not eligible`() = runTest {
     val travelCertificateUseCase =
-      com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+      GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
       )
 
@@ -85,13 +88,13 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
     assertThat(
       result,
-    ).isLeft().isInstanceOf<com.hedvig.android.feature.travelcertificate.data.TravelCertificateError.NotEligible>()
+    ).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
   }
 
   @Test
   fun `when the passed contractId is right, we get TravelCertificateData`() = runTest {
     val travelCertificateUseCase =
-      com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+      GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
       )
 
@@ -103,7 +106,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
                 contractId = "id"
-                email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -117,8 +119,8 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     val result = travelCertificateUseCase.invoke("id")
 
     assertThat(result).isRight().isEqualTo(
-      com.hedvig.android.feature.travelcertificate.data.TravelCertificateData(
-        com.hedvig.android.feature.travelcertificate.data.TravelCertificateData.TravelCertificateSpecification(
+      TravelCertificateData(
+        TravelCertificateData.TravelCertificateSpecification(
           contractId = "id",
           email = "email",
           maxDurationDays = 1,
@@ -132,7 +134,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
   @Test
   fun `when the passed contractId is correct, but the contract is not eligible, we get not eligible`() = runTest {
     val travelCertificateUseCase =
-      com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+      GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
       )
 
@@ -144,7 +146,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
                 contractId = "id"
-                email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -159,7 +160,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
     assertThat(
       result,
-    ).isLeft().isInstanceOf<com.hedvig.android.feature.travelcertificate.data.TravelCertificateError.NotEligible>()
+    ).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
   }
 
   @Test
@@ -167,25 +168,25 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     @TestParameter contractSupportsTravelCertificate: Boolean,
   ) = runTest {
     val travelCertificateUseCase =
-      com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCaseImpl(
+      GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
       )
 
+    val contractId = "contractId"
     apolloClient.enqueueTestResponse(
       TravelCertificateSpecificationsQuery(),
       TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
+          activeContracts = listOf(
+            buildContract {
+              this.id = if (contractSupportsTravelCertificate) contractId else "non-matching ID"
+              this.supportsTravelCertificate = true
+            },
+          )
           travelCertificateSpecifications = buildTravelCertificateSpecification {
-            activeContracts = listOf(
-              buildContract {
-                id = "contractId"
-                supportsTravelCertificate = contractSupportsTravelCertificate
-              },
-            )
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
-                contractId = "contractId"
-                email = "email"
+                this.contractId = contractId
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
@@ -200,9 +201,9 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
     if (contractSupportsTravelCertificate) {
       assertThat(result).isRight().isEqualTo(
-        com.hedvig.android.feature.travelcertificate.data.TravelCertificateData(
-          com.hedvig.android.feature.travelcertificate.data.TravelCertificateData.TravelCertificateSpecification(
-            contractId = "contractId",
+        TravelCertificateData(
+          TravelCertificateData.TravelCertificateSpecification(
+            contractId = contractId,
             email = "email",
             maxDurationDays = 1,
             dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
@@ -213,7 +214,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     } else {
       assertThat(
         result,
-      ).isLeft().isInstanceOf<com.hedvig.android.feature.travelcertificate.data.TravelCertificateError.NotEligible>()
+      ).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
     }
   }
 }

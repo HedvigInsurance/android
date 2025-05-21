@@ -55,7 +55,7 @@ fun NavGraphBuilder.profileGraph(
           with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
         },
         navigateToContactInfo = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.ContactInfo) }
+          with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
         },
         navigateToAboutApp = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.AboutApp) }
@@ -87,7 +87,7 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ProfileDestinations.ContactInfo>(
+    navdestination<ProfileDestination.ContactInfo>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
     ) {
       val viewModel: ContactInfoViewModel = koinViewModel()

@@ -9,6 +9,7 @@ interface HedvigDeepLinkContainer {
   val helpCenterQuestion: List<String> // A specific question inside the help center
 
   val insurances: List<String> // The insurances destination, which also shows cross sells
+  val claimFlow: List<String> // The claim flow starting pledge destination
 
   /**
    * A link to a contract without an id, which should fall back to the same behavior that [insurances] gives us.
@@ -78,6 +79,9 @@ internal class HedvigDeepLinkContainerImpl(
 
   override val insurances: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/insurances"
+  }
+  override val claimFlow: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/submit-claim"
   }
   override val contractWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/contract"
@@ -170,4 +174,5 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     changeTierWithContractId.first(),
     claimDetails.first(),
     insuranceEvidence.first(),
+    claimFlow.first()
   )
