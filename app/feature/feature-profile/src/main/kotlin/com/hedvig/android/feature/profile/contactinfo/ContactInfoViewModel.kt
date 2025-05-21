@@ -58,10 +58,10 @@ internal sealed interface ContactInfoUiState {
     val showSuccessSnackBar: Boolean = false,
     val errorSnackBarText: ErrorSnackBarText? = null,
   ) : ContactInfoUiState {
-    private val phoneNumber: Either<ErrorMessage, PhoneNumber>
-      get() = PhoneNumber.notNullFromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
-    private val email: Either<ErrorMessage, Email>
-      get() = Email.fromStringNotNull(emailState.text.toString())
+    private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
+      get() = PhoneNumber.fromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
+    private val email: Either<ErrorMessage, Email?>
+      get() = Email.fromString(emailState.text.toString())
 
     val phoneNumberHasError: Boolean
       get() = phoneNumber.isLeft()
@@ -80,12 +80,12 @@ internal sealed interface ContactInfoUiState {
       }
 
     val canSubmit: Boolean
-      get() =
+      get() = !(phoneNumberState.text.isBlank() || emailState.text.isBlank()) &&
         !emailIsDeletingKnownInfo &&
-          !phoneNumberIsDeletingKnownInfo &&
-          !emailHasError &&
-          !phoneNumberHasError &&
-          !submittingUpdatedInfo
+        !phoneNumberIsDeletingKnownInfo &&
+        !emailHasError &&
+        !phoneNumberHasError &&
+        !submittingUpdatedInfo
 
     val phoneNumberInputTransformation = InputTransformation.byValue { _, proposed ->
       proposed.filterNot { it.isWhitespace() }.trim()
