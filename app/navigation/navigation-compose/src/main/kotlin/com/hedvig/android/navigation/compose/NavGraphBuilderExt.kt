@@ -84,8 +84,8 @@ inline fun <reified T : Destination> NavGraphBuilder.navgraph(
   )
 }
 
-fun navDeepLinks(vararg deepLinkLists: List<String>): List<NavDeepLink> {
-  return deepLinkLists.flatMap { deepLinks ->
+fun navDeepLinks(vararg deepLinksList: List<String>): List<NavDeepLink> {
+  return deepLinksList.flatMap { deepLinks ->
     deepLinks.map { uri ->
       navDeepLink { uriPattern = uri }
     }

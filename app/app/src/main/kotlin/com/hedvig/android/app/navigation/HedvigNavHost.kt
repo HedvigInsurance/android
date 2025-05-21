@@ -445,6 +445,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
