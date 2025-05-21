@@ -54,7 +54,10 @@ class GetMemberRemindersUseCaseTest {
           assertThat(this.upcomingRenewals).isNull()
           assertThat(this.coInsuredInfo).isNullOrEmpty()
         }
-      }    }  }
+      }
+    }
+  }
+
   @Test
   fun `all reminders available returns a list with all of them together`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
@@ -92,7 +95,10 @@ class GetMemberRemindersUseCaseTest {
               UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId),
             )
         }
-      }    }  }
+      }
+    }
+  }
+
   class TestGetConnectPaymentReminderUseCase : GetConnectPaymentReminderUseCase {
     val turbine = Turbine<Either<ConnectPaymentReminderError, PaymentReminder.ShowConnectPaymentReminder>>()
 
@@ -125,6 +131,5 @@ class GetMemberRemindersUseCaseTest {
         },
       )
     }
-
   }
 }
