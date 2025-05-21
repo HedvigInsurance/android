@@ -22,6 +22,7 @@ fun NavGraphBuilder.homeGraph(
   onStartClaim: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContactInfo: (NavBackStackEntry) -> Unit,
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
@@ -56,6 +57,9 @@ fun NavGraphBuilder.homeGraph(
           }
         },
         onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        navigateToContactInfo = {
+          navigateToContactInfo(backStackEntry)
+        },
       )
     }
     navdestination<HomeDestination.FirstVet>(

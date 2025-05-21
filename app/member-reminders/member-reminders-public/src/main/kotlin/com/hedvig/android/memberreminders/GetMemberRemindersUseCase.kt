@@ -2,6 +2,7 @@ package com.hedvig.android.memberreminders
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -18,6 +19,7 @@ internal class GetMemberRemindersUseCaseImpl(
   private val getConnectPaymentReminderUseCase: GetConnectPaymentReminderUseCase,
   private val getUpcomingRenewalRemindersUseCase: GetUpcomingRenewalRemindersUseCase,
   private val getNeedsCoInsuredInfoRemindersUseCase: GetNeedsCoInsuredInfoRemindersUseCase,
+  private val getContactInfoUpdateIsNeededUseCase: GetContactInfoUpdateIsNeededUseCase,
 ) : GetMemberRemindersUseCase {
   override fun invoke(): Flow<MemberReminders> {
     return combine(
@@ -47,17 +49,20 @@ internal class GetMemberRemindersUseCaseImpl(
         emit(upcomingRenewals)
       },
       getNeedsCoInsuredInfoRemindersUseCase.invoke(),
+      getContactInfoUpdateIsNeededUseCase.invoke(),
     ) {
       enableNotifications: MemberReminder.EnableNotifications?,
       connectPayment: MemberReminder.PaymentReminder?,
       upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
       coInsuredInfoResult: Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>,
+      contactInfoReminder: Either<com.hedvig.android.core.common.ErrorMessage, ContactInfoUpdateNeeded?>,
       ->
       MemberReminders(
         connectPayment = connectPayment,
         upcomingRenewals = upcomingRenewalReminders,
         enableNotifications = enableNotifications,
         coInsuredInfo = coInsuredInfoResult.getOrNull(),
+        updateContactInfo = contactInfoReminder.getOrNull(),
       )
     }
   }
@@ -68,6 +73,7 @@ data class MemberReminders(
   val upcomingRenewals: List<MemberReminder.UpcomingRenewal>? = null,
   val enableNotifications: MemberReminder.EnableNotifications? = null,
   val coInsuredInfo: List<MemberReminder.CoInsuredInfo>? = null,
+  val updateContactInfo: ContactInfoUpdateNeeded? = null,
 ) {
   /**
    * In some cases a reminder may be present but may not be applicable in our current app state.
@@ -89,6 +95,9 @@ data class MemberReminders(
       }
       upcomingRenewals?.let {
         addAll(it)
+      }
+      updateContactInfo?.let {
+        add(it)
       }
     }
   }
@@ -123,4 +132,8 @@ sealed interface MemberReminder {
     val contractId: String,
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
+
+  data object ContactInfoUpdateNeeded : MemberReminder {
+    override val id: String = UUID.randomUUID().toString()
+  }
 }

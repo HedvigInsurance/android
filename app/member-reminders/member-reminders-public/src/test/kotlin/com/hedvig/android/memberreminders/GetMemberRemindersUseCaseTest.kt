@@ -6,6 +6,7 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.left
 import arrow.core.nonEmptyListOf
+import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertAll
 import assertk.assertThat
@@ -13,10 +14,12 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isNullOrEmpty
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.memberreminders.MemberReminder.CoInsuredInfo
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -29,11 +32,13 @@ class GetMemberRemindersUseCaseTest {
     val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
+    val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
+      getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -49,21 +54,20 @@ class GetMemberRemindersUseCaseTest {
           assertThat(this.upcomingRenewals).isNull()
           assertThat(this.coInsuredInfo).isNullOrEmpty()
         }
-      }
-    }
-  }
-
+      }    }  }
   @Test
   fun `all reminders available returns a list with all of them together`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
     val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
+    val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
+      getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
     )
     val testId = "test"
 
@@ -88,10 +92,7 @@ class GetMemberRemindersUseCaseTest {
               UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId),
             )
         }
-      }
-    }
-  }
-
+      }    }  }
   class TestGetConnectPaymentReminderUseCase : GetConnectPaymentReminderUseCase {
     val turbine = Turbine<Either<ConnectPaymentReminderError, PaymentReminder.ShowConnectPaymentReminder>>()
 
@@ -114,5 +115,16 @@ class GetMemberRemindersUseCaseTest {
     override fun invoke(): Flow<Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredInfo>>> {
       return turbine.asChannel().receiveAsFlow()
     }
+  }
+
+  class TestGetContactInfoUpdateIsNeededUseCase() : GetContactInfoUpdateIsNeededUseCase {
+    override fun invoke(): Flow<Either<ErrorMessage, MemberReminder.ContactInfoUpdateNeeded?>> {
+      return flowOf(
+        either {
+          null
+        },
+      )
+    }
+
   }
 }

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.profile.contactinfo
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,11 +27,13 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
@@ -66,15 +69,26 @@ private fun ContactInfoScreen(
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     navigateUp = navigateUp,
-    modifier = Modifier.fillMaxSize().clearFocusOnTap(),
+    modifier = Modifier
+      .fillMaxSize()
+      .clearFocusOnTap(),
   ) {
     when (uiState) {
       ContactInfoUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f).wrapContentHeight())
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
       }
 
       ContactInfoUiState.Error -> {
-        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f).wrapContentHeight())
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
       }
 
       is ContactInfoUiState.Content -> {
@@ -89,24 +103,17 @@ private fun ContactInfoScreen(
 }
 
 @Composable
-private fun SuccessState(
+private fun ColumnScope.SuccessState(
   uiState: ContactInfoUiState.Content,
   updateEmailAndPhoneNumber: () -> Unit,
   focusManager: FocusManager,
 ) {
+  Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
-  ContactInfoTextField(
-    textFieldState = uiState.phoneNumberState,
-    labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
-    errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
-      uiState.phoneNumberHasError
-    },
-    keyboardOptions = KeyboardOptions(
-      keyboardType = KeyboardType.Phone,
-      imeAction = ImeAction.Next,
-    ),
-    inputTransformation = uiState.phoneNumberInputTransformation,
-    keyboardActionHandler = null,
+  HedvigNotificationCard(
+    message = stringResource(R.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),
+    priority = NotificationDefaults.NotificationPriority.Info,
+    modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(4.dp))
   ContactInfoTextField(
@@ -125,22 +132,34 @@ private fun SuccessState(
       focusManager.clearFocus()
     },
   )
+  Spacer(Modifier.height(4.dp))
+  ContactInfoTextField(
+    textFieldState = uiState.phoneNumberState,
+    labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
+    errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
+      uiState.phoneNumberHasError
+    },
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Phone,
+      imeAction = ImeAction.Next,
+    ),
+    inputTransformation = uiState.phoneNumberInputTransformation,
+    keyboardActionHandler = null,
+  )
   Spacer(Modifier.height(16.dp))
-  if (uiState.canSubmit || uiState.submittingUpdatedInfo) {
-    HedvigButton(
-      text = stringResource(R.string.general_save_button),
-      enabled = uiState.canSubmit,
-      onClick = {
-        focusManager.clearFocus()
-        updateEmailAndPhoneNumber()
-      },
-      isLoading = uiState.submittingUpdatedInfo,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxSize(),
-    )
-    Spacer(Modifier.height(16.dp))
-  }
+  HedvigButton(
+    text = stringResource(R.string.general_save_button),
+    enabled = uiState.canSubmit || uiState.submittingUpdatedInfo,
+    onClick = {
+      focusManager.clearFocus()
+      updateEmailAndPhoneNumber()
+    },
+    isLoading = uiState.submittingUpdatedInfo,
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+      .fillMaxSize(),
+  )
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable

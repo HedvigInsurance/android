@@ -68,6 +68,7 @@ import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
+import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
@@ -192,6 +193,9 @@ internal fun HedvigNavHost(
       navigator = navigator,
       onNavigateToAddonPurchaseFlow = { ids ->
         navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
+      },
+      navigateToContactInfo = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
       },
     )
     insuranceGraph(

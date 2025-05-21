@@ -138,6 +138,7 @@ internal fun HomeDestination(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  navigateToContactInfo: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -159,6 +160,7 @@ internal fun HomeDestination(
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+    navigateToContactInfo = navigateToContactInfo,
   )
 }
 
@@ -178,6 +180,7 @@ private fun HomeScreen(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
@@ -237,6 +240,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            navigateToContactInfo = navigateToContactInfo,
           )
         }
       }
@@ -355,6 +359,7 @@ private fun HomeScreenSuccess(
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -421,6 +426,7 @@ private fun HomeScreenSuccess(
             onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+            navigateToContactInfo = navigateToContactInfo,
           )
         },
         startClaimButton = {
@@ -694,6 +700,7 @@ private fun PreviewHomeScreen(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         onNavigateToAddonPurchaseFlow = {},
+        navigateToContactInfo = {},
       )
     }
   }
