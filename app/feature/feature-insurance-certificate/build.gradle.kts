@@ -36,6 +36,7 @@ dependencies {
   implementation(projects.navigationCore)
 
   testImplementation(libs.apollo.testingSupport)
+  testImplementation(projects.apolloOctopusTest)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
