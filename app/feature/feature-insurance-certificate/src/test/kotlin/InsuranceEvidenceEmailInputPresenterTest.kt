@@ -16,24 +16,24 @@ import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
-import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.Test
 
 class InsuranceEvidenceEmailInputPresenterTest {
-  @get:Rule
-  val testLogcatLogger = TestLogcatLoggingRule()
-
-  @Test
-  fun `when loading email fails show failure state`() = runTest {
+  private fun createPresenterWithFakes(): Triple<InsuranceEvidenceEmailInputPresenter, FakeGetInsuranceEvidenceInitialEmailUseCase, FakeGenerateInsuranceEvidenceUseCase> {
     val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
     val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
     val presenter = InsuranceEvidenceEmailInputPresenter(
       generateInsuranceEvidenceUseCase = generateUseCase,
       getEmailUseCase = getEmailUseCase,
     )
+    return Triple(presenter, getEmailUseCase, generateUseCase)
+  }
+
+  @Test
+  fun `when loading email fails show failure state`() = runTest {
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
       skipItems(1)
       getEmailUseCase.emailTurbine.add(ErrorMessage().left())
@@ -43,12 +43,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when loading email succeeds show success state with email`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
       skipItems(1)
       getEmailUseCase.emailTurbine.add("test@example.com".right())
@@ -60,12 +55,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when loading email succeeds with empty email show success state with empty email`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
       skipItems(1)
       getEmailUseCase.emailTurbine.add("".right())
@@ -77,17 +67,10 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when retry is clicked reload email`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
-      skipItems(1)
       getEmailUseCase.emailTurbine.add(ErrorMessage().left())
-      skipItems(1)
-
+      skipItems(2)
       sendEvent(InsuranceEvidenceEmailInputEvent.RetryLoadData)
       getEmailUseCase.emailTurbine.add("retry@example.com".right())
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
@@ -98,17 +81,10 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when email input is changed update email in state`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
-      skipItems(1)
       getEmailUseCase.emailTurbine.add("initial@example.com".right())
-      skipItems(1)
-
+      skipItems(2)
       sendEvent(InsuranceEvidenceEmailInputEvent.ChangeEmailInput("new@example.com"))
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
         .prop(InsuranceEvidenceEmailInputState.Success::email)
@@ -118,17 +94,10 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when submit is clicked with valid email generate certificate`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, generateUseCase) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
-      skipItems(1)
       getEmailUseCase.emailTurbine.add("valid@example.com".right())
-      skipItems(1)
-
+      skipItems(2)
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
         .prop(InsuranceEvidenceEmailInputState.Success::buttonLoading)
@@ -140,12 +109,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when submit is clicked with invalid email show validation error`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Success(email = "invalid-email")) {
       skipItems(1)
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
@@ -157,12 +121,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when submit is clicked with empty email show empty email error`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Success(email = "")) {
       skipItems(1)
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
@@ -174,22 +133,15 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when generating certificate succeeds update state with certificate url`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, generateUseCase) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Success(email = "valid@example.com")) {
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
       skipItems(1)
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
         .prop(InsuranceEvidenceEmailInputState.Success::buttonLoading)
         .isTrue()
-
       generateUseCase.generateTurbine.awaitItem()
       generateUseCase.resultTurbine.add("https://certificate.url".right())
-
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
         .all {
           prop(InsuranceEvidenceEmailInputState.Success::fetchedCertificateUrl)
@@ -202,19 +154,12 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when generating certificate fails show error message`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, generateUseCase) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Success(email = "valid@example.com")) {
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
-      skipItems(2) // todo: maybe one? also NoClassDefFoundError
-
+      skipItems(2)
       generateUseCase.generateTurbine.awaitItem()
       generateUseCase.resultTurbine.add(ErrorMessage().left())
-
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
         .all {
           prop(InsuranceEvidenceEmailInputState.Success::generatingErrorMessage)
@@ -227,12 +172,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when clear navigation is clicked remove certificate url from state`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, generateUseCase) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
       getEmailUseCase.emailTurbine.add("test@example.com".right())
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
@@ -248,12 +188,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when clear error message is clicked remove error message from state`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, _) = createPresenterWithFakes()
     presenter.test(
       InsuranceEvidenceEmailInputState.Success(
         email = "",
@@ -270,12 +205,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when submitting show loading state on button`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, getEmailUseCase, _) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Loading) {
       getEmailUseCase.emailTurbine.add("valid@example.com".right())
       skipItems(2)
@@ -288,12 +218,7 @@ class InsuranceEvidenceEmailInputPresenterTest {
 
   @Test
   fun `when changing email after validation error clear the error`() = runTest {
-    val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
-    val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
-    val presenter = InsuranceEvidenceEmailInputPresenter(
-      generateInsuranceEvidenceUseCase = generateUseCase,
-      getEmailUseCase = getEmailUseCase,
-    )
+    val (presenter, _, _) = createPresenterWithFakes()
     presenter.test(
       InsuranceEvidenceEmailInputState.Success(
         email = "invalid-email",
