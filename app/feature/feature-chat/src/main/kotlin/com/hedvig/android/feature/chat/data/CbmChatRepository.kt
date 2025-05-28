@@ -216,7 +216,6 @@ internal class CbmChatRepositoryImpl(
 
             else -> {}
           }
-          chatDao.deleteMessage(conversationId, messageId)
         }
       }
     }
