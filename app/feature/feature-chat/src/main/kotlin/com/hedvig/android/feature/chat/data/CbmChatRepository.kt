@@ -580,7 +580,7 @@ private fun ConversationInput.toChatMessageEntity(
         url = this.fileUploadToken,
         mimeType = CbmChatMessage.ChatMessageFile.MimeType.OTHER.toString(),
         failedToSend = null,
-        // todo sending = true
+        isBeingSent = true,
       )
     }
 
@@ -595,7 +595,7 @@ private fun ConversationInput.toChatMessageEntity(
         url = null,
         mimeType = null,
         failedToSend = null,
-        // todo sending = true
+        isBeingSent = true,
       )
     }
   }

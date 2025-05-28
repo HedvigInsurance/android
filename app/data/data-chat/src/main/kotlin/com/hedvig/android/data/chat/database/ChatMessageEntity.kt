@@ -1,5 +1,6 @@
 package com.hedvig.android.data.chat.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.benasher44.uuid.Uuid
@@ -17,7 +18,8 @@ data class ChatMessageEntity(
   val url: String?,
   val mimeType: String?,
   val failedToSend: FailedToSendType?,
-  // todo chat id: add field for "sending" for ongoing messages being sent
+  @ColumnInfo(defaultValue = "0")
+  val isBeingSent: Boolean,
 ) {
   enum class Sender {
     HEDVIG,

@@ -94,6 +94,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = url,
       mimeType = mimeType.name,
       failedToSend = null,
+      isBeingSent = false,
     )
 
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
@@ -106,6 +107,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = null,
       mimeType = null,
       failedToSend = null,
+      isBeingSent = false,
     )
 
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
@@ -118,6 +120,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = null,
       mimeType = null,
       failedToSend = null,
+      isBeingSent = false,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
@@ -130,6 +133,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = null,
       mimeType = null,
       failedToSend = TEXT,
+      isBeingSent = false,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -142,6 +146,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = uri.toString(),
       mimeType = null,
       failedToSend = PHOTO,
+      isBeingSent = false,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -154,6 +159,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       url = uri.toString(),
       mimeType = null,
       failedToSend = MEDIA,
+      isBeingSent = false,
     )
   }
 }
