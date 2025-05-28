@@ -12,7 +12,6 @@ internal fun ChatMessageSender.toSender(): Sender = when (this) {
   ChatMessageSender.MEMBER -> Sender.MEMBER
   ChatMessageSender.HEDVIG -> Sender.HEDVIG
   ChatMessageSender.UNKNOWN__ -> Sender.HEDVIG
-  ChatMessageSender.AUTOMATION -> Sender.HEDVIG
 }
 
 internal fun ChatMessageEntity.Sender.toSender(): Sender {
