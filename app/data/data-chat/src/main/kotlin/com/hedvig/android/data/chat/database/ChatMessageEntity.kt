@@ -17,6 +17,7 @@ data class ChatMessageEntity(
   val url: String?,
   val mimeType: String?,
   val failedToSend: FailedToSendType?,
+  // todo chat id: add field for "sending" for ongoing messages being sent
 ) {
   enum class Sender {
     HEDVIG,
