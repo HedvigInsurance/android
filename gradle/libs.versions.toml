@@ -46,6 +46,7 @@ androidx-other-splashscreen = "1.2.0-beta02"
 androidx-other-startup = "1.2.0"
 androidx-other-workManager = "2.10.1"
 androidx-test = "1.6.1"
+androidx-testEspresso = "3.6.1"
 androidx-testRunners = "1.6.2"
 androidx-ui-alpha = "1.8.1"
 androidxGraphicsShapes = "1.0.1"
@@ -134,6 +135,7 @@ androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", vers
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
 androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
+androidx-testEspresso = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-testEspresso" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
@@ -203,6 +205,7 @@ room-common = { module = "androidx.room:room-common", version.ref = "room" }
 room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
