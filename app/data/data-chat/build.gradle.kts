@@ -1,12 +1,11 @@
 plugins {
   id("hedvig.gradle.plugin")
   id("hedvig.kotlin.library")
-  alias(libs.plugins.ksp)
-  alias(libs.plugins.room)
 }
 
 hedvig {
   serialization()
+  room(isTestOnly = true) { resolve("app/data/data-chat/build/generated/ksp/test/kotlin") }
 }
 
 dependencies {
@@ -26,14 +25,4 @@ dependencies {
   testImplementation(libs.room.runtime)
   testImplementation(libs.sqlite.bundled)
   testImplementation(projects.testClock)
-  kspTest(libs.room.ksp)
-}
-
-val schemaDirectory = project
-  .rootDir
-  .resolve("app/data/data-chat/build/generated/ksp/test/kotlin")
-  .absolutePath
-
-room {
-  schemaDirectory(schemaDirectory)
 }

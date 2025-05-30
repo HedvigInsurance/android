@@ -23,6 +23,7 @@ dependencies {
   compileOnly(libs.compose.compilerGradlePlugin)
   compileOnly(libs.kotlin.gradlePlugin)
   compileOnly(libs.kotlinter.gradlePlugin)
+  compileOnly(libs.room.gradlePlugin)
 
   // Enables using type-safe accessors to reference plugins from the [plugins] block defined in version catalogs.
   // Context: https://github.com/gradle/gradle/issues/15383#issuecomment-779893192

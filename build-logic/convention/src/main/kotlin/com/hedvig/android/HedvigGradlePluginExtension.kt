@@ -2,6 +2,7 @@ package com.hedvig.android
 
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Action
@@ -28,6 +29,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<ComposeHandler>()
   private val androidResHandler: AndroidResHandler =
     project.objects.newInstance<AndroidResHandler>()
+  private val roomHandler: RoomHandler =
+    project.objects.newInstance<RoomHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -58,6 +61,10 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
   fun androidResources() {
     androidResHandler.configure(project)
+  }
+
+  fun room(isTestOnly: Boolean = false, resolveSchemaRelativeToRootDir: File.() -> File) {
+    roomHandler.configure(project, pluginManager, libs, isTestOnly, resolveSchemaRelativeToRootDir)
   }
 
   companion object {
@@ -183,6 +190,28 @@ private abstract class AndroidResHandler {
       buildFeatures {
         androidResources = true
       }
+    }
+  }
+}
+
+private abstract class RoomHandler {
+  fun configure(
+    project: Project,
+    pluginManager: PluginManager,
+    libs: LibrariesForLibs,
+    isTestOnly: Boolean,
+    resolveSchemaRelativeToRootDir: File.() -> File,
+  ) {
+    with(pluginManager) {
+      apply(libs.plugins.room.get().pluginId)
+      apply(libs.plugins.ksp.get().pluginId)
+    }
+    project.dependencies {
+      val ksp = if (isTestOnly) "kspTest" else "ksp"
+      add(ksp, libs.room.ksp)
+    }
+    project.extensions.configure<androidx.room.gradle.RoomExtension> {
+      schemaDirectory(project.rootDir.resolveSchemaRelativeToRootDir().absolutePath)
     }
   }
 }

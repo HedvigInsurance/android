@@ -16,6 +16,7 @@ plugins {
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.license) apply false
   alias(libs.plugins.lintGradlePlugin) apply false
+  alias(libs.plugins.room) apply false
   alias(libs.plugins.serialization) apply false
   alias(libs.plugins.squareSortDependencies) apply false
   id("hedvig.gradle.plugin") apply false
