@@ -2,13 +2,13 @@ package com.hedvig.android
 
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.apollographql.apollo.gradle.api.Service
 import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginManager
-import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
@@ -23,6 +23,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   private val libs: LibrariesForLibs,
   private val pluginManager: PluginManager,
 ) {
+  private val apolloHandler: ApolloHandler =
+    project.objects.newInstance<ApolloHandler>()
   private val apolloSchemaHandler: ApolloSchemaHandler =
     project.objects.newInstance<ApolloSchemaHandler>()
   private val composeHandler: ComposeHandler =
@@ -40,15 +42,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    * [packageName] is the package that the generated apollo classes will have for this module.
    */
   fun apollo(packageName: String, extraConfiguration: Action<com.apollographql.apollo.gradle.api.Service> = Action {}) {
-    pluginManager.apply(libs.plugins.apollo.get().pluginId)
-    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
-      service("octopus") {
-        this.packageName = packageName
-        @Suppress("OPT_IN_USAGE")
-        dependsOn(project.project(":apollo-octopus-public"), true)
-        extraConfiguration.execute(this)
-      }
-    }
+    apolloHandler.configure(project, pluginManager, libs, packageName, extraConfiguration)
   }
 
   fun compose() {
@@ -144,6 +138,27 @@ private abstract class ApolloSchemaHandler {
       oldValue,
       newValue,
     )
+  }
+}
+
+private abstract class ApolloHandler {
+  fun configure(
+    project: Project,
+    pluginManager: PluginManager,
+    libs: LibrariesForLibs,
+    packageName: String,
+    extraConfiguration: Action<Service>,
+  ) {
+    pluginManager.apply(libs.plugins.apollo.get().pluginId)
+    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
+      service("octopus") {
+        this.packageName.set(packageName)
+
+        @Suppress("OPT_IN_USAGE")
+        dependsOn(project.project(":apollo-octopus-public"), true)
+        extraConfiguration.execute(this)
+      }
+    }
   }
 }
 
