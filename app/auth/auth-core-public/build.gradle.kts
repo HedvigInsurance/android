@@ -8,16 +8,16 @@ hedvig {
 }
 
 dependencies {
-  api(libs.hedvig.authlib)
   api(libs.kotlinx.datetime)
   api(libs.okhttp.core)
+  api(projects.authlib)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
-  implementation(libs.ktor)
+  implementation(libs.ktor.client.android)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)

@@ -29,6 +29,9 @@ in the module's `build.gradle`, as opposed to creating a convention plugin with 
 setup.
 
 Current list of convention plugins:
+- [`hedvig.gradle.plugin`](convention/src/main/kotlin/HedvigGradlePlugin.kt)
+  The base hedvig gradle plugin, enforcing module relationship rules, applying other relevant 
+  plugins, allowing modules to opt-in into features like serialization, enabling compose etc.
 - [`hedvig.android.apollo`](convention/src/main/kotlin/ApolloConventionPlugin.kt),
   Setup apollo compiler and common tasks, like downloading the schema or editing the downloaded schema to not contain double white-spaces.
 - [`hedvig.android.ktlint`](convention/src/main/kotlin/KtlintConventionPlugin.kt),
@@ -38,6 +41,8 @@ Current list of convention plugins:
   Configures common Android and Kotlin options.
 - [`hedvig.kotlin.library`](convention/src/main/kotlin/KotlinLibraryConventionPlugin.kt),
   Configures pure Kotlin options without any Android references.
+- [`hedvig.multiplatform.library`](convention/src/main/kotlin/KotlinMultiplatformLibraryConventionPlugin.kt),
+  Configures Kotlin multiplatform options without with android + TODO TARGETS configured.
 - [`hedvig.android.application.compose`](convention/src/main/kotlin/ApplicationComposeConventionPlugin.kt),
   [`hedvig.android.library.compose`](convention/src/main/kotlin/LibraryComposeConventionPlugin.kt):
   Configures Jetpack Compose options

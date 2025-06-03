@@ -7,18 +7,19 @@ plugins {
 group = "com.hedvig.android.buildlogic"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
   compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_17)
+    jvmTarget.set(JvmTarget.JVM_21)
   }
 }
 
 dependencies {
   compileOnly(libs.android.gradlePlugin)
+  compileOnly(libs.androidMultiplatform.gradlePlugin)
   compileOnly(libs.apollo.gradlePlugin)
   compileOnly(libs.compose.compilerGradlePlugin)
   compileOnly(libs.kotlin.gradlePlugin)
@@ -41,6 +42,7 @@ gradlePlugin {
     createPlugin("hedvig.android.application", "ApplicationConventionPlugin")
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
+    createPlugin("hedvig.multiplatform.library", "KotlinMultiplatformLibraryConventionPlugin")
     createPlugin("hedvig.gradle.plugin", "HedvigGradlePlugin")
   }
 }
