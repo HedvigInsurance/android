@@ -340,7 +340,7 @@ internal class CbmChatRepositoryImpl(
         ErrorMessage("Unknown chat message type").toMessageSendError()
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
-      chatMessage
+      chatMessage!!
     }.onLeft {
       logcat { "Failed to send message, with error message:$it" }
     }

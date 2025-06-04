@@ -3,6 +3,10 @@ plugins {
   id("hedvig.multiplatform.library")
 }
 
+hedvig {
+  serialization()
+}
+
 kotlin {
   explicitApi()
   sourceSets {
