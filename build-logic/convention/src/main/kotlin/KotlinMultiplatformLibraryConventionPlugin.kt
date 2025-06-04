@@ -1,3 +1,4 @@
+import com.hedvig.android.configureKotlinCompilerOptions
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -53,7 +54,11 @@ private fun Project.configureKotlinMultiplatform() {
     ).forEach {
 //      it.binaries.framework { baseName = xcfName }
     }
-    jvm()
+    jvm {
+      compilerOptions {
+        this.configureKotlinCompilerOptions()
+      }
+    }
     applyDefaultHierarchyTemplate()
 
     sourceSets.getByName("commonMain") {

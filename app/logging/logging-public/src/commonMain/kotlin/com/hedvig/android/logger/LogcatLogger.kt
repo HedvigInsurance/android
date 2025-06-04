@@ -1,5 +1,9 @@
 package com.hedvig.android.logger
 
+import kotlin.concurrent.Volatile
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
+
 /**
  * Logger that [logcat] delegates to. Call [install] to install a new logger, the default is a
  * no-op logger. Calling [uninstall] falls back to the default no-op logger.
@@ -10,7 +14,7 @@ interface LogcatLogger {
    */
   fun log(priority: LogPriority, throwable: Throwable?, message: () -> String)
 
-  companion object {
+  companion object : SynchronizedObject() {
     @Volatile
     @PublishedApi
     internal var logger: LogcatLogger = NoLog

@@ -213,7 +213,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
-  implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)

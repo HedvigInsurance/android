@@ -57,7 +57,6 @@ dependencies {
   implementation(libs.timber)
   implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
-  implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 }
