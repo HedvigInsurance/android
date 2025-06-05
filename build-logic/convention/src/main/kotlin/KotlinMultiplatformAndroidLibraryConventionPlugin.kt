@@ -1,8 +1,6 @@
 import com.android.build.api.dsl.androidLibrary
 import com.hedvig.android.configureAutomaticNamespace
 import com.hedvig.android.configureKotlinCompilerOptions
-import com.hedvig.android.isLoggingPublicModule
-import com.hedvig.android.isTrackingCoreModule
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -28,9 +26,13 @@ class KotlinMultiplatformAndroidLibraryConventionPlugin : Plugin<Project> {
 
 /**
  * Configure base Kotlin Multiplatform libraries that also need to be an android target
+ *
+ * See [com.hedvig.android.configureKotlinAndroid] as the source of truth for what must be done here. There are
+ * currently no common parent interfaces for android KMP libraries, android libraries and android applications atm.
+ * tl;dr [com.hedvig.android.AndroidCommonExtension] does not have a common parent with
+ * [com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget] so this contains copy-pasted code
  */
 private fun Project.configureKotlinAndroidMultiplatform() {
-  val project = this@configureKotlinAndroidMultiplatform
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
@@ -59,15 +61,6 @@ private fun Project.configureKotlinAndroidMultiplatform() {
   }
 
   dependencies {
-    val koinBom = libs.koin.bom
-//    implementation(platform(koinBom))
-
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
-//    add("lintChecks", project(":hedvig-lint"))
-    // Add logging-public and tracking-core to all modules except themselves
-    if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
-//      implementation(project(":logging-public"))
-//      implementation(project(":tracking-core"))
-    }
   }
 }

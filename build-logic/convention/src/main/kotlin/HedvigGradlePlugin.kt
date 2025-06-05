@@ -20,9 +20,12 @@ class HedvigGradlePlugin : Plugin<Project> {
       configureHedvigPlugin()
       configureFeatureModuleGuidelines()
       configureKtlint(libs)
-      pluginManager.apply(libs.plugins.dependencyAnalysis.get().pluginId)
-      pluginManager.apply(libs.plugins.squareSortDependencies.get().pluginId)
+      configureCommonDependencies(libs)
       apply<HedvigLintConventionPlugin>()
+      with(pluginManager) {
+        apply(libs.plugins.dependencyAnalysis.get().pluginId)
+        apply(libs.plugins.squareSortDependencies.get().pluginId)
+      }
     }
   }
 }

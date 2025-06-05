@@ -7,7 +7,6 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
@@ -25,25 +24,9 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.kotlinJvm.get().pluginId)
-        apply<HedvigLintConventionPlugin>()
       }
 
       configureKotlin()
-
-      dependencies {
-        val koinBom = libs.koin.bom
-        add("implementation", platform(koinBom))
-
-        add("lintChecks", project(":hedvig-lint"))
-        if (target.name != "logging-public") {
-          add("implementation", project(":logging-public"))
-        }
-        // Add logging-public and tracking-core to all modules except themselves
-        if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
-          add("implementation", project(":logging-public"))
-          add("implementation", project(":tracking-core"))
-        }
-      }
     }
   }
 }
@@ -78,12 +61,4 @@ private fun KotlinProjectExtension.forEachCompilerOptions(block: KotlinCommonCom
 
     else -> error("Unknown kotlin extension $this")
   }
-}
-
-private fun Project.isLoggingPublicModule(): Boolean {
-  return name == "logging-public"
-}
-
-private fun Project.isTrackingCoreModule(): Boolean {
-  return name == "tracking-core"
 }

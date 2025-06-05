@@ -16,22 +16,6 @@ class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
       }
 
       configureKotlinMultiplatform()
-
-      // todo consider moving this into Hedvig gradle plugin instead
-//      dependencies {
-//        val koinBom = libs.koin.bom
-//        add("implementation", platform(koinBom))
-//
-//        add("lintChecks", project(":hedvig-lint"))
-//        if (target.name != "logging-public") {
-//          add("implementation", project(":logging-public"))
-//        }
-//        // Add logging-public and tracking-core to all modules except themselves
-//        if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
-//          add("implementation", project(":logging-public"))
-//          add("implementation", project(":tracking-core"))
-//        }
-//      }
     }
   }
 }
