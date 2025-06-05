@@ -1,6 +1,9 @@
 package com.hedvig.android.core.tracking
 
 import com.hedvig.android.logger.logcat
+import kotlin.concurrent.Volatile
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 
 interface RumLogger {
   fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>)
@@ -13,7 +16,7 @@ interface RumLogger {
     stacktrace: String?,
   )
 
-  companion object {
+  companion object : SynchronizedObject() {
     @Volatile
     @PublishedApi
     internal var rumLogger: RumLogger = NoLog
