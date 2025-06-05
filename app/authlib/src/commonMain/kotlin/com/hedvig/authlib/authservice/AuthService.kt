@@ -1,15 +1,30 @@
 package com.hedvig.authlib.authservice
 
 import com.hedvig.authlib.AuthEnvironment
-import com.hedvig.authlib.authservice.model.*
+import com.hedvig.authlib.authservice.model.GrantTokenInput
+import com.hedvig.authlib.authservice.model.GrantTokenOutput
+import com.hedvig.authlib.authservice.model.LoginOtpInput
+import com.hedvig.authlib.authservice.model.LoginOtpResponse
+import com.hedvig.authlib.authservice.model.LoginOtpSwedenInput
+import com.hedvig.authlib.authservice.model.LoginStatusResponse
+import com.hedvig.authlib.authservice.model.LoginSwedenInput
+import com.hedvig.authlib.authservice.model.LoginSwedenResponse
+import com.hedvig.authlib.authservice.model.OtpVerifyInput
+import com.hedvig.authlib.authservice.model.OtpVerifyResponse
+import com.hedvig.authlib.authservice.model.RevokeTokenInput
 import com.hedvig.authlib.baseUrl
 import com.hedvig.authlib.url.LoginStatusUrl
 import com.hedvig.authlib.url.OtpResendUrl
 import com.hedvig.authlib.url.OtpVerifyUrl
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.NoTransformationFoundException
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 
 /**
  * Service mapping the API of `HedvigInsurance/auth`

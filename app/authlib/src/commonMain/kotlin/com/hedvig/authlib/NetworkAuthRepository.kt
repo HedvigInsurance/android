@@ -1,21 +1,26 @@
 package com.hedvig.authlib
 
 import com.hedvig.authlib.authservice.AuthService
-import com.hedvig.authlib.authservice.model.*
+import com.hedvig.authlib.authservice.model.GrantTokenInput
+import com.hedvig.authlib.authservice.model.LoginOtpInput
+import com.hedvig.authlib.authservice.model.LoginOtpResponse
+import com.hedvig.authlib.authservice.model.LoginStatusResponse
+import com.hedvig.authlib.authservice.model.LoginSwedenResponse
+import com.hedvig.authlib.authservice.model.OtpVerifyResponse
 import com.hedvig.authlib.internal.buildKtorClient
 import com.hedvig.authlib.url.LoginStatusUrl
 import com.hedvig.authlib.url.OtpResendUrl
 import com.hedvig.authlib.url.OtpVerifyUrl
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.*
-import io.ktor.utils.io.errors.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.NoTransformationFoundException
+import io.ktor.client.engine.HttpClientEngine
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.io.IOException
 
 private const val POLL_DELAY_MILLIS = 1000L
 
