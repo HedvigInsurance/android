@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.kotlin.library")
+  id("hedvig.jvm.library")
   id("hedvig.gradle.plugin")
 }
 
