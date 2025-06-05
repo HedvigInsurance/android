@@ -1,7 +1,7 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
+  id("hedvig.gradle.plugin")
 }
 
 kotlin {

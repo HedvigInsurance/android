@@ -1,8 +1,8 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.application")
+  id("hedvig.gradle.plugin")
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
