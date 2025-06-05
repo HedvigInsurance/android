@@ -119,7 +119,12 @@ internal class GetHomeDataUseCaseImpl(
               CrossSellType.HOME -> CrossSell.CrossSellType.HOME
               CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
               CrossSellType.PET -> CrossSell.CrossSellType.PET
-              CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+              CrossSellType.PET_CAT,
+              CrossSellType.PET_DOG,
+              CrossSellType.APARTMENT_BRF,
+              CrossSellType.APARTMENT_RENT,
+              CrossSellType.UNKNOWN__,
+              -> CrossSell.CrossSellType.UNKNOWN
             },
           )
         }
