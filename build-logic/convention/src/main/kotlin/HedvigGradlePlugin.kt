@@ -2,9 +2,14 @@ import com.hedvig.android.HedvigGradlePluginExtension.Companion.configureHedvigP
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jmailen.gradle.kotlinter.KotlinterExtension
 import org.jmailen.gradle.kotlinter.support.ReporterType
 
@@ -17,6 +22,7 @@ class HedvigGradlePlugin : Plugin<Project> {
       configureKtlint(libs)
       pluginManager.apply(libs.plugins.dependencyAnalysis.get().pluginId)
       pluginManager.apply(libs.plugins.squareSortDependencies.get().pluginId)
+      apply<HedvigLintConventionPlugin>()
     }
   }
 }
@@ -54,6 +60,7 @@ private fun Project.configureFeatureModuleGuidelines() {
   fun String.isFeatureModule(): Boolean {
     return startsWith("feature-") && !startsWith("feature-flags")
   }
+
   val thisModuleName = this.name
   if (!thisModuleName.isFeatureModule()) return
   configurations.configureEach {
@@ -72,4 +79,60 @@ private fun Project.configureFeatureModuleGuidelines() {
       }
     }
   }
+}
+
+private fun Project.configureCommonDependencies(libs: LibrariesForLibs) {
+  pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
+    project.extensions.configure<KotlinMultiplatformExtension> {
+      sourceSets.configureEach {
+        dependencies {
+          configureCommonDependencies(project, libs)
+        }
+      }
+    }
+  }
+  pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
+    dependencies {
+      configureCommonDependencies(project, libs)
+    }
+  }
+  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+    dependencies {
+      configureCommonDependencies(project, libs)
+    }
+  }
+}
+
+@Suppress("UnusedReceiverParameter")
+private fun KotlinDependencyHandler.configureCommonDependencies(project: Project, libs: LibrariesForLibs) {
+  project.configureCommonDependencies(libs, "commonMainImplementation")
+}
+
+@Suppress("UnusedReceiverParameter")
+private fun DependencyHandlerScope.configureCommonDependencies(project: Project, libs: LibrariesForLibs) {
+  project.configureCommonDependencies(libs, "implementation")
+}
+
+private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
+  val koinBom = libs.koin.bom
+  dependencies {
+    add(configurationName, platform(koinBom))
+
+    if (project.name != "logging-public") {
+      add(configurationName, project(":logging-public"))
+    }
+    // Add logging-public and tracking-core to all modules except themselves
+    if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
+      add(configurationName, project(":logging-public"))
+      add(configurationName, project(":tracking-core"))
+    }
+  }
+}
+
+fun Project.isLoggingPublicModule(): Boolean {
+  return name == "logging-public"
+}
+
+fun Project.isTrackingCoreModule(): Boolean {
+  return name == "tracking-core"
 }

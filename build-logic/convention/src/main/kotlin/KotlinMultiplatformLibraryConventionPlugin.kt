@@ -13,7 +13,6 @@ class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.kotlinMultiplatform.get().pluginId)
-        apply<HedvigLintConventionPlugin>() // todo consider moving this into Hedvig gradle plugin instead
       }
 
       configureKotlinMultiplatform()

@@ -18,7 +18,6 @@ class ApplicationConventionPlugin : Plugin<Project> {
         apply(libs.plugins.androidApplication.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
         apply(libs.plugins.kotlin.get().pluginId)
-        apply<HedvigLintConventionPlugin>()
       }
 
       extensions.configure<BaseAppModuleExtension> {
