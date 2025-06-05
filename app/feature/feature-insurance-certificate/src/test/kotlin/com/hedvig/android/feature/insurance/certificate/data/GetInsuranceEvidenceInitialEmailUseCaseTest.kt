@@ -104,4 +104,4 @@ internal class GetInsuranceEvidenceInitialEmailUseCaseTest {
 
     assertThat(result).isRight().isEqualTo(email)
   }
-} 
+}
