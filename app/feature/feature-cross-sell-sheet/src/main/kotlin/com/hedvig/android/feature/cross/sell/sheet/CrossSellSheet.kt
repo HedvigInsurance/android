@@ -22,7 +22,6 @@ import org.koin.androidx.compose.koinViewModel
 fun CrossSellSheet(
   isInScreenEligibleForCrossSells: Boolean,
   onCrossSellClick: (String) -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val viewModel: CrossSellSheetViewModel = koinViewModel()
   if (isInScreenEligibleForCrossSells) {
@@ -69,7 +68,6 @@ fun CrossSellSheet(
     com.hedvig.android.crosssells.CrossSellSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
-      onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
     )
   }
 }

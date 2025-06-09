@@ -182,6 +182,10 @@ private fun loadInsuranceData(
             CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
             CrossSellType.PET -> CrossSell.CrossSellType.PET
             CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+            CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET // todo: extra types!
+            CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
+            CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
+            CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
           },
         )
       }

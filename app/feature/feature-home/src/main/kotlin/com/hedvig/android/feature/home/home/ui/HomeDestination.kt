@@ -139,7 +139,6 @@ internal fun HomeDestination(
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -159,7 +158,6 @@ internal fun HomeDestination(
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
     navigateToContactInfo = navigateToContactInfo,
   )
 }
@@ -182,7 +180,6 @@ private fun HomeScreen(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -198,7 +195,6 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openUrl,
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -264,7 +260,9 @@ private fun HomeScreen(
 
               is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
                 onClick = {
-                  crossSellBottomSheetState.show(CrossSellSheetData(action.crossSells, uiState.travelAddonBannerInfo))
+                  crossSellBottomSheetState.show(
+                    action.crossSells,
+                  )
                 },
               )
 
@@ -589,7 +587,6 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 @Composable
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
@@ -605,7 +602,6 @@ private fun CrossSellBottomSheet(
   CrossSellSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
 }
 
@@ -665,7 +661,24 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = CrossSellsAction(
-            listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
+            CrossSellSheetData(
+              recommendedCrossSell = CrossSell(
+                "rh",
+                "Car Insurance",
+                "For you and your car",
+                "",
+                CrossSell.CrossSellType.CAR,
+              ),
+              otherCrossSells = listOf(
+                CrossSell(
+                  "rf",
+                  "Pet insurance",
+                  "For your dog or cat",
+                  "",
+                  ACCIDENT,
+                ),
+              ),
+            ),
           ),
           firstVetAction = FirstVetAction(
             listOf(
@@ -699,7 +712,6 @@ private fun PreviewHomeScreen(
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
-        onNavigateToAddonPurchaseFlow = {},
         navigateToContactInfo = {},
       )
     }

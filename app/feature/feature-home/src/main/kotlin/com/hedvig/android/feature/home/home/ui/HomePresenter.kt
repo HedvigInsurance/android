@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -175,11 +175,9 @@ private data class SuccessData(
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
-      val crossSellsAction = if (homeData.crossSells.isNotEmpty()) {
+      val crossSellsAction =
         HomeTopBarAction.CrossSellsAction(homeData.crossSells)
-      } else {
-        null
-      }
+
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
@@ -232,6 +230,6 @@ sealed interface HomeTopBarAction {
   ) : HomeTopBarAction
 
   data class CrossSellsAction(
-    val crossSells: List<CrossSell>,
+    val crossSells: CrossSellSheetData,
   ) : HomeTopBarAction
 }

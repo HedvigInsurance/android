@@ -111,14 +111,14 @@ internal fun HedvigApp(
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
         onCrossSellClick = deepLinkFirstUriHandler::openUri,
-        onNavigateToAddonPurchaseFlow = { insuranceIds ->
-          navHostController.navigate(
-            AddonPurchaseGraphDestination(
-              insuranceIds,
-              TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
-            ),
-          )
-        },
+//        onNavigateToAddonPurchaseFlow = { insuranceIds ->
+//          navHostController.navigate(
+//            AddonPurchaseGraphDestination(
+//              insuranceIds,
+//              TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
+//            ),
+//          )
+//        },
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(
