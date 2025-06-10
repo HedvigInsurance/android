@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -43,6 +44,7 @@ import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
+import com.hedvig.android.design.system.hedvig.CrossSellDrugHandle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -65,6 +67,11 @@ data class CrossSellSheetData(
 fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
+    dragHandle = {
+      CrossSellDrugHandle(
+        contentPadding =  PaddingValues(horizontal = 16.dp)
+      )
+    },
     content = { crossSellSheetData ->
       CrossSellsSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
