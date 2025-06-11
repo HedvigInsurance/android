@@ -161,7 +161,9 @@ fun CrossSellDrugHandle(
       .background(color = HedvigTheme.colorScheme.signalGreenFill),
       contentAlignment = Alignment.Center
     ) {
-      Row {
+      Row(
+        verticalAlignment = Alignment.CenterVertically
+      ) {
         Icon(HedvigIcons.Campaign,
           contentDescription = EmptyContentDescription,
           tint = HedvigTheme.colorScheme.signalGreenElement,

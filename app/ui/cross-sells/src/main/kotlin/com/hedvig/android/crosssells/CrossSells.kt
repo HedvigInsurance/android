@@ -119,6 +119,7 @@ private fun ColumnScope.CrossSellsSheetContent(
         onCrossSellClick(recommendedCrossSell.storeUrl)
       },
       enabled = true,
+      Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
     HedvigText(
