@@ -19,10 +19,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CrossSellSheet(
-  isInScreenEligibleForCrossSells: Boolean,
-  onCrossSellClick: (String) -> Unit,
-) {
+fun CrossSellSheet(isInScreenEligibleForCrossSells: Boolean, onCrossSellClick: (String) -> Unit) {
   val viewModel: CrossSellSheetViewModel = koinViewModel()
   if (isInScreenEligibleForCrossSells) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

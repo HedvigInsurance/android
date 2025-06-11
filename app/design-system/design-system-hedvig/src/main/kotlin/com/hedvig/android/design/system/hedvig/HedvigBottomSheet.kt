@@ -1,7 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -30,8 +29,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
@@ -66,7 +63,7 @@ fun HedvigBottomSheet(
     content = content,
     contentPadding = contentPadding,
     sheetState = sheetState,
-    dragHandle = dragHandle
+    dragHandle = dragHandle,
   )
 }
 
@@ -121,15 +118,15 @@ private fun <T> InternalHedvigBottomSheet(
     containerColor = bottomSheetColors.bottomSheetBackgroundColor,
     contentColor = bottomSheetColors.contentColor,
     contentPadding = contentPadding,
-    dragHandle = dragHandle ?:
-      {
-      DragHandle(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally)
-          .padding(top = 8.dp, bottom = 20.dp),
-      )
-    },
+    dragHandle = dragHandle
+      ?: {
+        DragHandle(
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(top = 8.dp, bottom = 20.dp),
+        )
+      },
   ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
       content()
@@ -143,45 +140,46 @@ fun CrossSellDrugHandle(
   modifier: Modifier = Modifier,
   text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
 ) {
-    val direction = LocalLayoutDirection.current
-    Box(modifier
+  val direction = LocalLayoutDirection.current
+  Box(
+    modifier
       .fillMaxWidth()
       .height(40.dp)
       .layout { measurable, constraints ->
         val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
         val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
         val adjustedConstraints = constraints.copy(
-          maxWidth = constraints.maxWidth+paddingEnd+paddingStart,
-          minWidth = constraints.minWidth+paddingEnd+paddingStart)
+          maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
+          minWidth = constraints.minWidth + paddingEnd + paddingStart,
+        )
         val placeable = measurable.measure(adjustedConstraints)
         layout(placeable.width, placeable.height) {
           placeable.place(0, 0)
         }
       }
       .background(color = HedvigTheme.colorScheme.signalGreenFill),
-      contentAlignment = Alignment.Center
+    contentAlignment = Alignment.Center,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Icon(HedvigIcons.Campaign,
-          contentDescription = EmptyContentDescription,
-          tint = HedvigTheme.colorScheme.signalGreenElement,
-          modifier = Modifier.size(20.dp)
+      Icon(
+        HedvigIcons.Campaign,
+        contentDescription = EmptyContentDescription,
+        tint = HedvigTheme.colorScheme.signalGreenElement,
+        modifier = Modifier.size(20.dp),
+      )
+      Spacer(Modifier.width(8.dp))
+      if (text != null) {
+        HedvigText(
+          text,
+          fontSize = HedvigTheme.typography.label.fontSize,
+          color = HedvigTheme.colorScheme.signalGreenText,
         )
-        Spacer(Modifier.width(8.dp))
-        if (text!=null) {
-          HedvigText(
-            text,
-            fontSize = HedvigTheme.typography.label.fontSize,
-            color = HedvigTheme.colorScheme.signalGreenText
-          )
-        }
       }
     }
-
+  }
 }
-
 
 @Composable
 private fun DragHandle(modifier: Modifier = Modifier) {

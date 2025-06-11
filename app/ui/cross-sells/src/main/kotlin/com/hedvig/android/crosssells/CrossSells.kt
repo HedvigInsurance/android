@@ -43,7 +43,6 @@ import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
 import com.hedvig.android.design.system.hedvig.CrossSellDrugHandle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -69,7 +68,7 @@ fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSel
     hedvigBottomSheetState = state,
     dragHandle = {
       CrossSellDrugHandle(
-        contentPadding =  PaddingValues(horizontal = 16.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp),
       )
     },
     content = { crossSellSheetData ->
@@ -119,7 +118,7 @@ private fun ColumnScope.CrossSellsSheetContent(
         onCrossSellClick(recommendedCrossSell.storeUrl)
       },
       enabled = true,
-      Modifier.fillMaxWidth()
+      Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
     HedvigText(
@@ -276,7 +275,7 @@ private fun CrossSellItem(
         onCrossSellClick(storeUrl)
       },
       buttonSize = Small,
-      buttonStyle =  ButtonDefaults.ButtonStyle.Secondary,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
