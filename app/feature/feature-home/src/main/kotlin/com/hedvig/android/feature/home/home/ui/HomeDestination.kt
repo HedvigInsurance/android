@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -78,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
@@ -317,7 +319,11 @@ private fun HomeScreen(
               .align(Alignment.End)
               .padding(horizontal = 16.dp),
           )
+        } else {
+          CrossSellsTooltip(uiState)
         }
+      } else if (uiState is Success) {
+        CrossSellsTooltip(uiState)
       }
     }
     PullRefreshIndicator(
@@ -328,6 +334,46 @@ private fun HomeScreen(
     )
   }
 }
+
+@Composable
+private fun ColumnScope.CrossSellsTooltip(uiState: Success) {
+  val context = LocalContext.current
+  if (uiState.crossSellsAction != null) {
+    val currentRecommendationId = uiState.crossSellsAction.crossSells.recommendedCrossSell.id
+    val shouldShowCrossSellsTooltip by produceState(false) {
+      val lastShownRecommendationId = context.getLastShownCrossSellRecommendation()
+      value = currentRecommendationId != lastShownRecommendationId
+    }
+    if (shouldShowCrossSellsTooltip) {
+      //      if (true) { //todo: remove if true
+      context.setLastShownCrossSellRecommendation(currentRecommendationId)
+      HedvigTooltip(
+        message = stringResource(R.string.TOAST_NEW_OFFER),
+        showTooltip = true,
+        tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
+          subMessage = null,
+          TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT,
+        ),
+        beakDirection = TopEnd,
+        tooltipShown = {},
+        modifier = Modifier
+          .align(Alignment.End)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+          )
+          .padding(start = 16.dp, end = getCrossSellsToolTipEndPadding(uiState).dp),
+      )
+    }
+  }
+}
+
+private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
+  val initialEndPadding = 16
+  var endPadding = initialEndPadding
+  if (uiState.firstVetAction != null) endPadding += 48
+  if (uiState.chatAction != null) endPadding += 48
+  return endPadding
+} // todo: how to make endPadding less hardcoded?
 
 private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
   val currentEpochDay = java.time.LocalDate
@@ -616,6 +662,14 @@ private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
 private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+
+private const val SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION = "shared_preference_cross_sell_recommendation"
+
+private fun Context.setLastShownCrossSellRecommendation(recommendationId: String?) =
+  getSharedPreferences().edit().putString(SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION, recommendationId).commit()
+
+private fun Context.getLastShownCrossSellRecommendation() =
+  getSharedPreferences().getString(SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION, null)
 
 @HedvigPreview
 @Composable
