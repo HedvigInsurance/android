@@ -1,4 +1,12 @@
 plugins {
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
-  id("hedvig.kotlin.library")
+}
+
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.atomicfu)
+    }
+  }
 }

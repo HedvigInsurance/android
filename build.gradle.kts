@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.androidApplication) apply false
   alias(libs.plugins.androidLibrary) apply false
+  alias(libs.plugins.androidLibraryMultiplatform) apply false
   alias(libs.plugins.apollo) apply false
   alias(libs.plugins.appIconBannerGenerator) apply false
   alias(libs.plugins.cacheFix) apply false
@@ -12,6 +13,7 @@ plugins {
   alias(libs.plugins.googleServices) apply false
   alias(libs.plugins.kotlin) apply false
   alias(libs.plugins.kotlinJvm) apply false
+  alias(libs.plugins.kotlinMultiplatform) apply false
   alias(libs.plugins.kotlinter) apply false
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.license) apply false

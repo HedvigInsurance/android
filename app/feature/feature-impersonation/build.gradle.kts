@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -14,10 +14,10 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
-  implementation(libs.hedvig.authlib)
   implementation(libs.koin.android)
   implementation(libs.koin.core)
   implementation(projects.authCorePublic)
+  implementation(projects.authlib)
   implementation(projects.designSystemHedvig)
   implementation(projects.navigationCore)
 }
