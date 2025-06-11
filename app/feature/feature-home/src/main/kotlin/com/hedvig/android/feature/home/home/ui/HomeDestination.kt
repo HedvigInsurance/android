@@ -306,6 +306,9 @@ private fun HomeScreen(
             },
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
         } else if (shouldShowNewMessageTooltip) {
@@ -317,6 +320,9 @@ private fun HomeScreen(
             tooltipShown = {},
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
         } else {
@@ -345,7 +351,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success) {
       value = currentRecommendationId != lastShownRecommendationId
     }
     if (shouldShowCrossSellsTooltip) {
-      //      if (true) { //todo: remove if true
+      //      if (true) { //todo: remove testing if true
       context.setLastShownCrossSellRecommendation(currentRecommendationId)
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
