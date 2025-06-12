@@ -37,7 +37,6 @@ internal class CrossSellNotificationBadgeService(
     val potentialCrossSellRecommendation = getCrossSellRecommendationIdUseCase
       .invoke()
       ?.rawValue
-    TODO()
     notificationBadgeStorage.setValue(
       notificationBadge = notificationBadge,
       newStatus = potentialCrossSellRecommendation?.let { setOf(it) } ?: emptySet(),
