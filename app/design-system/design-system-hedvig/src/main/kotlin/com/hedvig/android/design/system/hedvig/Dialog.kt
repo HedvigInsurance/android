@@ -437,7 +437,9 @@ private fun CoreSelectDialog(
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(20.dp))
+      if (!applyDefaultPadding) {
+        Spacer(Modifier.height(20.dp))
+      }
       HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
       Spacer(Modifier.height(8.dp))
       val state = rememberLazyListState()
