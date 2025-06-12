@@ -99,12 +99,16 @@ private fun SelectContractScreen(
             is SelectContractState.Error.UserPresentable -> uiState.message
             else -> stringResource(R.string.GENERAL_ERROR_BODY)
           },
-          modifier = Modifier.fillMaxWidth().weight(1f),
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
         )
       }
     }
 
-    is SelectContractState.Loading, is SelectContractState.NotEmpty.Redirecting -> HedvigFullScreenCenterAlignedProgress()
+    is SelectContractState.Loading, is SelectContractState.NotEmpty.Redirecting -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is SelectContractState.NotEmpty.Content -> {
       HedvigScaffold(

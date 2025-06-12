@@ -21,7 +21,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class InsuranceEvidenceEmailInputPresenterTest {
-  private fun createPresenterWithFakes(): Triple<InsuranceEvidenceEmailInputPresenter, FakeGetInsuranceEvidenceInitialEmailUseCase, FakeGenerateInsuranceEvidenceUseCase> {
+  private fun createPresenterWithFakes(): Triple<
+    InsuranceEvidenceEmailInputPresenter,
+    FakeGetInsuranceEvidenceInitialEmailUseCase,
+    FakeGenerateInsuranceEvidenceUseCase,
+  > {
     val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
     val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
     val presenter = InsuranceEvidenceEmailInputPresenter(

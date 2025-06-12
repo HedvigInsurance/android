@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -13,7 +13,6 @@ android {
   testOptions.unitTests.isReturnDefaultValues = true
   testOptions.unitTests.isIncludeAndroidResources = true
 }
-
 
 dependencies {
   implementation(libs.arrow.core)

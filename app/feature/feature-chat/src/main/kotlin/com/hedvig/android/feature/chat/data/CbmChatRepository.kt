@@ -74,7 +74,11 @@ internal interface CbmChatRepository {
 
   suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<MessageSendError, CbmChatMessage>
 
-  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<MessageSendError, CbmChatMessage>
+  suspend fun sendText(
+    conversationId: Uuid,
+    retryingMessageId: Uuid?,
+    text: String,
+  ): Either<MessageSendError, CbmChatMessage>
 
   suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 
@@ -212,7 +216,6 @@ internal class CbmChatRepositoryImpl(
 
             else -> {}
           }
-          chatDao.deleteMessage(conversationId, messageId)
         }
       }
     }
@@ -220,12 +223,13 @@ internal class CbmChatRepositoryImpl(
 
   override suspend fun sendText(
     conversationId: Uuid,
-    messageId: Uuid?,
+    retryingMessageId: Uuid?,
     text: String,
   ): Either<MessageSendError, CbmChatMessage> {
-    return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
+    val messageId = retryingMessageId ?: Uuid.randomUUID()
+    return sendMessage(conversationId, messageId, ConversationInput.Text(text)).onLeft { error ->
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
-        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        messageId.toString(),
         clock.now(),
         text,
       )
@@ -253,18 +257,19 @@ internal class CbmChatRepositoryImpl(
 
   private suspend fun sendOneMedia(
     conversationId: Uuid,
-    messageId: Uuid?,
+    retryingMessageId: Uuid?,
     uri: Uri,
   ): Either<MessageSendError, CbmChatMessage> {
+    val messageId = retryingMessageId ?: Uuid.randomUUID()
     return either {
       val uploadToken = uploadMediaToBotService(uri)
-      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
+      sendMessage(conversationId, messageId, ConversationInput.File(uploadToken)).bind()
     }.onLeft { messageSendError ->
       if (messageSendError !is MessageSendError.FileTooBigError) {
         val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(),
-          clock.now(),
-          uri,
+          id = messageId.toString(),
+          sentAt = clock.now(),
+          uri = uri,
         )
         messageSendError.handleFailedToSendMedia(failedMessage, uri, conversationId)
       }
@@ -273,19 +278,20 @@ internal class CbmChatRepositoryImpl(
 
   private suspend fun sendOnePhoto(
     conversationId: Uuid,
-    messageId: Uuid?,
+    retryingMessageId: Uuid?,
     uri: Uri,
   ): Either<MessageSendError, CbmChatMessage> {
+    val messageId = retryingMessageId ?: Uuid.randomUUID()
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
-      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
-    }.onLeft {
+      sendMessage(conversationId, messageId, ConversationInput.File(uploadToken)).bind()
+    }.onLeft { messageSendError ->
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        messageId.toString(),
         clock.now(),
         uri,
       )
-      it.handleFailedToSendMedia(failedMessage, uri, conversationId)
+      messageSendError.handleFailedToSendMedia(failedMessage, uri, conversationId)
     }
   }
 
@@ -308,13 +314,22 @@ internal class CbmChatRepositoryImpl(
 
   private suspend fun sendMessage(
     conversationId: Uuid,
+    messageId: Uuid,
     input: ConversationInput,
   ): Either<MessageSendError, CbmChatMessage> {
     return either {
+      chatDao.insert(input.toChatMessageEntity(clock, conversationId, messageId))
       val response = apolloClient
-        .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
+        .mutation(
+          ConversationSendMessageMutation(
+            conversationId = conversationId.toString(),
+            messageId = messageId.toString(),
+            text = input.text,
+            fileUploadToken = input.fileUploadToken,
+          ),
+        )
         .safeExecute(::ErrorMessage)
-        .mapLeft(ErrorMessage::toMessageSendError)
+        .mapLeft { message -> message.toMessageSendError() }
         .bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
@@ -325,7 +340,7 @@ internal class CbmChatRepositoryImpl(
         ErrorMessage("Unknown chat message type").toMessageSendError()
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
-      chatMessage
+      chatMessage!!
     }.onLeft {
       logcat { "Failed to send message, with error message:$it" }
     }
@@ -540,6 +555,48 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   else -> {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
+  }
+}
+
+/**
+ * Convert the chat input into a chat message entity which represents a message currently being sent over the network
+ */
+private fun ConversationInput.toChatMessageEntity(
+  clock: Clock,
+  conversationId: Uuid,
+  messageId: Uuid,
+): ChatMessageEntity {
+  val sentAt = clock.now()
+  return when (this) {
+    is ConversationInput.File -> {
+      ChatMessageEntity(
+        id = messageId,
+        conversationId = conversationId,
+        sender = ChatMessageEntity.Sender.MEMBER,
+        sentAt = sentAt,
+        text = null,
+        gifUrl = null,
+        url = this.fileUploadToken,
+        mimeType = CbmChatMessage.ChatMessageFile.MimeType.OTHER.toString(),
+        failedToSend = null,
+        isBeingSent = true,
+      )
+    }
+
+    is ConversationInput.Text -> {
+      ChatMessageEntity(
+        id = messageId,
+        conversationId = conversationId,
+        sender = ChatMessageEntity.Sender.MEMBER,
+        sentAt = sentAt,
+        text = text,
+        gifUrl = null,
+        url = null,
+        mimeType = null,
+        failedToSend = null,
+        isBeingSent = true,
+      )
+    }
   }
 }
 

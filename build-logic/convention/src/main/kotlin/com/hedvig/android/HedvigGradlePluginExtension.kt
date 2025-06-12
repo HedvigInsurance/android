@@ -1,13 +1,20 @@
 package com.hedvig.android
 
+import androidx.room.gradle.RoomExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.apollographql.apollo.gradle.api.ApolloExtension
+import com.apollographql.apollo.gradle.api.Service
+import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
+import java.io.File
 import javax.inject.Inject
+import kotlin.takeIf
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
 import org.gradle.api.plugins.PluginManager
-import org.gradle.kotlin.dsl.assign
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
@@ -22,30 +29,26 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   private val libs: LibrariesForLibs,
   private val pluginManager: PluginManager,
 ) {
+  private val apolloHandler: ApolloHandler =
+    project.objects.newInstance<ApolloHandler>()
   private val apolloSchemaHandler: ApolloSchemaHandler =
     project.objects.newInstance<ApolloSchemaHandler>()
   private val composeHandler: ComposeHandler =
     project.objects.newInstance<ComposeHandler>()
   private val androidResHandler: AndroidResHandler =
     project.objects.newInstance<AndroidResHandler>()
+  private val roomHandler: RoomHandler =
+    project.objects.newInstance<RoomHandler>()
 
-  fun apolloSchema(apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
+  fun apolloSchema(apolloServiceAction: Action<Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
   }
 
   /**
    * [packageName] is the package that the generated apollo classes will have for this module.
    */
-  fun apollo(packageName: String, extraConfiguration: Action<com.apollographql.apollo.gradle.api.Service> = Action {}) {
-    pluginManager.apply(libs.plugins.apollo.get().pluginId)
-    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
-      service("octopus") {
-        this.packageName = packageName
-        @Suppress("OPT_IN_USAGE")
-        dependsOn(project.project(":apollo-octopus-public"), true)
-        extraConfiguration.execute(this)
-      }
-    }
+  fun apollo(packageName: String, extraConfiguration: Action<Service> = Action {}) {
+    apolloHandler.configure(project, pluginManager, libs, packageName, extraConfiguration)
   }
 
   fun compose() {
@@ -58,6 +61,10 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
   fun androidResources() {
     androidResHandler.configure(project)
+  }
+
+  fun room(isTestOnly: Boolean = false, resolveSchemaRelativeToRootDir: File.() -> File) {
+    roomHandler.configure(project, pluginManager, libs, isTestOnly, resolveSchemaRelativeToRootDir)
   }
 
   companion object {
@@ -73,16 +80,16 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 }
 
 private abstract class ApolloSchemaHandler {
-  fun configure(project: Project, apolloServiceAction: Action<com.apollographql.apollo.gradle.api.Service>) {
+  fun configure(project: Project, apolloServiceAction: Action<Service>) {
     with(project) {
       pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
     }
-    project.extensions.configure<com.apollographql.apollo.gradle.api.ApolloExtension> {
+    project.extensions.configure<ApolloExtension> {
       service("octopus") {
         apolloServiceAction.execute(this)
       }
     }
-    project.tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>()
+    project.tasks.withType<ApolloDownloadSchemaTask>()
       .configureEach {
         doLast {
           val schemaFile = outputFile.get().asFile
@@ -140,6 +147,27 @@ private abstract class ApolloSchemaHandler {
   }
 }
 
+private abstract class ApolloHandler {
+  fun configure(
+    project: Project,
+    pluginManager: PluginManager,
+    libs: LibrariesForLibs,
+    packageName: String,
+    extraConfiguration: Action<Service>,
+  ) {
+    pluginManager.apply(libs.plugins.apollo.get().pluginId)
+    project.extensions.configure<ApolloExtension> {
+      service("octopus") {
+        this.packageName.set(packageName)
+
+        @Suppress("OPT_IN_USAGE")
+        dependsOn(project.project(":apollo-octopus-public"), true)
+        extraConfiguration.execute(this)
+      }
+    }
+  }
+}
+
 private abstract class ComposeHandler {
   fun configure(project: Project) {
     val libs = project.the<LibrariesForLibs>()
@@ -175,6 +203,27 @@ private abstract class ComposeHandler {
       compose = true
     }
   }
+
+  private fun ComposeCompilerGradlePluginExtension.configureComposeCompilerMetrics(project: Project) {
+    with(project) {
+      fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
+
+      fun Provider<*>.relativeToRootProject(dir: String): Provider<Directory?> = flatMap {
+        rootProject.layout.buildDirectory.dir(projectDir.toRelativeString(rootDir))
+      }.map { it.dir(dir) }
+
+      // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
+      project.providers.gradleProperty("com.hedvig.app.enableComposeCompilerReports")
+        .onlyIfTrue()
+        .relativeToRootProject("compose-metrics")
+        .let(metricsDestination::set)
+
+      project.providers.gradleProperty("com.hedvig.app.enableComposeCompilerReports")
+        .onlyIfTrue()
+        .relativeToRootProject("compose-reports")
+        .let(reportsDestination::set)
+    }
+  }
 }
 
 private abstract class AndroidResHandler {
@@ -183,6 +232,28 @@ private abstract class AndroidResHandler {
       buildFeatures {
         androidResources = true
       }
+    }
+  }
+}
+
+private abstract class RoomHandler {
+  fun configure(
+    project: Project,
+    pluginManager: PluginManager,
+    libs: LibrariesForLibs,
+    isTestOnly: Boolean,
+    resolveSchemaRelativeToRootDir: File.() -> File,
+  ) {
+    with(pluginManager) {
+      apply(libs.plugins.room.get().pluginId)
+      apply(libs.plugins.ksp.get().pluginId)
+    }
+    project.dependencies {
+      val ksp = if (isTestOnly) "kspTest" else "ksp"
+      add(ksp, libs.room.ksp)
+    }
+    project.extensions.configure<RoomExtension> {
+      schemaDirectory(project.rootDir.resolveSchemaRelativeToRootDir().absolutePath)
     }
   }
 }

@@ -34,7 +34,7 @@ interface ChatDao {
     """
     SELECT * FROM chat_messages
     WHERE conversationId LIKE :conversationId
-    ORDER BY sentAt DESC
+    ORDER BY isBeingSent DESC, sentAt DESC 
     """,
   )
   fun messages(conversationId: Uuid): PagingSource<Int, ChatMessageEntity>
@@ -54,6 +54,7 @@ interface ChatDao {
     SELECT id FROM chat_messages
     WHERE conversationId LIKE :conversationId
         AND failedToSend IS NULL
+        AND isBeingSent IS FALSE
     ORDER BY sentAt DESC
     LIMIT 1
     """,

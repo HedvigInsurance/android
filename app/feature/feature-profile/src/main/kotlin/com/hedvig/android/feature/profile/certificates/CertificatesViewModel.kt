@@ -29,7 +29,8 @@ internal class CertificatesViewModel(
   )
 
 private class CertificatesPresenter(
-  private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val checkTravelCertificateDestinationAvailabilityUseCase:
+    CheckTravelCertificateDestinationAvailabilityUseCase,
   private val checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
 ) : MoleculePresenter<CertificatesEvent, CertificatesState> {
   @Composable
