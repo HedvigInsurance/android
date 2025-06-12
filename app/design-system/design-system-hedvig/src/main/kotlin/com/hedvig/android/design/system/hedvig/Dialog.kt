@@ -374,7 +374,7 @@ private fun HedvigDialogContent(
       when (style) {
         NoButtons -> content()
         else -> {
-          Box(Modifier.fillMaxWidth(), propagateMinConstraints = true) {
+          Box(Modifier.fillMaxWidth().weight(1f, fill = false), propagateMinConstraints = true) {
             content()
           }
           Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
