@@ -9,12 +9,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import arrow.core.Either
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.feature.home.home.data.combine
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.coroutines.flow.combine
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
@@ -68,14 +72,26 @@ internal class HomePresenter(
         )
       }
     }
-
     LaunchedEffect(loadIteration) {
       val forceNetworkFetch = loadIteration != 0
       Snapshot.withMutableSnapshot {
         isReloading = true
         hasError = false
       }
-      getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch).collectLatest { homeResult ->
+      combine(
+        getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch),
+        crossSellHomeNotificationServiceProvider.provide().showRedDotNotification(),
+        crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown()
+      ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
+        homeResult to (showRedDot to epochDay)
+      }.collectLatest { result: Pair<Either<ApolloOperationError, HomeData>, Pair<Boolean, Long?>> ->
+        val homeResult = result.first
+        val showCrossSellRedDot = result.second.first
+        val lastDayCrossSellToolTipShown = result.second.second
+        val crossSellRecommendationNotification = CrossSellRecommendationNotification(
+          showCrossSellRedDot,
+          lastDayCrossSellToolTipShown,
+        )
         homeResult.fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {
@@ -85,12 +101,6 @@ internal class HomePresenter(
             }
           },
         ) { homeData: HomeData ->
-          val showCrossSellRedDot = crossSellHomeNotificationServiceProvider.provide().showRedDotNotification().first()
-          val lastDayCrossSellToolTipShown = crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown().first()
-          val crossSellRecommendationNotification = CrossSellRecommendationNotification(
-            showCrossSellRedDot,
-            lastDayCrossSellToolTipShown,
-          )
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
@@ -267,6 +277,5 @@ data class CrossSellRecommendationNotification(
   val hasUnreadRecommendation: Boolean, // show red dot
   private val epochDayWhenLastToolTipShown: Long?,
 ) {
-  private val today = java.time.LocalDate.now().toEpochDay()
-  val showToolTip: Boolean = hasUnreadRecommendation && epochDayWhenLastToolTipShown != today
+  val showToolTip: Boolean = hasUnreadRecommendation && epochDayWhenLastToolTipShown != java.time.LocalDate.now().toEpochDay()
 }

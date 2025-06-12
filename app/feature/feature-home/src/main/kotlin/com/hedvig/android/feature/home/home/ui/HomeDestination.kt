@@ -96,6 +96,7 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -352,9 +353,11 @@ private fun HomeScreen(
 private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
+    logcat { "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip today: ${ java.time.LocalDate.now().toEpochDay()}" }
     if (shouldShowCrossSellsTooltip) {
-      //      if (true) { //todo: remove testing if true
+    //        if (true) { //todo: remove testing if true
       val today = java.time.LocalDate.now().toEpochDay()
+   //           val today = 1L  //todo: remove testing today
       setEpochDayWhenLastToolTipShown(today)
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
