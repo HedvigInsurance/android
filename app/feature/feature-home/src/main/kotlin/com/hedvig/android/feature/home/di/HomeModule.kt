@@ -12,7 +12,7 @@ import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImp
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
-import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
+import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationServiceProvider
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.viewModel
@@ -47,7 +47,7 @@ val homeModule = module {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),
       get<SeenImportantMessagesStorage>(),
-      get<CrossSellCardNotificationBadgeServiceProvider>(),
+      get<CrossSellHomeNotificationServiceProvider>(),
       get<ApplicationScope>(),
     )
   }

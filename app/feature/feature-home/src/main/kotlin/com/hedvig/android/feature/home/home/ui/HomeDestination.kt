@@ -161,6 +161,9 @@ internal fun HomeDestination(
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    setEpochDayWhenLastToolTipShown = { epochDay ->
+      viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
+    },
   )
 }
 
@@ -182,6 +185,7 @@ private fun HomeScreen(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  setEpochDayWhenLastToolTipShown: (Long) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -266,6 +270,9 @@ private fun HomeScreen(
                     action.crossSells,
                   )
                 },
+                modifier = Modifier.notificationCircle(
+                  action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                ),
               )
 
               is HomeTopBarAction.FirstVetAction -> {
@@ -326,10 +333,10 @@ private fun HomeScreen(
               .padding(horizontal = 16.dp),
           )
         } else {
-          CrossSellsTooltip(uiState)
+          CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
         }
       } else if (uiState is Success) {
-        CrossSellsTooltip(uiState)
+        CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
       }
     }
     PullRefreshIndicator(
@@ -342,17 +349,13 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun ColumnScope.CrossSellsTooltip(uiState: Success) {
-  val context = LocalContext.current
+private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
-    val currentRecommendationId = uiState.crossSellsAction.crossSells.recommendedCrossSell.id
-    val shouldShowCrossSellsTooltip by produceState(false) {
-      val lastShownRecommendationId = context.getLastShownCrossSellRecommendation()
-      value = currentRecommendationId != lastShownRecommendationId
-    }
+    val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
     if (shouldShowCrossSellsTooltip) {
       //      if (true) { //todo: remove testing if true
-      context.setLastShownCrossSellRecommendation(currentRecommendationId)
+      val today = java.time.LocalDate.now().toEpochDay()
+      setEpochDayWhenLastToolTipShown(today)
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
         showTooltip = true,
@@ -379,7 +382,7 @@ private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
   if (uiState.firstVetAction != null) endPadding += 48
   if (uiState.chatAction != null) endPadding += 48
   return endPadding
-} // todo: how to make endPadding less hardcoded?
+}
 
 private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
   val currentEpochDay = java.time.LocalDate
@@ -669,14 +672,6 @@ private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
 private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
-private const val SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION = "shared_preference_cross_sell_recommendation"
-
-private fun Context.setLastShownCrossSellRecommendation(recommendationId: String?) =
-  getSharedPreferences().edit().putString(SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION, recommendationId).commit()
-
-private fun Context.getLastShownCrossSellRecommendation() =
-  getSharedPreferences().getString(SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION, null)
-
 @HedvigPreview
 @Composable
 private fun PreviewHomeScreen(
@@ -739,6 +734,10 @@ private fun PreviewHomeScreen(
                 ),
               ),
             ),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification(
+              true,
+              java.time.LocalDate.now().toEpochDay(),
+            ),
           ),
           firstVetAction = FirstVetAction(
             listOf(
@@ -773,6 +772,7 @@ private fun PreviewHomeScreen(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
       )
     }
   }

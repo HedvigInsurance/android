@@ -1,11 +1,11 @@
 package com.hedvig.android.notification.badge.data.crosssell.card
 
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellIdentifier
-import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellIdentifiersUseCase
+import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommendationIdUseCase
 
-class FakeGetCrossSellIdentifiersUseCase(
+class FakeGetCrossSellRecommendationIdUseCase(
   private val typeOfContracts: (() -> Set<CrossSellIdentifier>) = { emptySet() },
-) : GetCrossSellIdentifiersUseCase {
+) : GetCrossSellRecommendationIdUseCase {
   override suspend fun invoke(): Set<CrossSellIdentifier> {
     return typeOfContracts()
   }

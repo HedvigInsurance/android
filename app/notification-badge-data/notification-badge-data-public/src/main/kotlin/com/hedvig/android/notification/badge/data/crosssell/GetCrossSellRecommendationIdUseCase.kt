@@ -8,14 +8,14 @@ import octopus.CrossSellTypesQuery
 /**
  * Returns a set of unique identifiers per cross-sell that exists for the current member as returned from the backend.
  */
-interface GetCrossSellIdentifiersUseCase {
-  suspend fun invoke(): Set<CrossSellIdentifier>
+interface GetCrossSellRecommendationIdUseCase {
+  suspend fun invoke(): CrossSellIdentifier?
 }
 
-internal class GetCrossSellIdentifiersUseCaseImpl(
+internal class GetCrossSellRecommendationIdUseCaseImpl(
   private val apolloClient: ApolloClient,
-) : GetCrossSellIdentifiersUseCase {
-  override suspend fun invoke(): Set<CrossSellIdentifier> {
+) : GetCrossSellRecommendationIdUseCase {
+  override suspend fun invoke(): CrossSellIdentifier? {
     return apolloClient
       .query(CrossSellTypesQuery())
       .safeExecute()
@@ -24,10 +24,11 @@ internal class GetCrossSellIdentifiersUseCaseImpl(
           logcat(throwable = it.throwable) {
             "Error when loading potential cross-sells: $it"
           }
-          emptySet()
+          null
         },
         { data ->
-          data.currentMember.crossSells.map { it.type.rawValue }.map(::CrossSellIdentifier).toSet()
+          data.currentMember
+            .crossSell.recommendedCrossSell?.id?.let { CrossSellIdentifier(it) }
         },
       )
   }
