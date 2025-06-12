@@ -105,7 +105,6 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellSource {
     is CrossSellInfoType.ClosedClaim -> CrossSellSource.CLOSED_CLAM
     CrossSellInfoType.EditCoInsured -> CrossSellSource.EDIT_COINSURED
     CrossSellInfoType.MovingFlow -> CrossSellSource.MOVING_FLOW
-    // todo: CrossSellSource.HOME is not used!
   }
 }
 
@@ -136,10 +135,11 @@ internal class GetCrossSellSheetDataUseCaseImpl(
             it.toCrossSell()
           }
           val recommended = recommendedData ?: otherCrossSellsData[0]
-          // todo: recommended should not be null - what to do in this case?
+          val otherCrossSells = recommendedData?.let { otherCrossSellsData } ?: otherCrossSellsData.drop(1)
+          // todo: recommended should not be null - what to do in this case? asked in https://hedviginsurance.slack.com/archives/C08TXUFL0T0/p1749712959548239
           CrossSellSheetData(
             recommendedCrossSell = recommended,
-            otherCrossSells = emptyList(), // todo: empty list happening on the client - should change?
+            otherCrossSells = otherCrossSells,
           )
         }
       }
