@@ -86,15 +86,11 @@ internal class HomePresenter(
         crossSellHomeNotificationServiceProvider.provide().showRedDotNotification(),
         crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown(),
       ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
-        homeResult to (showRedDot to epochDay)
-      }.collectLatest { result: Pair<Either<ApolloOperationError, HomeData>, Pair<Boolean, Long?>> ->
-        val homeResult = result.first
-        val showCrossSellRedDot = result.second.first
-        val lastDayCrossSellToolTipShown = result.second.second
-        val crossSellRecommendationNotification = CrossSellRecommendationNotification(
-          showCrossSellRedDot,
-          lastDayCrossSellToolTipShown,
+        homeResult to CrossSellRecommendationNotification(
+          showRedDot,
+          epochDay,
         )
+      }.collectLatest { (homeResult: Either<ApolloOperationError, HomeData>, crossSellNotification: CrossSellRecommendationNotification) ->
         homeResult.fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {
@@ -107,7 +103,7 @@ internal class HomePresenter(
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
-            successData = SuccessData.fromHomeData(homeData, crossSellRecommendationNotification)
+            successData = SuccessData.fromHomeData(homeData, crossSellNotification)
           }
         }
       }
