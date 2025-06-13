@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -166,9 +168,9 @@ fun SingleSelectDialog(
   radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
 ) {
   CoreSelectDialog(
-    title = title,
     optionsList = optionsList,
     onDismissRequest = onDismissRequest,
+    style = DialogStyle.TitleNoButtons(title = title),
   ) { radioOptionData ->
     RadioOption(
       data = radioOptionData,
@@ -220,10 +222,10 @@ fun MultiSelectDialog(
   checkboxSize: CheckboxSize = Medium,
 ) {
   CoreSelectDialog(
-    title = title,
     optionsList = optionsList,
     onDismissRequest = onDismissRequest,
     style = DialogStyle.TitlePlusButton(
+      title = title,
       onButtonClick = onDismissRequest,
       buttonText = stringResource(R.string.general_close_button),
     ),
@@ -296,8 +298,12 @@ object DialogDefaults {
         }
       }
 
+      is DialogStyle.TitleNoButtons -> {
+        DialogTokens.TitledPadding
+      }
+
       is DialogStyle.TitlePlusButton -> {
-        DialogTokens.TitlePlusButtonPadding
+        DialogTokens.TitledPadding
       }
 
       NoButtons -> DialogTokens.NoButtonsPadding
@@ -314,6 +320,7 @@ object DialogDefaults {
         DialogTokens.ContentToTitlePlusButtonPaddingHeight
       }
 
+      is DialogStyle.TitleNoButtons -> 0.dp
       NoButtons -> 0.dp
     }
   }
@@ -335,8 +342,13 @@ object DialogDefaults {
      *  however this is required for dialogs which need a button at the bottom for a11y reasons
      */
     data class TitlePlusButton(
+      val title: String,
       val onButtonClick: () -> Unit,
       val buttonText: String,
+    ) : DialogStyle()
+
+    data class TitleNoButtons(
+      val title: String,
     ) : DialogStyle()
 
     data object NoButtons : DialogStyle()
@@ -371,47 +383,53 @@ private fun HedvigDialogContent(
     Column(
       Modifier.padding(padding),
     ) {
-      when (style) {
-        NoButtons -> content()
-        else -> {
-          Box(Modifier.fillMaxWidth().weight(1f, fill = false), propagateMinConstraints = true) {
-            content()
-          }
-          Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
-          when (style) {
-            NoButtons -> error("NoButtons is covered in the outer when statement")
-            is Buttons -> {
-              when (style.buttonSize) {
-                BIG -> {
-                  BigVerticalButtons(
-                    onDismissRequest = style.onDismissRequest,
-                    dismissButtonText = style.dismissButtonText,
-                    onConfirmButtonClick = style.onConfirmButtonClick,
-                    confirmButtonText = style.confirmButtonText,
-                  )
-                }
+      if (style is NoButtons) {
+        content()
+      } else {
+        if (style is DialogStyle.TitlePlusButton) {
+          DialogContentTitle(applyDefaultPadding, style, style.title)
+        }
+        if (style is DialogStyle.TitleNoButtons) {
+          DialogContentTitle(applyDefaultPadding, style, style.title)
+        }
+        Box(Modifier.fillMaxWidth().weight(1f, fill = false), propagateMinConstraints = true) {
+          content()
+        }
+        Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
+        when (style) {
+          NoButtons -> error("NoButtons is covered in the outer when statement")
+          is DialogStyle.TitleNoButtons -> {}
+          is Buttons -> {
+            when (style.buttonSize) {
+              BIG -> {
+                BigVerticalButtons(
+                  onDismissRequest = style.onDismissRequest,
+                  dismissButtonText = style.dismissButtonText,
+                  onConfirmButtonClick = style.onConfirmButtonClick,
+                  confirmButtonText = style.confirmButtonText,
+                )
+              }
 
-                SMALL -> {
-                  SmallHorizontalPreferringButtons(
-                    onDismissRequest = style.onDismissRequest,
-                    dismissButtonText = style.dismissButtonText,
-                    onConfirmButtonClick = style.onConfirmButtonClick,
-                    confirmButtonText = style.confirmButtonText,
-                  )
-                }
+              SMALL -> {
+                SmallHorizontalPreferringButtons(
+                  onDismissRequest = style.onDismissRequest,
+                  dismissButtonText = style.dismissButtonText,
+                  onConfirmButtonClick = style.onConfirmButtonClick,
+                  confirmButtonText = style.confirmButtonText,
+                )
               }
             }
+          }
 
-            is DialogStyle.TitlePlusButton -> {
-              HedvigButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = style.onButtonClick,
-                text = style.buttonText,
-                enabled = true,
-                buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-                buttonSize = ButtonDefaults.ButtonSize.Large,
-              )
-            }
+          is DialogStyle.TitlePlusButton -> {
+            HedvigButton(
+              modifier = Modifier.fillMaxWidth(),
+              onClick = style.onButtonClick,
+              text = style.buttonText,
+              enabled = true,
+              buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+              buttonSize = ButtonDefaults.ButtonSize.Large,
+            )
           }
         }
       }
@@ -420,8 +438,20 @@ private fun HedvigDialogContent(
 }
 
 @Composable
+private fun DialogContentTitle(applyDefaultPadding: Boolean, style: DialogStyle, title: String) {
+  if (!applyDefaultPadding) {
+    Spacer(Modifier.height(DialogDefaults.padding(style).calculateTopPadding()))
+  }
+  HedvigText(
+    text = title,
+    style = HedvigTheme.typography.bodySmall,
+    textAlign = TextAlign.Center,
+    modifier = Modifier.fillMaxWidth().semantics { heading() },
+  )
+}
+
+@Composable
 private fun CoreSelectDialog(
-  title: String,
   optionsList: List<RadioOptionData>,
   onDismissRequest: () -> Unit,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
@@ -437,10 +467,6 @@ private fun CoreSelectDialog(
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      if (!applyDefaultPadding) {
-        Spacer(Modifier.height(20.dp))
-      }
-      HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
       Spacer(Modifier.height(8.dp))
       val state = rememberLazyListState()
       val lazyColumnContentPadding = if (applyDefaultPadding) {
