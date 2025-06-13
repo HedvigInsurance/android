@@ -265,16 +265,19 @@ private fun HomeScreen(
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
-              is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
-                onClick = {
-                  crossSellBottomSheetState.show(
-                    action.crossSells,
-                  )
-                },
-                modifier = Modifier.notificationCircle(
-                  action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                ),
-              )
+              is HomeTopBarAction.CrossSellsAction -> {
+                ToolbarCrossSellsIcon(
+                  onClick = {
+                    crossSellBottomSheetState.show(
+                      action.crossSells,
+                    )
+                  },
+                  modifier = Modifier
+                    .notificationCircle(
+                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                    ),
+                )
+              }
 
               is HomeTopBarAction.FirstVetAction -> {
                 val sections = action.sections
@@ -352,13 +355,17 @@ private fun HomeScreen(
 @Composable
 private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
-   // setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
+    // setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
-    logcat { "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip today: ${ java.time.LocalDate.now().toEpochDay()}" }
+    logcat {
+      "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip today: ${
+        java.time.LocalDate.now().toEpochDay()
+      }"
+    }
     if (shouldShowCrossSellsTooltip) {
-    //        if (true) { //todo: remove testing if true
+      //        if (true) { //todo: remove testing if true
       val today = java.time.LocalDate.now().toEpochDay()
-   //           val today = 1L  //todo: remove testing today
+      //           val today = 1L  //todo: remove testing today
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
         showTooltip = true,

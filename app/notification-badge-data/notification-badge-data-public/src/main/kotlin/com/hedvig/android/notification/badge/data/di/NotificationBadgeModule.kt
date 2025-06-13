@@ -48,8 +48,7 @@ val notificationBadgeModule = module {
   single<DemoCrossSellCardNotificationBadgeService> {
     DemoCrossSellCardNotificationBadgeService()
   }
-  single<CrossSellHomeNotificationServiceImpl>{
+  single<CrossSellHomeNotificationServiceImpl> {
     CrossSellHomeNotificationServiceImpl(get(), get())
   }
-
 }

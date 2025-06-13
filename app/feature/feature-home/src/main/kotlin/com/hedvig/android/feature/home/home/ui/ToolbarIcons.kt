@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.home.home.ui
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -8,9 +10,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -52,6 +60,14 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  var isRotated by remember { mutableStateOf(false) }
+  val fullRotation by animateFloatAsState(
+    targetValue = if (isRotated) 360f else 0f,
+    animationSpec = tween(1500, 50),
+  )
+  LaunchedEffect(Unit) {
+    isRotated = true
+  }
   Image(
     imageVector = HedvigIcons.ColoredCampaign,
     contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
@@ -59,7 +75,10 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      .clickable(onClick = onClick),
+      .clickable(onClick = onClick)
+      .graphicsLayer {
+        rotationZ = fullRotation
+      },
   )
 }
 

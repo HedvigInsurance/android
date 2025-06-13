@@ -25,10 +25,10 @@ import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNo
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.coroutines.flow.combine
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
@@ -81,7 +81,7 @@ internal class HomePresenter(
       combine(
         getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch),
         crossSellHomeNotificationServiceProvider.provide().showRedDotNotification(),
-        crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown()
+        crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown(),
       ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
         homeResult to (showRedDot to epochDay)
       }.collectLatest { result: Pair<Either<ApolloOperationError, HomeData>, Pair<Boolean, Long?>> ->
@@ -277,5 +277,6 @@ data class CrossSellRecommendationNotification(
   val hasUnreadRecommendation: Boolean, // show red dot
   private val epochDayWhenLastToolTipShown: Long?,
 ) {
-  val showToolTip: Boolean = hasUnreadRecommendation && epochDayWhenLastToolTipShown != java.time.LocalDate.now().toEpochDay()
+  val showToolTip: Boolean =
+    hasUnreadRecommendation && epochDayWhenLastToolTipShown != java.time.LocalDate.now().toEpochDay()
 }

@@ -56,7 +56,7 @@ internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellRedDotBadgeType = CrossSellBadgeType.InsuranceFragmentCard
 
   override fun showRedDotNotification(): Flow<Boolean> {
-   // return flowOf(true) //todo: remove mock
+    // return flowOf(true) //todo: remove mock
     return crossSellNotificationBadgeService.showNotification(crossSellRedDotBadgeType)
   }
 
@@ -69,7 +69,7 @@ internal class CrossSellHomeNotificationServiceImpl(
         result
       }
       .distinctUntilChanged()
-  //  return flowOf(null) //todo: remove mock
+    //  return flowOf(null) //todo: remove mock
   }
 
   override suspend fun markAsSeen() {
