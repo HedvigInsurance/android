@@ -26,7 +26,6 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -90,7 +89,9 @@ internal class HomePresenter(
           showRedDot,
           epochDay,
         )
-      }.collectLatest { (homeResult: Either<ApolloOperationError, HomeData>, crossSellNotification: CrossSellRecommendationNotification) ->
+      }.collectLatest {
+        (homeResult: Either<ApolloOperationError, HomeData>, crossSellNotification: CrossSellRecommendationNotification),
+        ->
         homeResult.fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {
@@ -209,9 +210,13 @@ private data class SuccessData(
       homeData: HomeData,
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
     ): SuccessData {
-      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell!=null || homeData.crossSells.otherCrossSells.isNotEmpty())
-        HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification) else null
-
+      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
+        homeData.crossSells.otherCrossSells.isNotEmpty()
+      ) {
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification)
+      } else {
+        null
+      }
 
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
@@ -275,6 +280,8 @@ data class CrossSellRecommendationNotification(
   private val epochDayWhenLastToolTipShown: Long?,
 ) {
   val showToolTip: Boolean =
-    hasUnreadRecommendation && epochDayWhenLastToolTipShown != Clock.System.now().toLocalDateTime(
-      TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
+    hasUnreadRecommendation &&
+      epochDayWhenLastToolTipShown != Clock.System.now().toLocalDateTime(
+        TimeZone.currentSystemDefault(),
+      ).date.toEpochDays().toLong()
 }

@@ -361,7 +361,7 @@ private fun HomeScreen(
 @Composable
 private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
-    // setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
+//    setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
     logcat {
       "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip"
@@ -370,7 +370,8 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
       if (shouldSetEpochDayWhenLastToolTipShown) {
         val today = Clock.System.now().toLocalDateTime(
-          TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
+          TimeZone.currentSystemDefault(),
+        ).date.toEpochDays().toLong()
         delay(5000)
         setEpochDayWhenLastToolTipShown(today)
       }
