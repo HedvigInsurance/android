@@ -210,11 +210,9 @@ private data class SuccessData(
       homeData: HomeData,
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
     ): SuccessData {
-      val crossSellsAction =
-        HomeTopBarAction.CrossSellsAction(
-          homeData.crossSells,
-          crossSellRecommendationNotification,
-        )
+      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell!=null || homeData.crossSells.otherCrossSells.isNotEmpty())
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification) else null
+
 
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
