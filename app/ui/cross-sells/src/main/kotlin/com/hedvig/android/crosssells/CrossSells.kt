@@ -90,7 +90,7 @@ private fun ColumnScope.CrossSellsSheetContent(
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  if (recommendedCrossSell!=null) {
+  if (recommendedCrossSell != null) {
     RecommendationSection(recommendedCrossSell, onCrossSellClick)
   }
   if (otherCrossSells.isNotEmpty()) {
@@ -120,7 +120,7 @@ private fun ColumnScope.CrossSellsSheetContent(
 private fun RecommendationSection(
   recommendedCrossSell: CrossSell,
   onCrossSellClick: (String) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,

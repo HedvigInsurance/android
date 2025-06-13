@@ -40,7 +40,7 @@ internal class HomePresenterTest {
     "title",
     "subtitle",
     "url",
-    CrossSellType.HOME
+    CrossSellType.HOME,
   )
 
   @Test
@@ -126,7 +126,7 @@ internal class HomePresenterTest {
           showChatIcon = true,
           hasUnseenChatMessages = false,
           showHelpCenter = false,
-          crossSells =  CrossSellSheetData(testCrossSell,listOf()),
+          crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
           travelBannerInfo = null,
         ).right(),
@@ -151,8 +151,9 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           firstVetAction = null,
-          crossSellsAction =  HomeTopBarAction.CrossSellsAction(
-            CrossSellSheetData( testCrossSell,listOf())),
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(
+            CrossSellSheetData(testCrossSell, listOf()),
+          ),
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
           travelAddonBannerInfo = null,
@@ -184,7 +185,7 @@ internal class HomePresenterTest {
           ),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null,listOf()),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -258,7 +259,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = CrossSellSheetData(null,listOf()),
+          crossSells = CrossSellSheetData(null, listOf()),
           travelBannerInfo = null,
         ).right(),
       )
@@ -290,7 +291,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null,listOf()),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -340,7 +341,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null,listOf()),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(
             firstVet,
           ),
@@ -393,7 +394,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells =  CrossSellSheetData(testCrossSell, listOf(crossSell)),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell)),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
