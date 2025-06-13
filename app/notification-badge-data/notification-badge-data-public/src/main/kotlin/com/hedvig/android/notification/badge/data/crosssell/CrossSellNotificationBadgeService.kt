@@ -39,7 +39,7 @@ internal class CrossSellNotificationBadgeService(
       ?.rawValue
     notificationBadgeStorage.setValue(
       notificationBadge = notificationBadge,
-      newStatus = potentialCrossSellRecommendation?.let { setOf(it) } ?: emptySet(),
+      newStatus = setOfNotNull(potentialCrossSellRecommendation),
     )
   }
 }
