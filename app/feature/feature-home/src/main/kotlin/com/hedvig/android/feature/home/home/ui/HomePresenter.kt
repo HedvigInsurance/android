@@ -28,7 +28,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
@@ -276,5 +279,6 @@ data class CrossSellRecommendationNotification(
   private val epochDayWhenLastToolTipShown: Long?,
 ) {
   val showToolTip: Boolean =
-    hasUnreadRecommendation && epochDayWhenLastToolTipShown != java.time.LocalDate.now().toEpochDay()
+    hasUnreadRecommendation && epochDayWhenLastToolTipShown != Clock.System.now().toLocalDateTime(
+      TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
 }

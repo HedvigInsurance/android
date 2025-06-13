@@ -120,13 +120,17 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun HomeDestination(
@@ -352,19 +356,19 @@ private fun HomeScreen(
   }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
     // setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
     logcat {
-      "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip today: ${
-        java.time.LocalDate.now().toEpochDay()
-      }"
+      "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip"
     }
     if (shouldShowCrossSellsTooltip) {
       //        if (true) { //todo: remove testing if true
-      val today = java.time.LocalDate.now().toEpochDay()
+      val today = Clock.System.now().toLocalDateTime(
+        TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
       //           val today = 1L  //todo: remove testing today
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
