@@ -175,8 +175,8 @@ private data class SuccessData(
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
-      val crossSellsAction =
-        HomeTopBarAction.CrossSellsAction(homeData.crossSells)
+      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell!=null || homeData.crossSells.otherCrossSells.isNotEmpty())
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells) else null
 
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
