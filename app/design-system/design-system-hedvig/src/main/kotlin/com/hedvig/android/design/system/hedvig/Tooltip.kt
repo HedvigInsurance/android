@@ -72,8 +72,8 @@ fun HedvigTooltip(
     if (!showTooltip) return@LaunchedEffect
     delay(0.5.seconds)
     transientShowTooltip = showTooltip
-    delay(5.seconds)
     tooltipShown()
+    delay(5.seconds)
     transientShowTooltip = false
   }
   InnerChatTooltip(

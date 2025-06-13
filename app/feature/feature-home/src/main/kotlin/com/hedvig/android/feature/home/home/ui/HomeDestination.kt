@@ -122,6 +122,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -365,11 +366,16 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     logcat {
       "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip"
     }
+    var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
+    LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
+      if (shouldSetEpochDayWhenLastToolTipShown) {
+        val today = Clock.System.now().toLocalDateTime(
+          TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
+        delay(5000)
+        setEpochDayWhenLastToolTipShown(today)
+      }
+    }
     if (shouldShowCrossSellsTooltip) {
-      //        if (true) { //todo: remove testing if true
-      val today = Clock.System.now().toLocalDateTime(
-        TimeZone.currentSystemDefault()).date.toEpochDays().toLong()
-      //           val today = 1L  //todo: remove testing today
       HedvigTooltip(
         message = stringResource(R.string.TOAST_NEW_OFFER),
         showTooltip = true,
@@ -379,7 +385,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
         ),
         beakDirection = TopEnd,
         tooltipShown = {
-          setEpochDayWhenLastToolTipShown(today)
+          shouldSetEpochDayWhenLastToolTipShown = true
         },
         modifier = Modifier
           .align(Alignment.End)

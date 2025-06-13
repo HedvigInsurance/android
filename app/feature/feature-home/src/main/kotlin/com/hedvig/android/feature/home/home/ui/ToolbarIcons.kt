@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -60,14 +61,11 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  var isRotated by remember { mutableStateOf(false) }
+  val isRotated by produceState(false) { value = true }
   val fullRotation by animateFloatAsState(
     targetValue = if (isRotated) 360f else 0f,
     animationSpec = tween(1500, 50),
   )
-  LaunchedEffect(Unit) {
-    isRotated = true
-  }
   Image(
     imageVector = HedvigIcons.ColoredCampaign,
     contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
