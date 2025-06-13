@@ -134,12 +134,9 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }
-          val recommended = recommendedData ?: otherCrossSellsData[0]
-          val otherCrossSells = recommendedData?.let { otherCrossSellsData } ?: otherCrossSellsData.drop(1)
-          // todo: recommended should not be null - what to do in this case? asked in https://hedviginsurance.slack.com/archives/C08TXUFL0T0/p1749712959548239
           CrossSellSheetData(
-            recommendedCrossSell = recommended,
-            otherCrossSells = otherCrossSells,
+            recommendedCrossSell = recommendedData,
+            otherCrossSells = otherCrossSellsData,
           )
         }
       }
