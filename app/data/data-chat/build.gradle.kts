@@ -1,10 +1,11 @@
 plugins {
+  id("hedvig.jvm.library")
   id("hedvig.gradle.plugin")
-  id("hedvig.kotlin.library")
 }
 
 hedvig {
   serialization()
+  room(isTestOnly = true) { resolve("app/data/data-chat/build/generated/ksp/test/kotlin") }
 }
 
 dependencies {
@@ -16,5 +17,12 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantPublic)
-}
 
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.room.paging)
+  testImplementation(libs.room.runtime)
+  testImplementation(libs.sqlite.bundled)
+  testImplementation(projects.testClock)
+}

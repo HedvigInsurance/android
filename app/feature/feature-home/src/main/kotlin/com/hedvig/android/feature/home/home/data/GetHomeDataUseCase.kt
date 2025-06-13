@@ -115,12 +115,9 @@ internal class GetHomeDataUseCaseImpl(
         val otherCrossSellsData = crossSellsData.otherCrossSells.map {
           it.toCrossSell()
         }
-        val recommended = recommendedData ?: otherCrossSellsData[0]
-        val otherCrossSells = recommendedData?.let { otherCrossSellsData } ?: otherCrossSellsData.drop(1)
-        // todo - instead of drop, how to make sure the recommended is not null?
         val crossSells = CrossSellSheetData(
-          recommendedCrossSell = recommended,
-          otherCrossSells = otherCrossSells,
+          recommendedCrossSell = recommendedData,
+          otherCrossSells = otherCrossSellsData,
         )
         val showChatIcon = !shouldHideChatButton(
           isChatDisabledFromKillSwitch = isChatDisabled,

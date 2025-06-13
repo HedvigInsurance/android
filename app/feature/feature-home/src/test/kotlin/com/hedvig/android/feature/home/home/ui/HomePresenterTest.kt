@@ -40,7 +40,7 @@ internal class HomePresenterTest {
     "title",
     "subtitle",
     "url",
-    CrossSellType.HOME
+    CrossSellType.HOME,
   )
 
   @Test
@@ -126,7 +126,7 @@ internal class HomePresenterTest {
           showChatIcon = true,
           hasUnseenChatMessages = false,
           showHelpCenter = false,
-          crossSells =  CrossSellSheetData(testCrossSell,listOf()),
+          crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
           travelBannerInfo = null,
         ).right(),

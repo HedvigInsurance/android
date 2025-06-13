@@ -1,5 +1,5 @@
-mutation ConversationSendMessage($conversationId: UUID!, $text: String, $fileUploadToken: String) {
-  conversationSendMessage(input: {id: $conversationId, text: $text, fileUploadToken: $fileUploadToken}) {
+mutation ConversationSendMessage($conversationId: UUID!, $messageId: UUID!, $text: String, $fileUploadToken: String) {
+  conversationSendMessage(input: {id: $conversationId, messageId: $messageId, text: $text, fileUploadToken: $fileUploadToken}) {
     message {
       ...ChatMessageFragment
     }

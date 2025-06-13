@@ -13,7 +13,8 @@ interface CheckCertificatesAvailabilityUseCase {
 }
 
 internal class CheckCertificatesAvailabilityUseCaseImpl(
-  private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val checkTravelCertificateDestinationAvailabilityUseCase:
+    CheckTravelCertificateDestinationAvailabilityUseCase,
   private val checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
 ) : CheckCertificatesAvailabilityUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Unit> {

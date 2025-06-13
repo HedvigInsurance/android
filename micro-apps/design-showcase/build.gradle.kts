@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.application")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -57,7 +57,6 @@ dependencies {
   implementation(libs.timber)
   implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
-  implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 }

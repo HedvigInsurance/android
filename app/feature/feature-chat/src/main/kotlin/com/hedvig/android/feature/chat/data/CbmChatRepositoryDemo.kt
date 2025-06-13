@@ -54,7 +54,7 @@ internal class CbmChatRepositoryDemo(
 
   override suspend fun sendText(
     conversationId: Uuid,
-    messageId: Uuid?,
+    retryingMessageId: Uuid?,
     text: String,
   ): Either<MessageSendError, CbmChatMessage> {
     return demoErrorMessage.left()

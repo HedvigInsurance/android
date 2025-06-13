@@ -6,6 +6,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 
 class HedvigLintConventionPlugin : Plugin<Project> {
@@ -13,6 +14,7 @@ class HedvigLintConventionPlugin : Plugin<Project> {
     with(target) {
       val libs = the<LibrariesForLibs>()
       val moduleName = target.name
+      if (moduleName == "hedvig-lint") return
       val lintBaselineFile: File = rootProject.projectDir
         .resolve("hedvig-lint")
         .resolve("lint-baseline")
@@ -32,6 +34,9 @@ class HedvigLintConventionPlugin : Plugin<Project> {
       if (!didConfigureLint) {
         pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
         configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
+      }
+      dependencies {
+        add("lintChecks", project(":hedvig-lint"))
       }
     }
   }

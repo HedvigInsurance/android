@@ -208,6 +208,11 @@ private fun EnterNewAddressScreen(
               uiState.postalCode.updateValue(null)
             } else if (it.isDigitsOnly()) {
               uiState.postalCode.updateValue(it)
+            } else {
+              val withoutWhitespaces = it.filterNot { it.isWhitespace() }
+              if (withoutWhitespaces.isDigitsOnly()) {
+                uiState.postalCode.updateValue(withoutWhitespaces)
+              }
             }
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),

@@ -58,7 +58,7 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 
 data class CrossSellSheetData(
-  val recommendedCrossSell: CrossSell,
+  val recommendedCrossSell: CrossSell?,
   val otherCrossSells: List<CrossSell>,
 )
 
@@ -85,14 +85,46 @@ fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSel
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.CrossSellsSheetContent(
-  recommendedCrossSell: CrossSell,
+  recommendedCrossSell: CrossSell?,
   otherCrossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
 ) {
+  if (recommendedCrossSell != null) {
+    RecommendationSection(recommendedCrossSell, onCrossSellClick)
+  }
+  if (otherCrossSells.isNotEmpty()) {
+    Spacer(Modifier.height(64.dp))
+    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE))
+    Spacer(Modifier.height(24.dp))
+    CrossSellsSection(
+      showNotificationBadge = false,
+      crossSells = otherCrossSells,
+      onCrossSellClick = onCrossSellClick,
+      withSubHeader = false,
+    )
+  }
+  Spacer(Modifier.height(24.dp))
+  HedvigButton(
+    text = stringResource(R.string.general_close_button),
+    onClick = dismissSheet,
+    enabled = true,
+    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+    modifier = Modifier.fillMaxSize(),
+  )
+  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+}
+
+@Composable
+private fun RecommendationSection(
+  recommendedCrossSell: CrossSell,
+  onCrossSellClick: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = Modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
   ) {
     Spacer(Modifier.height(48.dp))
     Image(
@@ -127,27 +159,6 @@ private fun ColumnScope.CrossSellsSheetContent(
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
   }
-  if (otherCrossSells.isNotEmpty()) {
-    Spacer(Modifier.height(64.dp))
-    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE))
-    Spacer(Modifier.height(24.dp))
-    CrossSellsSection(
-      showNotificationBadge = false,
-      crossSells = otherCrossSells,
-      onCrossSellClick = onCrossSellClick,
-      withSubHeader = false,
-    )
-  }
-  Spacer(Modifier.height(24.dp))
-  HedvigButton(
-    text = stringResource(R.string.general_close_button),
-    onClick = dismissSheet,
-    enabled = true,
-    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    modifier = Modifier.fillMaxSize(),
-  )
-  Spacer(Modifier.height(8.dp))
-  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable

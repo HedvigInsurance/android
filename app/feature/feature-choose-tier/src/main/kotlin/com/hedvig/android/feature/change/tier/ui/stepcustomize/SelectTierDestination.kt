@@ -421,7 +421,8 @@ private fun CustomizationCard(
               val price = stringResource(R.string.TALKBACK_PRICE)
               val premiumDescription = quote.premium.getPerMonthDescription()
               val deductibleDescription = quote.deductible?.getVoiceDescription()
-              val voiceDescription = "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
+              val voiceDescription =
+                "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
               quote.deductible?.let {
                 add(
                   ExpandedRadioOptionData(
