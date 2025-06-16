@@ -96,7 +96,6 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -361,11 +360,7 @@ private fun HomeScreen(
 @Composable
 private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
   if (uiState.crossSellsAction != null) {
-//    setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
-    logcat {
-      "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip"
-    }
     var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
     LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
       if (shouldSetEpochDayWhenLastToolTipShown) {

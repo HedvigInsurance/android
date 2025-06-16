@@ -213,7 +213,7 @@ internal class GetHomeDataUseCaseImpl(
           CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
           CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
           CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
-          CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME // todo: would need other types further??
+          CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
         },
       )
     }
