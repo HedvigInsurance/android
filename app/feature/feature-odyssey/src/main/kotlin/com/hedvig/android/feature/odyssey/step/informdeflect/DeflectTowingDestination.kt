@@ -230,6 +230,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
           )
         },
         contentPadding = PaddingValues(12.dp),
+        titleDescription = faqItem.first,
       )
     }
   }

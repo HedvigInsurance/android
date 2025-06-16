@@ -73,6 +73,7 @@ private fun AccordionItem(
     },
     isExpanded = isExpanded,
     onClick = onClick,
+    titleDescription = title,
   )
 }
 

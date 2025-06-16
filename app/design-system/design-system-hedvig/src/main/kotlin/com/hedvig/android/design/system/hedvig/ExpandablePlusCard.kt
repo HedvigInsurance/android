@@ -23,17 +23,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens
+import hedvig.resources.R
 
 @Composable
 fun ExpandablePlusCard(
@@ -43,7 +43,14 @@ fun ExpandablePlusCard(
   content: @Composable RowScope.() -> Unit,
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
+  // used for better accessibility voice over instead of raw collapsed "content".
+  titleDescription: String? = null,
 ) {
+  val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
+  val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
+  val cardContentDescription = stringResource(R.string.TALKBACK_EXPANDABLE_ITEM, "${titleDescription?.let { it }}")
+  val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
+  val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   Surface(
     modifier = modifier
       .clip(PerilCommonTokens.ContainerShape.value)
@@ -54,20 +61,17 @@ fun ExpandablePlusCard(
           radius = 1000.dp,
         ),
         onClick = onClick,
-        //role = Role.DropdownList,
-          onClickLabel =  if (isExpanded) "Collapse" else "Expand"
+        onClickLabel = if (isExpanded) collapseClickLabel else expandClickLabel,
       )
       .semantics {
-        this.contentDescription = "Expandable item"
-    //    this.stateDescription = if (isExpanded) "Expanded" else "Collapsed"
-      }
-    ,
+        this.contentDescription = cardContentDescription
+        this.stateDescription = if (isExpanded) expandedStateDescription else collapsedStateDescription
+      },
   ) {
     Column(
       modifier = Modifier
-//        .semantics(true){
-//          this.isTraversalGroup
-//        }
+        .semantics(true) {
+        }
         .padding(contentPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
@@ -109,6 +113,9 @@ fun ExpandablePlusCard(
           }
         },
         spaceBetween = 4.dp,
+        modifier = Modifier.semantics {
+          hideFromAccessibility()
+        },
       )
       AnimatedVisibility(
         visible = isExpanded,
