@@ -23,6 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -48,10 +54,21 @@ fun ExpandablePlusCard(
           radius = 1000.dp,
         ),
         onClick = onClick,
-      ),
+        //role = Role.DropdownList,
+          onClickLabel =  if (isExpanded) "Collapse" else "Expand"
+      )
+      .semantics {
+        this.contentDescription = "Expandable item"
+    //    this.stateDescription = if (isExpanded) "Expanded" else "Collapsed"
+      }
+    ,
   ) {
     Column(
-      modifier = Modifier.padding(contentPadding),
+      modifier = Modifier
+//        .semantics(true){
+//          this.isTraversalGroup
+//        }
+        .padding(contentPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
