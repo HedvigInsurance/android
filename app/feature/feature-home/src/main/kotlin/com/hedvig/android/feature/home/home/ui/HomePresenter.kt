@@ -89,7 +89,10 @@ internal class HomePresenter(
           epochDay,
         )
       }.collectLatest {
-        (homeResult: Either<ApolloOperationError, HomeData>, crossSellNotification: CrossSellRecommendationNotification),
+        (
+          homeResult: Either<ApolloOperationError, HomeData>,
+          crossSellNotification: CrossSellRecommendationNotification,
+        ),
         ->
         homeResult.fold(
           ifLeft = {

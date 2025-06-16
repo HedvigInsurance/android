@@ -26,7 +26,11 @@ internal class CrossSellNotificationBadgeService(
       emitAll(
         notificationBadgeStorage.getValue(notificationBadge)
           .map { seenCrossSells: Set<String> ->
-            !seenCrossSells.contains(potentialCrossSellRecommendation)
+            if (potentialCrossSellRecommendation == null) {
+              false
+            } else {
+              !seenCrossSells.contains(potentialCrossSellRecommendation)
+            }
           },
       )
     }

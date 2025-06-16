@@ -36,7 +36,7 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns no cross sells, show no badge`() = runTest {
+  fun `When backend returns no cross sell recommendation, show no badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellRecommendationIdUseCase()
     val service = tabNotificationBadgeService(
@@ -50,11 +50,11 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns a cross sell and it's not seen, show insurance badge`() = runTest {
-    val seAccident = CrossSellIdentifier("SE_ACCIDENT")
+  fun `When backend returns a cross sell recommendation and it's not seen, show insurance badge`() = runTest {
+    val seAccident = CrossSellIdentifier("1111")
     val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident)
+      seAccident
     }
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -67,7 +67,7 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
+  fun `When backend returns a cross sell recommendation but it's seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
@@ -76,7 +76,7 @@ class TabNotificationBadgeServiceTest {
       )
     }
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident)
+      seAccident
     }
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -86,86 +86,6 @@ class TabNotificationBadgeServiceTest {
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
     assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
-  }
-
-  @Test
-  fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
-    val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
-      setValue(
-        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
-        setOf(
-          seAccident.rawValue,
-          seCarFull.rawValue,
-        ),
-      )
-    }
-    val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident, seCarFull)
-    }
-    val service = tabNotificationBadgeService(
-      notificationBadgeStorage = notificationBadgeService,
-      getCrossSellRecommendationIdUseCase = getCrossSellsContractTypesUseCase,
-    )
-
-    val unseenBadges = service.unseenTabNotificationBadges().first()
-
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
-  }
-
-  @Test
-  fun `When backend returns two cross sells but only one is seen, still show insurance badge`() = runTest {
-    val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
-      setValue(
-        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
-        setOf(seAccident.rawValue),
-      )
-    }
-    val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident, seCarFull)
-    }
-    val service = tabNotificationBadgeService(
-      notificationBadgeStorage = notificationBadgeService,
-      getCrossSellRecommendationIdUseCase = getCrossSellsContractTypesUseCase,
-    )
-
-    val unseenBadges = service.unseenTabNotificationBadges().first()
-
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
-  }
-
-  @Test
-  fun `Storing old seen contract types shouldn't affect the shown badge`() = runTest {
-    val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val seApartmentBrf = CrossSellIdentifier("SE_APARTMENT_BRF")
-    val seHouse = CrossSellIdentifier("SE_HOUSE")
-    val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val seQasaShortTermRental = CrossSellIdentifier("SE_QASA_SHORT_TERM_RENTAL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
-      setValue(
-        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
-        setOf(
-          seAccident.rawValue,
-          seApartmentBrf.rawValue,
-          seCarFull.rawValue,
-          seHouse.rawValue,
-        ),
-      )
-    }
-    val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seQasaShortTermRental)
-    }
-    val service = tabNotificationBadgeService(
-      notificationBadgeStorage = notificationBadgeService,
-      getCrossSellRecommendationIdUseCase = getCrossSellsContractTypesUseCase,
-    )
-
-    val unseenBadges = service.unseenTabNotificationBadges().first()
-
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -173,7 +93,7 @@ class TabNotificationBadgeServiceTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident)
+      seAccident
     }
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -192,7 +112,7 @@ class TabNotificationBadgeServiceTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellRecommendationIdUseCase {
-      setOf(seAccident)
+      seAccident
     }
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
