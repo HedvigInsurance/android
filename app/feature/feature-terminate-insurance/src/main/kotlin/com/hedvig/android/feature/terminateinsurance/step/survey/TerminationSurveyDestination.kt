@@ -1,4 +1,3 @@
-
 package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import androidx.compose.animation.AnimatedContent
@@ -11,6 +10,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
@@ -166,11 +165,10 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) { title ->
-        if (uiState.showEmptyQuotesDialog) {
+        if (uiState.showEmptyQuotesDialog || true) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-            applyVerticalScroll = true,
+            contentPadding = PaddingValues(0.dp),
           ) {
             EmptyQuotesDialogContent(closeEmptyQuotesDialog)
           }
@@ -376,6 +374,7 @@ private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
 

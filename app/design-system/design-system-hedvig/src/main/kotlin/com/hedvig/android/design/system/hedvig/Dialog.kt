@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
@@ -34,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -70,7 +69,6 @@ fun ErrorDialog(
     style = NoButtons,
     onDismissRequest = onDismiss,
     modifier = modifier,
-    applyVerticalScroll = true,
   ) {
     EmptyState(
       text = title,
@@ -108,7 +106,6 @@ fun HedvigAlertDialog(
       buttonSize = buttonSize,
     ),
     onDismissRequest = onDismissRequest,
-    applyVerticalScroll = true,
     modifier = modifier,
   ) {
     Column(
@@ -240,14 +237,17 @@ fun MultiSelectDialog(
   }
 }
 
+/**
+ * [contentPadding] is used if a custom content padding needs to be applied. When [null] is passed, the default DS
+ * paddings are used instead
+ */
 @Composable
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
-  applyVerticalScroll: Boolean,
   modifier: Modifier = Modifier,
-  applyDefaultPadding: Boolean = true,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
+  contentPadding: PaddingValues? = null,
   content: @Composable () -> Unit,
 ) {
   Dialog(
@@ -255,18 +255,16 @@ fun HedvigDialog(
     properties = dialogProperties,
   ) {
     HedvigDialogContent(
-      dialogProperties.usePlatformDefaultWidth,
-      applyDefaultPadding,
-      style,
-      modifier
-        .then(
-          if (applyVerticalScroll) {
-            Modifier.verticalScroll(rememberScrollState())
-          } else {
-            Modifier
-          },
-        ),
-      content,
+      style = style,
+      contentPadding = contentPadding,
+      modifier = modifier.then(
+        if (dialogProperties.usePlatformDefaultWidth) {
+          Modifier
+        } else {
+          Modifier.padding(horizontal = 16.dp)
+        },
+      ),
+      content = content,
     )
   }
 }
@@ -362,24 +360,17 @@ object DialogDefaults {
 
 @Composable
 private fun HedvigDialogContent(
-  usePlatformDefaultWidth: Boolean,
-  applyDefaultPadding: Boolean,
   style: DialogStyle,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues? = null,
   content: @Composable () -> Unit,
 ) {
   Surface(
     shape = DialogDefaults.shape,
     color = DialogDefaults.containerColor,
-    modifier = modifier.then(
-      if (usePlatformDefaultWidth) {
-        Modifier
-      } else {
-        Modifier.padding(horizontal = 16.dp)
-      },
-    ),
+    modifier = modifier,
   ) {
-    val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
+    val padding = contentPadding ?: DialogDefaults.padding(style)
     Column(
       Modifier.padding(padding),
     ) {
@@ -387,12 +378,17 @@ private fun HedvigDialogContent(
         content()
       } else {
         if (style is DialogStyle.TitlePlusButton) {
-          DialogContentTitle(applyDefaultPadding, style, style.title)
+          DialogContentTitle(padding, style, style.title)
         }
         if (style is DialogStyle.TitleNoButtons) {
-          DialogContentTitle(applyDefaultPadding, style, style.title)
+          DialogContentTitle(padding, style, style.title)
         }
-        Box(Modifier.fillMaxWidth().weight(1f, fill = false), propagateMinConstraints = true) {
+        Box(
+          Modifier
+            .fillMaxWidth()
+            .weight(1f, fill = false),
+          propagateMinConstraints = true,
+        ) {
           content()
         }
         Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
@@ -438,15 +434,19 @@ private fun HedvigDialogContent(
 }
 
 @Composable
-private fun DialogContentTitle(applyDefaultPadding: Boolean, style: DialogStyle, title: String) {
-  if (!applyDefaultPadding) {
-    Spacer(Modifier.height(DialogDefaults.padding(style).calculateTopPadding()))
-  }
+private fun DialogContentTitle(contentPadding: PaddingValues, style: DialogStyle, title: String) {
+  Spacer(
+    Modifier.height(
+      (DialogDefaults.padding(style).calculateTopPadding() - contentPadding.calculateTopPadding()).coerceAtLeast(0.dp),
+    ),
+  )
   HedvigText(
     text = title,
     style = HedvigTheme.typography.bodySmall,
     textAlign = TextAlign.Center,
-    modifier = Modifier.fillMaxWidth().semantics { heading() },
+    modifier = Modifier
+      .fillMaxWidth()
+      .semantics { heading() },
   )
 }
 
@@ -457,11 +457,8 @@ private fun CoreSelectDialog(
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   itemContent: @Composable (RadioOptionData) -> Unit,
 ) {
-  val applyDefaultPadding = style is DialogStyle.TitlePlusButton
   HedvigDialog(
     onDismissRequest = { onDismissRequest.invoke() },
-    applyDefaultPadding = applyDefaultPadding,
-    applyVerticalScroll = false,
     style = style,
   ) {
     Column(
@@ -469,11 +466,7 @@ private fun CoreSelectDialog(
     ) {
       Spacer(Modifier.height(8.dp))
       val state = rememberLazyListState()
-      val lazyColumnContentPadding = if (applyDefaultPadding) {
-        PaddingValues(vertical = 16.dp)
-      } else {
-        PaddingValues(16.dp)
-      }
+      val lazyColumnContentPadding = PaddingValues(vertical = 16.dp)
       val density = LocalDensity.current
       val drawTopBorder by remember {
         derivedStateOf {
@@ -651,8 +644,6 @@ private fun PreviewHedvigDialogContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HedvigDialogContent(
-        usePlatformDefaultWidth = false,
-        applyDefaultPadding = false,
         style = Buttons({}, "Cancel", {}, "Confirm text with upgrade and everything"),
         content = {
           HedvigText("Some varying content", textAlign = TextAlign.Center)
@@ -679,6 +670,16 @@ private fun PreviewSmallHorizontalPreferringButtons() {
         {},
         "Confirm text",
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewErrorDialog() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ErrorDialog("title", "message", {})
     }
   }
 }

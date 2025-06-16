@@ -223,22 +223,16 @@ private fun HelpCenterHomeScreen(
 
     is MultiSelectExpandedLink -> {
       HedvigDialog(
-        applyDefaultPadding = false,
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
           onDismissQuickActionDialog()
         },
-        style = DialogDefaults.DialogStyle.NoButtons,
-        applyVerticalScroll = true,
+        style = DialogDefaults.DialogStyle.TitleNoButtons(
+          stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+        ),
       ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
           var selectedIndex by remember { mutableStateOf<Int?>(null) }
-          Spacer(Modifier.height(24.dp))
-          HedvigText(
-            stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-          )
           Spacer(Modifier.height(24.dp))
           selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
             val voiceoverDescription = "${stringResource(
@@ -299,7 +293,6 @@ private fun HelpCenterHomeScreen(
               onDismissQuickActionDialog()
             },
           )
-          Spacer(Modifier.height(24.dp))
         }
       }
     }

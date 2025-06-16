@@ -44,7 +44,6 @@ fun DialogShowcase() {
         },
         buttonSize = SMALL,
       ),
-      applyVerticalScroll = true,
     ) {
       EmptyState(
         text = "Are you sure?",
