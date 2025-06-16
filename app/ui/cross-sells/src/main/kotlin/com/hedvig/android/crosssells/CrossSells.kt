@@ -95,10 +95,10 @@ private fun ColumnScope.CrossSellsSheetContent(
     RecommendationSection(recommendedCrossSell, onCrossSellClick)
   }
   if (otherCrossSells.isNotEmpty() && recommendedCrossSell != null) {
-    Spacer(Modifier.height(40.dp))
+    Spacer(Modifier.height(48.dp))
   }
   if (otherCrossSells.isNotEmpty()) {
-    Spacer(Modifier.height(24.dp))
+    Spacer(Modifier.height(16.dp))
     HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
     Spacer(Modifier.height(24.dp))
     CrossSellsSection(
