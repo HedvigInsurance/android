@@ -31,6 +31,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -52,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionSi
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
 import hedvig.resources.R
+import kotlin.collections.listOf
 
 @Composable
 fun ErrorDialog(
@@ -215,12 +217,16 @@ fun MultiSelectDialog(
   onSelected: (RadioOptionData) -> Unit,
   onDismissRequest: () -> Unit,
   checkboxStyle: CheckboxStyle = CheckboxStyle.Default,
-  checkboxSize: CheckboxDefaults.CheckboxSize = Medium,
+  checkboxSize: CheckboxSize = Medium,
 ) {
   CoreSelectDialog(
     title = title,
     optionsList = optionsList,
     onDismissRequest = onDismissRequest,
+    style = DialogStyle.TitlePlusButton(
+      onButtonClick = onDismissRequest,
+      buttonText = stringResource(R.string.general_close_button),
+    ),
   ) { radioOptionData ->
     Checkbox(
       data = radioOptionData,
@@ -290,7 +296,25 @@ object DialogDefaults {
         }
       }
 
+      is DialogStyle.TitlePlusButton -> {
+        DialogTokens.TitlePlusButtonPadding
+      }
+
       NoButtons -> DialogTokens.NoButtonsPadding
+    }
+  }
+
+  internal fun contentToButtonPaddingHeight(style: DialogStyle): Dp {
+    return when (style) {
+      is Buttons -> {
+        DialogTokens.ContentToButtonsPaddingHeight
+      }
+
+      is DialogStyle.TitlePlusButton -> {
+        DialogTokens.ContentToTitlePlusButtonPaddingHeight
+      }
+
+      NoButtons -> 0.dp
     }
   }
 
@@ -301,6 +325,18 @@ object DialogDefaults {
       val onConfirmButtonClick: () -> Unit,
       val confirmButtonText: String,
       val buttonSize: ButtonSize = defaultButtonSize,
+    ) : DialogStyle()
+
+    /**
+     * A dialog stlye which has a title at the top, therefore it needs a small top padding, but also contains a single
+     * button at the bottom like [Buttons] do.
+     * TODO no direct match in the design system
+     *  https://www.figma.com/design/5kmmDdh6StpXzbEfr7WevV/Hedvig-UI-Kit?node-id=15981-24294&t=OAapnM8EnyEKhUSw-1
+     *  however this is required for dialogs which need a button at the bottom for a11y reasons
+     */
+    data class TitlePlusButton(
+      val onButtonClick: () -> Unit,
+      val buttonText: String,
     ) : DialogStyle()
 
     data object NoButtons : DialogStyle()
@@ -336,33 +372,48 @@ private fun HedvigDialogContent(
       Modifier.padding(padding),
     ) {
       when (style) {
-        is Buttons -> {
-          Box(Modifier.fillMaxWidth(), propagateMinConstraints = true) {
+        NoButtons -> content()
+        else -> {
+          Box(Modifier.fillMaxWidth().weight(1f, fill = false), propagateMinConstraints = true) {
             content()
           }
-          Spacer(Modifier.height(40.dp))
-          when (style.buttonSize) {
-            BIG -> {
-              BigVerticalButtons(
-                onDismissRequest = style.onDismissRequest,
-                dismissButtonText = style.dismissButtonText,
-                onConfirmButtonClick = style.onConfirmButtonClick,
-                confirmButtonText = style.confirmButtonText,
-              )
+          Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
+          when (style) {
+            NoButtons -> error("NoButtons is covered in the outer when statement")
+            is Buttons -> {
+              when (style.buttonSize) {
+                BIG -> {
+                  BigVerticalButtons(
+                    onDismissRequest = style.onDismissRequest,
+                    dismissButtonText = style.dismissButtonText,
+                    onConfirmButtonClick = style.onConfirmButtonClick,
+                    confirmButtonText = style.confirmButtonText,
+                  )
+                }
+
+                SMALL -> {
+                  SmallHorizontalPreferringButtons(
+                    onDismissRequest = style.onDismissRequest,
+                    dismissButtonText = style.dismissButtonText,
+                    onConfirmButtonClick = style.onConfirmButtonClick,
+                    confirmButtonText = style.confirmButtonText,
+                  )
+                }
+              }
             }
 
-            SMALL -> {
-              SmallHorizontalPreferringButtons(
-                onDismissRequest = style.onDismissRequest,
-                dismissButtonText = style.dismissButtonText,
-                onConfirmButtonClick = style.onConfirmButtonClick,
-                confirmButtonText = style.confirmButtonText,
+            is DialogStyle.TitlePlusButton -> {
+              HedvigButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = style.onButtonClick,
+                text = style.buttonText,
+                enabled = true,
+                buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+                buttonSize = ButtonDefaults.ButtonSize.Large,
               )
             }
           }
         }
-
-        NoButtons -> content()
       }
     }
   }
@@ -373,33 +424,44 @@ private fun CoreSelectDialog(
   title: String,
   optionsList: List<RadioOptionData>,
   onDismissRequest: () -> Unit,
+  style: DialogStyle = DialogDefaults.defaultDialogStyle,
   itemContent: @Composable (RadioOptionData) -> Unit,
 ) {
+  val applyDefaultPadding = style is DialogStyle.TitlePlusButton
   HedvigDialog(
     onDismissRequest = { onDismissRequest.invoke() },
-    applyDefaultPadding = false,
+    applyDefaultPadding = applyDefaultPadding,
     applyVerticalScroll = false,
+    style = style,
   ) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(20.dp))
+      if (!applyDefaultPadding) {
+        Spacer(Modifier.height(20.dp))
+      }
       HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
       Spacer(Modifier.height(8.dp))
       val state = rememberLazyListState()
-      val lazyColumnContentPadding = 16.dp
+      val lazyColumnContentPadding = if (applyDefaultPadding) {
+        PaddingValues(vertical = 16.dp)
+      } else {
+        PaddingValues(16.dp)
+      }
       val density = LocalDensity.current
       val drawTopBorder by remember {
         derivedStateOf {
           state.firstVisibleItemIndex != 0 ||
-            state.firstVisibleItemScrollOffset > with(density) { lazyColumnContentPadding.roundToPx() }
+            state.firstVisibleItemScrollOffset > with(density) {
+              lazyColumnContentPadding.calculateTopPadding().roundToPx()
+            }
         }
       }
       val borderColor = HedvigTheme.colorScheme.borderSecondary
       LazyColumn(
         state = state,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(lazyColumnContentPadding),
+        contentPadding = lazyColumnContentPadding,
         modifier = Modifier.drawWithContent {
           drawContent()
           if (drawTopBorder) {
@@ -512,6 +574,48 @@ private fun BigVerticalButtons(
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       buttonSize = ButtonDefaults.ButtonSize.Large,
     )
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewSingleSelectDialog() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val optionsList = listOf("optionsList")
+      SingleSelectDialog(
+        title = "title",
+        optionsList = optionsList,
+        onSelected = {},
+        getDisplayText = { "getDisplayText" },
+        getIsSelected = { true },
+        getId = { "getId" },
+        getItemForId = { optionsList.first() },
+        onDismissRequest = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewMultiSelectDialog() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val optionsList = listOf("optionsList").run {
+        this + this + this + this + this
+      }
+      MultiSelectDialog(
+        title = "title",
+        optionsList = optionsList,
+        onSelected = {},
+        getDisplayText = { "getDisplayText" },
+        getIsSelected = { true },
+        getId = { "getId" },
+        getItemForId = { optionsList.first() },
+        onDismissRequest = {},
+      )
+    }
   }
 }
 
