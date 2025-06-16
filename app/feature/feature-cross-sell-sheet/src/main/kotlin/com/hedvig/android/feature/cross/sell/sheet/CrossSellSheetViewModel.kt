@@ -102,7 +102,7 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellSource {
   return when (this) {
     CrossSellInfoType.Addon -> CrossSellSource.ADDON
     CrossSellInfoType.ChangeTier -> CrossSellSource.CHANGE_TIER
-    is CrossSellInfoType.ClosedClaim -> CrossSellSource.CLOSED_CLAM
+    is CrossSellInfoType.ClosedClaim -> CrossSellSource.CLOSED_CLAIM
     CrossSellInfoType.EditCoInsured -> CrossSellSource.EDIT_COINSURED
     CrossSellInfoType.MovingFlow -> CrossSellSource.MOVING_FLOW
   }
