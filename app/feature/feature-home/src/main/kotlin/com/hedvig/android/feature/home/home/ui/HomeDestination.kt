@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -78,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
@@ -94,6 +96,7 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -117,13 +120,18 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun HomeDestination(
@@ -159,6 +167,9 @@ internal fun HomeDestination(
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    setEpochDayWhenLastToolTipShown = { epochDay ->
+      viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
+    },
   )
 }
 
@@ -180,6 +191,7 @@ private fun HomeScreen(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  setEpochDayWhenLastToolTipShown: (Long) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -258,13 +270,19 @@ private fun HomeScreen(
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
-              is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
-                onClick = {
-                  crossSellBottomSheetState.show(
-                    action.crossSells,
-                  )
-                },
-              )
+              is HomeTopBarAction.CrossSellsAction -> {
+                ToolbarCrossSellsIcon(
+                  onClick = {
+                    crossSellBottomSheetState.show(
+                      action.crossSells,
+                    )
+                  },
+                  modifier = Modifier
+                    .notificationCircle(
+                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                    ),
+                )
+              }
 
               is HomeTopBarAction.FirstVetAction -> {
                 val sections = action.sections
@@ -304,6 +322,9 @@ private fun HomeScreen(
             },
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
         } else if (shouldShowNewMessageTooltip) {
@@ -315,9 +336,16 @@ private fun HomeScreen(
             tooltipShown = {},
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
+        } else {
+          CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
         }
+      } else if (uiState is Success) {
+        CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
       }
     }
     PullRefreshIndicator(
@@ -327,6 +355,56 @@ private fun HomeScreen(
       modifier = Modifier.align(Alignment.TopCenter),
     )
   }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
+  if (uiState.crossSellsAction != null) {
+//    setEpochDayWhenLastToolTipShown(1L) //todo: remove testing
+    val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
+    logcat {
+      "Mariia: ColumnScope.CrossSellsTooltip shouldShowCrossSellsTooltip: $shouldShowCrossSellsTooltip"
+    }
+    var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
+    LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
+      if (shouldSetEpochDayWhenLastToolTipShown) {
+        val today = Clock.System.now().toLocalDateTime(
+          TimeZone.currentSystemDefault(),
+        ).date.toEpochDays().toLong()
+        delay(5000)
+        setEpochDayWhenLastToolTipShown(today)
+      }
+    }
+    if (shouldShowCrossSellsTooltip) {
+      HedvigTooltip(
+        message = stringResource(R.string.TOAST_NEW_OFFER),
+        showTooltip = true,
+        tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
+          subMessage = null,
+          TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT,
+        ),
+        beakDirection = TopEnd,
+        tooltipShown = {
+          shouldSetEpochDayWhenLastToolTipShown = true
+        },
+        modifier = Modifier
+          .align(Alignment.End)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+          )
+          .padding(start = 16.dp, end = getCrossSellsToolTipEndPadding(uiState).dp),
+      )
+    }
+  }
+}
+
+private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
+  val initialEndPadding = 16
+  var endPadding = initialEndPadding
+  if (uiState.firstVetAction != null) endPadding += 48
+  if (uiState.chatAction != null) endPadding += 48
+  return endPadding
 }
 
 private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
@@ -679,6 +757,10 @@ private fun PreviewHomeScreen(
                 ),
               ),
             ),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification(
+              true,
+              java.time.LocalDate.now().toEpochDay(),
+            ),
           ),
           firstVetAction = FirstVetAction(
             listOf(
@@ -713,6 +795,7 @@ private fun PreviewHomeScreen(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
       )
     }
   }
