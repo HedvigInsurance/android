@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,7 @@ import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
-import com.hedvig.android.design.system.hedvig.CrossSellDrugHandle
+import com.hedvig.android.design.system.hedvig.CrossSellDragHandle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -67,7 +68,7 @@ fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSel
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
     dragHandle = {
-      CrossSellDrugHandle(
+      CrossSellDragHandle(
         contentPadding = PaddingValues(horizontal = 16.dp),
       )
     },
@@ -93,9 +94,12 @@ private fun ColumnScope.CrossSellsSheetContent(
   if (recommendedCrossSell != null) {
     RecommendationSection(recommendedCrossSell, onCrossSellClick)
   }
+  if (otherCrossSells.isNotEmpty() && recommendedCrossSell != null) {
+    Spacer(Modifier.height(40.dp))
+  }
   if (otherCrossSells.isNotEmpty()) {
-    Spacer(Modifier.height(64.dp))
-    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE))
+    Spacer(Modifier.height(24.dp))
+    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
     Spacer(Modifier.height(24.dp))
     CrossSellsSection(
       showNotificationBadge = false,
@@ -204,7 +208,9 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
     NotificationSubheading(
       text = stringResource(R.string.insurance_tab_cross_sells_title),
       showNotification = showNotificationBadge,
-      modifier = Modifier,
+      modifier = Modifier.semantics {
+        heading()
+      },
     )
     Spacer(Modifier.height(16.dp))
   }

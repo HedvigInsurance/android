@@ -135,7 +135,7 @@ private fun <T> InternalHedvigBottomSheet(
 }
 
 @Composable
-fun CrossSellDrugHandle(
+fun CrossSellDragHandle(
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
   text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
@@ -146,6 +146,7 @@ fun CrossSellDrugHandle(
       .fillMaxWidth()
       .height(40.dp)
       .layout { measurable, constraints ->
+        // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
         val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
         val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
         val adjustedConstraints = constraints.copy(
@@ -169,8 +170,8 @@ fun CrossSellDrugHandle(
         tint = HedvigTheme.colorScheme.signalGreenElement,
         modifier = Modifier.size(20.dp),
       )
-      Spacer(Modifier.width(8.dp))
       if (text != null) {
+        Spacer(Modifier.width(8.dp))
         HedvigText(
           text,
           fontSize = HedvigTheme.typography.label.fontSize,
