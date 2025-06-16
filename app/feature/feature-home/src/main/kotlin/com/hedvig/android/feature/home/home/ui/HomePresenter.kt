@@ -9,26 +9,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import arrow.core.Either
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
-  private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
+  private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -37,6 +43,7 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
 
@@ -49,19 +56,44 @@ internal class HomePresenter(
 
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch {
-            crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen()
+            crossSellHomeNotificationServiceProvider.provide().markAsSeen()
           }
+        }
+
+        is HomeEvent.CrossSellToolTipShown -> {
+          crossSellToolTipShownEpochDay = homeEvent.epochDay
         }
       }
     }
-
+    LaunchedEffect(crossSellToolTipShownEpochDay) {
+      val epochDay = crossSellToolTipShownEpochDay
+      if (epochDay != null) {
+        crossSellHomeNotificationServiceProvider.provide().setLastEpochDayNewRecommendationNotificationWasShown(
+          epochDay,
+        )
+      }
+    }
     LaunchedEffect(loadIteration) {
       val forceNetworkFetch = loadIteration != 0
       Snapshot.withMutableSnapshot {
         isReloading = true
         hasError = false
       }
-      getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch).collectLatest { homeResult ->
+      combine(
+        getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch),
+        crossSellHomeNotificationServiceProvider.provide().showRedDotNotification(),
+        crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown(),
+      ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
+        homeResult to CrossSellRecommendationNotification(
+          showRedDot,
+          epochDay,
+        )
+      }.collectLatest {
+        (
+          homeResult: Either<ApolloOperationError, HomeData>,
+          crossSellNotification: CrossSellRecommendationNotification,
+        ),
+        ->
         homeResult.fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {
@@ -74,7 +106,7 @@ internal class HomePresenter(
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
-            successData = SuccessData.fromHomeData(homeData)
+            successData = SuccessData.fromHomeData(homeData, crossSellNotification)
           }
         }
       }
@@ -114,6 +146,8 @@ internal sealed interface HomeEvent {
   data class MarkMessageAsSeen(val messageId: String) : HomeEvent
 
   data object MarkCardCrossSellsAsSeen : HomeEvent
+
+  data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -174,12 +208,18 @@ private data class SuccessData(
       )
     }
 
-    fun fromHomeData(homeData: HomeData): SuccessData {
-      val crossSellsAction = if (homeData.crossSells.isNotEmpty()) {
-        HomeTopBarAction.CrossSellsAction(homeData.crossSells)
+    fun fromHomeData(
+      homeData: HomeData,
+      crossSellRecommendationNotification: CrossSellRecommendationNotification,
+    ): SuccessData {
+      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
+        homeData.crossSells.otherCrossSells.isNotEmpty()
+      ) {
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification)
       } else {
         null
       }
+
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
@@ -232,6 +272,18 @@ sealed interface HomeTopBarAction {
   ) : HomeTopBarAction
 
   data class CrossSellsAction(
-    val crossSells: List<CrossSell>,
+    val crossSells: CrossSellSheetData,
+    val crossSellRecommendationNotification: CrossSellRecommendationNotification,
   ) : HomeTopBarAction
+}
+
+data class CrossSellRecommendationNotification(
+  val hasUnreadRecommendation: Boolean, // show red dot
+  private val epochDayWhenLastToolTipShown: Long?,
+) {
+  val showToolTip: Boolean =
+    hasUnreadRecommendation &&
+      epochDayWhenLastToolTipShown != Clock.System.now().toLocalDateTime(
+        TimeZone.currentSystemDefault(),
+      ).date.toEpochDays().toLong()
 }

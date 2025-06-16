@@ -11,6 +11,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
@@ -38,6 +39,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
+import octopus.fragment.HomeCrossSellFragment
 import octopus.type.CrossSellType
 
 internal interface GetHomeDataUseCase {
@@ -108,26 +110,15 @@ internal class GetHomeDataUseCaseImpl(
             },
           )
         }
-        val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
-          CrossSell(
-            id = crossSell.id,
-            title = crossSell.title,
-            subtitle = crossSell.description,
-            storeUrl = crossSell.storeUrl,
-            type = when (crossSell.type) {
-              CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-              CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-              CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-              CrossSellType.PET -> CrossSell.CrossSellType.PET
-              CrossSellType.PET_CAT,
-              CrossSellType.PET_DOG,
-              CrossSellType.APARTMENT_BRF,
-              CrossSellType.APARTMENT_RENT,
-              CrossSellType.UNKNOWN__,
-              -> CrossSell.CrossSellType.UNKNOWN
-            },
-          )
+        val crossSellsData = homeQueryData.currentMember.crossSell
+        val recommendedData = crossSellsData.recommendedCrossSell?.toCrossSell()
+        val otherCrossSellsData = crossSellsData.otherCrossSells.map {
+          it.toCrossSell()
         }
+        val crossSells = CrossSellSheetData(
+          recommendedCrossSell = recommendedData,
+          otherCrossSells = otherCrossSellsData,
+        )
         val showChatIcon = !shouldHideChatButton(
           isChatDisabledFromKillSwitch = isChatDisabled,
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
@@ -206,6 +197,28 @@ internal class GetHomeDataUseCaseImpl(
     }
   }
 
+  internal fun HomeCrossSellFragment.toCrossSell(): CrossSell {
+    return with(this) {
+      CrossSell(
+        id = id,
+        title = title,
+        subtitle = description,
+        storeUrl = storeUrl,
+        type = when (type) {
+          CrossSellType.CAR -> CrossSell.CrossSellType.CAR
+          CrossSellType.HOME -> CrossSell.CrossSellType.HOME
+          CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+          CrossSellType.PET -> CrossSell.CrossSellType.PET
+          CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+          CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
+          CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
+          CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
+          CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME // todo: would need other types further??
+        },
+      )
+    }
+  }
+
   private fun HomeQuery.Data.CurrentMember.isAutomaticallySwitching(): Boolean {
     val isSwitchable = this.pendingContracts.any { pendingContract ->
       pendingContract.externalInsuranceCancellationHandledByHedvig
@@ -249,7 +262,7 @@ internal data class HomeData(
   val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
-  val crossSells: List<CrossSell>,
+  val crossSells: CrossSellSheetData,
   val travelBannerInfo: TravelAddonBannerInfo?,
 ) {
   @Immutable

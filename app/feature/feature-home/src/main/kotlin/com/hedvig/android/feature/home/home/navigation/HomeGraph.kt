@@ -27,7 +27,6 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
@@ -56,7 +55,6 @@ fun NavGraphBuilder.homeGraph(
             backStackEntry.navigate(HomeDestination.FirstVet(sections))
           }
         },
-        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
         navigateToContactInfo = {
           navigateToContactInfo(backStackEntry)
         },

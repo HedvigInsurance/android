@@ -5,9 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -20,14 +25,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
 import eu.wewox.modalsheet.ExperimentalSheetApi
+import hedvig.resources.R
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable
@@ -35,6 +47,7 @@ fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+  dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val sheetState = rememberHedvigBottomSheetState<Unit>()
@@ -50,6 +63,7 @@ fun HedvigBottomSheet(
     content = content,
     contentPadding = contentPadding,
     sheetState = sheetState,
+    dragHandle = dragHandle,
   )
 }
 
@@ -67,6 +81,7 @@ fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+  dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   InternalHedvigBottomSheet(
@@ -76,6 +91,7 @@ fun <T> HedvigBottomSheet(
       // false automaticaly.
     },
     contentPadding = contentPadding,
+    dragHandle = dragHandle,
     sheetState = hedvigBottomSheetState,
   ) {
     if (hedvigBottomSheetState.data != null) {
@@ -90,6 +106,7 @@ private fun <T> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
   sheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues,
+  dragHandle: @Composable (() -> Unit)?,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BottomSheet(
@@ -101,17 +118,66 @@ private fun <T> InternalHedvigBottomSheet(
     containerColor = bottomSheetColors.bottomSheetBackgroundColor,
     contentColor = bottomSheetColors.contentColor,
     contentPadding = contentPadding,
-    dragHandle = {
-      DragHandle(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally)
-          .padding(top = 8.dp, bottom = 20.dp),
-      )
-    },
+    dragHandle = dragHandle
+      ?: {
+        DragHandle(
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(top = 8.dp, bottom = 20.dp),
+        )
+      },
   ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
       content()
+    }
+  }
+}
+
+@Composable
+fun CrossSellDragHandle(
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+  text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
+) {
+  val direction = LocalLayoutDirection.current
+  Box(
+    modifier
+      .fillMaxWidth()
+      .height(40.dp)
+      .layout { measurable, constraints ->
+        // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
+        val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
+        val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
+        val adjustedConstraints = constraints.copy(
+          maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
+          minWidth = constraints.minWidth + paddingEnd + paddingStart,
+        )
+        val placeable = measurable.measure(adjustedConstraints)
+        layout(placeable.width, placeable.height) {
+          placeable.place(0, 0)
+        }
+      }
+      .background(color = HedvigTheme.colorScheme.signalGreenFill),
+    contentAlignment = Alignment.Center,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Icon(
+        HedvigIcons.Campaign,
+        contentDescription = EmptyContentDescription,
+        tint = HedvigTheme.colorScheme.signalGreenElement,
+        modifier = Modifier.size(20.dp),
+      )
+      if (text != null) {
+        Spacer(Modifier.width(8.dp))
+        HedvigText(
+          text,
+          fontSize = HedvigTheme.typography.label.fontSize,
+          color = HedvigTheme.colorScheme.signalGreenText,
+        )
+      }
     }
   }
 }

@@ -133,7 +133,7 @@ private fun InnerChatTooltip(
             color = tooltipStyle.textColor,
             textAlign = TextAlign.Center,
           )
-          if (tooltipStyle is Campaign) {
+          if (tooltipStyle is Campaign && tooltipStyle.subMessage != null) {
             HedvigText(
               text = tooltipStyle.subMessage,
               color = tooltipStyle.subMessageColor,
@@ -302,7 +302,7 @@ object TooltipDefaults {
     }
 
     data class Campaign(
-      val subMessage: String,
+      val subMessage: String?,
       val brightness: Brightness,
     ) : TooltipStyle() {
       enum class Brightness {
