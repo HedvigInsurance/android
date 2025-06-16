@@ -65,13 +65,19 @@ data class CrossSellSheetData(
 
 @Composable
 fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
+  val dragHandle: @Composable (() -> Unit)? =
+    if (state.data?.recommendedCrossSell != null) {
+      {
+        CrossSellDragHandle(
+          contentPadding = PaddingValues(horizontal = 16.dp),
+        )
+      }
+    } else {
+      null
+    }
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
-    dragHandle = {
-      CrossSellDragHandle(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-      )
-    },
+    dragHandle = dragHandle,
     content = { crossSellSheetData ->
       CrossSellsSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
