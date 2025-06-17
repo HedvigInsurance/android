@@ -58,7 +58,9 @@ interface HedvigDeepLinkContainer {
 
   val insuranceEvidence: List<String> // The screen where member can generate insurance evidence
 
-  val moveContract: List<String> // the screen where member can start moving flow to change address for their home insurance
+  // the screen where member can start moving flow to change address
+  // for their home insurance
+  val moveContract: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
