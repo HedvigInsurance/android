@@ -305,14 +305,8 @@ private fun AudioRecordingSection(
     submitAudioUrl = submitAudioUrl,
     redo = redo,
     modifier = modifier,
-    textButtonTitle = if (allowFreeText) stringResource(R.string.CLAIMS_USE_TEXT_INSTEAD) else null,
-    onTextButtonClick = {
-      if (allowFreeText) {
-        launchFreeText()
-      } else {
-        null
-      }
-    },
+    allowFreeText = allowFreeText,
+    onLaunchFreeText = launchFreeText,
   )
 }
 
