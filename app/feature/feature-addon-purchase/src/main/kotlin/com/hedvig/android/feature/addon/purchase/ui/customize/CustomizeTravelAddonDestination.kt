@@ -28,7 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -447,7 +449,7 @@ private fun DropdownContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       title,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().semantics { heading() },
       textAlign = TextAlign.Center,
     )
     HedvigText(

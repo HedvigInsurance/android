@@ -402,7 +402,6 @@ private fun CommonChoiceDialogContent(
   Column(
     Modifier.verticalScroll(rememberScrollState()),
   ) {
-//    Spacer(Modifier.height(16.dp))
     FlowHeading(
       firstText,
       secondText,

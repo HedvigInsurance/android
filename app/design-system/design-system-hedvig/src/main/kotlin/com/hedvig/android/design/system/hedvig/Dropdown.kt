@@ -158,8 +158,6 @@ fun DropdownWithDialog(
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      // todo stelios this
-//      applyDefaultPadding = false,
       dialogProperties = dialogProperties,
       onDismissRequest = {
         onDoAlongWithDismissRequest?.invoke()

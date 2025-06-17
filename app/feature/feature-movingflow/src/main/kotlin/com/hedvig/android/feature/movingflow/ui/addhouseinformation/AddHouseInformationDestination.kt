@@ -32,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -384,7 +386,8 @@ private fun ExtraBuildingsDialogContent(
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally),
+        .wrapContentWidth(Alignment.CenterHorizontally)
+        .semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
