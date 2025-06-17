@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
@@ -94,8 +96,11 @@ private fun ColumnScope.CrossSellsSheetContent(
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  HedvigText(stringResource(R.string.CROSS_SELL_TITLE))
-  HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), color = HedvigTheme.colorScheme.textSecondary)
+  FlowHeading(
+    stringResource(R.string.CROSS_SELL_TITLE),
+    stringResource(R.string.CROSS_SELL_SUBTITLE),
+    baseStyle = HedvigTheme.typography.bodySmall,
+  )
   Spacer(Modifier.height(24.dp))
   CrossSellsSection(
     showNotificationBadge = false,
@@ -239,9 +244,11 @@ private fun CrossSellItem(
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
   Row(
-    modifier = modifier.heightIn(64.dp).semantics(true) {
-      contentDescription = description
-    },
+    modifier = modifier
+      .heightIn(64.dp)
+      .semantics(true) {
+        contentDescription = description
+      },
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
@@ -257,9 +264,11 @@ private fun CrossSellItem(
     )
     Spacer(Modifier.width(16.dp))
     Column(
-      modifier = Modifier.weight(1f).semantics {
-        hideFromAccessibility()
-      },
+      modifier = Modifier
+        .weight(1f)
+        .semantics {
+          hideFromAccessibility()
+        },
       verticalArrangement = Arrangement.Center,
     ) {
       HedvigText(

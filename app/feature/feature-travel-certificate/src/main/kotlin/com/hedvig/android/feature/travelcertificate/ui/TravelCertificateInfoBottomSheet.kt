@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -32,7 +34,7 @@ private fun TravelCertificateInfoBottomSheetContent(onDismiss: () -> Unit) {
   Column {
     HedvigText(
       text = stringResource(R.string.travel_certificate_info_title),
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(

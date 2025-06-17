@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -60,6 +62,7 @@ fun EmptyState(
       ),
       color = emptyStateColors.textColor,
       textAlign = TextAlign.Center,
+      modifier = Modifier.semantics { heading() },
     )
     if (description != null) {
       HedvigText(
@@ -83,6 +86,7 @@ fun EmptyState(
           HedvigText(buttonStyle.buttonText)
         }
       }
+
       NoButton -> {}
     }
     Spacer(Modifier.height(24.dp))
