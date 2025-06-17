@@ -20,6 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -41,10 +45,20 @@ fun <T> HedvigChip(
   showChipAnimatable: Animatable<Float, AnimationVector1D>,
 ) {
   Box(
-    modifier = modifier.graphicsLayer {
-      scaleX = showChipAnimatable.value
-      scaleY = showChipAnimatable.value
-    },
+    modifier = modifier
+      .graphicsLayer {
+        scaleX = showChipAnimatable.value
+        scaleY = showChipAnimatable.value
+      }
+      .clearAndSetSemantics {
+        val name = itemDisplayName(item)
+        contentDescription = name
+        selected = isSelected
+        this.onClick {
+          onItemClick(item)
+          true
+        }
+      },
     contentAlignment = Alignment.Center,
   ) {
     val surfaceColor by animateColorAsState(
