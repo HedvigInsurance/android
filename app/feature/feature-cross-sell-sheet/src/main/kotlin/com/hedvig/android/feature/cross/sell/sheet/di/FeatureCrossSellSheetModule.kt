@@ -2,7 +2,6 @@ package com.hedvig.android.feature.cross.sell.sheet.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetViewModel
 import com.hedvig.android.feature.cross.sell.sheet.DemoGetCrossSellSheetDataUseCase
@@ -19,7 +18,6 @@ val featureCrossSellSheetModule = module {
   single<GetCrossSellSheetDataUseCase> {
     GetCrossSellSheetDataUseCaseImpl(
       apolloClient = get<ApolloClient>(),
-      getTravelAddonBannerInfoUseCase = get<GetTravelAddonBannerInfoUseCase>(),
     )
   }
   single<GetCrossSellSheetDataUseCaseProvider> {

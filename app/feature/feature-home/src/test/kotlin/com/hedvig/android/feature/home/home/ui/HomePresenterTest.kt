@@ -14,17 +14,20 @@ import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.CrossSell.CrossSellType
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
-import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
@@ -33,13 +36,21 @@ import org.junit.runner.RunWith
 
 @RunWith(TestParameterInjector::class)
 internal class HomePresenterTest {
+  val testCrossSell = CrossSell(
+    "id",
+    "title",
+    "subtitle",
+    "url",
+    CrossSellType.HOME,
+  )
+
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -65,7 +76,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -89,7 +100,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -116,7 +127,7 @@ internal class HomePresenterTest {
           showChatIcon = true,
           hasUnseenChatMessages = false,
           showHelpCenter = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
           travelBannerInfo = null,
         ).right(),
@@ -141,7 +152,11 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           firstVetAction = null,
-          crossSellsAction = null,
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(
+            CrossSellSheetData(testCrossSell, listOf()),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification
+              (true, 1L),
+          ),
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
           travelAddonBannerInfo = null,
@@ -156,7 +171,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -173,7 +188,7 @@ internal class HomePresenterTest {
           ),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -205,7 +220,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -228,7 +243,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -247,7 +262,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, listOf()),
           travelBannerInfo = null,
         ).right(),
       )
@@ -264,7 +279,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
 
@@ -279,7 +294,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -309,7 +324,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
     val firstVet = FirstVetSection(
@@ -329,7 +344,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(
             firstVet,
           ),
@@ -356,12 +371,12 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `if not empty crossSells list show crossSells icon`() = runTest {
+  fun `if crossSell has recommendation or otherCrossSells list show crossSells icon`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
     val crossSell = CrossSell(
@@ -382,7 +397,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = listOf(crossSell),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell)),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -399,7 +414,11 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(
+            CrossSellSheetData(testCrossSell, listOf(crossSell)),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification
+              (true, 1L),
+          ),
           travelAddonBannerInfo = null,
         ),
       )
@@ -412,7 +431,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -426,7 +445,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = true,
           hasUnseenChatMessages = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, emptyList()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -456,7 +475,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
+      { FakeCrossSellHomeNotificationService() },
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -470,7 +489,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = listOf(),
+          crossSells = CrossSellSheetData(null, emptyList()),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -513,7 +532,23 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    crossSells = listOf(),
+    crossSells = CrossSellSheetData(null, emptyList()),
     travelBannerInfo = null,
   )
+}
+
+private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationService {
+  override fun showRedDotNotification(): Flow<Boolean> {
+    return flowOf(true)
+  }
+
+  override fun getLastEpochDayNewRecommendationNotificationWasShown(): Flow<Long?> {
+    return flowOf(1L)
+  }
+
+  override suspend fun markAsSeen() {
+  }
+
+  override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) {
+  }
 }

@@ -19,12 +19,13 @@ query Home {
         buttonText
       }
     }
-    crossSells {
-      id
-      title
-      description
-      storeUrl
-      type
+    crossSell(source: HOME) {
+      recommendedCrossSell {
+        ...HomeCrossSellFragment
+      }
+      otherCrossSells {
+        ...HomeCrossSellFragment
+      }
     }
     memberActions {
       firstVetAction {
@@ -40,4 +41,12 @@ query Home {
       masterInceptionDate
     }
   }
+}
+
+fragment HomeCrossSellFragment on CrossSell {
+  id
+  title
+  description
+  storeUrl
+  type
 }
