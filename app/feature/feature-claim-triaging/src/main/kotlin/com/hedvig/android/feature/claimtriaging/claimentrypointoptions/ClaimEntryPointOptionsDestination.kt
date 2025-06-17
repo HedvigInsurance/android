@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -113,13 +114,16 @@ private fun ClaimEntryPointOptionsScreen(
       exit = fadeOut(),
     ) {
       Column {
+        val description = stringResource(R.string.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION)
         WarningTextWithIcon(
           modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .wrapContentWidth()
-            .semantics { liveRegion = LiveRegionMode.Assertive },
-          //todo: check!
+            .semantics {
+              contentDescription = description
+              liveRegion = LiveRegionMode.Assertive
+            },
           text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
