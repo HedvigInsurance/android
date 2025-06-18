@@ -280,19 +280,23 @@ fun QuoteCard(
           Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             HorizontalDivider()
             if (displayItems != null) {
-              Column {
+              Column(
+                Modifier.semantics(true) {},
+              ) {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
                 displayItems()
               }
             }
             if (insurableLimits != null) {
-              Column {
+              Column(
+                Modifier.semantics(true) {},
+              ) {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
                 insurableLimits()
               }
             }
             if (documents.isNotEmpty()) {
-              Column {
+              Column(Modifier.semantics(true) {}) {
                 HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
                 Column(
                   verticalArrangement = Arrangement.spacedBy(6.dp),

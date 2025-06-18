@@ -33,9 +33,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -57,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Larg
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
+import hedvig.resources.R
 
 // used in RadioOption and Checkbox composables
 data class RadioOptionData(
@@ -164,11 +167,12 @@ fun RadioOptionRightAligned(
   RadioOption(
     chosenState = chosenState,
     onClick = onClick,
-    modifier = modifier
-      .semantics(true) { role = Role.RadioButton },
+    modifier = modifier,
     lockedState = lockedState,
     size = size,
     optionContent = { radioButtonIcon ->
+      val chosenDescription = stringResource(R.string.TALKBACK_OPTION_SELECTED)
+      val notChosenDescription = stringResource(R.string.TALKBACK_OPTION_NOT_SELECTED)
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { optionContent() },
         endSlot = {
@@ -177,6 +181,10 @@ fun RadioOptionRightAligned(
           }
         },
         spaceBetween = 8.dp,
+        modifier = Modifier.semantics(true) {
+          role = Role.RadioButton
+          stateDescription = if (chosenState == ChosenState.Chosen) chosenDescription else notChosenDescription
+        },
       )
     },
   )
