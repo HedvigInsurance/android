@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
@@ -43,12 +42,9 @@ fun ExpandablePlusCard(
   content: @Composable RowScope.() -> Unit,
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
-  // used for better accessibility voice over instead of raw collapsed "content".
-  titleDescription: String? = null,
 ) {
   val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
   val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
-  val cardContentDescription = stringResource(R.string.TALKBACK_EXPANDABLE_ITEM, "${titleDescription?.let { it }}")
   val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
   val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   Surface(
@@ -64,16 +60,10 @@ fun ExpandablePlusCard(
         onClickLabel = if (isExpanded) collapseClickLabel else expandClickLabel,
       )
       .semantics {
-        this.contentDescription = cardContentDescription
         this.stateDescription = if (isExpanded) expandedStateDescription else collapsedStateDescription
       },
   ) {
-    Column(
-      modifier = Modifier
-        .semantics(true) {
-        }
-        .padding(contentPadding),
-    ) {
+    Column(modifier = Modifier.padding(contentPadding)) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(verticalAlignment = Alignment.CenterVertically) {
@@ -113,14 +103,12 @@ fun ExpandablePlusCard(
           }
         },
         spaceBetween = 4.dp,
-        modifier = Modifier.semantics {
-          hideFromAccessibility()
-        },
       )
       AnimatedVisibility(
         visible = isExpanded,
         enter = fadeIn() + expandVertically(clip = false, expandFrom = Alignment.Top),
         exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.Top),
+        modifier = Modifier.semantics(mergeDescendants = true) {},
       ) {
         expandedContent()
       }
