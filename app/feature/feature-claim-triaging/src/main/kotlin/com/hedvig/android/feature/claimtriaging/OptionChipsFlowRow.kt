@@ -14,6 +14,8 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.semantics.selectableGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import arrow.core.identity
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -34,7 +36,9 @@ internal fun <T> OptionChipsFlowRow(
   modifier: Modifier = Modifier,
 ) {
   FlowRow(
-    modifier = modifier,
+    modifier = modifier.semantics {
+      selectableGroup()
+    },
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
