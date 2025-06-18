@@ -151,8 +151,8 @@ private fun SummaryScreen(
       )
       Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
+          .fillMaxWidth()
+          .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -242,9 +242,9 @@ private fun SummaryScreen(
     var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
     Column(
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-          .verticalScroll(rememberScrollState()),
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -282,15 +282,15 @@ private fun SummaryScreen(
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier
-          .wrapContentHeight(Alignment.Bottom)
-          .onPlaced {
-              bottomAttachedContentHeightPx = it.size.height
-          },
+        .wrapContentHeight(Alignment.Bottom)
+        .onPlaced {
+          bottomAttachedContentHeightPx = it.size.height
+        },
     ) {
       Column(
         Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
@@ -309,10 +309,10 @@ private fun SummaryScreen(
                 text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
                 textAlign = TextAlign.End,
                 modifier = Modifier
-                    .wrapContentWidth(Alignment.End)
-                    .semantics {
-                        contentDescription = voiceoverDescription
-                    },
+                  .wrapContentWidth(Alignment.End)
+                  .semantics {
+                    contentDescription = voiceoverDescription
+                  },
               )
             }
           },
@@ -389,8 +389,8 @@ private fun AddonQuoteCard(
             buttonSize = Medium,
             border = HedvigTheme.colorScheme.borderPrimary,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+              .fillMaxWidth()
+              .padding(bottom = 8.dp),
           )
         }
         if (quote.isExcludedByUser) {
