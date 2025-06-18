@@ -3,6 +3,7 @@ package com.hedvig.android.feature.movingflow.ui.addhouseinformation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -31,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -287,11 +290,10 @@ private fun ExtraBuildingsCard(
   var extraBuildingsDialogOpen by rememberSaveable { mutableStateOf(false) }
   if (extraBuildingsDialogOpen) {
     HedvigDialog(
-      applyDefaultPadding = false,
+      contentPadding = PaddingValues(0.dp),
       dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
       onDismissRequest = { extraBuildingsDialogOpen = false },
       style = NoButtons,
-      applyVerticalScroll = false,
     ) {
       ExtraBuildingsDialogContent(
         extraBuildings = extraBuildings,
@@ -384,7 +386,8 @@ private fun ExtraBuildingsDialogContent(
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally),
+        .wrapContentWidth(Alignment.CenterHorizontally)
+        .semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {

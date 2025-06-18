@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,20 +91,18 @@ fun DropdownWithDialog(
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      applyDefaultPadding = true,
       dialogProperties = dialogProperties,
       onDismissRequest = {
         onDoAlongWithDismissRequest?.invoke()
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
-      applyVerticalScroll = true,
     ) {
       Surface(
         color = dropdownColors.containerColor(false).value,
         shape = size.shape,
       ) {
-        Column {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
           style.items.forEachIndexed { index, item ->
             DropdownOption(
               item = item,
@@ -158,14 +158,12 @@ fun DropdownWithDialog(
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      applyDefaultPadding = false,
       dialogProperties = dialogProperties,
       onDismissRequest = {
         onDoAlongWithDismissRequest?.invoke()
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
-      applyVerticalScroll = false,
     ) {
       dialogContent {
         onDoAlongWithDismissRequest?.invoke()
@@ -205,19 +203,16 @@ fun DropdownWithDialog(
   errorText: String? = null,
   containerColor: Color? = null,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
-  applyDefaultDialogPadding: Boolean = false,
   dialogContent: @Composable (onDismissRequest: () -> Unit) -> Unit,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      applyDefaultPadding = applyDefaultDialogPadding,
       dialogProperties = dialogProperties,
       onDismissRequest = {
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
-      applyVerticalScroll = false,
     ) {
       dialogContent {
         isDialogVisible = false

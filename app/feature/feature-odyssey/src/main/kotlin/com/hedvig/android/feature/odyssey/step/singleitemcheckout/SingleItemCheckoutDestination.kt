@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -422,7 +423,8 @@ internal fun SingleItemCheckoutInfoBottomSheet(sheetState: HedvigBottomSheetStat
         text = explanationTitleAndText.first,
         modifier = Modifier
           .fillMaxWidth()
-          .padding(horizontal = 24.dp),
+          .padding(horizontal = 24.dp)
+          .semantics { heading() },
       )
       Spacer(Modifier.height(8.dp))
       HedvigText(

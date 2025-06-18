@@ -26,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -94,7 +96,9 @@ internal fun AddCoInsuredBottomSheetContent(
     HedvigText(
       text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(24.dp))
     if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
@@ -340,7 +344,9 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f).defaultMinSize(minHeight = 64.dp),
+        modifier = Modifier
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -355,7 +361,9 @@ private fun ManualInputFields(
           capitalization = KeyboardCapitalization.Words,
           keyboardType = KeyboardType.Text,
         ),
-        modifier = Modifier.weight(1f).defaultMinSize(minHeight = 64.dp),
+        modifier = Modifier
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(

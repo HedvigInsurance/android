@@ -51,6 +51,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
@@ -144,14 +145,10 @@ private fun RecommendationSection(
         .size(140.dp),
     )
     Spacer(Modifier.height(24.dp))
-    HedvigText(
-      text = recommendedCrossSell.title,
-      style = HedvigTheme.typography.bodySmall,
-    )
-    HedvigText(
-      text = recommendedCrossSell.subtitle,
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+    FlowHeading(
+      recommendedCrossSell.title,
+      recommendedCrossSell.subtitle,
+      baseStyle = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(48.dp))
     HedvigButton(
@@ -214,9 +211,7 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
     NotificationSubheading(
       text = stringResource(R.string.insurance_tab_cross_sells_title),
       showNotification = showNotificationBadge,
-      modifier = Modifier.semantics {
-        heading()
-      },
+      modifier = Modifier.semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -247,9 +242,11 @@ private fun CrossSellItem(
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
   Row(
-    modifier = modifier.heightIn(64.dp).semantics(true) {
-      contentDescription = description
-    },
+    modifier = modifier
+      .heightIn(64.dp)
+      .semantics(true) {
+        contentDescription = description
+      },
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
@@ -265,9 +262,11 @@ private fun CrossSellItem(
     )
     Spacer(Modifier.width(16.dp))
     Column(
-      modifier = Modifier.weight(1f).semantics {
-        hideFromAccessibility()
-      },
+      modifier = Modifier
+        .weight(1f)
+        .semantics {
+          hideFromAccessibility()
+        },
       verticalArrangement = Arrangement.Center,
     ) {
       HedvigText(

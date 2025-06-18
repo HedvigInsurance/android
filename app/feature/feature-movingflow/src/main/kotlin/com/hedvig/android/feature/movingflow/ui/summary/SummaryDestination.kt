@@ -77,6 +77,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -209,8 +210,11 @@ private fun SummaryScreen(
   }
   val exclusionBottomSheetState = rememberHedvigBottomSheetState<ExclusionDialogInfo>()
   HedvigBottomSheet(exclusionBottomSheetState) { data ->
-    HedvigText(stringResource(R.string.ADDON_REMOVE_TITLE, data.addonName))
-    HedvigText(stringResource(R.string.ADDON_REMOVE_DESCRIPTION), color = HedvigTheme.colorScheme.textSecondary)
+    FlowHeading(
+      stringResource(R.string.ADDON_REMOVE_TITLE, data.addonName),
+      stringResource(R.string.ADDON_REMOVE_DESCRIPTION),
+      baseStyle = HedvigTheme.typography.bodySmall,
+    )
     Spacer(Modifier.height(32.dp))
     HedvigButton(
       text = stringResource(R.string.ADDON_REMOVE_CONFIRM_BUTTON, data.addonName),
@@ -304,7 +308,8 @@ private fun SummaryScreen(
               HedvigText(
                 text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
                 textAlign = TextAlign.End,
-                modifier = Modifier.wrapContentWidth(Alignment.End)
+                modifier = Modifier
+                  .wrapContentWidth(Alignment.End)
                   .semantics {
                     contentDescription = voiceoverDescription
                   },

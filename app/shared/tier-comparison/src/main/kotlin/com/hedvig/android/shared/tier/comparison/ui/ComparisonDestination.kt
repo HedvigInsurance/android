@@ -266,11 +266,10 @@ private fun ComparisonRowBottomSheetContent(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
-    HedvigText(text = comparisonItem.title)
-    Spacer(Modifier.height(2.dp))
-    HedvigText(
-      text = comparisonItem.description,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      comparisonItem.title,
+      comparisonItem.description,
+      baseStyle = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(32.dp))
     HedvigButton(
