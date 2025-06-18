@@ -183,8 +183,8 @@ fun RadioOptionRightAligned(
         spaceBetween = 8.dp,
         modifier = Modifier.semantics(true) {
           role = Role.RadioButton
-          stateDescription = if (chosenState== ChosenState.Chosen) chosenDescription else notChosenDescription
-        }
+          stateDescription = if (chosenState == ChosenState.Chosen) chosenDescription else notChosenDescription
+        },
       )
     },
   )
