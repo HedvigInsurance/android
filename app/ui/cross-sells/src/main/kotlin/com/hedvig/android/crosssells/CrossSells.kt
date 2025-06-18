@@ -51,7 +51,6 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
@@ -145,10 +144,12 @@ private fun RecommendationSection(
         .size(140.dp),
     )
     Spacer(Modifier.height(24.dp))
-    FlowHeading(
-      recommendedCrossSell.title,
+    HedvigText(
+      text = recommendedCrossSell.title,
+    )
+    HedvigText(
       recommendedCrossSell.subtitle,
-      baseStyle = HedvigTheme.typography.bodySmall,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
     Spacer(Modifier.height(48.dp))
     HedvigButton(
