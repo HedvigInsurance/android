@@ -356,6 +356,7 @@ internal fun HedvigNavHost(
     movingFlowGraph(
       navController = hedvigAppState.navController,
       goToChat = ::navigateToNewConversation,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     connectPaymentGraph(
       navigator = navigator,
