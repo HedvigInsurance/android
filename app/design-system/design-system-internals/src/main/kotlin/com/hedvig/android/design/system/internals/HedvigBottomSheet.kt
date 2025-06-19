@@ -46,7 +46,7 @@ fun <T> BottomSheet(
     ModalBottomSheet(
       onDismissRequest = onDismissRequest,
       modifier = modifier.then(
-        Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+        Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
       ),
       sheetState = state,
       contentWindowInsets = {
