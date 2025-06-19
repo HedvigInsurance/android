@@ -21,7 +21,12 @@ query Home {
     }
     crossSell(source: HOME) {
       recommendedCrossSell {
-        ...HomeCrossSellFragment
+        crossSell {
+          ...HomeCrossSellFragment
+        }
+        bannerText
+        discountText
+        buttonText
       }
       otherCrossSells {
         ...HomeCrossSellFragment

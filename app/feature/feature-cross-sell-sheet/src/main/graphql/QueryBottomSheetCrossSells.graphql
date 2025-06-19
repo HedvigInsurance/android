@@ -2,7 +2,12 @@ query BottomSheetCrossSells($source: CrossSellSource!) {
   currentMember {
     crossSell(source: $source) {
       recommendedCrossSell {
-        ...CrossSellFragment
+        crossSell {
+          ...CrossSellFragment
+        }
+        bannerText
+        discountText
+        buttonText
       }
       otherCrossSells {
         ...CrossSellFragment

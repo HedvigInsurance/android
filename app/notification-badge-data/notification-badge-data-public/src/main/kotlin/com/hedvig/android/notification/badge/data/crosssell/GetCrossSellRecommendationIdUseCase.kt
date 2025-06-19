@@ -28,7 +28,7 @@ internal class GetCrossSellRecommendationIdUseCaseImpl(
         },
         { data ->
           data.currentMember
-            .crossSell.recommendedCrossSell?.id?.let { CrossSellIdentifier(it) }
+            .crossSell.recommendedCrossSell?.crossSell?.id?.let { CrossSellIdentifier(it) }
         },
       )
   }
