@@ -135,54 +135,6 @@ private fun <T> InternalHedvigBottomSheet(
 }
 
 @Composable
-fun CrossSellDragHandle(
-  contentPadding: PaddingValues,
-  modifier: Modifier = Modifier,
-  text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
-) {
-  val direction = LocalLayoutDirection.current
-  Box(
-    modifier
-      .fillMaxWidth()
-      .height(40.dp)
-      .layout { measurable, constraints ->
-        // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
-        val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
-        val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
-        val adjustedConstraints = constraints.copy(
-          maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
-          minWidth = constraints.minWidth + paddingEnd + paddingStart,
-        )
-        val placeable = measurable.measure(adjustedConstraints)
-        layout(placeable.width, placeable.height) {
-          placeable.place(0, 0)
-        }
-      }
-      .background(color = HedvigTheme.colorScheme.signalGreenFill),
-    contentAlignment = Alignment.Center,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(
-        HedvigIcons.Campaign,
-        contentDescription = EmptyContentDescription,
-        tint = HedvigTheme.colorScheme.signalGreenElement,
-        modifier = Modifier.size(20.dp),
-      )
-      if (text != null) {
-        Spacer(Modifier.width(8.dp))
-        HedvigText(
-          text,
-          fontSize = HedvigTheme.typography.label.fontSize,
-          color = HedvigTheme.colorScheme.signalGreenText,
-        )
-      }
-    }
-  }
-}
-
-@Composable
 private fun DragHandle(modifier: Modifier = Modifier) {
   Box(
     modifier = modifier

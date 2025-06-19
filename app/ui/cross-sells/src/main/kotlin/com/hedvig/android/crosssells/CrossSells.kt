@@ -3,13 +3,17 @@ package com.hedvig.android.crosssells
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -44,14 +50,16 @@ import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
-import com.hedvig.android.design.system.hedvig.CrossSellDragHandle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -341,6 +349,54 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
   }
 }
 
+@Composable
+private fun CrossSellDragHandle(
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+  text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
+) {
+  val direction = LocalLayoutDirection.current
+  Box(
+    modifier
+      .fillMaxWidth()
+      .height(40.dp)
+      .layout { measurable, constraints ->
+        // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
+        val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
+        val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
+        val adjustedConstraints = constraints.copy(
+          maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
+          minWidth = constraints.minWidth + paddingEnd + paddingStart,
+        )
+        val placeable = measurable.measure(adjustedConstraints)
+        layout(placeable.width, placeable.height) {
+          placeable.place(0, 0)
+        }
+      }
+      .background(color = HedvigTheme.colorScheme.signalGreenFill),
+    contentAlignment = Alignment.Center,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Icon(
+        HedvigIcons.Campaign,
+        contentDescription = EmptyContentDescription,
+        tint = HedvigTheme.colorScheme.signalGreenElement,
+        modifier = Modifier.size(20.dp),
+      )
+      if (text != null) {
+        Spacer(Modifier.width(8.dp))
+        HedvigText(
+          text,
+          fontSize = HedvigTheme.typography.label.fontSize,
+          color = HedvigTheme.colorScheme.signalGreenText,
+        )
+      }
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewCrossSellsSheetContent() {
@@ -392,6 +448,16 @@ private fun PreviewCrossSellItemPlaceholder() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellItemPlaceholder()
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellDragHandle() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellDragHandle(PaddingValues())
     }
   }
 }
