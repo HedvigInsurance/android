@@ -17,6 +17,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
@@ -130,7 +131,14 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val allData = response
             .bind()
             .currentMember.crossSell
-          val recommendedData = allData.recommendedCrossSell?.crossSell?.toCrossSell()
+          val recommendedData = allData.recommendedCrossSell?.let {
+            RecommendedCrossSell(
+              crossSell = it.crossSell.toCrossSell(),
+              bannerText = it.bannerText,
+              buttonText = it.buttonText,
+              discountText = it.discountText,
+            )
+          }
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }

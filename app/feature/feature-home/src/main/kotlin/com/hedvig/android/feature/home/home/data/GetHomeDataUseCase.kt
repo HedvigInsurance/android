@@ -12,6 +12,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
@@ -111,12 +112,19 @@ internal class GetHomeDataUseCaseImpl(
           )
         }
         val crossSellsData = homeQueryData.currentMember.crossSell
-        val recommendedData = crossSellsData.recommendedCrossSell?.crossSell?.toCrossSell()
+        val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
+          RecommendedCrossSell(
+            crossSell = it.crossSell.toCrossSell(),
+            bannerText = it.bannerText,
+            buttonText = it.buttonText,
+            discountText = it.discountText,
+          )
+        }
         val otherCrossSellsData = crossSellsData.otherCrossSells.map {
           it.toCrossSell()
         }
         val crossSells = CrossSellSheetData(
-          recommendedCrossSell = recommendedData,
+          recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
         )
         val showChatIcon = !shouldHideChatButton(

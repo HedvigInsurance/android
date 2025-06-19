@@ -15,6 +15,7 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
@@ -36,12 +37,17 @@ import org.junit.runner.RunWith
 
 @RunWith(TestParameterInjector::class)
 internal class HomePresenterTest {
-  val testCrossSell = CrossSell(
-    "id",
-    "title",
-    "subtitle",
-    "url",
-    CrossSellType.HOME,
+  val testCrossSell = RecommendedCrossSell(
+    crossSell = CrossSell(
+      "id",
+      "title",
+      "subtitle",
+      "url",
+      CrossSellType.HOME,
+    ),
+    bannerText = "50% discount the first year",
+    buttonText = "Explore offer",
+    discountText = "-50%",
   )
 
   @Test
