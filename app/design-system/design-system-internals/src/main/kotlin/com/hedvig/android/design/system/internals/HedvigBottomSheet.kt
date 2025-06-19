@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -44,7 +45,9 @@ fun <T> BottomSheet(
   if (sheetState.isVisible) {
     ModalBottomSheet(
       onDismissRequest = onDismissRequest,
-      modifier = modifier,
+      modifier = modifier.then(
+        Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
+      ),
       sheetState = state,
       contentWindowInsets = {
         WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom) + contentPadding
