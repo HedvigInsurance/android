@@ -130,7 +130,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val allData = response
             .bind()
             .currentMember.crossSell
-          val recommendedData = allData.recommendedCrossSell?.toCrossSell()
+          val recommendedData = allData.recommendedCrossSell?.crossSell?.toCrossSell()
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }
@@ -156,10 +156,11 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
         CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
         CrossSellType.PET -> CrossSell.CrossSellType.PET
         CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-        CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
-        CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
-        CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
-        CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
+        CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET // todo: there are separate pillow images for this. check iOs
+        CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET // todo: there are separate pillow images for this. check iOs
+        CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME // todo: there are separate pillow images for this. check iOs
+        CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME // todo: there are separate pillow images for this. check iOs
+        CrossSellType.HOUSE -> CrossSell.CrossSellType.HOME // todo: there are separate pillow images for this. check iOs
       },
     )
   }

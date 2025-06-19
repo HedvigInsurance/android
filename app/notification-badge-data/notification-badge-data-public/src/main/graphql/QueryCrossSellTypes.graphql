@@ -2,7 +2,9 @@ query CrossSellTypes {
   currentMember {
     crossSell(source: HOME) {
       recommendedCrossSell {
-        id
+        crossSell {
+          id
+        }
       }
     }
   }
