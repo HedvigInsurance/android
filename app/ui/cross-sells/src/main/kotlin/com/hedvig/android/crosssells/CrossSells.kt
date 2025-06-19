@@ -35,6 +35,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -54,6 +56,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
@@ -174,7 +177,12 @@ private fun RecommendationSection(
     )
     HedvigText(
       recommendedCrossSell.crossSell.subtitle,
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      style = LocalTextStyle.current.copy(
+        lineBreak = LineBreak.Heading,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      ),
+      modifier = Modifier.padding(horizontal = 16.dp),
+      textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(48.dp))
     HedvigButton(

@@ -746,7 +746,7 @@ private fun PreviewHomeScreen(
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
-                buttonText = "Explore offer"
+                buttonText = "Explore offer",
               ),
               otherCrossSells = listOf(
                 CrossSell(
