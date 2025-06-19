@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,6 +52,8 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.placeholder.fade
@@ -68,7 +71,7 @@ data class RecommendedCrossSell(
   val crossSell: CrossSell,
   val bannerText: String,
   val buttonText: String?,
-  val discountText: String?
+  val discountText: String?,
 )
 
 @Composable
@@ -114,8 +117,10 @@ private fun ColumnScope.CrossSellsSheetContent(
   }
   if (otherCrossSells.isNotEmpty()) {
     Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE),
-      Modifier.semantics { heading() })
+    HedvigText(
+      stringResource(R.string.CROSS_SELL_SUBTITLE),
+      Modifier.semantics { heading() },
+    )
     Spacer(Modifier.height(24.dp))
     CrossSellsSection(
       showNotificationBadge = false,
@@ -148,14 +153,21 @@ private fun RecommendationSection(
   ) {
     Spacer(Modifier.height(48.dp))
     Box {
-
+      Image(
+        painter = painterResource(id = recommendedCrossSell.crossSell.type.iconRes()),
+        contentDescription = EmptyContentDescription,
+        modifier = Modifier
+          .size(140.dp),
+      )
+      if (recommendedCrossSell.discountText != null) {
+        HighlightLabel(
+          labelText = recommendedCrossSell.discountText,
+          size = HighlightLabelDefaults.HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+          modifier = Modifier.align(Alignment.TopEnd).padding(top = 16.dp),
+        )
+      }
     }
-    Image(
-      painter = painterResource(id = recommendedCrossSell.crossSell.type.iconRes()),
-      contentDescription = EmptyContentDescription,
-      modifier = Modifier
-        .size(140.dp),
-    )
     Spacer(Modifier.height(24.dp))
     HedvigText(
       text = recommendedCrossSell.crossSell.title,
@@ -174,9 +186,11 @@ private fun RecommendationSection(
       Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
-    val bottomLabelText = if (recommendedCrossSell.discountText!=null)
-      stringResource(R.string.CROSS_SELL_LABEL) else
-        stringResource(R.string.CROSS_SELL_LABEL_LIMITED_OFFER)
+    val bottomLabelText = if (recommendedCrossSell.discountText != null) {
+      stringResource(R.string.CROSS_SELL_LABEL)
+    } else {
+      stringResource(R.string.CROSS_SELL_LABEL_LIMITED_OFFER)
+    }
     HedvigText(
       text = bottomLabelText,
       style = HedvigTheme.typography.finePrint,
@@ -366,7 +380,7 @@ private fun PreviewCrossSellsSheetContent() {
         CrossSellsSheetContent(
           recommendedCrossSell =
             RecommendedCrossSell(
-              crossSell =   CrossSell(
+              crossSell = CrossSell(
                 "rh",
                 "Car Insurance",
                 "For you and your car",
@@ -375,7 +389,7 @@ private fun PreviewCrossSellsSheetContent() {
               ),
               bannerText = "50% discount the first year",
               buttonText = "Explore offer",
-              discountText = "50%"
+              discountText = "-50%",
             ),
           otherCrossSells = listOf(
             CrossSell(

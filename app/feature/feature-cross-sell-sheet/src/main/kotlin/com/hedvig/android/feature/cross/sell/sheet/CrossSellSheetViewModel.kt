@@ -136,7 +136,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
               crossSell = it.crossSell.toCrossSell(),
               bannerText = it.bannerText,
               buttonText = it.buttonText,
-              discountText = it.discountText
+              discountText = it.discountText,
             )
           }
           val otherCrossSellsData = allData.otherCrossSells.map {
@@ -150,7 +150,6 @@ internal class GetCrossSellSheetDataUseCaseImpl(
       }
   }
 }
-
 
 internal fun CrossSellFragment.toCrossSell(): CrossSell {
   return with(this) {
