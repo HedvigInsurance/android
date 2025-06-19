@@ -113,7 +113,11 @@ private fun ColumnScope.CrossSellsSheetContent(
   dismissSheet: () -> Unit,
 ) {
   if (recommendedCrossSell != null) {
-    RecommendationSection(recommendedCrossSell, onCrossSellClick)
+    RecommendationSection(
+      recommendedCrossSell,
+      onCrossSellClick,
+      dismissSheet = dismissSheet,
+    )
   }
   if (otherCrossSells.isNotEmpty() && recommendedCrossSell != null) {
     Spacer(Modifier.height(48.dp))
@@ -130,6 +134,7 @@ private fun ColumnScope.CrossSellsSheetContent(
       crossSells = otherCrossSells,
       onCrossSellClick = onCrossSellClick,
       withSubHeader = false,
+      dismissSheet = dismissSheet,
     )
   }
   Spacer(Modifier.height(24.dp))
@@ -148,6 +153,7 @@ private fun ColumnScope.CrossSellsSheetContent(
 private fun RecommendationSection(
   recommendedCrossSell: RecommendedCrossSell,
   onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -189,6 +195,7 @@ private fun RecommendationSection(
       text = recommendedCrossSell.buttonText ?: stringResource(R.string.CROSS_SELL_BUTTON),
       onClick = {
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
+        dismissSheet()
       },
       enabled = true,
       Modifier.fillMaxWidth(),
@@ -212,6 +219,7 @@ fun CrossSellsSection(
   showNotificationBadge: Boolean,
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
 ) {
@@ -220,7 +228,7 @@ fun CrossSellsSection(
       CrossSellsSubHeaderWithDivider(showNotificationBadge)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick)
+      CrossSellItem(crossSell, onCrossSellClick, dismissSheet = dismissSheet)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -240,6 +248,7 @@ fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
       onCrossSellClick = {},
       isLoading = true,
       modifier = Modifier,
+      dismissSheet = {},
     )
   }
 }
@@ -257,7 +266,12 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
 }
 
 @Composable
-private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun CrossSellItem(
+  crossSell: CrossSell,
+  onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
     crossSellSubtitle = crossSell.subtitle,
@@ -266,6 +280,7 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Un
     onCrossSellClick = onCrossSellClick,
     modifier = modifier,
     isLoading = false,
+    dismissSheet = dismissSheet,
   )
 }
 
@@ -277,6 +292,7 @@ private fun CrossSellItem(
   type: CrossSell.CrossSellType,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
+  dismissSheet: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
@@ -334,6 +350,7 @@ private fun CrossSellItem(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
+        dismissSheet()
       },
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -424,6 +441,7 @@ private fun PreviewCrossSellsSection() {
       CrossSellsSection(
         true,
         List(2) { CrossSell("id", "title", "subtitle", "storeUrl", HOME) },
+        {},
         {},
       )
     }
