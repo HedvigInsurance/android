@@ -187,9 +187,9 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(12.dp))
     val bottomLabelText = if (recommendedCrossSell.discountText != null) {
-      stringResource(R.string.CROSS_SELL_LABEL)
-    } else {
       stringResource(R.string.CROSS_SELL_LABEL_LIMITED_OFFER)
+    } else {
+      stringResource(R.string.CROSS_SELL_LABEL)
     }
     HedvigText(
       text = bottomLabelText,
