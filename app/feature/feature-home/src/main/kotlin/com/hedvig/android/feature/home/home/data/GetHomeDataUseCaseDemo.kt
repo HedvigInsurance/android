@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.memberreminders.MemberReminders
@@ -26,13 +27,19 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       showHelpCenter = true,
       firstVetSections = listOf(),
       crossSells = CrossSellSheetData(
-        recommendedCrossSell = CrossSell(
-          "rh",
-          "Car Insurance",
-          "For you and your car",
-          "",
-          CrossSell.CrossSellType.CAR,
-        ),
+        recommendedCrossSell =
+          RecommendedCrossSell(
+            crossSell = CrossSell(
+              "rh",
+              "Car Insurance",
+              "For you and your car",
+              "",
+              CrossSell.CrossSellType.CAR,
+            ),
+            bannerText = "50% discount the first year",
+            discountText = "-50%",
+            buttonText = "Explore offer"
+          ),
         otherCrossSells = listOf(
           CrossSell(
             "rf",
