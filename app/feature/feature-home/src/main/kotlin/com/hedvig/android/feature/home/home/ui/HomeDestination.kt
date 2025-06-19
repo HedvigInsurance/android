@@ -61,7 +61,7 @@ import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.crosssells.CrossSellSheet
+import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
@@ -672,7 +672,7 @@ private fun CrossSellBottomSheet(
         }
       }
   }
-  CrossSellSheet(
+  CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
   )

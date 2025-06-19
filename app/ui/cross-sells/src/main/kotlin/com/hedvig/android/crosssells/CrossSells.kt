@@ -14,14 +14,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +50,7 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
+import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -71,8 +74,35 @@ data class CrossSellSheetData(
   val otherCrossSells: List<CrossSell>,
 )
 
+/**
+ * Floating bottom sheet option
+ */
 @Composable
-fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
+fun CrossSellFloatingBottomSheet(
+  state: HedvigBottomSheetState<CrossSellSheetData>,
+  onCrossSellClick: (String) -> Unit,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = state,
+    dragHandle = {
+      CrossSellDragHandle(contentPadding = PaddingValues(horizontal = 0.dp))
+    },
+    style = BottomSheetStyle(transparentBackground = true, automaticallyScrollableContent = false),
+    contentPadding = PaddingValues(horizontal = 0.dp),
+    sheetPadding = PaddingValues(horizontal = 16.dp),
+    content = { crossSellSheetData ->
+      CrossSellsFloatingSheetContent(
+        recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
+        otherCrossSells = crossSellSheetData.otherCrossSells,
+        onCrossSellClick = onCrossSellClick,
+        dismissSheet = { state.dismiss() },
+      )
+    },
+  )
+}
+
+@Composable
+fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
   val dragHandle: @Composable (() -> Unit)? =
     if (state.data?.recommendedCrossSell != null) {
       {
@@ -105,33 +135,84 @@ private fun ColumnScope.CrossSellsSheetContent(
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  if (recommendedCrossSell != null) {
-    RecommendationSection(recommendedCrossSell, onCrossSellClick)
+  Column(
+    verticalArrangement = Arrangement.spacedBy(64.dp),
+    modifier = Modifier.padding(top = 48.dp, bottom = 24.dp),
+  ) {
+    if (recommendedCrossSell != null) {
+      RecommendationSection(recommendedCrossSell, onCrossSellClick)
+    }
+    if (otherCrossSells.isNotEmpty()) {
+      Column {
+        HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+        Spacer(Modifier.height(24.dp))
+        CrossSellsSection(
+          showNotificationBadge = false,
+          crossSells = otherCrossSells,
+          onCrossSellClick = onCrossSellClick,
+          withSubHeader = false,
+        )
+      }
+    }
   }
-  if (otherCrossSells.isNotEmpty() && recommendedCrossSell != null) {
-    Spacer(Modifier.height(48.dp))
-  }
-  if (otherCrossSells.isNotEmpty()) {
-    Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
-    Spacer(Modifier.height(24.dp))
-    CrossSellsSection(
-      showNotificationBadge = false,
-      crossSells = otherCrossSells,
-      onCrossSellClick = onCrossSellClick,
-      withSubHeader = false,
-    )
-  }
-  Spacer(Modifier.height(24.dp))
   HedvigButton(
     text = stringResource(R.string.general_close_button),
     onClick = dismissSheet,
     enabled = true,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(8.dp))
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+}
+
+@Composable
+private fun CrossSellsFloatingSheetContent(
+  recommendedCrossSell: CrossSell?,
+  otherCrossSells: List<CrossSell>,
+  onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
+) {
+  Column {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLargeBottom,
+      modifier = Modifier.weight(1f, fill = false),
+    ) {
+      Column(
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp)
+          .padding(top = 48.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(64.dp),
+      ) {
+        if (recommendedCrossSell != null) {
+          RecommendationSection(recommendedCrossSell, onCrossSellClick)
+        }
+        if (otherCrossSells.isNotEmpty()) {
+          Column {
+            HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+            Spacer(Modifier.height(24.dp))
+            CrossSellsSection(
+              showNotificationBadge = false,
+              crossSells = otherCrossSells,
+              onCrossSellClick = onCrossSellClick,
+              withSubHeader = false,
+            )
+          }
+        }
+      }
+    }
+    Spacer(Modifier.height(24.dp))
+    HedvigButton(
+      text = stringResource(R.string.general_close_button),
+      onClick = dismissSheet,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
 }
 
 @Composable
@@ -144,7 +225,6 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Spacer(Modifier.height(48.dp))
     Image(
       painter = painterResource(id = recommendedCrossSell.type.iconRes()),
       contentDescription = EmptyContentDescription,
