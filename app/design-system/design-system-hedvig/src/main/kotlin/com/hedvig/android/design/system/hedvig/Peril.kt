@@ -131,7 +131,6 @@ private fun ExpandablePerilCard(
     },
     modifier = modifier,
     contentPadding = size.padding,
-    titleDescription = title,
   )
 }
 
