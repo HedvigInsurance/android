@@ -170,7 +170,7 @@ private fun ColumnScope.CrossSellsSheetContent(
           crossSells = otherCrossSells,
           onCrossSellClick = onCrossSellClick,
           withSubHeader = false,
-          dismissSheet = dismissSheet,
+          onSheetDismissed = dismissSheet,
         )
       }
     }
@@ -224,7 +224,7 @@ private fun CrossSellsFloatingSheetContent(
               crossSells = otherCrossSells,
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
-              dismissSheet = dismissSheet,
+              onSheetDismissed = dismissSheet,
             )
           }
         }
@@ -314,7 +314,7 @@ fun CrossSellsSection(
   showNotificationBadge: Boolean,
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
-  dismissSheet: () -> Unit,
+  onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
 ) {
@@ -323,7 +323,7 @@ fun CrossSellsSection(
       CrossSellsSubHeaderWithDivider(showNotificationBadge)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, dismissSheet = dismissSheet)
+      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -343,7 +343,7 @@ fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
       onCrossSellClick = {},
       isLoading = true,
       modifier = Modifier,
-      dismissSheet = {},
+      onSheetDismissed = {},
     )
   }
 }
@@ -364,7 +364,7 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
 private fun CrossSellItem(
   crossSell: CrossSell,
   onCrossSellClick: (String) -> Unit,
-  dismissSheet: () -> Unit,
+  onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   CrossSellItem(
@@ -375,7 +375,7 @@ private fun CrossSellItem(
     onCrossSellClick = onCrossSellClick,
     modifier = modifier,
     isLoading = false,
-    dismissSheet = dismissSheet,
+    onSheetDismissed = onSheetDismissed,
   )
 }
 
@@ -387,7 +387,7 @@ private fun CrossSellItem(
   type: CrossSell.CrossSellType,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
-  dismissSheet: () -> Unit,
+  onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
@@ -445,7 +445,7 @@ private fun CrossSellItem(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
-        dismissSheet()
+        onSheetDismissed()
       },
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,

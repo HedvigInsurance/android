@@ -275,7 +275,7 @@ private fun InsuranceScreenContent(
             crossSells = uiState.crossSells,
             onCrossSellClick = onCrossSellClick,
             modifier = Modifier.padding(horizontal = 16.dp),
-            dismissSheet = {},
+            onSheetDismissed = {},
           )
         }
         if (quantityOfCancelledInsurances > 0) {
