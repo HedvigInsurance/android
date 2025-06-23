@@ -197,11 +197,14 @@ private fun CrossSellsFloatingSheetContent(
         modifier = Modifier
           .verticalScroll(rememberScrollState())
           .padding(horizontal = 16.dp)
-          .padding(top = 48.dp, bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(64.dp),
+          .padding(top = 24.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(40.dp),
       ) {
         if (recommendedCrossSell != null) {
-          RecommendationSection(recommendedCrossSell, onCrossSellClick)
+          Column {
+            Spacer(Modifier.height(24.dp))
+            RecommendationSection(recommendedCrossSell, onCrossSellClick)
+          }
         }
         if (otherCrossSells.isNotEmpty()) {
           Column {
@@ -252,7 +255,9 @@ private fun RecommendationSection(
           labelText = recommendedCrossSell.discountText,
           size = HighlightLabelDefaults.HighLightSize.Small,
           color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
-          modifier = Modifier.align(Alignment.TopEnd).padding(top = 16.dp),
+          modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(top = 16.dp),
         )
       }
     }
@@ -545,6 +550,40 @@ private fun PreviewCrossSellsSheetContent() {
           dismissSheet = {},
         )
       }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsFloatingSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellsFloatingSheetContent(
+        RecommendedCrossSell(
+          crossSell = CrossSell(
+            "rh",
+            "Car Insurance",
+            "For you and your car",
+            "",
+            CrossSell.CrossSellType.CAR,
+          ),
+          bannerText = "50% discount the first year",
+          buttonText = "Explore offer",
+          discountText = "-50%",
+        ),
+        listOf(
+          CrossSell(
+            "id",
+            "title",
+            "subtitle",
+            "",
+            ACCIDENT,
+          ),
+        ),
+        {},
+        {},
+      )
     }
   }
 }
