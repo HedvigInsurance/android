@@ -155,7 +155,11 @@ private fun ColumnScope.CrossSellsSheetContent(
     modifier = Modifier.padding(top = 48.dp, bottom = 24.dp),
   ) {
     if (recommendedCrossSell != null) {
-      RecommendationSection(recommendedCrossSell, onCrossSellClick)
+      RecommendationSection(
+        recommendedCrossSell = recommendedCrossSell,
+        onCrossSellClick = onCrossSellClick,
+        dismissSheet = dismissSheet
+      )
     }
     if (otherCrossSells.isNotEmpty()) {
       Column {
@@ -166,6 +170,7 @@ private fun ColumnScope.CrossSellsSheetContent(
           crossSells = otherCrossSells,
           onCrossSellClick = onCrossSellClick,
           withSubHeader = false,
+          dismissSheet = dismissSheet
         )
       }
     }
@@ -203,7 +208,9 @@ private fun CrossSellsFloatingSheetContent(
         if (recommendedCrossSell != null) {
           Column {
             Spacer(Modifier.height(24.dp))
-            RecommendationSection(recommendedCrossSell, onCrossSellClick)
+            RecommendationSection(recommendedCrossSell,
+              onCrossSellClick,
+              dismissSheet = dismissSheet)
           }
         }
         if (otherCrossSells.isNotEmpty()) {
@@ -215,6 +222,7 @@ private fun CrossSellsFloatingSheetContent(
               crossSells = otherCrossSells,
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
+              dismissSheet = dismissSheet
             )
           }
         }
