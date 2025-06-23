@@ -17,6 +17,7 @@ import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvid
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -41,7 +42,6 @@ import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
-import octopus.type.CrossSellType
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
@@ -212,22 +212,12 @@ internal class GetHomeDataUseCaseImpl(
         title = title,
         subtitle = description,
         storeUrl = storeUrl,
-        type = when (type) {
-          CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-          CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-          CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-          CrossSellType.PET -> CrossSell.CrossSellType.PET
-          CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-          CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
-          // todo: there are separate pillow images for this. check iOs
-          CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
-          // todo: there are separate pillow images for this. check iOs
-          CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
-          // todo: there are separate pillow images for this. check iOs
-          CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
-          // todo: there are separate pillow images for this. check iOs
-          CrossSellType.HOUSE -> CrossSell.CrossSellType.HOME
-          // todo: there are separate pillow images for this. check iOs
+        pillowImage = pillowImageLarge?.let {
+          ImageAsset(
+            id = it.id,
+            src = it.src,
+            description = it.alt,
+          )
         },
       )
     }

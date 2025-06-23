@@ -17,6 +17,7 @@ import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
@@ -176,17 +176,12 @@ private fun loadInsuranceData(
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
-          type = when (crossSell.type) {
-            CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-            CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-            CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-            CrossSellType.PET -> CrossSell.CrossSellType.PET
-            CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-            CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
-            CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
-            CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
-            CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
-            CrossSellType.HOUSE -> CrossSell.CrossSellType.HOME
+          pillowImage = crossSell.pillowImageLarge?.let {
+            ImageAsset(
+              id = it.id,
+              src = it.src,
+              description = it.alt,
+            )
           },
         )
       }

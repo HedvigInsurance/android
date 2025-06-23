@@ -19,6 +19,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
 import octopus.type.CrossSellSource
-import octopus.type.CrossSellType
 
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
@@ -158,22 +158,12 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
       title = title,
       subtitle = description,
       storeUrl = storeUrl,
-      type = when (type) {
-        CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-        CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-        CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-        CrossSellType.PET -> CrossSell.CrossSellType.PET
-        CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-        CrossSellType.PET_CAT -> CrossSell.CrossSellType.PET
-        // todo: there are separate pillow images for this. check iOs
-        CrossSellType.PET_DOG -> CrossSell.CrossSellType.PET
-        // todo: there are separate pillow images for this. check iOs
-        CrossSellType.APARTMENT_BRF -> CrossSell.CrossSellType.HOME
-        // todo: there are separate pillow images for this. check iOs
-        CrossSellType.APARTMENT_RENT -> CrossSell.CrossSellType.HOME
-        // todo: there are separate pillow images for this. check iOs
-        CrossSellType.HOUSE -> CrossSell.CrossSellType.HOME
-        // todo: there are separate pillow images for this. check iOs
+      pillowImage = pillowImageLarge?.let {
+        ImageAsset(
+          id = it.id,
+          src = it.src,
+          description = it.alt,
+        )
       },
     )
   }

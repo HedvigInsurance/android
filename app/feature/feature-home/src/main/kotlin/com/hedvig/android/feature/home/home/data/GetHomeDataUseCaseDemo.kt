@@ -6,7 +6,7 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.memberreminders.MemberReminders
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -34,7 +34,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
               "Car Insurance",
               "For you and your car",
               "",
-              CrossSell.CrossSellType.CAR,
+              ImageAsset("", "", ""),
             ),
             bannerText = "50% discount the first year",
             discountText = "-50%",
@@ -46,7 +46,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             "Pet insurance",
             "For your dog or cat",
             "",
-            ACCIDENT,
+            ImageAsset("", "", ""),
           ),
         ),
       ),

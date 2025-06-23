@@ -55,6 +55,7 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
@@ -243,7 +244,10 @@ private fun InsuranceScreenContent(
           imageLoader = imageLoader,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
-        CrossSellItemPlaceholder(Modifier.padding(horizontal = 16.dp))
+        CrossSellItemPlaceholder(
+          imageLoader,
+          Modifier.padding(horizontal = 16.dp),
+        )
       } else {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           ContractsSection(
@@ -275,6 +279,7 @@ private fun InsuranceScreenContent(
             crossSells = uiState.crossSells,
             onCrossSellClick = onCrossSellClick,
             modifier = Modifier.padding(horizontal = 16.dp),
+            imageLoader = imageLoader,
           )
         }
         if (quantityOfCancelledInsurances > 0) {
@@ -413,7 +418,7 @@ private fun PreviewInsuranceScreen(
               title = "Pet#$index",
               subtitle = "Unlimited FirstVet calls#$index",
               storeUrl = "",
-              type = CrossSell.CrossSellType.HOME,
+              ImageAsset("", "", ""),
             )
           },
           showNotificationBadge = false,
@@ -497,7 +502,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           title = "Pet",
           subtitle = "Unlimited FirstVet calls",
           storeUrl = "",
-          type = CrossSell.CrossSellType.HOME,
+          ImageAsset("", "", ""),
         ),
       ),
       showNotificationBadge = false,
@@ -534,14 +539,14 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           title = "Home",
           subtitle = "Unlimited home",
           storeUrl = "",
-          type = CrossSell.CrossSellType.HOME,
+          ImageAsset("", "", ""),
         ),
         CrossSell(
           id = "2",
           title = "Pet",
           subtitle = "Unlimited FirstVet calls".repeat(2),
           storeUrl = "",
-          type = CrossSell.CrossSellType.PET,
+          ImageAsset("", "", ""),
         ),
       ),
       hasError = false,

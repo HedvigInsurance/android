@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import coil.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -27,6 +28,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
@@ -58,6 +60,7 @@ fun NavGraphBuilder.homeGraph(
         navigateToContactInfo = {
           navigateToContactInfo(backStackEntry)
         },
+        imageLoader = imageLoader,
       )
     }
     navdestination<HomeDestination.FirstVet>(

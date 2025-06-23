@@ -109,6 +109,7 @@ internal fun HedvigApp(
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
         onCrossSellClick = deepLinkFirstUriHandler::openUri,
+        imageLoader,
 //        onNavigateToAddonPurchaseFlow = { insuranceIds ->
 //          navHostController.navigate(
 //            AddonPurchaseGraphDestination(

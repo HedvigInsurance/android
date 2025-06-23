@@ -194,6 +194,7 @@ internal fun HedvigNavHost(
       navigateToContactInfo = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
       },
+      imageLoader = imageLoader,
     )
     insuranceGraph(
       nestedGraphs = {
