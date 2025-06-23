@@ -63,6 +63,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
@@ -735,12 +736,17 @@ private fun PreviewHomeScreen(
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = CrossSellsAction(
             CrossSellSheetData(
-              recommendedCrossSell = CrossSell(
-                "rh",
-                "Car Insurance",
-                "For you and your car",
-                "",
-                CrossSell.CrossSellType.CAR,
+              recommendedCrossSell = RecommendedCrossSell(
+                crossSell = CrossSell(
+                  "rh",
+                  "Car Insurance",
+                  "For you and your car",
+                  "",
+                  CrossSell.CrossSellType.CAR,
+                ),
+                bannerText = "50% discount the first year",
+                discountText = "-50%",
+                buttonText = "Explore offer",
               ),
               otherCrossSells = listOf(
                 CrossSell(
