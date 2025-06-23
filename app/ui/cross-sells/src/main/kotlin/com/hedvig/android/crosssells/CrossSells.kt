@@ -3,6 +3,7 @@ package com.hedvig.android.crosssells
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -20,6 +22,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -46,9 +52,9 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
 import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
 import com.hedvig.android.data.contract.android.iconRes
+import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
-import com.hedvig.android.design.system.hedvig.CrossSellDragHandle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -56,9 +62,12 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -77,13 +86,42 @@ data class RecommendedCrossSell(
   val discountText: String?,
 )
 
+/**
+ * Floating bottom sheet option
+ */
 @Composable
-fun CrossSellSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
+fun CrossSellFloatingBottomSheet(
+  state: HedvigBottomSheetState<CrossSellSheetData>,
+  onCrossSellClick: (String) -> Unit,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = state,
+    dragHandle = {
+      CrossSellDragHandle(
+        text = state.data?.recommendedCrossSell?.bannerText,
+        contentPadding = PaddingValues(horizontal = 0.dp),
+      )
+    },
+    style = BottomSheetStyle(transparentBackground = true, automaticallyScrollableContent = false),
+    contentPadding = PaddingValues(horizontal = 0.dp),
+    sheetPadding = PaddingValues(horizontal = 16.dp),
+    content = { crossSellSheetData ->
+      CrossSellsFloatingSheetContent(
+        recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
+        otherCrossSells = crossSellSheetData.otherCrossSells,
+        onCrossSellClick = onCrossSellClick,
+        dismissSheet = { state.dismiss() },
+      )
+    },
+  )
+}
+
+@Composable
+fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
   val dragHandle: @Composable (() -> Unit)? =
     if (state.data?.recommendedCrossSell != null) {
       {
         CrossSellDragHandle(
-          text = state.data?.recommendedCrossSell?.bannerText,
           contentPadding = PaddingValues(horizontal = 16.dp),
         )
       }
@@ -112,41 +150,87 @@ private fun ColumnScope.CrossSellsSheetContent(
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  if (recommendedCrossSell != null) {
-    RecommendationSection(
-      recommendedCrossSell,
-      onCrossSellClick,
-      dismissSheet = dismissSheet,
-    )
+  Column(
+    verticalArrangement = Arrangement.spacedBy(64.dp),
+    modifier = Modifier.padding(top = 48.dp, bottom = 24.dp),
+  ) {
+    if (recommendedCrossSell != null) {
+      RecommendationSection(recommendedCrossSell, onCrossSellClick)
+    }
+    if (otherCrossSells.isNotEmpty()) {
+      Column {
+        HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+        Spacer(Modifier.height(24.dp))
+        CrossSellsSection(
+          showNotificationBadge = false,
+          crossSells = otherCrossSells,
+          onCrossSellClick = onCrossSellClick,
+          withSubHeader = false,
+        )
+      }
+    }
   }
-  if (otherCrossSells.isNotEmpty() && recommendedCrossSell != null) {
-    Spacer(Modifier.height(48.dp))
-  }
-  if (otherCrossSells.isNotEmpty()) {
-    Spacer(Modifier.height(16.dp))
-    HedvigText(
-      stringResource(R.string.CROSS_SELL_SUBTITLE),
-      Modifier.semantics { heading() },
-    )
-    Spacer(Modifier.height(24.dp))
-    CrossSellsSection(
-      showNotificationBadge = false,
-      crossSells = otherCrossSells,
-      onCrossSellClick = onCrossSellClick,
-      withSubHeader = false,
-      dismissSheet = dismissSheet,
-    )
-  }
-  Spacer(Modifier.height(24.dp))
   HedvigButton(
     text = stringResource(R.string.general_close_button),
     onClick = dismissSheet,
     enabled = true,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(8.dp))
   Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+}
+
+@Composable
+private fun CrossSellsFloatingSheetContent(
+  recommendedCrossSell: RecommendedCrossSell?,
+  otherCrossSells: List<CrossSell>,
+  onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
+) {
+  Column {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLargeBottom,
+      modifier = Modifier.weight(1f, fill = false),
+    ) {
+      Column(
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp)
+          .padding(top = 24.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(40.dp),
+      ) {
+        if (recommendedCrossSell != null) {
+          Column {
+            Spacer(Modifier.height(24.dp))
+            RecommendationSection(recommendedCrossSell, onCrossSellClick)
+          }
+        }
+        if (otherCrossSells.isNotEmpty()) {
+          Column {
+            HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+            Spacer(Modifier.height(24.dp))
+            CrossSellsSection(
+              showNotificationBadge = false,
+              crossSells = otherCrossSells,
+              onCrossSellClick = onCrossSellClick,
+              withSubHeader = false,
+            )
+          }
+        }
+      }
+    }
+    Spacer(Modifier.height(24.dp))
+    HedvigButton(
+      text = stringResource(R.string.general_close_button),
+      onClick = dismissSheet,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
 }
 
 @Composable
@@ -160,7 +244,6 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Spacer(Modifier.height(48.dp))
     Box {
       Image(
         painter = painterResource(id = recommendedCrossSell.crossSell.type.iconRes()),
@@ -173,7 +256,9 @@ private fun RecommendationSection(
           labelText = recommendedCrossSell.discountText,
           size = HighlightLabelDefaults.HighLightSize.Small,
           color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
-          modifier = Modifier.align(Alignment.TopEnd).padding(top = 16.dp),
+          modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(top = 16.dp),
         )
       }
     }
@@ -396,6 +481,54 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
   }
 }
 
+@Composable
+private fun CrossSellDragHandle(
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+  text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
+) {
+  val direction = LocalLayoutDirection.current
+  Box(
+    modifier
+      .fillMaxWidth()
+      .height(40.dp)
+      .layout { measurable, constraints ->
+        // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
+        val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
+        val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
+        val adjustedConstraints = constraints.copy(
+          maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
+          minWidth = constraints.minWidth + paddingEnd + paddingStart,
+        )
+        val placeable = measurable.measure(adjustedConstraints)
+        layout(placeable.width, placeable.height) {
+          placeable.place(0, 0)
+        }
+      }
+      .background(color = HedvigTheme.colorScheme.signalGreenFill),
+    contentAlignment = Alignment.Center,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Icon(
+        HedvigIcons.Campaign,
+        contentDescription = EmptyContentDescription,
+        tint = HedvigTheme.colorScheme.signalGreenElement,
+        modifier = Modifier.size(20.dp),
+      )
+      if (text != null) {
+        Spacer(Modifier.width(8.dp))
+        HedvigText(
+          text,
+          fontSize = HedvigTheme.typography.label.fontSize,
+          color = HedvigTheme.colorScheme.signalGreenText,
+        )
+      }
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewCrossSellsSheetContent() {
@@ -435,6 +568,40 @@ private fun PreviewCrossSellsSheetContent() {
 
 @HedvigPreview
 @Composable
+private fun PreviewCrossSellsFloatingSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellsFloatingSheetContent(
+        RecommendedCrossSell(
+          crossSell = CrossSell(
+            "rh",
+            "Car Insurance",
+            "For you and your car",
+            "",
+            CrossSell.CrossSellType.CAR,
+          ),
+          bannerText = "50% discount the first year",
+          buttonText = "Explore offer",
+          discountText = "-50%",
+        ),
+        listOf(
+          CrossSell(
+            "id",
+            "title",
+            "subtitle",
+            "",
+            ACCIDENT,
+          ),
+        ),
+        {},
+        {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
 private fun PreviewCrossSellsSection() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -454,6 +621,16 @@ private fun PreviewCrossSellItemPlaceholder() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellItemPlaceholder()
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellDragHandle() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellDragHandle(PaddingValues())
     }
   }
 }
