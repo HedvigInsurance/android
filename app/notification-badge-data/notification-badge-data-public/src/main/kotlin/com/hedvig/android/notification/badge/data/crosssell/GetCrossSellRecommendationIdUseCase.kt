@@ -1,6 +1,8 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +22,7 @@ internal class GetCrossSellRecommendationIdUseCaseImpl(
   override fun invoke(): Flow<CrossSellIdentifier?> {
     return apolloClient
       .query(CrossSellTypesQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow()
       .map { result ->
         result.fold(
@@ -30,8 +33,11 @@ internal class GetCrossSellRecommendationIdUseCaseImpl(
             null
           },
           { data ->
-            data.currentMember
-              .crossSell.recommendedCrossSell?.crossSell?.id?.let { CrossSellIdentifier(it) }
+            val result = data.currentMember
+              .crossSell.recommendedCrossSell?.crossSell?.id?.let {
+                CrossSellIdentifier(it)
+              }
+            result
           },
         )
       }
