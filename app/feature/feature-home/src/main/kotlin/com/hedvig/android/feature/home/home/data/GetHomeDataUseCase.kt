@@ -212,13 +212,11 @@ internal class GetHomeDataUseCaseImpl(
         title = title,
         subtitle = description,
         storeUrl = storeUrl,
-        pillowImage = pillowImageLarge?.let {
-          ImageAsset(
-            id = it.id,
-            src = it.src,
-            description = it.alt,
-          )
-        },
+        pillowImage = ImageAsset(
+          id = pillowImageLarge.id,
+          src = pillowImageLarge.src,
+          description = pillowImageLarge.alt,
+        ),
       )
     }
   }

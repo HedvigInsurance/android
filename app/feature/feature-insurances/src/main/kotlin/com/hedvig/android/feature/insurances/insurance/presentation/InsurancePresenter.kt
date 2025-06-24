@@ -153,13 +153,11 @@ private fun loadInsuranceData(
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
-          pillowImage = crossSell.pillowImageLarge?.let {
-            ImageAsset(
-              id = it.id,
-              src = it.src,
-              description = it.alt,
-            )
-          },
+          pillowImage = ImageAsset(
+            id = crossSell.pillowImageLarge.id,
+            src = crossSell.pillowImageLarge.src,
+            description = crossSell.pillowImageLarge.alt,
+          ),
         )
       }
       InsuranceData(

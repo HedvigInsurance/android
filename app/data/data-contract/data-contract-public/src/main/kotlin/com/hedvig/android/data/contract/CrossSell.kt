@@ -5,7 +5,7 @@ data class CrossSell(
   val title: String,
   val subtitle: String,
   val storeUrl: String,
-  val pillowImage: ImageAsset?,
+  val pillowImage: ImageAsset,
 ) {
   enum class CrossSellType {
     PET,
