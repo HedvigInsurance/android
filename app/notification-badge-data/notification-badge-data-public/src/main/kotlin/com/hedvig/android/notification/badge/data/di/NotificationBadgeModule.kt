@@ -6,7 +6,6 @@ import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotific
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommendationIdUseCase
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommendationIdUseCaseImpl
-import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeServiceImpl
 import com.hedvig.android.notification.badge.data.crosssell.card.DemoCrossSellCardNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationServiceImpl
@@ -26,14 +25,13 @@ val notificationBadgeModule = module {
       prodImpl = get<CrossSellHomeNotificationServiceImpl>(),
     )
   }
-  single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
   single<GetCrossSellRecommendationIdUseCase> {
     GetCrossSellRecommendationIdUseCaseImpl(get<ApolloClient>())
   }
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get()) }
-  single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
+  single<TabNotificationBadgeService> { TabNotificationBadgeService(get()) }
 
   single<CrossSellCardNotificationBadgeServiceProvider> {
     CrossSellCardNotificationBadgeServiceProvider(

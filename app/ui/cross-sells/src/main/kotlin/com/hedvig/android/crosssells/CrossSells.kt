@@ -1,7 +1,5 @@
 package com.hedvig.android.crosssells
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,15 +22,9 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -45,9 +37,6 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
@@ -133,6 +122,7 @@ fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCr
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
+          text = state.data?.recommendedCrossSell?.bannerText
         )
       }
     } else {
@@ -168,7 +158,11 @@ private fun CrossSellsSheetContent(
       if (recommendedCrossSell != null) {
         Column {
           Spacer(Modifier.height(48.dp))
-          RecommendationSection(recommendedCrossSell, onCrossSellClick)
+          RecommendationSection(
+            recommendedCrossSell,
+            onCrossSellClick,
+            dismissSheet = dismissSheet,
+          )
         }
       }
       if (otherCrossSells.isNotEmpty()) {
@@ -177,10 +171,10 @@ private fun CrossSellsSheetContent(
           HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
           Spacer(Modifier.height(24.dp))
           CrossSellsSection(
-            showNotificationBadge = false,
             crossSells = otherCrossSells,
             onCrossSellClick = onCrossSellClick,
             withSubHeader = false,
+            onSheetDismissed = dismissSheet,
           )
         }
       }
@@ -221,7 +215,11 @@ private fun CrossSellsFloatingSheetContent(
         if (recommendedCrossSell != null) {
           Column {
             Spacer(Modifier.height(48.dp))
-            RecommendationSection(recommendedCrossSell, onCrossSellClick)
+            RecommendationSection(
+              recommendedCrossSell,
+              onCrossSellClick,
+              dismissSheet = dismissSheet,
+            )
           }
         }
         if (otherCrossSells.isNotEmpty()) {
@@ -230,10 +228,10 @@ private fun CrossSellsFloatingSheetContent(
             HedvigText(stringResource(R.string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
-              showNotificationBadge = false,
               crossSells = otherCrossSells,
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
+              onSheetDismissed = dismissSheet,
             )
           }
         }
@@ -260,6 +258,7 @@ private fun CrossSellsFloatingSheetContent(
 private fun RecommendationSection(
   recommendedCrossSell: RecommendedCrossSell,
   onCrossSellClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -302,6 +301,7 @@ private fun RecommendationSection(
       text = recommendedCrossSell.buttonText ?: stringResource(R.string.CROSS_SELL_BUTTON),
       onClick = {
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
+        dismissSheet()
       },
       enabled = true,
       Modifier.fillMaxWidth(),
@@ -322,18 +322,18 @@ private fun RecommendationSection(
 
 @Composable
 fun CrossSellsSection(
-  showNotificationBadge: Boolean,
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
+  onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
 ) {
   Column(modifier) {
     if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider(showNotificationBadge)
+      CrossSellsSubHeaderWithDivider()
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick)
+      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -344,7 +344,7 @@ fun CrossSellsSection(
 @Composable
 fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
   Column(modifier) {
-    CrossSellsSubHeaderWithDivider(false)
+    CrossSellsSubHeaderWithDivider()
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
@@ -353,16 +353,16 @@ fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
       onCrossSellClick = {},
       isLoading = true,
       modifier = Modifier,
+      onSheetDismissed = {},
     )
   }
 }
 
 @Composable
-private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
+private fun CrossSellsSubHeaderWithDivider() {
   Column {
     NotificationSubheading(
       text = stringResource(R.string.insurance_tab_cross_sells_title),
-      showNotification = showNotificationBadge,
       modifier = Modifier.semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
@@ -370,7 +370,12 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
 }
 
 @Composable
-private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun CrossSellItem(
+  crossSell: CrossSell,
+  onCrossSellClick: (String) -> Unit,
+  onSheetDismissed: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
     crossSellSubtitle = crossSell.subtitle,
@@ -379,6 +384,7 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Un
     onCrossSellClick = onCrossSellClick,
     modifier = modifier,
     isLoading = false,
+    onSheetDismissed = onSheetDismissed,
   )
 }
 
@@ -390,6 +396,7 @@ private fun CrossSellItem(
   type: CrossSell.CrossSellType,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
+  onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
@@ -447,6 +454,7 @@ private fun CrossSellItem(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
+        onSheetDismissed()
       },
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -461,33 +469,11 @@ private fun CrossSellItem(
 }
 
 @Composable
-private fun NotificationSubheading(text: String, showNotification: Boolean, modifier: Modifier = Modifier) {
+private fun NotificationSubheading(text: String, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    // We want the notification to stick until we leave the screen, even after we've "cleared" it.
-    var stickyShowNotification by remember { mutableStateOf(showNotification) }
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-      val observer = LifecycleEventObserver { _, event ->
-        if (event == Lifecycle.Event.ON_PAUSE) {
-          stickyShowNotification = false
-        }
-      }
-      lifecycleOwner.lifecycle.addObserver(observer)
-      onDispose {
-        lifecycleOwner.lifecycle.removeObserver(observer)
-      }
-    }
-    AnimatedVisibility(stickyShowNotification) {
-      Row {
-        Canvas(Modifier.size(8.dp)) {
-          drawCircle(Color.Red)
-        }
-        Spacer(Modifier.width(8.dp))
-      }
-    }
     HedvigText(text = text)
   }
 }
@@ -620,8 +606,8 @@ private fun PreviewCrossSellsSection() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellsSection(
-        true,
         List(2) { CrossSell("id", "title", "subtitle", "storeUrl", HOME) },
+        {},
         {},
       )
     }
