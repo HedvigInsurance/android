@@ -38,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -426,5 +427,18 @@ fun PreviewEnterNewAddressScreen() {
     ),
     submitInput = {},
     dismissSubmissionError = {},
+  )
+}
+
+@HedvigPreview
+@Composable
+fun PreviewEnterNewAddressScreenFailure() {
+  EnterNewAddressScreen(
+    uiState = EnterNewAddressUiState.MissingOngoingMovingFlow,
+    {},
+    {},
+    {},
+    {},
+    {},
   )
 }

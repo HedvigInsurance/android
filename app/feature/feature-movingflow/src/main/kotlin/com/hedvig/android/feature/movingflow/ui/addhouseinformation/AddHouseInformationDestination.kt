@@ -522,6 +522,23 @@ private fun PreviewAddHouseInformationScreen() {
 
 @Preview
 @Composable
+private fun PreviewAddHouseInformationScreenFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      AddHouseInformationScreen(
+        uiState = AddHouseInformationUiState.MissingOngoingMovingFlow,
+        navigateUp = {},
+        popBackStack = {},
+        exitFlow = {},
+        dismissSubmissionError = {},
+        onSubmit = {},
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
 private fun PreviewExtraBuildingsDialogContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {

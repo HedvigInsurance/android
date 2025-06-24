@@ -575,3 +575,18 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     onCompareCoverageClicked = {},
   )
 }
+
+@HedvigPreview
+@Composable
+fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
+  ChoseCoverageLevelAndDeductibleScreen(
+    uiState = MissingOngoingMovingFlow,
+    navigateUp = {},
+    popBackStack = {},
+    onSubmit = {},
+    exitFlow = {},
+    onSelectCoverageOption = {},
+    onSelectDeductibleOption = {},
+    onCompareCoverageClicked = {},
+  )
+}
