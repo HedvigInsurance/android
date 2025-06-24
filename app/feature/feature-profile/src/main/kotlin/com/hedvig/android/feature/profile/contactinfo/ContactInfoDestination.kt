@@ -243,3 +243,19 @@ private fun PreviewContactInfoScreen(
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewContactInfoScreenFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ContactInfoScreen(
+        uiState = ContactInfoUiState.Error,
+        updateEmailAndPhoneNumber = {},
+        reload = {},
+        navigateUp = {},
+        {},
+      )
+    }
+  }
+}

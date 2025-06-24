@@ -801,3 +801,31 @@ private fun PreviewHomeScreen(
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewHomeScreenWithError() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HomeScreen(
+        uiState = HomeUiState.Error(null),
+        notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        reload = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
+        onClaimDetailCardClicked = {},
+        navigateToConnectPayment = {},
+        onStartClaim = {},
+        navigateToHelpCenter = {},
+        openUrl = {},
+        openAppSettings = {},
+        navigateToMissingInfo = {},
+        markMessageAsSeen = {},
+        navigateToFirstVet = {},
+        markCrossSellsNotificationAsSeen = {},
+        navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
+      )
+    }
+  }
+}

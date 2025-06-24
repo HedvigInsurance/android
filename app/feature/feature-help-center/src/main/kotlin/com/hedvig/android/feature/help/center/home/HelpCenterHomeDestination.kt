@@ -915,6 +915,34 @@ private fun PreviewQuickLinkAnimations() {
   }
 }
 
+@HedvigPreview
+@Composable
+private fun PreviewQuickLinkEmptyState() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HelpCenterHomeScreen(
+        topics = emptyList(),
+        questions = emptyList(),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onDismissQuickActionDialog = {},
+        showNavigateToInboxButton = true,
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
+        onNavigateUp = {},
+        quickLinksUiState = HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+        onClearSearch = {},
+        onUpdateSearchResults = { _, _ -> },
+        search = null,
+        reload = {},
+      )
+    }
+  }
+}
+
 private class QuickLinkUiStatePreviewProvider :
   CollectionPreviewParameterProvider<HelpCenterUiState.QuickLinkUiState>(
     listOf(
