@@ -667,6 +667,12 @@ private fun ExpandedOptionContent(
 
 @HedvigPreview
 @Composable
+private fun FailureScreenPreview() {
+  FailureScreen({}, {})
+}
+
+@HedvigPreview
+@Composable
 private fun CustomizationCardPreview() {
   HedvigTheme {
     CustomizationCard(

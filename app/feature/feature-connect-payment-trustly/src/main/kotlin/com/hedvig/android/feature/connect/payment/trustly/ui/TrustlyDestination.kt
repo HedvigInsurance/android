@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.composewebview.AccompanistWebViewClient
@@ -41,12 +43,14 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
+import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascriptInterface
 import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.LogPriority
@@ -233,3 +237,33 @@ private fun TrustlyBrowser(
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun TrustlyPreview(
+  @PreviewParameter(TrustlyUiStateProvider::class) uiState: TrustlyUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      TrustlyScreen(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class TrustlyUiStateProvider :
+  CollectionPreviewParameterProvider<TrustlyUiState>(
+    listOf(
+      TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
+      TrustlyUiState.Loading,
+      TrustlyUiState.FailedToConnectCard,
+      TrustlyUiState.FailedToStartSession,
+      TrustlyUiState.SucceededInConnectingCard,
+    ),
+  )

@@ -348,3 +348,23 @@ private fun PaymentDetailsScreenPreview(
     }
   }
 }
+
+@Composable
+@HedvigPreview
+private fun PaymentDetailsScreenFailurePreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DiscountsScreen(
+        uiState = DiscountsUiState(
+          discounts = emptyList(),
+          isLoadingPaymentOverView = false,
+          error = true,
+          foreverInformation = null,
+        ),
+        navigateUp = {},
+        retry = {},
+        navigateToForever = {},
+      )
+    }
+  }
+}

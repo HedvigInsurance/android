@@ -63,7 +63,10 @@ private fun TerminatedContractsScreen(
     Spacer(Modifier.height(16.dp))
     when (uiState) {
       TerminatedContractsUiState.Error -> {
-        HedvigErrorSection(retry)
+        HedvigErrorSection(
+          retry,
+          Modifier.weight(1f),
+        )
       }
 
       TerminatedContractsUiState.Loading -> {
@@ -74,6 +77,7 @@ private fun TerminatedContractsScreen(
         HedvigErrorSection(
           buttonText = stringResource(R.string.general_back_button),
           onButtonClick = navigateUp,
+          modifier = Modifier.weight(1f),
         )
       }
 
