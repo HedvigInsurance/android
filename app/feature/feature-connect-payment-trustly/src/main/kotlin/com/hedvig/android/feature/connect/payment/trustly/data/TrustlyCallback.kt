@@ -19,4 +19,7 @@ internal class TrustlyCallbackImpl(
   override val failureUrl: String = "https://${hedvigBuildConstants.deepLinkHosts.first()}/payment-failure"
 }
 
-internal class PreviewTrustlyCallback(override val successUrl: String, override val failureUrl: String) : TrustlyCallback
+internal class PreviewTrustlyCallback(
+  override val successUrl: String,
+  override val failureUrl: String,
+) : TrustlyCallback
