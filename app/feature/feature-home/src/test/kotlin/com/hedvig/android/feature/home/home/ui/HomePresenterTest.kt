@@ -17,7 +17,7 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.CrossSell.CrossSellType
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -43,7 +43,7 @@ internal class HomePresenterTest {
       "title",
       "subtitle",
       "url",
-      CrossSellType.HOME,
+      ImageAsset("", "", ""),
     ),
     bannerText = "50% discount the first year",
     buttonText = "Explore offer",
@@ -390,7 +390,7 @@ internal class HomePresenterTest {
       title = "title",
       storeUrl = "url",
       subtitle = "subt",
-      type = CrossSell.CrossSellType.HOME,
+      pillowImage = ImageAsset("", "", ""),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)

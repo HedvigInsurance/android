@@ -118,11 +118,11 @@ fun CrossSellBottomSheet(
   val dragHandle: @Composable (() -> Unit)? =
     if (state.data?.recommendedCrossSell != null) {
       val data = state.data?.recommendedCrossSell
-      val bannerText  = data!!.bannerText
+      val bannerText = data!!.bannerText
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
-          text = bannerText
+          text = bannerText,
         )
       }
     } else {
@@ -273,8 +273,8 @@ private fun RecommendationSection(
         HedvigTheme.colorScheme.surfaceSecondary,
       )
       AsyncImage(
-        model = recommendedCrossSell.crossSell.pillowImage?.src,
-        contentDescription = recommendedCrossSell.crossSell.pillowImage?.description ?: EmptyContentDescription,
+        model = recommendedCrossSell.crossSell.pillowImage.src,
+        contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
