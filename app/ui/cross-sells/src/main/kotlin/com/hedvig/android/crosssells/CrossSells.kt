@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -74,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
 
 data class CrossSellSheetData(
@@ -278,7 +280,7 @@ private fun RecommendationSection(
     modifier = modifier.fillMaxWidth(),
   ) {
     Box {
-      val fallbackPainter = ColorPainter(Color.Black.copy(alpha = 0.7f))
+      val fallbackPainter = ColorPainter(Color.Black.copy(alpha = 0.5f))
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage?.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage?.description ?: EmptyContentDescription,
@@ -445,7 +447,9 @@ private fun CrossSellItem(
       contentScale = ContentScale.Crop,
       modifier = Modifier
         .size(48.dp)
-        .background(shape = HedvigTheme.shapes.cornerSmall, color = Color.Unspecified),
+        .clip(HedvigTheme.shapes.cornerXLarge)
+
+       // .background(shape = HedvigTheme.shapes.cornerSmall, color = Color.Unspecified),
     )
     Spacer(Modifier.width(16.dp))
     Column(
