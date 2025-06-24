@@ -91,6 +91,7 @@ data class RecommendedCrossSell(
 
 /**
  * Floating bottom sheet option
+ * todo: Look into using this again when we can control the scrim composable and can add a gradient brush there instead
  */
 @Composable
 fun CrossSellFloatingBottomSheet(
