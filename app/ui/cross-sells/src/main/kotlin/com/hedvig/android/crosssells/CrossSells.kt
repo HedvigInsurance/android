@@ -187,6 +187,7 @@ private fun CrossSellsSheetContent(
             onCrossSellClick = onCrossSellClick,
             withSubHeader = false,
             onSheetDismissed = dismissSheet,
+            imageLoader = imageLoader
           )
         }
       }
@@ -394,7 +395,7 @@ private fun CrossSellItem(
   crossSell: CrossSell,
   onCrossSellClick: (String) -> Unit,
   onSheetDismissed: () -> Unit,
-  imageLoader = imageLoader,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   CrossSellItem(
