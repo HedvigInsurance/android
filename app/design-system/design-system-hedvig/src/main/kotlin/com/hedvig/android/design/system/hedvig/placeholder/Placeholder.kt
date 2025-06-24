@@ -22,8 +22,8 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder as corePlaceholder
 
 @Composable
-fun crossSellPainterFallback() = ShapedColorPainter(
-  HedvigTheme.shapes.cornerXLarge,
+fun crossSellPainterFallback(shape: Shape = HedvigTheme.shapes.cornerXLarge) = ShapedColorPainter(
+  shape,
   PlaceholderDefaults.color(),
 )
 

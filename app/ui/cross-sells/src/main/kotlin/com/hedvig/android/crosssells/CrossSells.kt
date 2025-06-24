@@ -268,12 +268,13 @@ private fun RecommendationSection(
     modifier = modifier.fillMaxWidth(),
   ) {
     Box {
+      val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
-        placeholder = crossSellPainterFallback(),
-        error = crossSellPainterFallback(),
-        fallback = crossSellPainterFallback(),
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
         modifier = Modifier
