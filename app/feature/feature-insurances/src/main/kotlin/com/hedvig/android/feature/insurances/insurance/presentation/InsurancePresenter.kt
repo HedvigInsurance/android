@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -26,18 +25,15 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import octopus.type.CrossSellType
 import kotlinx.coroutines.launch
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
-
-  data object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
 }
 
 internal data class InsuranceUiState(
@@ -45,7 +41,6 @@ internal data class InsuranceUiState(
   val pendingContracts: List<PendingInsuranceContract>,
   val crossSells: List<CrossSell>,
   val travelAddonBannerInfo: TravelAddonBannerInfo?,
-  val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
   val shouldSuggestMovingFlow: Boolean,
   val hasError: Boolean,
@@ -57,7 +52,6 @@ internal data class InsuranceUiState(
       contracts = listOf(),
       pendingContracts = listOf(),
       crossSells = listOf(),
-      showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = false,
       hasError = false,
@@ -71,8 +65,6 @@ internal data class InsuranceUiState(
 internal class InsurancePresenter(
   private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
-  private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
-  private val applicationScope: CoroutineScope,
   private val getTravelAddonBannerInfoUseCase: Provider<GetTravelAddonBannerInfoUseCase>,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
@@ -87,21 +79,9 @@ internal class InsurancePresenter(
     var didFailToLoad by remember { mutableStateOf(false) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    val showNotificationBadge by produceState(lastState.showNotificationBadge) {
-      crossSellCardNotificationBadgeServiceProvider
-        .provide()
-        .showNotification()
-        .collectLatest {
-          value = it
-        }
-    }
-
     CollectEvents { event ->
       when (event) {
         InsuranceScreenEvent.RetryLoading -> loadIteration++
-        InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-          applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
-        }
       }
     }
 
@@ -141,7 +121,6 @@ internal class InsurancePresenter(
       contracts = insuranceData.contracts,
       pendingContracts = insuranceData.pendingContracts,
       crossSells = insuranceData.crossSells,
-      showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
       shouldSuggestMovingFlow = insuranceData.isEligibleToPerformMovingFlow,
       hasError = didFailToLoad && !isLoading && !isRetrying,
