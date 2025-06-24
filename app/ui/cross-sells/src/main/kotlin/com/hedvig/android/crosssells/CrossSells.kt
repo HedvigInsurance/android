@@ -160,8 +160,11 @@ private fun CrossSellsSheetContent(
       if (recommendedCrossSell != null) {
         Column {
           Spacer(Modifier.height(48.dp))
-          RecommendationSection(recommendedCrossSell, onCrossSellClick,
-            dismissSheet = dismissSheet,)
+          RecommendationSection(
+            recommendedCrossSell,
+            onCrossSellClick,
+            dismissSheet = dismissSheet,
+          )
         }
       }
       if (otherCrossSells.isNotEmpty()) {
@@ -174,7 +177,7 @@ private fun CrossSellsSheetContent(
             crossSells = otherCrossSells,
             onCrossSellClick = onCrossSellClick,
             withSubHeader = false,
-            dismissSheet = dismissSheet,
+            onSheetDismissed = dismissSheet,
           )
         }
       }
@@ -213,8 +216,11 @@ private fun CrossSellsFloatingSheetContent(
         if (recommendedCrossSell != null) {
           Column {
             Spacer(Modifier.height(48.dp))
-            RecommendationSection(recommendedCrossSell, onCrossSellClick,
-              dismissSheet = dismissSheet,)
+            RecommendationSection(
+              recommendedCrossSell,
+              onCrossSellClick,
+              dismissSheet = dismissSheet,
+            )
           }
         }
         if (otherCrossSells.isNotEmpty()) {
