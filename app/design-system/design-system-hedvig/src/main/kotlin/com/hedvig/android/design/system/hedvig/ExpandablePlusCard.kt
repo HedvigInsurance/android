@@ -23,11 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens
+import hedvig.resources.R
 
 @Composable
 fun ExpandablePlusCard(
@@ -38,6 +43,10 @@ fun ExpandablePlusCard(
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
+  val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
+  val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
+  val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   Surface(
     modifier = modifier
       .clip(PerilCommonTokens.ContainerShape.value)
@@ -48,11 +57,13 @@ fun ExpandablePlusCard(
           radius = 1000.dp,
         ),
         onClick = onClick,
-      ),
+        onClickLabel = if (isExpanded) collapseClickLabel else expandClickLabel,
+      )
+      .semantics {
+        this.stateDescription = if (isExpanded) expandedStateDescription else collapsedStateDescription
+      },
   ) {
-    Column(
-      modifier = Modifier.padding(contentPadding),
-    ) {
+    Column(modifier = Modifier.padding(contentPadding)) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(verticalAlignment = Alignment.CenterVertically) {
@@ -97,6 +108,7 @@ fun ExpandablePlusCard(
         visible = isExpanded,
         enter = fadeIn() + expandVertically(clip = false, expandFrom = Alignment.Top),
         exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.Top),
+        modifier = Modifier.semantics(mergeDescendants = true) {},
       ) {
         expandedContent()
       }
