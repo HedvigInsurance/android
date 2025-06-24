@@ -118,7 +118,7 @@ fun CrossSellFloatingBottomSheet(
     content = { crossSellSheetData ->
       CrossSellsFloatingSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
-        otherCrossSells = emptyList(), // crossSellSheetData.otherCrossSells,
+        otherCrossSells = crossSellSheetData.otherCrossSells,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
       )
