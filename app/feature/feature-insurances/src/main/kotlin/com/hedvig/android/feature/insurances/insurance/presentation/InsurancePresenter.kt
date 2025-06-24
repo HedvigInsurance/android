@@ -29,8 +29,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import octopus.type.CrossSellType
-import kotlinx.coroutines.launch
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
