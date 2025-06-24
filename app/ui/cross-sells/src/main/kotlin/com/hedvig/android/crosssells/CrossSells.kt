@@ -30,9 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -67,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.ShapedColorPainter
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
@@ -189,7 +188,7 @@ private fun CrossSellsSheetContent(
             onCrossSellClick = onCrossSellClick,
             withSubHeader = false,
             onSheetDismissed = dismissSheet,
-            imageLoader = imageLoader
+            imageLoader = imageLoader,
           )
         }
       }
@@ -280,7 +279,10 @@ private fun RecommendationSection(
     modifier = modifier.fillMaxWidth(),
   ) {
     Box {
-      val fallbackPainter = ColorPainter(Color.Black.copy(alpha = 0.5f))
+      val fallbackPainter = ShapedColorPainter(
+        HedvigTheme.shapes.cornerXLarge,
+        HedvigTheme.colorScheme.surfaceSecondary,
+      )
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage?.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage?.description ?: EmptyContentDescription,
@@ -289,7 +291,8 @@ private fun RecommendationSection(
         fallback = fallbackPainter,
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.size(140.dp),
+        modifier = Modifier
+          .size(140.dp),
       )
       if (recommendedCrossSell.discountText != null) {
         HighlightLabel(
@@ -354,7 +357,7 @@ fun CrossSellsSection(
       CrossSellsSubHeaderWithDivider(showNotificationBadge)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed,imageLoader = imageLoader,)
+      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed, imageLoader = imageLoader)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -434,8 +437,9 @@ private fun CrossSellItem(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    val fallbackPainter = ColorPainter(
-      Color.Black.copy(alpha = 0.7f),
+    val fallbackPainter = ShapedColorPainter(
+      HedvigTheme.shapes.cornerXLarge,
+      HedvigTheme.colorScheme.surfaceSecondary,
     )
     AsyncImage(
       model = crossSellImageAsset?.src,
@@ -446,10 +450,7 @@ private fun CrossSellItem(
       imageLoader = imageLoader,
       contentScale = ContentScale.Crop,
       modifier = Modifier
-        .size(48.dp)
-        .clip(HedvigTheme.shapes.cornerXLarge)
-
-       // .background(shape = HedvigTheme.shapes.cornerSmall, color = Color.Unspecified),
+        .size(48.dp),
     )
     Spacer(Modifier.width(16.dp))
     Column(
