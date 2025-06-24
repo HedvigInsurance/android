@@ -3,7 +3,6 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import kotlin.math.max
@@ -27,7 +26,7 @@ fun HorizontalItemsWithMaximumSpaceTaken(
       startSlot()
       endSlot()
     },
-    modifier = modifier.semantics(mergeDescendants = true) {},
+    modifier = modifier,
   ) { measurables, constraints ->
     val first = measurables.getOrNull(0)
     val second = measurables.getOrNull(1)
