@@ -122,7 +122,7 @@ fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCr
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
-          text = state.data?.recommendedCrossSell?.bannerText
+          text = state.data?.recommendedCrossSell?.bannerText,
         )
       }
     } else {
