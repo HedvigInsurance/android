@@ -59,7 +59,7 @@ internal class GetHomeDataUseCaseImpl(
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
       apolloClient.query(HomeQuery())
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
         .safeFlow(),
       flow {
         while (currentCoroutineContext().isActive) {
