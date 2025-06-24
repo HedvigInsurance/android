@@ -112,7 +112,7 @@ private fun <T> InternalHedvigBottomSheet(
     modifier = Modifier,
     sheetState = sheetState,
     shape = bottomSheetShape.shape,
-    scrimColor = bottomSheetColors.scrimColor,
+    scrimColor = style.scrimColor ?: bottomSheetColors.scrimColor,
     containerColor = if (style.transparentBackground) {
       Color.Transparent
     } else {
@@ -198,11 +198,13 @@ internal val bottomSheetShape: BottomSheetShape
 data class BottomSheetStyle(
   val transparentBackground: Boolean,
   val automaticallyScrollableContent: Boolean,
+  val scrimColor: Color?,
 )
 
 object BottomSheetDefaults {
   val bottomSheetStyle: BottomSheetStyle = BottomSheetStyle(
     transparentBackground = false,
     automaticallyScrollableContent = true,
+    scrimColor = null,
   )
 }
