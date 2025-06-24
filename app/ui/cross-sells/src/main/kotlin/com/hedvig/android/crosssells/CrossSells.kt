@@ -237,6 +237,15 @@ private fun CrossSellsFloatingSheetContent(
       buttonStyle = ButtonDefaults.ButtonStyle.Primary,
       modifier = Modifier.fillMaxWidth(),
     )
+    Surface(shape = HedvigTheme.shapes.cornerLarge) {
+      HedvigButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = dismissSheet,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
