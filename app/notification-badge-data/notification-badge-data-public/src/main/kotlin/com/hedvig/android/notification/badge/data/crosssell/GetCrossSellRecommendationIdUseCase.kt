@@ -1,36 +1,46 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.safeExecute
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.logger.logcat
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import octopus.CrossSellTypesQuery
 
 /**
  * Returns a set of unique identifiers per cross-sell that exists for the current member as returned from the backend.
  */
 interface GetCrossSellRecommendationIdUseCase {
-  suspend fun invoke(): CrossSellIdentifier?
+  fun invoke(): Flow<CrossSellIdentifier?>
 }
 
 internal class GetCrossSellRecommendationIdUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellRecommendationIdUseCase {
-  override suspend fun invoke(): CrossSellIdentifier? {
+  override fun invoke(): Flow<CrossSellIdentifier?> {
     return apolloClient
       .query(CrossSellTypesQuery())
-      .safeExecute()
-      .fold(
-        {
-          logcat(throwable = it.throwable) {
-            "Error when loading potential cross-sells: $it"
-          }
-          null
-        },
-        { data ->
-          data.currentMember
-            .crossSell.recommendedCrossSell?.crossSell?.id?.let { CrossSellIdentifier(it) }
-        },
-      )
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeFlow()
+      .map { result ->
+        result.fold(
+          {
+            logcat(throwable = it.throwable) {
+              "Error when loading potential cross-sells: $it"
+            }
+            null
+          },
+          { data ->
+            val result = data.currentMember
+              .crossSell.recommendedCrossSell?.crossSell?.id?.let {
+                CrossSellIdentifier(it)
+              }
+            result
+          },
+        )
+      }
   }
 }
 

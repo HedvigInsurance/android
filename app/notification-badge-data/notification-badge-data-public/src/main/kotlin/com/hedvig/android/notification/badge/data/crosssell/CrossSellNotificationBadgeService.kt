@@ -2,9 +2,8 @@ package com.hedvig.android.notification.badge.data.crosssell
 
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 
 /**
  * Notification badges for cross-sells show if there is a potential cross-sell
@@ -18,28 +17,25 @@ internal class CrossSellNotificationBadgeService(
   private val notificationBadgeStorage: NotificationBadgeStorage,
 ) {
   fun showNotification(badgeType: CrossSellBadgeType): Flow<Boolean> {
-    return flow {
-      val notificationBadge = badgeType.associatedNotificationBadge
-      val potentialCrossSellRecommendation = getCrossSellRecommendationIdUseCase
-        .invoke()
-        ?.rawValue
-      emitAll(
-        notificationBadgeStorage.getValue(notificationBadge)
-          .map { seenCrossSells: Set<String> ->
-            if (potentialCrossSellRecommendation == null) {
-              false
-            } else {
-              !seenCrossSells.contains(potentialCrossSellRecommendation)
-            }
-          },
-      )
+    val notificationBadge = badgeType.associatedNotificationBadge
+    return combine(
+      getCrossSellRecommendationIdUseCase
+        .invoke(),
+      notificationBadgeStorage.getValue(notificationBadge),
+    ) { potentialCrossSellRecommendationData, seenCrossSells ->
+      val potentialCrossSellRecommendation = potentialCrossSellRecommendationData?.rawValue
+      if (potentialCrossSellRecommendation == null) {
+        false
+      } else {
+        !seenCrossSells.contains(potentialCrossSellRecommendation)
+      }
     }
   }
 
   suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
     val notificationBadge = badgeType.associatedNotificationBadge
     val potentialCrossSellRecommendation = getCrossSellRecommendationIdUseCase
-      .invoke()
+      .invoke().first()
       ?.rawValue
     notificationBadgeStorage.setValue(
       notificationBadge = notificationBadge,

@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellBadgeType
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import kotlinx.coroutines.flow.Flow
@@ -56,7 +55,6 @@ internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellRedDotBadgeType = CrossSellBadgeType.InsuranceFragmentCard
 
   override fun showRedDotNotification(): Flow<Boolean> {
-    // return flowOf(true) //todo: remove mock
     return crossSellNotificationBadgeService.showNotification(crossSellRedDotBadgeType)
   }
 
@@ -65,11 +63,9 @@ internal class CrossSellHomeNotificationServiceImpl(
       .data
       .map { preferences ->
         val result = preferences[SHARED_PREFERENCE_CROSS_SELL_RECOMMENDATION]
-        logcat { "Mariia: getLastEpochDayNewRecommendationNotificationWasShown result: $result " }
         result
       }
       .distinctUntilChanged()
-    //  return flowOf(null) //todo: remove mock
   }
 
   override suspend fun markAsSeen() {
