@@ -54,11 +54,11 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
-import com.hedvig.android.design.system.hedvig.ShapedColorPainter
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -268,16 +268,12 @@ private fun RecommendationSection(
     modifier = modifier.fillMaxWidth(),
   ) {
     Box {
-      val fallbackPainter = ShapedColorPainter(
-        HedvigTheme.shapes.cornerXLarge,
-        HedvigTheme.colorScheme.surfaceSecondary,
-      )
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
-        placeholder = fallbackPainter,
-        error = fallbackPainter,
-        fallback = fallbackPainter,
+        placeholder = crossSellPainterFallback(),
+        error = crossSellPainterFallback(),
+        fallback = crossSellPainterFallback(),
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
         modifier = Modifier
@@ -424,16 +420,12 @@ private fun CrossSellItem(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    val fallbackPainter = ShapedColorPainter(
-      HedvigTheme.shapes.cornerXLarge,
-      HedvigTheme.colorScheme.surfaceSecondary,
-    )
     AsyncImage(
       model = crossSellImageAsset?.src,
       contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
-      placeholder = fallbackPainter,
-      error = fallbackPainter,
-      fallback = fallbackPainter,
+      placeholder = crossSellPainterFallback(),
+      error = crossSellPainterFallback(),
+      fallback = crossSellPainterFallback(),
       imageLoader = imageLoader,
       contentScale = ContentScale.Crop,
       modifier = Modifier
