@@ -26,9 +26,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +38,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
@@ -98,24 +93,6 @@ internal fun InsuranceDestination(
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val lifecycleOwner = LocalLifecycleOwner.current
-  val currentViewModel by rememberUpdatedState(viewModel)
-  DisposableEffect(lifecycleOwner) {
-    val observer = LifecycleEventObserver { _, event ->
-      if (event == Lifecycle.Event.ON_PAUSE) {
-        currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
-      }
-    }
-    lifecycleOwner.lifecycle.addObserver(observer)
-    onDispose {
-      lifecycleOwner.lifecycle.removeObserver(observer)
-    }
-  }
-  DisposableEffect(Unit) {
-    onDispose {
-      currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
-    }
-  }
   InsuranceScreen(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
@@ -176,7 +153,6 @@ private fun InsuranceScreen(
           InsuranceScreenContent(
             uiState = state,
             imageLoader = imageLoader,
-            showNotificationBadge = state.showNotificationBadge,
             quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
             onInsuranceCardClick = onInsuranceCardClick,
             onCrossSellClick = onCrossSellClick,
@@ -204,7 +180,6 @@ private fun InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
   pullRefreshState: PullRefreshState,
-  showNotificationBadge: Boolean,
   quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
@@ -271,7 +246,6 @@ private fun InsuranceScreenContent(
         }
         if (uiState.crossSells.isNotEmpty()) {
           CrossSellsSection(
-            showNotificationBadge = showNotificationBadge,
             crossSells = uiState.crossSells,
             onCrossSellClick = onCrossSellClick,
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -417,7 +391,6 @@ private fun PreviewInsuranceScreen(
               type = CrossSell.CrossSellType.HOME,
             )
           },
-          showNotificationBadge = false,
           quantityOfCancelledInsurances = 1,
           shouldSuggestMovingFlow = true,
           hasError = false,
@@ -472,7 +445,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
@@ -484,7 +456,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
@@ -501,7 +472,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           type = CrossSell.CrossSellType.HOME,
         ),
       ),
-      showNotificationBadge = false,
       quantityOfCancelledInsurances = 1,
       hasError = false,
       isLoading = false,
@@ -522,7 +492,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
@@ -549,7 +518,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
@@ -561,7 +529,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
@@ -573,7 +540,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      showNotificationBadge = false,
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
