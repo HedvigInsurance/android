@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -209,20 +211,15 @@ private fun MovingDateButton(
 
 @HedvigPreview
 @Composable
-private fun PreviewTravelCertificateDateInput() {
+private fun PreviewTravelCertificateDateInput(
+  @PreviewParameter(
+    ChooseInsuranceForAddonUiStateProvider::class,
+  ) uiState: TravelCertificateDateInputUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateDateInput(
-        Success(
-          "id",
-          "emaild",
-          hasCoInsured = false,
-          datePickerState = HedvigDatePickerState(Locale.ENGLISH, null, null, 2020..2024, HedvigDisplayMode.Picker),
-          travelDate = LocalDate(2023, 1, 1),
-          daysValid = 40,
-          errorMessageRes = null,
-          primaryInput = null,
-        ),
+        uiState,
         {},
         {},
         {},
@@ -234,3 +231,22 @@ private fun PreviewTravelCertificateDateInput() {
     }
   }
 }
+
+private class ChooseInsuranceForAddonUiStateProvider :
+  CollectionPreviewParameterProvider<TravelCertificateDateInputUiState>(
+    listOf(
+      Success(
+        "id",
+        "emaild",
+        hasCoInsured = false,
+        datePickerState = HedvigDatePickerState(Locale.ENGLISH, null, null, 2020..2024, HedvigDisplayMode.Picker),
+        travelDate = LocalDate(2023, 1, 1),
+        daysValid = 40,
+        errorMessageRes = null,
+        primaryInput = null,
+      ),
+      TravelCertificateDateInputUiState.Failure,
+      TravelCertificateDateInputUiState.Loading,
+      TravelCertificateDateInputUiState.UrlFetched(TravelCertificateUrl("")),
+    ),
+  )

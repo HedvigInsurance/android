@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -79,6 +80,7 @@ data class RecommendedCrossSell(
 
 /**
  * Floating bottom sheet option
+ * todo: Look into using this again when we can control the scrim composable and can add a gradient brush there instead
  */
 @Composable
 fun CrossSellFloatingBottomSheet(
@@ -91,12 +93,18 @@ fun CrossSellFloatingBottomSheet(
     dragHandle = {
       CrossSellDragHandle(
         text = state.data?.recommendedCrossSell?.bannerText,
-        contentPadding = PaddingValues(horizontal = 0.dp),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .clip(HedvigTheme.shapes.cornerXLargeTop),
       )
     },
-    style = BottomSheetStyle(transparentBackground = true, automaticallyScrollableContent = false),
+    style = BottomSheetStyle(
+      transparentBackground = true,
+      automaticallyScrollableContent = false,
+      scrimColor = HedvigTheme.colorScheme.scrim.copy(alpha = 0.72f),
+    ),
     contentPadding = PaddingValues(horizontal = 0.dp),
-    sheetPadding = PaddingValues(horizontal = 16.dp),
+    sheetPadding = PaddingValues(horizontal = 0.dp),
     content = { crossSellSheetData ->
       CrossSellsFloatingSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
@@ -117,12 +125,10 @@ fun CrossSellBottomSheet(
 ) {
   val dragHandle: @Composable (() -> Unit)? =
     if (state.data?.recommendedCrossSell != null) {
-      val data = state.data?.recommendedCrossSell
-      val bannerText = data!!.bannerText
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
-          text = bannerText,
+          text = state.data?.recommendedCrossSell?.bannerText,
         )
       }
     } else {
@@ -203,7 +209,9 @@ private fun CrossSellsFloatingSheetContent(
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  Column {
+  Column(
+    Modifier.padding(horizontal = 16.dp),
+  ) {
     Surface(
       shape = HedvigTheme.shapes.cornerXLargeBottom,
       modifier = Modifier.weight(1f, fill = false),
@@ -243,13 +251,17 @@ private fun CrossSellsFloatingSheetContent(
       }
     }
     Spacer(Modifier.height(24.dp))
-    HedvigButton(
-      text = stringResource(R.string.general_close_button),
-      onClick = dismissSheet,
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-      modifier = Modifier.fillMaxWidth(),
-    )
+    Surface(
+      shape = HedvigTheme.shapes.cornerLarge,
+    ) {
+      HedvigButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = dismissSheet,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
@@ -493,8 +505,8 @@ private fun NotificationSubheading(text: String, modifier: Modifier = Modifier) 
 
 @Composable
 private fun CrossSellDragHandle(
-  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues? = null,
   text: String? = stringResource(R.string.CROSS_SELL_BANNER_TEXT),
 ) {
   val direction = LocalLayoutDirection.current
@@ -504,8 +516,8 @@ private fun CrossSellDragHandle(
       .height(40.dp)
       .layout { measurable, constraints ->
         // M3 sheet does not allow us to "break out" of the content padding so we do it through a layout
-        val paddingStart = contentPadding.calculateStartPadding(direction).roundToPx()
-        val paddingEnd = contentPadding.calculateEndPadding(direction).roundToPx()
+        val paddingStart = contentPadding?.calculateStartPadding(direction)?.roundToPx() ?: 0
+        val paddingEnd = contentPadding?.calculateEndPadding(direction)?.roundToPx() ?: 0
         val adjustedConstraints = constraints.copy(
           maxWidth = constraints.maxWidth + paddingEnd + paddingStart,
           minWidth = constraints.minWidth + paddingEnd + paddingStart,
@@ -653,7 +665,7 @@ private fun PreviewCrossSellItemPlaceholder() {
 private fun PreviewCrossSellDragHandle() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      CrossSellDragHandle(PaddingValues())
+      CrossSellDragHandle()
     }
   }
 }

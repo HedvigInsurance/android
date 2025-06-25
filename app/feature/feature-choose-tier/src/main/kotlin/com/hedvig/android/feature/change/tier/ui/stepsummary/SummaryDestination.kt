@@ -3,7 +3,6 @@ package com.hedvig.android.feature.change.tier.ui.stepsummary
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -117,7 +116,7 @@ private fun SummaryScreen(
     Failure -> HedvigScaffold(navigateUp) {
       Spacer(Modifier.weight(1f))
       HedvigErrorSection(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.weight(1f),
         onButtonClick = onReload,
       )
       Spacer(Modifier.weight(1f))
