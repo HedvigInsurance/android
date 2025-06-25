@@ -62,7 +62,7 @@ fun CrossSellSheet(isInScreenEligibleForCrossSells: Boolean, onCrossSellClick: (
         }
       }
     }
-    com.hedvig.android.crosssells.CrossSellFloatingBottomSheet(
+    com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
     )
