@@ -834,7 +834,7 @@ private fun PreviewHomeScreenWithError() {
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
-        imageLoader = rememberPreviewImageLoader()
+        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }
