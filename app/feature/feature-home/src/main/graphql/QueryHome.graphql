@@ -27,6 +27,7 @@ query Home {
         bannerText
         discountText
         buttonText
+        buttonDescription
       }
       otherCrossSells {
         ...HomeCrossSellFragment

@@ -137,6 +137,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
               bannerText = it.bannerText,
               buttonText = it.buttonText,
               discountText = it.discountText,
+              buttonDescription = it.buttonDescription,
             )
           }
           val otherCrossSellsData = allData.otherCrossSells.map {

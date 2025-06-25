@@ -8,6 +8,7 @@ query BottomSheetCrossSells($source: CrossSellSource!) {
         bannerText
         discountText
         buttonText
+        buttonDescription
       }
       otherCrossSells {
         ...CrossSellFragment

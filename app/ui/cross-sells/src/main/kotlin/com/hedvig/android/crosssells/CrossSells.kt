@@ -74,8 +74,9 @@ data class CrossSellSheetData(
 data class RecommendedCrossSell(
   val crossSell: CrossSell,
   val bannerText: String,
-  val buttonText: String?,
+  val buttonText: String,
   val discountText: String?,
+  val buttonDescription: String,
 )
 
 /**
@@ -318,7 +319,7 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(48.dp))
     HedvigButton(
-      text = recommendedCrossSell.buttonText ?: stringResource(R.string.CROSS_SELL_BUTTON),
+      text = recommendedCrossSell.buttonText,
       onClick = {
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
         dismissSheet()
@@ -327,11 +328,7 @@ private fun RecommendationSection(
       Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
-    val bottomLabelText = if (recommendedCrossSell.discountText != null) {
-      stringResource(R.string.CROSS_SELL_LABEL_LIMITED_OFFER)
-    } else {
-      stringResource(R.string.CROSS_SELL_LABEL)
-    }
+    val bottomLabelText = recommendedCrossSell.buttonDescription
     HedvigText(
       text = bottomLabelText,
       style = HedvigTheme.typography.finePrint,
@@ -571,6 +568,7 @@ private fun PreviewCrossSellsSheetContent(
             bannerText = "50% discount the first year",
             buttonText = "Explore offer",
             discountText = "-50%",
+            buttonDescription = "Limited time offer",
           ).takeIf { case != TripleCase.THIRD },
           otherCrossSells = listOf(
             CrossSell(
@@ -609,6 +607,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
           bannerText = "50% discount the first year",
           buttonText = "Explore offer",
           discountText = "-50%",
+          buttonDescription = "Limited time offer",
         ).takeIf { case != TripleCase.THIRD },
         listOf(
           CrossSell(
