@@ -26,8 +26,7 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
 import octopus.ContactInformationQuery
-import octopus.MemberUpdateEmailMutation
-import octopus.MemberUpdatePhoneNumberMutation
+import octopus.MemberUpdateContactInfoMutation
 import octopus.type.buildMember
 import octopus.type.buildMemberMutationOutput
 import org.junit.Rule
@@ -51,7 +50,7 @@ class ContactInfoPresenterTest {
     val presenter = ContactInfoPresenter(Provider { repository })
     val originalEmail = "test@hedvig.com"
     val originalPhoneNumber = "+123"
-    val alteredEmail = "test@hedvig.co"
+    val alteredEmail = "test2@hedvig.com"
     val alteredPhoneNumber = "+123456"
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
@@ -70,7 +69,7 @@ class ContactInfoPresenterTest {
         assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(originalPhoneNumber))
         assertThat(this.content!!.uploadedEmail).isEqualTo(Email(originalEmail))
         assertThat(this.content!!.submittingUpdatedInfo).isEqualTo(false)
-        assertThat(this.content!!.canSubmit).isEqualTo(false)
+        assertThat(this.content!!.canSubmit).isEqualTo(true)
         content!!.phoneNumberState.setTextAndPlaceCursorAtEnd(alteredPhoneNumber)
         content!!.emailState.setTextAndPlaceCursorAtEnd(alteredEmail)
         assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(originalPhoneNumber))
@@ -85,9 +84,9 @@ class ContactInfoPresenterTest {
         assertThat(canSubmit).isFalse()
       }
       apolloClient.registerSuspendingTestResponse(
-        MemberUpdateEmailMutation(alteredEmail),
-        MemberUpdateEmailMutation.Data {
-          this.memberUpdateEmail = this.buildMemberMutationOutput {
+        MemberUpdateContactInfoMutation(alteredEmail, originalPhoneNumber),
+        MemberUpdateContactInfoMutation.Data {
+          this.memberUpdateContactInfo = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
               this.phoneNumber = originalPhoneNumber
@@ -97,13 +96,13 @@ class ContactInfoPresenterTest {
         },
       )
       apolloClient.registerSuspendingTestResponse(
-        MemberUpdatePhoneNumberMutation(alteredPhoneNumber),
-        MemberUpdatePhoneNumberMutation.Data {
-          this.memberUpdatePhoneNumber = this.buildMemberMutationOutput {
+        MemberUpdateContactInfoMutation(alteredEmail, alteredPhoneNumber),
+        MemberUpdateContactInfoMutation.Data {
+          this.memberUpdateContactInfo = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
               this.phoneNumber = alteredPhoneNumber
-              this.email = originalEmail
+              this.email = alteredEmail
             }
           }
         },
@@ -114,79 +113,78 @@ class ContactInfoPresenterTest {
         assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(alteredPhoneNumber))
         assertThat(this.content!!.uploadedEmail).isEqualTo(Email(alteredEmail))
         assertThat(this.content!!.submittingUpdatedInfo).isFalse()
-        assertThat(this.content!!.canSubmit).isFalse()
+        assertThat(this.content!!.canSubmit).isTrue()
       }
     }
   }
 
   @Test
-  fun `Allowing submission should depend on if the input is valid and is different from the original input`() =
-    runTest {
-      val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-      val presenter = ContactInfoPresenter(Provider { repository })
-      val originalEmail = "test@hedvig.com"
-      val originalPhoneNumber = "+123"
-      val validEmails = listOf(
-        "test@hedvig.co",
-        "a@hedvig.c",
-        "a@h.c",
-      )
-      val validPhoneNumbers = listOf(
-        "+1234",
-        "+1",
-        "1",
-        "+1234567890123",
-        "1234567890123",
-        "+123 456 789 0123",
-        "123 456 789 0123",
-      )
-      val invalidEmails = listOf(
-        "test@hedvig .com",
-        "a@a",
-        "a@a@a.com",
-        "",
-        " ",
-      )
-      val invalidPhoneNumbers = listOf(
-        "++1234",
-        "+1234a",
-        "+",
-        "",
-        " ",
-      )
-      presenter.test(
-        ContactInfoUiState.Content(
-          phoneNumberState = TextFieldState(originalPhoneNumber),
-          emailState = TextFieldState(originalEmail),
-          uploadedPhoneNumber = PhoneNumber(originalPhoneNumber),
-          uploadedEmail = Email(originalEmail),
-          submittingUpdatedInfo = false,
-        ),
-      ) {
-        with(awaitItem().content!!) {
-          assertThat(canSubmit).isFalse()
-          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
-          assertThat(canSubmit).isTrue()
-          for (invalidEmail in invalidEmails) {
-            emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
-            assertThat(canSubmit).isFalse()
-          }
-          emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
-          assertThat(canSubmit).isTrue()
-          for (invalidPhoneNumber in invalidPhoneNumbers) {
-            phoneNumberState.setTextAndPlaceCursorAtEnd(invalidPhoneNumber)
-            assertThat(canSubmit).isFalse()
-          }
-          phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
-          assertThat(canSubmit).isTrue()
-          emailState.setTextAndPlaceCursorAtEnd(originalEmail)
-          assertThat(canSubmit).isTrue()
-          phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
+  fun `Allowing submission should depend on if the input is valid`() = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(Provider { repository })
+    val originalEmail = "test@hedvig.com"
+    val originalPhoneNumber = "+123"
+    val validEmails = listOf(
+      "test@hedvig.co",
+      "a@hedvig.c",
+      "a@h.c",
+    )
+    val validPhoneNumbers = listOf(
+      "+1234",
+      "+1",
+      "1",
+      "+1234567890123",
+      "1234567890123",
+      "+123 456 789 0123",
+      "123 456 789 0123",
+    )
+    val invalidEmails = listOf(
+      "test@hedvig .com",
+      "a@a",
+      "a@a@a.com",
+      "",
+      " ",
+    )
+    val invalidPhoneNumbers = listOf(
+      "++1234",
+      "+1234a",
+      "+",
+      "",
+      " ",
+    )
+    presenter.test(
+      ContactInfoUiState.Content(
+        phoneNumberState = TextFieldState(originalPhoneNumber),
+        emailState = TextFieldState(originalEmail),
+        uploadedPhoneNumber = PhoneNumber(originalPhoneNumber),
+        uploadedEmail = Email(originalEmail),
+        submittingUpdatedInfo = false,
+      ),
+    ) {
+      with(awaitItem().content!!) {
+        assertThat(canSubmit).isTrue()
+        phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
+        assertThat(canSubmit).isTrue()
+        for (invalidEmail in invalidEmails) {
+          emailState.setTextAndPlaceCursorAtEnd(invalidEmail)
           assertThat(canSubmit).isFalse()
         }
-        awaitUnchanged()
+        emailState.setTextAndPlaceCursorAtEnd(validEmails.first())
+        assertThat(canSubmit).isTrue()
+        for (invalidPhoneNumber in invalidPhoneNumbers) {
+          phoneNumberState.setTextAndPlaceCursorAtEnd(invalidPhoneNumber)
+          assertThat(canSubmit).isFalse()
+        }
+        phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
+        assertThat(canSubmit).isTrue()
+        emailState.setTextAndPlaceCursorAtEnd(originalEmail)
+        assertThat(canSubmit).isTrue()
+        phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
+        assertThat(canSubmit).isTrue()
       }
+      awaitUnchanged()
     }
+  }
 
   @Test
   fun `Retrying does fetch the new state after an initial failure`() = runTest {
@@ -244,93 +242,7 @@ class ContactInfoPresenterTest {
   }
 
   @Test
-  fun `Trying to edit contact info when one of the two is originally null should still work`(
-    @TestParameter testingNullPhoneNumber: Boolean,
-  ) = runTest {
-    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
-    val backendEmail = "test@hedvig.com".takeIf { testingNullPhoneNumber } ?: ""
-    val backendPhoneNumber = "+123".takeIf { !testingNullPhoneNumber }
-    val newPhoneNumber = "123"
-    val newEmail = "new@hedvig.com"
-    apolloClient.registerSuspendingTestResponse(
-      ContactInformationQuery(),
-      ContactInformationQuery.Data {
-        this.currentMember = this.buildMember {
-          this.phoneNumber = backendPhoneNumber
-          this.email = backendEmail
-        }
-      },
-    )
-    presenter.test(ContactInfoUiState.Loading) {
-      assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
-      with(awaitItem()) {
-        if (testingNullPhoneNumber) {
-          assertThat(this.content!!.uploadedPhoneNumber).isNull()
-          assertThat(this.content!!.uploadedEmail).isNotNull()
-        } else {
-          assertThat(this.content!!.uploadedPhoneNumber).isNotNull()
-          assertThat(this.content!!.uploadedEmail).isNull()
-        }
-        assertThat(this.content!!.canSubmit).isEqualTo(false)
-        if (testingNullPhoneNumber) {
-          this.content!!.emailState.setTextAndPlaceCursorAtEnd(newEmail)
-        } else {
-          this.content!!.phoneNumberState.setTextAndPlaceCursorAtEnd(newPhoneNumber)
-        }
-        assertThat(this.content!!.canSubmit).isEqualTo(true)
-        sendEvent(ContactInfoEvent.SubmitData)
-        assertThat(awaitItem().content!!.submittingUpdatedInfo).isTrue()
-        if (testingNullPhoneNumber) {
-          apolloClient.registerSuspendingTestResponse(
-            MemberUpdateEmailMutation(newEmail),
-            MemberUpdateEmailMutation.Data {
-              this.memberUpdateEmail = this.buildMemberMutationOutput {
-                this.userError = null
-                this.member = this.buildMember {
-                  this.phoneNumber = backendPhoneNumber
-                  this.email = newEmail
-                }
-              }
-            },
-          )
-        } else {
-          apolloClient.registerSuspendingTestResponse(
-            MemberUpdatePhoneNumberMutation(newPhoneNumber),
-            MemberUpdatePhoneNumberMutation.Data {
-              this.memberUpdatePhoneNumber = this.buildMemberMutationOutput {
-                this.userError = null
-                this.member = this.buildMember {
-                  this.phoneNumber = newPhoneNumber
-                  this.email = backendEmail
-                }
-              }
-            },
-          )
-        }
-        with(awaitItem()) {
-          if (testingNullPhoneNumber) {
-            assertThat(this.content!!.phoneNumberState.text).isEqualTo("")
-            assertThat(this.content!!.emailState.text).isEqualTo(newEmail)
-            assertThat(this.content!!.uploadedPhoneNumber).isNull()
-            assertThat(this.content!!.uploadedEmail).isEqualTo(Email(newEmail))
-          } else {
-            assertThat(this.content!!.phoneNumberState.text).isEqualTo(newPhoneNumber)
-            assertThat(this.content!!.emailState.text).isEqualTo("")
-            assertThat(this.content!!.uploadedPhoneNumber).isEqualTo(PhoneNumber(newPhoneNumber))
-            assertThat(this.content!!.uploadedEmail).isNull()
-          }
-          assertThat(this.content!!.submittingUpdatedInfo).isFalse()
-          assertThat(this.content!!.canSubmit).isFalse()
-        }
-      }
-    }
-  }
-
-  @Test
-  fun `Can not submit new contact info if that would mean deleting some previously present info`(
-    @TestParameter testingNullPhoneNumber: Boolean,
-  ) = runTest {
+  fun `Can not submit new contact info if that would mean deleting some previously present info`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
     val presenter = ContactInfoPresenter(Provider { repository })
     val backendEmail = "test@hedvig.com"
@@ -347,6 +259,8 @@ class ContactInfoPresenterTest {
     presenter.test(ContactInfoUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
       with(awaitItem()) {
+        this.content!!.phoneNumberState.setTextAndPlaceCursorAtEnd("")
+        content!!.emailState.setTextAndPlaceCursorAtEnd("")
         assertThat(this.content!!.uploadedPhoneNumber).isNotNull()
         assertThat(this.content!!.uploadedEmail).isNotNull()
         assertThat(this.content!!.canSubmit).isEqualTo(false)

@@ -1,11 +1,30 @@
-query BottomSheetCrossSells {
+query BottomSheetCrossSells($source: CrossSellSource!) {
   currentMember {
-    crossSells {
-      id
-      title
-      description
-      storeUrl
-      type
+    crossSell(source: $source) {
+      recommendedCrossSell {
+        crossSell {
+          ...CrossSellFragment
+        }
+        bannerText
+        discountText
+        buttonText
+        buttonDescription
+      }
+      otherCrossSells {
+        ...CrossSellFragment
+      }
     }
+  }
+}
+
+fragment CrossSellFragment on CrossSell {
+  id
+  title
+  description
+  storeUrl
+  pillowImageLarge {
+    src
+    id
+    alt
   }
 }

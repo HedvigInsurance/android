@@ -52,6 +52,7 @@ data class Shapes internal constructor(
   val cornerXSmall: Shape = FigmaShape(6.dp),
   val cornerNone: Shape = RectangleShape,
   val cornerXLargeTop: Shape = FigmaShape(16.dp, figmaShapeDirection = TopOnly),
+  val cornerXLargeBottom: Shape = FigmaShape(16.dp, figmaShapeDirection = BottomOnly),
   val cornerXSmallTop: Shape = FigmaShape(6.dp, figmaShapeDirection = TopOnly),
   val cornerXSmallBottom: Shape = FigmaShape(6.dp, figmaShapeDirection = BottomOnly),
 )

@@ -1,6 +1,6 @@
 plugins {
+  id("hedvig.jvm.library")
   id("hedvig.gradle.plugin")
-  id("hedvig.kotlin.library")
 }
 
 hedvig {
@@ -9,6 +9,7 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.datastore.core)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)

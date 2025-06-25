@@ -258,7 +258,6 @@ private fun CoverageCard(
           size = Small,
           hintText = tiersInfo.selectedCoverage.tierDisplayName,
           chosenItemIndex = chosenCoverageItemIndex,
-          applyDefaultDialogPadding = false,
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) { onDismissRequest ->
           CoverageChoiceDialogContent(
@@ -289,7 +288,6 @@ private fun CoverageCard(
               hintText = tiersInfo.selectedDeductible?.tierDisplayName
                 ?: stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
               chosenItemIndex = chosenDeductibleItemIndex,
-              applyDefaultDialogPadding = false,
               dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) { onDismissRequest ->
               DeductibleChoiceDialogContent(
@@ -402,11 +400,8 @@ private fun CommonChoiceDialogContent(
 ) {
   var chosenItemIndex by remember { mutableStateOf(initiallyChosenItemIndex) }
   Column(
-    Modifier
-      .padding(horizontal = 16.dp)
-      .verticalScroll(rememberScrollState()),
+    Modifier.verticalScroll(rememberScrollState()),
   ) {
-    Spacer(Modifier.height(16.dp))
     FlowHeading(
       firstText,
       secondText,
@@ -477,7 +472,6 @@ private fun CommonChoiceDialogContent(
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -572,6 +566,21 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       isSubmitting = false,
       comparisonParameters = null,
     ),
+    navigateUp = {},
+    popBackStack = {},
+    onSubmit = {},
+    exitFlow = {},
+    onSelectCoverageOption = {},
+    onSelectDeductibleOption = {},
+    onCompareCoverageClicked = {},
+  )
+}
+
+@HedvigPreview
+@Composable
+fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
+  ChoseCoverageLevelAndDeductibleScreen(
+    uiState = MissingOngoingMovingFlow,
     navigateUp = {},
     popBackStack = {},
     onSubmit = {},

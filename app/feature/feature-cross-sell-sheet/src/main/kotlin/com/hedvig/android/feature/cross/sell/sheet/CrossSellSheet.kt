@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.withStateAtLeast
+import coil.ImageLoader
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content
@@ -22,7 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 fun CrossSellSheet(
   isInScreenEligibleForCrossSells: Boolean,
   onCrossSellClick: (String) -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val viewModel: CrossSellSheetViewModel = koinViewModel()
   if (isInScreenEligibleForCrossSells) {
@@ -66,10 +67,10 @@ fun CrossSellSheet(
         }
       }
     }
-    com.hedvig.android.crosssells.CrossSellSheet(
+    com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
-      onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+      imageLoader = imageLoader,
     )
   }
 }

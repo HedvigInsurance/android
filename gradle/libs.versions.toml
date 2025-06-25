@@ -5,86 +5,85 @@ targetSdkVersion = "34"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.8.2"
-lintGradlePlugin = "8.8.2"
+lintApi = "31.10.0"
+lintGradlePlugin = "8.10.0"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.8.2"
-apolloAdapters = "0.0.4"
-apollo = "4.1.1"
+androidGradlePlugin = "8.10.0"
+apolloAdapters = "0.0.6"
+apollo = "4.2.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.3"
-datadogPlugin = "1.15.0"
+datadogPlugin = "1.16.0"
 doctor = "0.10.0"
-easylauncher = "6.4.0"
+easylauncher = "6.4.1"
 googleServices = "4.4.2"
-gradleDevelocity = "3.19.2"
-kotlin = "2.1.10"
-kotlinter = "5.0.1"
-ksp = "2.1.10-1.0.31"
-ktor = "3.1.1"
+gradleDevelocity = "4.0.1"
+kotlin = "2.1.21"
+kotlinter = "5.0.2"
+ksp = "2.1.21-2.0.1"
+ktor = "3.1.3"
 license = "0.9.8"
-molecule = "2.0.0"
+molecule = "2.1.0"
 squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
-accompanist = "0.37.2"
+accompanist = "0.37.3"
 androidx-activity-compose = "1.10.1"
 androidx-activity-core = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-composeBom = "2025.02.00"
+androidx-composeBom = "2025.05.00"
 #todo: remove this alpha when stable compose version bumps to 1.8
-androidx-datastore = "1.1.3"
+androidx-datastore = "1.1.4"
 androidx-junit = "1.2.1"
-androidx-lifecycle = "2.8.7"
-androidx-navigation = "2.8.7"
+androidx-lifecycle = "2.9.0"
+androidx-navigation = "2.9.0"
 androidx-other-appCompat = "1.7.0"
 androidx-other-browser = "1.8.0"
 androidx-other-constraintLayout = "2.2.0"
-androidx-other-core = "1.15.0"
-androidx-other-splashscreen = "1.2.0-beta01"
+androidx-other-core = "1.16.0"
+androidx-other-splashscreen = "1.2.0-beta02"
 androidx-other-startup = "1.2.0"
-androidx-other-workManager = "2.10.0"
+androidx-other-workManager = "2.10.1"
 androidx-test = "1.6.1"
 androidx-testRunners = "1.6.2"
-androidx-ui-alpha = "1.8.0-beta03"
+androidx-ui-alpha = "1.8.1"
 androidxGraphicsShapes = "1.0.1"
-arrow = "2.0.1"
+arrow = "2.1.2"
 assertK = "0.28.1"
-atomicfu = "0.26.0"
+atomicfu = "0.27.0"
 coil = "2.7.0"
 composeRichtext = "1.0.0-alpha02"
 coreLibraryDesugaring = "2.1.5"
-coroutines = "1.10.1"
-datadog = "2.18.0"
-dependencyAnalysis = "2.10.1"
+coroutines = "1.10.2"
+datadog = "2.21.0"
+dependencyAnalysis = "2.17.0"
 firebaseCrashlyticsBuildtools = "3.0.3"
-hedvigAuthlib = "1.4.3"
 junit = "4.13.2"
-koinBom = "4.0.2"
-kotlinx-serialization = "1.8.0"
+koinBom = "4.0.4"
+kotlinx-serialization = "1.8.1"
 kotlinxDatetime = "0.6.2"
-media3 = "1.5.1"
+media3 = "1.7.1"
 modalSheet = "0.7.0"
 moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
-okio = "3.10.2"
+okio = "3.11.0"
 paging = "3.3.6"
 playReview = "2.0.2"
-playServicesBase = "18.5.0"
-retrofit = "2.11.0"
+playServicesBase = "18.7.0"
+retrofit = "3.0.0"
 robolectric = "4.14.1"
-room = "2.7.0-rc01"
+room = "2.7.1"
 slimber = "2.0.0"
-sqlite = "2.5.0-rc01"
+sqlite = "2.5.1"
 testParameterInjector = "1.18"
 timber = "5.0.1"
 turbine = "1.2.0"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
-zoomable = "1.6.2"
+zoomable = "1.7.0"
 
 [libraries]
 
@@ -163,11 +162,10 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.10.0"
+firebase-bom = "com.google.firebase:firebase-bom:33.13.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
-hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
@@ -177,10 +175,18 @@ koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
 koin-coreViewmodelNavigation = { module = "io.insert-koin:koin-core-viewmodel-navigation" }
 koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3" }
 media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
@@ -203,6 +209,7 @@ room-common = { module = "androidx.room:room-common", version.ref = "room" }
 room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
@@ -214,11 +221,13 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+androidMultiplatform-gradlePlugin = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
@@ -229,6 +238,7 @@ lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" 
 
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+androidLibraryMultiplatform = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradlePlugin" }
 apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
@@ -241,6 +251,7 @@ googleServices = { id = "com.google.gms.google-services", version.ref = "googleS
 gradleDevelocity = { id = "com.gradle.develocity", version.ref = "gradleDevelocity" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }

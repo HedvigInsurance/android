@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.CrossSellsQuery
-import octopus.type.CrossSellType
 
 internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<CrossSellsQuery.Data.CurrentMember.CrossSell>> {
@@ -15,28 +14,28 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
           "Home Insurance",
           "For you, your family and your home",
           "",
-          CrossSellType.HOME,
+          octopus.CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
         ),
         CrossSellsQuery.Data.CurrentMember.CrossSell(
           "2",
           "Pet Insurance",
           "For your dog or cat",
           "",
-          CrossSellType.PET,
+          octopus.CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
         ),
         CrossSellsQuery.Data.CurrentMember.CrossSell(
           "3",
           "Car Insurance",
           "For your and your car",
           "",
-          CrossSellType.CAR,
+          octopus.CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
         ),
         CrossSellsQuery.Data.CurrentMember.CrossSell(
           "4",
           "Accident Insurance",
           "No loopholes on our part. No worries on your part.",
           "",
-          CrossSellType.ACCIDENT,
+          octopus.CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
         ),
       )
     }

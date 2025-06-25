@@ -10,7 +10,7 @@ import timber.log.Timber
 
 class TimberInitializer : Initializer<Unit> {
   override fun create(context: Context) {
-    if (isDebug()) {
+    if (shouldIncludeDebugLoggingTree()) {
       Timber.plant(Timber.DebugTree())
     }
     Timber.plant(FirebaseBreadcrumbTimberTree())
@@ -23,6 +23,6 @@ class TimberInitializer : Initializer<Unit> {
   }
 }
 
-private fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
-  BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
+private fun shouldIncludeDebugLoggingTree() = BuildConfig.BUILD_TYPE == "debug" ||
+  BuildConfig.APPLICATION_ID == "staging" ||
   BuildConfig.DEBUG

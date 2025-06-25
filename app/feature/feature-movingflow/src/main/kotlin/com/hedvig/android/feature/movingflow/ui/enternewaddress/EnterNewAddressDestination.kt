@@ -38,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -208,6 +209,11 @@ private fun EnterNewAddressScreen(
               uiState.postalCode.updateValue(null)
             } else if (it.isDigitsOnly()) {
               uiState.postalCode.updateValue(it)
+            } else {
+              val withoutWhitespaces = it.filterNot { it.isWhitespace() }
+              if (withoutWhitespaces.isDigitsOnly()) {
+                uiState.postalCode.updateValue(withoutWhitespaces)
+              }
             }
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
@@ -421,5 +427,18 @@ fun PreviewEnterNewAddressScreen() {
     ),
     submitInput = {},
     dismissSubmissionError = {},
+  )
+}
+
+@HedvigPreview
+@Composable
+fun PreviewEnterNewAddressScreenFailure() {
+  EnterNewAddressScreen(
+    uiState = EnterNewAddressUiState.MissingOngoingMovingFlow,
+    {},
+    {},
+    {},
+    {},
+    {},
   )
 }

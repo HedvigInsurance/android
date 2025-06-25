@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 
-internal class ShapedColorPainter(
+class ShapedColorPainter(
   val shape: Shape,
   val color: Color,
 ) : Painter() {

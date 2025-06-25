@@ -35,6 +35,9 @@ fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+  sheetPadding: PaddingValues = PaddingValues(0.dp),
+  style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
+  dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val sheetState = rememberHedvigBottomSheetState<Unit>()
@@ -49,7 +52,10 @@ fun HedvigBottomSheet(
     onDismissRequest = { onVisibleChange(false) },
     content = content,
     contentPadding = contentPadding,
+    sheetPadding = sheetPadding,
+    style = style,
     sheetState = sheetState,
+    dragHandle = dragHandle,
   )
 }
 
@@ -67,6 +73,9 @@ fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+  sheetPadding: PaddingValues = PaddingValues(0.dp),
+  style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
+  dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
   InternalHedvigBottomSheet(
@@ -76,6 +85,9 @@ fun <T> HedvigBottomSheet(
       // false automaticaly.
     },
     contentPadding = contentPadding,
+    sheetPadding = sheetPadding,
+    style = style,
+    dragHandle = dragHandle,
     sheetState = hedvigBottomSheetState,
   ) {
     if (hedvigBottomSheetState.data != null) {
@@ -90,6 +102,9 @@ private fun <T> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
   sheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues,
+  sheetPadding: PaddingValues,
+  style: BottomSheetStyle,
+  dragHandle: @Composable (() -> Unit)?,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BottomSheet(
@@ -97,20 +112,32 @@ private fun <T> InternalHedvigBottomSheet(
     modifier = Modifier,
     sheetState = sheetState,
     shape = bottomSheetShape.shape,
-    scrimColor = bottomSheetColors.scrimColor,
-    containerColor = bottomSheetColors.bottomSheetBackgroundColor,
+    scrimColor = style.scrimColor ?: bottomSheetColors.scrimColor,
+    containerColor = if (style.transparentBackground) {
+      Color.Transparent
+    } else {
+      bottomSheetColors.bottomSheetBackgroundColor
+    },
     contentColor = bottomSheetColors.contentColor,
     contentPadding = contentPadding,
-    dragHandle = {
-      DragHandle(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally)
-          .padding(top = 8.dp, bottom = 20.dp),
-      )
-    },
+    sheetPadding = sheetPadding,
+    dragHandle = dragHandle
+      ?: {
+        DragHandle(
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(top = 8.dp, bottom = 20.dp),
+        )
+      },
   ) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    Column(
+      modifier = if (style.automaticallyScrollableContent) {
+        Modifier.verticalScroll(rememberScrollState())
+      } else {
+        Modifier
+      },
+    ) {
       content()
     }
   }
@@ -166,3 +193,18 @@ internal val bottomSheetShape: BottomSheetShape
     shape = BottomSheetTokens.ContainerShape.value,
     contentHorizontalPadding = BottomSheetTokens.ContentPadding,
   )
+
+@Immutable
+data class BottomSheetStyle(
+  val transparentBackground: Boolean,
+  val automaticallyScrollableContent: Boolean,
+  val scrimColor: Color?,
+)
+
+object BottomSheetDefaults {
+  val bottomSheetStyle: BottomSheetStyle = BottomSheetStyle(
+    transparentBackground = false,
+    automaticallyScrollableContent = true,
+    scrimColor = null,
+  )
+}

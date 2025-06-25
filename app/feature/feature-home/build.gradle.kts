@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -61,6 +61,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
+  implementation(projects.notificationBadgeDataPublic)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

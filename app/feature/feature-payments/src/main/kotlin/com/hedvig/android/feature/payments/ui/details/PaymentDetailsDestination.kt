@@ -426,3 +426,19 @@ private fun PaymentDetailsScreenPreview(
     }
   }
 }
+
+@Composable
+@HedvigPreview
+private fun PaymentDetailsScreenFailurePreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      MemberChargeDetailsScreen(
+        uiState = PaymentDetailsUiState.Failure,
+        selectedCharge = null,
+        onCardClick = {},
+        navigateUp = {},
+        reload = {},
+      )
+    }
+  }
+}

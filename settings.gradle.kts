@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 }
 
 plugins {
-  id("com.gradle.develocity") version "3.19.2"
+  id("com.gradle.develocity") version "4.0.1"
 }
 
 develocity {
@@ -69,4 +69,7 @@ rootProject.projectDir
 
 include("design-showcase")
 project(":design-showcase").projectDir = rootProject.projectDir.resolve("micro-apps").resolve("design-showcase")
+include("design-showcase-desktop")
+project(":design-showcase-desktop").projectDir =
+  rootProject.projectDir.resolve("micro-apps").resolve("design-showcase-desktop")
 include("hedvig-lint")

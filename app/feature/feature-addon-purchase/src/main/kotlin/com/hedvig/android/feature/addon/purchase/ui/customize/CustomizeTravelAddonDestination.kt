@@ -28,7 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -72,6 +74,7 @@ import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -322,10 +325,11 @@ private fun CustomizeTravelAddonCard(
           add(SimpleDropdownItem(option.displayName))
         }
       }
+      val isDropdownEnabled = uiState.travelAddonOffer.addonOptions.size > 1
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         // Locked option if there is nothing else to chose from
-        isEnabled = uiState.travelAddonOffer.addonOptions.size > 1,
+        isEnabled = isDropdownEnabled,
         style = Label(
           label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
           items = addonSimpleItems,
@@ -337,6 +341,11 @@ private fun CustomizeTravelAddonCard(
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
+        modifier = Modifier.accessibilityForDropdown(
+          labelText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+          selectedValue = uiState.currentlyChosenOption.displayName,
+          isEnabled = isDropdownEnabled,
+        ),
       ) { onDismissRequest ->
         DropdownContent(
           onContinueButtonClick = {
@@ -374,6 +383,7 @@ private fun HeaderInfoWithCurrentPrice(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
+    val pricePerMonth = chosenOptionPremiumExtra.getPerMonthDescription()
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(exposureName)
@@ -384,7 +394,9 @@ private fun HeaderInfoWithCurrentPrice(
             labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
-            modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd).semantics {
+              contentDescription = pricePerMonth
+            },
           )
         }
       },
@@ -447,7 +459,7 @@ private fun DropdownContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       title,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().semantics { heading() },
       textAlign = TextAlign.Center,
     )
     HedvigText(

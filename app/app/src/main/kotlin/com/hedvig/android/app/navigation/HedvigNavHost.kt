@@ -68,6 +68,7 @@ import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
+import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
@@ -190,9 +191,10 @@ internal fun HedvigNavHost(
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
       navigator = navigator,
-      onNavigateToAddonPurchaseFlow = { ids ->
-        navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
+      navigateToContactInfo = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
       },
+      imageLoader = imageLoader,
     )
     insuranceGraph(
       nestedGraphs = {
@@ -355,6 +357,7 @@ internal fun HedvigNavHost(
     movingFlowGraph(
       navController = hedvigAppState.navController,
       goToChat = ::navigateToNewConversation,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     connectPaymentGraph(
       navigator = navigator,
@@ -414,16 +417,16 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateUp = navigator::navigateUp,
-    appPackageId = hedvigBuildConstants.appId,
+    appPackageId = hedvigBuildConstants.appPackageId,
     navigateToConversation = { backStackEntry, conversationId ->
       navigateToConversation(backStackEntry, conversationId)
     },
-    applicationId = hedvigBuildConstants.appId,
+    applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   travelCertificateGraph(
     navigator = navigator,
-    applicationId = hedvigBuildConstants.appId,
+    applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
@@ -439,12 +442,13 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   )
   insuranceEvidenceGraph(
     navigator = navigator,
-    applicationId = hedvigBuildConstants.appId,
+    applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
@@ -471,7 +475,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigateToNewConversation(backStackEntry, null)
     },
     imageLoader = imageLoader,
-    appPackageId = hedvigBuildConstants.appId,
+    appPackageId = hedvigBuildConstants.appPackageId,
   )
   terminalClaimFlowStepDestinations(
     navigator = navigator,

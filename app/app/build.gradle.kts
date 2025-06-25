@@ -1,8 +1,8 @@
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.application")
+  id("hedvig.gradle.plugin")
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.0.0"
+    versionName = "13.0.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -67,7 +67,7 @@ android {
     }
 
     val staging by creating {
-      applicationIdSuffix = ".test.app"
+      applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
       matchingFallbacks += "release"
@@ -213,7 +213,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
-  implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)

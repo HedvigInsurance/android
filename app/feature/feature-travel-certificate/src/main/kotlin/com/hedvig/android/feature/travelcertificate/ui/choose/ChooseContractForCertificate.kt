@@ -140,3 +140,16 @@ private fun PreviewChooseContractForCertificate() {
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewChooseContractForCertificateFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FailureScreen(
+        {},
+        {},
+      )
+    }
+  }
+}

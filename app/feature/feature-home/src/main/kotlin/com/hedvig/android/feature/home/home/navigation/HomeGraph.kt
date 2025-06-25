@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import coil.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -22,11 +23,12 @@ fun NavGraphBuilder.homeGraph(
   onStartClaim: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContactInfo: (NavBackStackEntry) -> Unit,
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
@@ -55,7 +57,10 @@ fun NavGraphBuilder.homeGraph(
             backStackEntry.navigate(HomeDestination.FirstVet(sections))
           }
         },
-        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        navigateToContactInfo = {
+          navigateToContactInfo(backStackEntry)
+        },
+        imageLoader = imageLoader,
       )
     }
     navdestination<HomeDestination.FirstVet>(

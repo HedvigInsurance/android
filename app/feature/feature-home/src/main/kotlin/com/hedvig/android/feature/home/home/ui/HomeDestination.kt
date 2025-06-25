@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,15 +57,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import coil.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.crosssells.CrossSellSheet
+import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -78,12 +81,14 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
@@ -117,13 +122,18 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun HomeDestination(
@@ -138,7 +148,8 @@ internal fun HomeDestination(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToContactInfo: () -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -158,7 +169,11 @@ internal fun HomeDestination(
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+    navigateToContactInfo = navigateToContactInfo,
+    setEpochDayWhenLastToolTipShown = { epochDay ->
+      viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
+    },
+    imageLoader = imageLoader,
   )
 }
 
@@ -178,8 +193,10 @@ private fun HomeScreen(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  setEpochDayWhenLastToolTipShown: (Long) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -195,7 +212,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openUrl,
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+    imageLoader = imageLoader,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -237,6 +254,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            navigateToContactInfo = navigateToContactInfo,
           )
         }
       }
@@ -258,11 +276,19 @@ private fun HomeScreen(
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
-              is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
-                onClick = {
-                  crossSellBottomSheetState.show(CrossSellSheetData(action.crossSells, uiState.travelAddonBannerInfo))
-                },
-              )
+              is HomeTopBarAction.CrossSellsAction -> {
+                ToolbarCrossSellsIcon(
+                  onClick = {
+                    crossSellBottomSheetState.show(
+                      action.crossSells,
+                    )
+                  },
+                  modifier = Modifier
+                    .notificationCircle(
+                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                    ),
+                )
+              }
 
               is HomeTopBarAction.FirstVetAction -> {
                 val sections = action.sections
@@ -302,6 +328,9 @@ private fun HomeScreen(
             },
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
         } else if (shouldShowNewMessageTooltip) {
@@ -313,9 +342,16 @@ private fun HomeScreen(
             tooltipShown = {},
             modifier = Modifier
               .align(Alignment.End)
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+              )
               .padding(horizontal = 16.dp),
           )
+        } else {
+          CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
         }
+      } else if (uiState is Success) {
+        CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
       }
     }
     PullRefreshIndicator(
@@ -325,6 +361,52 @@ private fun HomeScreen(
       modifier = Modifier.align(Alignment.TopCenter),
     )
   }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastToolTipShown: (Long) -> Unit) {
+  if (uiState.crossSellsAction != null) {
+    val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
+    var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
+    LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
+      if (shouldSetEpochDayWhenLastToolTipShown) {
+        val today = Clock.System.now().toLocalDateTime(
+          TimeZone.currentSystemDefault(),
+        ).date.toEpochDays().toLong()
+        delay(5000)
+        setEpochDayWhenLastToolTipShown(today)
+      }
+    }
+    if (shouldShowCrossSellsTooltip) {
+      HedvigTooltip(
+        message = stringResource(R.string.TOAST_NEW_OFFER),
+        showTooltip = true,
+        tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
+          subMessage = null,
+          TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT,
+        ),
+        beakDirection = TopEnd,
+        tooltipShown = {
+          shouldSetEpochDayWhenLastToolTipShown = true
+        },
+        modifier = Modifier
+          .align(Alignment.End)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+          )
+          .padding(start = 16.dp, end = getCrossSellsToolTipEndPadding(uiState).dp),
+      )
+    }
+  }
+}
+
+private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
+  val initialEndPadding = 16
+  var endPadding = initialEndPadding
+  if (uiState.firstVetAction != null) endPadding += 48
+  if (uiState.chatAction != null) endPadding += 48
+  return endPadding
 }
 
 private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
@@ -355,6 +437,7 @@ private fun HomeScreenSuccess(
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -421,6 +504,7 @@ private fun HomeScreenSuccess(
             onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+            navigateToContactInfo = navigateToContactInfo,
           )
         },
         startClaimButton = {
@@ -583,9 +667,9 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 @Composable
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
     snapshotFlow { state.isVisible }
@@ -596,10 +680,10 @@ private fun CrossSellBottomSheet(
         }
       }
   }
-  CrossSellSheet(
+  CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
-    onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+    imageLoader = imageLoader,
   )
 }
 
@@ -659,7 +743,34 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = CrossSellsAction(
-            listOf(CrossSell("rf", "erf", "", "", ACCIDENT)),
+            CrossSellSheetData(
+              recommendedCrossSell = RecommendedCrossSell(
+                crossSell = CrossSell(
+                  "rh",
+                  "Car Insurance",
+                  "For you and your car",
+                  "",
+                  ImageAsset("", "", ""),
+                ),
+                bannerText = "50% discount the first year",
+                discountText = "-50%",
+                buttonText = "Explore offer",
+                buttonDescription = "Limited time offer",
+              ),
+              otherCrossSells = listOf(
+                CrossSell(
+                  "rf",
+                  "Pet insurance",
+                  "For your dog or cat",
+                  "",
+                  ImageAsset("", "", ""),
+                ),
+              ),
+            ),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification(
+              true,
+              java.time.LocalDate.now().toEpochDay(),
+            ),
           ),
           firstVetAction = FirstVetAction(
             listOf(
@@ -693,7 +804,38 @@ private fun PreviewHomeScreen(
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
-        onNavigateToAddonPurchaseFlow = {},
+        navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
+        imageLoader = rememberPreviewImageLoader(),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHomeScreenWithError() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HomeScreen(
+        uiState = HomeUiState.Error(null),
+        notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        reload = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
+        onClaimDetailCardClicked = {},
+        navigateToConnectPayment = {},
+        onStartClaim = {},
+        navigateToHelpCenter = {},
+        openUrl = {},
+        openAppSettings = {},
+        navigateToMissingInfo = {},
+        markMessageAsSeen = {},
+        navigateToFirstVet = {},
+        markCrossSellsNotificationAsSeen = {},
+        navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
+        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }

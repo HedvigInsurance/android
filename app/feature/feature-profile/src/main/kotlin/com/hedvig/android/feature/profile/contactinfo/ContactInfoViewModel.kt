@@ -25,7 +25,6 @@ import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Error
 import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Fetching
 import com.hedvig.android.feature.profile.contactinfo.DataFetchingState.Idle
 import com.hedvig.android.feature.profile.data.ContactInfoRepository
-import com.hedvig.android.feature.profile.data.ContactInfoRepository.UpdateFailure
 import com.hedvig.android.feature.profile.data.ContactInformation
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
@@ -38,6 +37,8 @@ internal sealed interface ContactInfoEvent {
   data object RetryLoadData : ContactInfoEvent
 
   data object SubmitData : ContactInfoEvent
+
+  data object ShowedMessage : ContactInfoEvent
 }
 
 internal sealed interface ContactInfoUiState {
@@ -54,6 +55,8 @@ internal sealed interface ContactInfoUiState {
     val uploadedPhoneNumber: PhoneNumber?,
     val uploadedEmail: Email?,
     val submittingUpdatedInfo: Boolean,
+    val showSuccessSnackBar: Boolean = false,
+    val errorSnackBarText: ErrorSnackBarText? = null,
   ) : ContactInfoUiState {
     private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
       get() = PhoneNumber.fromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
@@ -64,11 +67,6 @@ internal sealed interface ContactInfoUiState {
       get() = phoneNumber.isLeft()
     val emailHasError: Boolean
       get() = email.isLeft()
-
-    private val emailIsDifferentFromUploadedEmail: Boolean
-      get() = uploadedEmail.valueForTextField != emailState.text
-    private val phoneNumberIsDifferentFromUploadedPhoneNumber: Boolean
-      get() = uploadedPhoneNumber.valueForTextField != phoneNumberState.text
 
     private val emailIsDeletingKnownInfo: Boolean
       get() = when (uploadedEmail) {
@@ -82,7 +80,7 @@ internal sealed interface ContactInfoUiState {
       }
 
     val canSubmit: Boolean
-      get() = (emailIsDifferentFromUploadedEmail || phoneNumberIsDifferentFromUploadedPhoneNumber) &&
+      get() = !(phoneNumberState.text.isBlank() || emailState.text.isBlank()) &&
         !emailIsDeletingKnownInfo &&
         !phoneNumberIsDeletingKnownInfo &&
         !emailHasError &&
@@ -123,8 +121,9 @@ internal class ContactInfoPresenter(
 
     var refetchDataIteration by remember { mutableIntStateOf(0) }
 
-    var submittingData: Pair<PhoneNumber?, Email?>? by remember { mutableStateOf(null) }
-    var submissionError by remember { mutableStateOf<Boolean>(false) }
+    var submittingData: Pair<PhoneNumber, Email>? by remember { mutableStateOf(null) }
+    var errorSnackBarText by remember { mutableStateOf<ErrorSnackBarText?>(null) }
+    var showSuccessToast by remember { mutableStateOf<Boolean>(false) }
 
     var dataFetchingState by remember {
       mutableStateOf(
@@ -169,22 +168,19 @@ internal class ContactInfoPresenter(
           .updateInfo(
             phoneNumber = submittingPhoneNumber,
             email = submittingEmail,
-            originalNumber = uploadedPhoneNumber,
-            originalEmail = uploadedEmail,
           )
           .fold(
             ifLeft = { error ->
-              when (error) {
-                // no-op
-                UpdateFailure.NoChanges -> {
+              val text = error.message
+              if (text == null) {
+                Snapshot.withMutableSnapshot {
                   submittingData = null
+                  errorSnackBarText = ErrorSnackBarText.General
                 }
-
-                is UpdateFailure.Error -> {
-                  Snapshot.withMutableSnapshot {
-                    submissionError = true
-                    submittingData = null
-                  }
+              } else {
+                Snapshot.withMutableSnapshot {
+                  submittingData = null
+                  errorSnackBarText = ErrorSnackBarText.WithMessage(text)
                 }
               }
             },
@@ -192,6 +188,8 @@ internal class ContactInfoPresenter(
               Snapshot.withMutableSnapshot {
                 updateStateWithFetchedContactInformation(contactInformation)
                 submittingData = null
+                showSuccessToast = true
+                errorSnackBarText = null
               }
             },
           )
@@ -205,15 +203,23 @@ internal class ContactInfoPresenter(
         }
 
         SubmitData -> {
+          if (phoneNumber.text.isBlank() || email.text.isBlank()) return@CollectEvents
           val trimmedPhoneNumber = PhoneNumber
-            .fromStringAfterTrimmingWhitespaces(phoneNumber.text.toString())
+            .notNullFromStringAfterTrimmingWhitespaces(phoneNumber.text.toString())
             .getOrElse {
               return@CollectEvents
             }
-          val emailValue = Email.fromString(email.text.toString()).getOrElse {
+          val emailValue = Email.fromStringNotNull(email.text.toString()).getOrElse {
             return@CollectEvents
           }
           submittingData = trimmedPhoneNumber to emailValue
+        }
+
+        ContactInfoEvent.ShowedMessage -> {
+          Snapshot.withMutableSnapshot {
+            showSuccessToast = false
+            errorSnackBarText = null
+          }
         }
       }
     }
@@ -227,6 +233,8 @@ internal class ContactInfoPresenter(
         uploadedEmail = uploadedEmail,
         uploadedPhoneNumber = uploadedPhoneNumber,
         submittingUpdatedInfo = submittingData != null,
+        errorSnackBarText = errorSnackBarText,
+        showSuccessSnackBar = showSuccessToast,
       )
     }
   }
@@ -236,4 +244,10 @@ private enum class DataFetchingState {
   Idle,
   Fetching,
   Error,
+}
+
+internal sealed interface ErrorSnackBarText {
+  data object General : ErrorSnackBarText
+
+  data class WithMessage(val message: String) : ErrorSnackBarText
 }

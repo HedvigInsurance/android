@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
+  implementation(projects.navigationCore)
   implementation(projects.tierComparison)
   implementation(projects.uiTiersAndAddons)
 }

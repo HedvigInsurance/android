@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -57,7 +59,7 @@ internal fun CoverageTab(
 ) {
   val bottomSheetState = rememberHedvigBottomSheetState<InsurableLimit>()
   HedvigBottomSheet(bottomSheetState) { selectedInsurableLimit ->
-    HedvigText(stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO))
+    HedvigText(stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO), Modifier.semantics { heading() })
     Spacer(Modifier.height(8.dp))
     HedvigText(
       text = selectedInsurableLimit.description,

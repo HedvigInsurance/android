@@ -319,18 +319,30 @@ private fun DetailsWithStrikeThrough(uiState: Content) {
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           if (valueToStrikeThrough != null) {
+            val strikeThroughDescription = stringResource(R.string.TALKBACK_PREVIOUS_VALUE, valueToStrikeThrough)
             HedvigText(
               valueToStrikeThrough,
               style = HedvigTheme.typography.bodySmall.copy(
                 textDecoration = TextDecoration.LineThrough,
                 color = HedvigTheme.colorScheme.textSecondary,
               ),
+              modifier = Modifier.semantics {
+                contentDescription = strikeThroughDescription
+              },
             )
             Spacer(Modifier.width(8.dp))
+          }
+          val newValueDescription = if (valueToStrikeThrough != null) {
+            stringResource(R.string.TALKBACK_NEW_VALUE, quoteItem.second)
+          } else {
+            quoteItem.second
           }
           HedvigText(
             quoteItem.second,
             color = HedvigTheme.colorScheme.textSecondary,
+            modifier = Modifier.semantics {
+              contentDescription = newValueDescription
+            },
           )
         }
       },

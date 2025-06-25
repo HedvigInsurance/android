@@ -35,6 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -79,9 +82,9 @@ internal fun AudioRecorder(
   submitAudioFile: (File) -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
+  allowFreeText: Boolean,
+  onLaunchFreeText: () -> Unit,
   modifier: Modifier = Modifier,
-  textButtonTitle: String? = null,
-  onTextButtonClick: (() -> Unit)? = null,
 ) {
   when (uiState) {
     is Playback -> Playback(
@@ -111,6 +114,9 @@ internal fun AudioRecorder(
         ScreenOnFlag()
       }
 
+      val startRecordingText = stringResource(R.string.EMBARK_START_RECORDING)
+      val stopRecordingText = stringResource(R.string.EMBARK_STOP_RECORDING)
+      val audioRecordingText = stringResource(R.string.A11Y_AUDIO_RECORDING)
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
@@ -127,7 +133,14 @@ internal fun AudioRecorder(
               .shadow(2.dp, CircleShape)
               .size(72.dp)
               .background(Color.White, CircleShape)
-              .clickable {
+              .semantics { contentDescription = audioRecordingText }
+              .clickable(
+                onClickLabel = when (isRecording) {
+                  true -> stopRecordingText
+                  false -> startRecordingText
+                },
+                role = Role.Button,
+              ) {
                 if (isRecording) {
                   stopRecording()
                 } else {
@@ -190,14 +203,14 @@ internal fun AudioRecorder(
               modifier = Modifier.padding(bottom = 16.dp),
             )
           } else {
-            if (textButtonTitle != null && onTextButtonClick != null) {
+            if (allowFreeText) {
               HedvigTextButton(
-                text = textButtonTitle,
-                onClick = onTextButtonClick,
+                text = stringResource(R.string.CLAIMS_USE_TEXT_INSTEAD),
+                onClick = onLaunchFreeText,
               )
             } else {
               HedvigText(
-                text = stringResource(R.string.EMBARK_START_RECORDING),
+                text = startRecordingText,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp),
               )
@@ -227,14 +240,18 @@ private fun Playback(uiState: Playback, submit: () -> Unit, redo: () -> Unit, mo
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
-      modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 16.dp),
     )
 
     HedvigTextButton(
       text = stringResource(R.string.EMBARK_RECORD_AGAIN),
       onClick = redo,
       enabled = uiState.canSubmit,
-      modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 8.dp),
     )
   }
 }
@@ -298,14 +315,14 @@ private fun PreviewNotRecording() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
         uiState = NotRecording,
-        startRecording = { },
+        startRecording = {},
         clock = Clock.System,
-        stopRecording = { },
+        stopRecording = {},
         submitAudioFile = {},
         submitAudioUrl = {},
-        redo = { },
-        textButtonTitle = "Write text instead",
-        onTextButtonClick = {},
+        redo = {},
+        allowFreeText = true,
+        onLaunchFreeText = {},
       )
     }
   }
@@ -323,6 +340,8 @@ private fun PreviewRecording() {
         stopRecording = { },
         submitAudioFile = {},
         submitAudioUrl = {},
+        allowFreeText = false,
+        onLaunchFreeText = {},
         redo = { },
       )
     }

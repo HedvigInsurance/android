@@ -9,6 +9,7 @@ interface HedvigDeepLinkContainer {
   val helpCenterQuestion: List<String> // A specific question inside the help center
 
   val insurances: List<String> // The insurances destination, which also shows cross sells
+  val claimFlow: List<String> // The claim flow starting pledge destination
 
   /**
    * A link to a contract without an id, which should fall back to the same behavior that [insurances] gives us.
@@ -32,13 +33,15 @@ interface HedvigDeepLinkContainer {
 
   val profile: List<String> // The profile screen, which acts as a gateway to several app settings
 
-  val connectPayment: List<String> // Screen where the member can connect their payment method to Hedvig to pay for insurance
+  // Screen where the member can connect their payment method to Hedvig to pay for insurance
+  val connectPayment: List<String>
   val directDebit: List<String> // Same as connectPayment but to support an old link to it
   val eurobonus: List<String> // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: List<String> // The payments screen, showing the payments history and the upcoming payment information
   val deleteAccount: List<String> // The screen where the member may request for their account data to be GDPR wiped
 
-  val contactInfo: List<String> // The screen where one can change their contact information, like their email and phone.
+  // The screen where one can change their contact information, like their email and phone.
+  val contactInfo: List<String>
 
   val chat: List<String> // Hedvig Chat
   val inbox: List<String> // Hedvig CBM inbox
@@ -47,12 +50,17 @@ interface HedvigDeepLinkContainer {
   val travelAddon: List<String> // Travel addon purchase flow
   val travelCertificate: List<String> // The screen which shows existing and allows creating new travel certificates
 
-  val changeTierWithoutContractId: List<String> // The screen where member can choose insurance to change tier and deductible
+  // The screen where member can choose insurance to change tier and deductible
+  val changeTierWithoutContractId: List<String>
   val changeTierWithContractId: List<String> // The screen where member can change tier and deductible
 
   val claimDetails: List<String> // The screen where member can see the details of a specific claim
 
   val insuranceEvidence: List<String> // The screen where member can generate insurance evidence
+
+  // the screen where member can start moving flow to change address
+  // for their home insurance
+  val moveContract: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -78,6 +86,9 @@ internal class HedvigDeepLinkContainerImpl(
 
   override val insurances: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/insurances"
+  }
+  override val claimFlow: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/submit-claim"
   }
   override val contractWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/contract"
@@ -139,6 +150,9 @@ internal class HedvigDeepLinkContainerImpl(
   override val insuranceEvidence: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/insurance-evidence"
   }
+  override val moveContract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/move-contract"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -170,4 +184,6 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     changeTierWithContractId.first(),
     claimDetails.first(),
     insuranceEvidence.first(),
+    claimFlow.first(),
+    moveContract.first(),
   )

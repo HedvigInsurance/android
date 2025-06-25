@@ -21,6 +21,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -117,11 +121,16 @@ private fun ClaimEntryPointsScreen(
       exit = fadeOut(),
     ) {
       Column {
+        val description = stringResource(R.string.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION)
         WarningTextWithIcon(
           modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
-            .wrapContentWidth(),
+            .wrapContentWidth()
+            .semantics {
+              contentDescription = description
+              liveRegion = LiveRegionMode.Assertive
+            },
           text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))

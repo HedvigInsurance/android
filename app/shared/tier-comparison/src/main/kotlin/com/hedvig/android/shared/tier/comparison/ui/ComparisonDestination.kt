@@ -89,15 +89,20 @@ fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit
     }
 
     Failure -> {
-      Box(Modifier.fillMaxSize()) {
-        HedvigErrorSection(
-          onButtonClick = {
-            viewModel.emit(Reload)
-          },
-          modifier = Modifier.fillMaxSize(),
-        )
-      }
+      FailureScreen({
+        viewModel.emit(Reload)
+      })
     }
+  }
+}
+
+@Composable
+private fun FailureScreen(onButtonClick: () -> Unit) {
+  Box(Modifier.fillMaxSize()) {
+    HedvigErrorSection(
+      onButtonClick = onButtonClick,
+      modifier = Modifier.fillMaxSize(),
+    )
   }
 }
 
@@ -266,11 +271,10 @@ private fun ComparisonRowBottomSheetContent(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
-    HedvigText(text = comparisonItem.title)
-    Spacer(Modifier.height(2.dp))
-    HedvigText(
-      text = comparisonItem.description,
-      color = HedvigTheme.colorScheme.textSecondary,
+    FlowHeading(
+      comparisonItem.title,
+      comparisonItem.description,
+      baseStyle = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(32.dp))
     HedvigButton(
@@ -331,6 +335,16 @@ private fun PreviewComparisonRowBottomSheetContent() {
         ),
         dismissSheet = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewComparisonScreenFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FailureScreen({})
     }
   }
 }

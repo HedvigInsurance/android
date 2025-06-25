@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
@@ -346,9 +347,11 @@ private fun CustomizationCard(
           val tierDescription = pair.first.tierDescription ?: ""
           val price = stringResource(R.string.TALKBACK_PRICE)
           val premiumDescription = pair.second.getPerMonthDescription()
-          val voiceDescription = "${pair.first.tierDisplayName}, $tierDescription, $price: ${stringResource(
-            R.string.TALKBACK_FROM,
-          )} $premiumDescription"
+          val voiceDescription = "${pair.first.tierDisplayName}, $tierDescription, $price: ${
+            stringResource(
+              R.string.TALKBACK_FROM,
+            )
+          } $premiumDescription"
           ExpandedRadioOptionData(
             chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
             title = pair.first.tierDisplayName ?: "-",
@@ -421,7 +424,8 @@ private fun CustomizationCard(
               val price = stringResource(R.string.TALKBACK_PRICE)
               val premiumDescription = quote.premium.getPerMonthDescription()
               val deductibleDescription = quote.deductible?.getVoiceDescription()
-              val voiceDescription = "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
+              val voiceDescription =
+                "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
               quote.deductible?.let {
                 add(
                   ExpandedRadioOptionData(
@@ -537,7 +541,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       title,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics { heading() },
       textAlign = Companion.Center,
     )
     HedvigText(
@@ -657,6 +663,12 @@ private fun ExpandedOptionContent(
       }
     }
   }
+}
+
+@HedvigPreview
+@Composable
+private fun FailureScreenPreview() {
+  FailureScreen({}, {})
 }
 
 @HedvigPreview

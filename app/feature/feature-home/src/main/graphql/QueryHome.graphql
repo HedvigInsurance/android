@@ -19,12 +19,19 @@ query Home {
         buttonText
       }
     }
-    crossSells {
-      id
-      title
-      description
-      storeUrl
-      type
+    crossSell(source: HOME) {
+      recommendedCrossSell {
+        crossSell {
+          ...HomeCrossSellFragment
+        }
+        bannerText
+        discountText
+        buttonText
+        buttonDescription
+      }
+      otherCrossSells {
+        ...HomeCrossSellFragment
+      }
     }
     memberActions {
       firstVetAction {
@@ -39,5 +46,17 @@ query Home {
     activeContracts {
       masterInceptionDate
     }
+  }
+}
+
+fragment HomeCrossSellFragment on CrossSell {
+  id
+  title
+  description
+  storeUrl
+  pillowImageLarge {
+    src
+    id
+    alt
   }
 }

@@ -138,3 +138,20 @@ private fun PreviewInsuranceEvidenceOverview() {
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceEvidenceOverviewFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      InsuranceEvidenceOverview(
+        insuranceEvidenceUrl = "",
+        onDownloadCertificate = {},
+        navigateUp = {},
+        onShareInsuranceEvidence = {},
+        uiState = InsuranceEvidenceOverviewState.Failure,
+        onRetry = {},
+      )
+    }
+  }
+}

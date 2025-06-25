@@ -27,14 +27,12 @@ import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.CrossSellsQuery
-import octopus.type.CrossSellType
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -202,7 +200,7 @@ internal class InsurancePresenterTest {
       title = "crossSellTitle",
       description = "crossSellDescription",
       storeUrl = "",
-      type = CrossSellType.HOME,
+      pillowImageLarge = CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
     ),
   )
 
@@ -214,8 +212,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -237,7 +233,6 @@ internal class InsurancePresenterTest {
             .isEqualTo(validContracts.count(EstablishedInsuranceContract::isTerminated))
           assertThat(uiState.contracts.map { it.id }).containsSubList(validContracts.map { it.id })
           assertThat(uiState.crossSells.map { it.id }).containsSubList(validCrossSells.map { it.id })
-          assertThat(uiState.showNotificationBadge)
         }
       }
     }
@@ -251,8 +246,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -278,8 +271,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -305,8 +296,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -351,8 +340,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     val allContracts = validContracts + terminatedContracts
@@ -385,8 +372,6 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
@@ -401,45 +386,13 @@ internal class InsurancePresenterTest {
   }
 
   @Test
-  fun `marking cross sells as seen correctly updates storage and the UI state`() = runTest {
-    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
-    val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { crossSellCardNotificationBadgeService },
-      backgroundScope,
-      { getTravelAddonBannerInfoUseCase },
-    )
-    presenter.test(InsuranceUiState.initialState) {
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
-
-      getInsuranceContractsUseCase.contracts.add(validContracts)
-      getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
-
-      crossSellCardNotificationBadgeService.showNotification.add(true)
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(true)
-
-      sendEvent(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(false)
-    }
-  }
-
-  @Test
   fun `if GetTravelAddonBannerInfoUseCase returns null, don't show addon banner`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { crossSellCardNotificationBadgeService },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -455,13 +408,10 @@ internal class InsurancePresenterTest {
   fun `if GetTravelAddonBannerInfoUseCase returns not null, show addon banner`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { crossSellCardNotificationBadgeService },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -477,19 +427,15 @@ internal class InsurancePresenterTest {
   fun `when starting presentation with an already loaded initial state, don't briefly show loading`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      { crossSellCardNotificationBadgeService },
-      backgroundScope,
       { getTravelAddonBannerInfoUseCase },
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),
       crossSells = listOf(),
-      showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = false,
       hasError = false,

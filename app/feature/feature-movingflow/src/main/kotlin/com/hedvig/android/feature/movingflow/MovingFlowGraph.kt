@@ -19,10 +19,12 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
@@ -79,8 +81,14 @@ internal sealed interface MovingFlowDestinations {
   }
 }
 
-fun NavGraphBuilder.movingFlowGraph(navController: NavController, goToChat: () -> Unit) {
-  navdestination<SelectContractForMoving> {
+fun NavGraphBuilder.movingFlowGraph(
+  navController: NavController,
+  goToChat: () -> Unit,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+) {
+  navdestination<SelectContractForMoving>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.moveContract),
+  ) {
     SelectContractDestination(
       viewModel = koinViewModel<SelectContractViewModel>(),
       navigateUp = navController::navigateUp,

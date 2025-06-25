@@ -16,7 +16,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.*
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.Surface

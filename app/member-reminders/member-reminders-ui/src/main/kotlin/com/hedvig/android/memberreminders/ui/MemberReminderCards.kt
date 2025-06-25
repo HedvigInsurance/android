@@ -44,6 +44,7 @@ fun MemberReminderCardsWithoutNotification(
   navigateToAddMissingInfo: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
+  navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   MemberReminderCards(
@@ -55,6 +56,7 @@ fun MemberReminderCardsWithoutNotification(
     snoozeNotificationPermissionReminder = {},
     notificationPermissionState = null,
     contentPadding = contentPadding,
+    navigateToContactInfo = navigateToContactInfo,
     modifier = modifier,
   )
 }
@@ -67,6 +69,7 @@ fun MemberReminderCards(
   navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -82,6 +85,7 @@ fun MemberReminderCards(
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
         modifier = modifier.padding(contentPadding),
+        navigateToContactInfo = navigateToContactInfo,
       )
     } else if (memberReminders.isNotEmpty()) {
       val pagerState = rememberPagerState(pageCount = { memberReminders.size })
@@ -103,6 +107,7 @@ fun MemberReminderCards(
           onNavigateToNewConversation = onNavigateToNewConversation,
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
+          navigateToContactInfo = navigateToContactInfo,
           modifier = modifier.fillMaxWidth(),
         )
       }
@@ -126,6 +131,7 @@ private fun ColumnScope.MemberReminderCard(
   memberReminder: MemberReminder,
   navigateToAddMissingInfo: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -151,7 +157,7 @@ private fun ColumnScope.MemberReminderCard(
       modifier = modifier,
     )
 
-    is MemberReminder.UpcomingRenewal -> ReminderCardUpcomingRenewals(
+    is UpcomingRenewal -> ReminderCardUpcomingRenewals(
       upcomingRenewal = memberReminder,
       openUrl = openUrl,
       modifier = modifier,
@@ -173,6 +179,11 @@ private fun ColumnScope.MemberReminderCard(
         }
       }
     }
+
+    is MemberReminder.ContactInfoUpdateNeeded -> ReminderCardUpdateContactInfo(
+      navigateToContactInfo = navigateToContactInfo,
+      modifier = modifier,
+    )
   }
 }
 
@@ -200,6 +211,19 @@ fun ReminderCardEnableNotifications(
       onLeftButtonClick = snoozeNotificationPermissionReminder,
       rightButtonText = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
       onRightButtonClick = requestNotificationPermission,
+    ),
+  )
+}
+
+@Composable
+fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigNotificationCard(
+    message = stringResource(R.string.MISSING_CONTACT_INFO_CARD_TEXT),
+    modifier = modifier,
+    priority = NotificationPriority.Info,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(R.string.MISSING_CONTACT_INFO_CARD_BUTTON),
+      onButtonClick = navigateToContactInfo,
     ),
   )
 }
@@ -309,6 +333,18 @@ private fun PreviewReminderCardCoInsuredInfo() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ReminderCoInsuredInfo(
+        {},
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardUpdateContactInfo() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCardUpdateContactInfo(
         {},
       )
     }

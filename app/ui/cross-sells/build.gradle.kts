@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.gradle.plugin")
   id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
 }
 
 hedvig {
@@ -13,6 +13,9 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.arrow.core)
+  implementation(libs.coil.coil) //todo: or api?
+  implementation(projects.placeholder)
+  implementation(libs.coil.compose)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)

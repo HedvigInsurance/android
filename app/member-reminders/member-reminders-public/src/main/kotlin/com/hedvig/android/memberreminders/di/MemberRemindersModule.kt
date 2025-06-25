@@ -10,6 +10,8 @@ import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManag
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManagerImpl
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCase
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCaseImpl
+import com.hedvig.android.memberreminders.GetContactInfoUpdateIsNeededUseCase
+import com.hedvig.android.memberreminders.GetContactInfoUpdateIsNeededUseCaseImpl
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCaseImpl
 import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCase
@@ -48,6 +50,12 @@ val memberRemindersModule = module {
       get<GetConnectPaymentReminderUseCase>(),
       get<GetUpcomingRenewalRemindersUseCase>(),
       get<GetNeedsCoInsuredInfoRemindersUseCase>(),
+      get<GetContactInfoUpdateIsNeededUseCase>(),
+    )
+  }
+  single<GetContactInfoUpdateIsNeededUseCase> {
+    GetContactInfoUpdateIsNeededUseCaseImpl(
+      get<ApolloClient>(),
     )
   }
 }

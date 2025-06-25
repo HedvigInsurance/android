@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ fun <T> BottomSheet(
   modifier: Modifier,
   sheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues,
+  sheetPadding: PaddingValues,
   shape: Shape,
   containerColor: Color,
   contentColor: Color,
@@ -44,7 +48,9 @@ fun <T> BottomSheet(
   if (sheetState.isVisible) {
     ModalBottomSheet(
       onDismissRequest = onDismissRequest,
-      modifier = modifier,
+      modifier = modifier
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+        .padding(sheetPadding),
       sheetState = state,
       contentWindowInsets = {
         WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom) + contentPadding

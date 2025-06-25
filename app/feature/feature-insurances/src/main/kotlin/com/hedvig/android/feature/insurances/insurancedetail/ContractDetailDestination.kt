@@ -418,3 +418,27 @@ private fun PreviewContractDetailScreen() {
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewContractDetailScreenFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ContractDetailScreen(
+        uiState = ContractDetailsUiState.Error,
+        imageLoader = rememberPreviewImageLoader(),
+        retry = {},
+        onEditCoInsuredClick = {},
+        onChangeAddressClick = {},
+        onCancelInsuranceClick = {
+        },
+        navigateUp = {},
+        navigateBack = {},
+        onNavigateToNewConversation = {},
+        onMissingInfoClick = {},
+        openUrl = {},
+        onChangeTierClick = {},
+      )
+    }
+  }
+}
