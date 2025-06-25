@@ -14,11 +14,18 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.ShapedColorPainter
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.contentColorFor
 import com.hedvig.android.placeholder.PlaceholderDefaults
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder as corePlaceholder
+
+@Composable
+fun crossSellPainterFallback(shape: Shape = HedvigTheme.shapes.cornerXLarge) = ShapedColorPainter(
+  shape,
+  PlaceholderDefaults.color(),
+)
 
 @Suppress("UnusedReceiverParameter")
 @Composable

@@ -53,5 +53,9 @@ fragment HomeCrossSellFragment on CrossSell {
   title
   description
   storeUrl
-  type
+  pillowImageLarge {
+    src
+    id
+    alt
+  }
 }

@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import coil.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
@@ -66,7 +67,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -87,6 +88,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
@@ -147,6 +149,7 @@ internal fun HomeDestination(
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -170,6 +173,7 @@ internal fun HomeDestination(
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
+    imageLoader = imageLoader,
   )
 }
 
@@ -192,6 +196,7 @@ private fun HomeScreen(
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -207,6 +212,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openUrl,
+    imageLoader = imageLoader,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -663,6 +669,7 @@ private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
     snapshotFlow { state.isVisible }
@@ -676,6 +683,7 @@ private fun CrossSellBottomSheet(
   CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
+    imageLoader = imageLoader,
   )
 }
 
@@ -742,7 +750,7 @@ private fun PreviewHomeScreen(
                   "Car Insurance",
                   "For you and your car",
                   "",
-                  CrossSell.CrossSellType.CAR,
+                  ImageAsset("", "", ""),
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -754,7 +762,7 @@ private fun PreviewHomeScreen(
                   "Pet insurance",
                   "For your dog or cat",
                   "",
-                  ACCIDENT,
+                  ImageAsset("", "", ""),
                 ),
               ),
             ),
@@ -797,6 +805,7 @@ private fun PreviewHomeScreen(
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
+        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }
@@ -825,6 +834,7 @@ private fun PreviewHomeScreenWithError() {
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
+        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }

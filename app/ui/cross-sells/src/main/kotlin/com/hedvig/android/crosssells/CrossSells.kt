@@ -1,6 +1,5 @@
 package com.hedvig.android.crosssells
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,9 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -37,13 +36,13 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
-import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
-import com.hedvig.android.data.contract.android.iconRes
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
@@ -60,9 +59,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 
@@ -86,6 +86,7 @@ data class RecommendedCrossSell(
 fun CrossSellFloatingBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
@@ -110,13 +111,18 @@ fun CrossSellFloatingBottomSheet(
         otherCrossSells = crossSellSheetData.otherCrossSells,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
+        imageLoader,
       )
     },
   )
 }
 
 @Composable
-fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCrossSellClick: (String) -> Unit) {
+fun CrossSellBottomSheet(
+  state: HedvigBottomSheetState<CrossSellSheetData>,
+  onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
+) {
   val dragHandle: @Composable (() -> Unit)? =
     if (state.data?.recommendedCrossSell != null) {
       {
@@ -137,6 +143,7 @@ fun CrossSellBottomSheet(state: HedvigBottomSheetState<CrossSellSheetData>, onCr
         otherCrossSells = crossSellSheetData.otherCrossSells,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
+        imageLoader,
       )
     },
   )
@@ -149,6 +156,7 @@ private fun CrossSellsSheetContent(
   otherCrossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
+  imageLoader: ImageLoader,
 ) {
   Column {
     Column(
@@ -162,6 +170,7 @@ private fun CrossSellsSheetContent(
             recommendedCrossSell,
             onCrossSellClick,
             dismissSheet = dismissSheet,
+            imageLoader = imageLoader,
           )
         }
       }
@@ -175,6 +184,7 @@ private fun CrossSellsSheetContent(
             onCrossSellClick = onCrossSellClick,
             withSubHeader = false,
             onSheetDismissed = dismissSheet,
+            imageLoader = imageLoader,
           )
         }
       }
@@ -197,6 +207,7 @@ private fun CrossSellsFloatingSheetContent(
   otherCrossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
+  imageLoader: ImageLoader,
 ) {
   Column(
     Modifier.padding(horizontal = 16.dp),
@@ -219,6 +230,7 @@ private fun CrossSellsFloatingSheetContent(
               recommendedCrossSell,
               onCrossSellClick,
               dismissSheet = dismissSheet,
+              imageLoader = imageLoader,
             )
           }
         }
@@ -232,6 +244,7 @@ private fun CrossSellsFloatingSheetContent(
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
               onSheetDismissed = dismissSheet,
+              imageLoader = rememberPreviewImageLoader(),
             )
           }
         }
@@ -259,6 +272,7 @@ private fun RecommendationSection(
   recommendedCrossSell: RecommendedCrossSell,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -266,9 +280,15 @@ private fun RecommendationSection(
     modifier = modifier.fillMaxWidth(),
   ) {
     Box {
-      Image(
-        painter = painterResource(id = recommendedCrossSell.crossSell.type.iconRes()),
-        contentDescription = EmptyContentDescription,
+      val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+      AsyncImage(
+        model = recommendedCrossSell.crossSell.pillowImage.src,
+        contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
         modifier = Modifier
           .size(140.dp),
       )
@@ -325,6 +345,7 @@ fun CrossSellsSection(
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   onSheetDismissed: () -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
 ) {
@@ -333,7 +354,7 @@ fun CrossSellsSection(
       CrossSellsSubHeaderWithDivider()
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed)
+      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed, imageLoader = imageLoader)
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -342,15 +363,16 @@ fun CrossSellsSection(
 }
 
 @Composable
-fun CrossSellItemPlaceholder(modifier: Modifier = Modifier) {
+fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   Column(modifier) {
     CrossSellsSubHeaderWithDivider()
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
       storeUrl = "",
-      type = CrossSell.CrossSellType.HOME,
+      crossSellImageAsset = ImageAsset("", "", ""),
       onCrossSellClick = {},
+      imageLoader = imageLoader,
       isLoading = true,
       modifier = Modifier,
       onSheetDismissed = {},
@@ -374,16 +396,18 @@ private fun CrossSellItem(
   crossSell: CrossSell,
   onCrossSellClick: (String) -> Unit,
   onSheetDismissed: () -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
     crossSellSubtitle = crossSell.subtitle,
     storeUrl = crossSell.storeUrl,
-    type = crossSell.type,
     onCrossSellClick = onCrossSellClick,
     modifier = modifier,
     isLoading = false,
+    imageLoader = imageLoader,
+    crossSellImageAsset = crossSell.pillowImage,
     onSheetDismissed = onSheetDismissed,
   )
 }
@@ -393,9 +417,10 @@ private fun CrossSellItem(
   crossSellTitle: String,
   crossSellSubtitle: String,
   storeUrl: String,
-  type: CrossSell.CrossSellType,
+  crossSellImageAsset: ImageAsset?,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
+  imageLoader: ImageLoader,
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -408,16 +433,16 @@ private fun CrossSellItem(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Image(
-      painter = painterResource(id = type.iconRes()),
-      contentDescription = EmptyContentDescription,
+    AsyncImage(
+      model = crossSellImageAsset?.src,
+      contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
+      placeholder = crossSellPainterFallback(),
+      error = crossSellPainterFallback(),
+      fallback = crossSellPainterFallback(),
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
       modifier = Modifier
-        .size(48.dp)
-        .hedvigPlaceholder(
-          visible = isLoading,
-          shape = HedvigTheme.shapes.cornerSmall,
-          highlight = PlaceholderHighlight.fade(),
-        ),
+        .size(48.dp),
     )
     Spacer(Modifier.width(16.dp))
     Column(
@@ -541,7 +566,7 @@ private fun PreviewCrossSellsSheetContent(
               "Car Insurance",
               "For you and your car",
               "",
-              CrossSell.CrossSellType.CAR,
+              ImageAsset("", "", ""),
             ),
             bannerText = "50% discount the first year",
             buttonText = "Explore offer",
@@ -553,11 +578,12 @@ private fun PreviewCrossSellsSheetContent(
               "Pet insurance",
               "For your dog or cat",
               "",
-              ACCIDENT,
+              ImageAsset("", "", ""),
             ),
           ).takeIf { case != TripleCase.FIRST }.orEmpty(),
           onCrossSellClick = {},
           dismissSheet = {},
+          imageLoader = rememberPreviewImageLoader(),
         )
       }
     }
@@ -578,7 +604,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "Car Insurance",
             "For you and your car",
             "",
-            CrossSell.CrossSellType.CAR,
+            ImageAsset("", "", ""),
           ),
           bannerText = "50% discount the first year",
           buttonText = "Explore offer",
@@ -590,11 +616,12 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "title",
             "subtitle",
             "",
-            ACCIDENT,
+            ImageAsset("", "", ""),
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
         {},
         {},
+        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }
@@ -606,9 +633,18 @@ private fun PreviewCrossSellsSection() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellsSection(
-        List(2) { CrossSell("id", "title", "subtitle", "storeUrl", HOME) },
+        List(2) {
+          CrossSell(
+            "id",
+            "title",
+            "subtitle",
+            "storeUrl",
+            ImageAsset("", "", ""),
+          )
+        },
         {},
         {},
+        rememberPreviewImageLoader(),
       )
     }
   }
@@ -619,7 +655,7 @@ private fun PreviewCrossSellsSection() {
 private fun PreviewCrossSellItemPlaceholder() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      CrossSellItemPlaceholder()
+      CrossSellItemPlaceholder(rememberPreviewImageLoader())
     }
   }
 }

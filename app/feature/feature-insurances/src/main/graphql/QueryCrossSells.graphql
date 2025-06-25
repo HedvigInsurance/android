@@ -6,7 +6,11 @@ query CrossSells {
       title
       description
       storeUrl
-      type
+      pillowImageLarge {
+        src
+        id
+        alt
+      }
     }
   }
 }
