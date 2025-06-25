@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.0.1"
+    versionName = "13.0.2"
 
     vectorDrawables.useSupportLibrary = true
 
