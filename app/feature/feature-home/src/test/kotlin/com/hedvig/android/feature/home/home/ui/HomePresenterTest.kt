@@ -48,6 +48,7 @@ internal class HomePresenterTest {
     bannerText = "50% discount the first year",
     buttonText = "Explore offer",
     discountText = "-50%",
+    buttonDescription = "Limited time offer",
   )
 
   @Test

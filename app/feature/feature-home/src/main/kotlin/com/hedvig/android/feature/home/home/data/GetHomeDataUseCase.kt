@@ -118,6 +118,7 @@ internal class GetHomeDataUseCaseImpl(
             bannerText = it.bannerText,
             buttonText = it.buttonText,
             discountText = it.discountText,
+            buttonDescription = it.buttonDescription,
           )
         }
         val otherCrossSellsData = crossSellsData.otherCrossSells.map {
