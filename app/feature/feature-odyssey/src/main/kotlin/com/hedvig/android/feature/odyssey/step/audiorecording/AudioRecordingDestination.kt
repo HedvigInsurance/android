@@ -129,7 +129,8 @@ private fun AudioRecordingScreen(
   FreeTextOverlay(
     freeTextMaxLength = 2000,
     freeTextValue = if (uiState is WhatHappenedUiState.FreeTextDescription) uiState.freeText else null,
-    freeTextHint = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
       onCloseFullScreenEditText()
     },

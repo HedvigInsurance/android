@@ -152,7 +152,8 @@ private fun TerminationSurveyScreen(
   FreeTextOverlay(
     freeTextMaxLength = 2000,
     freeTextValue = uiState.feedbackText,
-    freeTextHint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+    freeTextHint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT),
+    freeTextTitle = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
     freeTextOnCancelClick = {
       onCloseFullScreenEditText()
     },
