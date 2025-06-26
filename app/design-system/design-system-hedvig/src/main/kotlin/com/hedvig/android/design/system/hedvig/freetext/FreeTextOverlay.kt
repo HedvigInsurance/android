@@ -35,7 +35,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -47,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -69,6 +69,7 @@ fun FreeTextOverlay(
   // for example, FreeTextDisplay or some Button.
   freeTextValue: String?,
   freeTextHint: String,
+  freeTextTitle: String?,
   freeTextOnSaveClick: (String?) -> Unit,
   freeTextOnCancelClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -83,6 +84,7 @@ fun FreeTextOverlay(
       shouldShowOverlay = shouldShowOverlay,
       freeTextValue = freeTextValue,
       hintText = freeTextHint,
+      titleText = freeTextTitle,
       onSaveClick = freeTextOnSaveClick,
       onCancelClick = freeTextOnCancelClick,
       textMaxLength = freeTextMaxLength,
@@ -97,6 +99,7 @@ private fun FreeTextOverlayAnimated(
   shouldShowOverlay: Boolean,
   freeTextValue: String?,
   hintText: String,
+  titleText: String?,
   onSaveClick: (String?) -> Unit,
   onCancelClick: () -> Unit,
   textMaxLength: Int,
@@ -120,6 +123,7 @@ private fun FreeTextOverlayAnimated(
           FreeTextOverlayContent(
             freeTextValue = freeTextValue,
             hintText = hintText,
+            titleText = titleText,
             onSaveClick = onSaveClick,
             onCancelClick = onCancelClick,
             textMaxLength = textMaxLength,
@@ -137,6 +141,7 @@ private fun FreeTextOverlayAnimated(
 private fun FreeTextOverlayContent(
   freeTextValue: String?,
   hintText: String,
+  titleText: String?,
   onSaveClick: (String?) -> Unit,
   onCancelClick: () -> Unit,
   textMaxLength: Int,
@@ -202,6 +207,9 @@ private fun FreeTextOverlayContent(
                   shape = FreeTextDefaults.shape,
                 ),
               )
+            },
+            title = titleText?.let {
+              { HedvigText(titleText) }
             },
             modifier = Modifier
               .weight(1f)
@@ -292,6 +300,7 @@ internal object FreeTextDefaults {
     top = FreeTextTokens.OverlayCounterPaddingTop,
   )
   val textStyle = FreeTextTokens.TextStyle
+  val titleTextStyle = FreeTextTokens.TitleTextStyle
   val countLabelStyle = FreeTextTokens.CountLabel
   val shape
     @Composable
@@ -306,6 +315,7 @@ internal data class FreeTextColors(
   val textColor: Color,
   val labelColor: Color,
   val hintColor: Color,
+  val titleColor: Color,
   val displayContainerColor: Color,
   val warningIconColor: Color,
 )
@@ -320,6 +330,7 @@ internal val freeTextColors: FreeTextColors
         textColor = fromToken(TextPrimary),
         labelColor = fromToken(TextTertiary),
         hintColor = fromToken(TextTertiary),
+        titleColor = fromToken(TextPrimary),
         displayContainerColor = fromToken(SurfacePrimary),
         warningIconColor = fromToken(SignalAmberElement),
       )
@@ -335,6 +346,7 @@ private fun HedvigFreeTextDecorationBox(
   container: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   placeholder: @Composable (() -> Unit)? = null,
+  title: @Composable (() -> Unit)? = null,
 ) {
   val transformedText = remember(value, visualTransformation) {
     visualTransformation.filter(AnnotatedString(value))
@@ -354,21 +366,53 @@ private fun HedvigFreeTextDecorationBox(
     } else {
       null
     }
+  val decoratedTitle: @Composable ((Modifier) -> Unit)? =
+    if (title != null) {
+      @Composable { decoratedPlaceholderModifier ->
+        Box(decoratedPlaceholderModifier) {
+          Decoration(
+            contentColor = freeTextColors.titleColor,
+            typography = FreeTextDefaults.titleTextStyle.value,
+            content = title,
+          )
+        }
+      }
+    } else {
+      null
+    }
   Box(
     modifier.padding(contentPadding),
     content = {
       container()
-      if (decoratedPlaceholder != null) {
-        decoratedPlaceholder(
-          Modifier.layoutId("placeholder"),
-        )
-      }
-      Box(
-        modifier = Modifier.layoutId("inner text field"),
-        propagateMinConstraints = true,
-      ) {
-        innerTextField()
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        decoratedTitle?.invoke(Modifier)
+        Box {
+          if (decoratedPlaceholder != null) {
+            decoratedPlaceholder(Modifier)
+          }
+          innerTextField()
+        }
       }
     },
   )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewFreeTextOverlayContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FreeTextOverlayContent(
+        freeTextValue = "freeTextValue",
+        hintText = "hintText",
+        titleText = "Title text",
+        onSaveClick = {},
+        onCancelClick = {},
+        textMaxLength = 400,
+        modifier = Modifier,
+        cancelButtonText = "cancelButtonText",
+        confirmButtonText = "confirmButtonText",
+      )
+    }
+  }
 }

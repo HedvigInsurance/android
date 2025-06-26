@@ -45,7 +45,8 @@ fun FreeTextShowcase() {
       } else {
         ""
       },
-    freeTextHint = "Please let us know more",
+    freeTextHint = "freeTextHint",
+    freeTextTitle = "freeTextTitle",
     freeTextOnCancelClick = {
       isFreeTextVisible = false
     },
