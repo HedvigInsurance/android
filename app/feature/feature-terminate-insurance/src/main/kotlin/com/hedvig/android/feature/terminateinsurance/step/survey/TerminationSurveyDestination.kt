@@ -166,7 +166,7 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) { title ->
-        if (uiState.showEmptyQuotesDialog || true) {
+        if (uiState.showEmptyQuotesDialog) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
             contentPadding = PaddingValues(0.dp),
@@ -373,7 +373,7 @@ private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
       stringResource(R.string.general_close_button),
       onClick = closeEmptyQuotesDialog,
       buttonSize = Large,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
