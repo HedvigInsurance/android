@@ -239,7 +239,7 @@ private fun FreeTextOverlayContent(
       ) {
         HedvigButton(
           enabled = true,
-          text = cancelButtonText ?: stringResource(id = R.string.general_cancel_button),
+          text = cancelButtonText ?: stringResource(id = R.string.general_close_button),
           onClick = {
             focusManager.clearFocus()
             onCancelClick()
