@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
@@ -100,7 +99,7 @@ internal fun ImageViewerDestination(
               ) {
                 Icon(
                   imageVector = HedvigIcons.ArrowNorthEast,
-                  contentDescription = null,
+                  contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
                   modifier = Modifier.size(24.dp),
                 )
               }

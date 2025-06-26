@@ -90,7 +90,7 @@ private fun DeflectCarOtherDamageScreen(
       Spacer(modifier = Modifier.width(8.dp))
       Icon(
         imageVector = HedvigIcons.ArrowNorthEast,
-        contentDescription = null,
+        contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
         modifier = Modifier.size(16.dp),
       )
     }

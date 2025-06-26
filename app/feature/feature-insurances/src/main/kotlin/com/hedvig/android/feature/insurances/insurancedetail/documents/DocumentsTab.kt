@@ -114,7 +114,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?, 
         endSlot = {
           Icon(
             imageVector = HedvigIcons.ArrowNorthEast,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
             modifier = Modifier
               .wrapContentSize(Alignment.CenterEnd)
               .size(24.dp),
