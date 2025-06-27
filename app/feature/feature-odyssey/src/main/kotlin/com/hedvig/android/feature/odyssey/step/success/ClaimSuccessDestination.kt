@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
-import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -45,15 +45,16 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.weight(1f))
       EmptyState(
         stringResource(R.string.CLAIMS_SUCCESS_TITLE),
         stringResource(R.string.CLAIMS_SUCCESS_LABEL),
         Modifier
           .fillMaxSize()
-          .weight(1f)
           .wrapContentSize(Alignment.Center),
         SUCCESS,
       )
+      Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         onClick = closeSuccessScreen,
@@ -68,7 +69,7 @@ private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
   }
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
 fun PreviewClaimSuccessScreen() {
   HedvigTheme {
