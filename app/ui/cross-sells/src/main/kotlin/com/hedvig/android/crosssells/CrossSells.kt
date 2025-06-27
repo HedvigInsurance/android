@@ -318,6 +318,7 @@ private fun RecommendationSection(
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(48.dp))
+    val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
     HedvigButton(
       text = recommendedCrossSell.buttonText,
       onClick = {
@@ -325,7 +326,9 @@ private fun RecommendationSection(
         dismissSheet()
       },
       enabled = true,
-      Modifier.fillMaxWidth(),
+      Modifier.fillMaxWidth().semantics {
+        contentDescription = linkRoleDescription
+      },
     )
     Spacer(Modifier.height(12.dp))
     val bottomLabelText = recommendedCrossSell.buttonDescription
@@ -472,6 +475,7 @@ private fun CrossSellItem(
       )
     }
     Spacer(Modifier.width(16.dp))
+    val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
     HedvigButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
@@ -480,11 +484,15 @@ private fun CrossSellItem(
       },
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      modifier = Modifier.hedvigPlaceholder(
-        visible = isLoading,
-        shape = HedvigTheme.shapes.cornerSmall,
-        highlight = PlaceholderHighlight.shimmer(),
-      ),
+      modifier = Modifier
+        .semantics {
+          contentDescription = linkRoleDescription
+        }
+        .hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
       enabled = !isLoading,
     )
   }
