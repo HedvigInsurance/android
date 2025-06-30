@@ -27,8 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -158,9 +156,8 @@ private fun MarketingScreen(
           val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
           HedvigTextButton(
             text = stringResource(R.string.MARKETING_GET_HEDVIG),
-            modifier = Modifier.fillMaxWidth().semantics {
-              contentDescription = linkRoleDescription
-            },
+            onClickLabel = linkRoleDescription,
+            modifier = Modifier.fillMaxWidth(),
             enabled = uiState is MarketingUiState.Success,
             buttonSize = Large,
             onClick = {
