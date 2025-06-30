@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -280,7 +281,7 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Box {
+    Box(Modifier.semantics(mergeDescendants = true) {}) {
       val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
@@ -318,17 +319,15 @@ private fun RecommendationSection(
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(48.dp))
-    val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
     HedvigButton(
       text = recommendedCrossSell.buttonText,
       onClick = {
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
         dismissSheet()
       },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       enabled = true,
-      Modifier.fillMaxWidth().semantics {
-        contentDescription = linkRoleDescription
-      },
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
     val bottomLabelText = recommendedCrossSell.buttonDescription
@@ -475,24 +474,20 @@ private fun CrossSellItem(
       )
     }
     Spacer(Modifier.width(16.dp))
-    val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
     HedvigButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
         onSheetDismissed()
       },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      modifier = Modifier
-        .semantics {
-          contentDescription = linkRoleDescription
-        }
-        .hedvigPlaceholder(
-          visible = isLoading,
-          shape = HedvigTheme.shapes.cornerSmall,
-          highlight = PlaceholderHighlight.shimmer(),
-        ),
+      modifier = Modifier.hedvigPlaceholder(
+        visible = isLoading,
+        shape = HedvigTheme.shapes.cornerSmall,
+        highlight = PlaceholderHighlight.shimmer(),
+      ),
       enabled = !isLoading,
     )
   }
