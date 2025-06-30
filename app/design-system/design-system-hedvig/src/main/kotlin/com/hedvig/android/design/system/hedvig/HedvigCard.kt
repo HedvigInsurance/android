@@ -50,6 +50,7 @@ import hedvig.resources.R
 fun HedvigCard(
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
+  onClickLabel: String? = null,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
@@ -60,6 +61,7 @@ fun HedvigCard(
     Surface(
       shape = shape,
       onClick = onClick,
+      onClickLabel = onClickLabel,
       enabled = enabled,
       interactionSource = interactionSource,
       indication = indication,
@@ -91,21 +93,22 @@ fun InsuranceCard(
 ) {
   val description = stringResource(R.string.TALKBACK_INSURANCE_CARD)
   Box(
-    modifier.clip(HedvigTheme.shapes.cornerXLarge)
-      .semantics(mergeDescendants = true) {
-        contentDescription = description
-      },
+    modifier
+        .clip(HedvigTheme.shapes.cornerXLarge)
+        .semantics(mergeDescendants = true) {
+            contentDescription = description
+        },
   ) {
     if (isLoading) {
       Image(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
-          .matchParentSize()
-          .hedvigPlaceholder(
-            visible = true,
-            shape = HedvigTheme.shapes.cornerXLarge,
-            highlight = PlaceholderHighlight.shimmer(),
-          ),
+            .matchParentSize()
+            .hedvigPlaceholder(
+                visible = true,
+                shape = HedvigTheme.shapes.cornerXLarge,
+                highlight = PlaceholderHighlight.shimmer(),
+            ),
         contentDescription = EmptyContentDescription,
       )
     } else {
