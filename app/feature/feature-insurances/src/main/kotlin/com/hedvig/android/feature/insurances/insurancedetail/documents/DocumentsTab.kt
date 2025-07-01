@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -83,15 +82,12 @@ internal fun DocumentsTab(
 
 @Composable
 private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?, modifier: Modifier = Modifier) {
-  val docDescription = stringResource(R.string.TALKBACK_DOCUMENT, title)
   HedvigCard(
     onClick = onClick,
+    onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
     modifier = modifier
       .padding(horizontal = 16.dp)
-      .heightIn(min = 56.dp)
-      .clearAndSetSemantics {
-        contentDescription = docDescription
-      },
+      .heightIn(min = 56.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,

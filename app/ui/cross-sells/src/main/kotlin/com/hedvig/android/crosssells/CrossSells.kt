@@ -280,7 +280,7 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Box {
+    Box(Modifier.semantics(mergeDescendants = true) {}) {
       val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
@@ -324,8 +324,9 @@ private fun RecommendationSection(
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
         dismissSheet()
       },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       enabled = true,
-      Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
     val bottomLabelText = recommendedCrossSell.buttonDescription
@@ -478,6 +479,7 @@ private fun CrossSellItem(
         onCrossSellClick(storeUrl)
         onSheetDismissed()
       },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       buttonSize = Small,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier.hedvigPlaceholder(

@@ -54,7 +54,7 @@ interface ChatDao {
     SELECT id FROM chat_messages
     WHERE conversationId LIKE :conversationId
         AND failedToSend IS NULL
-        AND isBeingSent IS FALSE
+        AND isBeingSent = 0
     ORDER BY sentAt DESC
     LIMIT 1
     """,

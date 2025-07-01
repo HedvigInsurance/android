@@ -329,7 +329,7 @@ fun QuoteCard(
                         val density = LocalDensity.current
                         Icon(
                           imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = null,
+                          contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)
@@ -560,7 +560,7 @@ private fun QuoteCard(
                         val density = LocalDensity.current
                         Icon(
                           imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = null, // CHECKED
+                          contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
                           tint = HedvigTheme.colorScheme.fillPrimary,
                           modifier = Modifier
                             .wrapContentSize(Alignment.Center)
