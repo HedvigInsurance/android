@@ -94,21 +94,21 @@ fun InsuranceCard(
   val description = stringResource(R.string.TALKBACK_INSURANCE_CARD)
   Box(
     modifier
-        .clip(HedvigTheme.shapes.cornerXLarge)
-        .semantics(mergeDescendants = true) {
-            contentDescription = description
-        },
+      .clip(HedvigTheme.shapes.cornerXLarge)
+      .semantics(mergeDescendants = true) {
+        contentDescription = description
+      },
   ) {
     if (isLoading) {
       Image(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
-            .matchParentSize()
-            .hedvigPlaceholder(
-                visible = true,
-                shape = HedvigTheme.shapes.cornerXLarge,
-                highlight = PlaceholderHighlight.shimmer(),
-            ),
+          .matchParentSize()
+          .hedvigPlaceholder(
+            visible = true,
+            shape = HedvigTheme.shapes.cornerXLarge,
+            highlight = PlaceholderHighlight.shimmer(),
+          ),
         contentDescription = EmptyContentDescription,
       )
     } else {
