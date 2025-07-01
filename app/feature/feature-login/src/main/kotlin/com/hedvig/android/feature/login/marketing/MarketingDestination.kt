@@ -153,8 +153,10 @@ private fun MarketingScreen(
               .fillMaxWidth()
               .testTag("login_button"),
           )
+          val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
           HedvigTextButton(
             text = stringResource(R.string.MARKETING_GET_HEDVIG),
+            onClickLabel = linkRoleDescription,
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState is MarketingUiState.Success,
             buttonSize = Large,

@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
@@ -55,6 +54,7 @@ fun HedvigButton(
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
+  onClickLabel: String? = null,
   isLoading: Boolean = false,
 ) {
   HedvigButton(
@@ -65,6 +65,7 @@ fun HedvigButton(
     buttonSize = buttonSize,
     interactionSource = interactionSource,
     border = border,
+    onClickLabel = onClickLabel,
   ) {
     val buttonColors = buttonStyle.style.buttonColors
     val loadingTransition = updateTransition(isLoading, label = "loading transition")
@@ -100,6 +101,7 @@ fun HedvigButton(
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
+  onClickLabel: String? = null,
   content: @Composable RowScope.() -> Unit,
 ) {
   @Suppress("NAME_SHADOWING")
@@ -118,7 +120,9 @@ fun HedvigButton(
   )
   Surface(
     onClick = onClick,
-    modifier = modifier.semantics { role = Role.Button },
+    modifier = modifier,
+    onClickLabel = onClickLabel,
+    role = Role.Button,
     enabled = enabled,
     shape = buttonSize.size.shape,
     border = border,
@@ -144,11 +148,13 @@ fun HedvigTextButton(
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
   buttonSize: ButtonSize = ButtonDefaults.ButtonSize.Large,
+  onClickLabel: String? = null,
   onClick: () -> Unit,
 ) {
   HedvigButton(
     text = text,
     onClick = onClick,
+    onClickLabel = onClickLabel,
     enabled = enabled,
     modifier = modifier,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
