@@ -219,7 +219,6 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
   currentHomeAddresses = listOf(
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
       id = "id1",
-      oldAddressCoverageDurationDays = 30,
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",
       displayTitle = "Title",
@@ -228,7 +227,6 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
     ),
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
       id = "id2",
-      oldAddressCoverageDurationDays = 30,
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",
       displayTitle = "Title",

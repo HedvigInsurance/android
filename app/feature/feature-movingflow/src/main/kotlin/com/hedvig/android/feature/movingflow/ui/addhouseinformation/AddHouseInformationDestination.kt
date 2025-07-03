@@ -51,7 +51,6 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -64,7 +63,6 @@ import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
@@ -260,14 +258,6 @@ private fun AddHouseInformationScreen(
         )
       }
       Spacer(Modifier.height(16.dp))
-      if (content.oldAddressCoverageDurationDays != null) {
-        HedvigNotificationCard(
-          message = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, content.oldAddressCoverageDurationDays),
-          priority = Info,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
-      }
       HedvigButton(
         text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         onClick = onSubmit,
@@ -508,7 +498,6 @@ private fun PreviewAddHouseInformationScreen() {
           isLoadingNextStep = false,
           submittingInfoFailure = null,
           navigateToChoseCoverage = false,
-          oldAddressCoverageDurationDays = 10000,
         ),
         navigateUp = {},
         popBackStack = {},
