@@ -15,7 +15,6 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.DismissSt
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.NavigatedToNextStep
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SelectHousingType
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SubmitHousingType
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -69,7 +68,6 @@ private class HousingTypePresenter(
             currentState = HousingTypeUiState.Content(
               possibleHousingTypes = HousingType.entries,
               selectedHousingType = HousingType.entries.first(),
-              oldHomeInsuranceDuration = it?.oldAddressCoverageDurationDays,
               navigateToNextStep = false,
             )
             submittingHousingType = null
@@ -113,7 +111,6 @@ internal sealed interface HousingTypeUiState {
   data class Content(
     val possibleHousingTypes: List<HousingType>,
     val selectedHousingType: HousingType,
-    val oldHomeInsuranceDuration: Int?,
     val navigateToNextStep: Boolean,
     val buttonLoading: Boolean = false,
   ) : HousingTypeUiState

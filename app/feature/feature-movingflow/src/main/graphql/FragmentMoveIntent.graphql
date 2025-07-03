@@ -9,7 +9,6 @@ fragment MoveIntentFragment on MoveIntent {
   extraBuildingTypes
   currentHomeAddresses {
     id
-    oldAddressCoverageDurationDays
     displayTitle
     displaySubtitle
     suggestedNumberCoInsured
