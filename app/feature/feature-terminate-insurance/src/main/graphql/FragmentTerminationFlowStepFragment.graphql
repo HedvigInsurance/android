@@ -72,6 +72,9 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
   extraCoverage @include(if: $addonsEnabled) {
     ...ExtraCoverageItemFragment
   }
+  notification {
+    ...TerminationNotificationFragment
+  }
 }
 
 fragment FlowTerminationDeletionStepFragment on FlowTerminationDeletionStep {
@@ -93,4 +96,9 @@ fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
 fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
   displayName
   displayValue
+}
+
+fragment TerminationNotificationFragment on FlowTerminationNotification {
+  message
+  type
 }

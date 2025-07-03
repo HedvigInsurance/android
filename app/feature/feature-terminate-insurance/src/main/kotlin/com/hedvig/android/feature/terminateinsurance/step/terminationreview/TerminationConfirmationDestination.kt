@@ -37,6 +37,7 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -44,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
@@ -53,6 +55,8 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
+import com.hedvig.android.feature.terminateinsurance.data.TerminationNotificationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
@@ -102,6 +106,7 @@ private fun TerminationConfirmationScreen(
       type = uiState.terminationType,
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.extraCoverageItems,
+      notification = uiState.notification,
       navigateUp = navigateBack,
       closeTerminationFlow = closeTerminationFlow,
       onContinue = onContinue,
@@ -115,6 +120,7 @@ private fun AreYouSureScreen(
   type: TerminationType,
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
+  notification: TerminationNotification?,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinue: () -> Unit,
@@ -133,6 +139,18 @@ private fun AreYouSureScreen(
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
+    if (notification != null) {
+      HedvigNotificationCard(
+        message = notification.message,
+        priority = when (notification.type) {
+          TerminationNotificationType.Info -> NotificationDefaults.NotificationPriority.Info
+          TerminationNotificationType.Attention -> NotificationDefaults.NotificationPriority.Attention
+          TerminationNotificationType.Unknown -> NotificationDefaults.NotificationPriority.Info
+        },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     InsuranceInfoCard(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
@@ -292,6 +310,10 @@ private fun PreviewTerminationConfirmationScreen(
           extraCoverageItems = List(if (withExtraCoverage) 2 else 0) {
             ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
           },
+          notification = TerminationNotification(
+            message = "Your insurance will be deactivated when you no longer have two insurances with us",
+            type = TerminationNotificationType.Attention,
+          ),
           nextStep = null,
           errorMessage = null,
           isSubmittingContractTermination = isLoading,
