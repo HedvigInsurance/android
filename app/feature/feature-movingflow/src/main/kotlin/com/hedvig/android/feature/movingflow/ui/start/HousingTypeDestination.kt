@@ -28,11 +28,9 @@ import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical.Default
@@ -152,13 +150,6 @@ private fun StartContentScreen(
         radioGroupSize = Medium,
       )
       Spacer(Modifier.height(16.dp))
-      if (uiState.oldHomeInsuranceDuration != null) {
-        HedvigNotificationCard(
-          stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT, uiState.oldHomeInsuranceDuration),
-          Info,
-        )
-        Spacer(Modifier.height(16.dp))
-      }
       HedvigButton(
         text = stringResource(R.string.general_continue_button),
         onClick = onSubmitHousingType,
@@ -204,20 +195,17 @@ private class StartUiStateProvider : CollectionPreviewParameterProvider<HousingT
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
-      oldHomeInsuranceDuration = 30,
       navigateToNextStep = false,
     ),
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries[1],
-      oldHomeInsuranceDuration = null,
       navigateToNextStep = false,
       buttonLoading = false,
     ),
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
-      oldHomeInsuranceDuration = null,
       navigateToNextStep = false,
       buttonLoading = true,
     ),

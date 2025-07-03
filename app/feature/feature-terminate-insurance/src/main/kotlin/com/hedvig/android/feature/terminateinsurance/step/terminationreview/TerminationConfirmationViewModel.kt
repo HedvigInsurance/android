@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ internal class TerminationConfirmationViewModel(
   private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   private val insuranceInfo: TerminationGraphParameters,
   private val extraCoverageItems: List<ExtraCoverageItem>,
+  private val notification: TerminationNotification?,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
@@ -24,6 +26,7 @@ internal class TerminationConfirmationViewModel(
       terminationType = terminationType,
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
+      notification = notification,
       nextStep = null,
       errorMessage = null,
       isSubmittingContractTermination = false,
@@ -72,6 +75,7 @@ internal data class OverviewUiState(
   val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   val insuranceInfo: TerminationGraphParameters,
   val extraCoverageItems: List<ExtraCoverageItem>,
+  val notification: TerminationNotification?,
   val nextStep: TerminateInsuranceStep?,
   val errorMessage: String?,
   val isSubmittingContractTermination: Boolean,
