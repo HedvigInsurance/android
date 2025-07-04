@@ -50,17 +50,12 @@ fun generateChecksum(): String {
 }
 
 fun main() {
-  // testing
-//  runCommand("echo", "VERSION_CODE=0.0.4", ">>", "\$GITHUB_ENV")
-  runCommand("echo", "0.0.4", ">>", "\$VERSION_CODE")
-  //
   val version: String = System.getenv("VERSION_CODE")
-//  val version = runCommand("echo", "\$VERSION_CODE")
   println("version: $version")
-//  val checksum = generateChecksum()
-//  println(checksum)
-//  val fileContents = generatePackageSwiftFileContents(version, checksum)
-//  println(fileContents)
+  val checksum = generateChecksum()
+  println(checksum)
+  val fileContents = generatePackageSwiftFileContents(version, checksum)
+  println(fileContents)
 }
 
 main()
