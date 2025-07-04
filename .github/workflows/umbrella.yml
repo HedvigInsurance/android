@@ -67,8 +67,7 @@ jobs:
               )
             ]
           )
-          EOF
-          ) | base64 -w 0
+          EOF | base64 -w 0)
           echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT | base64 -d >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
