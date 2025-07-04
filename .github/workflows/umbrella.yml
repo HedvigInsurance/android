@@ -89,7 +89,8 @@ jobs:
           echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-      - run: echo $PACKAGE_SWIFT_FILE_CONTENT
+      - name: Echo
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
 
