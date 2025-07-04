@@ -45,19 +45,12 @@ jobs:
         run: ./scripts/generate_package_swift.main.kts
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-      - name: Print
-        run: echo $PACKAGE_SWIFT
-      - name: Test ls
-        run: ls
-      - name: Test pwd
-          #        run: ./scripts/test.main.kts
-        run: pwd
       - uses: actions/checkout@v4
         with:
           repository: hedviginsurance/umbrella
       - name: Update resources
         uses: test-room-7/action-update-file@v1
         with:
-          file-path: ~/Package.swift
+          file-path: ./Package.swift
           commit-msg: Update Package.swift
           github-token: ${{ secrets.GITHUB_TOKEN }}
