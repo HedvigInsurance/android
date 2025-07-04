@@ -62,7 +62,7 @@ fun main() {
   println(runCommand("pwd"))
   // touch a file with fileContents in the user's root directory
   runCommand("touch", "./Package.swift")
-  runCommand("bash", "-e", "echo $'$fileContents' > ./Package.swift")
+  runCommand("bash", "-e", "echo $'$fileContents'", ">", "./Package.swift")
 }
 
 main()
