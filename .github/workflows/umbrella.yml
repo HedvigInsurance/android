@@ -47,3 +47,10 @@ jobs:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - name: Print
         run: echo $PACKAGE_SWIFT
+      - uses: actions/checkout@v4
+        with:
+          repository: hedviginsurance/umbrella
+      - name: Test checkout
+        run: ./scripts/generate_package_swift.main.kts
+        env:
+          VERSION_CODE: ${{ env.VERSION_CODE }}
