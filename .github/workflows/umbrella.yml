@@ -16,51 +16,106 @@ jobs:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-#      - uses: gradle/actions/wrapper-validation@v4
-#      - name: Copy CI gradle.properties
-#        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
-#      - uses: actions/setup-java@v4.7.1
-#        with:
-#          java-version: 21
-#          distribution: 'zulu'
-#      - name: Prebuild
-#        run: ./scripts/ci-prebuild.sh
-#        env:
-#          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
-#          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-#          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-#          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-#          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#        with:
-#          # Only write to the cache for builds on the 'develop' branch
-#          cache-read-only: false
-#      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
+      #      - uses: gradle/actions/wrapper-validation@v4
+      #      - name: Copy CI gradle.properties
+      #        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      #      - uses: actions/setup-java@v4.7.1
+      #        with:
+      #          java-version: 21
+      #          distribution: 'zulu'
+      #      - name: Prebuild
+      #        run: ./scripts/ci-prebuild.sh
+      #        env:
+      #          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
+      #          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
+      #          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      #          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+      #          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      #      - name: Setup Gradle
+      #        uses: gradle/actions/setup-gradle@v4
+      #        with:
+      #          # Only write to the cache for builds on the 'develop' branch
+      #          cache-read-only: false
+      #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - run: echo VERSION_CODE=0.0.5 >> $GITHUB_ENV
 
-#      - name: Build
-#        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
-      - name: Generate Package.swift file
-        run: ./scripts/generate_package_swift.main.kts
+      - run: |
+          set -x
+          
+          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
+          
+          function zipXCFramework {
+            cd $1
+            zip -r umbrella.xcframework.zip umbrella.xcframework/* 
+            cd -
+          }
+          
+          zipXCFramework $RELEASE_DIR
+          
+          function checksum {
+            echo $(swift package compute-checksum $RELEASE_DIR$1)
+          }
+          CHECKSUM=$(checksum umbrella.xcframework.zip)
+          function url {
+            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
+          }
+          URL=$(url $VERSION_CODE)
+          CONTENT=$(cat << EOF
+          // swift-tools-version:5.3
+  
+          import PackageDescription
+          
+          let package = Package(
+            name: "umbrella",
+            platforms: [
+              .iOS(.v14),
+            ],
+            products: [
+              .library(
+                name: "umbrella",
+                targets: ["umbrella"]
+              )
+            ],
+            targets: [
+              .binaryTarget(
+                name: "umbrella",
+                url: "https://github.com/HedvigInsurance/umbrella/releases/download/v$versionCode/umbrella.xcframework.zip",
+                checksum: "$checksum"
+              )
+            ]
+          )
+          EOF
+          )
+          echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-#      - name: Script instead
-#        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
-      - uses: actions/checkout@v4
-        with:
-          repository: hedviginsurance/umbrella
-      - name: check env
-        run: echo $PACKAGE_SWIFT_FILE_CONTENT
+      - run: echo $PACKAGE_SWIFT_FILE_CONTENT
         env:
-          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
-#      - name: Create file
-#        run: |
-#          git commit -am "Automated report"
-#          git push
-#      - name: Update resources
-#        uses: test-room-7/action-update-file@v1
-#        with:
-#          file-path: Package.swift
-#          commit-msg: Update Package.swift
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
+          $PACKAGE_SWIFT_FILE_CONTENT: ${{ env.$PACKAGE_SWIFT_FILE_CONTENT }}
+
+        ##      - name: Build
+        ##        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
+        #      - name: Generate Package.swift file
+        #        run: ./scripts/generate_package_swift.main.kts
+        #        env:
+        #          VERSION_CODE: ${{ env.VERSION_CODE }}
+        ##      - name: Script instead
+        ##        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
+        #      - uses: actions/checkout@v4
+        #        with:
+        #          repository: hedviginsurance/umbrella
+        #      - name: check env
+        #        run: echo $PACKAGE_SWIFT_FILE_CONTENT
+        #        env:
+        #          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+        ##      - name: Create file
+        ##        run: |
+        ##          git commit -am "Automated report"
+        ##          git push
+        ##      - name: Update resources
+        ##        uses: test-room-7/action-update-file@v1
+        ##        with:
+        ##          file-path: Package.swift
+        ##          commit-msg: Update Package.swift
+        ##          github-token: ${{ secrets.GITHUB_TOKEN }}
+
