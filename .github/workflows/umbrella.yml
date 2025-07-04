@@ -79,6 +79,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: hedviginsurance/umbrella
+          token: ${{ secrets.umbrella_repo_pat }}
       - name: Add file
         run: echo $PACKAGE_SWIFT_FILE_CONTENT > Package.swift
         env:
@@ -89,6 +90,7 @@ jobs:
           git push
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 #      - name: Create file
 #        run: |
 #          git commit -am "Automated report"
