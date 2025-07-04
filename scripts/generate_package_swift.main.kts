@@ -54,15 +54,15 @@ fun main() {
   println("version: $version")
 //  val checksum = generateChecksum()
 //  println(checksum)
-//  val fileContents = generatePackageSwiftFileContents(version, "checksum")
-  val fileContents = "generatePackageSwiftFileContents(version, checksum)"
+  val fileContents = generatePackageSwiftFileContents(version, "checksum")
+//  val fileContents = "generatePackageSwiftFileContents(version, checksum)"
 //  println(fileContents)
   runCommand("cd", "..")
   println(runCommand("ls"))
   println(runCommand("pwd"))
   // touch a file with fileContents in the user's root directory
   runCommand("touch", "./Package.swift")
-  runCommand("bash", "-e", "echo $'$fileContents' > $./Package.swift")
+  runCommand("bash", "-e", "echo $'$fileContents' > ./Package.swift")
 }
 
 main()
