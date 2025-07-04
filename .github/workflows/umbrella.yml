@@ -69,7 +69,7 @@ jobs:
             ]
           )
           EOF)
-          CONTENT=$(CONTENT_NORMAL | base64)
+          CONTENT=$CONTENT_NORMAL | base64
           echo CONTENT
           echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT >> $GITHUB_ENV
         env:
