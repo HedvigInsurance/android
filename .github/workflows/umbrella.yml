@@ -91,7 +91,7 @@ jobs:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - run: echo $PACKAGE_SWIFT_FILE_CONTENT
         env:
-          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.$PACKAGE_SWIFT_FILE_CONTENT }}
+          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
 
         ##      - name: Build
         ##        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
