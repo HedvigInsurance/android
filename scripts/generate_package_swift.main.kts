@@ -57,9 +57,9 @@ fun main() {
   val fileContents = "generatePackageSwiftFileContents(version, checksum)"
 //  println(fileContents)
   // touch a file with fileContents in the user's root directory
-  runCommand("touch", "./Package.swift")
-  runCommand("echo", "$'$fileContents'", ">", "./Package.swift")
-  runCommand("echo", "PACKAGE_SWIFT_FILE_CONTENT='$fileContents'", ">>", "\$GITHUB_ENV")
+//  runCommand("touch", "./Package.swift")
+//  runCommand("echo", "$'$fileContents'", ">", "./Package.swift")
+  runCommand("echo", "PACKAGE_SWIFT_FILE_CONTENT=asd", ">>", "\$GITHUB_ENV")
 }
 
 main()
