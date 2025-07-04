@@ -37,7 +37,7 @@ jobs:
       #          # Only write to the cache for builds on the 'develop' branch
       #          cache-read-only: false
       #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.5 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.6 >> $GITHUB_ENV
 
       - run: |
           set -x
@@ -45,7 +45,7 @@ jobs:
           URL="https://github.com/HedvigInsurance/umbrella/releases/download/v${VERSION_CODE}/umbrella.xcframework.zip"
           CONTENT=$(cat << EOF | base64 -w 0
           // swift-tools-version:5.3
-  
+          
           import PackageDescription
           
           let package = Package(
@@ -86,21 +86,24 @@ jobs:
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
           git push
           git push --tags
-          gh release create "$VERSION_CODE" "./build/my_artifact.zip" \
+          gh release create "$VERSION_CODE" \
                       --title "$RELEASE_TITLE" \
                       --notes "$RELEASE_NOTES" \
+                      --prerelease \
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-#      - name: Create file
-#        run: |
-#          git commit -am "Automated report"
-#          git push
-#      - name: Update resources
-#        uses: test-room-7/action-update-file@v1
-#        with:
-#          file-path: Package.swift
-#          commit-msg: Update Package.swift
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
+          #          gh release upload "$VERSION_CODE" ""
+        #          gh release create "$VERSION_CODE" "./build/my_artifact.zip" \
+        #      - name: Create file
+        #        run: |
+        #          git commit -am "Automated report"
+        #          git push
+        #      - name: Update resources
+        #        uses: test-room-7/action-update-file@v1
+        #        with:
+        #          file-path: Package.swift
+        #          commit-msg: Update Package.swift
+        #          github-token: ${{ secrets.GITHUB_TOKEN }}
 
         #          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
         #
