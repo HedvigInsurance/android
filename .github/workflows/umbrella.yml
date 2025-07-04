@@ -51,6 +51,7 @@ jobs:
         with:
           repository: hedviginsurance/umbrella
       - name: Test checkout
-        run: ./scripts/test.main.kts
-        env:
-          VERSION_CODE: ${{ env.VERSION_CODE }}
+#        run: ./scripts/test.main.kts
+        run: pwd
+      - name: Test ls
+        run: ls
