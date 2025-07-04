@@ -14,6 +14,10 @@ fun runCommand(vararg args: String): String {
   return output
 }
 
+fun runCommand(args: String): String {
+  return runCommand(*args.split(" ").toTypedArray())
+}
+
 fun generatePackageSwiftFileContents(versionCode: String, checksum: String): String = """
 // swift-tools-version:5.3
 
@@ -59,7 +63,7 @@ fun main() {
   // touch a file with fileContents in the user's root directory
 //  runCommand("touch", "./Package.swift")
 //  runCommand("echo", "$'$fileContents'", ">", "./Package.swift")
-  runCommand("echo", "PACKAGE_SWIFT_FILE_CONTENT=asd", ">>", "\$GITHUB_ENV")
+  runCommand("echo PACKAGE_SWIFT_FILE_CONTENT=asd >> \$GITHUB_ENV")
 }
 
 main()
