@@ -56,8 +56,8 @@ fun main() {
 //  println(checksum)
   val fileContents = generatePackageSwiftFileContents(version, "checksum")
 //  println(fileContents)
-  runCommand("ls")
-  runCommand("pwd")
+  println(runCommand("ls"))
+  println(runCommand("pwd"))
   runCommand("git", "clone", "https://github.com/HedvigInsurance/umbrella.git")
 }
 
