@@ -51,6 +51,6 @@ jobs:
       - name: Update resources
         uses: test-room-7/action-update-file@v1
         with:
-          file-path: ./Package.swift
+          file-path: Package.swift
           commit-msg: Update Package.swift
           github-token: ${{ secrets.GITHUB_TOKEN }}
