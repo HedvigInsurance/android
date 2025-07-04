@@ -47,11 +47,14 @@ jobs:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - name: Print
         run: echo $PACKAGE_SWIFT
+      - name: Test checkout
+          #        run: ./scripts/test.main.kts
+        run: pwd
       - uses: actions/checkout@v4
         with:
           repository: hedviginsurance/umbrella
+      - name: Test ls
+        run: ls
       - name: Test checkout
 #        run: ./scripts/test.main.kts
         run: pwd
-      - name: Test ls
-        run: ls
