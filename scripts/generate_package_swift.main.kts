@@ -38,7 +38,7 @@ let package = Package(
         )
     ]
 )
-""".replace("\n", "\r\n")
+"""
 
 fun generateChecksum(): String {
   return runCommand(
@@ -61,7 +61,7 @@ fun main() {
   println(runCommand("pwd"))
   runCommand("git", "clone", "https://github.com/HedvigInsurance/umbrella.git")
   // touch a file with fileContents in the user's root directory
-  runCommand("bash", "-e", "echo '$fileContents' > $~/Package.swift")
+  runCommand("bash", "-e", "echo $'$fileContents' > $~/Package.swift")
 }
 
 main()
