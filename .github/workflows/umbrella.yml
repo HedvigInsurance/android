@@ -48,9 +48,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: hedviginsurance/umbrella
-      - name: Update resources
-        uses: test-room-7/action-update-file@v1
-        with:
-          file-path: Package.swift
-          commit-msg: Update Package.swift
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: check env
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT
+        env:
+          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+#      - name: Create file
+#        run: |
+#          git commit -am "Automated report"
+#          git push
+#      - name: Update resources
+#        uses: test-room-7/action-update-file@v1
+#        with:
+#          file-path: Package.swift
+#          commit-msg: Update Package.swift
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
