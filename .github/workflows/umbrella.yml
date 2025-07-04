@@ -44,3 +44,4 @@ jobs:
 #        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
       - name: Generate Package.swift file
         run: ./scripts/generate_package_swift.main.kts
+        env: ${{ env.VERSION_CODE }}
