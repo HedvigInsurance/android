@@ -68,21 +68,21 @@ jobs:
           import PackageDescription
           
           let package = Package(
-            name: "umbrella",
+            name: \"umbrella\",
             platforms: [
               .iOS(.v14),
             ],
             products: [
               .library(
-                name: "umbrella",
-                targets: ["umbrella"]
+                name: \"umbrella\",
+                targets: [\"umbrella\"]
               )
             ],
             targets: [
               .binaryTarget(
-                name: "umbrella",
-                url: "$URL",
-                checksum: "$CHECKSUM"
+                name: \"umbrella\",
+                url: \"$URL\",
+                checksum: \"$CHECKSUM\"
               )
             ]
           )
