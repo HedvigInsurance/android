@@ -43,7 +43,7 @@ jobs:
           set -x
           CHECKSUM='35fc65d3a1e912539ec609e4f564b885dca4e56615da3bb44d5f93549d394a72'
           URL="https://github.com/HedvigInsurance/umbrella/releases/download/v${VERSION_CODE}/umbrella.xcframework.zip"
-          CONTENT=$(cat << EOF
+          CONTENT_NORMAL=$(cat << EOF
           // swift-tools-version:5.3
           
           import PackageDescription
@@ -67,7 +67,8 @@ jobs:
               )
             ]
           )
-          EOF | base64 -w 0)
+          EOF)
+          CONTENT=$(CONTENT_NORMAL | base64 -w 0)
           echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT | base64 -d >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
