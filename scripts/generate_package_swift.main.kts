@@ -50,7 +50,7 @@ fun generateChecksum(): String {
 }
 
 fun main() {
-  val version: String = System.getenv("VERSION_CODE")
+//  val version: String = System.getenv("VERSION_CODE")
 //  val checksum = generateChecksum()
 //  println(checksum)
 //  val fileContents = generatePackageSwiftFileContents(version, "checksum")
