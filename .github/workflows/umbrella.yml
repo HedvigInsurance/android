@@ -80,7 +80,7 @@ jobs:
           repository: hedviginsurance/umbrella
           token: ${{ secrets.UMBRELLA_REPO_PAT }}
       - name: Echo
-        run: echo $PACKAGE_SWIFT_FILE_CONTENT | base64 -d
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
       - name: Add file
