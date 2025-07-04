@@ -56,6 +56,7 @@ fun main() {
 //  println(checksum)
   val fileContents = generatePackageSwiftFileContents(version, "checksum")
   println(fileContents)
+  System.setenv("PACKAGE_SWIFT", fileContents)
 }
 
 main()
