@@ -76,6 +76,48 @@ jobs:
         run: echo $PACKAGE_SWIFT_FILE_CONTENT
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: hedviginsurance/umbrella
+      - name: Add file
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT > Package.swift
+        env:
+          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+      - name: Commit
+        run: |
+          git commit -am "Update Package.swift"
+          git push
+        env:
+          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
+#      - name: Create file
+#        run: |
+#          git commit -am "Automated report"
+#          git push
+#      - name: Update resources
+#        uses: test-room-7/action-update-file@v1
+#        with:
+#          file-path: Package.swift
+#          commit-msg: Update Package.swift
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+        #          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
+        #
+        #          function zipXCFramework {
+        #            cd $1
+        #            zip -r umbrella.xcframework.zip umbrella.xcframework/*
+        #            cd -
+        #          }
+        #
+        #          zipXCFramework $RELEASE_DIR
+        #
+        #          function checksum {
+        #            echo $(swift package compute-checksum $RELEASE_DIR$1)
+        #          }
+        #          CHECKSUM=$(checksum umbrella.xcframework.zip)
+        #          function url {
+        #            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
+        #          }
+        #          URL=$(url $VERSION_CODE)
 
         ##      - name: Build
         ##        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
@@ -85,21 +127,4 @@ jobs:
         #          VERSION_CODE: ${{ env.VERSION_CODE }}
         ##      - name: Script instead
         ##        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
-        #      - uses: actions/checkout@v4
-        #        with:
-        #          repository: hedviginsurance/umbrella
-        #      - name: check env
-        #        run: echo $PACKAGE_SWIFT_FILE_CONTENT
-        #        env:
-        #          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
-        ##      - name: Create file
-        ##        run: |
-        ##          git commit -am "Automated report"
-        ##          git push
-        ##      - name: Update resources
-        ##        uses: test-room-7/action-update-file@v1
-        ##        with:
-        ##          file-path: Package.swift
-        ##          commit-msg: Update Package.swift
-        ##          github-token: ${{ secrets.GITHUB_TOKEN }}
 
