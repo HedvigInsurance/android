@@ -38,7 +38,7 @@ let package = Package(
         )
     ]
 )
-"""
+""".replace("\n", "\r\n")
 
 fun generateChecksum(): String {
   return runCommand(
