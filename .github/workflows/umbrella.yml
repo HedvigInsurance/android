@@ -1,6 +1,10 @@
 name: Trigger new umbrella release
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - feature/kmp-publication
+  workflow_dispatch:
 
 concurrency:
   group: ref-${{ github.ref }}
