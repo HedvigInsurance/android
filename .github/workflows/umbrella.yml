@@ -42,24 +42,26 @@ jobs:
       - run: |
           set -x
           
-          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
-          
-          function zipXCFramework {
-            cd $1
-            zip -r umbrella.xcframework.zip umbrella.xcframework/* 
-            cd -
-          }
-          
-          zipXCFramework $RELEASE_DIR
-          
-          function checksum {
-            echo $(swift package compute-checksum $RELEASE_DIR$1)
-          }
-          CHECKSUM=$(checksum umbrella.xcframework.zip)
-          function url {
-            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
-          }
-          URL=$(url $VERSION_CODE)
+#          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
+#
+#          function zipXCFramework {
+#            cd $1
+#            zip -r umbrella.xcframework.zip umbrella.xcframework/*
+#            cd -
+#          }
+#
+#          zipXCFramework $RELEASE_DIR
+#
+#          function checksum {
+#            echo $(swift package compute-checksum $RELEASE_DIR$1)
+#          }
+#          CHECKSUM=$(checksum umbrella.xcframework.zip)
+#          function url {
+#            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
+#          }
+#          URL=$(url $VERSION_CODE)
+          CHECKSUM='35fc65d3a1e912539ec609e4f564b885dca4e56615da3bb44d5f93549d394a72'
+          URL='https://github.com/HedvigInsurance/umbrella/releases/download/v0.0.3/umbrella.xcframework.zip'
           CONTENT=$(cat << EOF
           // swift-tools-version:5.3
   
@@ -79,8 +81,8 @@ jobs:
             targets: [
               .binaryTarget(
                 name: "umbrella",
-                url: "https://github.com/HedvigInsurance/umbrella/releases/download/v$versionCode/umbrella.xcframework.zip",
-                checksum: "$checksum"
+                url: "$URL",
+                checksum: "$CHECKSUM"
               )
             ]
           )
