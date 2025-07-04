@@ -54,7 +54,8 @@ fun main() {
   println("version: $version")
 //  val checksum = generateChecksum()
 //  println(checksum)
-  val fileContents = generatePackageSwiftFileContents(version, "checksum")
+//  val fileContents = generatePackageSwiftFileContents(version, "checksum")
+  val fileContents = "generatePackageSwiftFileContents(version, checksum)"
 //  println(fileContents)
   runCommand("cd", "..")
   println(runCommand("ls"))
