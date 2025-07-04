@@ -84,8 +84,8 @@ jobs:
         run: |
           git commit -am "Update Package.swift"
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
-          git push
           git push --tags
+          git push
           gh release create "$VERSION_CODE" \
                       --title "$RELEASE_TITLE" \
                       --notes "$RELEASE_NOTES" \
