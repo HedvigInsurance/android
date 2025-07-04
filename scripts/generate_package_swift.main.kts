@@ -61,7 +61,7 @@ fun main() {
   println(runCommand("pwd"))
   runCommand("git", "clone", "https://github.com/HedvigInsurance/umbrella.git")
   // touch a file with fileContents in the user's root directory
-  runCommand("bash", "-c", "echo '$fileContents' > $~/Package.swift")
+  runCommand("bash", "-c", "-e", "echo '$fileContents' > $~/Package.swift")
 }
 
 main()
