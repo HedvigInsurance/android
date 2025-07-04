@@ -52,9 +52,9 @@ fun generateChecksum(): String {
 fun main() {
   val version: String = System.getenv("VERSION_CODE")
   println("version: $version")
-  val checksum = generateChecksum()
-  println(checksum)
-  val fileContents = generatePackageSwiftFileContents(version, checksum)
+//  val checksum = generateChecksum()
+//  println(checksum)
+  val fileContents = generatePackageSwiftFileContents(version, "checksum")
   println(fileContents)
 }
 
