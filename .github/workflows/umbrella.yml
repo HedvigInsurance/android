@@ -41,12 +41,12 @@ jobs:
 
 #      - name: Build
 #        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
-#      - name: Generate Package.swift file
-#        run: ./scripts/generate_package_swift.main.kts
-#        env:
-#          VERSION_CODE: ${{ env.VERSION_CODE }}
-      - name: Script instead
-        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
+      - name: Generate Package.swift file
+        run: ./scripts/generate_package_swift.main.kts
+        env:
+          VERSION_CODE: ${{ env.VERSION_CODE }}
+#      - name: Script instead
+#        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           repository: hedviginsurance/umbrella
