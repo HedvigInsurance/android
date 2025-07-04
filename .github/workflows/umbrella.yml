@@ -13,7 +13,7 @@ concurrency:
 jobs:
   umbrella_release:
     name: Build and release new umbrella version
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
 #      - uses: gradle/actions/wrapper-validation@v4
