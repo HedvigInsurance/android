@@ -90,7 +90,6 @@ jobs:
           git push
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 #      - name: Create file
 #        run: |
 #          git commit -am "Automated report"
