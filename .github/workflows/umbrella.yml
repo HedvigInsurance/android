@@ -55,6 +55,6 @@ jobs:
           repository: hedviginsurance/umbrella
       - name: Test ls
         run: ls
-      - name: Test checkout
+      - name: Test checkout 2
 #        run: ./scripts/test.main.kts
         run: pwd
