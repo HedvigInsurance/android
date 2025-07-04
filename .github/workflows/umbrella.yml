@@ -51,6 +51,6 @@ jobs:
         with:
           repository: hedviginsurance/umbrella
       - name: Test checkout
-        run: ./scripts/generate_package_swift.main.kts
+        run: ./scripts/test.main.kts
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
