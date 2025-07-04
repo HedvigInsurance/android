@@ -54,7 +54,8 @@ fun main() {
 //  runCommand("echo", "VERSION_CODE=0.0.4", ">>", "\$GITHUB_ENV")
   runCommand("echo", "0.0.4", ">>", "\$VERSION_CODE")
   //
-  val version = runCommand("echo", "\$VERSION_CODE")
+  val version: String = System.getenv("VERSION_CODE")
+//  val version = runCommand("echo", "\$VERSION_CODE")
   println("version: $version")
 //  val checksum = generateChecksum()
 //  println(checksum)
