@@ -69,7 +69,7 @@ jobs:
           )
           EOF)
           CONTENT=$(CONTENT_NORMAL | base64)
-          echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT | base64 >> $GITHUB_ENV
+          echo PACKAGE_SWIFT_FILE_CONTENT=$CONTENT >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - uses: actions/checkout@v4
