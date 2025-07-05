@@ -48,7 +48,7 @@ jobs:
         run: |
           VERSION="0.0.$VERSION_TIMESTAMP"
           echo Will make a release with version:$VERSION
-          echo VERSION_CODE=VERSION >> $GITHUB_ENV
+          echo VERSION_CODE=$VERSION >> $GITHUB_ENV
         env:
           VERSION_TIMESTAMP: "${{ steps.time.outputs.time }}"
 
