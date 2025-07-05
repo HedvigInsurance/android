@@ -3,7 +3,7 @@ name: Trigger new umbrella release
 on:
   push:
     branches:
-      - feature/kmp-publication
+      - develop
   workflow_dispatch:
 
 concurrency:
