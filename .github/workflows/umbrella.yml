@@ -84,24 +84,26 @@ jobs:
         with:
           repository: hedviginsurance/umbrella
           token: ${{ secrets.UMBRELLA_REPO_PAT }}
-      - name: Echo
-        run: echo $PACKAGE_SWIFT_FILE_CONTENT | base64 -d
-        env:
-          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
       - name: Add file
         run: echo $PACKAGE_SWIFT_FILE_CONTENT | base64 -d > Package.swift
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
       - name: Commit
         run: |
+          echo 1
           git commit -am "Update Package.swift"
+          echo 2
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
+          echo 3
           git push --tags
+          echo 4
           git push
+          echo 5
           gh release create "$VERSION_CODE" \
                       --title "$RELEASE_TITLE" \
                       --notes "$RELEASE_NOTES" \
                       --prerelease \
+          echo 6
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
