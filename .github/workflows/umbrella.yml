@@ -37,7 +37,7 @@ jobs:
       #          # Only write to the cache for builds on the 'develop' branch
       #          cache-read-only: false
       #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.15 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.16 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
@@ -49,6 +49,7 @@ jobs:
           # Define the content for Package.swift
           PACKAGE_SWIFT_CONTENT_RAW=$(cat << EOF
           // swift-tools-version:5.3
+
           import PackageDescription
 
           let package = Package(
@@ -96,7 +97,9 @@ jobs:
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
           git push --set-upstream origin master
           git push --tags
-          gh release create "$VERSION_CODE"
+          gh release create "$VERSION_CODE" \
+            --fail-on-no-commits \
+            --verify-tag
           gh release upload "$VERSION_CODE" "umbrella.xcframework.zip"
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
