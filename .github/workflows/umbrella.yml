@@ -73,7 +73,7 @@ jobs:
           EOF
           )
 
-          PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64 -w 0)
+          PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64)
 
           echo "PACKAGE_SWIFT_FILE_CONTENT=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
           echo "Successfully created base64 encoded Package.swift content."
