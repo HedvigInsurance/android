@@ -37,7 +37,7 @@ jobs:
       #          # Only write to the cache for builds on the 'develop' branch
       #          cache-read-only: false
       #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.9 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.10 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
@@ -94,6 +94,8 @@ jobs:
           git commit -am "Update Package.swift"
           echo 2
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
+          git remote rm origin
+          git remote add origin https://github.com/hedviginsurance/umbrella
           echo 3
           git push --tags
           echo 4
