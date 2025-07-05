@@ -36,12 +36,23 @@ jobs:
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
-#      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - name: Build
+      - name: Build umbrella XCFramework
         run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
-      - run: echo VERSION_CODE=0.0.31 >> $GITHUB_ENV
+      - name: Generate version timestamp
+        id: time
+        uses: nanzm/get-time-action@v2.0
+        with:
+          timeZone: UTC
+          format: 'YYYYMMDDHHmmss'
+      - name: Generate new release version code
+        run: |
+          VERSION="0.0.$VERSION_TIMESTAMP"
+          echo Will make a release with version:$VERSION
+          echo VERSION_CODE=VERSION >> $GITHUB_ENV
+        env:
+          VERSION_TIMESTAMP: "${{ steps.time.outputs.time }}"
 
-      - name: Create Package.swift
+      - name: Generate new Package.swift contents
         run: |
           set -x
 
@@ -92,20 +103,20 @@ jobs:
 
           PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64)
 
-          echo "PACKAGE_SWIFT_FILE_URL=$URL" >> $GITHUB_ENV
-          echo "PACKAGE_SWIFT_FILE_CONTENT=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
+          echo "PACKAGE_SWIFT_FILE_CONTENT_ENCODED=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-      - uses: actions/checkout@v4
+      - name: Checkout umbrella repo under the path_umbrella path
+        uses: actions/checkout@v4
         with:
           path: path_umbrella
           repository: hedviginsurance/umbrella
           token: ${{ secrets.UMBRELLA_REPO_PAT }}
-      - name: Add file
-        run: echo $PACKAGE_SWIFT_FILE_CONTENT | base64 -d > path_umbrella/Package.swift
+      - name: Update Package.swift inside umbrella repo
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT_ENCODED | base64 -d > path_umbrella/Package.swift
         env:
-          PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
-      - name: Commit
+          PACKAGE_SWIFT_FILE_CONTENT_ENCODED: ${{ env.PACKAGE_SWIFT_FILE_CONTENT_ENCODED }}
+      - name: Commit the changes, tag and release the new umbrella version
         run: |
           cd path_umbrella
           git remote rm origin
