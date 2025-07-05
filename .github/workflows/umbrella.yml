@@ -89,21 +89,30 @@ jobs:
         run: echo $PACKAGE_SWIFT_FILE_CONTENT | base64 -d > Package.swift
         env:
           PACKAGE_SWIFT_FILE_CONTENT: ${{ env.PACKAGE_SWIFT_FILE_CONTENT }}
-      - name: Commit
+#      - name: Commit
+#        run: |
+#          git remote rm origin
+#          git remote add origin https://github.com/hedviginsurance/umbrella
+#          git commit -am "Update Package.swift"
+#          git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
+#          git push --set-upstream origin master
+#          git push --tags
+#          gh release create "$VERSION_CODE" \
+#            --fail-on-no-commits \
+#            --verify-tag
+#          gh release upload "$VERSION_CODE" "umbrella.xcframework.zip"
+#        env:
+#          VERSION_CODE: ${{ env.VERSION_CODE }}
+#          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
+      - name: Checkout back to android and upload the generated artifact
         run: |
-          git remote rm origin
-          git remote add origin https://github.com/hedviginsurance/umbrella
-          git commit -am "Update Package.swift"
-          git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
-          git push --set-upstream origin master
-          git push --tags
-          gh release create "$VERSION_CODE" \
-            --fail-on-no-commits \
-            --verify-tag
-          gh release upload "$VERSION_CODE" "umbrella.xcframework.zip"
-        env:
-          VERSION_CODE: ${{ env.VERSION_CODE }}
-          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
+          echo 1
+          pwd
+          echo 2
+          cd ../android
+          echo 3
+          pwd
+          echo 4
           #          gh release upload "$VERSION_CODE" ""
         #          gh release create "$VERSION_CODE" "./build/my_artifact.zip" \
         #      - name: Create file
