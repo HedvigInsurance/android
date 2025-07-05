@@ -58,11 +58,9 @@ jobs:
           }
           CHECKSUM=$(checksum umbrella.xcframework.zip)
           function url {
-            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
+            echo https://github.com/HedvigInsurance/umbrella/releases/download/$1/umbrella.xcframework.zip
           }
           URL=$(url $VERSION_CODE)
-          CHECKSUM='ca10e03cc4b2057816a9c442a36f0a6606d5c5bfa08ccd61dd8a97d29058f7d6'
-          URL="https://github.com/HedvigInsurance/umbrella/releases/download/${VERSION_CODE}/umbrella.xcframework.zip"
 
           # Define the content for Package.swift
           PACKAGE_SWIFT_CONTENT_RAW=$(cat << EOF
@@ -117,29 +115,10 @@ jobs:
           git push --set-upstream origin master
           git push --tags
           cd ..
-          gh release create "$VERSION_CODE" "$PACKAGE_SWIFT_FILE_URL" \
+          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip \
             --fail-on-no-commits \
             --verify-tag \
             --repo https://github.com/HedvigInsurance/umbrella
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-          PACKAGE_SWIFT_FILE_URL: ${{ env.PACKAGE_SWIFT_FILE_URL }}
           GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
-#          gh release upload "$VERSION_CODE" "/app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip" /
-#      - name: Upload the generated artifact
-#        run: |
-#          gh release upload "$VERSION_CODE" "/app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip" /
-#            --repo https://github.com/HedvigInsurance/umbrella
-#        env:
-#          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
-
-#
-#
-#
-
-#                - name: Generate Package.swift file
-#                  run: ./scripts/generate_package_swift.main.kts
-#                  env:
-#                    VERSION_CODE: ${{ env.VERSION_CODE }}
-#          #      - name: Script instead
-#          #        run: echo PACKAGE_SWIFT_FILE_CONTENT=asd >> $GITHUB_ENV
