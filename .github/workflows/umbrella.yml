@@ -37,7 +37,7 @@ jobs:
 #          # Only write to the cache for builds on the 'develop' branch
 #          cache-read-only: false
 #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.19 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.20 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
@@ -113,6 +113,9 @@ jobs:
           echo 12
           ls
           echo 13
+          cd scripts
+          ls
+          cd ..
           gh release upload "$VERSION_CODE" "/scripts/umbrella.xcframework.zip" /
             --repo https://github.com/HedvigInsurance/umbrella
         env:
