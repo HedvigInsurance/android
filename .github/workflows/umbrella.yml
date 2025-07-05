@@ -37,7 +37,7 @@ jobs:
       #          # Only write to the cache for builds on the 'develop' branch
       #          cache-read-only: false
       #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.12 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.13 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
@@ -108,7 +108,7 @@ jobs:
           echo 6
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
           #          gh release upload "$VERSION_CODE" ""
         #          gh release create "$VERSION_CODE" "./build/my_artifact.zip" \
         #      - name: Create file
