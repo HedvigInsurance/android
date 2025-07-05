@@ -108,10 +108,12 @@ jobs:
         run: |
           echo 1
           pwd
+          ls
           echo 2
-          cd ../android
+          cd ..
           echo 3
           pwd
+          ls
           echo 4
           #          gh release upload "$VERSION_CODE" ""
         #          gh release create "$VERSION_CODE" "./build/my_artifact.zip" \
