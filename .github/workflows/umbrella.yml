@@ -16,33 +16,51 @@ jobs:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-#      - uses: gradle/actions/wrapper-validation@v4
-#      - name: Copy CI gradle.properties
-#        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
-#      - uses: actions/setup-java@v4.7.1
-#        with:
-#          java-version: 21
-#          distribution: 'zulu'
-#      - name: Prebuild
-#        run: ./scripts/ci-prebuild.sh
-#        env:
-#          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
-#          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-#          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-#          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-#          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-#      - name: Setup Gradle
-#        uses: gradle/actions/setup-gradle@v4
-#        with:
-#          # Only write to the cache for builds on the 'develop' branch
-#          cache-read-only: false
+      - uses: gradle/actions/wrapper-validation@v4
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      - uses: actions/setup-java@v4.7.1
+        with:
+          java-version: 21
+          distribution: 'zulu'
+      - name: Prebuild
+        run: ./scripts/ci-prebuild.sh
+        env:
+          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
+          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: false
 #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.26 >> $GITHUB_ENV
+      - name: Build
+        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
+      - run: echo VERSION_CODE=0.0.27 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
           set -x
 
+          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
+
+          function zipXCFramework {
+            cd $1
+            zip -r umbrella.xcframework.zip umbrella.xcframework/*
+            cd -
+          }
+          zipXCFramework $RELEASE_DIR
+          function checksum {
+            echo $(swift package compute-checksum $RELEASE_DIR$1)
+          }
+          CHECKSUM=$(checksum umbrella.xcframework.zip)
+          function url {
+            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
+          }
+          URL=$(url $VERSION_CODE)
           CHECKSUM='ca10e03cc4b2057816a9c442a36f0a6606d5c5bfa08ccd61dd8a97d29058f7d6'
           URL="https://github.com/HedvigInsurance/umbrella/releases/download/${VERSION_CODE}/umbrella.xcframework.zip"
 
@@ -77,8 +95,6 @@ jobs:
           PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64)
 
           echo "PACKAGE_SWIFT_FILE_CONTENT=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
-          echo "Successfully created base64 encoded Package.swift content."
-          echo "Length of encoded content: ${#PACKAGE_SWIFT_CONTENT_ENCODED} characters."
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - uses: actions/checkout@v4
@@ -100,7 +116,7 @@ jobs:
           git push --set-upstream origin master
           git push --tags
           cd ..
-          gh release create "$VERSION_CODE" scripts/umbrella.xcframework.zip \
+          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/ \
             --fail-on-no-commits \
             --verify-tag \
             --repo https://github.com/HedvigInsurance/umbrella
@@ -116,25 +132,9 @@ jobs:
 #          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
 
 #
-#           RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
 #
-#          function zipXCFramework {
-#            cd $1
-#            zip -r umbrella.xcframework.zip umbrella.xcframework/*
-#            cd -
-#          }
-#          zipXCFramework $RELEASE_DIR
-#          function checksum {
-#            echo $(swift package compute-checksum $RELEASE_DIR$1)
-#          }
-#          CHECKSUM=$(checksum umbrella.xcframework.zip)
-#          function url {
-#            echo https://github.com/HedvigInsurance/umbrella/releases/download/v$1/umbrella.xcframework.zip
-#          }
-#          URL=$(url $VERSION_CODE)
 #
-#          #      - name: Build
-#          #        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
+
 #                - name: Generate Package.swift file
 #                  run: ./scripts/generate_package_swift.main.kts
 #                  env:
