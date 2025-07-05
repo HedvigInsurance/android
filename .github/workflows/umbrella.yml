@@ -124,7 +124,7 @@ jobs:
           git add .
           git commit -am "Update Package.swift"
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
-          git push --set-upstream origin master
+          git push --set-upstream origin main
           git push --tags
           cd ..
           gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip \
