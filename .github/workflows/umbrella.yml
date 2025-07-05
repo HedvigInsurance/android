@@ -39,7 +39,7 @@ jobs:
 #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - name: Build
         run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
-      - run: echo VERSION_CODE=0.0.29 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.30 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
@@ -94,6 +94,7 @@ jobs:
 
           PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64)
 
+          echo "PACKAGE_SWIFT_FILE_URL=$URL" >> $GITHUB_ENV
           echo "PACKAGE_SWIFT_FILE_CONTENT=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
@@ -116,12 +117,13 @@ jobs:
           git push --set-upstream origin master
           git push --tags
           cd ..
-          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/ \
+          gh release create "$VERSION_CODE" "$PACKAGE_SWIFT_FILE_URL" \
             --fail-on-no-commits \
             --verify-tag \
             --repo https://github.com/HedvigInsurance/umbrella
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
+          PACKAGE_SWIFT_FILE_URL: ${{ env.PACKAGE_SWIFT_FILE_URL }}
           GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
 #          gh release upload "$VERSION_CODE" "/app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip" /
 #      - name: Upload the generated artifact
