@@ -121,6 +121,7 @@ jobs:
           cd path_umbrella
           git remote rm origin
           git remote add origin https://github.com/HedvigInsurance/umbrella.git
+          git add .
           git commit -am "Update Package.swift"
           git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
           git push --set-upstream origin master
