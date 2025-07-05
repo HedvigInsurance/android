@@ -28,15 +28,11 @@ private fun Project.configureKotlinMultiplatform() {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
-//    compilerOptions.configureKotlinCompilerOptions()
-//    val xcfName = "design-showcake-desktop-kit"
     listOf(
       iosX64(),
       iosArm64(),
       iosSimulatorArm64(),
-    ).forEach {
-//      it.binaries.framework { baseName = xcfName }
-    }
+    )
     jvm {
       compilerOptions {
         this.configureKotlinCompilerOptions()
