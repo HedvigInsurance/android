@@ -39,7 +39,7 @@ jobs:
 #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - name: Build
         run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
-      - run: echo VERSION_CODE=0.0.27 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.28 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
