@@ -37,7 +37,7 @@ jobs:
 #          # Only write to the cache for builds on the 'develop' branch
 #          cache-read-only: false
 #      - run: echo VERSION_CODE=$(expr 1 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - run: echo VERSION_CODE=0.0.21 >> $GITHUB_ENV
+      - run: echo VERSION_CODE=0.0.22 >> $GITHUB_ENV
 
       - name: Create Package.swift
         run: |
