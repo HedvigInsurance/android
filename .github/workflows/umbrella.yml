@@ -102,7 +102,7 @@ jobs:
           gh release create "$VERSION_CODE" \
             --fail-on-no-commits \
             --verify-tag
-          gh release upload "$VERSION_CODE" "scripts/umbrella.xcframework.zip" /
+          gh release upload "$VERSION_CODE" scripts/umbrella.xcframework.zip /
             --repo https://github.com/HedvigInsurance/umbrella
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
