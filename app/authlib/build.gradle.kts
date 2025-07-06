@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
+  alias(libs.plugins.skie)
 }
 
 hedvig {
@@ -23,5 +24,11 @@ kotlin {
     iosMain.dependencies {
       implementation(libs.ktor.client.darwin)
     }
+  }
+}
+
+skie {
+  build {
+    enableSwiftLibraryEvolution.set(true)
   }
 }

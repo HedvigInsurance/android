@@ -63,7 +63,7 @@ internal sealed interface TerminateInsuranceDestination {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
         typeOf<List<ExtraCoverageItem>>(),
-        typeOf<TerminationNotification>(),
+        typeOf<TerminationNotification?>(),
         typeOf<TerminationGraphParameters>(),
       )
     }

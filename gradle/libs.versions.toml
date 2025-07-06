@@ -10,8 +10,8 @@ lintGradlePlugin = "8.10.0"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.10.0"
-apolloAdapters = "0.0.6"
 apollo = "4.2.0"
+apolloAdapters = "0.0.6"
 cacheFix = "3.0.1"
 crashlytics = "3.0.3"
 datadogPlugin = "1.16.0"
@@ -25,6 +25,7 @@ ksp = "2.1.21-2.0.1"
 ktor = "3.1.3"
 license = "0.9.8"
 molecule = "2.1.0"
+skie = "0.10.4"
 squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
@@ -258,4 +259,5 @@ license = { id = "com.jaredsburrows.license", version.ref = "license" }
 lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 room = { id = "androidx.room", version.ref = "room" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }

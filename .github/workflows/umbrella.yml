@@ -1,0 +1,136 @@
+name: Trigger new umbrella release
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: ref-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  umbrella_release:
+    name: Build and release new umbrella version
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      - uses: actions/setup-java@v4.7.1
+        with:
+          java-version: 21
+          distribution: 'zulu'
+      - name: Prebuild
+        run: ./scripts/ci-prebuild.sh
+        env:
+          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
+          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: false
+      - name: Build umbrella XCFramework
+        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
+      - name: Generate version timestamp
+        id: time
+        uses: nanzm/get-time-action@v2.0
+        with:
+          timeZone: UTC
+          format: 'YYYYMMDDHHmmss'
+      - name: Generate new release version code
+        run: |
+          VERSION="0.0.$VERSION_TIMESTAMP"
+          echo Will make a release with version:$VERSION
+          echo VERSION_CODE=$VERSION >> $GITHUB_ENV
+        env:
+          VERSION_TIMESTAMP: "${{ steps.time.outputs.time }}"
+
+      - name: Generate new Package.swift contents
+        run: |
+          set -x
+
+          RELEASE_DIR="${{ github.workspace }}/app/umbrella/build/XCFrameworks/release/"
+
+          function zipXCFramework {
+            cd $1
+            zip -r umbrella.xcframework.zip umbrella.xcframework/*
+            cd -
+          }
+          zipXCFramework $RELEASE_DIR
+          function checksum {
+            echo $(swift package compute-checksum $RELEASE_DIR$1)
+          }
+          CHECKSUM=$(checksum umbrella.xcframework.zip)
+          function url {
+            echo https://github.com/HedvigInsurance/umbrella/releases/download/$1/umbrella.xcframework.zip
+          }
+          URL=$(url $VERSION_CODE)
+
+          # Define the content for Package.swift
+          PACKAGE_SWIFT_CONTENT_RAW=$(cat << EOF
+          // swift-tools-version:5.3
+
+          import PackageDescription
+
+          let package = Package(
+            name: "umbrella",
+            platforms: [
+              .iOS(.v14),
+            ],
+            products: [
+              .library(
+                name: "umbrella",
+                targets: ["umbrella"]
+              )
+            ],
+            targets: [
+              .binaryTarget(
+                name: "umbrella",
+                url: "$URL",
+                checksum: "$CHECKSUM"
+              )
+            ]
+          )
+          EOF
+          )
+
+          PACKAGE_SWIFT_CONTENT_ENCODED=$(echo "$PACKAGE_SWIFT_CONTENT_RAW" | base64)
+
+          echo "PACKAGE_SWIFT_FILE_CONTENT_ENCODED=$PACKAGE_SWIFT_CONTENT_ENCODED" >> $GITHUB_ENV
+        env:
+          VERSION_CODE: ${{ env.VERSION_CODE }}
+      - name: Checkout umbrella repo under the path_umbrella path
+        uses: actions/checkout@v4
+        with:
+          path: path_umbrella
+          repository: hedviginsurance/umbrella
+          token: ${{ secrets.UMBRELLA_REPO_PAT }}
+      - name: Update Package.swift inside umbrella repo
+        run: echo $PACKAGE_SWIFT_FILE_CONTENT_ENCODED | base64 -d > path_umbrella/Package.swift
+        env:
+          PACKAGE_SWIFT_FILE_CONTENT_ENCODED: ${{ env.PACKAGE_SWIFT_FILE_CONTENT_ENCODED }}
+      - name: Commit the changes, tag and release the new umbrella version
+        run: |
+          cd path_umbrella
+          git remote rm origin
+          git remote add origin https://github.com/HedvigInsurance/umbrella.git
+          git add .
+          git commit -am "Update Package.swift"
+          git tag -a $VERSION_CODE -m "Release $VERSION_CODE"
+          git push --set-upstream origin main
+          git push --tags
+          cd ..
+          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip \
+            --fail-on-no-commits \
+            --verify-tag \
+            --repo https://github.com/HedvigInsurance/umbrella
+        env:
+          VERSION_CODE: ${{ env.VERSION_CODE }}
+          GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}
