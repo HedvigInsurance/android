@@ -69,7 +69,6 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.hedvig.app
           track: internal
-          changesNotSentForReview: true
           mappingFile: app/app/build/outputs/mapping/release/mapping.txt
           status: completed
       - name: Upload mapping files to datadog
