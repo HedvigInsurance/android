@@ -8,7 +8,7 @@ plugins {
 }
 
 kotlin {
-  val frameworkName = "umbrella"
+  val frameworkName = "HedvigShared"
   val xcf = XCFramework(frameworkName)
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,

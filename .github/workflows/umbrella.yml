@@ -37,7 +37,7 @@ jobs:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
       - name: Build umbrella XCFramework
-        run: ./gradlew :umbrella:assembleUmbrellaReleaseXCFramework
+        run: ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
       - name: Generate version timestamp
         id: time
         uses: nanzm/get-time-action@v2.0
