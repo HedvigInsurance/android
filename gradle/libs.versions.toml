@@ -34,7 +34,6 @@ androidx-activity-compose = "1.10.1"
 androidx-activity-core = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-composeBom = "2025.05.00"
-#todo: remove this alpha when stable compose version bumps to 1.8
 androidx-datastore = "1.1.4"
 androidx-junit = "1.2.1"
 androidx-lifecycle = "2.9.0"
