@@ -60,16 +60,16 @@ jobs:
 
           function zipXCFramework {
             cd $1
-            zip -r umbrella.xcframework.zip umbrella.xcframework/*
+            zip -r HedvigShared.xcframework.zip HedvigShared.xcframework/*
             cd -
           }
           zipXCFramework $RELEASE_DIR
           function checksum {
             echo $(swift package compute-checksum $RELEASE_DIR$1)
           }
-          CHECKSUM=$(checksum umbrella.xcframework.zip)
+          CHECKSUM=$(checksum HedvigShared.xcframework.zip)
           function url {
-            echo https://github.com/HedvigInsurance/umbrella/releases/download/$1/umbrella.xcframework.zip
+            echo https://github.com/HedvigInsurance/umbrella/releases/download/$1/HedvigShared.xcframework.zip
           }
           URL=$(url $VERSION_CODE)
 
@@ -80,19 +80,19 @@ jobs:
           import PackageDescription
 
           let package = Package(
-            name: "umbrella",
+            name: "HedvigShared",
             platforms: [
               .iOS(.v14),
             ],
             products: [
               .library(
-                name: "umbrella",
-                targets: ["umbrella"]
+                name: "HedvigShared",
+                targets: ["HedvigShared"]
               )
             ],
             targets: [
               .binaryTarget(
-                name: "umbrella",
+                name: "HedvigShared",
                 url: "$URL",
                 checksum: "$CHECKSUM"
               )
@@ -127,7 +127,7 @@ jobs:
           git push --set-upstream origin main
           git push --tags
           cd ..
-          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/umbrella.xcframework.zip \
+          gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework.zip \
             --fail-on-no-commits \
             --verify-tag \
             --repo https://github.com/HedvigInsurance/umbrella
