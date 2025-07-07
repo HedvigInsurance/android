@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
+  alias(libs.plugins.skie)
 }
 
 kotlin {
@@ -32,5 +33,11 @@ kotlin {
         api(projectToExport)
       }
     }
+  }
+}
+
+skie {
+  build {
+    enableSwiftLibraryEvolution.set(true)
   }
 }
