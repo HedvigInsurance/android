@@ -65,6 +65,16 @@
           android:scheme="https"
           android:pathPrefix="@string/DEEP_LINK_DOMAIN_PATH_PREFIX" />
       </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data
+          android:host="@string/DEEP_LINK_DOMAIN_HOST_NEW"
+          android:scheme="https" />
+      </intent-filter>
     </activity>
 
     <meta-data
