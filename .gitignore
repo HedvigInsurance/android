@@ -14,10 +14,6 @@ sentry.properties
 .kotlin
 mapping.txt
 
-# graphql
-schema.json
-schema.graphqls
-
 open_source_licenses.html
 
 # lokalise credentials
