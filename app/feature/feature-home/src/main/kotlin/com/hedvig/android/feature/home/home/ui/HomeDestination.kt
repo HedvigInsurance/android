@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.home.home.ui
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
@@ -41,7 +40,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -123,12 +121,10 @@ import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.time.ExperimentalTime
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -198,7 +194,6 @@ private fun HomeScreen(
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
@@ -301,10 +296,6 @@ private fun HomeScreen(
         }
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-        val shouldShowGotQuestionsTooltip by produceState(false) {
-          val tooLongSinceLastTooltipShown = tooLongSinceLastTooltipShown(context)
-          value = tooLongSinceLastTooltipShown
-        }
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
           snapshotFlow { updatedHasUnseenChatMessages }
@@ -313,27 +304,7 @@ private fun HomeScreen(
               value = it
             }
         }
-        if (shouldShowGotQuestionsTooltip) {
-          HedvigTooltip(
-            message = stringResource(R.string.home_tab_chat_hint_text),
-            showTooltip = shouldShowGotQuestionsTooltip,
-            tooltipStyle = Inbox,
-            beakDirection = TopEnd,
-            tooltipShown = {
-              context.setLastEpochDayWhenChatTooltipWasShown(
-                java.time.LocalDate
-                  .now()
-                  .toEpochDay(),
-              )
-            },
-            modifier = Modifier
-              .align(Alignment.End)
-              .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-              )
-              .padding(horizontal = 16.dp),
-          )
-        } else if (shouldShowNewMessageTooltip) {
+        if (shouldShowNewMessageTooltip) {
           HedvigTooltip(
             message = stringResource(R.string.CHAT_NEW_MESSAGE),
             showTooltip = shouldShowNewMessageTooltip,
@@ -407,18 +378,6 @@ private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
   if (uiState.firstVetAction != null) endPadding += 48
   if (uiState.chatAction != null) endPadding += 48
   return endPadding
-}
-
-private suspend fun tooLongSinceLastTooltipShown(context: Context): Boolean {
-  val currentEpochDay = java.time.LocalDate
-    .now()
-    .toEpochDay()
-  val lastEpochDayOpened = withContext(Dispatchers.IO) {
-    context.getLastEpochDayWhenChatTooltipWasShown()
-  }
-  val diff = currentEpochDay - lastEpochDayOpened
-  val daysSinceLastTooltipShown = diff >= 30
-  return daysSinceLastTooltipShown
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -686,18 +645,6 @@ private fun CrossSellBottomSheet(
     imageLoader = imageLoader,
   )
 }
-
-private const val SHARED_PREFERENCE_LAST_OPEN = "shared_preference_last_open"
-
-private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
-  getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, epochDay).commit()
-
-private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
-  getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
-
-private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
-
-private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 @HedvigPreview
 @Composable
