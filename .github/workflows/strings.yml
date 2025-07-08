@@ -1,4 +1,4 @@
-name: String resources
+name: Update String resources
 
 on:
   schedule:
