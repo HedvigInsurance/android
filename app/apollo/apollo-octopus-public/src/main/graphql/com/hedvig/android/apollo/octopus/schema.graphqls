@@ -755,6 +755,7 @@ type CrossSell {
   A url pointing to a product page where the member can complete the purchase
   """
   storeUrl: String!
+  type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
 }
