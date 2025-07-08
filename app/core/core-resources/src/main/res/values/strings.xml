@@ -1567,6 +1567,10 @@
     <item quantity="other">Hi %1$s, we\'ve closed your claims.</item>
   </plurals>
   <string name="home.claim.multiple.title">Hi %1$s, here’s your recent claims.</string>
+  <plurals name="home.claim.reopened.title">
+    <item quantity="one">Hi %1$s, we\'ve reopened your claim.</item>
+    <item quantity="other">Hi %1$s, we\'ve reopened your claims.</item>
+  </plurals>
   <string name="home.claim_card.pill.claim">Claim</string>
   <string name="home.claim_card.pill.reopened">Reopened</string>
   <string name="home.first_login.welcome_message">Hi %1$s, welcome to the Hedvig app.</string>
@@ -1585,7 +1589,7 @@
   <string name="home_tab.error_body">Check your internet connection and try again.</string>
   <string name="home_tab.error_button_text">Try again</string>
   <string name="home_tab.error_title">Something went wrong</string>
-  <string name="home_tab.get_help">Help and Support</string>
+  <string name="home_tab.get_help">Help and support</string>
   <string name="home_tab.moving_action_sheet.description">You already have a quote for an address change to %1$s.</string>
   <string name="home_tab.moving_action_sheet.start_new_offer_button">Create a new quote</string>
   <string name="home_tab.moving_info_card.button_text">Go to pending quote</string>
