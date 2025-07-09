@@ -18,6 +18,9 @@ jobs:
       - uses: ./.github/actions/common-setup
         with:
           gradle-cache-read-only: true
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Update schema
         run: ./gradlew downloadApolloSchemaFromIntrospection
       - name: Create Pull Request

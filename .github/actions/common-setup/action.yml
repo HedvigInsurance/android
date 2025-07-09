@@ -4,6 +4,12 @@ inputs:
   gradle-cache-read-only:
     description: 'Gradle cache read-only flag'
     required: true
+  datadog-api-key:
+    required: true
+  lokalise-id:
+    required: true
+  lokalise-token:
+    required: true
 runs:
   using: "composite"
   steps:
@@ -20,9 +26,9 @@ runs:
       run: ./scripts/ci-prebuild.sh
       shell: bash
       env:
-        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-        LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+        DATADOG_API_KEY: ${{ inputs.datadog-api-key }}
+        LOKALISE_ID: ${{ inputs.lokalise-id }}
+        LOKALISE_TOKEN: ${{ inputs.lokalise-token }}
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:

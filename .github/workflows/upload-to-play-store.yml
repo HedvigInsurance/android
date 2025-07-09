@@ -15,7 +15,10 @@ jobs:
     steps:
       - uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: true
+          gradle-cache-read-only: false
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - run: echo VERSION_CODE=$(date +%s) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:

@@ -10,7 +10,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: true
+          gradle-cache-read-only: false
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
 
       - name: Run android lint
         run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
