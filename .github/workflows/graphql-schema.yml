@@ -14,30 +14,9 @@ jobs:
   update_gql_schema:
     runs-on: ubuntu-latest-8-vcpu
     steps:
-      - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
-      - name: Copy CI gradle.properties
-        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
-      - name: Setup JDK 21
-        uses: actions/setup-java@v4.7.1
+      - uses: ./.github/actions/common-setup
         with:
-          java-version: '21'
-          distribution: 'zulu'
-      - name: Prebuild
-        run: ./scripts/ci-prebuild.sh
-        env:
-          HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
-          HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-read-only: true
-        env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          gradle-cache-read-only: true
       - name: Update schema
         run: ./gradlew downloadApolloSchemaFromIntrospection
       - name: Create Pull Request
