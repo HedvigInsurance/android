@@ -1,0 +1,35 @@
+name: 'Common Setup'
+description: 'Sets up the common environment for CI jobs'
+inputs:
+  gradle-cache-read-only:
+    description: 'Gradle cache read-only flag'
+    required: true
+  datadog-api-key:
+    required: true
+  lokalise-id:
+    required: true
+  lokalise-token:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: gradle/actions/wrapper-validation@v4
+    - name: Copy CI gradle.properties
+      run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      shell: bash
+    - name: Setup JDK 21
+      uses: actions/setup-java@v4.7.1
+      with:
+        java-version: '21'
+        distribution: 'zulu'
+    - name: Prebuild
+      run: ./scripts/ci-prebuild.sh
+      shell: bash
+      env:
+        DATADOG_API_KEY: ${{ inputs.datadog-api-key }}
+        LOKALISE_ID: ${{ inputs.lokalise-id }}
+        LOKALISE_TOKEN: ${{ inputs.lokalise-token }}
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
