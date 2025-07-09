@@ -7,27 +7,28 @@ jobs:
   execute:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/actions/common-setup
-      with:
-        gradle-cache-read-only: true
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: true
 
-    - name: Run android lint
-      run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
+      - name: Run android lint
+        run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
 
-    - name: Remove unused resources
-      run: ./gradlew :app:removeUnusedResourcesDebug
+      - name: Remove unused resources
+        run: ./gradlew :app:removeUnusedResourcesDebug
 
-    - name: Generate Token
-      id: generate_token
-      uses: tibdex/github-app-token@v2
-      with:
-        app_id: ${{ secrets.CI_APP_ID }}
-        private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
+      - name: Generate Token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.CI_APP_ID }}
+          private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
 
-    - name: Create PR
-      uses: peter-evans/create-pull-request@v7
-      with:
-        token: ${{ steps.generate_token.outputs.token }}
-        branch: "maintenance/remove-unused-resources"
-        title: "Maintenance: Remove unused resources"
-        body: ""
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          branch: "maintenance/remove-unused-resources"
+          title: "Maintenance: Remove unused resources"
+          body: ""

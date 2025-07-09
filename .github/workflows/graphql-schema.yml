@@ -14,6 +14,7 @@ jobs:
   update_gql_schema:
     runs-on: ubuntu-latest-8-vcpu
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/common-setup
         with:
           gradle-cache-read-only: true

@@ -15,6 +15,7 @@ jobs:
     name: Build and release new umbrella version
     runs-on: macos-13
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/common-setup
         with:
           gradle-cache-read-only: true
