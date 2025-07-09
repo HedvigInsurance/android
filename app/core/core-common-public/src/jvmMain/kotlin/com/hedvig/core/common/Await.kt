@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common
+package com.hedvig.core.common
 
 import java.io.IOException
 import kotlin.coroutines.resume

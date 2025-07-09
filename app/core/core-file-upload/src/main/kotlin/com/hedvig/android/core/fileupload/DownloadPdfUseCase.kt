@@ -4,9 +4,9 @@ import android.content.Context
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.await
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.core.common.await
 import java.io.File
 import java.time.format.DateTimeFormatter
 import kotlin.coroutines.cancellation.CancellationException
