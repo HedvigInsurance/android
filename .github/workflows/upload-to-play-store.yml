@@ -13,7 +13,8 @@ jobs:
   build_release:
     runs-on: ubuntu-latest-8-vcpu
     steps:
-      - uses: ./.github/actions/common-setup
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
         with:
           gradle-cache-read-only: false
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}

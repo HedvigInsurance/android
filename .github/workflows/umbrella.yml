@@ -16,7 +16,8 @@ jobs:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/common-setup
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
         with:
           gradle-cache-read-only: false
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
