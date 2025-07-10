@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
 }
 
@@ -7,13 +7,13 @@ hedvig {
   apolloSchema {
     introspection {
       endpointUrl = "https://apollo-router.dev.hedvigit.com"
-      schemaFile = file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
+      schemaFile = file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
     }
     schemaFiles.setFrom(
-      file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"),
-      file("src/main/graphql/com/hedvig/android/apollo/octopus/extra.graphqls"),
+      file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"),
+      file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/extra.graphqls"),
     )
-    srcDir(file("src/main/graphql/com/hedvig/android/apollo/octopus/graphql"))
+    srcDir(file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/graphql"))
 
     packageName = "octopus"
     codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
@@ -34,11 +34,15 @@ hedvig {
   }
 }
 
-dependencies {
-  api(libs.apollo.adapters.datetime)
-  api(libs.apollo.api)
-  api(libs.kotlinx.datetime)
-  implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreMarkdown)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      api(libs.apollo.adapters.datetime)
+      api(libs.apollo.api)
+      api(libs.kotlinx.datetime)
+      implementation(projects.coreBuildConstants)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.coreMarkdown)
+    }
+  }
 }
