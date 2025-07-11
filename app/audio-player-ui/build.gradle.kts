@@ -14,7 +14,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(projects.audioPlayerData)
-  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
 }

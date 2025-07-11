@@ -21,7 +21,6 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)

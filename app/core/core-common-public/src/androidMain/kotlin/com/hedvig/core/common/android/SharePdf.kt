@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.android
+package com.hedvig.core.common.android
 
 import android.content.Context
 import android.content.Intent

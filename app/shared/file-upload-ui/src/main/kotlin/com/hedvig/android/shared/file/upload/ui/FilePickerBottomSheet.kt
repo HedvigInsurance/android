@@ -1,4 +1,4 @@
-package com.hedvig.android.core.fileupload.ui
+package com.hedvig.android.shared.file.upload.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.android.validation
+package com.hedvig.core.common.android.validation
 
 import androidx.annotation.StringRes
 

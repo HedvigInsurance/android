@@ -42,7 +42,6 @@ dependencies {
   implementation(projects.composePhotoCaptureState)
   implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)

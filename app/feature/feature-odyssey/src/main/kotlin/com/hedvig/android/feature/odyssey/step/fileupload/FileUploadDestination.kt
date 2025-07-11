@@ -15,9 +15,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
-import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import hedvig.resources.R
 
 @Composable
