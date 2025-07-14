@@ -1,8 +1,6 @@
 package com.hedvig.android.core.uidata
 
 import androidx.compose.runtime.Immutable
-import java.math.BigDecimal
-import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
 import octopus.fragment.MoneyFragment
 
@@ -25,7 +23,7 @@ data class UiMoney(val amount: Double, val currencyCode: UiCurrencyCode) {
 
   operator fun plus(other: UiMoney): UiMoney {
     return this.copy(
-      amount = BigDecimal(amount).add(BigDecimal(other.amount)).toDouble(),
+      amount = amount + other.amount.toDouble(),
     )
   }
 
@@ -35,5 +33,3 @@ data class UiMoney(val amount: Double, val currencyCode: UiCurrencyCode) {
     }
   }
 }
-
-private val decimalFormatter: DecimalFormat = DecimalFormat("")

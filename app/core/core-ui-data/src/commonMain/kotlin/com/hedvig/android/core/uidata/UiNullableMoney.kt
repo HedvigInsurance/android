@@ -1,7 +1,6 @@
 package com.hedvig.android.core.uidata
 
 import androidx.compose.runtime.Immutable
-import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
 import octopus.fragment.MoneyFragment
 
@@ -33,5 +32,3 @@ data class UiNullableMoney(val amount: Double?, val currencyCode: UiCurrencyCode
     }
   }
 }
-
-private val decimalFormatter: DecimalFormat = DecimalFormat("")

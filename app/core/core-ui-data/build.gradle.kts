@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
 }
 
@@ -8,8 +8,12 @@ hedvig {
   compose()
 }
 
-dependencies {
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(projects.apolloOctopusPublic)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.androidx.compose.runtime)
+      implementation(libs.kotlinx.serialization.core)
+      implementation(projects.apolloOctopusPublic)
+    }
+  }
 }

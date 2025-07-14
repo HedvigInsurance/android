@@ -49,6 +49,7 @@ androidx-test = "1.6.1"
 androidx-testRunners = "1.6.2"
 androidx-ui-alpha = "1.8.1"
 androidxGraphicsShapes = "1.0.1"
+jetbrains-compose-runtime = "1.8.2"
 arrow = "2.1.2"
 assertK = "0.28.1"
 atomicfu = "0.27.0"
@@ -100,7 +101,7 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
-androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+androidx-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose-runtime" }
 androidx-compose-runtimeSaveable = { module = "androidx.compose.runtime:runtime-saveable" }
 
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui", version.ref = "androidx-ui-alpha" }
