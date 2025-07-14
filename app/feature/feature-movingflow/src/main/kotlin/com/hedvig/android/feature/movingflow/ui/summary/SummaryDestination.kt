@@ -185,15 +185,16 @@ private fun SummaryScreen(
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
+  val startDateFormatted = formatStartDate(content.summaryInfo.moveHomeQuote.startDate)
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
+      title = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       onDismissRequest = { showConfirmChangesDialog = false },
       onConfirmClick = onConfirmChanges,
       confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
       dismissButtonLabel = stringResource(R.string.general_cancel_button),
-      text = null,
+      text = stringResource(R.string.CONFIRM_CHANGES_SUBTITLE, startDateFormatted),
     )
   }
   if (content.submitError != null) {
@@ -320,10 +321,8 @@ private fun SummaryScreen(
           spaceBetween = 8.dp,
         )
         Spacer(Modifier.height(2.dp))
-        val startDate = formatStartDate(content.summaryInfo.moveHomeQuote.startDate)
-        val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
         HedvigText(
-          text = subtitle,
+          text = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDateFormatted),
           style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
           textAlign = TextAlign.End,
           modifier = Modifier.fillMaxWidth(),
