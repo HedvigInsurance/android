@@ -8,8 +8,6 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
-import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import kotlinx.datetime.LocalDate
 import octopus.CommitMidtermChangeMutation
 import octopus.type.MidtermChangeIntentState
@@ -22,12 +20,9 @@ internal class CommitMidtermChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
   private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
-  private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : CommitMidtermChangeUseCase {
   override suspend fun invoke(intentId: String): Either<ErrorMessage, CommitMidtermChangeSuccess> = either {
-    val mutation = CommitMidtermChangeMutation(intentId)
-
-    val result = apolloClient.mutation(mutation)
+    val result = apolloClient.mutation(CommitMidtermChangeMutation(intentId))
       .safeExecute(::ErrorMessage)
       .bind()
 
@@ -40,9 +35,6 @@ internal class CommitMidtermChangeUseCaseImpl(
       MidtermChangeIntentState.COMPLETED -> {
         networkCacheManager.clearCache()
         selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
-        crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-          CrossSellInfoType.EditCoInsured,
-        )
         CommitMidtermChangeSuccess(
           result.midtermChangeIntentCommit.intent.activationDate,
         )

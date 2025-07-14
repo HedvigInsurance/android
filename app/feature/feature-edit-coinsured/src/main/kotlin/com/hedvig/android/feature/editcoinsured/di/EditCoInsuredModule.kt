@@ -3,7 +3,6 @@ package com.hedvig.android.feature.editcoinsured.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
-import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -49,7 +48,6 @@ val editCoInsuredModule = module {
       get<ApolloClient>(),
       get<NetworkCacheManager>(),
       get<SelfServiceCompletedEventManager>(),
-      get<CrossSellAfterFlowRepository>(),
     )
   }
 
