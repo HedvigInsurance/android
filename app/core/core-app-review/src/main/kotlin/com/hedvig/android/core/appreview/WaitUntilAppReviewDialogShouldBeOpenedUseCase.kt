@@ -21,5 +21,6 @@ internal class WaitUntilAppReviewDialogShouldBeOpenedUseCaseImpl(
       .drop(1)
       .filter { it > 0 }
       .first()
+    dataStore.resetSelfServiceCompletions()
   }
 }
