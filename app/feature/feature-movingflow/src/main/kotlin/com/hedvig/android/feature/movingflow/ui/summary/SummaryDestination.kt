@@ -319,6 +319,15 @@ private fun SummaryScreen(
           modifier = Modifier.fillMaxWidth(),
           spaceBetween = 8.dp,
         )
+        Spacer(Modifier.height(2.dp))
+        val startDate = formatStartDate(content.summaryInfo.moveHomeQuote.startDate)
+        val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
+        HedvigText(
+          text = subtitle,
+          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
@@ -340,11 +349,9 @@ private fun QuoteCard(
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
 ) {
-  val startDate = formatStartDate(quote.startDate)
-  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
     productVariant = quote.productVariant,
-    subtitle = subtitle,
+    subtitle = quote.exposureName, // todo look into if this is the correct field to use
     premium = quote.premium,
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
