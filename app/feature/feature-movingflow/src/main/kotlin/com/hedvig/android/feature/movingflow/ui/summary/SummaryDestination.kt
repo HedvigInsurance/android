@@ -1,17 +1,16 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
+import android.R.attr.data
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -41,8 +40,10 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -75,6 +76,7 @@ import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
@@ -95,9 +97,8 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
+import com.hedvig.android.tiersandaddons.ContractDiscount
 import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteCardDefaults
-import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
@@ -299,22 +300,39 @@ private fun SummaryScreen(
             HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
           },
           endSlot = {
-            AnimatedContent(
-              targetState = content.summaryInfo.totalPremium,
-              transitionSpec = {
-                slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
-              },
-            ) { premium ->
-              val voiceoverDescription = premium.getPerMonthDescription()
-              HedvigText(
-                text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
-                textAlign = TextAlign.End,
-                modifier = Modifier
-                  .wrapContentWidth(Alignment.End)
-                  .semantics {
-                    contentDescription = voiceoverDescription
-                  },
-              )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
+              if (content.summaryInfo.totalPremium != content.summaryInfo.grossPremium) {
+                HedvigText(
+                  text = stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    content.summaryInfo.grossPremium,
+                  ),
+                  textAlign = TextAlign.End,
+                  style = LocalTextStyle.current.copy(
+                    textDecoration = TextDecoration.LineThrough,
+                  ),
+                  modifier = Modifier
+                    .wrapContentWidth(Alignment.End)
+                    .semantics { hideFromAccessibility() },
+                )
+              }
+              AnimatedContent(
+                targetState = content.summaryInfo.totalPremium,
+                transitionSpec = {
+                  slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
+                },
+              ) { premium ->
+                val voiceoverDescription = premium.getPerMonthDescription()
+                HedvigText(
+                  text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
+                  textAlign = TextAlign.End,
+                  modifier = Modifier
+                    .wrapContentWidth(Alignment.End)
+                    .semantics {
+                      contentDescription = voiceoverDescription
+                    },
+                )
+              }
             }
           },
           modifier = Modifier.fillMaxWidth(),
@@ -346,14 +364,20 @@ private fun SummaryScreen(
 private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
   QuoteCard(
     productVariant = quote.productVariant,
-    subtitle = quote.exposureName, // todo look into if this is the correct field to use
+    subtitle = quote.exposureName,
     premium = quote.premium,
-    previousPremium = null, // todo bundle discounts
+    previousPremium = quote.previousPremium,
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
         subtitle = it.subtitle,
         value = it.value,
+      )
+    },
+    discounts = quote.discounts.map {
+      ContractDiscount(
+        displayName = it.displayName,
+        discount = it.discount,
       )
     },
     modifier = modifier,
@@ -370,54 +394,22 @@ private fun AddonQuoteCard(
   AddonQuoteCard(
     quote = quote,
     modifier = modifier,
-    underDetailsContent = { state ->
-      LaunchedEffect(quote.isExcludedByUser) {
-        if (quote.isExcludedByUser) {
-          state.showDetails = false
-        }
-      }
-      Column {
-        Spacer(Modifier.height(16.dp))
-        AnimatedVisibility(
-          visible = canExcludeAddons && state.showDetails && !quote.isExcludedByUser,
-          enter = expandVertically(expandFrom = Alignment.Top),
-          exit = shrinkVertically(shrinkTowards = Alignment.Top),
-        ) {
-          HedvigButton(
-            text = stringResource(R.string.GENERAL_REMOVE),
-            onClick = toggleHomeAddonExclusion,
-            enabled = true,
-            buttonStyle = Ghost,
-            buttonSize = Medium,
-            border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(bottom = 8.dp),
-          )
-        }
-        if (quote.isExcludedByUser) {
-          HedvigButton(
-            text = stringResource(R.string.ADDON_ADD_COVERAGE),
-            onClick = toggleHomeAddonExclusion,
-            enabled = true,
-            buttonStyle = Secondary,
-            buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth(),
-          )
-        } else {
-          HedvigButton(
-            text = if (state.showDetails) {
-              stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+    betweenDetailsAndDocumentsContent = {
+      if (canExcludeAddons) {
+        HedvigButton(
+          text = stringResource(
+            if (quote.isExcludedByUser) {
+              R.string.ADDON_ADD_COVERAGE
             } else {
-              stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+              R.string.GENERAL_REMOVE
             },
-            onClick = state::toggleState,
-            enabled = true,
-            buttonStyle = Secondary,
-            buttonSize = Medium,
-            modifier = Modifier.fillMaxWidth(),
-          )
-        }
+          ),
+          onClick = toggleHomeAddonExclusion,
+          enabled = true,
+          buttonStyle = Secondary,
+          buttonSize = Medium,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
     },
   )
@@ -428,7 +420,7 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, mod
   AddonQuoteCard(
     quote = quote,
     modifier = modifier,
-    underDetailsContent = null,
+    betweenDetailsAndDocumentsContent = {},
   )
 }
 
@@ -436,7 +428,7 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, mod
 private fun AddonQuoteCard(
   quote: MovingFlowQuotes.AddonQuote,
   modifier: Modifier = Modifier,
-  underDetailsContent: (@Composable (QuoteCardState) -> Unit)?,
+  betweenDetailsAndDocumentsContent: @Composable () -> Unit,
 ) {
   val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
     null
@@ -445,26 +437,23 @@ private fun AddonQuoteCard(
   }
   val quoteCardState = rememberQuoteCardState()
   QuoteCard(
-    quoteCardState = object : QuoteCardState {
-      override var showDetails: Boolean
-        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.showDetails
-        set(value) {
-          if (quote is HomeAddonQuote && quote.isExcludedByUser) return
-          quoteCardState.showDetails = value
-        }
-      override val isEnabled: Boolean
-        get() = if (quote is HomeAddonQuote && quote.isExcludedByUser) false else quoteCardState.isEnabled
-    },
+    quoteCardState = quoteCardState,
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium,
-    previousPremium = null, // todo bundle discounts
+    previousPremium = quote.previousPremium,
     isExcluded = when (quote) {
       is HomeAddonQuote -> quote.isExcludedByUser
       is MtaAddonQuote -> false
+    },
+    discounts = quote.discounts.map {
+      ContractDiscount(
+        displayName = it.displayName,
+        discount = it.discount,
+      )
     },
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
@@ -474,7 +463,7 @@ private fun AddonQuoteCard(
       )
     },
     modifier = modifier,
-    underDetailsContent = underDetailsContent ?: { QuoteCardDefaults.UnderDetailsContent(it) },
+    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
   )
 }
 
@@ -593,6 +582,13 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveHomeQuote = MoveHomeQuote(
           id = "id",
           premium = UiMoney(99.0, SEK),
+          previousPremium = UiMoney(199.0, SEK),
+          discounts = List(5) {
+            MovingFlowQuotes.ContractDiscount(
+              displayName = "displayName#$it",
+              discount = UiMoney(20.0, SEK),
+            )
+          },
           startDate = startDate,
           displayItems = listOf(
             DisplayItem(
@@ -612,7 +608,14 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
             HomeAddonQuote(
               addonId = AddonId(it.toString()),
               premium = UiMoney(129.0, SEK),
+              previousPremium = UiMoney(139.0, SEK),
               startDate = startDate,
+              discounts = listOf(
+                MovingFlowQuotes.ContractDiscount(
+                  displayName = "displayName",
+                  discount = UiMoney(10.0, SEK),
+                ),
+              ),
               displayItems = listOf(
                 DisplayItem(
                   title = "display title",
@@ -630,14 +633,18 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveMtaQuotes = listOf(
           MoveMtaQuote(
             premium = UiMoney(49.0, SEK),
+            previousPremium = null,
             exposureName = "exposureName",
             productVariant = productVariant,
             startDate = startDate,
+            discounts = emptyList(),
             displayItems = emptyList(),
             relatedAddonQuotes = emptyList(),
           ),
           MoveMtaQuote(
             premium = UiMoney(23.0, SEK),
+            previousPremium = null,
+            discounts = emptyList(),
             exposureName = "exposureName",
             productVariant = productVariant,
             startDate = startDate,
@@ -646,6 +653,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               MtaAddonQuote(
                 addonId = AddonId("1"),
                 premium = UiMoney(30.0, SEK),
+                previousPremium = null,
+                discounts = emptyList(),
                 startDate = startDate,
                 displayItems = listOf(
                   DisplayItem(
