@@ -210,136 +210,49 @@ fun QuoteCard(
 }
 
 @Composable
-fun QuoteCard(
-  quoteCardState: QuoteCardState,
-  subtitle: String,
-  premium: @Composable () -> Unit,
-  displayItems: (@Composable () -> Unit)?,
-  displayName: String,
-  contractGroup: ContractGroup?,
-  insurableLimits: (@Composable () -> Unit)?,
-  documents: List<InsuranceVariantDocument>,
-  modifier: Modifier = Modifier,
-  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
-    QuoteCardDefaults.UnderDetailsContent(state)
-  },
-) {
-  HedvigCard(
-    modifier = modifier,
-    onClick = quoteCardState::toggleState,
-    enabled = quoteCardState.isEnabled,
-    interactionSource = null,
-    indication = ripple(bounded = true, radius = 1000.dp),
-  ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row(
-        Modifier.semantics(mergeDescendants = true) {},
-      ) {
-        if (contractGroup != null) {
-          Image(
-            painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-          )
-          Spacer(modifier = Modifier.width(12.dp))
-        }
-        Column {
+fun QuoteCardDocumentsSection(documents: List<InsuranceVariantDocument>) {
+  Column(Modifier.semantics(true) {}) {
+    HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+    Column(
+      verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+      for (document in documents) {
+        val uriHandler = LocalUriHandler.current
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .clip(HedvigTheme.shapes.cornerXSmall)
+            .clickable {
+              uriHandler.openUri(document.url)
+            },
+        ) {
           HedvigText(
-            text = displayName,
-            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-          HedvigText(
-            text = subtitle,
+            text = document.displayName,
+            style = HedvigTheme.typography.bodySmall,
             color = HedvigTheme.colorScheme.textSecondary,
-            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
-            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
           )
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-        },
-        endSlot = premium,
-        spaceBetween = 8.dp,
-      )
-      AnimatedVisibility(
-        visible = quoteCardState.showDetails,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            HorizontalDivider()
-            if (displayItems != null) {
-              Column(
-                Modifier.semantics(true) {},
-              ) {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
-                displayItems()
-              }
-            }
-            if (insurableLimits != null) {
-              Column(
-                Modifier.semantics(true) {},
-              ) {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
-                insurableLimits()
-              }
-            }
-            if (documents.isNotEmpty()) {
-              Column(Modifier.semantics(true) {}) {
-                HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
-                Column(
-                  verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                  for (document in documents) {
-                    val uriHandler = LocalUriHandler.current
-                    Row(
-                      modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(HedvigTheme.shapes.cornerXSmall)
-                        .clickable {
-                          uriHandler.openUri(document.url)
-                        },
-                    ) {
-                      HedvigText(
-                        text = document.displayName,
-                        style = HedvigTheme.typography.bodySmall,
-                        color = HedvigTheme.colorScheme.textSecondary,
-                        modifier = Modifier.weight(1f),
-                      )
-                      Spacer(Modifier.width(8.dp))
-                      LayoutWithoutPlacement(
-                        sizeAdjustingContent = {
-                          HedvigText(
-                            "H",
-                            style = HedvigTheme.typography.bodySmall,
-                          )
-                        },
-                      ) {
-                        val density = LocalDensity.current
-                        Icon(
-                          imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
-                          tint = HedvigTheme.colorScheme.fillPrimary,
-                          modifier = Modifier
-                            .wrapContentSize(Alignment.Center)
-                            .then(with(density) { Modifier.size(24.sp.toDp()) }),
-                        )
-                      }
-                    }
-                  }
-                }
-              }
-            }
+          Spacer(Modifier.width(8.dp))
+          LayoutWithoutPlacement(
+            sizeAdjustingContent = {
+              HedvigText(
+                "H",
+                style = HedvigTheme.typography.bodySmall,
+              )
+            },
+          ) {
+            val density = LocalDensity.current
+            Icon(
+              imageVector = HedvigIcons.ArrowNorthEast,
+              contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+              tint = HedvigTheme.colorScheme.fillPrimary,
+              modifier = Modifier
+                .wrapContentSize(Alignment.Center)
+                .then(with(density) { Modifier.size(24.sp.toDp()) }),
+            )
           }
         }
       }
-      underDetailsContent(quoteCardState)
     }
   }
 }
