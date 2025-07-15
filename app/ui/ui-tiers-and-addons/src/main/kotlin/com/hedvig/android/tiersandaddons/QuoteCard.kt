@@ -146,9 +146,6 @@ fun QuoteCard(
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
-  underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
-    QuoteCardDefaults.UnderDetailsContent(state)
-  },
 ) {
   QuoteCard(
     quoteCardState = quoteCardState,
@@ -162,7 +159,6 @@ fun QuoteCard(
     contractGroup = productVariant.contractGroup,
     insurableLimits = productVariant.insurableLimits,
     documents = productVariant.documents,
-    underDetailsContent = underDetailsContent,
   )
 }
 
