@@ -1932,7 +1932,7 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use net/gross")
   """
    When this addon is becoming active 
   """
@@ -1941,6 +1941,9 @@ type MoveAddonQuote {
    The terms 
   """
   addonVariant: AddonVariant!
+  gross: Money!
+  net: Money!
+  discounts: [ProductOfferCostDiscount!]!
 }
 type MoveAddress {
   """
@@ -2031,7 +2034,7 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use net/gross")
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2068,6 +2071,17 @@ type MoveHomeQuote {
    The addons moved from old home to new home 
   """
   addons: [MoveAddonQuote!]!
+  gross: Money!
+  net: Money!
+  discounts: [ProductOfferCostDiscount!]!
+}
+enum ProductOfferDiscountType {
+  CAMPAIGN
+  BUNDLE
+}
+type ProductOfferCostDiscount {
+  value: Money!
+  displayName: String! # "50% puppy discount"
 }
 type MoveIntent {
   id: ID!
@@ -2180,7 +2194,7 @@ type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use net/gross")
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2201,6 +2215,9 @@ type MoveMtaQuote {
    The addons moved to new address for agreement 
   """
   addons: [MoveAddonQuote!]!
+  gross: Money!
+  net: Money!
+  discounts: [ProductOfferCostDiscount!]!
 }
 """
  DEPRECATED. Quotes used for the old V1 API 
