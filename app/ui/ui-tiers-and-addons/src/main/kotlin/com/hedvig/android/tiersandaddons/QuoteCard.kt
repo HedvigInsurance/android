@@ -138,12 +138,13 @@ object QuoteCardDefaults {
 
 @Composable
 fun QuoteCard(
-  quoteCardState: QuoteCardState = rememberQuoteCardState(),
   productVariant: ProductVariant,
   subtitle: String,
   premium: UiMoney,
+  previousPremium: UiMoney?,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
+  quoteCardState: QuoteCardState = rememberQuoteCardState(),
   underTitleContent: @Composable () -> Unit = {},
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
@@ -153,6 +154,7 @@ fun QuoteCard(
     quoteCardState = quoteCardState,
     subtitle = subtitle,
     premium = premium,
+    previousPremium = previousPremium,
     isExcluded = false,
     displayItems = displayItems,
     underTitleContent = underTitleContent,
@@ -174,6 +176,7 @@ fun QuoteCard(
   documents: List<InsuranceVariantDocument>,
   subtitle: String?,
   premium: UiMoney,
+  previousPremium: UiMoney?,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
@@ -186,6 +189,7 @@ fun QuoteCard(
     quoteCardState = quoteCardState,
     subtitle = subtitle,
     premium = premium,
+    previousPremium = previousPremium,
     isExcluded = isExcluded,
     displayItems = displayItems,
     underTitleContent = underTitleContent,
@@ -354,6 +358,7 @@ private fun QuoteCard(
   quoteCardState: QuoteCardState,
   subtitle: String?,
   premium: UiMoney,
+  previousPremium: UiMoney?,
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
@@ -393,7 +398,8 @@ private fun QuoteCard(
           Spacer(modifier = Modifier.width(12.dp))
         }
         Column(
-          Modifier.weight(1f)
+          Modifier
+            .weight(1f)
             .semantics(mergeDescendants = true) {},
         ) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -443,27 +449,41 @@ private fun QuoteCard(
           )
         },
         endSlot = {
-          val voiceDescription = premium.getPerMonthDescription()
-          HedvigText(
-            text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              premium,
-            ),
-            textAlign = TextAlign.End,
-            style = if (isExcluded) {
-              LocalTextStyle.current.copy(
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                textDecoration = TextDecoration.LineThrough,
+          val premiumPerMonthDescription = premium.getPerMonthDescription()
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
+            modifier = Modifier.semantics { contentDescription = premiumPerMonthDescription },
+          ) {
+            if (previousPremium != null && !isExcluded) {
+              HedvigText(
+                text = stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  previousPremium,
+                ),
+                textAlign = TextAlign.End,
+                style = LocalTextStyle.current.copy(
+                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                  textDecoration = TextDecoration.LineThrough,
+                ),
               )
-            } else {
-              LocalTextStyle.current
-            },
-            modifier = Modifier
-              .wrapContentWidth(Alignment.End)
-              .semantics {
-                contentDescription = voiceDescription
+            }
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                premium,
+              ),
+              textAlign = TextAlign.End,
+              style = if (isExcluded) {
+                LocalTextStyle.current.copy(
+                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                  textDecoration = TextDecoration.LineThrough,
+                )
+              } else {
+                LocalTextStyle.current
               },
-          )
+              modifier = Modifier.wrapContentWidth(Alignment.End),
+            )
+          }
         },
       )
       Column(
@@ -633,6 +653,7 @@ private fun PreviewQuoteCard(
         },
         subtitle = "subtitle",
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
+        previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
         isExcluded = showDetails,
         displayItems = List(5) {
           QuoteDisplayItem(

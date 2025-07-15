@@ -352,6 +352,7 @@ private fun QuoteCard(
     productVariant = quote.productVariant,
     subtitle = quote.exposureName, // todo look into if this is the correct field to use
     premium = quote.premium,
+    previousPremium = null, // todo bundle discounts
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
         title = it.title,
@@ -465,6 +466,7 @@ private fun AddonQuoteCard(
     documents = quote.addonVariant.documents,
     subtitle = subtitle,
     premium = quote.premium,
+    previousPremium = null, // todo bundle discounts
     isExcluded = when (quote) {
       is HomeAddonQuote -> quote.isExcludedByUser
       is MtaAddonQuote -> false

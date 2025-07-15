@@ -297,6 +297,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       formatStartDate(uiState.activationDate),
     ),
     premium = uiState.quote.premium,
+    previousPremium = null,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -359,6 +360,7 @@ private fun AddonCard(
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
     premium = addonQuote.premium,
+    previousPremium = null,
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
