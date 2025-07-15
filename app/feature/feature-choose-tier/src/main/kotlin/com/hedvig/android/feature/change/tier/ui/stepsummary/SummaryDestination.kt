@@ -297,7 +297,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       formatStartDate(uiState.activationDate),
     ),
     premium = uiState.quote.premium,
-    previousPremium = null,
+    previousPremium = uiState.currentContractData.activeDisplayPremium,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -305,42 +305,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
         it.displayValue,
       )
     },
-    underTitleContent = {
-      UnderTitleContent(
-        uiState.currentContractData.activeDisplayPremium,
-        modifier = Modifier.semantics(mergeDescendants = true) {},
-      )
-    },
     modifier = modifier,
-  )
-}
-
-@Composable
-private fun UnderTitleContent(activeDisplayPremium: UiMoney?, modifier: Modifier = Modifier) {
-  val description = activeDisplayPremium?.let {
-    stringResource(
-      R.string.TIER_FLOW_PREVIOUS_PRICE,
-      it.getPerMonthDescription(),
-    )
-  } ?: ""
-
-  HedvigText(
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(top = 2.dp)
-      .semantics {
-        contentDescription = description
-      },
-    textAlign = TextAlign.End,
-    text = stringResource(
-      R.string.TIER_FLOW_PREVIOUS_PRICE,
-      stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        activeDisplayPremium.toString(),
-      ),
-    ),
-    style = HedvigTheme.typography.label,
-    color = HedvigTheme.colorScheme.textSecondary,
   )
 }
 
@@ -360,7 +325,7 @@ private fun AddonCard(
     documents = addonQuote.addonVariant.documents,
     subtitle = subtitle,
     premium = addonQuote.premium,
-    previousPremium = null,
+    previousPremium = addonQuote.previousPremium,
     isExcluded = false,
     displayItems = addonQuote.displayItems.map {
       QuoteDisplayItem(
@@ -370,23 +335,6 @@ private fun AddonCard(
       )
     },
     modifier = modifier,
-    underTitleContent = {
-      HedvigText(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 2.dp),
-        textAlign = TextAlign.End,
-        text = stringResource(
-          R.string.TIER_FLOW_PREVIOUS_PRICE,
-          stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            addonQuote.previousPremium.toString(),
-          ),
-        ),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-    },
   )
 }
 

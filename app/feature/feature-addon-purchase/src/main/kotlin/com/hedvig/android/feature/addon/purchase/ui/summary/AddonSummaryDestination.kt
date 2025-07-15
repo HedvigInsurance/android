@@ -294,7 +294,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     insurableLimits = null,
     documents = uiState.quote.addonVariant.documents,
     modifier = modifier,
-    underTitleContent = {},
     underDetailsContent = {},
   )
 }

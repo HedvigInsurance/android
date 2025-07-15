@@ -343,11 +343,7 @@ private fun SummaryScreen(
 }
 
 @Composable
-private fun QuoteCard(
-  quote: MovingFlowQuotes.Quote,
-  modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
-) {
+private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
   QuoteCard(
     productVariant = quote.productVariant,
     subtitle = quote.exposureName, // todo look into if this is the correct field to use
@@ -361,7 +357,6 @@ private fun QuoteCard(
       )
     },
     modifier = modifier,
-    underTitleContent = underTitleContent,
   )
 }
 

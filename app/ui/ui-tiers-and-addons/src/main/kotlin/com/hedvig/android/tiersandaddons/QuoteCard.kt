@@ -146,7 +146,6 @@ fun QuoteCard(
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
-  underTitleContent: @Composable () -> Unit = {},
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
@@ -158,7 +157,6 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = false,
     displayItems = displayItems,
-    underTitleContent = underTitleContent,
     modifier = modifier,
     displayName = productVariant.displayName,
     contractGroup = productVariant.contractGroup,
@@ -181,7 +179,6 @@ fun QuoteCard(
   isExcluded: Boolean,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
@@ -227,7 +224,6 @@ fun QuoteCard(
   insurableLimits: (@Composable () -> Unit)?,
   documents: List<InsuranceVariantDocument>,
   modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
   },
@@ -273,7 +269,6 @@ fun QuoteCard(
         endSlot = premium,
         spaceBetween = 8.dp,
       )
-      underTitleContent()
       AnimatedVisibility(
         visible = quoteCardState.showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),
@@ -366,7 +361,6 @@ private fun QuoteCard(
   insurableLimits: List<InsurableLimit>,
   documents: List<InsuranceVariantDocument>,
   modifier: Modifier = Modifier,
-  underTitleContent: @Composable () -> Unit = {},
   titleEndSlot: @Composable () -> Unit = {},
   underDetailsContent: @Composable (QuoteCardState) -> Unit = { state ->
     QuoteCardDefaults.UnderDetailsContent(state)
