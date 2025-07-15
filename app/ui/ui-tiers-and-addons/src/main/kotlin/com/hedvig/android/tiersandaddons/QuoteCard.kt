@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -192,7 +193,6 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = isExcluded,
     displayItems = displayItems,
-    underTitleContent = underTitleContent,
     modifier = modifier,
     displayName = displayName,
     contractGroup = contractGroup,
@@ -386,215 +386,17 @@ private fun QuoteCard(
           isTraversalGroup = true
         },
     ) {
-      Row(
-        Modifier.semantics(mergeDescendants = true) {},
-      ) {
-        if (contractGroup != null) {
-          Image(
-            painter = painterResource(contractGroup.toPillow()),
-            contentDescription = null, // CHECKED
-            modifier = Modifier.size(48.dp),
-          )
-          Spacer(modifier = Modifier.width(12.dp))
-        }
-        Column(
-          Modifier
-            .weight(1f)
-            .semantics(mergeDescendants = true) {},
-        ) {
-          HorizontalItemsWithMaximumSpaceTaken(
-            startSlot = {
-              HedvigText(
-                text = displayName,
-                maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier,
-              )
-            },
-            endSlot = { titleEndSlot() },
-            spaceBetween = 8.dp,
-          )
-          AnimatedContent(
-            targetState = subtitle,
-            transitionSpec = {
-              (fadeIn() + expandVertically(expandFrom = Alignment.Top))
-                .togetherWith(fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top))
-            },
-            modifier = Modifier.fillMaxWidth(),
-          ) { subtitle ->
-            if (subtitle != null) {
-              HedvigText(
-                text = subtitle,
-                color = HedvigTheme.colorScheme.textSecondary,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            } else {
-              Box(Modifier.fillMaxWidth())
-            }
-          }
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        modifier = Modifier.semantics(true) {},
-        spaceBetween = 8.dp,
-        startSlot = {
-          HedvigText(
-            text = stringResource(R.string.TIER_FLOW_TOTAL),
-            color = if (isExcluded) {
-              HedvigTheme.colorScheme.textSecondaryTranslucent
-            } else {
-              Color.Unspecified
-            },
-          )
-        },
-        endSlot = {
-          val premiumPerMonthDescription = premium.getPerMonthDescription()
-          Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
-            modifier = Modifier.semantics { contentDescription = premiumPerMonthDescription },
-          ) {
-            if (previousPremium != null && !isExcluded) {
-              HedvigText(
-                text = stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  previousPremium,
-                ),
-                textAlign = TextAlign.End,
-                style = LocalTextStyle.current.copy(
-                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                  textDecoration = TextDecoration.LineThrough,
-                ),
-              )
-            }
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                premium,
-              ),
-              textAlign = TextAlign.End,
-              style = if (isExcluded) {
-                LocalTextStyle.current.copy(
-                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                  textDecoration = TextDecoration.LineThrough,
-                )
-              } else {
-                LocalTextStyle.current
-              },
-              modifier = Modifier.wrapContentWidth(Alignment.End),
-            )
-          }
-        },
+      QuoteIconAndTitle(
+        contractGroup = contractGroup,
+        displayName = displayName,
+        quoteCardState = quoteCardState,
+        titleEndSlot = titleEndSlot,
+        subtitle = subtitle,
+        modifier = Modifier.semantics(mergeDescendants = true) {},
       )
-      Column(
-        Modifier.semantics(true) {},
-      ) {
-        underTitleContent()
-      }
-      AnimatedVisibility(
-        visible = quoteCardState.showDetails,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Column(
-            modifier = Modifier.semantics(true) {},
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-          ) {
-            HorizontalDivider()
-            if (displayItems.isNotEmpty()) {
-              Column {
-                HedvigText(
-                  stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE),
-                )
-                Column {
-                  for (displayItem in displayItems) {
-                    InfoRow(displayItem.title, displayItem.value)
-                  }
-                }
-              }
-            }
-            if (insurableLimits.isNotEmpty()) {
-              Column(
-                modifier = Modifier.semantics(true) {},
-              ) {
-                HedvigText(
-                  stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
-                )
-                Column {
-                  for (insurableLimit in insurableLimits) {
-                    InfoRow(
-                      insurableLimit.label,
-                      insurableLimit.limit,
-                    )
-                  }
-                }
-              }
-            }
-            if (documents.isNotEmpty()) {
-              Column {
-                HedvigText(
-                  stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE),
-                  modifier = Modifier.semantics(true) {},
-                )
-                Column(
-                  verticalArrangement = Arrangement.spacedBy(6.dp),
-                  modifier = Modifier.semantics(true) {},
-                ) {
-                  for (document in documents) {
-                    val uriHandler = LocalUriHandler.current
-                    Row(
-                      modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(HedvigTheme.shapes.cornerXSmall)
-                        .clickable {
-                          uriHandler.openUri(document.url)
-                        },
-                    ) {
-                      val voiceoverDescription = stringResource(R.string.TALKBACK_DOCUMENT, document.displayName)
-                      HedvigText(
-                        text = stringWithShiftedLabel(
-                          text = document.displayName,
-                          labelText = "PDF",
-                          labelFontSize = HedvigTheme.typography.label.fontSize,
-                          textColor = HedvigTheme.colorScheme.textSecondary,
-                          textFontSize = LocalTextStyle.current.fontSize,
-                        ),
-                        style = HedvigTheme.typography.bodySmall,
-                        modifier = Modifier
-                          .weight(1f)
-                          .semantics {
-                            contentDescription = voiceoverDescription
-                          },
-                      )
-                      Spacer(Modifier.width(8.dp))
-                      LayoutWithoutPlacement(
-                        sizeAdjustingContent = {
-                          HedvigText(
-                            "H",
-                            style = HedvigTheme.typography.bodySmall,
-                          )
-                        },
-                      ) {
-                        val density = LocalDensity.current
-                        Icon(
-                          imageVector = HedvigIcons.ArrowNorthEast,
-                          contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
-                          tint = HedvigTheme.colorScheme.fillPrimary,
-                          modifier = Modifier
-                            .wrapContentSize(Alignment.Center)
-                            .then(with(density) { Modifier.size(24.sp.toDp()) }),
-                        )
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      Spacer(Modifier.height(16.dp))
+      TotalPriceRow(isExcluded, premium, previousPremium, Modifier.semantics(mergeDescendants = true) {})
+      QuoteDetails(quoteCardState, displayItems, insurableLimits, documents)
       Column(
         modifier = Modifier.semantics {
           isTraversalGroup = true
@@ -605,6 +407,236 @@ private fun QuoteCard(
       }
     }
   }
+}
+
+@Composable
+private fun QuoteIconAndTitle(
+  contractGroup: ContractGroup?,
+  displayName: String,
+  quoteCardState: QuoteCardState,
+  titleEndSlot: @Composable (() -> Unit),
+  subtitle: String?,
+  modifier: Modifier = Modifier,
+) {
+  Row(modifier) {
+    if (contractGroup != null) {
+      Image(
+        painter = painterResource(contractGroup.toPillow()),
+        contentDescription = null, // CHECKED
+        modifier = Modifier.size(48.dp),
+      )
+      Spacer(modifier = Modifier.width(12.dp))
+    }
+    Column(
+      Modifier
+        .weight(1f)
+        .semantics(mergeDescendants = true) {},
+    ) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(
+            text = displayName,
+            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier,
+          )
+        },
+        endSlot = { titleEndSlot() },
+        spaceBetween = 8.dp,
+      )
+      AnimatedContent(
+        targetState = subtitle,
+        transitionSpec = {
+          (fadeIn() + expandVertically(expandFrom = Alignment.Top))
+            .togetherWith(fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top))
+        },
+        modifier = Modifier.fillMaxWidth(),
+      ) { subtitle ->
+        if (subtitle != null) {
+          HedvigText(
+            text = subtitle,
+            color = HedvigTheme.colorScheme.textSecondary,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        } else {
+          Box(Modifier.fillMaxWidth())
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ColumnScope.QuoteDetails(
+  quoteCardState: QuoteCardState,
+  displayItems: List<QuoteDisplayItem>,
+  insurableLimits: List<InsurableLimit>,
+  documents: List<InsuranceVariantDocument>,
+) {
+  AnimatedVisibility(
+    visible = quoteCardState.showDetails,
+    enter = expandVertically(expandFrom = Alignment.Top),
+    exit = shrinkVertically(shrinkTowards = Alignment.Top),
+  ) {
+    Column {
+      Spacer(Modifier.height(16.dp))
+      Column(
+        modifier = Modifier.semantics(true) {},
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        HorizontalDivider()
+        if (displayItems.isNotEmpty()) {
+          Column {
+            HedvigText(
+              stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE),
+            )
+            Column {
+              for (displayItem in displayItems) {
+                InfoRow(displayItem.title, displayItem.value)
+              }
+            }
+          }
+        }
+        if (insurableLimits.isNotEmpty()) {
+          Column(
+            modifier = Modifier.semantics(true) {},
+          ) {
+            HedvigText(
+              stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
+            )
+            Column {
+              for (insurableLimit in insurableLimits) {
+                InfoRow(
+                  insurableLimit.label,
+                  insurableLimit.limit,
+                )
+              }
+            }
+          }
+        }
+        if (documents.isNotEmpty()) {
+          Column {
+            HedvigText(
+              stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE),
+              modifier = Modifier.semantics(true) {},
+            )
+            Column(
+              verticalArrangement = Arrangement.spacedBy(6.dp),
+              modifier = Modifier.semantics(true) {},
+            ) {
+              for (document in documents) {
+                val uriHandler = LocalUriHandler.current
+                Row(
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(HedvigTheme.shapes.cornerXSmall)
+                    .clickable {
+                      uriHandler.openUri(document.url)
+                    },
+                ) {
+                  val voiceoverDescription = stringResource(R.string.TALKBACK_DOCUMENT, document.displayName)
+                  HedvigText(
+                    text = stringWithShiftedLabel(
+                      text = document.displayName,
+                      labelText = "PDF",
+                      labelFontSize = HedvigTheme.typography.label.fontSize,
+                      textColor = HedvigTheme.colorScheme.textSecondary,
+                      textFontSize = LocalTextStyle.current.fontSize,
+                    ),
+                    style = HedvigTheme.typography.bodySmall,
+                    modifier = Modifier
+                      .weight(1f)
+                      .semantics {
+                        contentDescription = voiceoverDescription
+                      },
+                  )
+                  Spacer(Modifier.width(8.dp))
+                  LayoutWithoutPlacement(
+                    sizeAdjustingContent = {
+                      HedvigText(
+                        "H",
+                        style = HedvigTheme.typography.bodySmall,
+                      )
+                    },
+                  ) {
+                    val density = LocalDensity.current
+                    Icon(
+                      imageVector = HedvigIcons.ArrowNorthEast,
+                      contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+                      tint = HedvigTheme.colorScheme.fillPrimary,
+                      modifier = Modifier
+                        .wrapContentSize(Alignment.Center)
+                        .then(with(density) { Modifier.size(24.sp.toDp()) }),
+                    )
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun TotalPriceRow(
+  isExcluded: Boolean,
+  premium: UiMoney,
+  previousPremium: UiMoney?,
+  modifier: Modifier = Modifier,
+) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = modifier,
+    spaceBetween = 8.dp,
+    startSlot = {
+      HedvigText(
+        text = stringResource(R.string.TIER_FLOW_TOTAL),
+        color = if (isExcluded) {
+          HedvigTheme.colorScheme.textSecondaryTranslucent
+        } else {
+          Color.Unspecified
+        },
+      )
+    },
+    endSlot = {
+      val premiumPerMonthDescription = premium.getPerMonthDescription()
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
+        modifier = Modifier.semantics { contentDescription = premiumPerMonthDescription },
+      ) {
+        if (previousPremium != null && !isExcluded) {
+          HedvigText(
+            text = stringResource(
+              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              previousPremium,
+            ),
+            textAlign = TextAlign.End,
+            style = LocalTextStyle.current.copy(
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+              textDecoration = TextDecoration.LineThrough,
+            ),
+          )
+        }
+        HedvigText(
+          text = stringResource(
+            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            premium,
+          ),
+          textAlign = TextAlign.End,
+          style = if (isExcluded) {
+            LocalTextStyle.current.copy(
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+              textDecoration = TextDecoration.LineThrough,
+            )
+          } else {
+            LocalTextStyle.current
+          },
+          modifier = Modifier.wrapContentWidth(Alignment.End),
+        )
+      }
+    },
+  )
 }
 
 @Composable
