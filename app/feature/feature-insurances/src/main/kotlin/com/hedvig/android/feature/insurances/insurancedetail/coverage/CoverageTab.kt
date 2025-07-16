@@ -177,9 +177,7 @@ private fun ColumnScope.InsurableLimitSection(
           if (index != 0) {
             Modifier.drawWithContent {
               drawContent()
-              if (index != insurableLimits.lastIndex) {
-                drawLine(dividerColor, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx())
-              }
+              drawLine(dividerColor, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx())
             }
           } else {
             Modifier
