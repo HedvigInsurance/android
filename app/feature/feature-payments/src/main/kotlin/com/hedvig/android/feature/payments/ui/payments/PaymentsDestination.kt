@@ -157,7 +157,7 @@ private fun PaymentsScreen(
             },
         ) {
           HedvigText(
-            text = stringResource(R.string.PROFILE_PAYMENT_TITLE),
+            text = stringResource(R.string.TAB_PAYMENTS_TITLE),
             style = HedvigTheme.typography.headlineSmall,
           )
         }
