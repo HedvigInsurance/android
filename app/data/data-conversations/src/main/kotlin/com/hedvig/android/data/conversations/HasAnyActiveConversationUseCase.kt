@@ -26,7 +26,7 @@ class HasAnyActiveConversationUseCase(
         either {
           val data = result
             .onLeft { error ->
-              if ((error as? ApolloOperationError.OperationError)?.containsUnauthenticatedError == true) {
+              if (error.containsUnauthenticatedError) {
                 return@onLeft
               }
               logcat(LogPriority.ERROR, error.throwable) {

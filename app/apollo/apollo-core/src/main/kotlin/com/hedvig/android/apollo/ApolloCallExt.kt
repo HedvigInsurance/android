@@ -26,22 +26,25 @@ import kotlinx.coroutines.flow.map
 
 sealed interface ApolloOperationError {
   val throwable: Throwable?
+  val containsUnauthenticatedError: Boolean
 
   data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError {
+    override val containsUnauthenticatedError: Boolean = false
+
     override fun toString(): String {
       return "CacheMiss(throwableMessage=${throwable.message}, throwable=$throwable)"
     }
   }
 
   data class OperationException(override val throwable: ApolloException) : ApolloOperationError {
+    override val containsUnauthenticatedError: Boolean = false
+
     override fun toString(): String {
       return "OperationException(throwableMessage=${throwable.message}, throwable=$throwable)"
     }
   }
 
   sealed interface OperationError : ApolloOperationError {
-    val containsUnauthenticatedError: Boolean
-
     object Unathenticated : OperationError {
       override val containsUnauthenticatedError: Boolean = true
 
