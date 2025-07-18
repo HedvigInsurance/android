@@ -1,14 +1,18 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
 }
 
-dependencies {
-  api(libs.apollo.api)
-  api(libs.apollo.runtime)
-  api(libs.arrow.core)
-  api(libs.coroutines.core)
-  api(projects.coreCommonPublic)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      api(libs.apollo.api)
+      api(libs.apollo.runtime)
+      api(libs.arrow.core)
+      api(libs.coroutines.core)
+      api(projects.coreCommonPublic)
 
-  implementation(libs.apollo.normalizedCache)
+      implementation(libs.apollo.normalizedCache)
+    }
+  }
 }

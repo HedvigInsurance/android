@@ -17,7 +17,7 @@ sealed interface OperationResult<out T> {
         }
 
         operator fun invoke(throwable: Throwable?): NoDataError {
-          return NoDataError(throwable, throwable?.localizedMessage)
+          return NoDataError(throwable, throwable?.message)
         }
       }
     }
@@ -32,7 +32,7 @@ sealed interface OperationResult<out T> {
         }
 
         operator fun invoke(throwable: Throwable?): GeneralError {
-          return GeneralError(throwable, throwable?.localizedMessage)
+          return GeneralError(throwable, throwable?.message)
         }
       }
     }
@@ -47,7 +47,7 @@ sealed interface OperationResult<out T> {
         }
 
         operator fun invoke(throwable: Throwable?): OperationError {
-          return OperationError(throwable, throwable?.localizedMessage)
+          return OperationError(throwable, throwable?.message)
         }
       }
     }
@@ -62,7 +62,7 @@ sealed interface OperationResult<out T> {
         }
 
         operator fun invoke(throwable: Throwable?): NetworkError {
-          return NetworkError(throwable, throwable?.localizedMessage)
+          return NetworkError(throwable, throwable?.message)
         }
       }
     }
