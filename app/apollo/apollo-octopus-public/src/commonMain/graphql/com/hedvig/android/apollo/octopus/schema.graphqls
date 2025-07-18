@@ -1989,10 +1989,6 @@ enum MoveApartmentSubType {
   RENT
   OWN
 }
-enum MoveApiVersion {
-  V1
-  V2_TIERS_AND_DEDUCTIBLES
-}
 input MoveExtraBuildingInput {
   """
    Area of extra building 
@@ -2143,10 +2139,6 @@ type MoveIntentMutationOutput {
   userError: UserError
 }
 input MoveIntentRequestInput {
-  """
-   The version of this API used by the client 
-  """
-  apiVersion: MoveApiVersion
   """
    The new address to move to 
   """

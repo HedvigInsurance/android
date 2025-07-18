@@ -64,7 +64,6 @@ import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveApartmentSubType
 import octopus.type.MoveApartmentSubType.OWN
-import octopus.type.MoveApiVersion
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
@@ -216,7 +215,6 @@ private class EnterNewAddressPresenter(
 private fun ValidContent.toInputForSubmission(): InputForSubmission {
   return InputForSubmission(
     moveIntentRequestInput = MoveIntentRequestInput(
-      apiVersion = com.apollographql.apollo.api.Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
       moveToAddress = MoveToAddressInput(
         street = address,
         postalCode = postalCode,
