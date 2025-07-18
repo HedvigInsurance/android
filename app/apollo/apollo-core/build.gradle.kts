@@ -11,6 +11,7 @@ kotlin {
       api(libs.arrow.core)
       api(libs.coroutines.core)
       api(projects.coreCommonPublic)
+      api(projects.apolloOperationError)
 
       implementation(libs.apollo.normalizedCache)
     }

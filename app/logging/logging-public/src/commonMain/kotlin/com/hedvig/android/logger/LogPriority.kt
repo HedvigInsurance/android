@@ -12,3 +12,7 @@ enum class LogPriority {
   ERROR,
   ASSERT,
 }
+
+fun LogPriority.atMost(logPriority: LogPriority): LogPriority {
+  return if (this.ordinal <= logPriority.ordinal) this else logPriority
+}

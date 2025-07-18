@@ -163,7 +163,7 @@ internal class GetHomeDataUseCaseImpl(
           travelBannerInfo = travelBannerInfo,
         )
       }.onLeft { error: ApolloOperationError ->
-        logcat(throwable = error.throwable) { "GetHomeDataUseCase failed with $error" }
+        logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
       }
     }
   }

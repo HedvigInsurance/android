@@ -26,10 +26,7 @@ class HasAnyActiveConversationUseCase(
         either {
           val data = result
             .onLeft { error ->
-              if (error.containsUnauthenticatedError) {
-                return@onLeft
-              }
-              logcat(LogPriority.ERROR, error.throwable) {
+              logcat(LogPriority.ERROR, error) {
                 "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $error"
               }
             }

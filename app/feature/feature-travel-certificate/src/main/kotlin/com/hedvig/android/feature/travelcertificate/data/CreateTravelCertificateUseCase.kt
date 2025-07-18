@@ -42,15 +42,13 @@ internal class CreateTravelCertificateUseCase(
 
     val pdfUrl = apolloClient
       .mutation(TravelCertificateCreateMutation(input))
-      .safeExecute(::ErrorMessage)
+      .safeExecute()
       .onLeft {
-        logcat(
-          priority = LogPriority.ERROR,
-          throwable = it.throwable,
-        ) {
-          "CreateTravelCertificateUseCase: ${it.message ?: "Could not create travel certificate"}"
+        logcat(LogPriority.ERROR, it) {
+          "CreateTravelCertificateUseCase: $it"
         }
       }
+      .mapLeft(::ErrorMessage)
       .bind()
       .travelCertificateCreate
       .signedUrl

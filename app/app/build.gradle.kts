@@ -153,6 +153,7 @@ dependencies {
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
+  implementation(projects.apolloOperationError)
   implementation(projects.authCorePublic)
   implementation(projects.composeUi)
   implementation(projects.coreAppReview)
