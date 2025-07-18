@@ -185,15 +185,16 @@ private fun SummaryScreen(
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
+  val startDateFormatted = formatStartDate(content.summaryInfo.moveHomeQuote.startDate)
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
+      title = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       onDismissRequest = { showConfirmChangesDialog = false },
       onConfirmClick = onConfirmChanges,
       confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
       dismissButtonLabel = stringResource(R.string.general_cancel_button),
-      text = null,
+      text = stringResource(R.string.CONFIRM_CHANGES_SUBTITLE, startDateFormatted),
     )
   }
   if (content.submitError != null) {
@@ -319,6 +320,13 @@ private fun SummaryScreen(
           modifier = Modifier.fillMaxWidth(),
           spaceBetween = 8.dp,
         )
+        Spacer(Modifier.height(2.dp))
+        HedvigText(
+          text = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDateFormatted),
+          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
@@ -340,11 +348,9 @@ private fun QuoteCard(
   modifier: Modifier = Modifier,
   underTitleContent: @Composable () -> Unit = {},
 ) {
-  val startDate = formatStartDate(quote.startDate)
-  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
   QuoteCard(
     productVariant = quote.productVariant,
-    subtitle = subtitle,
+    subtitle = quote.exposureName, // todo look into if this is the correct field to use
     premium = quote.premium,
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(

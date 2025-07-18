@@ -47,7 +47,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
         .safeFlow()
         .map {
           it.mapLeft { error ->
-            logcat(LogPriority.ERROR) { "Error from travelAddonBannerQuery from source: $mappedSource: $error" }
+            logcat(LogPriority.ERROR, error) { "Error from travelAddonBannerQuery from source: $mappedSource: $error" }
             ErrorMessage()
           }
         },

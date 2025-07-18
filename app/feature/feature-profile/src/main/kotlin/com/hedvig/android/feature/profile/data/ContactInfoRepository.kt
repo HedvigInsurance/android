@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.android.validation.isValidEmail
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
+import com.hedvig.core.common.android.validation.isValidEmail
 
 internal interface ContactInfoRepository {
   suspend fun contactInfo(): Either<ErrorMessage, ContactInformation>

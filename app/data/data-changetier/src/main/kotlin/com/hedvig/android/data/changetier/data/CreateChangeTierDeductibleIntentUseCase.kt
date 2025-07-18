@@ -45,85 +45,88 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           ),
         )
         .safeExecute()
-      val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
-      if (intent != null) {
-        if (intent.quotes.isNotEmpty()) {
-          val currentQuote = with(intent.agreementToChange) {
-            ensureNotNull(tierLevel) {
-              ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierLevel was null")
-            }
-            ensureNotNull(tierName) {
-              ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierName was null")
-            }
-            TierDeductibleQuote(
-              id = TierConstants.CURRENT_ID,
-              deductible = deductible?.toDeductible(),
-              premium = UiMoney.fromMoneyFragment(basePremium),
-              productVariant = productVariant.toProductVariant(),
-              tier = Tier(
-                tierName = tierName,
-                tierLevel = tierLevel,
-                tierDescription = productVariant.tierDescription,
-                tierDisplayName = productVariant.displayNameTier,
-              ),
-              displayItems = displayItems.toDisplayItems(),
-              addons = emptyList(),
-            )
-          }
-          val quotesToOffer = intent.quotes.map {
-            ensureNotNull(it.tierLevel) {
-              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierLevel was null")
-            }
-            ensureNotNull(it.tierName) {
-              ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
-            }
-            TierDeductibleQuote(
-              id = it.id,
-              deductible = it.deductible?.toDeductible(),
-              displayItems = it.displayItems.toDisplayItems(),
-              premium = UiMoney.fromMoneyFragment(it.premium),
-              productVariant = it.productVariant.toProductVariant(),
-              tier = Tier(
-                tierName = it.tierName,
-                tierLevel = it.tierLevel,
-                tierDescription = it.productVariant.tierDescription,
-                tierDisplayName = it.productVariant.displayNameTier,
-              ),
-              addons = it.addons?.map { addon ->
-                ChangeTierDeductibleAddonQuote(
-                  addonId = addon.addonId,
-                  displayName = addon.displayName,
-                  displayItems = addon.displayItems.toDisplayItems(),
-                  previousPremium = UiMoney.fromMoneyFragment(addon.previousPremium),
-                  premium = UiMoney.fromMoneyFragment(addon.premium),
-                  addonVariant = addon.addonVariant.toAddonVariant(),
-                )
-              } ?: emptyList(),
-            )
-          }
-          val intentResult = ChangeTierDeductibleIntent(
-            activationDate = intent.activationDate,
-            quotes = listOf(currentQuote) + quotesToOffer,
+      val intent = changeTierDeductibleResponse.fold(
+        {
+          logcat(ERROR, it) { "Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!" }
+          raise(
+            ErrorMessage("Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!", it.throwable),
           )
-          logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
-          intentResult
-        } else {
-          val intentResult = ChangeTierDeductibleIntent(
-            activationDate = intent.activationDate,
-            quotes = listOf(),
-          )
-          logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
-          intentResult
-        }
-      } else {
-        if (changeTierDeductibleResponse.isRight()) {
-          logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
-        }
-        if (changeTierDeductibleResponse.isLeft()) {
-          logcat(ERROR) { "Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!" }
-        }
-        raise(ErrorMessage())
+        },
+        {
+          it.changeTierDeductibleCreateIntent.intent
+        },
+      )
+      if (intent == null) {
+        logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
+        raise(ErrorMessage("Tried to get changeTierQuotes but output intent is null!"))
       }
+      if (intent.quotes.isEmpty()) {
+        val intentResult = ChangeTierDeductibleIntent(
+          activationDate = intent.activationDate,
+          quotes = listOf(),
+        )
+        logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+        return@either intentResult
+      }
+      val currentQuote = with(intent.agreementToChange) {
+        ensureNotNull(tierLevel) {
+          ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierLevel was null")
+        }
+        ensureNotNull(tierName) {
+          ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierName was null")
+        }
+        TierDeductibleQuote(
+          id = TierConstants.CURRENT_ID,
+          deductible = deductible?.toDeductible(),
+          premium = UiMoney.fromMoneyFragment(basePremium),
+          productVariant = productVariant.toProductVariant(),
+          tier = Tier(
+            tierName = tierName,
+            tierLevel = tierLevel,
+            tierDescription = productVariant.tierDescription,
+            tierDisplayName = productVariant.displayNameTier,
+          ),
+          displayItems = displayItems.toDisplayItems(),
+          addons = emptyList(),
+        )
+      }
+      val quotesToOffer = intent.quotes.map {
+        ensureNotNull(it.tierLevel) {
+          ErrorMessage("For insuranceId:$insuranceId and source:$source, tierLevel was null")
+        }
+        ensureNotNull(it.tierName) {
+          ErrorMessage("For insuranceId:$insuranceId and source:$source, tierName was null")
+        }
+        TierDeductibleQuote(
+          id = it.id,
+          deductible = it.deductible?.toDeductible(),
+          displayItems = it.displayItems.toDisplayItems(),
+          premium = UiMoney.fromMoneyFragment(it.premium),
+          productVariant = it.productVariant.toProductVariant(),
+          tier = Tier(
+            tierName = it.tierName,
+            tierLevel = it.tierLevel,
+            tierDescription = it.productVariant.tierDescription,
+            tierDisplayName = it.productVariant.displayNameTier,
+          ),
+          addons = it.addons?.map { addon ->
+            ChangeTierDeductibleAddonQuote(
+              addonId = addon.addonId,
+              displayName = addon.displayName,
+              displayItems = addon.displayItems.toDisplayItems(),
+              previousPremium = UiMoney.fromMoneyFragment(addon.previousPremium),
+              premium = UiMoney.fromMoneyFragment(addon.premium),
+              addonVariant = addon.addonVariant.toAddonVariant(),
+            )
+          } ?: emptyList(),
+        )
+      }
+      val intentResult = ChangeTierDeductibleIntent(
+        activationDate = intent.activationDate,
+        quotes = listOf(currentQuote) + quotesToOffer,
+      )
+      logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+      intentResult
     }
   }
 }

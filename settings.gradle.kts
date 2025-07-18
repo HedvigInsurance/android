@@ -24,10 +24,6 @@ dependencyResolutionManagement {
       }
     }
     mavenCentral()
-    maven("https://maven.pkg.github.com/HedvigInsurance/authlib") {
-      name = "authlib"
-      credentials(PasswordCredentials::class)
-    }
     maven("https://jitpack.io")
   }
 }

@@ -4,6 +4,7 @@
 
     <string name="DEEP_LINK_DOMAIN_HOST_OLD" translatable="false">hedvig.page.link</string>
     <string name="DEEP_LINK_DOMAIN_HOST" translatable="false">www.hedvig.com</string>
+    <string name="DEEP_LINK_DOMAIN_HOST_NEW" translatable="false">link.hedvig.com</string>
 
     <string name="OCTOPUS_GRAPHQL_URL" translatable="false">https://apollo-router.prod.hedvigit.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.hedvig.com</string>

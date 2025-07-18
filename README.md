@@ -15,15 +15,6 @@
     `./gradlew downloadStrings`
 5. Build and install via Android Studio
 
-### Access to Hedvig dependencies
-
-Create a personal access token on GitHub. Add the token and your github username to `gradle.properties` located in   
-`/Users/{user}/.gradle/` as such:
-`authlibUsername={github username}`
-`authlibPassword={personal access token}}`
-
-This will allow gradle to download the authlib dependency.
-
 ## Formatting
 
 Formatting is handled with ktlint with extra configuration defined in [`.editorconfig`](.editorconfig)

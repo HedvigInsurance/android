@@ -23,7 +23,7 @@ internal class UploadLanguagePreferenceToBackendUseCaseImpl(
       .safeExecute()
       .fold(
         ifLeft = {
-          logcat(LogPriority.WARN, it.throwable) {
+          logcat(LogPriority.WARN, it) {
             "UploadLanguagePreferenceToBackendUseCase: Failed to upload new language:$ietfLanguageTag to backend. Message:$it"
           }
         },

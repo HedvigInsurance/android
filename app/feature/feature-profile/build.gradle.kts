@@ -32,7 +32,6 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.composeWebview)
   implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)

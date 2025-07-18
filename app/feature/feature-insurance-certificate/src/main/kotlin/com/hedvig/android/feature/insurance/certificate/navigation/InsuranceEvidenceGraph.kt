@@ -2,7 +2,6 @@ package com.hedvig.android.feature.insurance.certificate.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputDestination
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputViewModel
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewDestination
@@ -13,6 +12,7 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.core.common.android.sharePDF
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.insuranceEvidenceGraph(

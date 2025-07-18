@@ -118,24 +118,25 @@ private fun DependencyHandlerScope.configureCommonDependencies(project: Project,
 
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
   val koinBom = libs.koin.bom
+  val composeBom = libs.androidx.compose.bom
   dependencies {
     add(configurationName, platform(koinBom))
+    add(configurationName, platform(composeBom))
 
-    if (project.name != "logging-public") {
-      add(configurationName, project(":logging-public"))
-    }
-    // Add logging-public and tracking-core to all modules except themselves
-    if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
-      add(configurationName, project(":logging-public"))
-      add(configurationName, project(":tracking-core"))
+    with(project.name) {
+      // Logging project needs to depend on this one, so we make an exception here
+      if (this == projectNameApolloOperationError) return@with
+      // Add logging-public to all modules except itself
+      if (this != projectNameLoggingPublic) {
+        add(configurationName, project(":$projectNameLoggingPublic"))
+        if (this != projectNameTrackingCore) {
+          add(configurationName, project(":$projectNameTrackingCore"))
+        }
+      }
     }
   }
 }
 
-fun Project.isLoggingPublicModule(): Boolean {
-  return name == "logging-public"
-}
-
-fun Project.isTrackingCoreModule(): Boolean {
-  return name == "tracking-core"
-}
+private val projectNameApolloOperationError = "apollo-operation-error"
+private val projectNameTrackingCore = "tracking-core"
+private val projectNameLoggingPublic = "logging-public"
