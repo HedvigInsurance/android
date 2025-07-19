@@ -1141,6 +1141,7 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SCREEN_OVERVIEW">Överblick</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %s</string>
   <string name="SURVEY_ACTION_BUTTON_BETTER_PRICE">Se ditt pris</string>
   <string name="SURVEY_ACTION_BUTTON_MISSING_COVERAGE_OR_TERMS">Uppgradera ditt skydd</string>
   <string name="SURVEY_ACTION_BUTTON_MOVING_NEW_ADDRESS">Få ett prisförslag</string>
@@ -1401,6 +1402,8 @@
   <string name="claim.status_bar.being_handled">Hanteras</string>
   <string name="claim.status_bar.closed">Stängt</string>
   <string name="claim.status_bar.submitted">Inskickat</string>
+  <string name="claim_history.empty_state.body">Dina tidigare skador visas här automatiskt efter att de har hanterats.</string>
+  <string name="claim_history.empty_state.title">Ingen skadehistorik</string>
   <string name="claim_outcome_unresponsive_support_text">Ditt skadeärende har stängts eftersom vi inte har fått någon återkoppling från dig. Se konversation för mer information.</string>
   <string name="claim_status.being_handled.support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status.being_handled_reopened.support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
@@ -1850,6 +1853,7 @@
   <string name="profile.appSettingsSection.row.subheadline">Språk, tema, information</string>
   <string name="profile.appSettingsSection.title">Appinställningar</string>
   <string name="profile.certificates.title">Intyg</string>
+  <string name="profile.claim_history.title">Skadehistorik</string>
   <string name="profile_tab.about_row_subtitle">Version &amp; licenser</string>
   <string name="profile_tab.title">Profil</string>
   <string name="purchase_confirmation_accident_insurance.done_button">Klar</string>
