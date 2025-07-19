@@ -16,8 +16,17 @@ mutation MoveIntentV2Request(
 fragment MoveIntentQuotesFragment on MoveIntent {
   homeQuotes {
     id
-    premium {
+    net {
       ...MoneyFragment
+    }
+    gross {
+      ...MoneyFragment
+    }
+    discounts {
+      displayName
+      value {
+        ...MoneyFragment
+      }
     }
     startDate
     defaultChoice
@@ -43,8 +52,17 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     }
   }
   mtaQuotes {
-    premium {
+    net {
       ...MoneyFragment
+    }
+    gross {
+      ...MoneyFragment
+    }
+    discounts {
+      displayName
+      value {
+        ...MoneyFragment
+      }
     }
     startDate
     displayItems {
@@ -75,8 +93,17 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displaySubtitle
     displayValue
   }
-  premium {
+  net {
     ...MoneyFragment
+  }
+  gross {
+    ...MoneyFragment
+  }
+  discounts {
+    displayName
+    value {
+      ...MoneyFragment
+    }
   }
   startDate
   addonVariant {

@@ -523,7 +523,9 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         amount = (it + 1) * 100.0,
         currencyCode = SEK,
       ),
+      previousPremium = null,
       startDate = LocalDate.parse("2025-01-01"),
+      discounts = emptyList(),
       displayItems = List(2) {
         DisplayItem(
           title = "title#$it",
