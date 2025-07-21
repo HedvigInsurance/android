@@ -1141,6 +1141,7 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SCREEN_OVERVIEW">Overview</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activates %s</string>
   <string name="SURVEY_ACTION_BUTTON_BETTER_PRICE">Get a price quote</string>
   <string name="SURVEY_ACTION_BUTTON_MISSING_COVERAGE_OR_TERMS">See coverage levels</string>
   <string name="SURVEY_ACTION_BUTTON_MOVING_NEW_ADDRESS">Get a price quote</string>
@@ -1401,6 +1402,8 @@
   <string name="claim.status_bar.being_handled">Being handled</string>
   <string name="claim.status_bar.closed">Closed</string>
   <string name="claim.status_bar.submitted">Submitted</string>
+  <string name="claim_history.empty_state.body">Your past claims will appear here automatically once processed.</string>
+  <string name="claim_history.empty_state.title">No claims in history</string>
   <string name="claim_outcome_unresponsive_support_text">Your claim was closed as we didn’t hear back from you. Please see conversation for more details.</string>
   <string name="claim_status.being_handled.support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
   <string name="claim_status.being_handled_reopened.support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
@@ -1850,6 +1853,7 @@
   <string name="profile.appSettingsSection.row.subheadline">Language, theme, information</string>
   <string name="profile.appSettingsSection.title">App Settings</string>
   <string name="profile.certificates.title">Certificates</string>
+  <string name="profile.claim_history.title">Claim history</string>
   <string name="profile_tab.about_row_subtitle">Version &amp; licenses</string>
   <string name="profile_tab.title">Profile</string>
   <string name="purchase_confirmation_accident_insurance.done_button">Done</string>
