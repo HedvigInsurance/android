@@ -4,6 +4,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -122,7 +123,9 @@ val profileModule = module {
   viewModel<ContactInfoViewModel> {
     ContactInfoViewModel(get<ProfileRepositoryProvider>())
   }
-  viewModel<AboutAppViewModel> { AboutAppViewModel(get<ApolloClient>()) }
+  viewModel<AboutAppViewModel> {
+    AboutAppViewModel(get<ApolloClient>(), get<DeviceIdDataStore>())
+  }
   single<CheckTravelCertificateDestinationAvailabilityUseCase> {
     CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
       get<ApolloClient>(),
