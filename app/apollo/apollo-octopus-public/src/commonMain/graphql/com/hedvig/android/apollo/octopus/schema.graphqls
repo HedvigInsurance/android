@@ -2126,13 +2126,6 @@ type MoveIntent {
   """
   currentHomeAddresses: [MoveAddress!]!
   """
-  Will only be present after moveIntentRequest and for API V1.
-  DEPRECATED!
-  The quotes to accept for moving to new address, includes one quote for the new home contract and zero
-  or more MTA quotes for other non-home contracts with new address.
-  """
-  quotes: [MoveQuote!]!
-  """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
@@ -2160,7 +2153,7 @@ input MoveIntentRequestInput {
   """
    The version of this API used by the client 
   """
-  apiVersion: MoveApiVersion
+  apiVersion: MoveApiVersion @deprecated(reason: "No longer used, sent values will be ignored")
   """
    The new address to move to 
   """
@@ -2218,31 +2211,6 @@ type MoveMtaQuote {
   gross: Money!
   net: Money!
   discounts: [ProductOfferCostDiscount!]!
-}
-"""
- DEPRECATED. Quotes used for the old V1 API 
-"""
-type MoveQuote {
-  """
-   Premium 
-  """
-  premium: Money!
-  """
-   When new insurance (or existing insurance address change) is becoming active 
-  """
-  startDate: Date!
-  """
-   List of display items for the quote 
-  """
-  displayItems: [MoveQuoteDisplayItem!]!
-  """
-   The insurance exposure name, eg reg nbr for car, name and birthdate for cat/dog, street for home etc... 
-  """
-  exposureName: String
-  """
-   The terms 
-  """
-  productVariant: ProductVariant!
 }
 type MoveQuoteDisplayItem {
   displayTitle: String!

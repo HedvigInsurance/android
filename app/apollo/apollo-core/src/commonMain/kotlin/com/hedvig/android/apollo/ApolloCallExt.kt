@@ -14,56 +14,16 @@ import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
 import com.apollographql.apollo.cache.normalized.watch
-import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
 import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
+import com.hedvig.android.apollo.parseResponse
 import com.hedvig.android.core.common.ErrorMessage
+import kotlin.jvm.JvmInline
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-
-sealed interface ApolloOperationError {
-  val throwable: Throwable?
-
-  data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError {
-    override fun toString(): String {
-      return "CacheMiss(throwableMessage=${throwable.message}, throwable=$throwable)"
-    }
-  }
-
-  data class OperationException(override val throwable: ApolloException) : ApolloOperationError {
-    override fun toString(): String {
-      return "OperationException(throwableMessage=${throwable.message}, throwable=$throwable)"
-    }
-  }
-
-  sealed interface OperationError : ApolloOperationError {
-    val containsUnauthenticatedError: Boolean
-
-    object Unathenticated : OperationError {
-      override val containsUnauthenticatedError: Boolean = true
-
-      override val throwable: Throwable? = null
-
-      override fun toString(): String {
-        return "OperationError.Unathenticated"
-      }
-    }
-
-    data class Other(
-      private val message: String,
-      override val containsUnauthenticatedError: Boolean = false,
-    ) : OperationError {
-      override val throwable: Throwable? = null
-
-      override fun toString(): String {
-        return "OperationError.Other(message=$message)"
-      }
-    }
-  }
-}
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
   return iorNel<ApolloOperationError, D> { parseResponse(execute()) }.dropPartialResponses()

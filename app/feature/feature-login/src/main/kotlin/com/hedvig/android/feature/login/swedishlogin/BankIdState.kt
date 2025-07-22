@@ -57,7 +57,7 @@ private class BankIdStateImpl(
   private fun Context.canBankIdAppHandleUri(uri: Uri): Boolean {
     val resolvedActivity = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager)
     if (resolvedActivity == null) {
-      logcat(LogPriority.ERROR) {
+      logcat(LogPriority.WARN) {
         "Could not resolve BankID app with bankIdUri:$uri + resolvedActivity:$resolvedActivity"
       }
       return false

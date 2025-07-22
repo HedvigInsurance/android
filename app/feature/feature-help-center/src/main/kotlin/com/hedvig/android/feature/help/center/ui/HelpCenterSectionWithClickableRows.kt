@@ -8,13 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 
 @Composable
 internal fun <T> HelpCenterSectionWithClickableRows(
@@ -31,11 +32,12 @@ internal fun <T> HelpCenterSectionWithClickableRows(
     chipContainerColor = chipContainerColor,
     content = {
       Column {
-        for (question in items) {
+        items.forEachIndexed { index, question ->
           Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
               .clickable { onClickItem(question) }
+              .horizontalDivider(DividerPosition.Top, show = index != 0)
               .padding(vertical = 16.dp),
           ) {
             HedvigText(
@@ -53,7 +55,6 @@ internal fun <T> HelpCenterSectionWithClickableRows(
               )
             }
           }
-          HorizontalDivider()
         }
       }
     },

@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -48,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -350,18 +352,14 @@ private fun TravelCertificatesList(
           )
         },
         modifier = Modifier
+          .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 16.dp)
           .clickable {
             onCertificateClick(certificate.signedUrl)
           }
           .padding(16.dp),
       )
-
-      if (index != travelCertificates.size - 1) {
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-      } else {
-        Spacer(Modifier.height(16.dp))
-      }
     }
+    Spacer(Modifier.height(16.dp))
   }
 }
 

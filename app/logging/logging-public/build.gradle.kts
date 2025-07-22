@@ -8,6 +8,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.atomicfu)
+      implementation(projects.apolloOperationError)
     }
     androidMain.dependencies {
       implementation(libs.slimber)

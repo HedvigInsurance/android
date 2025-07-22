@@ -62,6 +62,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
+  <string name="BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE">Your bundle discount will be removed when you have less than two active insurances.</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig tar bara 25\u0025 av din månatliga premie för att utveckla och förbättra vår tjänst. Resterande 75\u0025 går till en gemensam skadepool. Är det pengar över i den när året är slut doneras de till Milkywire.</string>
   <string name="BUSINESS_MODEL_CARD_TITLE">Vi kan aldrig tjäna mer på att betala ut mindre</string>
   <string name="BUSINESS_MODEL_INFO_BUTTON_LABEL">Om Milkywire</string>
@@ -1141,6 +1142,7 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SCREEN_OVERVIEW">Överblick</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %s</string>
   <string name="SURVEY_ACTION_BUTTON_BETTER_PRICE">Se ditt pris</string>
   <string name="SURVEY_ACTION_BUTTON_MISSING_COVERAGE_OR_TERMS">Uppgradera ditt skydd</string>
   <string name="SURVEY_ACTION_BUTTON_MOVING_NEW_ADDRESS">Få ett prisförslag</string>
@@ -1359,7 +1361,7 @@
   <string name="app_info.submit_bug.button">Rapportera tekniska problem</string>
   <string name="app_info.submit_bug.continue">Fortsätt</string>
   <string name="app_info.submit_bug.go_back">Gå tillbaka</string>
-  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %s\nAVC: %s\nSV: %s</string>
+  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Rapport om tekniska problem</string>
   <string name="app_info.submit_bug.warning">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, skicka ett meddelande direkt här i appen.</string>
   <string name="app_update_needed.app_store_button">Gå till App Store</string>
@@ -1401,6 +1403,8 @@
   <string name="claim.status_bar.being_handled">Hanteras</string>
   <string name="claim.status_bar.closed">Stängt</string>
   <string name="claim.status_bar.submitted">Inskickat</string>
+  <string name="claim_history.empty_state.body">Dina tidigare skador visas här automatiskt efter att de har hanterats.</string>
+  <string name="claim_history.empty_state.title">Ingen skadehistorik</string>
   <string name="claim_outcome_unresponsive_support_text">Ditt skadeärende har stängts eftersom vi inte har fått någon återkoppling från dig. Se konversation för mer information.</string>
   <string name="claim_status.being_handled.support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status.being_handled_reopened.support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
@@ -1850,6 +1854,7 @@
   <string name="profile.appSettingsSection.row.subheadline">Språk, tema, information</string>
   <string name="profile.appSettingsSection.title">Appinställningar</string>
   <string name="profile.certificates.title">Intyg</string>
+  <string name="profile.claim_history.title">Skadehistorik</string>
   <string name="profile_tab.about_row_subtitle">Version &amp; licenser</string>
   <string name="profile_tab.title">Profil</string>
   <string name="purchase_confirmation_accident_insurance.done_button">Klar</string>

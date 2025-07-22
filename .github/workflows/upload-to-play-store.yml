@@ -13,6 +13,7 @@ jobs:
   build_release:
     runs-on: ubuntu-latest-8-vcpu
     steps:
+      - uses: actions/checkout@v4
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:

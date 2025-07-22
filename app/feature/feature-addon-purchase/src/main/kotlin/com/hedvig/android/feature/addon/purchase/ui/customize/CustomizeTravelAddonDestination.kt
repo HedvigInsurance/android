@@ -452,9 +452,7 @@ private fun DropdownContent(
     )
   }
   Column(
-    modifier
-      .padding(16.dp)
-      .verticalScroll(rememberScrollState()),
+    modifier.verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(

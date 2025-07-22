@@ -182,7 +182,6 @@ private fun EditCoInsuredScreen(
               onCoInsuredClicked(insured)
             },
             allowEdit = true,
-            modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
 
