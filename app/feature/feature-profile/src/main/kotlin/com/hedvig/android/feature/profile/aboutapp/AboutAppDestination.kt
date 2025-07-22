@@ -159,7 +159,7 @@ private fun SubmitBugWarningDialog(
   val localContext = LocalContext.current
   val letterSubject = stringResource(id = R.string.app_info_submit_bug_prefilled_letter_subject)
   val letterBody = String.format(
-    stringResource(R.string.app_info_submit_bug_prefilled_letter_body_2),
+    stringResource(R.string.app_info_submit_bug_prefilled_letter_body),
     memberId,
     deviceId,
     appVersionName,
