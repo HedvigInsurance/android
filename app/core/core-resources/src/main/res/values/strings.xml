@@ -1361,7 +1361,7 @@
   <string name="app_info.submit_bug.button">Report technical issue</string>
   <string name="app_info.submit_bug.continue">Continue</string>
   <string name="app_info.submit_bug.go_back">Go back</string>
-  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nAVC: %s\nSV: %s</string>
+  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Technical Issue Report</string>
   <string name="app_info.submit_bug.warning">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.</string>
   <string name="app_update_needed.app_store_button">Open App Store</string>
