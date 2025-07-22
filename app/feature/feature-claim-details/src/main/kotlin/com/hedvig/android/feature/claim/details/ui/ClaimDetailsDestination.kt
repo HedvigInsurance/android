@@ -394,10 +394,10 @@ private fun BeforeGridContent(
       Spacer(Modifier.height(8.dp))
     }
     ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
-    Spacer(Modifier.height(8.dp))
     if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
+      Spacer(Modifier.height(8.dp))
       HedvigCard {
-        Column(Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
           if (!uiState.claimIsInUndeterminedState) {
             HedvigText(
               text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
@@ -405,9 +405,7 @@ private fun BeforeGridContent(
             )
           }
           if (navigateToConversation != null && !uiState.claimIsInUndeterminedState) {
-            Spacer(Modifier.height(16.dp))
             HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
           }
           if (navigateToConversation != null) {
             HorizontalItemsWithMaximumSpaceTaken(

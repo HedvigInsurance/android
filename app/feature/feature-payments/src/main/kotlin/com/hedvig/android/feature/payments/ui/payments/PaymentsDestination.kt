@@ -359,10 +359,9 @@ private fun PaymentsListItems(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
 ) {
-  val listItemsSideSpacingModifier =
-    Modifier
-      .padding(horizontal = 16.dp)
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+  val listItemsSideSpacingModifier = Modifier
+    .padding(horizontal = 16.dp)
+    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
     PaymentsListItem(
       text = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),

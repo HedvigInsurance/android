@@ -308,7 +308,7 @@ private fun ColumnScope.ProfileItemRows(
   navigateToEurobonus: () -> Unit,
   navigateToCertificates: () -> Unit,
 ) {
-  val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, 16.dp)
+  val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, horizontalPadding = 16.dp)
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.ID,

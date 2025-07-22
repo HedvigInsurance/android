@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -48,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTabRow
 import com.hedvig.android.design.system.hedvig.HedvigTabletLandscapePreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
@@ -56,6 +56,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -187,9 +188,6 @@ private fun CoverageLevelRow(
 ) {
   Column {
     coverage.items.forEachIndexed { index, item ->
-      if (index != 0) {
-        HorizontalDivider(Modifier.padding(contentPadding))
-      }
       val coveredDescription = when (item.coveredStatus) {
         Checkmark -> stringResource(R.string.TALKBACK_COVERED)
         is Description -> item.coveredStatus.description
@@ -255,6 +253,7 @@ private fun CoverageLevelRow(
         modifier = Modifier
           .clickable { onCoverageClicked(item) }
           .padding(contentPadding)
+          .horizontalDivider(DividerPosition.Top, index != 0)
           .padding(horizontal = 4.dp, vertical = 16.dp)
           .clearAndSetSemantics {
             contentDescription = itemDescription
