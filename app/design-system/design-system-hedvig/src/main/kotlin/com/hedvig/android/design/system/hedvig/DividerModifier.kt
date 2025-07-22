@@ -42,12 +42,14 @@ private class HorizontalDividerNode(
   override fun ContentDrawScope.draw() {
     drawContent()
     val borderColor = currentValueOf(LocalColorScheme).fromToken(ColorSchemeKeyTokens.BorderSecondary)
+    val thickness = DividerDefaults.thickness.toPx()
     val yOffset = when (position) {
-      DividerPosition.Top -> 0f
-      DividerPosition.Bottom -> size.height
+      DividerPosition.Top -> 0f + thickness / 2
+      DividerPosition.Bottom -> size.height - thickness / 2
     }
     drawLine(
       color = borderColor,
+      strokeWidth = thickness,
       start = Offset(horizontalPadding.toPx(), yOffset),
       end = Offset(size.width - horizontalPadding.toPx(), yOffset),
     )
