@@ -4,7 +4,6 @@ import com.hedvig.android.lokalise.extension.LokalisePluginExtension
 import com.hedvig.android.lokalise.task.DownloadStringsTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.Property
 
 @Suppress("unused") // Used in ./lokalise-gradle-plugin/lokalise/build.gradle.kts
 class HedvigLokalisePlugin : Plugin<Project> {
@@ -28,12 +27,6 @@ class HedvigLokalisePlugin : Plugin<Project> {
           |```
           """.trimMargin(),
         )
-      with(extension) {
-        lokaliseProjectId.ensureIsSet()
-        lokaliseToken.ensureIsSet()
-        outputDirectory.ensureIsSet()
-      }
-
       project.tasks.register("downloadStrings", DownloadStringsTask::class.java) { task ->
         task.lokaliseProjectId.set(extension.lokaliseProjectId)
         task.lokaliseToken.set(extension.lokaliseToken)
@@ -41,13 +34,5 @@ class HedvigLokalisePlugin : Plugin<Project> {
         task.outputDirectory.from(extension.outputDirectory)
       }
     }
-  }
-}
-
-private fun <T> Property<T>.ensureIsSet() {
-  try {
-    get()
-  } catch (e: IllegalStateException) {
-    error("$this must be set!")
   }
 }
