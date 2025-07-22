@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.movingflow.ui.summary
 
-import android.R.attr.data
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -377,7 +376,7 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
     discounts = quote.discounts.map {
       ContractDiscount(
         displayName = it.displayName,
-        discount = it.discount,
+        discountValue = it.discountValue,
       )
     },
     modifier = modifier,
@@ -452,7 +451,7 @@ private fun AddonQuoteCard(
     discounts = quote.discounts.map {
       ContractDiscount(
         displayName = it.displayName,
-        discount = it.discount,
+        discountValue = it.discountValue,
       )
     },
     displayItems = quote.displayItems.map {
@@ -586,7 +585,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           discounts = List(5) {
             MovingFlowQuotes.ContractDiscount(
               displayName = "displayName#$it",
-              discount = UiMoney(20.0, SEK),
+              discountValue = "20.0 SEK",
             )
           },
           startDate = startDate,
@@ -613,7 +612,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               discounts = listOf(
                 MovingFlowQuotes.ContractDiscount(
                   displayName = "displayName",
-                  discount = UiMoney(10.0, SEK),
+                  discountValue = "10.0 SEK",
                 ),
               ),
               displayItems = listOf(

@@ -62,7 +62,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
-import octopus.type.CurrencyCode
 import octopus.type.MoveApartmentSubType
 import octopus.type.MoveApartmentSubType.OWN
 import octopus.type.MoveApiVersion
@@ -164,79 +163,7 @@ private class EnterNewAddressPresenter(
       LaunchedEffect(inputForSubmission) {
         @Suppress("NAME_SHADOWING")
         val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
-        @Suppress("KotlinUnreachableCode")
-        movingFlowRepository.updateWithMoveIntentQuotes(
-          MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent(
-            __typename = "MoveIntent",
-            homeQuotes = listOf(
-              MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote(
-                id = "id",
-                net = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Net(
-                  __typename = "typename",
-                  amount = 99.0,
-                  currencyCode = CurrencyCode.SEK,
-                ),
-                gross = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Gross(
-                  __typename = "typename",
-                  amount = 119.0,
-                  currencyCode = CurrencyCode.SEK,
-                ),
-                discounts = List(2) {
-                  MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Discount(
-                    displayName = "display name",
-                    value = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Discount.Value(
-                      __typename = "typename",
-                      amount = 123.0,
-                      currencyCode = CurrencyCode.SEK,
-                    ),
-                  )
-                },
-                startDate = LocalDate.parse("2025-10-10"),
-                defaultChoice = false,
-                tierName = "tierName",
-                tierLevel = 1,
-                deductible = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Deductible(
-                  amount = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.Deductible.Amount(
-                    __typename = "typename",
-                    amount = 1200.0,
-                    currencyCode = CurrencyCode.SEK,
-                  ),
-                  percentage = 5,
-                  displayText = "displayText",
-                ),
-                displayItems = listOf(
-                  MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.DisplayItem(
-                    __typename = "typename",
-                    displayTitle = "displayTitle",
-                    displaySubtitle = "displaySubtitle",
-                    displayValue = "displayValue",
-                  ),
-                ),
-                exposureName = "exposureName",
-                productVariant = MoveIntentV2RequestMutation.Data.MoveIntentRequest.MoveIntent.HomeQuote.ProductVariant(
-                  __typename = "typename",
-                  displayName = "displayName",
-                  displayNameTier = "displayNameTier",
-                  tierDescription = "tierDescription",
-                  typeOfContract = "typeOfContract",
-                  partner = "partner",
-                  termsVersion = "termsVersion",
-                  perils = emptyList(),
-                  insurableLimits = emptyList(),
-                  documents = emptyList(),
-                ),
-                addons = emptyList(),
-              ),
-            ),
-            mtaQuotes = emptyList(),
-          ),
-        )
-        navigateToChoseCoverage = true
-        inputForSubmission = null
-        return@LaunchedEffect
-        @Suppress("KotlinUnreachableCode")
         val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
-        @Suppress("KotlinUnreachableCode")
         apolloClient
           .mutation(
             MoveIntentV2RequestMutation(

@@ -93,7 +93,7 @@ data class QuoteDisplayItem(
 @Serializable
 data class ContractDiscount(
   val displayName: String,
-  val discount: UiMoney,
+  val discountValue: String,
 )
 
 @Stable
@@ -489,10 +489,7 @@ fun DiscountCostBreakdown(discounts: List<ContractDiscount>, modifier: Modifier 
           { HedvigText(discount.displayName) },
           {
             HedvigText(
-              text = "-" + stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                discount.discount.toString(),
-              ),
+              text = discount.discountValue,
               textAlign = TextAlign.End,
             )
           },
@@ -611,7 +608,7 @@ private fun PreviewQuoteCard(
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
         isExcluded = triple == TripleCase.SECOND,
-        discounts = List(3) { ContractDiscount("#$it", UiMoney(it.toDouble(), UiCurrencyCode.SEK)) }.takeIf {
+        discounts = List(3) { ContractDiscount("#$it", "discount#$it") }.takeIf {
           triple == TripleCase.THIRD
         }.orEmpty(),
         displayItems = List(5) {

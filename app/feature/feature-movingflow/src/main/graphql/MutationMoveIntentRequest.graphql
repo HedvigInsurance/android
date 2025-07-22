@@ -16,17 +16,8 @@ mutation MoveIntentV2Request(
 fragment MoveIntentQuotesFragment on MoveIntent {
   homeQuotes {
     id
-    net {
-      ...MoneyFragment
-    }
-    gross {
-      ...MoneyFragment
-    }
-    discounts {
-      displayName
-      value {
-        ...MoneyFragment
-      }
+    cost {
+      ...ItemCostFragment
     }
     startDate
     defaultChoice
@@ -52,17 +43,8 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     }
   }
   mtaQuotes {
-    net {
-      ...MoneyFragment
-    }
-    gross {
-      ...MoneyFragment
-    }
-    discounts {
-      displayName
-      value {
-        ...MoneyFragment
-      }
+    cost {
+      ...ItemCostFragment
     }
     startDate
     displayItems {
@@ -93,17 +75,8 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displaySubtitle
     displayValue
   }
-  net {
-    ...MoneyFragment
-  }
-  gross {
-    ...MoneyFragment
-  }
-  discounts {
-    displayName
-    value {
-      ...MoneyFragment
-    }
+  cost {
+    ...ItemCostFragment
   }
   startDate
   addonVariant {

@@ -1481,6 +1481,36 @@ input InsurelyInitiateIframeDataCollectionInput {
 type InsurelyInitiateIframeDataCollectionOutput {
   dataCollectionId: ID!
 }
+"""
+ Cost breakdown with discounts
+"""
+type ItemCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
+  discounts: [ItemDiscount!]!
+}
+"""
+Single discount line, represent distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be returned as ItemDiscount
+"""
+type ItemDiscount {
+  """
+   Short name for list display, ex. "50% puppy discount" 
+  """
+  displayName: String!
+  """
+   Short value for list display, ex. 50% 99 kr
+  """
+  displayValue: String!
+  """
+   Longer explanation, ex. 50% discount for 6 months
+  """
+  explanation: String!
+  """
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+  """
+  campaignCode: String!
+}
 scalar JSON
 type LinkInfo {
   url: Url!
@@ -1932,7 +1962,11 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use net/gross")
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+  Cost breakdown. Addons never have discounts unique to them, but they inherit discounts from parent contract
+  """
+  cost: ItemCost!
   """
    When this addon is becoming active 
   """
@@ -1941,9 +1975,6 @@ type MoveAddonQuote {
    The terms 
   """
   addonVariant: AddonVariant!
-  gross: Money!
-  net: Money!
-  discounts: [ProductOfferCostDiscount!]!
 }
 type MoveAddress {
   """
@@ -2034,7 +2065,11 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use net/gross")
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+   Cost breakdown
+  """
+  cost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2071,17 +2106,6 @@ type MoveHomeQuote {
    The addons moved from old home to new home 
   """
   addons: [MoveAddonQuote!]!
-  gross: Money!
-  net: Money!
-  discounts: [ProductOfferCostDiscount!]!
-}
-enum ProductOfferDiscountType {
-  CAMPAIGN
-  BUNDLE
-}
-type ProductOfferCostDiscount {
-  value: Money!
-  displayName: String! # "50% puppy discount"
 }
 type MoveIntent {
   id: ID!
@@ -2187,7 +2211,11 @@ type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use net/gross")
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+   Cost breakdown
+  """
+  cost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2208,9 +2236,6 @@ type MoveMtaQuote {
    The addons moved to new address for agreement 
   """
   addons: [MoveAddonQuote!]!
-  gross: Money!
-  net: Money!
-  discounts: [ProductOfferCostDiscount!]!
 }
 type MoveQuoteDisplayItem {
   displayTitle: String!
