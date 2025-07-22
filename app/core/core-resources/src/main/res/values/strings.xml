@@ -128,7 +128,7 @@
   <string name="CHANGE_ADDRESS_MAKING_CHANGES">Making changes...</string>
   <string name="CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT">Unfortunately we can’t help you change address to a Villa right now. Write us a message here in the app, and we’ll help you as soon as possible.</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_ERROR">Please select a moving date</string>
-  <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Access date</string>
+  <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Move-in date</string>
   <string name="CHANGE_ADDRESS_NEW_ADDRESS_LABEL">Address</string>
   <string name="CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL">Size</string>
   <string name="CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL">Postal code</string>

@@ -45,9 +45,11 @@ internal fun AboutAppDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val memberId = uiState.memberId
+  val deviceId = uiState.deviceId
 
   AboutAppScreen(
     memberId = memberId,
+    deviceId = deviceId,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
     isProduction = hedvigBuildConstants.isProduction,
@@ -59,6 +61,7 @@ internal fun AboutAppDestination(
 @Composable
 private fun AboutAppScreen(
   memberId: String?,
+  deviceId: String?,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
@@ -74,6 +77,7 @@ private fun AboutAppScreen(
     if (showSubmitBugWarning) {
       SubmitBugWarningDialog(
         memberId,
+        deviceId,
         appVersionName,
       ) {
         showSubmitBugWarning = false
@@ -146,12 +150,18 @@ private fun AboutAppScreen(
 }
 
 @Composable
-private fun SubmitBugWarningDialog(memberId: String?, appVersionName: String, onDismissRequest: () -> Unit) {
+private fun SubmitBugWarningDialog(
+  memberId: String?,
+  deviceId: String?,
+  appVersionName: String,
+  onDismissRequest: () -> Unit,
+) {
   val localContext = LocalContext.current
   val letterSubject = stringResource(id = R.string.app_info_submit_bug_prefilled_letter_subject)
   val letterBody = String.format(
-    stringResource(id = R.string.app_info_submit_bug_prefilled_letter_body),
+    stringResource(R.string.app_info_submit_bug_prefilled_letter_body_2),
     memberId,
+    deviceId,
     appVersionName,
     "Android ${Build.VERSION.SDK_INT}",
   )
@@ -200,6 +210,7 @@ private fun PreviewAboutAppScreen() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AboutAppScreen(
         memberId = "123",
+        deviceId = "123456",
         onBackPressed = {},
         showOpenSourceLicenses = {},
         isProduction = false,
