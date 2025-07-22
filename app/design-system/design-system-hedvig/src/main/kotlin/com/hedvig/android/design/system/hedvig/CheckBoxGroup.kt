@@ -158,13 +158,7 @@ private fun VerticalCheckboxGroupWithLabel(
                   onOptionClick(data.radioOptionData.id)
                 },
               )
-              .then(
-                if (index != 0) {
-                  Modifier.horizontalDivider(DividerPosition.Top)
-                } else {
-                  Modifier
-                },
-              ),
+              .horizontalDivider(DividerPosition.Top, show = index != 0),
           )
         }
       }
