@@ -62,6 +62,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
+  <string name="BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE">Your bundle discount will be removed when you have less than two active insurances.</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig tar bara 25\u0025 av din månatliga premie för att utveckla och förbättra vår tjänst. Resterande 75\u0025 går till en gemensam skadepool. Är det pengar över i den när året är slut doneras de till Milkywire.</string>
   <string name="BUSINESS_MODEL_CARD_TITLE">Vi kan aldrig tjäna mer på att betala ut mindre</string>
   <string name="BUSINESS_MODEL_INFO_BUTTON_LABEL">Om Milkywire</string>
