@@ -134,7 +134,6 @@ private fun FakeWaveAudioPlayerContent(
           modifier = Modifier
             .height(64.dp)
             .padding(horizontal = 4.dp, vertical = 8.dp)
-            .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessLow)),
         ) {
           ActionOrLoadingIcon(
             audioPlayerState = audioPlayerState,
