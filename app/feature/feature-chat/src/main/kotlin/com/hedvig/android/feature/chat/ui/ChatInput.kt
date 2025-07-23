@@ -295,7 +295,7 @@ private fun ChatClickableSquare(
       imageVector = imageVector,
       contentDescription = contentDescription,
       tint = HedvigTheme.colorScheme.fillPrimary,
-      modifier = Modifier.size(16.dp),
+      modifier = Modifier.size(20.dp),
     )
   }
 }
