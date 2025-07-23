@@ -132,7 +132,7 @@ private fun ChatInput(
     modifier = modifier,
   ) {
     val chatShape = HedvigTheme.shapes.cornerLarge
-    val outlineColor = HedvigTheme.colorScheme.fillPrimary.copy(0.38f)
+    val outlineColor = HedvigTheme.colorScheme.borderPrimary
     ChatOptions(
       areChatOptionsExpanded = areChatOptionsExpanded,
       takePicture = takePicture,
@@ -301,7 +301,7 @@ private fun ChatClickableSquare(
 }
 
 private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Modifier = drawWithCache {
-  val stroke = Stroke(Dp.Hairline.toPx())
+  val stroke = Stroke(1.dp.toPx())
   val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
   onDrawWithContent {
     drawContent()
