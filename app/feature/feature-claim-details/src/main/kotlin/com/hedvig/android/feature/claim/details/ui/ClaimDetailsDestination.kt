@@ -90,6 +90,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTime
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -464,7 +465,7 @@ private fun BeforeGridContent(
           modifier = Modifier.size(40.dp),
         ) {
           Icon(
-            imageVector = HedvigIcons.InfoOutline,
+            imageVector = HedvigIcons.InfoFilled,
             contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),
           )
