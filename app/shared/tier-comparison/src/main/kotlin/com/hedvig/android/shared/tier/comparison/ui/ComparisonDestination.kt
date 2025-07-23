@@ -122,18 +122,6 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
-    topAppBarActions = {
-      IconButton(
-        modifier = Modifier.size(24.dp),
-        onClick = { navigateUp() },
-        content = {
-          Icon(
-            imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
-          )
-        },
-      )
-    },
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
