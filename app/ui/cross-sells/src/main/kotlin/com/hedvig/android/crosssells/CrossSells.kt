@@ -329,10 +329,9 @@ private fun RecommendationSection(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
-    val bottomLabelText = recommendedCrossSell.buttonDescription
     HedvigText(
-      text = bottomLabelText,
-      style = HedvigTheme.typography.finePrint,
+      text = recommendedCrossSell.buttonDescription,
+      style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
   }
