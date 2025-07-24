@@ -1502,7 +1502,7 @@
   <string name="claims.payout.without.instant.payout.label">Fortsätt utan ersättning</string>
   <string name="claims.save.button">Spara</string>
   <string name="claims.select.other">Annat</string>
-  <string name="claims.skip.button">Skip</string>
+  <string name="claims.skip.button">Hoppa över</string>
   <string name="claims.summary.screen.no.price">No purchase price</string>
   <string name="claims.summary.screen.not.selected">Ej valt</string>
   <string name="claims.summary.screen.title">Sammanfattning</string>
