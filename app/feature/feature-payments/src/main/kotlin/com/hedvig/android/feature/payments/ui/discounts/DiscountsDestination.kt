@@ -267,7 +267,6 @@ internal fun ForeverExplanationBottomSheet(showForeverInfoBottomSheet: Boolean, 
       text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
       color = HedvigTheme.colorScheme.textSecondary,
     )
-    Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
       enabled = true,
@@ -278,6 +277,7 @@ internal fun ForeverExplanationBottomSheet(showForeverInfoBottomSheet: Boolean, 
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
+  Spacer(Modifier.height(24.dp))
 
 @Composable
 @HedvigPreview
