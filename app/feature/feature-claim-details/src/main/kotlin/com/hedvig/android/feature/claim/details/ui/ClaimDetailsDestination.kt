@@ -31,9 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -91,10 +88,10 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
-import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -237,7 +234,7 @@ private fun ClaimDetailContentScreen(
       sharePdf(uiState.savedFileUri)
     }
   }
-  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
 
   if (uiState.downloadError == true) {
     ErrorDialog(
@@ -249,22 +246,19 @@ private fun ClaimDetailContentScreen(
     )
   }
   FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
       onLaunchMediaRequest()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onPickFile = {
       onPickFile()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onTakePhoto = {
       onTakePhoto()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
-    onDismiss = {
-      showFileTypeSelectBottomSheet = false
-    },
-    isVisible = showFileTypeSelectBottomSheet,
   )
   NonDynamicGrid(
     uiState = uiState,
@@ -275,7 +269,7 @@ private fun ClaimDetailContentScreen(
     downloadFromUrl = downloadFromUrl,
     hasUnreadMessages = hasUnreadMessages,
     navigateToConversation = navigateToConversation,
-    onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
+    onAddFilesButtonClick = fileTypeSelectBottomSheetState::show,
   )
 }
 

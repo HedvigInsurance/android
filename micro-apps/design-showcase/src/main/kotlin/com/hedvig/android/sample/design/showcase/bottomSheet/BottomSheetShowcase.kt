@@ -1,5 +1,7 @@
 package com.hedvig.android.sample.design.showcase.bottomSheet
 
+import android.R.attr.enabled
+import android.R.attr.text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,8 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import hedvig.resources.R
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -41,12 +45,12 @@ import hedvig.resources.R
 fun ShowcaseBottomSheet() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
-      val isBottomSheetWithListVisible = remember { mutableStateOf(false) }
-      val isBottomSheetWithEditTextVisible = remember { mutableStateOf(false) }
-      val isBottomSheetWithLongListVisible = remember { mutableStateOf(false) }
-      BottomSheetWithList(isBottomSheetWithListVisible.value) { isBottomSheetWithListVisible.value = it }
-      BottomSheetWithEditText(isBottomSheetWithEditTextVisible.value) { isBottomSheetWithEditTextVisible.value = it }
-      BottomSheetWithLongList(isBottomSheetWithLongListVisible.value) { isBottomSheetWithLongListVisible.value = it }
+      val bottomSheetWithListState = rememberHedvigBottomSheetState<Unit>()
+      val bottomSheetWithEditTextState = rememberHedvigBottomSheetState<Unit>()
+      val bottomSheetWithLongListState = rememberHedvigBottomSheetState<Unit>()
+      BottomSheetWithList(bottomSheetWithListState)
+      BottomSheetWithEditText(bottomSheetWithEditTextState)
+      BottomSheetWithLongList(bottomSheetWithLongListState)
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -62,21 +66,21 @@ fun ShowcaseBottomSheet() {
         HedvigButton(
           enabled = true,
           onClick = {
-            isBottomSheetWithListVisible.value = true
+            bottomSheetWithListState.value = true
           },
         ) { HedvigText("Open sheet with List") }
         Spacer(Modifier.height(40.dp))
         HedvigButton(
           enabled = true,
           onClick = {
-            isBottomSheetWithLongListVisible.value = true
+            bottomSheetWithLongListState.value = true
           },
         ) { HedvigText("Open sheet with long list") }
         Spacer(Modifier.height(40.dp))
         HedvigButton(
           enabled = true,
           onClick = {
-            isBottomSheetWithEditTextVisible.value = true
+            bottomSheetWithEditTextState.value = true
           },
         ) { HedvigText("Open sheet with edit text") }
         Spacer(Modifier.height(40.dp))
@@ -86,7 +90,7 @@ fun ShowcaseBottomSheet() {
 }
 
 @Composable
-private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: (Boolean) -> Unit) {
+private fun BottomSheetWithList(sheetState: HedvigBottomSheetState<Unit>) {
   val chosenOption = remember { mutableStateOf<Int?>(null) }
   val listOfOptions = List(6) { index ->
     RadioOptionGroupData.RadioOptionGroupDataSimple(
@@ -97,10 +101,7 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
       ),
     )
   }
-  HedvigBottomSheet(
-    isVisible = isBottomSheetVisible,
-    onVisibleChange = onVisibleChange,
-  ) {
+  HedvigBottomSheet(sheetState) {
     Column(
       Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -114,13 +115,11 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
       HedvigButton(
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          onVisibleChange(false)
-        },
+        onClick = sheetState::dismiss,
       ) { HedvigText("Save") }
       Spacer(Modifier.height(8.dp))
       HedvigButton(
-        onClick = { onVisibleChange(false) },
+        onClick = sheetState::dismiss,
         text = stringResource(id = R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
@@ -133,7 +132,7 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
 }
 
 @Composable
-private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChange: (Boolean) -> Unit) {
+private fun BottomSheetWithLongList(sheetState: HedvigBottomSheetState<Unit>) {
   val chosenOption = remember { mutableStateOf<Int?>(null) }
   val listOfOptions = List(20) { index ->
     RadioOptionGroupData.RadioOptionGroupDataSimple(
@@ -144,10 +143,7 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
       ),
     )
   }
-  HedvigBottomSheet(
-    isVisible = isBottomSheetVisible,
-    onVisibleChange = onVisibleChange,
-  ) {
+  HedvigBottomSheet(sheetState) {
     Column(
       Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,12 +157,10 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
       HedvigButton(
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          onVisibleChange(false)
-        },
+        onClick = sheetState::dismiss,
       ) { HedvigText("Save") }
       HedvigButton(
-        onClick = { onVisibleChange(false) },
+        onClick = sheetState::dismiss,
         text = stringResource(id = R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
@@ -179,12 +173,9 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
 }
 
 @Composable
-private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChange: (Boolean) -> Unit) {
+private fun BottomSheetWithEditText(sheetState: HedvigBottomSheetState<Unit>) {
   val textFieldValue = remember { mutableStateOf("") }
-  HedvigBottomSheet(
-    isVisible = isBottomSheetVisible,
-    onVisibleChange = onVisibleChange,
-  ) {
+  HedvigBottomSheet(sheetState) {
     Column(
       Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -202,13 +193,11 @@ private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChan
       HedvigButton(
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          onVisibleChange(false)
-        },
+        onClick = sheetState::dismiss,
       ) { HedvigText("Save") }
       Spacer(Modifier.height(8.dp))
       HedvigButton(
-        onClick = { onVisibleChange(false) },
+        onClick = sheetState::dismiss,
         text = stringResource(id = R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
