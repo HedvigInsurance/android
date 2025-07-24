@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.composewebview.AccompanistWebViewClient
 import com.hedvig.android.composewebview.LoadingState
 import com.hedvig.android.composewebview.WebView
@@ -194,14 +195,8 @@ private fun TrustlyBrowser(
 
   Column {
     TopAppBarWithBack(
-      title = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
-      onClick = {
-        if (webViewNavigator.canGoBack) {
-          webViewNavigator.navigateBack()
-        } else {
-          navigateUp()
-        }
-      },
+      title = stringResource(R.string.pay_in_explainer_direct_debit_headline),
+      onClick = navigateUp,
     )
     Box(
       Modifier
