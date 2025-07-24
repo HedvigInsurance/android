@@ -39,8 +39,8 @@ internal val periodsPreviewData = listOf(
 
 internal val referralDiscountPreviewData = Discount(
   code = "APAKATT",
-  displayName = null,
-  description = null,
+  displayName = "display name",
+  description = "description",
   expiredState = Discount.ExpiredState.NotExpired,
   amount = UiMoney(-20.0, UiCurrencyCode.SEK),
   isReferral = true,
