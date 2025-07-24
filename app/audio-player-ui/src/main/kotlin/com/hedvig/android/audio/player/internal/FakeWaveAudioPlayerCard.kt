@@ -2,7 +2,6 @@ package com.hedvig.android.audio.player.internal
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -133,7 +132,7 @@ private fun FakeWaveAudioPlayerContent(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
             .height(64.dp)
-            .padding(horizontal = 4.dp, vertical = 8.dp)
+            .padding(horizontal = 4.dp, vertical = 8.dp),
         ) {
           ActionOrLoadingIcon(
             audioPlayerState = audioPlayerState,

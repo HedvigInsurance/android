@@ -361,7 +361,9 @@ private fun MemberChargeDetailsScreen(
 }
 
 @Composable
-private fun PaymentdetailsExplanationBottomSheet(paymentdetailsExplanationBottomSheetState: HedvigBottomSheetState<Unit>) {
+private fun PaymentdetailsExplanationBottomSheet(
+  paymentdetailsExplanationBottomSheetState: HedvigBottomSheetState<Unit>,
+) {
   HedvigBottomSheet(
     hedvigBottomSheetState = paymentdetailsExplanationBottomSheetState,
   ) {
