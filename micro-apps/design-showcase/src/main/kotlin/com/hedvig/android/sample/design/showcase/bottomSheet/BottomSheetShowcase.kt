@@ -38,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import hedvig.resources.R
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -65,23 +66,17 @@ fun ShowcaseBottomSheet() {
         Spacer(Modifier.height(40.dp))
         HedvigButton(
           enabled = true,
-          onClick = {
-            bottomSheetWithListState.value = true
-          },
+          onClick = bottomSheetWithListState::show,
         ) { HedvigText("Open sheet with List") }
         Spacer(Modifier.height(40.dp))
         HedvigButton(
           enabled = true,
-          onClick = {
-            bottomSheetWithLongListState.value = true
-          },
+          onClick = bottomSheetWithLongListState::show,
         ) { HedvigText("Open sheet with long list") }
         Spacer(Modifier.height(40.dp))
         HedvigButton(
           enabled = true,
-          onClick = {
-            bottomSheetWithEditTextState.value = true
-          },
+          onClick = bottomSheetWithEditTextState::show,
         ) { HedvigText("Open sheet with edit text") }
         Spacer(Modifier.height(40.dp))
       }
