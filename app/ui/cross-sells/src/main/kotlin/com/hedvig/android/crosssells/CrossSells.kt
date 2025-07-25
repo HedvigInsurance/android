@@ -479,7 +479,7 @@ private fun CrossSellItem(
         onSheetDismissed()
       },
       onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
-      buttonSize = Small,
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
