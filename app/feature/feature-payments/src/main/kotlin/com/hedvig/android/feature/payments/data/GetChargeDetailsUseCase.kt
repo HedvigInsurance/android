@@ -32,13 +32,11 @@ internal class GetChargeDetailsUseCaseImpl(
 
     val pastCharges = currentMember.pastCharges.map {
       it.toMemberCharge(
-        currentMember.redeemedCampaigns,
         currentMember.referralInformation,
         clock,
       )
     }.reversed()
     val futureMemberCharge = currentMember.futureCharge?.toMemberCharge(
-      currentMember.redeemedCampaigns,
       currentMember.referralInformation,
       clock,
     )
@@ -46,7 +44,6 @@ internal class GetChargeDetailsUseCaseImpl(
       .ongoingCharges
       .firstOrNull { it.id == id }
       ?.toMemberCharge(
-        currentMember.redeemedCampaigns,
         currentMember.referralInformation,
         clock,
       )

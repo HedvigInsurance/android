@@ -168,7 +168,6 @@ internal fun PaymentDetailExpandableCard(
             DiscountRow(
               discount,
               labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM),
-              showDisplayName = false,
             )
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
