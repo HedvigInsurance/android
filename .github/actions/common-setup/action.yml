@@ -41,7 +41,9 @@ runs:
         cache-read-only: ${{ inputs.gradle-cache-read-only }}
     - name: Download apollo schema
       if: ${{ inputs.download-schema }}
+      shell: bash
       run: ./gradlew downloadOctopusApolloSchemaFromIntrospection
     - name: Download strings
       if: ${{ inputs.download-strings }}
+      shell: bash
       run: ./gradlew downloadStrings
