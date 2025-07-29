@@ -18,6 +18,7 @@ jobs:
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
+          download-schema: false
           gradle-cache-read-only: false
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}

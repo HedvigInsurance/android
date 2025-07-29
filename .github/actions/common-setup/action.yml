@@ -10,6 +10,12 @@ inputs:
     required: true
   lokalise-token:
     required: true
+  download-schema:
+    required: false
+    default: true
+  download-strings:
+    required: false
+    default: true
 runs:
   using: "composite"
   steps:
@@ -33,3 +39,11 @@ runs:
       uses: gradle/actions/setup-gradle@v4
       with:
         cache-read-only: ${{ inputs.gradle-cache-read-only }}
+    - name: Download apollo schema
+      if: ${{ inputs.download-schema }}
+      shell: bash
+      run: ./gradlew downloadOctopusApolloSchemaFromIntrospection
+    - name: Download strings
+      if: ${{ inputs.download-strings }}
+      shell: bash
+      run: ./gradlew downloadStrings
