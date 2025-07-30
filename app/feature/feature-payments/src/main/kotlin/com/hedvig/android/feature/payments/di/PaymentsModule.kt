@@ -34,7 +34,6 @@ val paymentsModule = module {
   single<GetChargeDetailsUseCase> {
     GetChargeDetailsUseCaseImpl(
       get<ApolloClient>(),
-      get<Clock>(),
     )
   }
   single<GetForeverInformationUseCase> {

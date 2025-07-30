@@ -99,7 +99,6 @@ internal fun ShortPaymentHistoryQuery.Data.CurrentMember.PastCharge.toPaymentHis
 
 internal fun MemberChargeFragment.toMemberCharge(
   referralInformation: PaymentHistoryWithDetailsQuery.Data.CurrentMember.ReferralInformation,
-  clock: Clock,
 ) = MemberCharge(
   id = id,
   grossAmount = UiMoney.fromMoneyFragment(gross),
@@ -131,7 +130,7 @@ internal fun MemberChargeFragment.toMemberCharge(
         Discount(
           code = discount.code,
           description = discount.description,
-          // todo bundle discount figure out expired state Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
+          // Expired state is not applicable in this context
           expiredState = ExpiredState.NotExpired,
           amount = UiMoney(
             discount.discount.amount,
@@ -147,6 +146,7 @@ internal fun MemberChargeFragment.toMemberCharge(
   referralDiscount = this.referralDiscount?.let {
     Discount(
       code = referralInformation.code,
+      // Expired state is not applicable in this context
       expiredState = ExpiredState.NotExpired,
       description = null,
       amount = UiMoney(
