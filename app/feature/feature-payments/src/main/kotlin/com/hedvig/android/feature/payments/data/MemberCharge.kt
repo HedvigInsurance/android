@@ -81,6 +81,7 @@ internal data class MemberCharge(
           MemberCharge.ChargeBreakdown.Period.Description.BetweenDays(fromDate.daysUntil(toDate))
         }
       }
+
       sealed interface Description {
         data object FullPeriod : Description
 
