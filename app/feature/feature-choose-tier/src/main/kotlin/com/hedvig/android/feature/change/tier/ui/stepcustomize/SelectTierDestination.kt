@@ -337,6 +337,7 @@ private fun CustomizationCard(
         hintText = hintText,
         chosenItemIndex = chosenTierIndex,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
+        containerColor = HedvigTheme.colorScheme.fillNegative,
         modifier = Modifier.accessibilityForDropdown(
           labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           selectedValue = chosenTierVoiceDescription,
@@ -413,6 +414,7 @@ private fun CustomizationCard(
           hintText = hintText,
           chosenItemIndex = chosenQuoteIndex,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
+          containerColor = HedvigTheme.colorScheme.fillNegative,
           modifier = Modifier.accessibilityForDropdown(
             labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             selectedValue = chosenDeductibleVoiceDescription,
