@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.profile.contactinfo
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,6 +18,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -167,14 +170,18 @@ private fun ColumnScope.SuccessState(
       priority = NotificationPriority.Error,
       showSnackbar = uiState.errorSnackBarText != null,
       showedSnackbar = showedSnackBar,
-      modifier = Modifier.padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .align(Alignment.BottomCenter),
     )
     HedvigSnackbar(
       snackbarText = stringResource(R.string.travel_certificate_travel_certificate_ready), // todo - separate key
       priority = NotificationPriority.Info,
       showSnackbar = uiState.showSuccessSnackBar,
       showedSnackbar = showedSnackBar,
-      modifier = Modifier.padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .align(Alignment.BottomCenter),
     )
   }
   Spacer(Modifier.height(16.dp))
@@ -202,10 +209,12 @@ private fun ContactInfoTextField(
   inputTransformation: InputTransformation,
   keyboardActionHandler: KeyboardActionHandler?,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
     state = textFieldState,
     labelText = labelText,
-    errorState = if (errorText == null) {
+    errorState = if (errorText == null || isFocused) {
       HedvigTextFieldDefaults.ErrorState.NoError
     } else {
       HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
@@ -214,6 +223,7 @@ private fun ContactInfoTextField(
     inputTransformation = inputTransformation,
     keyboardActions = keyboardActionHandler,
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    interactionSource = interactionSource,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
