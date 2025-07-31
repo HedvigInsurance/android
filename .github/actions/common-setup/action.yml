@@ -12,10 +12,10 @@ inputs:
     required: true
   download-schema:
     required: false
-    default: true
+    default: 'true'
   download-strings:
     required: false
-    default: true
+    default: 'true'
 runs:
   using: "composite"
   steps:
@@ -38,12 +38,12 @@ runs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+        cache-read-only: ${{ inputs.gradle-cache-read-only == 'true' }}
     - name: Download apollo schema
-      if: ${{ inputs.download-schema }}
+      if: ${{ inputs.download-schema == 'true' }}
       shell: bash
       run: ./gradlew downloadOctopusApolloSchemaFromIntrospection
     - name: Download strings
-      if: ${{ inputs.download-strings }}
+      if: ${{ inputs.download-strings == 'true' }}
       shell: bash
       run: ./gradlew downloadStrings
