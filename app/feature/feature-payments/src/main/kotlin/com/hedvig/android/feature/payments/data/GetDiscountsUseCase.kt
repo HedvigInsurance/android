@@ -32,14 +32,8 @@ internal class GetDiscountsUseCaseImpl(
     val discounts = result.currentMember.redeemedCampaigns
       .filter { it.type == RedeemedCampaignType.VOUCHER }
       .map {
-        val applicableContract = it.onlyApplicableToContracts?.firstOrNull()
-        val exposureDisplayName = applicableContract?.exposureDisplayNameShort
-        val originalDisplayName = applicableContract?.currentAgreement?.productVariant?.displayNameShort
-          ?: applicableContract?.currentAgreement?.productVariant?.displayName
-        val displayName = "${originalDisplayName?.let {"$it • "} ?: ""}${exposureDisplayName ?: ""}"
         Discount(
           code = it.code,
-          displayName = displayName,
           description = it.description,
           expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
           amount = null,

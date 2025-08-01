@@ -32,7 +32,6 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun DiscountRows(
   discounts: List<Discount>,
-  showDisplayName: Boolean,
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
@@ -48,7 +47,6 @@ internal fun DiscountRows(
         discount,
         modifier = Modifier.fillMaxWidth(),
         labelColor = labelColor,
-        showDisplayName = showDisplayName,
       )
     }
   }
@@ -57,7 +55,6 @@ internal fun DiscountRows(
 @Composable
 internal fun DiscountRow(
   discount: Discount,
-  showDisplayName: Boolean, // we do not need it for payment details, but do need it for discounts
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
@@ -94,19 +91,6 @@ internal fun DiscountRow(
                 },
                 style = HedvigTheme.typography.label,
               )
-            }
-            discount.displayName?.let {
-              if (showDisplayName) {
-                HedvigText(
-                  text = it,
-                  color = if (discountIsExpired) {
-                    HedvigTheme.colorScheme.textDisabled
-                  } else {
-                    HedvigTheme.colorScheme.textSecondaryTranslucent
-                  },
-                  style = HedvigTheme.typography.label,
-                )
-              }
             }
           }
         }
@@ -184,7 +168,6 @@ private fun DiscountRowsPreview() {
       Column {
         DiscountRows(
           discounts = discountsPreviewData,
-          showDisplayName = false,
         )
       }
     }

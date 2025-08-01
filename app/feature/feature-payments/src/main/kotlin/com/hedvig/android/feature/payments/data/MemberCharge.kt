@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments.data
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount.ExpiredState
+import com.hedvig.android.feature.payments.data.from
 import kotlin.String
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -115,9 +116,7 @@ internal fun ShortPaymentHistoryQuery.Data.CurrentMember.PastCharge.toPaymentHis
 }
 
 internal fun MemberChargeFragment.toMemberCharge(
-  redeemedCampaigns: List<PaymentHistoryWithDetailsQuery.Data.CurrentMember.RedeemedCampaign>,
   referralInformation: PaymentHistoryWithDetailsQuery.Data.CurrentMember.ReferralInformation,
-  clock: Clock,
 ) = MemberCharge(
   id = id,
   grossAmount = UiMoney.fromMoneyFragment(gross),
@@ -146,14 +145,11 @@ internal fun MemberChargeFragment.toMemberCharge(
         )
       },
       discounts = chargeBreakdown.discounts?.map { discount ->
-        val relatedRedeemedCampaign = redeemedCampaigns.firstOrNull { it.code == discount.code }
         Discount(
           code = discount.code,
-          displayName = redeemedCampaigns.firstOrNull {
-            it.code == discount.code
-          }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-          description = relatedRedeemedCampaign?.description,
-          expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
+          description = discount.description,
+          // Expired state is not applicable in this context
+          expiredState = ExpiredState.NotExpired,
           amount = UiMoney(
             discount.discount.amount,
             UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
@@ -168,7 +164,7 @@ internal fun MemberChargeFragment.toMemberCharge(
   referralDiscount = this.referralDiscount?.let {
     Discount(
       code = referralInformation.code,
-      displayName = null,
+      // Expired state is not applicable in this context
       expiredState = ExpiredState.NotExpired,
       description = null,
       amount = UiMoney(

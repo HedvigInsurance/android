@@ -9,15 +9,6 @@ query PaymentHistoryWithDetails {
     ongoingCharges {
       ...MemberChargeFragment
     }
-    redeemedCampaigns {
-      code
-      description
-      expiresAt
-      id
-      onlyApplicableToContracts {
-        exposureDisplayName
-      }
-    }
     referralInformation {
       code
     }

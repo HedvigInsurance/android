@@ -5,15 +5,6 @@ query Discounts {
       description
       expiresAt
       id
-      onlyApplicableToContracts {
-        currentAgreement {
-          productVariant {
-            displayName
-            displayNameShort
-          }
-        }
-        exposureDisplayNameShort
-      }
       type
     }
   }

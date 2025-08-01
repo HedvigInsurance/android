@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class Discount(
   val code: String,
-  val displayName: String?,
   val description: String?,
   val expiredState: ExpiredState,
   val amount: UiMoney?,
