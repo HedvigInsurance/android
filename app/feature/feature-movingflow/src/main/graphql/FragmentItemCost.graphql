@@ -1,0 +1,11 @@
+fragment ItemCostFragment on ItemCost {
+  monthlyGross {
+    ...MoneyFragment
+  }
+  monthlyNet {
+    ...MoneyFragment
+  }
+  discounts {
+    ...ItemDiscountFragment
+  }
+}
