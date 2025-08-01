@@ -127,7 +127,7 @@ private fun ColumnScope.SuccessState(
         null -> "Test message"
       },
       priority = NotificationPriority.Error,
-      showSnackbar = true, // uiState.errorSnackBarText != null,
+      showSnackbar = uiState.errorSnackBarText != null,
       showedSnackbar = showedSnackBar,
       modifier = Modifier.padding(16.dp),
     )
