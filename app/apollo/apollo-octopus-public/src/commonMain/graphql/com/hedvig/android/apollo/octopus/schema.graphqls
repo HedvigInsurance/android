@@ -1304,7 +1304,7 @@ type FlowTerminationDateStep implements FlowStep {
   minDate: Date!
   maxDate: Date!
   extraCoverage: [FlowTerminationExtraCoverageItem!]!
-  notification: FlowTerminationNotification
+  notification: FlowTerminationNotification @deprecated(reason: "Call Member extention query to get notifications instead")
 }
 input FlowTerminationDeletionInput {
   """
@@ -1490,26 +1490,31 @@ type ItemCost {
   discounts: [ItemDiscount!]!
 }
 """
-Single discount line, represent distinct discount source affecting the item.
-Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be returned as ItemDiscount
+Single discount line that represents a distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be
+returned as ItemDiscount
 """
 type ItemDiscount {
+  """
+   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+  """
+  campaignCode: String!
   """
    Short name for list display, ex. "50% puppy discount" 
   """
   displayName: String!
   """
-   Short value for list display, ex. 50% 99 kr
+   Short value for list display, ex. 50% 99 kr 
   """
   displayValue: String!
   """
-   Longer explanation, ex. 50% discount for 6 months
+   Longer explanation, ex. 50% discount for 6 months 
   """
   explanation: String!
   """
-   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+   Discount amount 
   """
-  campaignCode: String!
+  amount: Money!
 }
 scalar JSON
 type LinkInfo {
@@ -1572,6 +1577,10 @@ type Member {
   importantMessages: [MemberImportantMessage!]!
   partnerData: PartnerData
   emailMessages: [EmailMessage!]!
+  """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
   hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
   """
   The currently redeemed campaign of this member, if any.
@@ -2818,18 +2827,26 @@ type ProductOfferCost {
   """
   gross: Money!
   """
+  Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
+  """
+  discounts: [ItemDiscount!]!
+  """
   How much price was reduced on the entire offer, including selected addons.
   """
-  discount: Money!
+  discount: Money! @deprecated(reason: "Use 'discounts' field instead")
   """
   Number of months the discount will apply.
   """
-  discountMonths: Int!
+  discountMonths: Int! @deprecated(reason: "Use 'discounts' field instead")
   """
   Details about origin of a discount
   """
-  discountSource: ProductOfferCostDiscountSource
+  discountSource: ProductOfferCostDiscountSource @deprecated(reason: "Use 'discounts' field instead")
 }
+"""
+@deprecated This type will be removed in a future version. Specific discount information should be obtained
+from 'ProductOfferCost.discounts' field
+"""
 type ProductOfferCostDiscountSource {
   campaignCode: String!
   discountPercent: Int!
@@ -3335,6 +3352,10 @@ type SwitcherCase {
 type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
+}
+input TerminationFlowNotificationInput {
+  contractId: ID!
+  terminationDate: Date!
 }
 enum TokenizationChannel {
   ANDROID
