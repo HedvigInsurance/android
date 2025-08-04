@@ -8,6 +8,8 @@ import kotlin.String
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.todayIn
 import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
@@ -70,7 +72,23 @@ internal data class MemberCharge(
       val fromDate: LocalDate,
       val toDate: LocalDate,
       val isPreviouslyFailedCharge: Boolean,
-    )
+    ) {
+      val description: Description? = when {
+        fromDate.dayOfMonth == 1 && toDate.isLastDayOfMonth() -> {
+          MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
+        }
+
+        else -> {
+          MemberCharge.ChargeBreakdown.Period.Description.BetweenDays(fromDate.daysUntil(toDate))
+        }
+      }
+
+      sealed interface Description {
+        data object FullPeriod : Description
+
+        data class BetweenDays(val daysBetween: Int) : Description
+      }
+    }
   }
 }
 
@@ -186,4 +204,8 @@ private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clo
   } else {
     Discount.ExpiredState.ExpiringInTheFuture(expirationDate)
   }
+}
+
+fun LocalDate.isLastDayOfMonth(): Boolean {
+  return toJavaLocalDate().lengthOfMonth() == dayOfMonth
 }
