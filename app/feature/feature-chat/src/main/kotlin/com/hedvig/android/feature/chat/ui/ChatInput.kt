@@ -46,7 +46,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -132,7 +131,7 @@ private fun ChatInput(
     modifier = modifier,
   ) {
     val chatShape = HedvigTheme.shapes.cornerLarge
-    val outlineColor = HedvigTheme.colorScheme.fillPrimary.copy(0.38f)
+    val outlineColor = HedvigTheme.colorScheme.borderPrimary
     ChatOptions(
       areChatOptionsExpanded = areChatOptionsExpanded,
       takePicture = takePicture,
@@ -295,13 +294,13 @@ private fun ChatClickableSquare(
       imageVector = imageVector,
       contentDescription = contentDescription,
       tint = HedvigTheme.colorScheme.fillPrimary,
-      modifier = Modifier.size(16.dp),
+      modifier = Modifier.size(20.dp),
     )
   }
 }
 
 private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Modifier = drawWithCache {
-  val stroke = Stroke(Dp.Hairline.toPx())
+  val stroke = Stroke(1.dp.toPx())
   val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
   onDrawWithContent {
     drawContent()

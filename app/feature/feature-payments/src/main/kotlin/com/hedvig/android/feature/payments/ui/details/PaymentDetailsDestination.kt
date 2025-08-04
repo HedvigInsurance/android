@@ -45,10 +45,13 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentDetails
@@ -97,39 +100,10 @@ private fun MemberChargeDetailsScreen(
 
     PaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentDetailsUiState.Success -> {
-      var showBottomSheet by remember { mutableStateOf(false) }
-      var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
-      ForeverExplanationBottomSheet(
-        showForeverInfoBottomSheet = showForeverInfoBottomSheet,
-        onClose = {
-          showForeverInfoBottomSheet = false
-        },
-      )
-      HedvigBottomSheet(
-        isVisible = showBottomSheet,
-        onVisibleChange = { visible ->
-          if (!visible) {
-            showBottomSheet = false
-          }
-        },
-      ) {
-        HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
-        HedvigText(
-          text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigTextButton(
-          text = stringResource(id = R.string.general_close_button),
-          enabled = true,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = {
-            showBottomSheet = false
-          },
-        )
-        Spacer(Modifier.height(8.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-      }
+      val foreverInfoBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+      ForeverExplanationBottomSheet(foreverInfoBottomSheetState)
+      val paymentdetailsExplanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+      PaymentdetailsExplanationBottomSheet(paymentdetailsExplanationBottomSheetState)
 
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       HedvigScaffold(
@@ -212,7 +186,7 @@ private fun MemberChargeDetailsScreen(
                     .wrapContentSize(Alignment.CenterEnd)
                     .size(24.dp)
                     .clip(HedvigTheme.shapes.cornerXLarge)
-                    .clickable { showForeverInfoBottomSheet = true }
+                    .clickable { foreverInfoBottomSheetState.show() }
                     .minimumInteractiveComponentSize(),
                 )
               },
@@ -276,7 +250,7 @@ private fun MemberChargeDetailsScreen(
                   .wrapContentSize(Alignment.CenterEnd)
                   .size(24.dp)
                   .clip(HedvigTheme.shapes.cornerXLarge)
-                  .clickable { showBottomSheet = true }
+                  .clickable { paymentdetailsExplanationBottomSheetState.dismiss() }
                   .minimumInteractiveComponentSize(),
               )
             },
@@ -383,6 +357,30 @@ private fun MemberChargeDetailsScreen(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun PaymentdetailsExplanationBottomSheet(
+  paymentdetailsExplanationBottomSheetState: HedvigBottomSheetState<Unit>,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = paymentdetailsExplanationBottomSheetState,
+  ) {
+    HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+    HedvigText(
+      text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_close_button),
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+      onClick = paymentdetailsExplanationBottomSheetState::dismiss,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

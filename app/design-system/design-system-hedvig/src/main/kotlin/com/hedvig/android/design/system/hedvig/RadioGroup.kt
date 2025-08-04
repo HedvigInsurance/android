@@ -145,9 +145,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-              .weight(1f)
-              .width(Min)
-              .padding(itemPadding),
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
           // so with this implementation the downside is
           // that both types of horizontal groups are not good for optionText longer than 1 word.
         )
@@ -162,9 +162,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-              .weight(1f)
-              .width(Min)
-              .padding(itemPadding),
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
         )
       }
     }
@@ -214,8 +214,8 @@ private fun HorizontalRadioGroupWithLabel(
             Modifier.width(Min)
           } else {
             Modifier
-                .weight(1f)
-                .width(Min)
+              .weight(1f)
+              .width(Min)
           }
           val lockedState = calculateLockedStateForItemInGroup(option, groupLockedState)
           HorizontalWithLabelRadioOption(
@@ -714,8 +714,8 @@ fun VerticalGroupWithDiffOptionStylesPreview(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
         Modifier
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+          .padding(horizontal = 16.dp)
+          .verticalScroll(rememberScrollState()),
       ) {
         VerticalRadioGroupWithLabel(
           groupLockedState = NotLocked,

@@ -329,10 +329,9 @@ private fun RecommendationSection(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(12.dp))
-    val bottomLabelText = recommendedCrossSell.buttonDescription
     HedvigText(
-      text = bottomLabelText,
-      style = HedvigTheme.typography.finePrint,
+      text = recommendedCrossSell.buttonDescription,
+      style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
   }
@@ -480,7 +479,7 @@ private fun CrossSellItem(
         onSheetDismissed()
       },
       onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
-      buttonSize = Small,
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,

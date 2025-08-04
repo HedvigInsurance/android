@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
-import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
+import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Default
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryAltResting
@@ -276,7 +276,7 @@ private val IntOffset.Companion.Uninitialized: IntOffset
   get() = IntOffset(-1, -1)
 
 object TabDefaults {
-  internal val defaultSize: TabSize = Mini
+  internal val defaultSize: TabSize = Small
   internal val defaultStyle: TabStyle = Default
 
   sealed class TabSize {

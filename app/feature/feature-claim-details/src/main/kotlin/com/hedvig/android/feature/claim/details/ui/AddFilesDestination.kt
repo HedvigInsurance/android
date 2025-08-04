@@ -38,7 +38,9 @@ import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import hedvig.resources.R
@@ -106,24 +108,21 @@ private fun AddFilesScreen(
   onPickFile: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
 ) {
-  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
       onPickPhoto()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onPickFile = {
       onPickFile()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onTakePhoto = {
       launchTakePhotoRequest()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
-    onDismiss = {
-      showFileTypeSelectBottomSheet = false
-    },
-    isVisible = showFileTypeSelectBottomSheet,
   )
 
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
@@ -162,9 +161,7 @@ private fun AddFilesScreen(
       DynamicFilesGridBetweenOtherThings(
         belowGridContent = {
           BelowGridContent(
-            onAddMoreFilesButtonClick = {
-              showFileTypeSelectBottomSheet = true
-            },
+            onAddMoreFilesButtonClick = fileTypeSelectBottomSheetState::show,
             onContinueButtonClick = onContinue,
             isLoading = uiState.isLoading,
           )

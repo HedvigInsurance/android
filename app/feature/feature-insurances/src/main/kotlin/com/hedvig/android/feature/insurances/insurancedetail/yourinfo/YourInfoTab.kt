@@ -241,7 +241,7 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
           }
         },
         spaceBetween = 8.dp,
-        modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0)
+        modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0),
       )
     }
   }

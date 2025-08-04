@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments.ui.discounts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,8 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,9 +49,12 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
@@ -132,13 +134,8 @@ private fun DiscountsScreen(
 private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Modifier = Modifier) {
   Column(modifier.fillMaxHeight()) {
     // todo: think how to add voiceDescription - WHAT ABOUT OTHER PAYMENTS??
-    var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
-    ForeverExplanationBottomSheet(
-      showForeverInfoBottomSheet = showForeverInfoBottomSheet,
-      onClose = {
-        showForeverInfoBottomSheet = false
-      },
-    )
+    val foreverInfoBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+    ForeverExplanationBottomSheet(foreverInfoBottomSheetState)
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       startSlot = {
@@ -156,7 +153,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
             .wrapContentSize(Alignment.CenterEnd)
             .size(24.dp)
             .clip(HedvigTheme.shapes.cornerXLarge)
-            .clickable { showForeverInfoBottomSheet = true }
+            .clickable { foreverInfoBottomSheetState.show() }
             .minimumInteractiveComponentSize(),
         )
       },
@@ -253,30 +250,29 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
 }
 
 @Composable
-internal fun ForeverExplanationBottomSheet(showForeverInfoBottomSheet: Boolean, onClose: () -> Unit) {
-  HedvigBottomSheet(
-    isVisible = showForeverInfoBottomSheet,
-    onVisibleChange = { visible ->
-      if (!visible) {
-        onClose()
-      }
-    },
-  ) {
-    HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
-    HedvigText(
-      text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
-      onClick = onClose,
-    )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+internal fun ForeverExplanationBottomSheet(foreverInfoBottomSheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(foreverInfoBottomSheetState) {
+    ForeverExplanationBottomSheetContent(foreverInfoBottomSheetState::dismiss)
   }
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.ForeverExplanationBottomSheetContent(onDismiss: () -> Unit) {
+  HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
+  HedvigText(
+    text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+    color = HedvigTheme.colorScheme.textSecondary,
+  )
+  Spacer(Modifier.height(24.dp))
+  HedvigTextButton(
+    text = stringResource(id = R.string.general_close_button),
+    enabled = true,
+    modifier = Modifier.fillMaxWidth(),
+    onClick = onDismiss,
+  )
+  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable
@@ -365,6 +361,16 @@ private fun PaymentDetailsScreenFailurePreview() {
         retry = {},
         navigateToForever = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewForeverExplanationBottomSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column { ForeverExplanationBottomSheetContent({}) }
     }
   }
 }

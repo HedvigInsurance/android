@@ -1662,17 +1662,9 @@ type MemberCharge {
   """
   date: Date!
   """
-  Breakdown of the upcoming charge by contract
-  """
-  contractsChargeBreakdown: [MemberChargeContractBreakdownItem!]! @deprecated(reason: "Use chargeBreakdown, will be removed")
-  """
   Breakdown of the upcoming charge by items
   """
   chargeBreakdown: [MemberChargeBreakdownItem!]!
-  """
-  Breakdown of the upcoming charge's discounts -- Use chargeBreakdown's discounts and referral discount, will be removed
-  """
-  discountBreakdown: [MemberChargeDiscountBreakdownItem!]!
   """
   Referral discount amount of the charge
   """
@@ -1700,6 +1692,7 @@ type MemberChargeBreakdownItem {
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
+  description: String
   discount: Money!
 }
 type MemberChargeBreakdownItemPeriod {
@@ -1707,22 +1700,6 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
-}
-type MemberChargeContractBreakdownItem {
-  gross: Money!
-  contract: Contract!
-  periods: [MemberChargeContractBreakdownItemPeriod!]!
-}
-type MemberChargeContractBreakdownItemPeriod {
-  fromDate: Date!
-  toDate: Date!
-  amount: Money!
-  isPreviouslyFailedCharge: Boolean!
-}
-type MemberChargeDiscountBreakdownItem {
-  code: String
-  discount: Money!
-  isReferral: Boolean!
 }
 """
 The status of the charge

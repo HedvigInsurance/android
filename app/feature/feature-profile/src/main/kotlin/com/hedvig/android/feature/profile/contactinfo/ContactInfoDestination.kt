@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.profile.contactinfo
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,7 +18,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -117,7 +119,26 @@ private fun ColumnScope.SuccessState(
   showedSnackBar: () -> Unit,
   focusManager: FocusManager,
 ) {
-  Spacer(Modifier.weight(1f))
+  Box(modifier = Modifier.weight(1f)) {
+    HedvigSnackbar(
+      snackbarText = when (uiState.errorSnackBarText) {
+        ErrorSnackBarText.General -> stringResource(R.string.something_went_wrong)
+        is ErrorSnackBarText.WithMessage -> uiState.errorSnackBarText.message
+        null -> "Test message"
+      },
+      priority = NotificationPriority.Error,
+      showSnackbar = uiState.errorSnackBarText != null,
+      showedSnackbar = showedSnackBar,
+      modifier = Modifier.padding(16.dp),
+    )
+    HedvigSnackbar(
+      snackbarText = stringResource(R.string.travel_certificate_travel_certificate_ready), // todo - separate key
+      priority = NotificationPriority.Info,
+      showSnackbar = uiState.showSuccessSnackBar,
+      showedSnackbar = showedSnackBar,
+      modifier = Modifier.padding(16.dp),
+    )
+  }
   Spacer(Modifier.height(16.dp))
   HedvigNotificationCard(
     message = stringResource(R.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),
@@ -125,56 +146,36 @@ private fun ColumnScope.SuccessState(
     modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(4.dp))
-  Box {
-    Column {
-      ContactInfoTextField(
-        textFieldState = uiState.emailState,
-        labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
-        errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
-          uiState.emailHasError
-        },
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Email,
-          imeAction = ImeAction.Done,
-        ),
-        inputTransformation = uiState.emailInputTransformation,
-        keyboardActionHandler = KeyboardActionHandler {
-          updateEmailAndPhoneNumber()
-          focusManager.clearFocus()
-        },
-      )
-      Spacer(Modifier.height(4.dp))
-      ContactInfoTextField(
-        textFieldState = uiState.phoneNumberState,
-        labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
-        errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
-          uiState.phoneNumberHasError
-        },
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Phone,
-          imeAction = ImeAction.Next,
-        ),
-        inputTransformation = uiState.phoneNumberInputTransformation,
-        keyboardActionHandler = null,
-      )
-    }
-    HedvigSnackbar(
-      snackbarText = when (uiState.errorSnackBarText) {
-        ErrorSnackBarText.General -> stringResource(R.string.something_went_wrong)
-        is ErrorSnackBarText.WithMessage -> uiState.errorSnackBarText.message
-        null -> ""
+  Column {
+    ContactInfoTextField(
+      textFieldState = uiState.emailState,
+      labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
+      errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
+        uiState.emailHasError
       },
-      priority = NotificationPriority.Error,
-      showSnackbar = uiState.errorSnackBarText != null,
-      showedSnackbar = showedSnackBar,
-      modifier = Modifier.padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Email,
+        imeAction = ImeAction.Done,
+      ),
+      inputTransformation = uiState.emailInputTransformation,
+      keyboardActionHandler = KeyboardActionHandler {
+        updateEmailAndPhoneNumber()
+        focusManager.clearFocus()
+      },
     )
-    HedvigSnackbar(
-      snackbarText = stringResource(R.string.travel_certificate_travel_certificate_ready), // todo - separate key
-      priority = NotificationPriority.Info,
-      showSnackbar = uiState.showSuccessSnackBar,
-      showedSnackbar = showedSnackBar,
-      modifier = Modifier.padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+    Spacer(Modifier.height(4.dp))
+    ContactInfoTextField(
+      textFieldState = uiState.phoneNumberState,
+      labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
+      errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
+        uiState.phoneNumberHasError
+      },
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Phone,
+        imeAction = ImeAction.Next,
+      ),
+      inputTransformation = uiState.phoneNumberInputTransformation,
+      keyboardActionHandler = null,
     )
   }
   Spacer(Modifier.height(16.dp))
@@ -202,10 +203,12 @@ private fun ContactInfoTextField(
   inputTransformation: InputTransformation,
   keyboardActionHandler: KeyboardActionHandler?,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
     state = textFieldState,
     labelText = labelText,
-    errorState = if (errorText == null) {
+    errorState = if (errorText == null || isFocused) {
       HedvigTextFieldDefaults.ErrorState.NoError
     } else {
       HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
@@ -214,6 +217,7 @@ private fun ContactInfoTextField(
     inputTransformation = inputTransformation,
     keyboardActions = keyboardActionHandler,
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    interactionSource = interactionSource,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
