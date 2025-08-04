@@ -18,6 +18,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationdate.Termin
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationfailure.TerminationFailureDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationDestination
+import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationEvent
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
@@ -100,6 +101,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           val commonParams = TerminationGraphParameters(
+            insuranceForCancellation.id,
             insuranceForCancellation.displayName,
             insuranceForCancellation.contractExposure,
             insuranceForCancellation.contractGroup,
@@ -184,7 +186,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
                 localDate,
               ),
               extraCoverageItems = extraCoverageItems,
-              notification = notification,
               commonParams = commonParams,
             ),
           )
@@ -205,7 +206,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             TerminateInsuranceDestination.TerminationConfirmation(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
               extraCoverageItems = extraCoverageItems,
-              notification = null,
               commonParams = commonParams,
             ),
           )
@@ -223,14 +223,15 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           terminationType,
           commonParams,
           extraCoverageItems,
-          notification,
         )
       }
       TerminationConfirmationDestination(
         viewModel = viewModel,
-        onContinue = viewModel::submitContractTermination,
+        onContinue = {
+          viewModel.emit(TerminationConfirmationEvent.Submit)
+        },
         navigateToNextStep = { terminationStep ->
-          viewModel.handledNextStepNavigation()
+          viewModel.emit(TerminationConfirmationEvent.HandledNextStepNavigation)
           navigator.navigateToTerminateFlowDestination(
             destination = terminationStep.toTerminateInsuranceDestination(commonParams),
           )
