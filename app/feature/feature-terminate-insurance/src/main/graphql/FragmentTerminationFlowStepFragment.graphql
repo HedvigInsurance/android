@@ -72,9 +72,6 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
   extraCoverage @include(if: $addonsEnabled) {
     ...ExtraCoverageItemFragment
   }
-  notification {
-    ...TerminationNotificationFragment
-  }
 }
 
 fragment FlowTerminationDeletionStepFragment on FlowTerminationDeletionStep {

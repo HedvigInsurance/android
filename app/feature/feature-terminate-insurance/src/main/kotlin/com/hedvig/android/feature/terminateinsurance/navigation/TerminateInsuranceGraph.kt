@@ -184,7 +184,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
                 localDate,
               ),
               extraCoverageItems = extraCoverageItems,
-              notification = notification,
               commonParams = commonParams,
             ),
           )
@@ -205,7 +204,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             TerminateInsuranceDestination.TerminationConfirmation(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
               extraCoverageItems = extraCoverageItems,
-              notification = null,
               commonParams = commonParams,
             ),
           )
@@ -223,7 +221,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           terminationType,
           commonParams,
           extraCoverageItems,
-          notification,
         )
       }
       TerminationConfirmationDestination(

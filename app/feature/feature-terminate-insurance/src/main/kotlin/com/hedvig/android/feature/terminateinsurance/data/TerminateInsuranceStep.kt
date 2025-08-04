@@ -13,8 +13,6 @@ import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionInfoFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.TerminationFlowStepFragment
-import octopus.fragment.TerminationNotificationFragment
-import octopus.type.FlowTerminationNotificationType
 import octopus.type.FlowTerminationSurveyOptionSuggestionInfoType
 import octopus.type.FlowTerminationSurveyRedirectAction
 
@@ -23,7 +21,6 @@ internal sealed interface TerminateInsuranceStep {
     val minDate: LocalDate,
     val maxDate: LocalDate,
     val extraCoverageItems: List<ExtraCoverageItem>,
-    val notification: TerminationNotification?,
   ) : TerminateInsuranceStep
 
   data class TerminateInsuranceSuccess(
@@ -58,7 +55,6 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
         minDate = minDate,
         maxDate = maxDate,
         extraCoverageItems = extraCoverage.toExtraCoverageItems(),
-        notification = notification?.toTerminationNotification(),
       )
     }
 
@@ -219,7 +215,6 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
         minDate = minDate,
         maxDate = maxDate,
         extraCoverageItems = extraCoverageItems,
-        notification = notification,
         commonParams = commonParams,
       )
     }
@@ -253,31 +248,3 @@ internal data class ExtraCoverageItem(
   val displayName: String,
   val displayValue: String?,
 )
-
-private fun TerminationNotificationFragment.toTerminationNotification(): TerminationNotification {
-  return TerminationNotification(
-    message = message,
-    type = type.toTerminationNotificationType(),
-  )
-}
-
-private fun FlowTerminationNotificationType.toTerminationNotificationType(): TerminationNotificationType {
-  return when (this) {
-    FlowTerminationNotificationType.INFO -> TerminationNotificationType.Info
-    FlowTerminationNotificationType.WARNING -> TerminationNotificationType.Attention
-    FlowTerminationNotificationType.UNKNOWN__ -> TerminationNotificationType.Unknown
-  }
-}
-
-@Serializable
-internal data class TerminationNotification(
-  val message: String,
-  val type: TerminationNotificationType,
-)
-
-@Serializable
-internal enum class TerminationNotificationType {
-  Info,
-  Attention,
-  Unknown,
-}

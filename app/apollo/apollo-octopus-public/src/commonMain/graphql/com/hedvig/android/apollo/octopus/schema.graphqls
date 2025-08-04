@@ -1304,7 +1304,7 @@ type FlowTerminationDateStep implements FlowStep {
   minDate: Date!
   maxDate: Date!
   extraCoverage: [FlowTerminationExtraCoverageItem!]!
-  notification: FlowTerminationNotification
+  notification: FlowTerminationNotification @deprecated(reason: "Call Member extention query to get notifications instead")
 }
 input FlowTerminationDeletionInput {
   """

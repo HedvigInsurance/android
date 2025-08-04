@@ -18,7 +18,6 @@ internal class TerminationConfirmationViewModel(
   private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   private val insuranceInfo: TerminationGraphParameters,
   private val extraCoverageItems: List<ExtraCoverageItem>,
-  private val notification: TerminationNotification?,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
@@ -26,7 +25,7 @@ internal class TerminationConfirmationViewModel(
       terminationType = terminationType,
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
-      notification = notification,
+      notification = TODO("Fetch from new query"),
       nextStep = null,
       errorMessage = null,
       isSubmittingContractTermination = false,
