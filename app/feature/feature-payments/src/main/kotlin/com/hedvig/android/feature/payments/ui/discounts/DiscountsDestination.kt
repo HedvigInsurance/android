@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -105,7 +104,7 @@ private fun DiscountsScreen(
         val discounts = uiState.discounts
         if (!discounts.isEmpty()) {
           Spacer(modifier = Modifier.height(24.dp))
-          DiscountRows(discounts, showDisplayName = true)
+          DiscountRows(discounts)
           Spacer(modifier = Modifier.height(16.dp))
         }
         if (uiState.foreverInformation != null) {
@@ -290,7 +289,6 @@ private fun PaymentDetailsScreenPreview(
             listOf(
               Discount(
                 "MYDISCOUNT1",
-                "display name of referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
                 UiMoney(10.0, UiCurrencyCode.SEK),
@@ -298,7 +296,6 @@ private fun PaymentDetailsScreenPreview(
               ),
               Discount(
                 "MYDISCOUNT2",
-                "display name of non referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
                 UiMoney(10.0, UiCurrencyCode.SEK),
@@ -306,7 +303,6 @@ private fun PaymentDetailsScreenPreview(
               ),
               Discount(
                 "MYDISCOUNT3",
-                "display name of expiring soon soon soon soon soon",
                 "description",
                 Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
                 UiMoney(10.0, UiCurrencyCode.SEK),
@@ -314,7 +310,6 @@ private fun PaymentDetailsScreenPreview(
               ),
               Discount(
                 "MYDISCOUNT3",
-                "display name of expired",
                 "description",
                 Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
                 UiMoney(10.0, UiCurrencyCode.SEK),
