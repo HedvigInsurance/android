@@ -245,7 +245,8 @@ internal data class SummaryInfo(
     currencyCode = moveHomeQuote.premium.currencyCode,
   )
   val grossPremium: UiMoney = UiMoney(
-    amount = totalPremium.amount + moveHomeQuote.relatedAddonQuotes.filter { it.isExcludedByUser }.sumOf { it.premium.amount },
+    amount =
+      totalPremium.amount + moveHomeQuote.relatedAddonQuotes.filter { it.isExcludedByUser }.sumOf { it.premium.amount },
     currencyCode = moveHomeQuote.premium.currencyCode,
   )
 }
