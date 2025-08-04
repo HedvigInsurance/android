@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
@@ -19,6 +20,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationdate.Termin
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
+import kotlinx.datetime.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -51,15 +53,20 @@ val terminateInsuranceModule = module {
       terminationType = terminationType,
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
-      terminateInsuranceRepository = get(),
+      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+      getTerminationNotificationUseCase = get<GetTerminationNotificationUseCase>(),
+      clock = get<Clock>(),
     )
   }
   single<TerminateInsuranceRepository> {
     TerminateInsuranceRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
-      terminationFlowContextStorage = get(),
+      terminationFlowContextStorage = get<TerminationFlowContextStorage>(),
     )
+  }
+  single<GetTerminationNotificationUseCase> {
+    GetTerminationNotificationUseCase(get<ApolloClient>())
   }
   single<TerminationFlowContextStorage> {
     TerminationFlowContextStorage(datastore = get<DataStore<Preferences>>())

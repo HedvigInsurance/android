@@ -94,8 +94,3 @@ fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
   displayName
   displayValue
 }
-
-fragment TerminationNotificationFragment on FlowTerminationNotification {
-  message
-  type
-}

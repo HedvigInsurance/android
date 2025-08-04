@@ -143,6 +143,7 @@ internal data class TerminationDateParameters(
 
 @Serializable
 internal data class TerminationGraphParameters(
+  val contractId: String,
   val insuranceDisplayName: String,
   val exposureName: String,
   val contractGroup: ContractGroup,

@@ -1,0 +1,12 @@
+query TerminationFlowNotification($contractId: ID!, $terminationDate: Date!) {
+  currentMember {
+    terminationFlowNotification(input: {contractId: $contractId, terminationDate: $terminationDate}) {
+      ...TerminationNotificationFragment
+    }
+  }
+}
+
+fragment TerminationNotificationFragment on FlowTerminationNotification {
+  message
+  type
+}

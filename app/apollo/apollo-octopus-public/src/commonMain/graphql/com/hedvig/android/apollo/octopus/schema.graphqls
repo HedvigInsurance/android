@@ -1572,6 +1572,10 @@ type Member {
   importantMessages: [MemberImportantMessage!]!
   partnerData: PartnerData
   emailMessages: [EmailMessage!]!
+  """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
   hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
   """
   The currently redeemed campaign of this member, if any.
@@ -3335,6 +3339,10 @@ type SwitcherCase {
 type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
+}
+input TerminationFlowNotificationInput {
+  contractId: ID!
+  terminationDate: Date!
 }
 enum TokenizationChannel {
   ANDROID
