@@ -328,13 +328,16 @@ private fun SummaryScreen(
                 },
                 modifier = Modifier.hedvigPlaceholder(
                   visible = content.totalPremium == null,
-                  shape = HedvigTheme.shapes.cornerXLarge,
+                  shape = HedvigTheme.shapes.cornerSmall,
                   highlight = PlaceholderHighlight.shimmer(),
                 ),
               ) { premium ->
                 val voiceoverDescription = premium.getPerMonthDescription()
                 HedvigText(
-                  text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, premium.toString()),
+                  text = stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    premium?.toString() ?: "00 kr",
+                  ),
                   textAlign = TextAlign.End,
                   modifier = Modifier
                     .wrapContentWidth(Alignment.End)

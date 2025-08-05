@@ -14,7 +14,6 @@ import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import octopus.feature.movingflow.MoveIntentCostQuery
