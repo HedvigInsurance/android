@@ -1,0 +1,12 @@
+query MoveIntentCost($intentId: ID!, $selectedHomeQuoteId: ID!, $selectedAddonIds: [ID!]!) {
+  moveIntentCost(intentId: $intentId, selectedHomeQuoteId: $selectedHomeQuoteId, selectedAddonIds: $selectedAddonIds) {
+    totalCost {
+      monthlyNet {
+        ...MoneyFragment
+      }
+      monthlyGross {
+        ...MoneyFragment
+      }
+    }
+  }
+}

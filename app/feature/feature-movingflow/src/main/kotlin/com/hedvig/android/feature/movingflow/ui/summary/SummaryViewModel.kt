@@ -45,6 +45,7 @@ internal class SummaryViewModel(
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
@@ -53,6 +54,7 @@ internal class SummaryViewModel(
       movingFlowRepository = movingFlowRepository,
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+      getMoveIntentCostUseCase = getMoveIntentCostUseCase,
       featureManager = featureManager,
     ),
   )
@@ -62,11 +64,14 @@ internal class SummaryPresenter(
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  private val getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
     var summaryInfo: SummaryInfoState by remember { mutableStateOf(SummaryInfoState.Loading) }
+    var totalPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.totalPremium) }
+    var grossPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.grossPremium) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
     var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
@@ -119,6 +124,29 @@ internal class SummaryPresenter(
               moveMtaQuotes = moveMtaQuotes,
             ),
           )
+        }
+      }
+    }
+
+    if (summaryInfo is SummaryInfoState.Content) {
+      LaunchedEffect(summaryInfo) {
+        val summaryInfo = (summaryInfo as SummaryInfoState.Content).summaryInfo
+        getMoveIntentCostUseCase.invoke(
+          intentId = summaryRoute.moveIntentId,
+          selectedHomeQuoteId = summaryInfo.moveHomeQuote.id,
+          selectedAddonIds = summaryInfo
+            .moveHomeQuote
+            .relatedAddonQuotes
+            .filterNot(HomeAddonQuote::isExcludedByUser)
+            .map(HomeAddonQuote::addonId)
+            .map(AddonId::id),
+        ).collect { result ->
+          result.onRight {
+            Snapshot.withMutableSnapshot {
+              totalPremium = it.monthlyNet
+              grossPremium = it.monthlyGross
+            }
+          }
         }
       }
     }
@@ -177,6 +205,8 @@ internal class SummaryPresenter(
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
         canExcludeAddons = canExcludeAddons,
+        totalPremium = totalPremium,
+        grossPremium = grossPremium,
       )
     }
   }
@@ -205,6 +235,8 @@ internal sealed interface SummaryUiState {
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
     val canExcludeAddons: Boolean,
+    val totalPremium: UiMoney?,
+    val grossPremium: UiMoney?,
   ) : SummaryUiState {
     val shouldDisableInput: Boolean = isSubmitting ||
       submitError != null ||
@@ -229,27 +261,7 @@ internal sealed interface SummaryEvent {
 internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
   val moveMtaQuotes: List<MoveMtaQuote>,
-) {
-  private val homeQuotePremium = moveHomeQuote.premium.amount
-  private val homeQuoteAddonsPremium = moveHomeQuote
-    .relatedAddonQuotes
-    .filter { !it.isExcludedByUser }
-    .sumOf { it.premium.amount }
-  private val homeQuoteWithAddonsPremium = homeQuotePremium + homeQuoteAddonsPremium
-
-  private val mtaQuotesPremium = moveMtaQuotes.sumOf { it.premium.amount }
-  private val mtaQuotesAddonsPremium = moveMtaQuotes.flatMap { it.relatedAddonQuotes }.sumOf { it.premium.amount }
-
-  val totalPremium: UiMoney = UiMoney(
-    amount = homeQuoteWithAddonsPremium + mtaQuotesPremium + mtaQuotesAddonsPremium,
-    currencyCode = moveHomeQuote.premium.currencyCode,
-  )
-  val grossPremium: UiMoney = UiMoney(
-    amount =
-      totalPremium.amount + moveHomeQuote.relatedAddonQuotes.filter { it.isExcludedByUser }.sumOf { it.premium.amount },
-    currencyCode = moveHomeQuote.premium.currencyCode,
-  )
-}
+)
 
 private data class SubmitChangesData(
   val forDate: LocalDate,

@@ -82,6 +82,8 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
@@ -96,6 +98,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.tiersandaddons.ContractDiscount
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
@@ -300,11 +303,14 @@ private fun SummaryScreen(
           },
           endSlot = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
-              if (content.summaryInfo.totalPremium != content.summaryInfo.grossPremium) {
+              if (content.totalPremium != null &&
+                content.grossPremium != null &&
+                content.totalPremium != content.grossPremium
+              ) {
                 HedvigText(
                   text = stringResource(
                     R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                    content.summaryInfo.grossPremium,
+                    content.grossPremium,
                   ),
                   textAlign = TextAlign.End,
                   style = LocalTextStyle.current.copy(
@@ -316,10 +322,15 @@ private fun SummaryScreen(
                 )
               }
               AnimatedContent(
-                targetState = content.summaryInfo.totalPremium,
+                targetState = content.totalPremium,
                 transitionSpec = {
                   slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut()
                 },
+                modifier = Modifier.hedvigPlaceholder(
+                  visible = content.totalPremium == null,
+                  shape = HedvigTheme.shapes.cornerXLarge,
+                  highlight = PlaceholderHighlight.shimmer(),
+                ),
               ) { premium ->
                 val voiceoverDescription = premium.getPerMonthDescription()
                 HedvigText(
@@ -670,10 +681,12 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           ),
         ),
       ),
-      false,
-      null,
-      null,
-      true,
+      isSubmitting = false,
+      submitError = null,
+      navigateToFinishedScreenWithDate = null,
+      canExcludeAddons = true,
+      totalPremium = UiMoney(199.0, SEK),
+      grossPremium = UiMoney(249.0, SEK),
     ),
   )
 }
