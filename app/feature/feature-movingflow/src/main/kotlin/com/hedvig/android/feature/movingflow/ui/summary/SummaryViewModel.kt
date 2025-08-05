@@ -141,11 +141,9 @@ internal class SummaryPresenter(
             .map(HomeAddonQuote::addonId)
             .map(AddonId::id),
         ).collect { result ->
-          result.onRight {
-            Snapshot.withMutableSnapshot {
-              totalPremium = it.monthlyNet
-              grossPremium = it.monthlyGross
-            }
+          Snapshot.withMutableSnapshot {
+            totalPremium = result.getOrNull()?.monthlyNet
+            grossPremium = result.getOrNull()?.monthlyGross
           }
         }
       }
