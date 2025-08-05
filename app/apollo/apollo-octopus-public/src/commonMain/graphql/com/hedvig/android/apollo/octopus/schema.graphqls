@@ -240,7 +240,12 @@ type Cart {
   Currently redeemed campaign, if any
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
-  redeemedCampaign: RedeemedCampaign
+  redeemedCampaign: RedeemedCampaign @deprecated(reason: "Use 'redeemedCampaignV2' instead")
+  """
+  Currently redeemed campaign, if any
+  It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
+  """
+  redeemedCampaignV2: RedeemedCampaignV2
 }
 type CartCost {
   """
@@ -1490,26 +1495,31 @@ type ItemCost {
   discounts: [ItemDiscount!]!
 }
 """
-Single discount line, represent distinct discount source affecting the item.
-Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be returned as ItemDiscount
+Single discount line that represents a distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be
+returned as ItemDiscount
 """
 type ItemDiscount {
+  """
+   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+  """
+  campaignCode: String!
   """
    Short name for list display, ex. "50% puppy discount" 
   """
   displayName: String!
   """
-   Short value for list display, ex. 50% 99 kr
+   Short value for list display, ex. 50% 99 kr 
   """
   displayValue: String!
   """
-   Longer explanation, ex. 50% discount for 6 months
+   Longer explanation, ex. 50% discount for 6 months 
   """
   explanation: String!
   """
-   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+   Discount amount 
   """
-  campaignCode: String!
+  amount: Money!
 }
 scalar JSON
 type LinkInfo {
@@ -1581,6 +1591,10 @@ type Member {
   The currently redeemed campaign of this member, if any.
   """
   redeemedCampaigns: [RedeemedCampaign!]!
+  """
+  The currently redeemed campaign of this member, if any.
+  """
+  redeemedCampaignsV2: [RedeemedCampaignV2!]!
   """
   A breakdown of the total cost of this member's insurance.
   The exact charge every month can vary based on other factors,
@@ -2142,6 +2156,19 @@ type MoveIntent {
   mtaQuotes: [MoveMtaQuote!]
 }
 """
+Cost breakdown for selected move intent configuration
+"""
+type MoveIntentCost {
+  """
+  Cost breakdown for both home quote and quotes for other contracts
+  """
+  quoteCosts: [MoveIntentQuoteCost!]!
+  """
+  Total breakdown
+  """
+  totalCost: MoveIntentTotalCost!
+}
+"""
  Only one field can be present 
 """
 type MoveIntentMutationOutput {
@@ -2153,6 +2180,10 @@ type MoveIntentMutationOutput {
    Fail case 
   """
   userError: UserError
+}
+type MoveIntentQuoteCost {
+  quoteId: ID!
+  cost: ItemCost!
 }
 input MoveIntentRequestInput {
   """
@@ -2187,6 +2218,10 @@ input MoveIntentRequestInput {
    Data if to move to house 
   """
   house: MoveToHouseInput
+}
+type MoveIntentTotalCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
 }
 type MoveMtaQuote {
   """
@@ -2328,11 +2363,11 @@ type Mutation {
   """
   Redeem a campaign for the current member with the input `code`.
   """
-  memberCampaignsRedeem(code: String!): MemberMutationOutput!
+  memberCampaignsRedeem(code: String!): MemberMutationOutput! @deprecated(reason: "No longer supported")
   """
   Remove a campaign for the current member with the given `RedeemedCampaign.id`.
   """
-  memberCampaignsUnredeem(id: ID!): MemberMutationOutput!
+  memberCampaignsUnredeem(id: ID!): MemberMutationOutput! @deprecated(reason: "No longer supported")
   """
   The document includes details of the member’s home insurance,
   such as address, coverage duration, payment information, co-insured parties,
@@ -2822,18 +2857,26 @@ type ProductOfferCost {
   """
   gross: Money!
   """
+  Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
+  """
+  discounts: [ItemDiscount!]!
+  """
   How much price was reduced on the entire offer, including selected addons.
   """
-  discount: Money!
+  discount: Money! @deprecated(reason: "Use 'discounts' field instead")
   """
   Number of months the discount will apply.
   """
-  discountMonths: Int!
+  discountMonths: Int! @deprecated(reason: "Use 'discounts' field instead")
   """
   Details about origin of a discount
   """
-  discountSource: ProductOfferCostDiscountSource
+  discountSource: ProductOfferCostDiscountSource @deprecated(reason: "Use 'discounts' field instead")
 }
+"""
+@deprecated This type will be removed in a future version. Specific discount information should be obtained
+from 'ProductOfferCost.discounts' field
+"""
 type ProductOfferCostDiscountSource {
   campaignCode: String!
   discountPercent: Int!
@@ -3014,6 +3057,10 @@ type Query {
   Resolve a single Trial contract by its ID. Does NOT require the caller to be a member owning said contract.
   """
   trialContract(id: UUID!): TrialContract!
+  """
+  Cost for selected configuration of moveIntent
+  """
+  moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
@@ -3024,6 +3071,7 @@ type RecommendedCrossSell {
 }
 """
 A type describing a redeemed campaign.
+@deprecated Use 'RedeemedCampaignV2' instead.
 """
 type RedeemedCampaign {
   id: ID!
@@ -3065,6 +3113,38 @@ enum RedeemedCampaignType {
   Some kind of discount usually created in Hope.
   """
   VOUCHER
+}
+enum RedeemedCampaignTypeV2 {
+  REFERRAL
+  CAMPAIGN
+}
+"""
+A type describing a redeemed campaign - v2
+"""
+type RedeemedCampaignV2 {
+  id: ID!
+  """
+  The code the user input to attach this campaign.
+  """
+  campaignCode: String!
+  """
+  REFERRAL (you were invited by a friend) or CAMPAIGN (this is some kind of limited discount or similar)
+  """
+  type: RedeemedCampaignTypeV2!
+  """
+  A user-readable explanation of this campaign.
+  """
+  description: String!
+  """
+  User readable amount to be discounted. We can only know that for Referral discounts.
+  """
+  displayValue: String
+  """
+  Expiration date of this campaign, this is non-null if the following is true:
+  - It is a kind of campaign that has an expiry (i.e. NOT a referral)
+  - It has been successfully redeemed by a signed member (i.e. not only in a ShopSession)
+  """
+  activeUntil: Date
 }
 input RegisterDirectDebitClientContext2 {
   successUrl: String!
