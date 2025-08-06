@@ -11,6 +11,8 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
@@ -18,13 +20,13 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.ClaimsQuery
-import octopus.ClaimsQuery.Data.CurrentMember.Claim.Conversation
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
@@ -33,6 +35,7 @@ import octopus.type.InsuranceDocumentType
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
+  private val featureManager: FeatureManager,
 ) {
   fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
@@ -45,27 +48,36 @@ internal class GetClaimDetailUiStateUseCase(
   }
 
   private fun queryFlow(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
-    return apolloClient
-      .query(ClaimsQuery())
-      .fetchPolicy(FetchPolicy.CacheAndNetwork)
-      .safeFlow { Error.NetworkError }
-      .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
-        either {
-          val claimsQueryData = response.bind()
-          val claim: ClaimsQuery.Data.CurrentMember.Claim? =
-            claimsQueryData.currentMember.claims.firstOrNull { it.id == claimId }
-          ensureNotNull(claim) { Error.NoClaimFound }
-          if (claim.showClaimClosedFlow) {
-            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
+    return featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY).flatMapLatest { enableClaimHistory ->
+      apolloClient
+        .query(ClaimsQuery(enableClaimHistory))
+        .fetchPolicy(FetchPolicy.CacheAndNetwork)
+        .safeFlow { Error.NetworkError }
+        .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
+          either {
+            val currentMember = response.bind().currentMember
+            val (claim: ClaimFragment?, id: String?, unreadMessageCount: Int?) =
+              currentMember.claims?.firstOrNull { it.id == claimId }
+                ?.let { Triple(it, it.conversation?.id, it.conversation?.unreadMessageCount) }
+                ?: currentMember.claimsActive?.firstOrNull { it.id == claimId }
+                  ?.let { Triple(it, it.conversation?.id, it.conversation?.unreadMessageCount) }
+                ?: currentMember.claimsHistory?.firstOrNull { it.id == claimId }
+                  ?.let { Triple(it, it.conversation?.id, it.conversation?.unreadMessageCount) }
+                ?: Triple(null, null, null)
+            ensureNotNull(claim) { Error.NoClaimFound }
+            if (claim.showClaimClosedFlow) {
+              crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
+            }
+            ClaimDetailUiState.Content.fromClaim(claim, id, unreadMessageCount)
           }
-          ClaimDetailUiState.Content.fromClaim(claim, claim.conversation)
         }
-      }
+    }
   }
 
   private fun ClaimDetailUiState.Content.Companion.fromClaim(
     claim: ClaimFragment,
-    conversation: Conversation?,
+    conversationId: String?,
+    conversationUnreadMessageCount: Int?,
   ): ClaimDetailUiState.Content {
     val audioUrl = claim.audioUrl
     val memberFreeText = claim.memberFreeText
@@ -81,8 +93,8 @@ internal class GetClaimDetailUiStateUseCase(
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,
-      conversationId = conversation?.id,
-      hasUnreadMessages = (conversation?.unreadMessageCount ?: 0) > 0,
+      conversationId = conversationId,
+      hasUnreadMessages = (conversationUnreadMessageCount ?: 0) > 0,
       submittedContent = when {
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
