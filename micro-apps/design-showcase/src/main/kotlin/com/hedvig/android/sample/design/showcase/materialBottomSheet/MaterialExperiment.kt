@@ -27,13 +27,8 @@ import com.hedvig.android.design.system.hedvig.show
 
 @Composable
 internal fun MaterialExperiment() {
-  var showBottomSheetOne by remember { mutableStateOf(false) }
-  if (showBottomSheetOne) {
-    LongSheetWithEditTextDefaultDescriptions(
-      showBottomSheetOne,
-      { showBottomSheetOne = it },
-    )
-  }
+  val bottomSheetOneState = rememberHedvigBottomSheetState<Unit>()
+  LongSheetWithEditTextDefaultDescriptions(bottomSheetOneState)
   val bottomSheetTwoState = rememberHedvigBottomSheetState<Unit>()
   LongSheetWithTextAndButtonsCustomDescription(bottomSheetTwoState)
   Column(
@@ -44,17 +39,13 @@ internal fun MaterialExperiment() {
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     HedvigButton(
-      onClick = {
-        showBottomSheetOne = true
-      },
+      onClick = bottomSheetOneState::show,
       enabled = true,
       text = "Open bottom sheet with edit text",
       modifier = Modifier.fillMaxWidth(),
     )
     HedvigButton(
-      onClick = {
-        bottomSheetTwoState.show()
-      },
+      onClick = bottomSheetOneState::show,
       enabled = true,
       text = "Open bottom sheet with text and buttons",
       modifier = Modifier.fillMaxWidth(),
@@ -67,11 +58,8 @@ internal fun MaterialExperiment() {
 }
 
 @Composable
-private fun LongSheetWithEditTextDefaultDescriptions(showBottomSheet: Boolean, onVisibleChange: (Boolean) -> Unit) {
-  HedvigBottomSheet(
-    isVisible = showBottomSheet,
-    onVisibleChange = onVisibleChange,
-  ) {
+private fun LongSheetWithEditTextDefaultDescriptions(bottomSheetOneState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(bottomSheetOneState) {
     Column(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,7 +74,7 @@ private fun LongSheetWithEditTextDefaultDescriptions(showBottomSheet: Boolean, o
         },
         endSlot = {
           HedvigButton(
-            onClick = { onVisibleChange(false) },
+            onClick = bottomSheetOneState::dismiss,
             enabled = true,
             text = "See price",
             modifier = Modifier.fillMaxWidth(),

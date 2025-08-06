@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.Lint
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import java.io.File
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
@@ -21,6 +22,15 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline-$moduleName.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
       var didConfigureLint = false
+      pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
+        configure<KotlinMultiplatformAndroidComponentsExtension> {
+          finalizeDsl {
+            it.lint { configure(lintXmlPath, lintBaselineFile) }
+          }
+        }
+        didConfigureLint = true
+      }
+
       pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
         configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
         didConfigureLint = true

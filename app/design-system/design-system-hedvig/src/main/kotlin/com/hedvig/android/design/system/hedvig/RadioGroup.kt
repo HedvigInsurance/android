@@ -334,7 +334,7 @@ private fun VerticalRadioGroupWithLabel(
         color = labelTextColor,
       )
       Column(modifier) {
-        for (data in radioGroupStyle.dataList) {
+        radioGroupStyle.dataList.forEachIndexed { index, data ->
           val interactionSource = remember { MutableInteractionSource() }
           val modifierRipple = Modifier
             .clickable(
@@ -363,11 +363,8 @@ private fun VerticalRadioGroupWithLabel(
             groupLockedState = groupLockedState,
             radioOptionSize = radioGroupSize.toOptionSize(),
             interactionSource = interactionSource,
-            modifier = modifierRipple,
+            modifier = modifierRipple.horizontalDivider(DividerPosition.Top, show = index != 0),
           )
-          if (radioGroupStyle.dataList.indexOf(data) != radioGroupStyle.dataList.lastIndex) {
-            HorizontalDivider()
-          }
         }
       }
     }

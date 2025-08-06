@@ -52,10 +52,12 @@ fun ClickableList(
         },
         size = size,
         style = style,
+        modifier = Modifier.horizontalDivider(
+          position = DividerPosition.Top,
+          show = style is ClickableListDefaults.Style.Default && index != 0,
+          color = listColors.dividerColor,
+        ),
       )
-      if (style is ClickableListDefaults.Style.Default && index != items.lastIndex) {
-        HorizontalDivider(color = listColors.dividerColor)
-      }
     }
   }
 }

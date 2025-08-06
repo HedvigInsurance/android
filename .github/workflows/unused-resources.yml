@@ -7,47 +7,32 @@ jobs:
   execute:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/checkout@v4
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: 'false'
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
 
-    - name: Copy CI gradle.properties
-      run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
-    - name: Setup JDK 21
-      uses: actions/setup-java@v4.7.1
-      with:
-        java-version: '21'
-        distribution: 'zulu'
-    - name: Prebuild
-      run: ./scripts/ci-prebuild.sh
-      env:
-        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-        LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Run android lint
+        run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
 
+      - name: Remove unused resources
+        run: ./gradlew :app:removeUnusedResourcesDebug
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
-      with:
-        # Only write to the cache for builds on the 'develop' branch
-        cache-read-only: false
+      - name: Generate Token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.CI_APP_ID }}
+          private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
 
-    - name: Run android lint
-      run: ./gradlew :app:lint -Prur.lint.onlyUnusedResources
-
-    - name: Remove unused resources
-      run: ./gradlew :app:removeUnusedResourcesDebug
-
-    - name: Generate Token
-      id: generate_token
-      uses: tibdex/github-app-token@v2
-      with:
-        app_id: ${{ secrets.CI_APP_ID }}
-        private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
-
-    - name: Create PR
-      uses: peter-evans/create-pull-request@v7
-      with:
-        token: ${{ steps.generate_token.outputs.token }}
-        branch: "maintenance/remove-unused-resources"
-        title: "Maintenance: Remove unused resources"
-        body: ""
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          branch: "maintenance/remove-unused-resources"
+          title: "Maintenance: Remove unused resources"
+          body: ""

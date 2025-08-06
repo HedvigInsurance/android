@@ -11,7 +11,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.payments.data.PaymentDetails.PaymentsInfo
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.datetime.Clock
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -21,7 +20,6 @@ internal interface GetChargeDetailsUseCase {
 
 internal class GetChargeDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val clock: Clock,
 ) : GetChargeDetailsUseCase {
   override suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails> = either {
     val currentMember = apolloClient.query(PaymentHistoryWithDetailsQuery())
@@ -31,25 +29,13 @@ internal class GetChargeDetailsUseCaseImpl(
       .currentMember
 
     val pastCharges = currentMember.pastCharges.map {
-      it.toMemberCharge(
-        currentMember.redeemedCampaigns,
-        currentMember.referralInformation,
-        clock,
-      )
+      it.toMemberCharge(currentMember.referralInformation)
     }.reversed()
-    val futureMemberCharge = currentMember.futureCharge?.toMemberCharge(
-      currentMember.redeemedCampaigns,
-      currentMember.referralInformation,
-      clock,
-    )
+    val futureMemberCharge = currentMember.futureCharge?.toMemberCharge(currentMember.referralInformation)
     val ongoingCharge = currentMember
       .ongoingCharges
       .firstOrNull { it.id == id }
-      ?.toMemberCharge(
-        currentMember.redeemedCampaigns,
-        currentMember.referralInformation,
-        clock,
-      )
+      ?.toMemberCharge(currentMember.referralInformation)
     val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
 
     val pastMemberCharge = pastCharges.firstOrNull { it.id == id }

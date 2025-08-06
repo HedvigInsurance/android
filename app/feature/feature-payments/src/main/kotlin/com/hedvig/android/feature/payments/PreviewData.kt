@@ -39,8 +39,7 @@ internal val periodsPreviewData = listOf(
 
 internal val referralDiscountPreviewData = Discount(
   code = "APAKATT",
-  displayName = null,
-  description = null,
+  description = "description",
   expiredState = Discount.ExpiredState.NotExpired,
   amount = UiMoney(-20.0, UiCurrencyCode.SEK),
   isReferral = true,
@@ -49,7 +48,6 @@ internal val referralDiscountPreviewData = Discount(
 internal val discountsPreviewData = listOf(
   Discount(
     code = "CAR15",
-    displayName = null,
     description = "15% discount for 12 months",
     expiredState = Discount.ExpiredState.NotExpired,
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
@@ -57,7 +55,6 @@ internal val discountsPreviewData = listOf(
   ),
   Discount(
     code = "HEJHEJ",
-    displayName = "Test 4",
     description = "Desc",
     expiredState = Discount.ExpiredState.AlreadyExpired(LocalDate(2022, 12, 14)),
     amount = UiMoney(20.0, UiCurrencyCode.SEK),
@@ -65,7 +62,6 @@ internal val discountsPreviewData = listOf(
   ),
   Discount(
     code = "HEJHEJ",
-    displayName = "Test 4",
     description = "Desc",
     expiredState = Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2025, 12, 14)),
     amount = null,

@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +53,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
@@ -59,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
@@ -305,11 +308,13 @@ private fun ColumnScope.ProfileItemRows(
   navigateToEurobonus: () -> Unit,
   navigateToCertificates: () -> Unit,
 ) {
+  val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, horizontalPadding = 16.dp)
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.ID,
     onClick = showContactInfo,
     isLoading = false,
+    modifier = horizontalDividerModifier,
   )
   if (profileUiState.certificatesAvailable) {
     ProfileRow(
@@ -317,6 +322,7 @@ private fun ColumnScope.ProfileItemRows(
       icon = HedvigIcons.MultipleDocuments,
       onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
+      modifier = horizontalDividerModifier,
     )
   }
   if (profileUiState.euroBonus != null) {
@@ -325,6 +331,7 @@ private fun ColumnScope.ProfileItemRows(
       icon = HedvigIcons.Eurobonus,
       onClick = navigateToEurobonus,
       isLoading = false,
+      modifier = horizontalDividerModifier,
     )
   }
   ProfileRow(
@@ -332,6 +339,7 @@ private fun ColumnScope.ProfileItemRows(
     icon = HedvigIcons.InfoOutline,
     onClick = showAboutApp,
     isLoading = false,
+    modifier = horizontalDividerModifier,
   )
   ProfileRow(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
@@ -382,11 +390,48 @@ internal fun ProfileRow(
 
 @HedvigPreview
 @Composable
-private fun PreviewProfileItemRows() {
+private fun PreviewProfileRows(
+  @PreviewParameter(ProfileUiStateProvider::class) profileUiState: ProfileUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ProfileRows(
+        profileUiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class ProfileUiStateProvider :
+  CollectionPreviewParameterProvider<ProfileUiState>(
+    listOf(
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        certificatesAvailable = true,
+      ),
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        certificatesAvailable = true,
+      ),
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        certificatesAvailable = false,
+      ),
+    ),
+  )
+
+@HedvigPreview
+@Composable
+private fun PreviewAnimatedProfileItemRows() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
-        parametersList = ProfileUiStateProvider().values.toList(),
+        parametersList = ProfileUiAnimationStateProvider().values.toList(),
       ) { uiState ->
         Column {
           ProfileRows(
@@ -403,7 +448,7 @@ private fun PreviewProfileItemRows() {
   }
 }
 
-private class ProfileUiStateProvider :
+private class ProfileUiAnimationStateProvider :
   CollectionPreviewParameterProvider<ProfileUiState>(
     listOf(
       ProfileUiState.Loading,

@@ -31,9 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +49,6 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
@@ -91,11 +87,13 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTime
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
@@ -236,7 +234,7 @@ private fun ClaimDetailContentScreen(
       sharePdf(uiState.savedFileUri)
     }
   }
-  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
 
   if (uiState.downloadError == true) {
     ErrorDialog(
@@ -248,22 +246,19 @@ private fun ClaimDetailContentScreen(
     )
   }
   FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
       onLaunchMediaRequest()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onPickFile = {
       onPickFile()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onTakePhoto = {
       onTakePhoto()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
-    onDismiss = {
-      showFileTypeSelectBottomSheet = false
-    },
-    isVisible = showFileTypeSelectBottomSheet,
   )
   NonDynamicGrid(
     uiState = uiState,
@@ -274,7 +269,7 @@ private fun ClaimDetailContentScreen(
     downloadFromUrl = downloadFromUrl,
     hasUnreadMessages = hasUnreadMessages,
     navigateToConversation = navigateToConversation,
-    onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
+    onAddFilesButtonClick = fileTypeSelectBottomSheetState::show,
   )
 }
 
@@ -394,10 +389,10 @@ private fun BeforeGridContent(
       Spacer(Modifier.height(8.dp))
     }
     ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
-    Spacer(Modifier.height(8.dp))
     if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
+      Spacer(Modifier.height(8.dp))
       HedvigCard {
-        Column(Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
           if (!uiState.claimIsInUndeterminedState) {
             HedvigText(
               text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
@@ -405,9 +400,7 @@ private fun BeforeGridContent(
             )
           }
           if (navigateToConversation != null && !uiState.claimIsInUndeterminedState) {
-            Spacer(Modifier.height(16.dp))
             HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
           }
           if (navigateToConversation != null) {
             HorizontalItemsWithMaximumSpaceTaken(
@@ -466,7 +459,7 @@ private fun BeforeGridContent(
           modifier = Modifier.size(40.dp),
         ) {
           Icon(
-            imageVector = HedvigIcons.InfoOutline,
+            imageVector = HedvigIcons.InfoFilled,
             contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),
           )

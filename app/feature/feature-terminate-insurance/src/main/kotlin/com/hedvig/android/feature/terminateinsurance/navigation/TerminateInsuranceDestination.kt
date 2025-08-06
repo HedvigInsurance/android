@@ -56,7 +56,6 @@ internal sealed interface TerminateInsuranceDestination {
     val minDate: LocalDate,
     val maxDate: LocalDate,
     val extraCoverageItems: List<ExtraCoverageItem>,
-    val notification: TerminationNotification?,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
@@ -76,7 +75,6 @@ internal sealed interface TerminateInsuranceDestination {
   data class TerminationConfirmation(
     val terminationType: TerminationType,
     val extraCoverageItems: List<ExtraCoverageItem>,
-    val notification: TerminationNotification?,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     @Serializable
@@ -145,6 +143,7 @@ internal data class TerminationDateParameters(
 
 @Serializable
 internal data class TerminationGraphParameters(
+  val contractId: String,
   val insuranceDisplayName: String,
   val exposureName: String,
   val contractGroup: ContractGroup,

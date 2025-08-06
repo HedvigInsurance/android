@@ -39,10 +39,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -68,7 +70,7 @@ private enum class PledgeAcceptingSliderPosition {
   Accepted,
 }
 
-private interface PledgeAcceptingSliderState {
+internal interface PledgeAcceptingSliderState {
   val xOffset: Float
   val isInAcceptedPosition: Boolean
 
@@ -201,13 +203,17 @@ private fun rememberPledgeAcceptingSliderState(
 }
 
 @Composable
-internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifier: Modifier = Modifier) {
-  val circleDiameterPx = with(LocalDensity.current) { circleDiameter.toPx() }
-  val state = rememberPledgeAcceptingSliderState(circleDiameterPx, onAccepted)
+internal fun PledgeAcceptingSlider(
+  onAccepted: () -> Unit,
+  text: String,
+  modifier: Modifier = Modifier,
+  circleDiameterPx: Float = with(LocalDensity.current) { circleDiameter.toPx() },
+  state: PledgeAcceptingSliderState = rememberPledgeAcceptingSliderState(circleDiameterPx, onAccepted),
+) {
   val isAcceptedTransition = updateTransition(state.isInAcceptedPosition)
   val boxColor by isAcceptedTransition.animateColor { isAccepted ->
     if (isAccepted) {
-      HedvigTheme.colorScheme.highlightGreenFill3
+      HedvigTheme.colorScheme.signalGreenElement
     } else {
       HedvigTheme.colorScheme.fillPrimary
     }
@@ -247,7 +253,7 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
           Icon(
             imageVector = HedvigIcons.Checkmark,
             contentDescription = null,
-            tint = HedvigTheme.colorScheme.fillBlack,
+            tint = HedvigTheme.colorScheme.textNegative,
           )
         } else {
           Icon(
@@ -263,12 +269,33 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
 
 @HedvigPreview
 @Composable
-private fun PreviewPledgeAcceptingSlider() {
+private fun PreviewPledgeAcceptingSlider(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) accepted: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PledgeAcceptingSlider(
         {},
         "Slide to start",
+        state = object : PledgeAcceptingSliderState {
+          override val xOffset: Float = 10f
+          override val isInAcceptedPosition: Boolean = accepted
+
+          override fun Modifier.sliderSemantics(acceptLabel: String): Modifier {
+            return this
+          }
+
+          override fun Modifier.containerDraggableModifier(): Modifier {
+            return this
+          }
+
+          override fun updateAnchors(layoutSize: IntSize) {
+          }
+
+          @Composable
+          override fun ReportAcceptedEffect(onAccepted: () -> Unit) {
+          }
+        },
       )
     }
   }

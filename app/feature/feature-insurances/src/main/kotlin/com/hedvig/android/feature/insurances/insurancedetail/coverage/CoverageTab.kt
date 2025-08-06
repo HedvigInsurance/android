@@ -46,7 +46,7 @@ import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
 
@@ -160,7 +160,7 @@ private fun ColumnScope.InsurableLimitSection(
           )
           Spacer(Modifier.width(8.dp))
           Icon(
-            imageVector = HedvigIcons.InfoOutline,
+            imageVector = HedvigIcons.InfoFilled,
             contentDescription = null,
             modifier = Modifier.size(24.dp),
             tint = HedvigTheme.colorScheme.fillSecondary,
@@ -177,9 +177,7 @@ private fun ColumnScope.InsurableLimitSection(
           if (index != 0) {
             Modifier.drawWithContent {
               drawContent()
-              if (index != insurableLimits.lastIndex) {
-                drawLine(dividerColor, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx())
-              }
+              drawLine(dividerColor, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx())
             }
           } else {
             Modifier

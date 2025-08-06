@@ -14,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,45 +27,6 @@ import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
 import eu.wewox.modalsheet.ExperimentalSheetApi
-
-@OptIn(ExperimentalSheetApi::class)
-@Composable
-fun HedvigBottomSheet(
-  isVisible: Boolean,
-  onVisibleChange: (Boolean) -> Unit,
-  contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
-  sheetPadding: PaddingValues = PaddingValues(0.dp),
-  style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
-  dragHandle: @Composable (() -> Unit)? = null,
-  content: @Composable ColumnScope.() -> Unit,
-) {
-  val sheetState = rememberHedvigBottomSheetState<Unit>()
-  LaunchedEffect(isVisible) {
-    if (isVisible) {
-      sheetState.show()
-    } else {
-      sheetState.dismiss()
-    }
-  }
-  InternalHedvigBottomSheet(
-    onDismissRequest = { onVisibleChange(false) },
-    content = content,
-    contentPadding = contentPadding,
-    sheetPadding = sheetPadding,
-    style = style,
-    sheetState = sheetState,
-    dragHandle = dragHandle,
-  )
-}
-
-fun HedvigBottomSheetState<Unit>.show() {
-  show(Unit)
-}
-
-@Composable
-fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
-  return rememberInternalHedvigBottomSheetState()
-}
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable
@@ -94,6 +54,15 @@ fun <T> HedvigBottomSheet(
       content(hedvigBottomSheetState.data!!)
     }
   }
+}
+
+fun HedvigBottomSheetState<Unit>.show() {
+  show(Unit)
+}
+
+@Composable
+fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
+  return rememberInternalHedvigBottomSheetState()
 }
 
 @OptIn(ExperimentalSheetApi::class)

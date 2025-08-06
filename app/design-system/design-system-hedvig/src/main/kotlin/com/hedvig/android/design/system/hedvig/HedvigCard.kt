@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -120,7 +121,7 @@ fun InsuranceCard(
         fallback = fallbackPainter,
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.matchParentSize(),
+        modifier = Modifier.matchParentSize().blur(8.dp),
       )
     }
     Column(Modifier.padding(16.dp)) {

@@ -194,14 +194,8 @@ private fun TrustlyBrowser(
 
   Column {
     TopAppBarWithBack(
-      title = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
-      onClick = {
-        if (webViewNavigator.canGoBack) {
-          webViewNavigator.navigateBack()
-        } else {
-          navigateUp()
-        }
-      },
+      title = stringResource(R.string.pay_in_explainer_direct_debit_headline),
+      onClick = navigateUp,
     )
     Box(
       Modifier

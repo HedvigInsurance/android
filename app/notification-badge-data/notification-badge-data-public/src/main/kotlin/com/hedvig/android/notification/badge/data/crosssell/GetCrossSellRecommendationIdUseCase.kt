@@ -27,7 +27,7 @@ internal class GetCrossSellRecommendationIdUseCaseImpl(
       .map { result ->
         result.fold(
           {
-            logcat(throwable = it.throwable) {
+            logcat(operationError = it) {
               "Error when loading potential cross-sells: $it"
             }
             null

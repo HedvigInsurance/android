@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -32,24 +33,26 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primar
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
-import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteCardState
+import com.hedvig.android.tiersandaddons.QuoteCardDocumentsSection
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -226,77 +229,96 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       locale,
     ).format(uiState.activationDate.toJavaLocalDate())
   }
-  QuoteCard(
-    quoteCardState = object : QuoteCardState {
-      override var showDetails: Boolean = true
-      override val isEnabled: Boolean = false
-    },
-    subtitle = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
-    premium = {
-      val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
-      val newPriceDescription = stringResource(
-        R.string.TALKBACK_YOUR_NEW_PRICE,
-        newPricePerMonth,
+  HedvigCard(
+    modifier = modifier,
+    onClick = null,
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
+  ) {
+    Column(Modifier.padding(16.dp)) {
+      HedvigText(
+        text = uiState.offerDisplayName,
+        overflow = TextOverflow.Ellipsis,
       )
-      Row(
-        horizontalArrangement = Arrangement.End,
-        modifier = Modifier.semantics(true) {},
-      ) {
-        if (uiState.currentTravelAddon != null) {
-          val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
-          val previousPriceDescription = stringResource(
-            R.string.TIER_FLOW_PREVIOUS_PRICE,
-            previousPricePerMonth,
-          )
-          HedvigText(
-            stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.currentTravelAddon.price,
-            ),
-            style = HedvigTheme.typography.bodySmall.copy(
-              textDecoration = TextDecoration.LineThrough,
-              color = HedvigTheme.colorScheme.textSecondary,
-            ),
-            modifier = Modifier.semantics {
-              contentDescription = previousPriceDescription
-            },
-          )
-          Spacer(Modifier.width(8.dp))
-          HedvigText(
-            stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.quote.price,
-            ),
-            modifier = Modifier.semantics {
-              contentDescription = newPriceDescription
-            },
-          )
-        } else {
-          HedvigText(
-            stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.quote.price,
-            ),
-            modifier = Modifier.semantics {
-              contentDescription = newPricePerMonth
-            },
-          )
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        HedvigText(
+          text = stringResource(R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM, formattedDate),
+          color = HedvigTheme.colorScheme.textSecondary,
+          overflow = TextOverflow.Ellipsis,
+        )
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+          },
+          endSlot = {
+            val newPricePerMonth = uiState.quote.price.getPerMonthDescription()
+            val newPriceDescription = stringResource(
+              R.string.TALKBACK_YOUR_NEW_PRICE,
+              newPricePerMonth,
+            )
+            Row(
+              horizontalArrangement = Arrangement.End,
+              modifier = Modifier.semantics(true) {},
+            ) {
+              if (uiState.currentTravelAddon != null) {
+                val previousPricePerMonth = uiState.currentTravelAddon.price.getPerMonthDescription()
+                val previousPriceDescription = stringResource(
+                  R.string.TIER_FLOW_PREVIOUS_PRICE,
+                  previousPricePerMonth,
+                )
+                HedvigText(
+                  stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    uiState.currentTravelAddon.price,
+                  ),
+                  style = HedvigTheme.typography.bodySmall.copy(
+                    textDecoration = TextDecoration.LineThrough,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  ),
+                  modifier = Modifier.semantics {
+                    contentDescription = previousPriceDescription
+                  },
+                )
+                Spacer(Modifier.width(8.dp))
+                HedvigText(
+                  stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    uiState.quote.price,
+                  ),
+                  modifier = Modifier.semantics {
+                    contentDescription = newPriceDescription
+                  },
+                )
+              } else {
+                HedvigText(
+                  stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    uiState.quote.price,
+                  ),
+                  modifier = Modifier.semantics {
+                    contentDescription = newPricePerMonth
+                  },
+                )
+              }
+            }
+          },
+          spaceBetween = 8.dp,
+        )
+        HorizontalDivider()
+        if (uiState.quote.displayDetails.isNotEmpty()) {
+          Column(
+            Modifier.semantics(true) {},
+          ) {
+            HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
+            DetailsWithStrikeThrough(uiState)
+          }
+        }
+        if (uiState.quote.addonVariant.documents.isNotEmpty()) {
+          QuoteCardDocumentsSection(uiState.quote.addonVariant.documents)
         }
       }
-    },
-    displayItems = if (uiState.quote.displayDetails.isNotEmpty()) {
-      { DetailsWithStrikeThrough(uiState) }
-    } else {
-      null
-    },
-    displayName = uiState.offerDisplayName,
-    contractGroup = null,
-    insurableLimits = null,
-    documents = uiState.quote.addonVariant.documents,
-    modifier = modifier,
-    underTitleContent = {},
-    underDetailsContent = {},
-  )
+    }
+  }
 }
 
 @Composable

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
+import android.R.attr.text
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,8 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,10 +28,12 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -45,14 +46,8 @@ internal fun TerminationScaffold(
   textForInfoIcon: String? = null,
   content: @Composable ColumnScope.(headingTitle: String) -> Unit,
 ) {
-  var showExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
-  if (textForInfoIcon != null) {
-    ExplanationBottomSheet(
-      onDismiss = { showExplanationBottomSheet = false },
-      text = textForInfoIcon,
-      isVisible = showExplanationBottomSheet,
-    )
-  }
+  val explanationBottomSheetState = rememberHedvigBottomSheetState<String>()
+  ExplanationBottomSheet(explanationBottomSheetState)
   HedvigScaffold(
     modifier = modifier,
     navigateUp = navigateUp,
@@ -61,7 +56,7 @@ internal fun TerminationScaffold(
       if (textForInfoIcon != null) {
         IconButton(
           modifier = Modifier.size(24.dp),
-          onClick = { showExplanationBottomSheet = true },
+          onClick = { explanationBottomSheetState.show(textForInfoIcon) },
           content = {
             Icon(
               imageVector = HedvigIcons.InfoOutline,
@@ -117,15 +112,8 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ExplanationBottomSheet(onDismiss: () -> Unit, text: String, isVisible: Boolean) {
-  HedvigBottomSheet(
-    onVisibleChange = { visible ->
-      if (!visible) {
-        onDismiss()
-      }
-    },
-    isVisible = isVisible,
-  ) {
+private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
+  HedvigBottomSheet(sheetState) { text ->
     HedvigText(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
@@ -138,8 +126,9 @@ private fun ExplanationBottomSheet(onDismiss: () -> Unit, text: String, isVisibl
       modifier = Modifier
         .fillMaxWidth(),
     )
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
-      onClick = onDismiss,
+      onClick = sheetState::dismiss,
       text = stringResource(id = R.string.general_close_button),
       enabled = true,
       buttonStyle = Ghost,

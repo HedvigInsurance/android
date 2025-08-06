@@ -188,9 +188,8 @@ private abstract class ComposeHandler {
       }
     }
     project.dependencies {
-      val bom = libs.androidx.compose.bom
-      add("implementation", platform(bom))
       if (isAndroidLibrary || isAndroidApp) {
+        val bom = libs.androidx.compose.bom
         add("androidTestImplementation", platform(bom))
         add("implementation", libs.androidx.compose.uiToolingPreview)
         add("implementation", libs.androidx.compose.uiTooling)

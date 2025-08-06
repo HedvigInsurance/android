@@ -18,8 +18,6 @@ dependencies {
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.composePhotoCaptureState)
-  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)

@@ -22,13 +22,14 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
     return either {
       val member = apolloClient
         .query(TravelCertificateSpecificationsQuery())
-        .safeExecute(::ErrorMessage)
-        .mapLeft(TravelCertificateError::Error)
+        .safeExecute()
         .onLeft {
-          logcat(throwable = it.throwable) {
-            "GetTravelCertificateSpecificationsUseCaseImpl: ${it.message ?: "Could not fetch travel certificate"}"
+          logcat(operationError = it) {
+            "GetTravelCertificateSpecificationsUseCaseImpl: $it"
           }
         }
+        .mapLeft(::ErrorMessage)
+        .mapLeft(TravelCertificateError::Error)
         .bind()
         .currentMember
 

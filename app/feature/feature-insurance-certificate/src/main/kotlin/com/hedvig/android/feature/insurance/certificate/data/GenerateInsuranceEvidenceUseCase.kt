@@ -24,13 +24,13 @@ internal class GenerateInsuranceEvidenceUseCaseImpl(
     )
     val result = apolloClient
       .mutation(InsuranceEvidenceCreateMutation(input))
-      .safeExecute(::ErrorMessage)
+      .safeExecute()
       .onLeft {
         logcat(
           priority = LogPriority.ERROR,
-          throwable = it.throwable,
+          operationError = it,
         ) {
-          "GetInsuranceEvidenceUseCase: ${it.message ?: "Could not create insurance evidence"}"
+          "GetInsuranceEvidenceUseCase: $it"
         }
       }
       .getOrNull()

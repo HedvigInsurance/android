@@ -26,7 +26,6 @@ dependencies {
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
   implementation(projects.composeUi)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)

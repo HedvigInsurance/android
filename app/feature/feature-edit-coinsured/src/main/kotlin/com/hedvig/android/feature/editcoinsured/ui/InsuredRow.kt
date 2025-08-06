@@ -3,6 +3,7 @@ package com.hedvig.android.feature.editcoinsured.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,8 @@ internal fun InsuredRow(
   isMember: Boolean,
   onRemove: () -> Unit,
   onEdit: () -> Unit,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
@@ -87,14 +90,15 @@ internal fun InsuredRow(
       }
     },
     spaceBetween = 8.dp,
-    modifier = Modifier
+    modifier = modifier
       .clickable(enabled = !isMember) {
         if (allowEdit && hasMissingInfo) {
           onEdit()
         } else {
           onRemove()
         }
-      },
+      }
+      .padding(contentPadding),
   )
 }
 
@@ -111,6 +115,7 @@ private fun InsuredRowPreviewEditable() {
         onRemove = {},
         onEdit = {},
         allowEdit = true,
+        contentPadding = PaddingValues(horizontal = 0.dp),
       )
     }
   }
@@ -129,6 +134,7 @@ private fun InsuredRowPreviewMissingInfo() {
         onRemove = {},
         onEdit = {},
         allowEdit = false,
+        contentPadding = PaddingValues(horizontal = 0.dp),
       )
     }
   }
@@ -147,6 +153,7 @@ private fun InsuredRowPreviewMember() {
         onRemove = {},
         onEdit = {},
         allowEdit = false,
+        contentPadding = PaddingValues(horizontal = 0.dp),
       )
     }
   }

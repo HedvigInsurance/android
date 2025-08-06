@@ -26,6 +26,7 @@ import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -48,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
@@ -239,10 +241,8 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
           }
         },
         spaceBetween = 8.dp,
+        modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0),
       )
-      if (index != coverageRowItems.size - 1) {
-        HorizontalDivider()
-      }
     }
   }
 }

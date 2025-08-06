@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -42,12 +43,12 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.Header
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
@@ -93,7 +94,9 @@ private fun InboxScreen(
         InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
         InboxUiState.Failure -> HedvigErrorSection(
           onButtonClick = reload,
-          modifier = Modifier.weight(1f).fillMaxWidth(),
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
         )
 
         is InboxUiState.Success -> InboxSuccessScreen(
@@ -131,12 +134,10 @@ private fun InboxSuccessScreen(inboxConversations: List<InboxConversation>, onCo
           fadeOutSpec = null,
         ),
       ) {
-        if (index != 0) {
-          HorizontalDivider()
-        }
         ConversationCard(
           conversation = conversation,
           onConversationClick = onConversationClick,
+          modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0),
         )
       }
     }

@@ -192,9 +192,11 @@ fun <T> MultiSelectDialog(
   getId: (T) -> String,
   getItemForId: (String) -> T,
   onDismissRequest: () -> Unit,
+  buttonText: String? = null,
 ) {
   MultiSelectDialog(
     title = title,
+    buttonText = buttonText,
     optionsList = optionsList.map {
       RadioOptionData(
         id = getId(it),
@@ -215,6 +217,7 @@ fun MultiSelectDialog(
   optionsList: List<RadioOptionData>,
   onSelected: (RadioOptionData) -> Unit,
   onDismissRequest: () -> Unit,
+  buttonText: String? = null,
   checkboxStyle: CheckboxStyle = CheckboxStyle.Default,
   checkboxSize: CheckboxSize = Medium,
 ) {
@@ -224,7 +227,7 @@ fun MultiSelectDialog(
     style = DialogStyle.TitlePlusButton(
       title = title,
       onButtonClick = onDismissRequest,
-      buttonText = stringResource(R.string.general_close_button),
+      buttonText = buttonText ?: stringResource(R.string.general_close_button),
     ),
   ) { radioOptionData ->
     Checkbox(

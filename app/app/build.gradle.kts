@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.0.11"
+    versionName = "13.0.15"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -153,11 +153,11 @@ dependencies {
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
+  implementation(projects.apolloOperationError)
   implementation(projects.authCorePublic)
   implementation(projects.composeUi)
   implementation(projects.coreAppReview)
   implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)

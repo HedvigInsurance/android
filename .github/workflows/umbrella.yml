@@ -16,24 +16,13 @@ jobs:
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
-      - name: Copy CI gradle.properties
-        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
-      - uses: actions/setup-java@v4.7.1
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
         with:
-          java-version: 21
-          distribution: 'zulu'
-      - name: Prebuild
-        run: ./scripts/ci-prebuild.sh
-        env:
-          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: false
+          gradle-cache-read-only: 'false'
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build umbrella XCFramework
         run: ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
       - name: Generate version timestamp

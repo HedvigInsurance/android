@@ -38,11 +38,6 @@ private fun Project.configureKotlinAndroidMultiplatform() {
 
   project.configure<KotlinMultiplatformExtension> {
     androidLibrary {
-      configureAutomaticNamespace(
-        path = path,
-        namespace = namespace,
-        setNameSpace = { namespace = it },
-      )
       this.compileSdk = libs.versions.compileSdkVersion.get().toInt()
       this.minSdk = libs.versions.minSdkVersion.get().toInt()
       this.enableCoreLibraryDesugaring = true
@@ -62,6 +57,8 @@ private fun Project.configureKotlinAndroidMultiplatform() {
         }
       }
       configureAutomaticNamespace(path, this.namespace, { this.namespace = it })
+      // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources-setup.html#resources-in-the-androidlibrary-target
+      experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
   }
 
