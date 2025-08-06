@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
@@ -41,6 +42,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
+import octopus.fragment.ClaimFragment
 import octopus.fragment.HomeCrossSellFragment
 
 internal interface GetHomeDataUseCase {
@@ -58,9 +60,11 @@ internal class GetHomeDataUseCaseImpl(
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
-      apolloClient.query(HomeQuery())
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-        .safeFlow(),
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY).flatMapLatest { enableClaimHistory ->
+        apolloClient.query(HomeQuery(enableClaimHistory))
+          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+          .safeFlow()
+      },
       flow {
         while (currentCoroutineContext().isActive) {
           emitAll(
@@ -251,8 +255,8 @@ internal class GetHomeDataUseCaseImpl(
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
-  val claimStatusCards: NonEmptyList<HomeQuery.Data.CurrentMember.Claim> =
-    this.currentMember.claims.toNonEmptyListOrNull() ?: return null
+  val claimStatusCards: NonEmptyList<ClaimFragment> =
+    (this.currentMember.claims ?: this.currentMember.claimsActive)?.toNonEmptyListOrNull() ?: return null
   return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
 }
 
