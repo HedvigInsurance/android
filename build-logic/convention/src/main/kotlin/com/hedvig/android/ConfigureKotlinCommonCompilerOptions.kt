@@ -37,6 +37,7 @@ private fun commonFreeCompilerArgs(): List<String> {
     "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
     "-opt-in=kotlin.Experimental",
     "-opt-in=kotlin.RequiresOptIn",
+    "-opt-in=kotlin.time.ExperimentalTime",
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     "-opt-in=kotlinx.coroutines.FlowPreview",
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
