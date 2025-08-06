@@ -129,9 +129,9 @@ import hedvig.resources.R
 import kotlin.time.ExperimentalTime
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlin.time.LocalDate
-import kotlin.time.TimeZone
-import kotlin.time.toLocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
