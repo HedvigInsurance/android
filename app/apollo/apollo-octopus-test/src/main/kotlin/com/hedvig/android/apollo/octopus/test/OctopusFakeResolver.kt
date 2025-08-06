@@ -5,7 +5,7 @@ import com.apollographql.apollo.api.FakeResolver
 import com.apollographql.apollo.api.FakeResolverContext
 import com.hedvig.android.core.markdown.MarkdownString
 import java.util.UUID
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.schema.__Schema

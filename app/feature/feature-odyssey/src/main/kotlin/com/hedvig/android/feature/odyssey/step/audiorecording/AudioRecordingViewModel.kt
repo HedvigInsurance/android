@@ -18,12 +18,12 @@ import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 internal class AudioRecordingViewModel(
   private val audioRecording: ClaimFlowDestination.AudioRecording,

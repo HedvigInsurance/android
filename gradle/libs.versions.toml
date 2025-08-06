@@ -11,7 +11,7 @@ lintGradlePlugin = "8.10.0"
 # gradlePlugin versions
 androidGradlePlugin = "8.10.0"
 apollo = "4.2.0"
-apolloAdapters = "0.0.6"
+apolloAdapters = "0.7.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.3"
 datadogPlugin = "1.16.0"
@@ -135,6 +135,7 @@ androidx-other-startup = { module = "androidx.startup:startup-runtime", version.
 androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
+apollo-adapters-core = { module = "com.apollographql.adapters:apollo-adapters-core", version.ref = "apolloAdapters" }
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
