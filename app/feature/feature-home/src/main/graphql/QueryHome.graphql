@@ -1,9 +1,9 @@
-query Home($claimsActiveFlag: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!) {
   currentMember {
-    claims@skip(if: $claimsActiveFlag) {
+    claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
-    claimsActive@include(if: $claimsActiveFlag) {
+    claimsActive@include(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
     terminatedContracts {

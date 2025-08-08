@@ -1,20 +1,20 @@
-query Claims($claimsActiveFlag: Boolean!) {
+query Claims($claimsHistoryFlag: Boolean!) {
   currentMember {
-    claims@skip(if: $claimsActiveFlag) {
+    claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
       conversation {
         id
         unreadMessageCount
       }
     }
-    claimsActive@include(if: $claimsActiveFlag) {
+    claimsActive@include(if: $claimsHistoryFlag) {
       ...ClaimFragment
       conversation {
         id
         unreadMessageCount
       }
     }
-    claimsHistory@include(if: $claimsActiveFlag) {
+    claimsHistory@include(if: $claimsHistoryFlag) {
       ...ClaimFragment
       conversation {
         id

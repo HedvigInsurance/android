@@ -7,12 +7,13 @@ import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaim
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val claimDetailsModule = module {
   single<GetClaimDetailUiStateUseCase> {
-    GetClaimDetailUiStateUseCase(get<ApolloClient>(), get<CrossSellAfterClaimClosedRepository>())
+    GetClaimDetailUiStateUseCase(get<ApolloClient>(), get<CrossSellAfterClaimClosedRepository>(), get<FeatureManager>())
   }
   viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFilesUri: List<String>) ->
     AddFilesViewModel(
