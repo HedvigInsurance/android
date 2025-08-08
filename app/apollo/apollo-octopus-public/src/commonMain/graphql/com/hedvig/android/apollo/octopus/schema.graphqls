@@ -294,7 +294,11 @@ type ChangeTierDeductibleAddonQuote {
   """
    Price for the addon. 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use cost instead")
+  """
+   Cost breakdown 
+  """
+  cost: ItemCost!
   """
    The terms 
   """
@@ -404,7 +408,11 @@ type ChangeTierDeductibleQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use cost instead")
+  """
+   Cost breakdown. Does not include addons 
+  """
+  cost: ItemCost!
   """
    List of display items for the quote 
   """
@@ -1568,6 +1576,8 @@ type Member {
   """
   memberFAQ: MemberFAQ!
   claims: [Claim!]!
+  claimsActive: [Claim!]!
+  claimsHistory: [Claim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -1906,8 +1916,16 @@ input MemberUpdatePhoneNumberInput {
 }
 type MidtermChangeIntent {
   id: ID!
-  currentPremium: Money!
-  newPremium: Money!
+  currentPremium: Money! @deprecated(reason: "Use currentTotalCost")
+  newPremium: Money! @deprecated(reason: "Use newTotalCost")
+  """
+  Breakdown of current cost. Includes addons
+  """
+  currentTotalCost: ItemCost!
+  """
+  Breakdown of new cost. Includes addons
+  """
+  newTotalCost: ItemCost!
   activationDate: Date!
   state: MidtermChangeIntentState!
 }
