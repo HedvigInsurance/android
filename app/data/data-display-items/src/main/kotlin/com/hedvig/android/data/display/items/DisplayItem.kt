@@ -1,5 +1,6 @@
 package com.hedvig.android.data.display.items
 
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -30,7 +31,7 @@ data class DisplayItem(
         } catch (_: IllegalArgumentException) {
         }
         try {
-          val instant = kotlinx.datetime.Instant.parse(value)
+          val instant = Instant.parse(value)
           return@run DisplayItemValue.DateTime(
             instant.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()),
           )
