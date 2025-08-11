@@ -30,6 +30,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

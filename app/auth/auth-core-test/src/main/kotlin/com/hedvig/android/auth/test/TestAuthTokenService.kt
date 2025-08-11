@@ -9,12 +9,12 @@ import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Clock
 
 class TestAuthTokenService : AuthTokenService {
   val authEventTurbine = Turbine<AuthEvent>()

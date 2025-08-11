@@ -155,6 +155,7 @@ import com.hedvig.android.feature.chat.ui.onBackgroundColor
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
@@ -165,7 +166,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
-import kotlinx.datetime.Instant
 
 @Composable
 internal fun CbmChatLoadedScreen(

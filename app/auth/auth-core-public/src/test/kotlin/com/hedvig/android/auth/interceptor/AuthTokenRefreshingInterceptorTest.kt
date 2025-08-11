@@ -19,6 +19,7 @@ import com.hedvig.authlib.RefreshToken
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.first
@@ -26,7 +27,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Interceptor

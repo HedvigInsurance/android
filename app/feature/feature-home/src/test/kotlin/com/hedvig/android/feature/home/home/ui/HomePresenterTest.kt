@@ -27,11 +27,11 @@ import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
 

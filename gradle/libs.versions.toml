@@ -11,7 +11,7 @@ lintGradlePlugin = "8.10.0"
 # gradlePlugin versions
 androidGradlePlugin = "8.10.0"
 apollo = "4.2.0"
-apolloAdapters = "0.0.6"
+apolloAdapters = "0.7.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.3"
 datadogPlugin = "1.16.0"
@@ -19,13 +19,13 @@ doctor = "0.10.0"
 easylauncher = "6.4.1"
 googleServices = "4.4.2"
 gradleDevelocity = "4.0.1"
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlinter = "5.0.2"
-ksp = "2.1.21-2.0.1"
+ksp = "2.2.0-2.0.2"
 ktor = "3.1.3"
 license = "0.9.8"
 molecule = "2.1.0"
-skie = "0.10.2"
+skie = "0.10.5"
 squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
@@ -52,7 +52,7 @@ androidxGraphicsShapes = "1.0.1"
 jetbrains-compose-runtime = "1.8.2"
 arrow = "2.1.2"
 assertK = "0.28.1"
-atomicfu = "0.27.0"
+atomicfu = "0.29.0"
 coil = "2.7.0"
 composeRichtext = "1.0.0-alpha02"
 coreLibraryDesugaring = "2.1.5"
@@ -62,8 +62,8 @@ dependencyAnalysis = "2.17.0"
 firebaseCrashlyticsBuildtools = "3.0.3"
 junit = "4.13.2"
 koinBom = "4.0.4"
-kotlinx-serialization = "1.8.1"
-kotlinxDatetime = "0.6.2"
+kotlinx-serialization = "1.9.0"
+kotlinxDatetime = "0.7.1-0.6.x-compat"
 media3 = "1.7.1"
 modalSheet = "0.7.0"
 moneta = "1.4.4"
@@ -135,6 +135,7 @@ androidx-other-startup = { module = "androidx.startup:startup-runtime", version.
 androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
+apollo-adapters-core = { module = "com.apollographql.adapters:apollo-adapters-core", version.ref = "apolloAdapters" }
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }

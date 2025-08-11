@@ -5,7 +5,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount.ExpiredState
 import com.hedvig.android.feature.payments.data.from
 import kotlin.String
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil

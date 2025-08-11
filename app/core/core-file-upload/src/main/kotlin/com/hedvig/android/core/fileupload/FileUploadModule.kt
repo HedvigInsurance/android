@@ -3,7 +3,7 @@ package com.hedvig.android.core.fileupload
 import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

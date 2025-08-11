@@ -18,7 +18,7 @@ import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemChec
 import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.language.LanguageService
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

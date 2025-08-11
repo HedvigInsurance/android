@@ -18,7 +18,7 @@ import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCase
 import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCaseImpl
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCase
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCaseImpl
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.dsl.module
 
 val memberRemindersModule = module {

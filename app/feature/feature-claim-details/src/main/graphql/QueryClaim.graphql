@@ -1,0 +1,9 @@
+query Claim($claimId: ID!) {
+  claim(id: $claimId) {
+    ...ClaimFragment
+    conversation {
+      id
+      unreadMessageCount
+    }
+  }
+}

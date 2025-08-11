@@ -1,6 +1,6 @@
 package com.hedvig.android.ui.claimstatus.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import octopus.fragment.ClaimFragment
 
 data class ClaimStatusCardUiState(

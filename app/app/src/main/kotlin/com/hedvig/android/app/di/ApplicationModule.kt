@@ -316,7 +316,7 @@ private val notificationModule = module {
 
 private val clockModule = module {
   single<java.time.Clock> { java.time.Clock.systemDefaultZone() }
-  single<kotlinx.datetime.Clock> { kotlinx.datetime.Clock.System }
+  single<kotlin.time.Clock> { kotlin.time.Clock.System }
   single<kotlinx.datetime.TimeZone> { kotlinx.datetime.TimeZone.currentSystemDefault() }
 }
 

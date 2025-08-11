@@ -20,8 +20,8 @@ import com.hedvig.android.feature.payments.data.toFailedCharge
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlin.collections.sorted
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery

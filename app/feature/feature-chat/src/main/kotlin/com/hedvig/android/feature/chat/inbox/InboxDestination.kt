@@ -57,7 +57,7 @@ import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unk
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
 import hedvig.resources.R
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Composable
 internal fun InboxDestination(

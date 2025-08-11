@@ -18,7 +18,9 @@ import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +29,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.type.FlowClaimItemBrandInput

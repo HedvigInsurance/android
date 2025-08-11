@@ -86,8 +86,8 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
+import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.Clock.System
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate

@@ -16,9 +16,9 @@ import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import java.util.Locale
+import kotlin.time.Clock
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import org.junit.Rule

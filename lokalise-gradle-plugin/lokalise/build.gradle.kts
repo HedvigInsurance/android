@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
   `embedded-kotlin`
@@ -19,6 +20,7 @@ java {
 kotlin {
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_21)
+    languageVersion = KotlinVersion.KOTLIN_2_2
   }
 }
 
