@@ -1,6 +1,6 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "35"
+compileSdkVersion = "36"
 targetSdkVersion = "34"
 minSdkVersion = "23"
 
@@ -163,11 +163,10 @@ datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref =
 datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = "com.google.firebase:firebase-bom:34.1.0"
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
-firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }

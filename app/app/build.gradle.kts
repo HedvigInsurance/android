@@ -136,7 +136,6 @@ dependencies {
   implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
-  implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
   implementation(libs.koin.workManager)

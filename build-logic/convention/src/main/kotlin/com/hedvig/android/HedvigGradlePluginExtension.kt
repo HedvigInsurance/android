@@ -204,10 +204,10 @@ private abstract class ComposeHandler {
   }
 
   private fun ComposeCompilerGradlePluginExtension.configureComposeCompilerMetrics(project: Project) {
-    with(project) {
+    with<Project, Unit>(project) {
       fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
 
-      fun Provider<*>.relativeToRootProject(dir: String): Provider<Directory?> = flatMap {
+      fun Provider<*>.relativeToRootProject(dir: String): Provider<Directory> = flatMap {
         rootProject.layout.buildDirectory.dir(projectDir.toRelativeString(rootDir))
       }.map { it.dir(dir) }
 

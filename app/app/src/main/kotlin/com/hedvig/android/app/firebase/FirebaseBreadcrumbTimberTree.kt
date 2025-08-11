@@ -1,7 +1,7 @@
 package com.hedvig.android.app.firebase
 
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import timber.log.Timber
 
 class FirebaseBreadcrumbTimberTree : Timber.Tree() {
