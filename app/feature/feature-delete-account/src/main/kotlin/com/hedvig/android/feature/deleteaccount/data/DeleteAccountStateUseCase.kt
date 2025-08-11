@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.deleteaccount.data
 
+import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -37,7 +38,7 @@ internal class DeleteAccountStateUseCase(
         return@combine DeleteAccountState.HasActiveInsurance
       }
       val hasActiveClaims = (
-        currentMember.claims?.map { it.status }
+        currentMember.claims?.toNonEmptyListOrNull()?.map { it.status }
           ?: currentMember.claimsActive.orEmpty().map { it.status }
       ).any { status ->
         // If we do not explicitly know that a claim is closed, we err on the side of caution and assume it's open
