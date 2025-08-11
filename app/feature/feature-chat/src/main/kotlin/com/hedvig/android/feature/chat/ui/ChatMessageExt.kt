@@ -9,9 +9,9 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn

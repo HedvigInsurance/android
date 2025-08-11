@@ -21,7 +21,7 @@ import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertifi
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.language.LanguageService
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

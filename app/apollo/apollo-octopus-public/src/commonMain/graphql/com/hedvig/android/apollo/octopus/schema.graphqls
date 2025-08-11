@@ -3079,6 +3079,7 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  claim(id: ID!): Claim
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

@@ -19,14 +19,14 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import java.util.Locale
+import kotlin.time.Clock
+import kotlin.time.Clock.System
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Clock.System
-import kotlinx.datetime.Instant
 
 @Composable
 internal fun SubmittedAndClosedColumns(submittedAt: Instant, closedAt: Instant?, locale: Locale) {

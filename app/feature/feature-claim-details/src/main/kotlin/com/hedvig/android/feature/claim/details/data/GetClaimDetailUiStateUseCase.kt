@@ -23,8 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.ClaimsQuery
-import octopus.ClaimsQuery.Data.CurrentMember.Claim.Conversation
+import octopus.ClaimQuery
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
@@ -46,26 +45,25 @@ internal class GetClaimDetailUiStateUseCase(
 
   private fun queryFlow(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return apolloClient
-      .query(ClaimsQuery())
+      .query(ClaimQuery(claimId))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow { Error.NetworkError }
-      .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
+      .map { response ->
         either {
-          val claimsQueryData = response.bind()
-          val claim: ClaimsQuery.Data.CurrentMember.Claim? =
-            claimsQueryData.currentMember.claims.firstOrNull { it.id == claimId }
+          val claim = response.bind().claim
           ensureNotNull(claim) { Error.NoClaimFound }
           if (claim.showClaimClosedFlow) {
             crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
           }
-          ClaimDetailUiState.Content.fromClaim(claim, claim.conversation)
+          ClaimDetailUiState.Content.fromClaim(claim, claim.conversation?.id, claim.conversation?.unreadMessageCount)
         }
       }
   }
 
   private fun ClaimDetailUiState.Content.Companion.fromClaim(
     claim: ClaimFragment,
-    conversation: Conversation?,
+    conversationId: String?,
+    conversationUnreadMessageCount: Int?,
   ): ClaimDetailUiState.Content {
     val audioUrl = claim.audioUrl
     val memberFreeText = claim.memberFreeText
@@ -81,8 +79,8 @@ internal class GetClaimDetailUiStateUseCase(
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,
-      conversationId = conversation?.id,
-      hasUnreadMessages = (conversation?.unreadMessageCount ?: 0) > 0,
+      conversationId = conversationId,
+      hasUnreadMessages = (conversationUnreadMessageCount ?: 0) > 0,
       submittedContent = when {
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))

@@ -1,7 +1,7 @@
 package com.hedvig.android.data.chat.database.converter
 
 import androidx.room.TypeConverter
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 class InstantConverter {
   @TypeConverter

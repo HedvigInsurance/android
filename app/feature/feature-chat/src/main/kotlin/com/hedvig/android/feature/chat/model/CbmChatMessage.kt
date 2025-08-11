@@ -9,7 +9,7 @@ import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal sealed interface CbmChatMessage {
   val id: String

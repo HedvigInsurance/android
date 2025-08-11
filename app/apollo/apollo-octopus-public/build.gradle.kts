@@ -26,8 +26,8 @@ hedvig {
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables = false
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
-    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
-    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
+    mapScalar("DateTime", "kotlin.time.Instant", "com.apollographql.adapter.core.KotlinInstantAdapter")
+    mapScalar("Instant", "kotlin.time.Instant", "com.apollographql.adapter.core.KotlinInstantAdapter")
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
@@ -37,6 +37,7 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      api(libs.apollo.adapters.core)
       api(libs.apollo.adapters.datetime)
       api(libs.apollo.api)
       api(libs.kotlinx.datetime)

@@ -18,8 +18,8 @@ import com.hedvig.android.feature.chat.data.PagingToken
 import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.logger.LogPriority.VERBOSE
 import com.hedvig.android.logger.logcat
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
-import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalPagingApi::class)
 internal class ChatRemoteMediator(

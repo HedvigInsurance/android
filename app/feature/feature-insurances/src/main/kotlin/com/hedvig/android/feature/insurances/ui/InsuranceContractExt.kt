@@ -13,7 +13,7 @@ import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 

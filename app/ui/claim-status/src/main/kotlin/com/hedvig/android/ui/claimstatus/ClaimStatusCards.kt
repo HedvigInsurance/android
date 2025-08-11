@@ -26,7 +26,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Composable
 fun ClaimStatusCards(

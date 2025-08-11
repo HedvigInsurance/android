@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.chat.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal data class InboxConversation(
   val conversationId: String,
