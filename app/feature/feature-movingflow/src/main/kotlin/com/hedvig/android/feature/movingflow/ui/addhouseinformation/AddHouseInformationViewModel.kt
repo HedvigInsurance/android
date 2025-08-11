@@ -58,7 +58,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
-import octopus.type.MoveApiVersion
 import octopus.type.MoveExtraBuildingInput
 import octopus.type.MoveExtraBuildingType.ATTEFALL
 import octopus.type.MoveExtraBuildingType.BARN
@@ -214,7 +213,6 @@ internal class AddHouseInformationPresenter(
 private fun MovingFlowState.toInputForSubmission(validContent: ValidAddressInput): InputForSubmission {
   return InputForSubmission(
     moveIntentRequestInput = MoveIntentRequestInput(
-      apiVersion = com.apollographql.apollo.api.Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
       moveToAddress = MoveToAddressInput(
         street = this.addressInfo.street!!,
         postalCode = this.addressInfo.postalCode!!,
