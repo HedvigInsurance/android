@@ -34,7 +34,7 @@ import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -125,7 +125,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
-      FakeFeatureManager2(true),
+      FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
@@ -174,7 +174,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
-      FakeFeatureManager2(true),
+      FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       travelBannerProvider,
@@ -266,7 +266,7 @@ internal class GetHomeUseCaseTest {
     @TestParameter claimsHistoryFlag: Boolean,
   ) = runTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager2(
+      featureManager = FakeFeatureManager(
         fixedMap = Feature.entries.associateWith { true }.plus(
           Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
         ),
@@ -321,7 +321,7 @@ internal class GetHomeUseCaseTest {
     @TestParameter claimsHistoryFlag: Boolean,
   ) = runTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager2(
+      featureManager = FakeFeatureManager(
         fixedMap = Feature.entries.associateWith { true }.plus(
           Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
         ),
@@ -447,7 +447,7 @@ internal class GetHomeUseCaseTest {
   fun `when the are only pending contracts, the contract status is considered pending or switchable`(
     @TestParameter isSwitchableByHedvig: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(true)
+    val featureManager = FakeFeatureManager(true)
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
@@ -493,7 +493,7 @@ internal class GetHomeUseCaseTest {
     @TestParameter hasAtLeastOneMessageByMember: Boolean,
     @TestParameter("0", "1", "2") numberOfMessagesByHedvig: Int,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
@@ -558,7 +558,7 @@ internal class GetHomeUseCaseTest {
     @TestParameter helpCenterIsEnabled: Boolean,
     @TestParameter isEligibleToSeeTheChatButton: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to chatIsKillSwitched,
         Feature.HELP_CENTER to helpCenterIsEnabled,
@@ -626,7 +626,7 @@ internal class GetHomeUseCaseTest {
   fun `the disable help center feature flag determines if we show it or not`(
     @TestParameter helpCenterIsEnabled: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to true,
         Feature.HELP_CENTER to helpCenterIsEnabled,
@@ -668,7 +668,7 @@ internal class GetHomeUseCaseTest {
     @TestParameter hasAtLeastOneOpenConversation: Boolean,
     @TestParameter closedConversationHasAtLeastOneMessage: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
@@ -726,7 +726,7 @@ internal class GetHomeUseCaseTest {
   fun `Chat notification dot shows depending on if there are unread messages or not`(
     @TestParameter hasUnreadMessages: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(true)
+    val featureManager = FakeFeatureManager(true)
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
@@ -771,7 +771,7 @@ internal class GetHomeUseCaseTest {
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
   private fun testUseCaseWithoutReminders(
-    featureManager: FeatureManager = FakeFeatureManager2(true),
+    featureManager: FeatureManager = FakeFeatureManager(true),
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
   ): GetHomeDataUseCase {

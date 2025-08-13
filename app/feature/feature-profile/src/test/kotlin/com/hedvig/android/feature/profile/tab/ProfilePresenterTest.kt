@@ -19,7 +19,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
@@ -52,7 +52,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(
+      FakeFeatureManager(
         fixedMap = mapOf(
           Feature.PAYMENT_SCREEN to false,
           Feature.HELP_CENTER to true,
@@ -88,7 +88,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(
+      FakeFeatureManager(
         fixedMap = mapOf(
           Feature.PAYMENT_SCREEN to true,
           Feature.HELP_CENTER to true,
@@ -124,7 +124,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(fixedReturnForAll = false),
+      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
 
@@ -154,7 +154,7 @@ class ProfilePresenterTest {
       FakeCheckCertificatesAvailabilityUseCase().apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(
+      FakeFeatureManager(
         mapOf(
           Feature.PAYMENT_SCREEN to false,
           Feature.ENABLE_CLAIM_HISTORY to claimHistoryFlag,
@@ -185,7 +185,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(fixedReturnForAll = false),
+      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
 
@@ -215,7 +215,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(fixedReturnForAll = false),
+      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
 
@@ -245,7 +245,7 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(fixedReturnForAll = false),
+      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
     presenter.test(ProfileUiState.Loading) {
@@ -276,7 +276,7 @@ class ProfilePresenterTest {
       },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(fixedReturnForAll = false),
+      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
     presenter.test(ProfileUiState.Loading) {
@@ -297,7 +297,7 @@ class ProfilePresenterTest {
 
   @Test
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       fixedMap = mapOf(
         Feature.PAYMENT_SCREEN to true,
         Feature.HELP_CENTER to true,
@@ -360,7 +360,7 @@ class ProfilePresenterTest {
       },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(
+      FakeFeatureManager(
         mapOf(
           Feature.PAYMENT_SCREEN to false,
           Feature.HELP_CENTER to true,
@@ -401,7 +401,7 @@ class ProfilePresenterTest {
       },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager2(
+      FakeFeatureManager(
         mapOf(
           Feature.PAYMENT_SCREEN to false,
           Feature.HELP_CENTER to true,
@@ -438,7 +438,7 @@ class ProfilePresenterTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
     val getEurobonusStatusUseCase = FakeGetEurobonusStatusUseCase()
     val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
-    val featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CLAIM_HISTORY to false))
+    val featureManager = FakeFeatureManager(mapOf(Feature.ENABLE_CLAIM_HISTORY to false))
     val presenter = ProfilePresenter(
       getEurobonusStatusUseCase,
       certificatesAvailabilityUseCase,

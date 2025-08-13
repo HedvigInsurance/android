@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
  * Uses a Turbine for the feature, to have more control over what and when it returns a value during a test.
  * Should probably delete `FakeFeatureManager` asap in favor of this, while keeping same API maybe.
  */
-class FakeFeatureManager2(
+class FakeFeatureManager(
   private val fixedMap: Map<Feature, Boolean> = emptyMap(),
 ) : FeatureManager {
   /**
