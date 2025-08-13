@@ -7,8 +7,13 @@ import arrow.core.right
 import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
+import assertk.assertions.prop
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
@@ -25,7 +30,9 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(TestParameterInjector::class)
 class ProfilePresenterTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
@@ -134,6 +141,37 @@ class ProfilePresenterTest {
         ),
       )
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `claims history feature flag hides the navigation option`(
+    @TestParameter claimHistoryFlag: Boolean,
+  ) = runTest {
+    println("stelios flag:$claimHistoryFlag")
+    val presenter = ProfilePresenter(
+      FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
+      FakeCheckCertificatesAvailabilityUseCase().apply { turbine.add(Unit.right()) },
+      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
+      TestEnableNotificationsReminderSnoozeManager(),
+      FakeFeatureManager2(
+        mapOf(
+          Feature.PAYMENT_SCREEN to false,
+          Feature.ENABLE_CLAIM_HISTORY to claimHistoryFlag,
+        ),
+      ),
+      noopLogoutUseCase,
+    )
+
+    presenter.test(ProfileUiState.Loading) {
+      assertThat(awaitItem()).isInstanceOf<ProfileUiState.Loading>()
+      runCurrent()
+      assertThat(awaitItem())
+        .isInstanceOf<ProfileUiState.Success>()
+        .prop(ProfileUiState.Success::showClaimHistory)
+        .run {
+          if (claimHistoryFlag) isTrue() else isFalse()
+        }
     }
   }
 

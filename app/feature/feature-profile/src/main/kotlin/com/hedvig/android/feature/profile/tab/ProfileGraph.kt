@@ -54,6 +54,9 @@ fun NavGraphBuilder.profileGraph(
         navigateToEurobonus = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
         },
+        navigateToClaimHistory = {
+          TODO("Claim history")
+        },
         navigateToContactInfo = {
           with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
         },
