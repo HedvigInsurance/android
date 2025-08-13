@@ -347,7 +347,7 @@ private fun ColumnScope.ProfileItemRows(
     ProfileRow(
       title = stringResource(R.string.profile_claim_history_title),
       icon = HedvigIcons.Clock,
-      onClick = navigateToClaimHistory,
+      onClick = dropUnlessResumed { navigateToClaimHistory() },
       isLoading = false,
       modifier = horizontalDividerModifier,
     )

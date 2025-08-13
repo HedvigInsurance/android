@@ -33,10 +33,9 @@ private fun Project.configureKotlinMultiplatform() {
       iosArm64(),
       iosSimulatorArm64(),
     )
-    jvm {
-      compilerOptions {
-        this.configureKotlinCompilerOptions()
-      }
+    jvm()
+    compilerOptions {
+      configureKotlinCompilerOptions()
     }
     applyDefaultHierarchyTemplate()
 

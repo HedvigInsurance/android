@@ -29,6 +29,8 @@ import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
+import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
+import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
@@ -302,7 +304,13 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
-      nestedGraphs = {},
+      nestedGraphs = {
+        claimHistoryGraph(
+          navigateToClaimDetails = { claimId ->
+            hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+          },
+        )
+      },
       settingsDestinationNestedGraphs = {
         deleteAccountGraph(hedvigDeepLinkContainer, navigator)
       },
@@ -317,6 +325,9 @@ internal fun HedvigNavHost(
       },
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
         with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
+      },
+      navigateToClaimHistory = {
+        hedvigAppState.navController.navigate(ClaimHistoryDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,

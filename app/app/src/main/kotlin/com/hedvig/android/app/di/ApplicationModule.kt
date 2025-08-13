@@ -69,6 +69,7 @@ import com.hedvig.android.feature.addon.purchase.di.addonPurchaseModule
 import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
+import com.hedvig.android.feature.claimhistory.di.claimHistoryModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.cross.sell.sheet.di.featureCrossSellSheetModule
@@ -382,6 +383,7 @@ val applicationModule = module {
       chooseTierModule,
       claimDetailsModule,
       claimFlowDataModule,
+      claimHistoryModule,
       claimTriagingModule,
       clockModule,
       coilModule,
@@ -413,8 +415,8 @@ val applicationModule = module {
       foreverModule,
       helpCenterModule,
       homeModule,
-      insurancesModule,
       insuranceEvidenceModule,
+      insurancesModule,
       languageAuthListenersModule,
       languageMigrationModule,
       languageModule,
