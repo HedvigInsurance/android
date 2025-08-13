@@ -15,7 +15,7 @@ jobs:
     name: Build and release new umbrella version
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
@@ -94,7 +94,7 @@ jobs:
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - name: Checkout umbrella repo under the path_umbrella path
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: path_umbrella
           repository: hedviginsurance/umbrella
