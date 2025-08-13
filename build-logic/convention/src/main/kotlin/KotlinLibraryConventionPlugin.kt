@@ -36,10 +36,10 @@ private fun Project.configureKotlin() {
     configureKotlinCompilerOptions()
   }
   project.extensions.getByType(JavaPluginExtension::class.java).apply {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(23))
   }
   project.tasks.withType(JavaCompile::class.java).configureEach {
-    options.release.set(21)
+    options.release.set(23)
   }
 }
 
