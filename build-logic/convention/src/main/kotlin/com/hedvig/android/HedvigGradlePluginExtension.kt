@@ -1,6 +1,7 @@
 package com.hedvig.android
 
 import androidx.room.gradle.RoomExtension
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
@@ -187,12 +188,19 @@ private abstract class ComposeHandler {
         configureComposeAndroidBuildFeature()
       }
     }
+    val isAndroidMulitplatformLibrary =
+      project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
     project.dependencies {
-      if (isAndroidLibrary || isAndroidApp) {
+      if (isAndroidLibrary || isAndroidApp || isAndroidMulitplatformLibrary) {
         val bom = libs.androidx.compose.bom
-        add("androidTestImplementation", platform(bom))
-        add("implementation", libs.androidx.compose.uiToolingPreview)
-        add("implementation", libs.androidx.compose.uiTooling)
+        if (isAndroidMulitplatformLibrary) {
+          add("androidMainImplementation", libs.androidx.compose.uiToolingPreview)
+          add("androidMainImplementation", libs.androidx.compose.uiTooling)
+        } else {
+          add("androidTestImplementation", platform(bom))
+          add("implementation", libs.androidx.compose.uiToolingPreview)
+          add("implementation", libs.androidx.compose.uiTooling)
+        }
       }
     }
   }

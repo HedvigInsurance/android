@@ -306,6 +306,7 @@ internal fun HedvigNavHost(
     profileGraph(
       nestedGraphs = {
         claimHistoryGraph(
+          navigateUp = hedvigAppState.navController::navigateUp,
           navigateToClaimDetails = { claimId ->
             hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
           },
