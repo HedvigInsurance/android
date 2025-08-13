@@ -2,16 +2,16 @@ package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import hedvig.resources.R
@@ -26,7 +26,8 @@ internal fun CoInsuredList(
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
-  val contentPadding = PaddingValues(horizontal = 16.dp)
+  val horizontalPaddingValue = 16.dp
+  val contentPadding = PaddingValues(horizontal = horizontalPaddingValue)
   Column(modifier = modifier) {
     uiState.member?.let {
       InsuredRow(
@@ -42,8 +43,6 @@ internal fun CoInsuredList(
     }
 
     uiState.coInsured.forEach { coInsured ->
-      HorizontalDivider(Modifier.padding(contentPadding))
-
       InsuredRow(
         displayName = coInsured.displayName.ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) },
         identifier = coInsured.identifier(dateTimeFormatter)
@@ -58,6 +57,7 @@ internal fun CoInsuredList(
           onEdit(coInsured)
         },
         contentPadding = contentPadding,
+        modifier = Modifier.horizontalDivider(DividerPosition.Top, horizontalPadding = horizontalPaddingValue),
       )
     }
   }

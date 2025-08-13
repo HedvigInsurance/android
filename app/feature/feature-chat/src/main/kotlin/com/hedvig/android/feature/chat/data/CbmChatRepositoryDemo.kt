@@ -8,9 +8,9 @@ import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.chat.model.CbmChatMessage
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.datetime.Clock
 
 /**
  * Normally we'd add a fake impl here, but the database being involved makes this too much of a task for it to be worth

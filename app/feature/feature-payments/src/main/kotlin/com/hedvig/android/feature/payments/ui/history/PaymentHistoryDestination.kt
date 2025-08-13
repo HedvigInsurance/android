@@ -21,6 +21,7 @@ import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParam
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -29,11 +30,11 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -135,10 +136,7 @@ private fun PaymentHistorySuccessScreen(
             Spacer(Modifier.height(16.dp))
           }
           HedvigText(text = "${yearCharges.year}", modifier = Modifier.padding(horizontal = 18.dp))
-          yearCharges.charge.forEachIndexed { chargeIndex, charge ->
-            if (chargeIndex != 0) {
-              HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            }
+          yearCharges.charge.forEachIndexed { index, charge ->
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
                 HedvigText(
@@ -158,6 +156,7 @@ private fun PaymentHistorySuccessScreen(
                 )
               },
               modifier = Modifier
+                .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 16.dp)
                 .clickable { onChargeClicked(charge.id) }
                 .padding(16.dp),
               spaceBetween = 8.dp,

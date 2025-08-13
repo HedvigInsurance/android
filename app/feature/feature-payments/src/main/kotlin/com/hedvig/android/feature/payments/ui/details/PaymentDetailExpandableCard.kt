@@ -22,7 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -42,6 +44,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.BetweenDays
+import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
 import com.hedvig.android.feature.payments.discountsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import hedvig.resources.R
@@ -153,9 +157,23 @@ internal fun PaymentDetailExpandableCard(
                 }
               },
             )
-            if (it.isPreviouslyFailedCharge) {
+            if (it.isPreviouslyFailedCharge || it.description != null) {
               HedvigText(
-                text = stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT),
+                text = if (it.isPreviouslyFailedCharge) {
+                  stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT)
+                } else {
+                  when (
+                    it.description!!
+                  ) {
+                    is BetweenDays -> stringResource(
+                      R.string.PAYMENTS_PERIOD_DAYS,
+                      it.description.daysBetween,
+                    )
+                    FullPeriod -> stringResource(
+                      R.string.PAYMENTS_PERIOD_FULL,
+                    )
+                  }
+                },
                 style = HedvigTheme.typography.label,
                 color = it.toSubtitleColor(),
               )
@@ -168,7 +186,6 @@ internal fun PaymentDetailExpandableCard(
             DiscountRow(
               discount,
               labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM),
-              showDisplayName = false,
             )
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
@@ -211,9 +228,11 @@ internal fun PaymentDetailExpandableCard(
 }
 
 private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateTimeFormatter): String {
-  return "${dateTimeFormatter.format(
-    fromDate.toJavaLocalDate(),
-  )} - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
+  return "${
+    dateTimeFormatter.format(
+      fromDate.toJavaLocalDate(),
+    )
+  } - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
 }
 
 @Composable
@@ -236,7 +255,9 @@ private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
 
 @Composable
 @HedvigPreview
-private fun PaymentDetailExpandableCardPreview() {
+private fun PaymentDetailExpandableCardPreview(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isExpanded: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PaymentDetailExpandableCard(
@@ -252,69 +273,19 @@ private fun PaymentDetailExpandableCardPreview() {
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
-            isPreviouslyFailedCharge = false,
-          ),
-          MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(400.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = true,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
+            amount = UiMoney(149.0, UiCurrencyCode.SEK),
+            fromDate = LocalDate.fromEpochDays(181),
+            toDate = LocalDate.fromEpochDays(211),
             isPreviouslyFailedCharge = false,
           ),
         ),
-        isExpanded = false,
-        onClick = {},
-        discounts = discountsPreviewData,
-      )
-    }
-  }
-}
-
-@Composable
-@HedvigPreview
-private fun PaymentDetailExpandableCardExpandedPreview() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PaymentDetailExpandableCard(
-        displayName = "Bilförsäkring",
-        subtitle = "ABH 234",
-        totalGrossAmount = "978 kr",
-        totalNetAmount = "800 kr",
-        periods = listOf(
-          MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
-            isPreviouslyFailedCharge = false,
-          ),
-          MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
-            isPreviouslyFailedCharge = false,
-          ),
-          MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(400.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
-            isPreviouslyFailedCharge = true,
-          ),
-          MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, UiCurrencyCode.SEK),
-            fromDate = LocalDate.fromEpochDays(200),
-            toDate = LocalDate.fromEpochDays(300),
-            isPreviouslyFailedCharge = false,
-          ),
-        ),
-        isExpanded = true,
+        isExpanded = isExpanded,
         onClick = {},
         discounts = discountsPreviewData,
       )

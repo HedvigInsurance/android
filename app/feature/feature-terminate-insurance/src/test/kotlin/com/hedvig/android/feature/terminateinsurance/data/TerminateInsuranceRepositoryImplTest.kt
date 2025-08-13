@@ -15,7 +15,7 @@ import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -136,7 +136,7 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok, options with tier-related subOptions should have subOptions and no required feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(
+      val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
           Feature.TRAVEL_ADDON to false,
         ),
@@ -180,7 +180,7 @@ class TerminateInsuranceRepositoryImplTest {
   @Test
   fun `when response is ok, options with tier actions should have corresponding action and have no feedback`() =
     runTest {
-      val featureManager = FakeFeatureManager2(
+      val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
           Feature.TRAVEL_ADDON to false,
         ),

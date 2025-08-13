@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.0.15"
+    versionName = "13.1.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -136,7 +136,6 @@ dependencies {
   implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
-  implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
   implementation(libs.koin.workManager)
@@ -187,6 +186,7 @@ dependencies {
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimDetails)
+  implementation(projects.featureClaimHistory)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)

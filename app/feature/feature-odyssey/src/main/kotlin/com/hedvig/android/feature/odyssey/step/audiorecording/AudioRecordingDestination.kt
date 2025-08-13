@@ -49,7 +49,7 @@ import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 import java.io.File
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Composable
 internal fun AudioRecordingDestination(

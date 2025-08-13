@@ -1,0 +1,6 @@
+fragment ItemDiscountFragment on ItemDiscount {
+  displayName
+  displayValue
+  explanation
+  campaignCode
+}

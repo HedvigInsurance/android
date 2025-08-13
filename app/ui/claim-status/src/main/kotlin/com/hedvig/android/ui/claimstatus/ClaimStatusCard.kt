@@ -1,12 +1,10 @@
 package com.hedvig.android.ui.claimstatus
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,12 +19,9 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.ui.claimstatus.internal.ClaimPillsRow
 import com.hedvig.android.ui.claimstatus.internal.ClaimProgressRow
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
@@ -36,7 +31,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -56,7 +51,7 @@ fun ClaimStatusCard(
       },
   ) {
     Column {
-      ClaimStatusCardContent(uiState, withInfoIcon = true, Modifier.padding(16.dp))
+      ClaimStatusCardContent(uiState, Modifier.padding(16.dp))
       HedvigButton(
         text = stringResource(R.string.claim_status_claim_details_button),
         onClick = { onClick(uiState.id) },
@@ -81,19 +76,14 @@ fun ClaimStatusCard(uiState: ClaimStatusCardUiState, modifier: Modifier = Modifi
         contentDescription = description
       },
   ) {
-    ClaimStatusCardContent(uiState, withInfoIcon = false, Modifier.padding(16.dp))
+    ClaimStatusCardContent(uiState, Modifier.padding(16.dp))
   }
 }
 
 @Composable
-fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, withInfoIcon: Boolean, modifier: Modifier = Modifier) {
+fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier = Modifier) {
   Column(modifier) {
-    Row {
-      ClaimPillsRow(pillTypes = uiState.pillTypes, modifier = Modifier.weight(1f))
-      if (withInfoIcon) {
-        Icon(HedvigIcons.InfoOutline, null, Modifier.size(24.dp), HedvigTheme.colorScheme.fillSecondary)
-      }
-    }
+    ClaimPillsRow(pillTypes = uiState.pillTypes, modifier = Modifier.weight(1f))
     Spacer(modifier = Modifier.height(16.dp))
     HedvigText(
       text = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() }

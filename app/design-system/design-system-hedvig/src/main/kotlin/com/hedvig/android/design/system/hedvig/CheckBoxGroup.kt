@@ -84,6 +84,7 @@ private fun VerticalCheckboxGroup(
         is Vertical.Icon -> CheckboxStyle.Icon(
           (data as RadioOptionGroupDataWithIcon).iconResource,
         )
+
         is Vertical.Label -> CheckboxStyle.Label((data as RadioOptionGroupDataWithLabel).labelText)
         is Vertical.LeftAligned -> CheckboxStyle.LeftAligned
       }
@@ -124,29 +125,19 @@ private fun VerticalCheckboxGroupWithLabel(
         style = checkboxGroupSize.getLabelTextStyle(),
         color = labelTextColor,
       )
-      Column(modifier) {
-        for (data in checkboxGroupStyle.dataList) {
+      Column {
+        checkboxGroupStyle.dataList.forEachIndexed { index, data ->
           val interactionSource = remember { MutableInteractionSource() }
-          val modifierRipple = Modifier
-            .clickable(
-              enabled = calculateLockedStateForItemInGroup(data.radioOptionData, groupLockedState) == NotLocked,
-              role = Role.Checkbox,
-              interactionSource = interactionSource,
-              indication = ripple(
-                bounded = true,
-              ),
-              onClick = {
-                onOptionClick(data.radioOptionData.id)
-              },
-            )
           val checkboxStyle = when (checkboxGroupStyle) {
             is VerticalWithGroupLabel.Default -> CheckboxStyle.Default
             is VerticalWithGroupLabel.Icon -> CheckboxStyle.Icon(
               (data as RadioOptionGroupDataWithIcon).iconResource,
             )
+
             is VerticalWithGroupLabel.Label -> CheckboxStyle.Label(
               (data as RadioOptionGroupDataWithLabel).labelText,
             )
+
             is VerticalWithGroupLabel.LeftAligned -> CheckboxStyle.LeftAligned
           }
           Checkbox(
@@ -155,11 +146,20 @@ private fun VerticalCheckboxGroupWithLabel(
             lockedState = groupLockedState,
             checkboxSize = checkboxGroupSize.toOptionSize(),
             interactionSource = interactionSource,
-            modifier = modifierRipple,
+            modifier = Modifier
+              .clickable(
+                enabled = calculateLockedStateForItemInGroup(data.radioOptionData, groupLockedState) == NotLocked,
+                role = Role.Checkbox,
+                interactionSource = interactionSource,
+                indication = ripple(
+                  bounded = true,
+                ),
+                onClick = {
+                  onOptionClick(data.radioOptionData.id)
+                },
+              )
+              .horizontalDivider(DividerPosition.Top, show = index != 0),
           )
-          if (checkboxGroupStyle.dataList.indexOf(data) != checkboxGroupStyle.dataList.lastIndex) {
-            HorizontalDivider()
-          }
         }
       }
     }

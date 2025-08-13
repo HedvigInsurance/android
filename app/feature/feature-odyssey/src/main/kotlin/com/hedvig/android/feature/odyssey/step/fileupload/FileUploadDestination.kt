@@ -17,6 +17,8 @@ import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import hedvig.resources.R
 
@@ -57,25 +59,22 @@ internal fun FileUploadDestination(
     }
   }
 
-  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
 
   FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
       photoPicker.launch(PickVisualMediaRequest())
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onPickFile = {
       filePicker.launch("*/*")
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
     onTakePhoto = {
       photoCaptureState.launchTakePhotoRequest()
-      showFileTypeSelectBottomSheet = false
+      fileTypeSelectBottomSheetState.dismiss()
     },
-    onDismiss = {
-      showFileTypeSelectBottomSheet = false
-    },
-    isVisible = showFileTypeSelectBottomSheet,
   )
 
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
@@ -99,9 +98,7 @@ internal fun FileUploadDestination(
       uiState = uiState,
       windowSizeClass = windowSizeClass,
       onContinue = viewModel::onContinue,
-      onAddMoreFiles = {
-        showFileTypeSelectBottomSheet = true
-      },
+      onAddMoreFiles = fileTypeSelectBottomSheetState::show,
       showedError = viewModel::dismissError,
       navigateUp = navigateUp,
       closeClaimFlow = closeClaimFlow,
@@ -115,9 +112,7 @@ internal fun FileUploadDestination(
     FileUploadScreen(
       uiState = uiState,
       windowSizeClass = windowSizeClass,
-      submitFiles = {
-        showFileTypeSelectBottomSheet = true
-      },
+      submitFiles = fileTypeSelectBottomSheetState::show,
       onContinue = viewModel::onContinue,
       showedError = viewModel::dismissError,
       navigateUp = navigateUp,

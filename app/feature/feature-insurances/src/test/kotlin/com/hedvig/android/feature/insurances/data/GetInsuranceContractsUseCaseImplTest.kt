@@ -10,7 +10,7 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -104,7 +104,7 @@ class GetInsuranceContractsUseCaseImplTest {
   @Test
   fun `when the contract response has isChangeTierEnabled as true, InsuranceContract should have supportsTierChange as true`() =
     runTest {
-      val featureManager = FakeFeatureManager2(
+      val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,
@@ -130,7 +130,7 @@ class GetInsuranceContractsUseCaseImplTest {
   @Test
   fun `when the contract response has isChangeTierEnabled as false InsuranceContract should have supportsTierChange as false`() =
     runTest {
-      val featureManager = FakeFeatureManager2(
+      val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
           Feature.MOVING_FLOW to true,
           Feature.EDIT_COINSURED to true,

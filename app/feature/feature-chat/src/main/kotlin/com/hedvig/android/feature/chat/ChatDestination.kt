@@ -52,7 +52,7 @@ import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewCo
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime

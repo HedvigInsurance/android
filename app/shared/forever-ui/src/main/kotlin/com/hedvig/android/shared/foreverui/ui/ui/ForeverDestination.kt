@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
@@ -65,6 +66,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Copy
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
@@ -264,146 +266,14 @@ internal fun ForeverContent(
   val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<UiMoney>()
   ForeverExplanationBottomSheet(referralExplanationBottomSheetState)
   Box(Modifier.fillMaxSize()) {
-    Column(
-      Modifier
-        .matchParentSize()
-        .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .height(64.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .semantics(mergeDescendants = true) {
-            heading()
-          },
-      ) {
-        HedvigText(
-          text = stringResource(R.string.TAB_REFERRALS_TITLE),
-          style = HedvigTheme.typography.headlineSmall,
-        )
-        if (uiState.foreverData?.incentive != null) {
-          IconButton(
-            onClick = { referralExplanationBottomSheetState.show(uiState.foreverData.incentive) },
-            modifier = Modifier.size(40.dp),
-          ) {
-            Icon(
-              imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        }
-      }
-      Spacer(Modifier.height(16.dp))
-      val discount = uiState.foreverData?.currentDiscount
-      if (discount != null) {
-        val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
-        val discountUiMoneyDescription = discount.getDescription()
-        HedvigText(
-          text = discount.toString().let { "-$it" },
-          textAlign = TextAlign.Center,
-          color = HedvigTheme.colorScheme.textSecondary,
-          modifier = Modifier.fillMaxWidth()
-            .semantics {
-              contentDescription = yourDiscountDescription + discountUiMoneyDescription
-            },
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      DiscountPieChart(
-        totalPrice = uiState.foreverData?.currentGrossCost?.amount?.toFloat() ?: 0f,
-        totalExistingDiscount = uiState.foreverData?.currentDiscount?.amount?.toFloat() ?: 0f,
-        incentive = uiState.foreverData?.incentive?.amount?.toFloat() ?: 0f,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth()
-          .wrapContentWidth(Alignment.CenterHorizontally),
-      )
-      Spacer(Modifier.height(24.dp))
-      if (uiState.foreverData?.referrals?.isEmpty() == true && uiState.foreverData.incentive != null) {
-        HedvigText(
-          text = stringResource(
-            id = R.string.referrals_empty_body,
-            uiState.foreverData.incentive.toString(),
-          ),
-          style = HedvigTheme.typography.bodySmall.copy(
-            textAlign = TextAlign.Center,
-            lineBreak = LineBreak.Heading,
-          ),
-          color = HedvigTheme.colorScheme.textSecondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      } else {
-        HedvigText(
-          text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        HedvigText(
-          text = stringResource(
-            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            uiState.foreverData?.currentNetCost?.toString() ?: "-",
-          ),
-          textAlign = TextAlign.Center,
-          color = HedvigTheme.colorScheme.textSecondary,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
-      if (uiState.foreverData?.campaignCode != null) {
-        Spacer(Modifier.height(16.dp))
-        ReferralCodeCard(
-          campaignCode = uiState.foreverData.campaignCode,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-      }
-      Spacer(Modifier.weight(1f))
-      if (uiState.foreverData?.incentive != null && uiState.foreverData.campaignCode != null) {
-        Spacer(Modifier.height(16.dp))
-        HedvigButton(
-          text = stringResource(R.string.referrals_empty_share_code_button),
-          enabled = true,
-          onClick = {
-            onShareCodeClick(
-              uiState.foreverData.campaignCode,
-              uiState.foreverData.incentive,
-            )
-          },
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigTextButton(
-          text = stringResource(id = R.string.referrals_change_change_code),
-          onClick = { referralCodeBottomSheetState.show(uiState.foreverData.campaignCode) },
-          buttonSize = Large,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
-      }
-      if (uiState.foreverData?.referrals?.isNotEmpty() == true) {
-        Spacer(Modifier.height(16.dp))
-        ReferralList(
-          referrals = uiState.foreverData.referrals,
-          grossPriceAmount = uiState.foreverData.currentGrossCost,
-          currentNetAmount = uiState.foreverData.currentNetCost,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-    }
+    ForeverScrollableContent(
+      uiState = uiState,
+      pullRefreshState = pullRefreshState,
+      referralExplanationBottomSheetState = referralExplanationBottomSheetState,
+      referralCodeBottomSheetState = referralCodeBottomSheetState,
+      onShareCodeClick = onShareCodeClick,
+      modifier = Modifier.matchParentSize(),
+    )
     PullRefreshIndicator(
       refreshing = uiState.reloading == true,
       state = pullRefreshState,
@@ -420,6 +290,158 @@ internal fun ForeverContent(
         .windowInsetsPadding(WindowInsets.safeDrawing)
         .padding(16.dp),
     )
+  }
+}
+
+@Composable
+private fun ForeverScrollableContent(
+  uiState: ForeverUiState.Success,
+  pullRefreshState: PullRefreshState,
+  referralExplanationBottomSheetState: HedvigBottomSheetState<UiMoney>,
+  referralCodeBottomSheetState: HedvigBottomSheetState<String>,
+  onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier
+      .pullRefresh(pullRefreshState)
+      .verticalScroll(rememberScrollState())
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+  ) {
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
+    ) {
+      HedvigText(
+        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        style = HedvigTheme.typography.headlineSmall,
+      )
+      if (uiState.foreverData?.incentive != null) {
+        IconButton(
+          onClick = { referralExplanationBottomSheetState.show(uiState.foreverData.incentive) },
+          modifier = Modifier.size(40.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.InfoOutline,
+            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
+    }
+    Spacer(Modifier.weight(1f))
+    val discount = uiState.foreverData?.currentDiscount
+    if (discount != null) {
+      val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
+      val discountUiMoneyDescription = discount.getDescription()
+      Spacer(Modifier.height(16.dp))
+      HedvigText(
+        text = discount.toString().let { "-$it" },
+        textAlign = TextAlign.Center,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .semantics {
+            contentDescription = yourDiscountDescription + discountUiMoneyDescription
+          },
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    DiscountPieChart(
+      totalPrice = uiState.foreverData?.currentGrossCost?.amount?.toFloat() ?: 0f,
+      totalExistingDiscount = uiState.foreverData?.currentDiscount?.amount?.toFloat() ?: 0f,
+      incentive = uiState.foreverData?.incentive?.amount?.toFloat() ?: 0f,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth()
+        .wrapContentWidth(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.height(24.dp))
+    if (uiState.foreverData?.referrals?.isEmpty() == true && uiState.foreverData.incentive != null) {
+      HedvigText(
+        text = stringResource(
+          id = R.string.referrals_empty_body,
+//            uiState.foreverData.incentive.toString(),
+        ),
+        style = HedvigTheme.typography.bodySmall.copy(
+          textAlign = TextAlign.Center,
+          lineBreak = LineBreak.Heading,
+        ),
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    } else {
+      HedvigText(
+        text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      HedvigText(
+        text = stringResource(
+          id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          uiState.foreverData?.currentNetCost?.toString() ?: "-",
+        ),
+        textAlign = TextAlign.Center,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+    Spacer(Modifier.weight(1f))
+    if (uiState.foreverData?.campaignCode != null) {
+      Spacer(Modifier.height(16.dp))
+      ReferralCodeCard(
+        campaignCode = uiState.foreverData.campaignCode,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+    if (uiState.foreverData?.incentive != null && uiState.foreverData.campaignCode != null) {
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = stringResource(R.string.referrals_empty_share_code_button),
+        enabled = true,
+        onClick = {
+          onShareCodeClick(
+            uiState.foreverData.campaignCode,
+            uiState.foreverData.incentive,
+          )
+        },
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.referrals_change_change_code),
+        onClick = { referralCodeBottomSheetState.show(uiState.foreverData.campaignCode) },
+        buttonSize = Large,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+    }
+    if (uiState.foreverData?.referrals?.isNotEmpty() == true) {
+      Spacer(Modifier.height(16.dp))
+      ReferralList(
+        referrals = uiState.foreverData.referrals,
+        grossPriceAmount = uiState.foreverData.currentGrossCost,
+        currentNetAmount = uiState.foreverData.currentNetCost,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -485,16 +507,35 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
     ForeverUiState.Success(
       foreverData = ForeverData(
         referrals = listOf(
-          Referral("Name#1", ReferralState.ACTIVE, null),
+          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
           Referral("Name#3", ReferralState.TERMINATED, null),
+          Referral("Name#4", ReferralState.TERMINATED, null),
+          Referral("Name#5", ReferralState.TERMINATED, null),
+          Referral("Name#6", ReferralState.TERMINATED, null),
+          Referral("Name#7", ReferralState.TERMINATED, null),
         ),
-        campaignCode = null,
+        campaignCode = "HEDV1G",
         incentive = null,
         currentNetCost = null,
         currentDiscount = null,
         currentGrossCost = null,
         currentDiscountAmountExcludingReferrals = null,
+      ),
+      referralCodeLoading = false,
+      referralCodeErrorMessage = null,
+      reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
+    ),
+    ForeverUiState.Success(
+      foreverData = ForeverData(
+        referrals = emptyList(),
+        campaignCode = "HEDV1G",
+        incentive = UiMoney(10.0, UiCurrencyCode.SEK),
+        currentNetCost = UiMoney(80.0, UiCurrencyCode.SEK),
+        currentDiscount = UiMoney(20.0, UiCurrencyCode.SEK),
+        currentGrossCost = UiMoney(100.0, UiCurrencyCode.SEK),
+        currentDiscountAmountExcludingReferrals = UiMoney(100.0, UiCurrencyCode.SEK),
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,

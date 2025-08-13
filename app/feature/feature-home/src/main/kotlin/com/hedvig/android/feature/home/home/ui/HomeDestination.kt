@@ -2,6 +2,8 @@ package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -41,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -49,6 +54,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -84,6 +90,8 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.Top
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -118,17 +126,15 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
@@ -399,7 +405,9 @@ private fun HomeScreenSuccess(
   navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
+  val isInPreview = LocalInspectionMode.current
+  val windowInfo = LocalWindowInfo.current
+  var fullScreenSize: IntSize? by remember { mutableStateOf(if (isInPreview) windowInfo.containerSize else null) }
   val consumedWindowInsets = remember { MutableWindowInsets() }
   Box(
     modifier = modifier
@@ -454,17 +462,29 @@ private fun HomeScreenSuccess(
           )
         },
         memberReminderCards = {
-          val memberReminders =
-            uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-          MemberReminderCardsWithoutNotification(
-            memberReminders = memberReminders,
-            navigateToConnectPayment = navigateToConnectPayment,
-            navigateToAddMissingInfo = navigateToMissingInfo,
-            onNavigateToNewConversation = onNavigateToNewConversation,
-            openUrl = openUrl,
-            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
-            navigateToContactInfo = navigateToContactInfo,
-          )
+          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            if (uiState.homeText is HomeText.ActiveInFuture) {
+              HedvigNotificationCard(
+                message = stringResource(R.string.home_tab_active_in_future_info, uiState.homeText.inception),
+                priority = NotificationPriority.Info,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .padding(horizontalInsets),
+              )
+            }
+            val memberReminders =
+              uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+            MemberReminderCardsWithoutNotification(
+              memberReminders = memberReminders,
+              navigateToConnectPayment = navigateToConnectPayment,
+              navigateToAddMissingInfo = navigateToMissingInfo,
+              onNavigateToNewConversation = onNavigateToNewConversation,
+              openUrl = openUrl,
+              contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+              navigateToContactInfo = navigateToContactInfo,
+            )
+          }
         },
         startClaimButton = {
           HedvigButton(
@@ -595,32 +615,37 @@ private fun VeryImportantMessageCard(
 
 @Composable
 private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
-  val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
-  val headlineText = when (homeText) {
-    is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
-    is HomeText.ActiveInFuture -> {
-      stringResource(
-        R.string.home_tab_active_in_future_welcome_title_without_name,
-        formatter.format(homeText.inception.toJavaLocalDate()),
-      )
+  if (homeText is HomeText.ActiveInFuture) {
+    Image(
+      HedvigIcons.HedvigLogotype,
+      null,
+      modifier
+        .fillMaxWidth()
+        .wrapContentWidth(Alignment.CenterHorizontally)
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    )
+  } else {
+    val headlineText = when (homeText) {
+      is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
+      is HomeText.ActiveInFuture -> error("Image shows here instead")
+      is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
+      is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
+      is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
     }
-
-    is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
-    is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
-    is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
+    HedvigText(
+      text = headlineText,
+      // todo custom style since new DS does not have this specification
+      //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
+      style = HedvigTheme.typography.headlineMedium.copy(
+        fontFamily = FontFamily.HedvigSerif,
+        fontSize = 28.0.sp,
+        lineBreak = LineBreak.Heading,
+        textAlign = TextAlign.Center,
+      ),
+      modifier = modifier.fillMaxWidth(),
+    )
   }
-  HedvigText(
-    text = headlineText,
-    // todo custom style since new DS does not have this specification
-    //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
-    style = HedvigTheme.typography.headlineMedium.copy(
-      fontFamily = FontFamily.HedvigSerif,
-      fontSize = 28.0.sp,
-      lineBreak = LineBreak.Heading,
-      textAlign = TextAlign.Center,
-    ),
-    modifier = modifier.fillMaxWidth(),
-  )
 }
 
 @Composable
@@ -787,3 +812,62 @@ private fun PreviewHomeScreenWithError() {
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewHomeScreenAllHomeTextTypes(
+  @PreviewParameter(HomeTextPreviewParameterProvider::class) homeText: HomeText,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HomeScreen(
+        uiState = HomeUiState.Success(
+          homeText = homeText,
+          isReloading = false,
+          claimStatusCardsData = null,
+          veryImportantMessages = emptyList(),
+          memberReminders = MemberReminders(
+            connectPayment = null,
+            upcomingRenewals = null,
+            enableNotifications = null,
+            coInsuredInfo = null,
+            updateContactInfo = null,
+          ),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          crossSellsAction = null,
+          firstVetAction = null,
+          chatAction = null,
+          travelAddonBannerInfo = null,
+        ),
+        notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        reload = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
+        onClaimDetailCardClicked = {},
+        navigateToConnectPayment = {},
+        onStartClaim = {},
+        navigateToHelpCenter = {},
+        openUrl = {},
+        openAppSettings = {},
+        navigateToMissingInfo = {},
+        markMessageAsSeen = {},
+        navigateToFirstVet = {},
+        markCrossSellsNotificationAsSeen = {},
+        navigateToContactInfo = {},
+        setEpochDayWhenLastToolTipShown = {},
+        imageLoader = rememberPreviewImageLoader(),
+      )
+    }
+  }
+}
+
+private class HomeTextPreviewParameterProvider : CollectionPreviewParameterProvider<HomeText>(
+  listOf(
+    HomeText.Active,
+    HomeText.ActiveInFuture(LocalDate.parse("2025-01-01")),
+    HomeText.Pending,
+    HomeText.Switching,
+    HomeText.Terminated,
+  ),
+)

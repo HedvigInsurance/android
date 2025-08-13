@@ -86,8 +86,8 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
+import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.Clock.System
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
@@ -359,10 +359,9 @@ private fun PaymentsListItems(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
 ) {
-  val listItemsSideSpacingModifier =
-    Modifier
-      .padding(horizontal = 16.dp)
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+  val listItemsSideSpacingModifier = Modifier
+    .padding(horizontal = 16.dp)
+    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
     PaymentsListItem(
       text = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),

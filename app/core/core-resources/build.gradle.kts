@@ -13,10 +13,13 @@ hedvig {
 
 lokalise {
   val lokaliseProperties = Properties()
-  lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
-  lokaliseProjectId.set(lokaliseProperties.getProperty("id"))
-  lokaliseToken.set(lokaliseProperties.getProperty("token"))
-  outputDirectory.set(file("src/main/res"))
+  val lokalisePropertiesFile = rootProject.file("lokalise.properties")
+  if (lokalisePropertiesFile.exists()) {
+    lokaliseProperties.load(FileInputStream(lokalisePropertiesFile))
+    lokaliseProjectId.set(lokaliseProperties.getProperty("id"))
+    lokaliseToken.set(lokaliseProperties.getProperty("token"))
+    outputDirectory.set(file("src/main/res"))
+  }
 }
 
 android {

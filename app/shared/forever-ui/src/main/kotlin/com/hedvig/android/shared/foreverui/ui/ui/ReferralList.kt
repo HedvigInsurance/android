@@ -3,7 +3,6 @@ package com.hedvig.android.shared.foreverui.ui.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,12 +20,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
@@ -47,8 +47,7 @@ internal fun ReferralList(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
     )
-    HorizontalDivider()
-    referrals.forEach { referral ->
+    for (referral in referrals) {
       ReferralRow(referral)
     }
     Row(
@@ -71,11 +70,11 @@ internal fun ReferralList(
   }
 }
 
-@Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Modifier) {
+private fun ReferralRow(referral: Referral, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier
+      .horizontalDivider(DividerPosition.Top)
       .padding(vertical = 16.dp)
       .fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -118,7 +117,6 @@ private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Mod
       }
     }
   }
-  HorizontalDivider()
 }
 
 @Composable

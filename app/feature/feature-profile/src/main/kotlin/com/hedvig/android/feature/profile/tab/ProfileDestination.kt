@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +53,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
@@ -59,6 +61,8 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
@@ -81,6 +85,7 @@ import hedvig.resources.R
 @Composable
 internal fun ProfileDestination(
   navigateToEurobonus: () -> Unit,
+  navigateToClaimHistory: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
@@ -98,6 +103,7 @@ internal fun ProfileDestination(
     uiState = uiState,
     reload = { viewModel.emit(ProfileUiEvent.Reload) },
     navigateToEurobonus = navigateToEurobonus,
+    navigateToClaimHistory = navigateToClaimHistory,
     navigateToContactInfo = navigateToContactInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
@@ -118,6 +124,7 @@ private fun ProfileScreen(
   uiState: ProfileUiState,
   reload: () -> Unit,
   navigateToEurobonus: () -> Unit,
+  navigateToClaimHistory: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
@@ -180,6 +187,7 @@ private fun ProfileScreen(
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
+        navigateToClaimHistory = navigateToClaimHistory,
         navigateToCertificates = navigateToCertificates,
       )
       Spacer(Modifier.height(16.dp))
@@ -240,6 +248,7 @@ private fun ProfileRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
+  navigateToClaimHistory: () -> Unit,
   navigateToCertificates: () -> Unit,
 ) {
   AnimatedContent(
@@ -255,10 +264,11 @@ private fun ProfileRows(
         is ProfileUiState.Success -> {
           ProfileItemRows(
             profileUiState = state,
-            showContactInfo = showContactInfo,
-            showSettings = showSettings,
-            showAboutApp = showAboutApp,
+            navigateToContactInfo = showContactInfo,
+            navigateToSettings = showSettings,
+            navigateToAboutApp = showAboutApp,
             navigateToEurobonus = navigateToEurobonus,
+            navigateToClaimHistory = navigateToClaimHistory,
             navigateToCertificates = navigateToCertificates,
           )
         }
@@ -267,6 +277,7 @@ private fun ProfileRows(
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ProfileItemRowsPlaceholders() {
   ProfileRow(
@@ -299,17 +310,20 @@ private fun ColumnScope.ProfileItemRowsPlaceholders() {
 @Composable
 private fun ColumnScope.ProfileItemRows(
   profileUiState: ProfileUiState.Success,
-  showContactInfo: () -> Unit,
-  showSettings: () -> Unit,
-  showAboutApp: () -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToSettings: () -> Unit,
+  navigateToAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
+  navigateToClaimHistory: () -> Unit,
   navigateToCertificates: () -> Unit,
 ) {
+  val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, horizontalPadding = 16.dp)
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.ID,
-    onClick = showContactInfo,
+    onClick = navigateToContactInfo,
     isLoading = false,
+    modifier = horizontalDividerModifier,
   )
   if (profileUiState.certificatesAvailable) {
     ProfileRow(
@@ -317,6 +331,7 @@ private fun ColumnScope.ProfileItemRows(
       icon = HedvigIcons.MultipleDocuments,
       onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
+      modifier = horizontalDividerModifier,
     )
   }
   if (profileUiState.euroBonus != null) {
@@ -325,18 +340,29 @@ private fun ColumnScope.ProfileItemRows(
       icon = HedvigIcons.Eurobonus,
       onClick = navigateToEurobonus,
       isLoading = false,
+      modifier = horizontalDividerModifier,
+    )
+  }
+  if (profileUiState.showClaimHistory) {
+    ProfileRow(
+      title = stringResource(R.string.profile_claim_history_title),
+      icon = HedvigIcons.Clock,
+      onClick = dropUnlessResumed { navigateToClaimHistory() },
+      isLoading = false,
+      modifier = horizontalDividerModifier,
     )
   }
   ProfileRow(
     title = stringResource(R.string.PROFILE_ABOUT_ROW),
     icon = HedvigIcons.InfoOutline,
-    onClick = showAboutApp,
+    onClick = navigateToAboutApp,
     isLoading = false,
+    modifier = horizontalDividerModifier,
   )
   ProfileRow(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
     icon = HedvigIcons.Settings,
-    onClick = showSettings,
+    onClick = navigateToSettings,
     isLoading = false,
   )
 }
@@ -382,15 +408,57 @@ internal fun ProfileRow(
 
 @HedvigPreview
 @Composable
-private fun PreviewProfileItemRows() {
+private fun PreviewProfileRows(
+  @PreviewParameter(ProfileUiStateProvider::class) profileUiState: ProfileUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ProfileRows(
+        profileUiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class ProfileUiStateProvider :
+  CollectionPreviewParameterProvider<ProfileUiState>(
+    listOf(
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        certificatesAvailable = true,
+        showClaimHistory = true,
+      ),
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        certificatesAvailable = true,
+        showClaimHistory = true,
+      ),
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        certificatesAvailable = false,
+        showClaimHistory = false,
+      ),
+    ),
+  )
+
+@HedvigPreview
+@Composable
+private fun PreviewAnimatedProfileItemRows() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
-        parametersList = ProfileUiStateProvider().values.toList(),
+        parametersList = ProfileUiStateProvider().values.toList() + ProfileUiState.Loading,
       ) { uiState ->
         Column {
           ProfileRows(
             uiState,
+            {},
             {},
             {},
             {},
@@ -402,24 +470,3 @@ private fun PreviewProfileItemRows() {
     }
   }
 }
-
-private class ProfileUiStateProvider :
-  CollectionPreviewParameterProvider<ProfileUiState>(
-    listOf(
-      ProfileUiState.Loading,
-      ProfileUiState.Success(
-        certificatesAvailable = true,
-      ),
-      ProfileUiState.Loading,
-      ProfileUiState.Success(
-        euroBonus = EuroBonus("jsdhgwmehg"),
-        certificatesAvailable = true,
-      ),
-      ProfileUiState.Loading,
-      ProfileUiState.Success(
-        euroBonus = EuroBonus("jsdhgwmehg"),
-        certificatesAvailable = false,
-      ),
-      ProfileUiState.Loading,
-    ),
-  )

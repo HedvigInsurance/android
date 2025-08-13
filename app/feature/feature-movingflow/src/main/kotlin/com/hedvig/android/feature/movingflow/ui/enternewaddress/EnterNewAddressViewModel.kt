@@ -19,6 +19,7 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
@@ -38,7 +39,6 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressE
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment.WithStudentOption
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment.WithoutStudentOption
@@ -64,7 +64,6 @@ import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveApartmentSubType
 import octopus.type.MoveApartmentSubType.OWN
-import octopus.type.MoveApiVersion
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
@@ -75,7 +74,7 @@ internal class EnterNewAddressViewModel(
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-    EnterNewAddressUiState.Loading,
+    Loading,
     EnterNewAddressPresenter(
       savedStateHandle.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId,
       movingFlowRepository,
@@ -94,7 +93,7 @@ private class EnterNewAddressPresenter(
   override fun MoleculePresenterScope<EnterNewAddressEvent>.present(
     lastState: EnterNewAddressUiState,
   ): EnterNewAddressUiState {
-    var content: Option<EnterNewAddressUiState.Content?> by remember {
+    var content: Option<Content?> by remember {
       mutableStateOf(
         when (lastState) {
           Loading -> None
@@ -192,15 +191,16 @@ private class EnterNewAddressPresenter(
               }
             },
           )
+        @Suppress("KotlinUnreachableCode")
         inputForSubmission = null
       }
     }
 
     return when (val contentValue = content) {
-      None -> EnterNewAddressUiState.Loading
+      None -> Loading
       is Some -> {
         when (val state = contentValue.value) {
-          null -> EnterNewAddressUiState.MissingOngoingMovingFlow
+          null -> MissingOngoingMovingFlow
           else -> state.copy(
             submittingInfoFailure = submittingInfoFailure,
             navigateToChoseCoverage = navigateToChoseCoverage,
@@ -216,17 +216,16 @@ private class EnterNewAddressPresenter(
 private fun ValidContent.toInputForSubmission(): InputForSubmission {
   return InputForSubmission(
     moveIntentRequestInput = MoveIntentRequestInput(
-      apiVersion = com.apollographql.apollo.api.Optional.present(MoveApiVersion.V2_TIERS_AND_DEDUCTIBLES),
       moveToAddress = MoveToAddressInput(
         street = address,
         postalCode = postalCode,
-        city = com.apollographql.apollo.api.Optional.absent(),
+        city = Optional.absent(),
       ),
       moveFromAddressId = moveFromAddressId,
       movingDate = movingDate,
       numberCoInsured = numberCoInsured,
       squareMeters = squareMeters,
-      apartment = com.apollographql.apollo.api.Optional.present(
+      apartment = Optional.present(
         when (propertyType) {
           ValidContent.PropertyType.House -> error("Should have navigated to house input instead of submitting here")
           is ValidContent.PropertyType.Apartment -> {
@@ -244,7 +243,7 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
           }
         },
       ),
-      house = com.apollographql.apollo.api.Optional.absent(),
+      house = Optional.absent(),
     ),
   )
 }
@@ -366,8 +365,8 @@ private fun Content.validate(): ValidContent? {
   }.mapLeft { null }.merge()
 }
 
-private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
-  return EnterNewAddressUiState.Content(
+private fun MovingFlowState.toContent(): Content {
+  return Content(
     moveFromAddressId = moveFromAddressId,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
@@ -427,14 +426,14 @@ private fun MovingFlowState.toContent(): EnterNewAddressUiState.Content {
       validRange = propertyState.numberCoInsuredState.allowedNumberCoInsuredRange,
     ),
     propertyType = when (propertyState) {
-      is HouseState -> PropertyType.House
+      is HouseState -> House
       is ApartmentState -> {
         when (propertyState.isAvailableForStudentState) {
-          NotAvailable -> PropertyType.Apartment.WithoutStudentOption(
+          NotAvailable -> WithoutStudentOption(
             propertyState.apartmentType,
           )
 
-          is Available -> PropertyType.Apartment.WithStudentOption(
+          is Available -> WithStudentOption(
             propertyState.apartmentType,
             BooleanInput(propertyState.isAvailableForStudentState.selectedIsStudent),
           )

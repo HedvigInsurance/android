@@ -243,6 +243,11 @@ object HighlightLabelDefaults {
     data class Grey(override val shade: HighlightShade, val translucent: Boolean = false) : HighlightColor()
 
     data class Frosted(override val shade: HighlightShade) : HighlightColor()
+
+    companion object {
+      // todo DS add new outline "color"
+      val Outline = Grey(HighlightShade.LIGHT)
+    }
   }
 }
 

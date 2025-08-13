@@ -1,6 +1,9 @@
-query DeleteAccountState {
+query DeleteAccountState($claimsHistoryFlag: Boolean!) {
   currentMember {
-    claims {
+    claims@skip(if: $claimsHistoryFlag) {
+      status
+    }
+    claimsActive@include(if: $claimsHistoryFlag) {
       status
     }
     activeContracts {

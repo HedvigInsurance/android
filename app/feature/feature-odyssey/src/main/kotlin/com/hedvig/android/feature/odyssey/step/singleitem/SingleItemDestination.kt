@@ -391,6 +391,7 @@ private fun ItemProblems(
   if (showDialog) {
     MultiSelectDialog(
       title = stringResource(R.string.claims_item_screen_type_of_damage_button),
+      buttonText = stringResource(R.string.general_save_button),
       optionsList = uiState.availableItemProblems,
       onSelected = selectProblem,
       getDisplayText = { it.displayName },

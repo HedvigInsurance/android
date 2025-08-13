@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 fun formatInstantForTalkBack(context: Context, instant: Instant): String {
   val timeInMillis = instant.toEpochMilliseconds()

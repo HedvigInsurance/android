@@ -172,7 +172,6 @@ class TerminationSurveyPresenterTest {
       LocalDate(2024, 6, 1),
       LocalDate(2024, 6, 29),
       emptyList(),
-      null,
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -203,7 +202,6 @@ class TerminationSurveyPresenterTest {
       LocalDate(2024, 6, 1),
       LocalDate(2024, 6, 29),
       emptyList(),
-      null,
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)

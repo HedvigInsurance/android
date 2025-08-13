@@ -8,6 +8,7 @@ import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import com.hedvig.android.feature.deleteaccount.data.DeleteAccountRequestStorage
 import com.hedvig.android.feature.deleteaccount.data.DeleteAccountStateUseCase
 import com.hedvig.android.feature.deleteaccount.data.RequestAccountDeletionUseCase
+import com.hedvig.android.featureflags.FeatureManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -29,6 +30,7 @@ val deleteAccountModule = module {
     DeleteAccountStateUseCase(
       apolloClient = get<ApolloClient>(),
       deleteAccountRequestStorage = get<DeleteAccountRequestStorage>(),
+      featureManager = get<FeatureManager>(),
     )
   }
   viewModel<DeleteAccountViewModel> {

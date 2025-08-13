@@ -303,6 +303,7 @@ private fun PreviewTerminationConfirmationScreen(
         uiState = OverviewUiState(
           terminationType = type,
           insuranceInfo = TerminationGraphParameters(
+            contractId = "contractId",
             insuranceDisplayName = "insuranceDisplayName",
             exposureName = "exposureName",
             HOMEOWNER,

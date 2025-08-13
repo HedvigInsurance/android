@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.core.Either
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
@@ -74,19 +72,25 @@ internal class ProfilePresenter(
       combine(
         getMemberRemindersUseCase.invoke(),
         featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
+        featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY),
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
         flow { emit(checkCertificatesAvailabilityUseCase.invoke()) },
-      ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, certificatesAvailability ->
-        ProfileData(memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, certificatesAvailability)
-      }.collectLatest { profileData ->
-        with(profileData) {
-          currentState = ProfileUiState.Success(
-            euroBonus = eurobonusResponse.getOrNull(),
-            showPaymentScreen = isPaymentScreenFeatureEnabled,
-            memberReminders = memberReminders,
-            certificatesAvailable = certificatesAvailability.isRight(),
-          )
-        }
+      ) {
+        memberReminders,
+        isPaymentScreenFeatureEnabled,
+        isClaimHistoryFeatureEnabled,
+        eurobonusResponse,
+        certificatesAvailability,
+        ->
+        ProfileUiState.Success(
+          euroBonus = eurobonusResponse.getOrNull(),
+          showPaymentScreen = isPaymentScreenFeatureEnabled,
+          memberReminders = memberReminders,
+          showClaimHistory = isClaimHistoryFeatureEnabled,
+          certificatesAvailable = certificatesAvailability.isRight(),
+        )
+      }.collectLatest { state ->
+        currentState = state
       }
     }
 
@@ -104,6 +108,7 @@ internal sealed interface ProfileUiState {
     val certificatesAvailable: Boolean,
     val euroBonus: EuroBonus? = null,
     val showPaymentScreen: Boolean = false,
+    val showClaimHistory: Boolean,
     val memberReminders: MemberReminders = MemberReminders(),
   ) : ProfileUiState
 
@@ -117,10 +122,3 @@ internal sealed interface ProfileUiEvent {
 
   data object Reload : ProfileUiEvent
 }
-
-private data class ProfileData(
-  val memberReminders: MemberReminders,
-  val isPaymentScreenFeatureEnabled: Boolean,
-  val eurobonusResponse: Either<GetEurobonusError, EuroBonus>,
-  val certificatesAvailability: Either<ErrorMessage, Unit>,
-)

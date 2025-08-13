@@ -62,6 +62,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
+  <string name="BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE">Your bundle discount will be removed when you have less than two active insurances.</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig only takes 25\u0025 of your monthly premium to improve the product and experience. The rest, 75\u0025, goes into a common claims pool. Any money left in that pool by the end of the year is donated to Milkywire.</string>
   <string name="BUSINESS_MODEL_CARD_TITLE">We can never earn more by paying out less to our members</string>
   <string name="BUSINESS_MODEL_INFO_BUTTON_LABEL">About Milkywire</string>
@@ -127,7 +128,7 @@
   <string name="CHANGE_ADDRESS_MAKING_CHANGES">Making changes...</string>
   <string name="CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT">Unfortunately we can’t help you change address to a Villa right now. Write us a message here in the app, and we’ll help you as soon as possible.</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_ERROR">Please select a moving date</string>
-  <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Access date</string>
+  <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Move-in date</string>
   <string name="CHANGE_ADDRESS_NEW_ADDRESS_LABEL">Address</string>
   <string name="CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL">Size</string>
   <string name="CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL">Postal code</string>
@@ -486,7 +487,7 @@
   <string name="HC_CHAT_BUTTON">Start new conversation</string>
   <string name="HC_CHAT_GO_TO_INBOX">Go to inbox</string>
   <string name="HC_CHAT_QUESTION">Still need help?</string>
-  <string name="HC_CLAIMS_A_01">Make your claim anytime right here in the app. You can either do a voice recording or write to us. We will respond to you as soon as we can and keep you updated throughout the process.\n\nHere\'s how it works:\n* Go to [Make a claim](https://hedvig.page.link/home)\n* Report a claim by telling us what has happened in a voice recording or text\n* We will handle your claim as soon as we can\n\nTo report a claim via email, send your statement to hedvig@hedvig.com and include:\n* Your personal information\n* A statement of the incident\n* Description of damaged items and compensation sought\n* Supporting documents (e.g., receipts, bank statements, photos).\n\nFor security reasons, we cannot assist with reporting a claim or provide case updates over the phone.</string>
+  <string name="HC_CLAIMS_A_01">Make your claim anytime right here in the app. You can either do a voice recording or write to us. We will respond to you as soon as we can and keep you updated throughout the process.\n\nHere\'s how it works:\n* Go to [Make a claim](https://hedvig.page.link/submit-claim)\n* Report a claim by telling us what has happened in a voice recording or text\n* We will handle your claim as soon as we can\n\nTo report a claim via email, send your statement to hedvig@hedvig.com and include:\n* Your personal information\n* A statement of the incident\n* Description of damaged items and compensation sought\n* Supporting documents (e.g., receipts, bank statements, photos).\n\nFor security reasons, we cannot assist with reporting a claim or provide case updates over the phone.</string>
   <string name="HC_CLAIMS_A_02">Once you have reported a claim, our team will get back to you as soon as possible with the next steps. In some cases we might need more information from you to help you further.\n\nSome smaller claims can be handled within minutes in the app. Larger incidents often needs a little more assistance from our service team. If you have any questions about your specific claim, you are always welcome to write to us here in the app.</string>
   <string name="HC_CLAIMS_A_03">Processing times vary depending on what has happened and how extensive the specific damage is. For larger incidents, it usually takes a little longer. We always aim to provide our assistance as quickly as we can. \n\nIf you have any questions about your case, you are always welcome to write to us here in the app.</string>
   <string name="HC_CLAIMS_A_04">We compensate based on the specific item\'s market value. Most items depreciate in value over time and the aim is to leave you in the same financial situation as before the damage. In your terms and conditions, you will find a table showing age deductions for the most common items. A fixed amount of compensation is set for some items.\n\nThe deductible varies depending on the type of damage you have suffered. You can find your deductible in the app or in your insurance policy.\n\nRead more about your insurance policies [here](https://hedvig.page.link/insurances).</string>
@@ -533,7 +534,6 @@
   <string name="HC_COVERAGE_A_08">If the injury occurred during the insurance period and fulfils the criteria to be classified as an accidental injury (bodily injury, involuntary, of sudden external violence/external event and having required medical attention), we can help with compensation for permanent scars based on the scar table. The assessment is usually made 12 months after the wound occurred.\n\nRead more about your accident insurance [here](https://hedvig.page.link/insurances).</string>
   <string name="HC_COVERAGE_A_09">Unfortunately, accident insurance does not cover sick leave or loss of income. However, if you have lost your ability to work by at least 50\u0025 due to an accidental injury that is so severe that you cannot work to the same extent as if you had before the injury, the insurance can help with compensation for so-called economic disability.</string>
   <string name="HC_COVERAGE_A_10">If you or a family member has an accident, Hedvig can compensate you for, among other things, hospitalisation, rehabilitation, therapy and dental injuries. The insurance also protects you if you suffer permanent disability or reduced working capacity as a result of an accident.</string>
-  <string name="HC_COVERAGE_A_11">Read about the fixed deductible [here](https://hedvig.com/se-en/insurances/pet-insurance)</string>
   <string name="HC_COVERAGE_A_12">Hedvig offers three different levels of cat and dog insurance, with deductibles of 0 kr, 2 500 kr or 3 500 kr. In addition to the fixed deductible, you have a variable deductible of 15-25 \u0025 of the cost of treatment. You only pay the fixed deductible once per insurance year (12 months), regardless of the number of vet visits.\n\nOur deductibles:\nBasic: 0 kr or 3 500 kr fixed + 25 \u0025 variable\nStandard: 0 kr or 2 500 kr fixed + 25 \u0025 variable\nPremium: 0 kr or 2 500 kr fixed + 15 \u0025 variable\n\nYour fixed deductible will always be 1 000 kr lower than shown above if you first book a digital appointment with FirstVet and are referred to a clinic. You can book unlimited calls with FirstVet at no extra cost.</string>
   <string name="HC_COVERAGE_A_13">The monthly premium is usually lower if your animal is neutered, as the risk of contracting certain diseases is reduced. If you have neutered your animal after signing up for Hedvig, please contact us.</string>
   <string name="HC_COVERAGE_A_14">If there is a specific cost or treatment you are considering, we recommend that you contact your veterinarian and ask for a preliminary decision. The vet will then submit the necessary information to us, and we can give a definitive answer regarding your coverage and reimbursement.</string>
@@ -558,7 +558,6 @@
   <string name="HC_COVERAGE_Q_08">Can I get compensated for my scar?</string>
   <string name="HC_COVERAGE_Q_09">Can I get compensation for loss of income during sick leave?</string>
   <string name="HC_COVERAGE_Q_10">What is covered by the accident insurance?</string>
-  <string name="HC_COVERAGE_Q_11"> </string>
   <string name="HC_COVERAGE_Q_12">How does the fixed deductible work?</string>
   <string name="HC_COVERAGE_Q_13">Will the price be lower if my pet is neutered?</string>
   <string name="HC_COVERAGE_Q_14">My animal needs a specific examination or treatment, will my insurance cover it?</string>
@@ -1141,6 +1140,7 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SCREEN_OVERVIEW">Overview</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activates %s</string>
   <string name="SURVEY_ACTION_BUTTON_BETTER_PRICE">Get a price quote</string>
   <string name="SURVEY_ACTION_BUTTON_MISSING_COVERAGE_OR_TERMS">See coverage levels</string>
   <string name="SURVEY_ACTION_BUTTON_MOVING_NEW_ADDRESS">Get a price quote</string>
@@ -1359,7 +1359,7 @@
   <string name="app_info.submit_bug.button">Report technical issue</string>
   <string name="app_info.submit_bug.continue">Continue</string>
   <string name="app_info.submit_bug.go_back">Go back</string>
-  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nAVC: %s\nSV: %s</string>
+  <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Technical Issue Report</string>
   <string name="app_info.submit_bug.warning">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.</string>
   <string name="app_update_needed.app_store_button">Open App Store</string>
@@ -1401,6 +1401,8 @@
   <string name="claim.status_bar.being_handled">Being handled</string>
   <string name="claim.status_bar.closed">Closed</string>
   <string name="claim.status_bar.submitted">Submitted</string>
+  <string name="claim_history.empty_state.body">Your past claims will appear here automatically once processed.</string>
+  <string name="claim_history.empty_state.title">No claims in history</string>
   <string name="claim_outcome_unresponsive_support_text">Your claim was closed as we didn’t hear back from you. Please see conversation for more details.</string>
   <string name="claim_status.being_handled.support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
   <string name="claim_status.being_handled_reopened.support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
@@ -1850,6 +1852,7 @@
   <string name="profile.appSettingsSection.row.subheadline">Language, theme, information</string>
   <string name="profile.appSettingsSection.title">App Settings</string>
   <string name="profile.certificates.title">Certificates</string>
+  <string name="profile.claim_history.title">Claim history</string>
   <string name="profile_tab.about_row_subtitle">Version &amp; licenses</string>
   <string name="profile_tab.title">Profile</string>
   <string name="purchase_confirmation_accident_insurance.done_button">Done</string>

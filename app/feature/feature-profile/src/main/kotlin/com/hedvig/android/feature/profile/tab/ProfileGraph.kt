@@ -35,6 +35,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  navigateToClaimHistory: () -> Unit,
   openAppSettings: () -> Unit,
   onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
@@ -54,6 +55,7 @@ fun NavGraphBuilder.profileGraph(
         navigateToEurobonus = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
         },
+        navigateToClaimHistory = navigateToClaimHistory,
         navigateToContactInfo = {
           with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
         },

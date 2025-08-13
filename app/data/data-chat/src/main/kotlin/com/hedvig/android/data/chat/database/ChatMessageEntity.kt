@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.benasher44.uuid.Uuid
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Entity(tableName = "chat_messages")
 data class ChatMessageEntity(

@@ -34,7 +34,7 @@ import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -111,7 +111,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = GetHomeDataUseCaseImpl(
       apolloClient.apply {
         registerTestResponse(
-          HomeQuery(),
+          HomeQuery(true),
           HomeQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
@@ -125,7 +125,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
-      FakeFeatureManager2(true),
+      FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
@@ -160,7 +160,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = GetHomeDataUseCaseImpl(
       apolloClient.apply {
         registerTestResponse(
-          HomeQuery(),
+          HomeQuery(true),
           HomeQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
@@ -174,7 +174,7 @@ internal class GetHomeUseCaseTest {
       },
       HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
-      FakeFeatureManager2(true),
+      FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       travelBannerProvider,
@@ -195,7 +195,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           importantMessages = List(3) { index ->
@@ -237,7 +237,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           importantMessages = emptyList()
@@ -262,14 +262,22 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are existing claims, show them as ClaimStatusCards`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders()
+  fun `when there are existing claims, show them as ClaimStatusCards`(
+    @TestParameter claimsHistoryFlag: Boolean,
+  ) = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      featureManager = FakeFeatureManager(
+        fixedMap = Feature.entries.associateWith { true }.plus(
+          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
+        ),
+      ),
+    )
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(claimsHistoryFlag),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          claims = listOf(
+          val claimsList = listOf(
             buildClaim {
               id = "claim id#1"
             },
@@ -277,6 +285,11 @@ internal class GetHomeUseCaseTest {
               id = "claim id#2"
             },
           )
+          if (!claimsHistoryFlag) {
+            claims = claimsList
+          } else {
+            claimsActive = claimsList
+          }
         }
       },
     )
@@ -304,14 +317,26 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are no existing claims, don't show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders()
+  fun `when there are no existing claims, don't show them`(
+    @TestParameter claimsHistoryFlag: Boolean,
+  ) = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      featureManager = FakeFeatureManager(
+        fixedMap = Feature.entries.associateWith { true }.plus(
+          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
+        ),
+      ),
+    )
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(claimsHistoryFlag),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          claims = emptyList()
+          if (claimsHistoryFlag) {
+            claimsActive = emptyList()
+          } else {
+            claims = emptyList()
+          }
         }
       },
     )
@@ -337,7 +362,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           activeContracts = emptyList()
@@ -384,7 +409,7 @@ internal class GetHomeUseCaseTest {
       testClock.now().toLocalDateTime(timeZone).date
     }
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolverWithFilledLists) {
         currentMember = buildMember {
           activeContracts = listOf(
@@ -422,11 +447,11 @@ internal class GetHomeUseCaseTest {
   fun `when the are only pending contracts, the contract status is considered pending or switchable`(
     @TestParameter isSwitchableByHedvig: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(true)
+    val featureManager = FakeFeatureManager(true)
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           activeContracts = emptyList()
@@ -468,16 +493,17 @@ internal class GetHomeUseCaseTest {
     @TestParameter hasAtLeastOneMessageByMember: Boolean,
     @TestParameter("0", "1", "2") numberOfMessagesByHedvig: Int,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
+        Feature.ENABLE_CLAIM_HISTORY to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -532,16 +558,17 @@ internal class GetHomeUseCaseTest {
     @TestParameter helpCenterIsEnabled: Boolean,
     @TestParameter isEligibleToSeeTheChatButton: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to chatIsKillSwitched,
         Feature.HELP_CENTER to helpCenterIsEnabled,
+        Feature.ENABLE_CLAIM_HISTORY to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -599,16 +626,17 @@ internal class GetHomeUseCaseTest {
   fun `the disable help center feature flag determines if we show it or not`(
     @TestParameter helpCenterIsEnabled: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to true,
         Feature.HELP_CENTER to helpCenterIsEnabled,
+        Feature.ENABLE_CLAIM_HISTORY to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -640,16 +668,17 @@ internal class GetHomeUseCaseTest {
     @TestParameter hasAtLeastOneOpenConversation: Boolean,
     @TestParameter closedConversationHasAtLeastOneMessage: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(
+    val featureManager = FakeFeatureManager(
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
+        Feature.ENABLE_CLAIM_HISTORY to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -697,11 +726,11 @@ internal class GetHomeUseCaseTest {
   fun `Chat notification dot shows depending on if there are unread messages or not`(
     @TestParameter hasUnreadMessages: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(true)
+    val featureManager = FakeFeatureManager(true)
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -742,7 +771,7 @@ internal class GetHomeUseCaseTest {
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
   private fun testUseCaseWithoutReminders(
-    faetureManager: FeatureManager = FakeFeatureManager2(true),
+    featureManager: FeatureManager = FakeFeatureManager(true),
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
   ): GetHomeDataUseCase {
@@ -750,7 +779,7 @@ internal class GetHomeUseCaseTest {
       apolloClient,
       HasAnyActiveConversationUseCase(apolloClient),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      faetureManager,
+      featureManager,
       testClock,
       timeZone,
       travelBannerProvider,

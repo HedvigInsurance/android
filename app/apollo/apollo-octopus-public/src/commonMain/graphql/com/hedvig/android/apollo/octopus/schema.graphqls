@@ -240,7 +240,12 @@ type Cart {
   Currently redeemed campaign, if any
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
-  redeemedCampaign: RedeemedCampaign
+  redeemedCampaign: RedeemedCampaign @deprecated(reason: "Use 'redeemedCampaignV2' instead")
+  """
+  Currently redeemed campaign, if any
+  It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
+  """
+  redeemedCampaignV2: RedeemedCampaignV2
 }
 type CartCost {
   """
@@ -289,7 +294,11 @@ type ChangeTierDeductibleAddonQuote {
   """
    Price for the addon. 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use cost instead")
+  """
+   Cost breakdown 
+  """
+  cost: ItemCost!
   """
    The terms 
   """
@@ -399,7 +408,11 @@ type ChangeTierDeductibleQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use cost instead")
+  """
+   Cost breakdown. Does not include addons 
+  """
+  cost: ItemCost!
   """
    List of display items for the quote 
   """
@@ -1304,7 +1317,7 @@ type FlowTerminationDateStep implements FlowStep {
   minDate: Date!
   maxDate: Date!
   extraCoverage: [FlowTerminationExtraCoverageItem!]!
-  notification: FlowTerminationNotification
+  notification: FlowTerminationNotification @deprecated(reason: "Call Member extention query to get notifications instead")
 }
 input FlowTerminationDeletionInput {
   """
@@ -1481,6 +1494,41 @@ input InsurelyInitiateIframeDataCollectionInput {
 type InsurelyInitiateIframeDataCollectionOutput {
   dataCollectionId: ID!
 }
+"""
+ Cost breakdown with discounts
+"""
+type ItemCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
+  discounts: [ItemDiscount!]!
+}
+"""
+Single discount line that represents a distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be
+returned as ItemDiscount
+"""
+type ItemDiscount {
+  """
+   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+  """
+  campaignCode: String!
+  """
+   Short name for list display, ex. "50% puppy discount" 
+  """
+  displayName: String!
+  """
+   Short value for list display, ex. 50% 99 kr 
+  """
+  displayValue: String!
+  """
+   Longer explanation, ex. 50% discount for 6 months 
+  """
+  explanation: String!
+  """
+   Discount amount 
+  """
+  amount: Money!
+}
 scalar JSON
 type LinkInfo {
   url: Url!
@@ -1528,6 +1576,8 @@ type Member {
   """
   memberFAQ: MemberFAQ!
   claims: [Claim!]!
+  claimsActive: [Claim!]!
+  claimsHistory: [Claim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -1542,11 +1592,19 @@ type Member {
   importantMessages: [MemberImportantMessage!]!
   partnerData: PartnerData
   emailMessages: [EmailMessage!]!
+  """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
   hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
   """
   The currently redeemed campaign of this member, if any.
   """
   redeemedCampaigns: [RedeemedCampaign!]!
+  """
+  The currently redeemed campaign of this member, if any.
+  """
+  redeemedCampaignsV2: [RedeemedCampaignV2!]!
   """
   A breakdown of the total cost of this member's insurance.
   The exact charge every month can vary based on other factors,
@@ -1632,17 +1690,9 @@ type MemberCharge {
   """
   date: Date!
   """
-  Breakdown of the upcoming charge by contract
-  """
-  contractsChargeBreakdown: [MemberChargeContractBreakdownItem!]! @deprecated(reason: "Use chargeBreakdown, will be removed")
-  """
   Breakdown of the upcoming charge by items
   """
   chargeBreakdown: [MemberChargeBreakdownItem!]!
-  """
-  Breakdown of the upcoming charge's discounts -- Use chargeBreakdown's discounts and referral discount, will be removed
-  """
-  discountBreakdown: [MemberChargeDiscountBreakdownItem!]!
   """
   Referral discount amount of the charge
   """
@@ -1670,6 +1720,7 @@ type MemberChargeBreakdownItem {
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
+  description: String
   discount: Money!
 }
 type MemberChargeBreakdownItemPeriod {
@@ -1677,22 +1728,6 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
-}
-type MemberChargeContractBreakdownItem {
-  gross: Money!
-  contract: Contract!
-  periods: [MemberChargeContractBreakdownItemPeriod!]!
-}
-type MemberChargeContractBreakdownItemPeriod {
-  fromDate: Date!
-  toDate: Date!
-  amount: Money!
-  isPreviouslyFailedCharge: Boolean!
-}
-type MemberChargeDiscountBreakdownItem {
-  code: String
-  discount: Money!
-  isReferral: Boolean!
 }
 """
 The status of the charge
@@ -1881,8 +1916,16 @@ input MemberUpdatePhoneNumberInput {
 }
 type MidtermChangeIntent {
   id: ID!
-  currentPremium: Money!
-  newPremium: Money!
+  currentPremium: Money! @deprecated(reason: "Use currentTotalCost")
+  newPremium: Money! @deprecated(reason: "Use newTotalCost")
+  """
+  Breakdown of current cost. Includes addons
+  """
+  currentTotalCost: ItemCost!
+  """
+  Breakdown of new cost. Includes addons
+  """
+  newTotalCost: ItemCost!
   activationDate: Date!
   state: MidtermChangeIntentState!
 }
@@ -1932,7 +1975,11 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+  Cost breakdown. Addons never have discounts unique to them, but they inherit discounts from parent contract
+  """
+  cost: ItemCost!
   """
    When this addon is becoming active 
   """
@@ -2031,7 +2078,11 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+   Cost breakdown
+  """
+  cost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2112,13 +2163,6 @@ type MoveIntent {
   """
   currentHomeAddresses: [MoveAddress!]!
   """
-  Will only be present after moveIntentRequest and for API V1.
-  DEPRECATED!
-  The quotes to accept for moving to new address, includes one quote for the new home contract and zero
-  or more MTA quotes for other non-home contracts with new address.
-  """
-  quotes: [MoveQuote!]!
-  """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
@@ -2128,6 +2172,19 @@ type MoveIntent {
   The MTA quotes for member's non-home contracts with new address.
   """
   mtaQuotes: [MoveMtaQuote!]
+}
+"""
+Cost breakdown for selected move intent configuration
+"""
+type MoveIntentCost {
+  """
+  Cost breakdown for both home quote and quotes for other contracts
+  """
+  quoteCosts: [MoveIntentQuoteCost!]!
+  """
+  Total breakdown
+  """
+  totalCost: MoveIntentTotalCost!
 }
 """
  Only one field can be present 
@@ -2142,11 +2199,15 @@ type MoveIntentMutationOutput {
   """
   userError: UserError
 }
+type MoveIntentQuoteCost {
+  quoteId: ID!
+  cost: ItemCost!
+}
 input MoveIntentRequestInput {
   """
    The version of this API used by the client 
   """
-  apiVersion: MoveApiVersion
+  apiVersion: MoveApiVersion @deprecated(reason: "No longer used, sent values will be ignored")
   """
    The new address to move to 
   """
@@ -2176,11 +2237,19 @@ input MoveIntentRequestInput {
   """
   house: MoveToHouseInput
 }
+type MoveIntentTotalCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
+}
 type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "use cost instead")
+  """
+   Cost breakdown
+  """
+  cost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2201,31 +2270,6 @@ type MoveMtaQuote {
    The addons moved to new address for agreement 
   """
   addons: [MoveAddonQuote!]!
-}
-"""
- DEPRECATED. Quotes used for the old V1 API 
-"""
-type MoveQuote {
-  """
-   Premium 
-  """
-  premium: Money!
-  """
-   When new insurance (or existing insurance address change) is becoming active 
-  """
-  startDate: Date!
-  """
-   List of display items for the quote 
-  """
-  displayItems: [MoveQuoteDisplayItem!]!
-  """
-   The insurance exposure name, eg reg nbr for car, name and birthdate for cat/dog, street for home etc... 
-  """
-  exposureName: String
-  """
-   The terms 
-  """
-  productVariant: ProductVariant!
 }
 type MoveQuoteDisplayItem {
   displayTitle: String!
@@ -2337,11 +2381,11 @@ type Mutation {
   """
   Redeem a campaign for the current member with the input `code`.
   """
-  memberCampaignsRedeem(code: String!): MemberMutationOutput!
+  memberCampaignsRedeem(code: String!): MemberMutationOutput! @deprecated(reason: "No longer supported")
   """
   Remove a campaign for the current member with the given `RedeemedCampaign.id`.
   """
-  memberCampaignsUnredeem(id: ID!): MemberMutationOutput!
+  memberCampaignsUnredeem(id: ID!): MemberMutationOutput! @deprecated(reason: "No longer supported")
   """
   The document includes details of the member’s home insurance,
   such as address, coverage duration, payment information, co-insured parties,
@@ -2831,18 +2875,26 @@ type ProductOfferCost {
   """
   gross: Money!
   """
+  Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
+  """
+  discounts: [ItemDiscount!]!
+  """
   How much price was reduced on the entire offer, including selected addons.
   """
-  discount: Money!
+  discount: Money! @deprecated(reason: "Use 'discounts' field instead")
   """
   Number of months the discount will apply.
   """
-  discountMonths: Int!
+  discountMonths: Int! @deprecated(reason: "Use 'discounts' field instead")
   """
   Details about origin of a discount
   """
-  discountSource: ProductOfferCostDiscountSource
+  discountSource: ProductOfferCostDiscountSource @deprecated(reason: "Use 'discounts' field instead")
 }
+"""
+@deprecated This type will be removed in a future version. Specific discount information should be obtained
+from 'ProductOfferCost.discounts' field
+"""
 type ProductOfferCostDiscountSource {
   campaignCode: String!
   discountPercent: Int!
@@ -2979,6 +3031,7 @@ type Query {
   Note that this can return null if `Mutation.conversationStart` has not been called with this ID.
   """
   conversation(id: UUID!): Conversation
+  claim(id: ID!): Claim
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
@@ -3023,6 +3076,11 @@ type Query {
   Resolve a single Trial contract by its ID. Does NOT require the caller to be a member owning said contract.
   """
   trialContract(id: UUID!): TrialContract!
+  """
+  Cost for selected configuration of moveIntent
+  """
+  moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  claim(id: ID!): Claim
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
@@ -3033,6 +3091,7 @@ type RecommendedCrossSell {
 }
 """
 A type describing a redeemed campaign.
+@deprecated Use 'RedeemedCampaignV2' instead.
 """
 type RedeemedCampaign {
   id: ID!
@@ -3074,6 +3133,38 @@ enum RedeemedCampaignType {
   Some kind of discount usually created in Hope.
   """
   VOUCHER
+}
+enum RedeemedCampaignTypeV2 {
+  REFERRAL
+  CAMPAIGN
+}
+"""
+A type describing a redeemed campaign - v2
+"""
+type RedeemedCampaignV2 {
+  id: ID!
+  """
+  The code the user input to attach this campaign.
+  """
+  campaignCode: String!
+  """
+  REFERRAL (you were invited by a friend) or CAMPAIGN (this is some kind of limited discount or similar)
+  """
+  type: RedeemedCampaignTypeV2!
+  """
+  A user-readable explanation of this campaign.
+  """
+  description: String!
+  """
+  User readable amount to be discounted. We can only know that for Referral discounts.
+  """
+  displayValue: String
+  """
+  Expiration date of this campaign, this is non-null if the following is true:
+  - It is a kind of campaign that has an expiry (i.e. NOT a referral)
+  - It has been successfully redeemed by a signed member (i.e. not only in a ShopSession)
+  """
+  activeUntil: Date
 }
 input RegisterDirectDebitClientContext2 {
   successUrl: String!
@@ -3348,6 +3439,10 @@ type SwitcherCase {
 type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
+}
+input TerminationFlowNotificationInput {
+  contractId: ID!
+  terminationDate: Date!
 }
 enum TokenizationChannel {
   ANDROID

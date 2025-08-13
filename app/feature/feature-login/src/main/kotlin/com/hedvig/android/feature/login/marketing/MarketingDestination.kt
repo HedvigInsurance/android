@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -51,6 +48,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
@@ -81,18 +80,17 @@ private fun MarketingScreen(
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
 ) {
-  var showPreferencesSheet by rememberSaveable { mutableStateOf(false) }
-  HedvigBottomSheet(
-    isVisible = (showPreferencesSheet && uiState is MarketingUiState.Success),
-    onVisibleChange = { showPreferencesSheet = it },
-    contentPadding = PaddingValues(0.dp),
-  ) {
-    if (uiState is MarketingUiState.Success) {
+  val preferencesSheetState = rememberHedvigBottomSheetState<Unit>()
+  if (uiState is MarketingUiState.Success) {
+    HedvigBottomSheet(
+      preferencesSheetState,
+      contentPadding = PaddingValues(0.dp),
+    ) {
       PreferencesSheetContent(
         chosenLanguage = uiState.language,
         appVersionName = appVersionName,
         selectLanguage = selectLanguage,
-        dismissSheet = { showPreferencesSheet = false },
+        dismissSheet = preferencesSheetState::dismiss,
       )
     }
   }
@@ -171,7 +169,7 @@ private fun MarketingScreen(
       if (uiState is MarketingUiState.Success) {
         val description = stringResource(R.string.market_language_screen_choose_language_label)
         IconButton(
-          onClick = { showPreferencesSheet = true },
+          onClick = preferencesSheetState::show,
           modifier = Modifier
             .align(Alignment.TopEnd)
             .padding(vertical = 10.dp, horizontal = 16.dp)

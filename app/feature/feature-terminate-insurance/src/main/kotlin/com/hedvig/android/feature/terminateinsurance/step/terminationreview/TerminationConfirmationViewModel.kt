@@ -1,73 +1,121 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationreview
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal class TerminationConfirmationViewModel(
   private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   private val insuranceInfo: TerminationGraphParameters,
   private val extraCoverageItems: List<ExtraCoverageItem>,
-  private val notification: TerminationNotification?,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
-) : ViewModel() {
-  private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
+  private val getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
+  private val clock: Clock,
+) : MoleculeViewModel<TerminationConfirmationEvent, OverviewUiState>(
     OverviewUiState(
       terminationType = terminationType,
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
-      notification = notification,
+      notification = null,
       nextStep = null,
       errorMessage = null,
       isSubmittingContractTermination = false,
     ),
+    TerminationConfirmationPresenter(
+      terminationType,
+      insuranceInfo,
+      terminateInsuranceRepository,
+      getTerminationNotificationUseCase,
+      clock,
+    ),
   )
-  val uiState: StateFlow<OverviewUiState> = _uiState.asStateFlow()
 
-  fun submitContractTermination() {
-    _uiState.update { it.copy(isSubmittingContractTermination = true) }
-    viewModelScope.launch {
-      when (terminationType) {
-        TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion -> {
-          terminateInsuranceRepository.confirmDeletion()
-        }
+sealed interface TerminationConfirmationEvent {
+  data object Submit : TerminationConfirmationEvent
 
-        is TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination -> {
-          terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
-        }
-      }.fold(
-        ifLeft = { errorMessage ->
-          _uiState.update {
-            it.copy(
-              isSubmittingContractTermination = false,
-              errorMessage = errorMessage.message,
-            )
-          }
+  data object HandledNextStepNavigation : TerminationConfirmationEvent
+}
+
+private class TerminationConfirmationPresenter(
+  private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  private val insuranceInfo: TerminationGraphParameters,
+  private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
+  private val clock: Clock,
+) : MoleculePresenter<TerminationConfirmationEvent, OverviewUiState> {
+  @Composable
+  override fun MoleculePresenterScope<TerminationConfirmationEvent>.present(
+    lastState: OverviewUiState,
+  ): OverviewUiState {
+    var uiState by remember { mutableStateOf(lastState) }
+    val notification by produceState(lastState.notification) {
+      getTerminationNotificationUseCase.invoke(
+        contractId = insuranceInfo.contractId,
+        terminationDate = when (terminationType) {
+          Deletion -> clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+          is Termination -> terminationType.terminationDate
         },
-        ifRight = { terminateInsuranceFlowStep ->
-          _uiState.update {
-            it.copy(
-              isSubmittingContractTermination = false,
-              nextStep = terminateInsuranceFlowStep,
-            )
-          }
-        },
-      )
+      ).collect {
+        value = it.getOrNull()
+      }
     }
-  }
 
-  fun handledNextStepNavigation() {
-    _uiState.update { it.copy(nextStep = null) }
+    CollectEvents { event ->
+      when (event) {
+        TerminationConfirmationEvent.HandledNextStepNavigation -> {
+          uiState = uiState.copy(nextStep = null)
+        }
+
+        TerminationConfirmationEvent.Submit -> {
+          uiState = uiState.copy(isSubmittingContractTermination = true)
+          launch {
+            when (terminationType) {
+              Deletion -> {
+                terminateInsuranceRepository.confirmDeletion()
+              }
+
+              is Termination -> {
+                terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
+              }
+            }.fold(
+              ifLeft = { errorMessage ->
+                uiState = uiState.copy(
+                  isSubmittingContractTermination = false,
+                  errorMessage = errorMessage.message,
+                )
+              },
+              ifRight = { terminateInsuranceFlowStep ->
+                uiState = uiState.copy(
+                  isSubmittingContractTermination = false,
+                  nextStep = terminateInsuranceFlowStep,
+                )
+              },
+            )
+          }
+        }
+      }
+    }
+
+    return uiState.copy(notification = notification)
   }
 }
 

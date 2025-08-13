@@ -1,31 +1,31 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "35"
+compileSdkVersion = "36"
 targetSdkVersion = "34"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.10.0"
-lintGradlePlugin = "8.10.0"
+lintApi = "31.12.0"
+lintGradlePlugin = "8.12.0"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.10.0"
-apollo = "4.2.0"
-apolloAdapters = "0.0.6"
+androidGradlePlugin = "8.12.0"
+apollo = "4.3.2"
+apolloAdapters = "0.7.0"
 cacheFix = "3.0.1"
-crashlytics = "3.0.3"
-datadogPlugin = "1.16.0"
-doctor = "0.10.0"
+crashlytics = "3.0.6"
+datadogPlugin = "1.18.0"
+doctor = "0.11.0"
 easylauncher = "6.4.1"
-googleServices = "4.4.2"
-gradleDevelocity = "4.0.1"
-kotlin = "2.1.21"
-kotlinter = "5.0.2"
-ksp = "2.1.21-2.0.1"
-ktor = "3.1.3"
+googleServices = "4.4.3"
+gradleDevelocity = "4.1"
+kotlin = "2.2.0"
+kotlinter = "5.2.0"
+ksp = "2.2.0-2.0.2"
+ktor = "3.2.3"
 license = "0.9.8"
 molecule = "2.1.0"
-skie = "0.10.2"
+skie = "0.10.5"
 squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
@@ -33,54 +33,54 @@ accompanist = "0.37.3"
 androidx-activity-compose = "1.10.1"
 androidx-activity-core = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-composeBom = "2025.05.00"
-androidx-datastore = "1.1.4"
-androidx-junit = "1.2.1"
-androidx-lifecycle = "2.9.0"
-androidx-navigation = "2.9.0"
-androidx-other-appCompat = "1.7.0"
-androidx-other-browser = "1.8.0"
+androidx-composeBom = "2025.07.00"
+androidx-datastore = "1.1.7"
+androidx-junit = "1.3.0"
+androidx-lifecycle = "2.9.2"
+androidx-navigation = "2.9.3"
+androidx-other-appCompat = "1.7.1"
+androidx-other-browser = "1.9.0"
 androidx-other-constraintLayout = "2.2.0"
 androidx-other-core = "1.16.0"
-androidx-other-splashscreen = "1.2.0-beta02"
+androidx-other-splashscreen = "1.2.0-rc01"
 androidx-other-startup = "1.2.0"
-androidx-other-workManager = "2.10.1"
-androidx-test = "1.6.1"
-androidx-testRunners = "1.6.2"
-androidx-ui-alpha = "1.8.1"
+androidx-other-workManager = "2.10.3"
+androidx-test = "1.7.0"
+androidx-testRunners = "1.7.0"
+androidx-ui-alpha = "1.8.3"
 androidxGraphicsShapes = "1.0.1"
 jetbrains-compose-runtime = "1.8.2"
 arrow = "2.1.2"
 assertK = "0.28.1"
-atomicfu = "0.27.0"
+atomicfu = "0.29.0"
 coil = "2.7.0"
-composeRichtext = "1.0.0-alpha02"
+composeRichtext = "1.0.0-alpha03"
 coreLibraryDesugaring = "2.1.5"
 coroutines = "1.10.2"
-datadog = "2.21.0"
-dependencyAnalysis = "2.17.0"
-firebaseCrashlyticsBuildtools = "3.0.3"
+datadog = "2.25.0"
+dependencyAnalysis = "2.19.0"
+firebaseCrashlyticsBuildtools = "3.0.6"
 junit = "4.13.2"
-koinBom = "4.0.4"
-kotlinx-serialization = "1.8.1"
-kotlinxDatetime = "0.6.2"
-media3 = "1.7.1"
+koinBom = "4.1.0"
+kotlinx-serialization = "1.9.0"
+kotlinxDatetime = "0.7.1-0.6.x-compat"
+media3 = "1.8.0"
 modalSheet = "0.7.0"
 moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
-okhttp = "4.12.0"
-okio = "3.11.0"
+okhttp = "5.1.0"
+okio = "3.16.0"
 paging = "3.3.6"
 playReview = "2.0.2"
-playServicesBase = "18.7.0"
+playServicesBase = "18.7.2"
 retrofit = "3.0.0"
-robolectric = "4.14.1"
-room = "2.7.1"
+robolectric = "4.15.1"
+room = "2.7.2"
 slimber = "2.0.0"
-sqlite = "2.5.1"
+sqlite = "2.5.2"
 testParameterInjector = "1.18"
 timber = "5.0.1"
-turbine = "1.2.0"
+turbine = "1.2.1"
 unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
@@ -135,6 +135,7 @@ androidx-other-startup = { module = "androidx.startup:startup-runtime", version.
 androidx-other-workManager = { module = "androidx.work:work-runtime", version.ref = "androidx-other-workManager" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
+apollo-adapters-core = { module = "com.apollographql.adapters:apollo-adapters-core", version.ref = "apolloAdapters" }
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
@@ -162,11 +163,10 @@ datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref =
 datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.13.0"
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
-firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom = "com.google.firebase:firebase-bom:34.1.0"
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }

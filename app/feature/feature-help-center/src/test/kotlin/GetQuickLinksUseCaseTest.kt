@@ -16,7 +16,7 @@ import com.hedvig.android.feature.help.center.data.MemberAction
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import hedvig.resources.R
 import kotlinx.coroutines.test.runTest
@@ -62,7 +62,7 @@ class GetQuickLinksUseCaseTest {
 
   @Test
   fun `when response is fine return ChangeTier quickAction`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
+    val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
     val useCase = GetQuickLinksUseCase(
@@ -93,7 +93,7 @@ class GetQuickLinksUseCaseTest {
 
   @Test
   fun `when response says cannot change tier should not contain ChangeTier quickAction`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedReturnForAll = true)
+    val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithoutTier.right())
     val useCase = GetQuickLinksUseCase(

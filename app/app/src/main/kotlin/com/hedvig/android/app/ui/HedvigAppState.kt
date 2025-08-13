@@ -336,6 +336,7 @@ private fun NavDestination?.isInListOfScreensPermittingCrossSellsSheetToShow(): 
  */
 private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
+  addAll(com.hedvig.android.feature.claimhistory.nav.profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
 

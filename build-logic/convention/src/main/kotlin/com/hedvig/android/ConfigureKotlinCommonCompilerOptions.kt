@@ -9,7 +9,7 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
   when (this) {
     is KotlinJvmCompilerOptions -> {
       configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
-      jvmTarget.set(JvmTarget.JVM_21)
+      jvmTarget.set(JvmTarget.JVM_23)
     }
 
     else -> {
@@ -21,8 +21,8 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
 private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
   extraFreeCompilerArgs: List<String> = emptyList(),
 ) {
-  apiVersion.set(KotlinVersion.KOTLIN_2_1)
-  languageVersion.set(KotlinVersion.KOTLIN_2_1)
+  apiVersion.set(KotlinVersion.KOTLIN_2_2)
+  languageVersion.set(KotlinVersion.KOTLIN_2_2)
   freeCompilerArgs.addAll(commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
 }
 
@@ -37,6 +37,7 @@ private fun commonFreeCompilerArgs(): List<String> {
     "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
     "-opt-in=kotlin.Experimental",
     "-opt-in=kotlin.RequiresOptIn",
+    "-opt-in=kotlin.time.ExperimentalTime",
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     "-opt-in=kotlinx.coroutines.FlowPreview",
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",

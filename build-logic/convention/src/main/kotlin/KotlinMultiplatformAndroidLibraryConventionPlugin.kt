@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
@@ -46,9 +47,13 @@ private fun Project.configureKotlinAndroidMultiplatform() {
             this.configureKotlinCompilerOptions()
           }
         }
-        this.compilerOptions.configure {
-          this.jvmTarget.set(JvmTarget.JVM_21)
-          this.languageVersion.set(KotlinVersion.KOTLIN_2_1)
+        this.compileTaskProvider.configure {
+          compilerOptions {
+            if (this is KotlinJvmCompilerOptions) {
+              this.jvmTarget.set(JvmTarget.JVM_23)
+            }
+            this.languageVersion.set(KotlinVersion.KOTLIN_2_2)
+          }
         }
       }
       configureAutomaticNamespace(path, this.namespace, { this.namespace = it })

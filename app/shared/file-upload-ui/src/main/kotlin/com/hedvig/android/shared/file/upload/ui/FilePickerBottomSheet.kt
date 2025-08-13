@@ -26,6 +26,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -34,19 +35,13 @@ import hedvig.resources.R
 
 @Composable
 fun FilePickerBottomSheet(
-  isVisible: Boolean,
+  sheetState: HedvigBottomSheetState<Unit>,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
   onTakePhoto: () -> Unit,
-  onDismiss: () -> Unit,
 ) {
   HedvigBottomSheet(
-    isVisible = isVisible,
-    onVisibleChange = { visible ->
-      if (!visible) {
-        onDismiss()
-      }
-    },
+    sheetState,
     content = {
       FilePickerBottomSheetContent(
         onPickPhoto = onPickPhoto,

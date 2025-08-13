@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -73,8 +74,8 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -192,6 +193,7 @@ private fun EnterNewAddressScreen(
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
           keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Next,
           ),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = when (val validationError = uiState.address.validationError) {
@@ -215,7 +217,10 @@ private fun EnterNewAddressScreen(
             }
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
-          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next,
+          ),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = when (val validationError = uiState.postalCode.validationError) {
             null -> HedvigTextFieldDefaults.ErrorState.NoError
@@ -236,7 +241,10 @@ private fun EnterNewAddressScreen(
             }
           },
           labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL),
-          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next,
+          ),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = when (val validationError = uiState.squareMeters.validationError) {
             null -> HedvigTextFieldDefaults.ErrorState.NoError

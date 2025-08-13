@@ -8,7 +8,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -32,14 +32,8 @@ internal class GetDiscountsUseCaseImpl(
     val discounts = result.currentMember.redeemedCampaigns
       .filter { it.type == RedeemedCampaignType.VOUCHER }
       .map {
-        val applicableContract = it.onlyApplicableToContracts?.firstOrNull()
-        val exposureDisplayName = applicableContract?.exposureDisplayNameShort
-        val originalDisplayName = applicableContract?.currentAgreement?.productVariant?.displayNameShort
-          ?: applicableContract?.currentAgreement?.productVariant?.displayName
-        val displayName = "${originalDisplayName?.let {"$it • "} ?: ""}${exposureDisplayName ?: ""}"
         Discount(
           code = it.code,
-          displayName = displayName,
           description = it.description,
           expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
           amount = null,

@@ -1,6 +1,6 @@
 package com.hedvig.android.auth.token
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class LocalAccessToken(
   val token: String,

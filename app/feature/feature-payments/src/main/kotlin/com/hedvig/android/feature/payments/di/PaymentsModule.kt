@@ -21,7 +21,7 @@ import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -34,7 +34,6 @@ val paymentsModule = module {
   single<GetChargeDetailsUseCase> {
     GetChargeDetailsUseCaseImpl(
       get<ApolloClient>(),
-      get<Clock>(),
     )
   }
   single<GetForeverInformationUseCase> {

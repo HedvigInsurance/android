@@ -17,7 +17,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -100,7 +100,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
 
   @Test
   fun `if FF for addons is off return ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to false))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to false))
     val sut = GetInsuranceForTravelAddonUseCaseImpl(apolloClientWithGoodResponse, featureManager)
     val result = sut.invoke(testIds).first()
     assertThat(result)
@@ -109,7 +109,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
 
   @Test
   fun `if quotes list is empty return ErrorMessage with null message`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetInsuranceForTravelAddonUseCaseImpl(apolloClientWithGoodButEmptyResponse, featureManager)
     val result = sut.invoke(testIds).first()
     assertThat(result)
@@ -119,7 +119,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
 
   @Test
   fun `if BE gives error return ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetInsuranceForTravelAddonUseCaseImpl(apolloClientWithError, featureManager)
     val result = sut.invoke(testIds).first()
     assertThat(result)
@@ -128,7 +128,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
 
   @Test
   fun `if BE gives correct response but the required ids are not there return ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetInsuranceForTravelAddonUseCaseImpl(apolloClientWithGoodResponse, featureManager)
     val result = sut.invoke(listOf("someotherid")).first()
     assertThat(result)
@@ -137,7 +137,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
 
   @Test
   fun `if BE gives correct response and required ids are not there return correctly mapped list`() = runTest {
-    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val sut = GetInsuranceForTravelAddonUseCaseImpl(apolloClientWithGoodResponse, featureManager)
     val result = sut.invoke(testIds).first()
     assertThat(result)

@@ -34,6 +34,7 @@ internal fun InsuredRow(
   onRemove: () -> Unit,
   onEdit: () -> Unit,
   contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
@@ -89,7 +90,7 @@ internal fun InsuredRow(
       }
     },
     spaceBetween = 8.dp,
-    modifier = Modifier
+    modifier = modifier
       .clickable(enabled = !isMember) {
         if (allowEdit && hasMissingInfo) {
           onEdit()
