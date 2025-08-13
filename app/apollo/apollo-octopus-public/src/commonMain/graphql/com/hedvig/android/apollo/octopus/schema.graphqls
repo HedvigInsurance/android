@@ -3031,6 +3031,7 @@ type Query {
   Note that this can return null if `Mutation.conversationStart` has not been called with this ID.
   """
   conversation(id: UUID!): Conversation
+  claim(id: ID!): Claim
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
