@@ -978,5 +978,5 @@ private class QuickLinkUiStatePreviewProvider :
 @Preview
 @Composable
 private fun SearchFieldPreview() {
-  SearchField("travel", FocusRequester(), {}, {}, {})
+  SearchField("travel", remember { FocusRequester() }, {}, {}, {})
 }
