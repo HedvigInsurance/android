@@ -339,7 +339,7 @@ private val datastoreAndroidModule = module {
 
 private val databaseChatAndroidModule = module {
   single<File>(databaseFileQualifier) {
-    val applicationContext = get<Context>()
+    val applicationContext = get<Context>().applicationContext
     val dbFile = applicationContext.getDatabasePath("hedvig_chat_database.db")
     // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
     dbFile
