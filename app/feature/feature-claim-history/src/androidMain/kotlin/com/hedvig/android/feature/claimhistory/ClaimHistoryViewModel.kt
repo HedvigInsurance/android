@@ -48,7 +48,6 @@ private class ClaimHistoryPresenter(
           }
           ClaimHistoryUiState.Content(list)
         }.merge()
-        state = ClaimHistoryUiState.Error
       }
     }
     return state
