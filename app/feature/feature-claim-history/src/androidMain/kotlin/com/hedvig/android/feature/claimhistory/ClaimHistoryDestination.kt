@@ -120,49 +120,58 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
     {
-
-        Row {
-          Column {
-            HedvigText(
-              text = claim.claimType ?: stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
-              style = HedvigTheme.typography.bodySmall,
-            )
-            HedvigText(
-              buildString {
-                append(stringResource(R.string.claim_status_claim_details_submitted))
-                append(" ")
-                append(
-                  hedvigDateTimeFormatter.format(
-                    claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime(),
-                  ),
-                )
-              },
-              style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
-            )
-          }
-          Spacer(Modifier.weight(1f))
+      Row(
+        Modifier
+          .fillMaxWidth(),
+      ) {
+        Column {
+          HedvigText(
+            text = claim.claimType ?: stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
+            style = HedvigTheme.typography.bodySmall,
+          )
+          HedvigText(
+            buildString {
+              append(stringResource(R.string.claim_status_claim_details_submitted))
+              append(" ")
+              append(
+                hedvigDateTimeFormatter.format(
+                  claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime(),
+                ),
+              )
+            },
+            style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+          )
+        }
+        Spacer(Modifier.weight(1f))
+        if (claim.outcome != null && claim.outcome != ClaimHistory.ClaimOutcome.UNKNOWN) {
           Spacer(Modifier.width(8.dp))
-          if (claim.outcome != null && claim.outcome != ClaimHistory.ClaimOutcome.UNKNOWN) {
-            HighlightLabel(
-              labelText = stringResource(
-                when (claim.outcome) {
-                  ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
-                  ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
-                  ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
-                  ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
-                  ClaimHistory.ClaimOutcome.UNKNOWN -> error("impossible")
-                },
-              ),
-              size = HighlightLabelDefaults.HighLightSize.Small,
-              color = HighlightLabelDefaults.HighlightColor.Outline,
-            )
-          }
-
-
+          HighlightLabel(
+            labelText = stringResource(
+              when (claim.outcome) {
+                ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
+                ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
+                ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
+                ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
+                ClaimHistory.ClaimOutcome.UNKNOWN -> error("impossible")
+              },
+            ),
+            size = HighlightLabelDefaults.HighLightSize.Small,
+            color = HighlightLabelDefaults.HighlightColor.Outline,
+          )
+        }
       }
     },
     {
-      ClaimHistoryItemEndSlot()
+      Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.End,
+      ) {
+        Icon(
+          HedvigIcons.ChevronRight,
+          null,
+          Modifier.size(24.dp),
+        )
+      }
     },
     spaceBetween = 8.dp,
     modifier = Modifier
@@ -175,15 +184,6 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 18.dp)
       .padding(horizontal = 18.dp, vertical = 16.dp),
   )
-}
-
-@Composable
-private fun ClaimHistoryItemEndSlot(modifier: Modifier = Modifier) {
-    Icon(
-      HedvigIcons.ChevronRight,
-      null,
-      modifier.size(24.dp),
-    )
 }
 
 @HedvigPreview
