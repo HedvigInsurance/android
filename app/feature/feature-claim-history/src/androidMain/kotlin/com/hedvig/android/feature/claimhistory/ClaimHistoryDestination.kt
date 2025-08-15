@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -118,50 +120,49 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
     {
-      Column {
-        HedvigText(
-          text = claim.claimType ?: stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
-          style = HedvigTheme.typography.bodySmall,
-        )
-        HedvigText(
-          buildString {
-            append(stringResource(R.string.claim_status_claim_details_submitted))
-            append(" ")
-            append(
-              hedvigDateTimeFormatter.format(
-                claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime(),
-              ),
+
+        Row {
+          Column {
+            HedvigText(
+              text = claim.claimType ?: stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
+              style = HedvigTheme.typography.bodySmall,
             )
-          },
-          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
-        )
+            HedvigText(
+              buildString {
+                append(stringResource(R.string.claim_status_claim_details_submitted))
+                append(" ")
+                append(
+                  hedvigDateTimeFormatter.format(
+                    claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime(),
+                  ),
+                )
+              },
+              style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+            )
+          }
+          Spacer(Modifier.weight(1f))
+          Spacer(Modifier.width(8.dp))
+          if (claim.outcome != null && claim.outcome != ClaimHistory.ClaimOutcome.UNKNOWN) {
+            HighlightLabel(
+              labelText = stringResource(
+                when (claim.outcome) {
+                  ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
+                  ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
+                  ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
+                  ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
+                  ClaimHistory.ClaimOutcome.UNKNOWN -> error("impossible")
+                },
+              ),
+              size = HighlightLabelDefaults.HighLightSize.Small,
+              color = HighlightLabelDefaults.HighlightColor.Outline,
+            )
+          }
+
+
       }
     },
     {
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-      ) {
-        if (claim.outcome != null && claim.outcome != ClaimHistory.ClaimOutcome.UNKNOWN) {
-          HighlightLabel(
-            labelText = stringResource(
-              when (claim.outcome) {
-                ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
-                ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
-                ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
-                ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
-                ClaimHistory.ClaimOutcome.UNKNOWN -> error("impossible")
-              },
-            ),
-            size = HighlightLabelDefaults.HighLightSize.Small,
-            color = HighlightLabelDefaults.HighlightColor.Outline,
-          )
-        }
-        Icon(
-          HedvigIcons.ChevronRight,
-          null,
-          Modifier.size(24.dp),
-        )
-      }
+      ClaimHistoryItemEndSlot()
     },
     spaceBetween = 8.dp,
     modifier = Modifier
@@ -174,6 +175,15 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 18.dp)
       .padding(horizontal = 18.dp, vertical = 16.dp),
   )
+}
+
+@Composable
+private fun ClaimHistoryItemEndSlot(modifier: Modifier = Modifier) {
+    Icon(
+      HedvigIcons.ChevronRight,
+      null,
+      modifier.size(24.dp),
+    )
 }
 
 @HedvigPreview
