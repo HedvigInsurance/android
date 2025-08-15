@@ -920,6 +920,8 @@
   <string name="PHONE_NUMBER_ROW_TITLE">Telefonnummer</string>
   <string name="PREVIOUSLY_TERMINATED_DUE_TO_FAILED_PAYMENTS"></string>
   <string name="PRICE_INTENT_NOTIFICATION_CURRENT_INSURER_KNOWN_STARTDATE_UNKNOWN">Glöm inte att säga upp din försäkring hos %s. Under startdatum anger du när försäkringen upphör.</string>
+  <string name="PRICE_NEW_PRICE">Nytt pris</string>
+  <string name="PRICE_PREVIOUS_PRICE">Tidigare pris</string>
   <string name="PRIVACY_POLICY_URL">https://www.hedvig.com/se/personuppgifter</string>
   <string name="PRODUCT_OFFER_USPS_SE_ACCIDENT">* Skydd vid skada efter olycksfall\n* Täcker många extremsporter\n* Gäller i hela världen, dygnet runt</string>
   <string name="PRODUCT_OFFER_USPS_SE_APARTMENT_BRF">* Bostaden försäkras till fullvärde\n* Totalt 1 000 000 kr för dina saker\n* Drulle upp till 50 000 kr ingår</string>
