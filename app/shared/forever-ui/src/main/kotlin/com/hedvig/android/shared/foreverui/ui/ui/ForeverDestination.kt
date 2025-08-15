@@ -337,7 +337,6 @@ private fun ForeverScrollableContent(
         }
       }
     }
-    Spacer(Modifier.weight(1f))
     val discount = uiState.foreverData?.currentDiscount
     if (discount != null) {
       val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
@@ -369,7 +368,7 @@ private fun ForeverScrollableContent(
       HedvigText(
         text = stringResource(
           id = R.string.referrals_empty_body,
-//            uiState.foreverData.incentive.toString(),
+          uiState.foreverData.incentive.toString(),
         ),
         style = HedvigTheme.typography.bodySmall.copy(
           textAlign = TextAlign.Center,
