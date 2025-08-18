@@ -103,6 +103,7 @@ private fun ClaimHistoryScreen(
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ClaimHistoryContent(
   uiState: ClaimHistoryUiState.Content,
