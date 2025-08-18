@@ -2379,14 +2379,6 @@ type Mutation {
   submitAdyenRedirection2(req: SubmitAdyenRedirectionRequest): SubmitAdyenRedirectionResponse!
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
-  Redeem a campaign for the current member with the input `code`.
-  """
-  memberCampaignsRedeem(code: String!): MemberMutationOutput! @deprecated(reason: "No longer supported")
-  """
-  Remove a campaign for the current member with the given `RedeemedCampaign.id`.
-  """
-  memberCampaignsUnredeem(id: ID!): MemberMutationOutput! @deprecated(reason: "No longer supported")
-  """
   The document includes details of the member’s home insurance,
   such as address, coverage duration, payment information, co-insured parties,
   and other relevant information for various purposes.
