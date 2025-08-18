@@ -215,9 +215,9 @@ private val buildConstantsModule = module {
       override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
       override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
       override val deepLinkHosts: List<String> = listOf(
+        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_NEW),
         context.getString(R.string.DEEP_LINK_DOMAIN_HOST) + context.getString(R.string.DEEP_LINK_DOMAIN_PATH_PREFIX),
         context.getString(R.string.DEEP_LINK_DOMAIN_HOST_OLD),
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_NEW),
       )
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
