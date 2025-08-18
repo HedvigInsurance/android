@@ -9,7 +9,7 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
   when (this) {
     is KotlinJvmCompilerOptions -> {
       configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
-      jvmTarget.set(JvmTarget.JVM_23)
+      jvmTarget.set(JvmTarget.JVM_21)
     }
 
     else -> {
