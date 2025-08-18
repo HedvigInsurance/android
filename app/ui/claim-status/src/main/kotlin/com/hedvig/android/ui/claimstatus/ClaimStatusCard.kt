@@ -83,7 +83,7 @@ fun ClaimStatusCard(uiState: ClaimStatusCardUiState, modifier: Modifier = Modifi
 @Composable
 fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier = Modifier) {
   Column(modifier) {
-    ClaimPillsRow(pillTypes = uiState.pillTypes, modifier = Modifier.weight(1f))
+    ClaimPillsRow(pillTypes = uiState.pillTypes)
     Spacer(modifier = Modifier.height(16.dp))
     HedvigText(
       text = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() }
