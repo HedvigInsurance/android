@@ -155,6 +155,7 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
             ),
             size = HighlightLabelDefaults.HighLightSize.Small,
             color = HighlightLabelDefaults.HighlightColor.Outline,
+            modifier = Modifier.weight(1f, false),
           )
         }
         Icon(
