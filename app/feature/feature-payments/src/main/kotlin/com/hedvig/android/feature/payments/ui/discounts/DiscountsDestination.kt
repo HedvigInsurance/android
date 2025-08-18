@@ -55,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
 import hedvig.resources.R
@@ -102,10 +103,10 @@ private fun DiscountsScreen(
           .weight(1f),
       ) {
         val discounts = uiState.discounts
+        val affectedContracts = discounts.map { it.affectedContract }.toSet()
         if (!discounts.isEmpty()) {
           Spacer(modifier = Modifier.height(24.dp))
-          DiscountRows(discounts)
-          Spacer(modifier = Modifier.height(16.dp))
+          DiscountRows(discounts, affectedContracts)
         }
         if (uiState.foreverInformation != null) {
           Spacer(modifier = Modifier.height(24.dp))
@@ -369,3 +370,47 @@ private fun PreviewForeverExplanationBottomSheetContent() {
     }
   }
 }
+
+// todo: remove
+private val previewMock = listOf<Discount>(
+  Discount(
+    "ONEONEONE",
+    "description",
+    Discount.ExpiredState.NotExpired,
+    UiMoney(24.5, UiCurrencyCode.SEK),
+    isReferral = false,
+    affectedContract = DiscountedContract("dqde", "House Standard ∙ Villagatan 25"),
+  ),
+  Discount(
+    "TWOTWO",
+    "description",
+    Discount.ExpiredState.NotExpired,
+    UiMoney(78.5, UiCurrencyCode.SEK),
+    isReferral = false,
+    affectedContract = null,
+  ),
+  Discount(
+    "THREEEE",
+    "description",
+    Discount.ExpiredState.NotExpired,
+    UiMoney(90.5, UiCurrencyCode.SEK),
+    isReferral = false,
+    affectedContract = DiscountedContract("dqde", "Dog Premium ∙ Fido"),
+  ),
+  Discount(
+    "FOURFOR",
+    "description",
+    Discount.ExpiredState.NotExpired,
+    UiMoney(11.5, UiCurrencyCode.SEK),
+    isReferral = true,
+    affectedContract = null,
+  ),
+  Discount(
+    "FIVVVV",
+    "description",
+    Discount.ExpiredState.NotExpired,
+    UiMoney(53.5, UiCurrencyCode.SEK),
+    isReferral = false,
+    affectedContract = DiscountedContract("dqde", "Dog Premium ∙ Fido"),
+  ),
+)

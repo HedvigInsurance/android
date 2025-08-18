@@ -11,6 +11,7 @@ internal data class Discount(
   val expiredState: ExpiredState,
   val amount: UiMoney?,
   val isReferral: Boolean,
+  val affectedContract: DiscountedContract? = null, // todo: just an assumption, don't have api yet
 ) {
   @Serializable
   sealed interface ExpiredState {
@@ -26,3 +27,9 @@ internal data class Discount(
     companion object
   }
 }
+
+@Serializable
+internal data class DiscountedContract(
+  val contractId: String,
+  val contractDisplayName: String,
+)

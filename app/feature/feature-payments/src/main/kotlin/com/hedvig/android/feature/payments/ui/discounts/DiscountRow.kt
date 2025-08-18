@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.discountsPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -32,22 +33,53 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun DiscountRows(
   discounts: List<Discount>,
+  affectedContracts: Set<DiscountedContract?>,
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
   Column(
     modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    discounts.forEachIndexed { index, discount ->
+    // null contract case - current
+    val discountsWithoutContract = discounts.filter {
+      it.affectedContract == null
+    }
+    discountsWithoutContract.forEachIndexed { index, discount ->
       if (index != 0) {
+        Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
       }
       DiscountRow(
         discount,
         modifier = Modifier.fillMaxWidth(),
         labelColor = labelColor,
       )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    // contract non-null case - for the future
+    affectedContracts.forEach { contract ->
+      if (contract != null) {
+        val relatedDiscounts = discounts.filter { it.affectedContract == contract }
+        Spacer(modifier = Modifier.height(16.dp))
+        HedvigText(contract.contractDisplayName)
+        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+        relatedDiscounts.forEachIndexed { index, discount ->
+          if (index != 0) {
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+          }
+          DiscountRow(
+            discount,
+            modifier = Modifier.fillMaxWidth(),
+            labelColor = labelColor,
+          )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+      }
     }
   }
 }
@@ -102,8 +134,12 @@ internal fun DiscountRow(
             horizontalArrangement = Arrangement.End,
           ) {
             discount.amount?.let { discountAmount ->
+              // the copy didn't have minus and ../mo
               HedvigText(
-                text = discountAmount.toString(),
+                text = stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  "-$discountAmount",
+                ),
                 color = if (discountIsExpired) {
                   HedvigTheme.colorScheme.textDisabled
                 } else {
@@ -168,6 +204,7 @@ private fun DiscountRowsPreview() {
       Column {
         DiscountRows(
           discounts = discountsPreviewData,
+          affectedContracts = setOf(),
         )
       }
     }
