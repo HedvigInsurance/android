@@ -50,7 +50,7 @@ private fun Project.configureKotlinAndroidMultiplatform() {
         this.compileTaskProvider.configure {
           compilerOptions {
             if (this is KotlinJvmCompilerOptions) {
-              this.jvmTarget.set(JvmTarget.JVM_23)
+              this.jvmTarget.set(JvmTarget.JVM_21)
             }
             this.languageVersion.set(KotlinVersion.KOTLIN_2_2)
           }
