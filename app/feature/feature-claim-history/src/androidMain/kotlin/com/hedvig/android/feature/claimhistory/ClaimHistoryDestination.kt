@@ -154,7 +154,7 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
               },
             ),
             size = HighlightLabelDefaults.HighLightSize.Small,
-            color = HighlightLabelDefaults.HighlightColor.Outline,
+            color = HighlightLabelDefaults.HighlightColor.Outline(HighlightLabelDefaults.HighlightShade.MEDIUM),
             modifier = Modifier.weight(1f, false),
           )
         }
