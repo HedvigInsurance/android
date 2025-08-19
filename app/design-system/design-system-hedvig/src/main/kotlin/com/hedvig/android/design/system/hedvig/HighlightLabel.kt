@@ -120,26 +120,35 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
       MEDIUM -> highLightColors.frostedMedium
       DARK -> highLightColors.frostedDark
     }
+
+    is HighlightColor.Outline -> highLightColors.outlineContainer
   }
   val textColor = when (color) {
     is Grey -> {
       when (color.shade) {
-        LIGHT -> highLightColors.textColorForGreyLight
-        MEDIUM -> highLightColors.textColorForGreyMedium
-        DARK -> highLightColors.textColorForGreyDark
+        LIGHT -> highLightColors.greyLightTextColor
+        MEDIUM -> highLightColors.greyMediumTextColor
+        DARK -> highLightColors.greyDarkTextColor
       }
     }
 
     is Frosted -> {
-      highLightColors.textColorForFrosted
+      highLightColors.frostedTextColor
     }
 
+    is HighlightColor.Outline -> highLightColors.outlineText
+
     else -> highLightColors.defaultTextColor
+  }
+  val borderColor = when (color) {
+    is HighlightColor.Outline -> highLightColors.outlineBorder
+    else -> Color.Transparent
   }
   Surface(
     modifier = modifier,
     shape = size.shape,
     color = surfaceColor,
+    border = borderColor,
   ) {
     HedvigText(
       text = labelText,
@@ -244,10 +253,7 @@ object HighlightLabelDefaults {
 
     data class Frosted(override val shade: HighlightShade) : HighlightColor()
 
-    companion object {
-      // todo DS add new outline "color"
-      val Outline = Grey(HighlightShade.LIGHT)
-    }
+    data class Outline(override val shade: HighlightShade) : HighlightColor()
   }
 }
 
@@ -283,13 +289,16 @@ private data class HighLightColors(
   val greyMediumTranslucent: Color,
   val greyDarkTranslucent: Color,
   val defaultTextColor: Color,
-  val textColorForGreyLight: Color,
-  val textColorForGreyMedium: Color,
-  val textColorForGreyDark: Color,
-  val textColorForFrosted: Color,
+  val greyLightTextColor: Color,
+  val greyMediumTextColor: Color,
+  val greyDarkTextColor: Color,
+  val frostedTextColor: Color,
   val frostedLight: Color,
   val frostedMedium: Color,
   val frostedDark: Color,
+  val outlineContainer: Color,
+  val outlineText: Color,
+  val outlineBorder: Color,
 )
 
 private val highLightColors: HighLightColors
@@ -328,13 +337,16 @@ private val highLightColors: HighLightColors
         greyMediumTranslucent = fromToken(ColorSchemeKeyTokens.SurfaceSecondaryTransparent),
         greyDarkTranslucent = fromToken(ColorSchemeKeyTokens.BackgroundNegative),
         defaultTextColor = fromToken(ColorSchemeKeyTokens.TextBlack),
-        textColorForGreyLight = fromToken(ColorSchemeKeyTokens.TextPrimary),
-        textColorForGreyMedium = fromToken(ColorSchemeKeyTokens.TextPrimary),
-        textColorForGreyDark = fromToken(ColorSchemeKeyTokens.TextNegative),
-        textColorForFrosted = fromToken(ColorSchemeKeyTokens.TextWhite),
+        greyLightTextColor = fromToken(ColorSchemeKeyTokens.TextPrimary),
+        greyMediumTextColor = fromToken(ColorSchemeKeyTokens.TextPrimary),
+        greyDarkTextColor = fromToken(ColorSchemeKeyTokens.TextNegative),
+        frostedTextColor = fromToken(ColorSchemeKeyTokens.TextWhite),
         frostedLight = fromToken(ColorSchemeKeyTokens.SurfaceSecondaryTransparent),
         frostedMedium = fromToken(ColorSchemeKeyTokens.FillTertiaryTransparent),
         frostedDark = fromToken(ColorSchemeKeyTokens.FillSecondaryTransparent),
+        outlineContainer = fromToken(ColorSchemeKeyTokens.FillNegative),
+        outlineBorder = fromToken(ColorSchemeKeyTokens.BorderPrimary),
+        outlineText = fromToken(ColorSchemeKeyTokens.TextPrimary),
       )
     }
   }
