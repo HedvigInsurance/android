@@ -6,7 +6,7 @@
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="ACTIVATE_NOTIFICATIONS_TITLE">Get notified</string>
-  <string name="ADDON_ADD_COVERAGE">Add Coverage</string>
+  <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
@@ -920,6 +920,8 @@
   <string name="PHONE_NUMBER_ROW_TITLE">Phone</string>
   <string name="PREVIOUSLY_TERMINATED_DUE_TO_FAILED_PAYMENTS"></string>
   <string name="PRICE_INTENT_NOTIFICATION_CURRENT_INSURER_KNOWN_STARTDATE_UNKNOWN">Don\'t forget to cancel your insurance at %s. Under start date, enter when the insurance expires.</string>
+  <string name="PRICE_NEW_PRICE">New price</string>
+  <string name="PRICE_PREVIOUS_PRICE">Previous price</string>
   <string name="PRIVACY_POLICY_URL">TODO</string>
   <string name="PRODUCT_OFFER_USPS_SE_ACCIDENT"></string>
   <string name="PRODUCT_OFFER_USPS_SE_APARTMENT_BRF"></string>

@@ -1,6 +1,7 @@
 import com.hedvig.android.configureKotlinCompilerOptions
 import kotlin.apply
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -36,10 +37,10 @@ private fun Project.configureKotlin() {
     configureKotlinCompilerOptions()
   }
   project.extensions.getByType(JavaPluginExtension::class.java).apply {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(23))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_21.majorVersion))
   }
   project.tasks.withType(JavaCompile::class.java).configureEach {
-    options.release.set(23)
+    options.release.set(JavaVersion.VERSION_21.majorVersion.toInt())
   }
 }
 

@@ -62,7 +62,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
-  <string name="BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE">Your bundle discount will be removed when you have less than two active insurances.</string>
+  <string name="BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE">Din samlingsrabatt tas bort om du har färre än två aktiva försäkringar.</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig tar bara 25\u0025 av din månatliga premie för att utveckla och förbättra vår tjänst. Resterande 75\u0025 går till en gemensam skadepool. Är det pengar över i den när året är slut doneras de till Milkywire.</string>
   <string name="BUSINESS_MODEL_CARD_TITLE">Vi kan aldrig tjäna mer på att betala ut mindre</string>
   <string name="BUSINESS_MODEL_INFO_BUTTON_LABEL">Om Milkywire</string>
@@ -920,6 +920,8 @@
   <string name="PHONE_NUMBER_ROW_TITLE">Telefonnummer</string>
   <string name="PREVIOUSLY_TERMINATED_DUE_TO_FAILED_PAYMENTS"></string>
   <string name="PRICE_INTENT_NOTIFICATION_CURRENT_INSURER_KNOWN_STARTDATE_UNKNOWN">Glöm inte att säga upp din försäkring hos %s. Under startdatum anger du när försäkringen upphör.</string>
+  <string name="PRICE_NEW_PRICE">Nytt pris</string>
+  <string name="PRICE_PREVIOUS_PRICE">Tidigare pris</string>
   <string name="PRIVACY_POLICY_URL">https://www.hedvig.com/se/personuppgifter</string>
   <string name="PRODUCT_OFFER_USPS_SE_ACCIDENT">* Skydd vid skada efter olycksfall\n* Täcker många extremsporter\n* Gäller i hela världen, dygnet runt</string>
   <string name="PRODUCT_OFFER_USPS_SE_APARTMENT_BRF">* Bostaden försäkras till fullvärde\n* Totalt 1 000 000 kr för dina saker\n* Drulle upp till 50 000 kr ingår</string>
