@@ -165,6 +165,55 @@ fun QuoteCard(
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
+  excludedCollapsedStateButtonContent: @Composable () -> Unit = {},
+) {
+  QuoteCard(
+    quoteCardState = quoteCardState,
+    subtitle = subtitle,
+    premium = premium,
+    previousPremium = previousPremium,
+    isExcluded = isExcluded,
+    discounts = discounts,
+    displayItems = displayItems,
+    modifier = modifier,
+    displayName = displayName,
+    contractGroup = contractGroup,
+    insurableLimits = insurableLimits,
+    documents = documents,
+    titleEndSlot = {
+      Crossfade(
+        targetState = isExcluded,
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+      ) { show ->
+        if (show) {
+          HighlightLabel(
+            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
+            size = Small,
+            color = Grey(MEDIUM),
+          )
+        }
+      }
+    },
+    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
+    excludedCollapsedStateButtonContent = excludedCollapsedStateButtonContent,
+  )
+}
+
+@Composable
+fun QuoteCard(
+  quoteCardState: QuoteCardState,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: List<InsurableLimit>,
+  documents: List<InsuranceVariantDocument>,
+  subtitle: String?,
+  premium: UiMoney,
+  previousPremium: UiMoney?,
+  isExcluded: Boolean,
+  discounts: List<ContractDiscount>,
+  displayItems: List<QuoteDisplayItem>,
+  modifier: Modifier = Modifier,
+  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
 ) {
   QuoteCard(
     quoteCardState = quoteCardState,
@@ -261,6 +310,7 @@ private fun QuoteCard(
   modifier: Modifier = Modifier,
   titleEndSlot: @Composable () -> Unit = {},
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
+  excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
 ) {
   HedvigCard(
     modifier = modifier,
@@ -285,18 +335,25 @@ private fun QuoteCard(
         modifier = Modifier.semantics(mergeDescendants = true) {},
       )
       Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = if (quoteCardState.showDetails) {
-          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        } else {
-          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-        },
-        onClick = quoteCardState::toggleState,
-        enabled = true,
-        buttonStyle = Secondary,
-        buttonSize = Medium,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      if (excludedCollapsedStateButtonContent != null &&
+        !quoteCardState.showDetails &&
+        isExcluded
+      ) {
+        excludedCollapsedStateButtonContent()
+      } else {
+        HedvigButton(
+          text = if (quoteCardState.showDetails) {
+            stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+          } else {
+            stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+          },
+          onClick = quoteCardState::toggleState,
+          enabled = true,
+          buttonStyle = Secondary,
+          buttonSize = Medium,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       AnimatedVisibility(
         visible = quoteCardState.showDetails,
         enter = expandVertically(expandFrom = Alignment.Top),

@@ -272,7 +272,9 @@ private fun SummaryScreen(
                 )
               } else {
                 toggleHomeAddonExclusion(addonQuote.addonId)
-                quoteCardState.toggleState()
+                if (quoteCardState.showDetails) {
+                  quoteCardState.toggleState()
+                }
               }
             },
           )
@@ -410,7 +412,7 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
 
 @Composable
 private fun AddonQuoteCard(
-  quote: MovingFlowQuotes.AddonQuote.HomeAddonQuote,
+  quote: HomeAddonQuote,
   canExcludeAddons: Boolean,
   toggleHomeAddonExclusion: () -> Unit,
   quoteCardState: QuoteCardState,
@@ -438,11 +440,12 @@ private fun AddonQuoteCard(
       }
     },
     quoteCardState = quoteCardState,
+    toggleHomeAddonExclusion = toggleHomeAddonExclusion,
   )
 }
 
 @Composable
-private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, modifier: Modifier = Modifier) {
+private fun AddonQuoteCard(quote: MtaAddonQuote, modifier: Modifier = Modifier) {
   NonExcludableAddonCard(
     quote = quote,
     modifier = modifier,
@@ -453,6 +456,7 @@ private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, mod
 private fun ExcludableAddonCard(
   quoteCardState: QuoteCardState,
   quote: HomeAddonQuote,
+  toggleHomeAddonExclusion: () -> Unit,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit,
 ) {
@@ -486,6 +490,16 @@ private fun ExcludableAddonCard(
     },
     modifier = modifier,
     betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
+    excludedCollapsedStateButtonContent = {
+      HedvigButton(
+        text = stringResource(R.string.ADDON_ADD_COVERAGE),
+        onClick = toggleHomeAddonExclusion,
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    },
   )
 }
 
