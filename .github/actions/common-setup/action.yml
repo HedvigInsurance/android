@@ -24,7 +24,7 @@ runs:
       run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       shell: bash
     - name: Setup JDK 21
-      uses: actions/setup-java@v4.7.1
+      uses: actions/setup-java@v5.0.0
       with:
         java-version: '21'
         distribution: 'zulu'
