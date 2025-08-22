@@ -117,6 +117,7 @@ fun HedvigTabRow(
   tabTitles: List<String>,
   modifier: Modifier = Modifier,
   tabRowState: HedvigTabRowState = rememberHedvigTabRowState(),
+  // TabSize ignored as the other options from DS are never meant to be used atm
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
   selectIndicatorAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
@@ -124,6 +125,7 @@ fun HedvigTabRow(
     easing = FastOutSlowInEasing,
   ),
 ) {
+  val tabSize: TabSize = TabDefaults.defaultSize
   val textStyle = tabSize.textStyle
   val tabInternalPadding = tabSize.tabPadding
   val textMeasurer = rememberTextMeasurer(tabTitles.size)

@@ -55,7 +55,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
+import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
@@ -335,7 +335,7 @@ private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier)
     tabRowState = rememberHedvigTabRowState(pagerState),
     selectIndicatorAnimationSpec = horizontalPagerSpringSpec(IntOffset.VisibilityThreshold),
     modifier = modifier.fillMaxWidth(),
-    tabSize = TabSize.Small,
+    tabSize = Small,
     tabStyle = Filled,
   )
 }
