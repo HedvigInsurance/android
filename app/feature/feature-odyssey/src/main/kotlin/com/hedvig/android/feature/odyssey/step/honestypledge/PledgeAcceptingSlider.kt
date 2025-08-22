@@ -222,14 +222,14 @@ internal fun PledgeAcceptingSlider(
     modifier
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
-      .background(HedvigTheme.colorScheme.borderSecondary, CircleShape)
+      .background(HedvigTheme.colorScheme.surfacePrimary, CircleShape)
       .onSizeChanged(state::updateAnchors)
       .then(with(state) { Modifier.containerDraggableModifier() })
       .then(with(state) { Modifier.sliderSemantics(stringResource(R.string.TALKBACK_ACCEPT)) }),
   ) {
     HedvigText(
       text = text,
-      color = HedvigTheme.colorScheme.textTertiary,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
       modifier = Modifier
         .align(Alignment.Center)
         .graphicsLayer {
