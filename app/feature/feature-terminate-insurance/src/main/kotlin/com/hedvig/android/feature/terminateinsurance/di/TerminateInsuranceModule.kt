@@ -20,7 +20,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationdate.Termin
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

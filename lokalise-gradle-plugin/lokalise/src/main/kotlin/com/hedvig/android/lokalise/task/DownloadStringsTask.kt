@@ -5,6 +5,7 @@ import java.io.File
 import java.net.URI
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -14,6 +15,7 @@ import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -62,48 +64,108 @@ abstract class DownloadStringsTask @Inject constructor(
   @TaskAction
   fun handle() {
     val dirRes = outputDirectory
-    logger.debug("$tag strings will be put at path:${outputDirectory.asPath}")
+    logger.debug("{} strings will be put at path:{}", tag, outputDirectory.asPath)
 
     val bucketUrl = fetchBucketUrl()
     val tempFileForZipFile = File.createTempFile("lang-file", ".zip")
     tempFileForZipFile.fillContentsByDownloadingFromUrl(bucketUrl)
-    logger.debug("$tag zip file path:${tempFileForZipFile.absolutePath}")
+    logger.debug("{} zip file path:{}", tag, tempFileForZipFile.absolutePath)
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
-    logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
+    logger.debug("{} dirRes:{}", tag, dirRes.asFileTree.map { it.absolutePath })
     dirRes.fixPercentageSigns()
     tempFileForZipFile.delete()
   }
 
   private fun fetchBucketUrl(): String {
-    val postBodyJson = buildJsonObject {
-      put("format", "xml")
-      put("export_sort", downloadConfig.get().stringsOrder.value)
-      put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
-      put("replace_breaks", true)
-      put("escape_percent", true)
-      put(
-        "filter_langs",
-        buildJsonArray {
-          add("en")
-          add("sv_SE")
-        },
+    val okHttpClient = OkHttpClient()
+    val processId = initiateAsyncDownloadAndReturnProcessId(okHttpClient)
+    val amazonDownloadUrl = pollForDownloadUrl(okHttpClient, processId)
+    logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
+    return amazonDownloadUrl
+  }
+
+  private fun initiateAsyncDownloadAndReturnProcessId(okHttpClient: OkHttpClient): String {
+    val asyncDownloadRequest = Request.Builder()
+      .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download")
+      .commonLokaliseHeaders()
+      .post(
+        buildJsonObject {
+          put("format", "xml")
+          put("export_sort", downloadConfig.get().stringsOrder.value)
+          put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
+          put("replace_breaks", true)
+          put("escape_percent", true)
+          put(
+            "filter_langs",
+            buildJsonArray {
+              add("en")
+              add("sv_SE")
+            },
+          )
+        }.toRequestBody(),
       )
-    }
-    val requestBody = postBodyJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
-    val postRequest = Request.Builder()
-      .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/download")
-      .header("x-api-token", lokaliseToken.get())
-      .header("content-type", "application/json")
-      .post(requestBody)
       .build()
-    logger.debug("$tag postRequest:$postRequest")
-    val response = OkHttpClient().newCall(postRequest).execute().body?.string()
+    logger.debug("{} asyncDownloadRequest:{}", tag, asyncDownloadRequest)
+    val response = okHttpClient.newCall(asyncDownloadRequest).execute().body?.string()
       ?: error("Lokalise responded with a null body")
-    logger.debug("$tag post response:$response")
-    val amazonBucketUrl = Json.parseToJsonElement(response).jsonObject["bundle_url"]
-      ?: error("Lokalise response contained no bucket with the strings. Response was instead: $response")
-    logger.debug("$tag amazonBucketUrl:$amazonBucketUrl")
-    return amazonBucketUrl.jsonPrimitive.content
+    logger.debug("{} post response:{}", tag, response)
+    val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
+      ?: error("Lokalise responded with a null processId")
+    return processId
+  }
+
+  private fun pollForDownloadUrl(okHttpClient: OkHttpClient, processId: String): String {
+    var iteration = 0
+    while (true) {
+      iteration++
+      logger.debug("{} iteration:{}", tag, iteration)
+      if (iteration >= 5) {
+        error("Lokalise failed after 10 retries")
+      }
+      Thread.sleep(3000L)
+      val getProcessStatusRequest = Request.Builder()
+        .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId")
+        .commonLokaliseHeaders()
+        .get()
+        .build()
+      logger.debug("{} getProcessStatusRequest:{}", tag, getProcessStatusRequest)
+      val response = okHttpClient.newCall(getProcessStatusRequest).execute().body?.string()
+        ?: error("Lokalise responded with a null body")
+      logger.debug("{} get response:{}", tag, response)
+      val process = Json
+        .parseToJsonElement(response)
+        .jsonObject["process"]
+        ?: error("Lokalise responded with a null process")
+      val status = process
+        .jsonObject["status"]
+        ?.jsonPrimitive
+        ?.content
+        ?.toProcessStatus()
+        ?: error("Lokalise responded with a null process status")
+      logger.debug("{} process status: {}", tag, status)
+      when (status) {
+        is ProcessStatus.Other -> error("Lokalise responded with an unknown process status: ${status.status}")
+        ProcessStatus.Queued, ProcessStatus.Running -> continue
+        ProcessStatus.Finished -> {
+          val downloadUrl = process
+            .jsonObject["details"]
+            ?.jsonObject["download_url"]
+            ?.jsonPrimitive
+            ?.content
+            ?: error("Lokalise responded with a null download_url")
+          return downloadUrl
+        }
+      }
+    }
+  }
+
+  private fun Request.Builder.commonLokaliseHeaders(): Request.Builder {
+    return header("x-api-token", lokaliseToken.get())
+      .header("content-type", "application/json")
+  }
+
+  private fun JsonObject.toRequestBody(): RequestBody {
+    return this.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
   }
 
   /**
@@ -143,5 +205,24 @@ abstract class DownloadStringsTask @Inject constructor(
       it.from(archiveOperations.zipTree(zipFile))
       it.into(this.asPath)
     }
+  }
+}
+
+private sealed interface ProcessStatus {
+  data object Queued : ProcessStatus
+
+  data object Finished : ProcessStatus
+
+  data object Running : ProcessStatus
+
+  data class Other(val status: String) : ProcessStatus
+}
+
+private fun String.toProcessStatus(): ProcessStatus {
+  when (this) {
+    "queued" -> return ProcessStatus.Queued
+    "running" -> return ProcessStatus.Running
+    "finished" -> return ProcessStatus.Finished
+    else -> return ProcessStatus.Other(this)
   }
 }

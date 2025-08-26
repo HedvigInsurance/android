@@ -22,6 +22,7 @@ kotlin {
       implementation(projects.coreCommonPublic)
     }
     androidMain.dependencies {
+      implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.koin.compose)
       implementation(libs.koin.core)

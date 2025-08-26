@@ -101,6 +101,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.tiersandaddons.ContractDiscount
 import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
@@ -225,6 +226,7 @@ private fun SummaryScreen(
       onClick = {
         exclusionBottomSheetState.dismiss()
         toggleHomeAddonExclusion(data.addonId)
+        data.addonCardState.toggleState()
       },
       enabled = true,
       buttonSize = Large,
@@ -254,14 +256,25 @@ private fun SummaryScreen(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QuoteCard(content.summaryInfo.moveHomeQuote)
         for (addonQuote in content.summaryInfo.moveHomeQuote.relatedAddonQuotes) {
+          val quoteCardState = rememberQuoteCardState()
           AddonQuoteCard(
             quote = addonQuote,
+            quoteCardState = quoteCardState,
             canExcludeAddons = content.canExcludeAddons,
             toggleHomeAddonExclusion = {
               if (!addonQuote.isExcludedByUser) {
-                exclusionBottomSheetState.show(ExclusionDialogInfo(addonQuote.addonId, addonQuote.exposureName))
+                exclusionBottomSheetState.show(
+                  ExclusionDialogInfo(
+                    addonQuote.addonId,
+                    addonQuote.exposureName,
+                    addonCardState = quoteCardState,
+                  ),
+                )
               } else {
                 toggleHomeAddonExclusion(addonQuote.addonId)
+                if (quoteCardState.showDetails) {
+                  quoteCardState.toggleState()
+                }
               }
             },
           )
@@ -399,12 +412,13 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
 
 @Composable
 private fun AddonQuoteCard(
-  quote: MovingFlowQuotes.AddonQuote.HomeAddonQuote,
+  quote: HomeAddonQuote,
   canExcludeAddons: Boolean,
   toggleHomeAddonExclusion: () -> Unit,
+  quoteCardState: QuoteCardState,
   modifier: Modifier = Modifier,
 ) {
-  AddonQuoteCard(
+  ExcludableAddonCard(
     quote = quote,
     modifier = modifier,
     betweenDetailsAndDocumentsContent = {
@@ -425,30 +439,32 @@ private fun AddonQuoteCard(
         )
       }
     },
+    quoteCardState = quoteCardState,
+    toggleHomeAddonExclusion = toggleHomeAddonExclusion,
   )
 }
 
 @Composable
-private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote.MtaAddonQuote, modifier: Modifier = Modifier) {
-  AddonQuoteCard(
+private fun AddonQuoteCard(quote: MtaAddonQuote, modifier: Modifier = Modifier) {
+  NonExcludableAddonCard(
     quote = quote,
     modifier = modifier,
-    betweenDetailsAndDocumentsContent = {},
   )
 }
 
 @Composable
-private fun AddonQuoteCard(
-  quote: MovingFlowQuotes.AddonQuote,
+private fun ExcludableAddonCard(
+  quoteCardState: QuoteCardState,
+  quote: HomeAddonQuote,
+  toggleHomeAddonExclusion: () -> Unit,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit,
 ) {
-  val subtitle = if (quote is HomeAddonQuote && quote.isExcludedByUser) {
+  val subtitle = if (quote.isExcludedByUser) {
     null
   } else {
     quote.coverageDisplayName
   }
-  val quoteCardState = rememberQuoteCardState()
   QuoteCard(
     quoteCardState = quoteCardState,
     displayName = quote.addonVariant.displayName,
@@ -458,10 +474,7 @@ private fun AddonQuoteCard(
     subtitle = subtitle,
     premium = quote.premium,
     previousPremium = quote.previousPremium,
-    isExcluded = when (quote) {
-      is HomeAddonQuote -> quote.isExcludedByUser
-      is MtaAddonQuote -> false
-    },
+    isExcluded = quote.isExcludedByUser,
     discounts = quote.discounts.map {
       ContractDiscount(
         displayName = it.displayName,
@@ -477,6 +490,48 @@ private fun AddonQuoteCard(
     },
     modifier = modifier,
     betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
+    excludedCollapsedStateButtonContent = {
+      HedvigButton(
+        text = stringResource(R.string.ADDON_ADD_COVERAGE),
+        onClick = toggleHomeAddonExclusion,
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    },
+  )
+}
+
+@Composable
+private fun NonExcludableAddonCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifier = Modifier) {
+  val subtitle = quote.coverageDisplayName
+  val quoteCardState = rememberQuoteCardState()
+  QuoteCard(
+    quoteCardState = quoteCardState,
+    displayName = quote.addonVariant.displayName,
+    contractGroup = null,
+    insurableLimits = emptyList(),
+    documents = quote.addonVariant.documents,
+    subtitle = subtitle,
+    premium = quote.premium,
+    previousPremium = quote.previousPremium,
+    isExcluded = false,
+    discounts = quote.discounts.map {
+      ContractDiscount(
+        displayName = it.displayName,
+        discountValue = it.discountValue,
+      )
+    },
+    displayItems = quote.displayItems.map {
+      QuoteDisplayItem(
+        title = it.title,
+        subtitle = it.subtitle,
+        value = it.value,
+      )
+    },
+    modifier = modifier,
+    betweenDetailsAndDocumentsContent = {},
   )
 }
 
@@ -516,6 +571,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 private data class ExclusionDialogInfo(
   val addonId: AddonId,
   val addonName: String,
+  val addonCardState: QuoteCardState,
 )
 
 @HedvigMultiScreenPreview

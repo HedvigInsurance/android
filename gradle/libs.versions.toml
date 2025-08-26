@@ -1,7 +1,7 @@
 [versions]
 # androidSdkVersions
 compileSdkVersion = "36"
-targetSdkVersion = "34"
+targetSdkVersion = "35"
 minSdkVersion = "23"
 
 # lint versions
@@ -233,7 +233,12 @@ room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref =
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
 
+# temporary bug workaround
+androidx-kmp-preview-bug1-workaround = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
+androidx-kmp-preview-bug2-workaround = { module = "androidx.emoji2:emoji2", version = "1.5.0" }
+
 [bundles]
+kmpPreviewBugWorkaround = ["androidx-kmp-preview-bug1-workaround", "androidx-kmp-preview-bug2-workaround"]
 
 [plugins]
 

@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
@@ -33,7 +34,11 @@ private fun Project.configureKotlinMultiplatform() {
       iosArm64(),
       iosSimulatorArm64(),
     )
-    jvm()
+    jvm {
+      compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+      }
+    }
     compilerOptions {
       configureKotlinCompilerOptions()
     }
