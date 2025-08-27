@@ -43,104 +43,108 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 import hedvig.resources.R
 
 @Composable
-fun HedvigBottomSheetPriceBreakdown(
-  hedvigBottomSheetState: HedvigBottomSheetState<Unit>,
-  displayItems: List<Pair<String, String>>,
-  totalGross: UiMoney,
-  totalNet: UiMoney,
-) {
+fun HedvigBottomSheetPriceBreakdown(state: HedvigBottomSheetState<PriceInfoForBottomSheet>) {
   HedvigBottomSheet(
-    hedvigBottomSheetState,
+    state,
   ) {
-    Column {
-      HedvigText(text = stringResource(R.string.PRICE_DETAILS_TITLE))
-      Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-          .horizontalDivider(DividerPosition.Bottom),
-      ) {
-        Spacer(Modifier.height(16.dp))
-        for (item in displayItems) {
-          HorizontalItemsWithMaximumSpaceTaken(
-            {
-              HedvigText(
-                item.first,
-                fontSize = HedvigTheme.typography.label.fontSize,
-                color = HedvigTheme.colorScheme.textSecondary,
-              )
-            },
-            {
-              HedvigText(
-                text = item.second,
-                textAlign = TextAlign.End,
-                fontSize = HedvigTheme.typography.label.fontSize,
-                color = HedvigTheme.colorScheme.textSecondary,
-              )
-            },
-            spaceBetween = 8.dp,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-      }
-      val netPriceDescription = stringResource(
-        R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS,
-        totalNet.getPerMonthDescription(),
-      )
-      val grossPriceDescription = stringResource(
-        R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
-        totalGross.getPerMonthDescription(),
-      )
-      Spacer(Modifier.height(16.dp))
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
-        },
-        endSlot = {
-          Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.semantics(true) {},
-          ) {
-            HedvigText(
-              stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                totalGross,
-              ),
-              style = HedvigTheme.typography.bodySmall.copy(
-                textDecoration = TextDecoration.LineThrough,
-                color = HedvigTheme.colorScheme.textSecondary,
-              ),
-              modifier = Modifier.semantics {
-                contentDescription = grossPriceDescription
+    val data = state.data
+    if (data != null) {
+      Column {
+        HedvigText(text = stringResource(R.string.PRICE_DETAILS_TITLE))
+        Column(
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+          modifier = Modifier
+            .horizontalDivider(DividerPosition.Bottom),
+        ) {
+          Spacer(Modifier.height(16.dp))
+          for (item in data.displayItems) {
+            HorizontalItemsWithMaximumSpaceTaken(
+              {
+                HedvigText(
+                  item.first,
+                  fontSize = HedvigTheme.typography.label.fontSize,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                )
               },
-            )
-            Spacer(Modifier.width(8.dp))
-            HedvigText(
-              stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                totalNet,
-              ),
-              modifier = Modifier.semantics {
-                contentDescription = netPriceDescription
+              {
+                HedvigText(
+                  text = item.second,
+                  textAlign = TextAlign.End,
+                  fontSize = HedvigTheme.typography.label.fontSize,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                )
               },
+              spaceBetween = 8.dp,
             )
           }
-        },
-        spaceBetween = 8.dp,
-      )
-      Spacer(Modifier.height(32.dp))
-      HedvigTextButton(
-        text = stringResource(id = R.string.general_close_button),
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          hedvigBottomSheetState.dismiss()
-        },
-      )
-      Spacer(Modifier.height(8.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+          Spacer(Modifier.height(16.dp))
+        }
+        val netPriceDescription = stringResource(
+          R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS,
+          data.totalNet.getPerMonthDescription(),
+        )
+        val grossPriceDescription = stringResource(
+          R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
+          data.totalGross.getPerMonthDescription(),
+        )
+        Spacer(Modifier.height(16.dp))
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+          },
+          endSlot = {
+            Row(
+              horizontalArrangement = Arrangement.End,
+              modifier = Modifier.semantics(true) {},
+            ) {
+              HedvigText(
+                stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  data.totalGross,
+                ),
+                style = HedvigTheme.typography.bodySmall.copy(
+                  textDecoration = TextDecoration.LineThrough,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                ),
+                modifier = Modifier.semantics {
+                  contentDescription = grossPriceDescription
+                },
+              )
+              Spacer(Modifier.width(8.dp))
+              HedvigText(
+                stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  data.totalNet,
+                ),
+                modifier = Modifier.semantics {
+                  contentDescription = netPriceDescription
+                },
+              )
+            }
+          },
+          spaceBetween = 8.dp,
+        )
+        Spacer(Modifier.height(32.dp))
+        HedvigTextButton(
+          text = stringResource(id = R.string.general_close_button),
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            state.dismiss()
+          },
+        )
+        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
     }
   }
 }
+
+data class PriceInfoForBottomSheet(
+  val displayItems: List<Pair<String, String>>,
+  val totalGross: UiMoney,
+  val totalNet: UiMoney,
+)
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable

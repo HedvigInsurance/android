@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
@@ -58,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
@@ -233,19 +235,9 @@ private fun EditCoInsuredScreen(
               )
             }
           }
-          val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<Unit>()
-          val mockGross = UiMoney(200.0, UiCurrencyCode.SEK) // todo: REMOVE MOCK
-          val mockNet = UiMoney(130.0, UiCurrencyCode.SEK) // todo: REMOVE MOCK
-          val mockDisplayItems = listOf(
-            "Homeowner Insurance Max" to "179 kr/mo",
-            "Extended travel 60 days" to "21 kr/mo",
-            "15% bundle discount" to "70 kr/mo",
-          ) // todo: REMOVE MOCK
+          val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
           HedvigBottomSheetPriceBreakdown(
             costBreakdownBottomSheetState,
-            displayItems = mockDisplayItems,
-            totalNet = mockNet,
-            totalGross = mockGross,
           )
           CoInsuredList(
             uiState = uiState.listState,
@@ -316,7 +308,7 @@ private fun EditCoInsuredScreen(
 @Composable
 private fun PriceInfo(
   priceInfo: EditCoInsuredState.Loaded.PriceInfo,
-  costBreakdownBottomSheetState: HedvigBottomSheetState<Unit>,
+  costBreakdownBottomSheetState: HedvigBottomSheetState<PriceInfoForBottomSheet>,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
@@ -338,7 +330,7 @@ private fun PriceInfo(
               .padding(vertical = 16.dp),
             text = stringResource(
               id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              priceInfo.previousPrice.toString(),
+              priceInfo.currentCost.monthlyNet.toString(),
             ),
           )
         }
@@ -352,13 +344,15 @@ private fun PriceInfo(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
-          if (
-            true // todo: REMOVE MOCK
-            //  grossPrice!=netPrice
-          ) {
+          if (priceInfo.currentCost.monthlyNet != priceInfo.newCost.monthlyNet) {
             IconButton(
               onClick = {
-                costBreakdownBottomSheetState.show(Unit)
+                val priceInfoForBottomSheet = PriceInfoForBottomSheet(
+                  displayItems = priceInfo.newCostBreakDown,
+                  totalGross = priceInfo.newCost.monthlyGross,
+                  totalNet = priceInfo.newCost.monthlyNet,
+                )
+                costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
               },
             ) {
               Icon(
@@ -377,7 +371,7 @@ private fun PriceInfo(
               .padding(top = 16.dp),
             text = stringResource(
               id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              priceInfo.newPrice.toString(),
+              priceInfo.newCost.monthlyNet.toString(),
             ),
           )
           HedvigText(
@@ -466,9 +460,19 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, UiCurrencyCode.SEK),
-              newPrice = UiMoney(200.0, UiCurrencyCode.SEK),
+              currentCost =
+                MonthlyCost(
+                  monthlyGross = UiMoney(179.0, UiCurrencyCode.SEK),
+                  monthlyNet = UiMoney(110.0, UiCurrencyCode.SEK),
+                ),
+              newCost = MonthlyCost(
+                monthlyGross = UiMoney(200.0, UiCurrencyCode.SEK),
+                monthlyNet = UiMoney(121.0, UiCurrencyCode.SEK),
+              ),
               validFrom = LocalDate.fromEpochDays(400),
+              newCostBreakDown = listOf(
+                "Bundle discount 20%" to "-79 kr/mo",
+              ),
             ),
             allCoInsured = listOf(),
           ),

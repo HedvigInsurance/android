@@ -19,6 +19,7 @@ import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnAddCoInsuredClicked
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnDismissError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnRemoveCoInsuredClicked
@@ -262,7 +263,7 @@ internal class EditCoInsuredPresenter(
           removeBottomSheetContentState = removeBottomSheetContentState.copy(isLoading = true)
         }
 
-        createMidtermChangeUseCase //todo: here
+        createMidtermChangeUseCase // todo: here
           .invoke(contractId, list)
           .fold(
             ifLeft = {
@@ -283,9 +284,10 @@ internal class EditCoInsuredPresenter(
                 listState = listState.copy(
                   updatedCoInsured = it.coInsured,
                   priceInfo = Loaded.PriceInfo(
-                    previousPrice = it.currentCost,
-                    newPrice = it.newCost,
+                    currentCost = it.currentCost,
+                    newCost = it.newCost,
                     validFrom = it.activatedDate,
+                    newCostBreakDown = it.newCostBreakDown,
                   ),
                 )
                 selectedCoInsuredId = null
@@ -455,8 +457,9 @@ internal sealed interface EditCoInsuredState {
     }
 
     data class PriceInfo(
-      val previousPrice: UiMoney,
-      val newPrice: UiMoney,
+      val currentCost: MonthlyCost,
+      val newCost: MonthlyCost,
+      val newCostBreakDown: List<Pair<String, String>>,
       val validFrom: LocalDate,
     )
 
