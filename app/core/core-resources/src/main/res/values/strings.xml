@@ -469,6 +469,7 @@
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">We need permission to record audio</string>
   <string name="PERMISSION_DIALOG_TITLE">Needs permission</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Phone</string>
+  <string name="PRICE_DETAILS_TITLE">Price details</string>
   <string name="PRICE_NEW_PRICE">New price</string>
   <string name="PRICE_PREVIOUS_PRICE">Previous price</string>
   <string name="PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS">License attributions</string>
@@ -648,6 +649,8 @@
   <string name="TALKBACK_WRITE_HERE">Write your message here</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Your new price: %1$s</string>
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
+  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Your price after discounts and addons: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Your price before discounts and addons: %1$s</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %s. If you have any questions, please visit \"Help and support\" in the app.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Confirmation</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Yes, continue</string>

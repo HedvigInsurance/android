@@ -1,14 +1,20 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,14 +25,122 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
 import eu.wewox.modalsheet.ExperimentalSheetApi
+import hedvig.resources.R
+
+@Composable
+fun HedvigBottomSheetPriceBreakdown(
+  hedvigBottomSheetState: HedvigBottomSheetState<Unit>,
+  displayItems: List<Pair<String, String>>,
+  totalGross: UiMoney,
+  totalNet: UiMoney,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState,
+  ) {
+    Column {
+      HedvigText(text = stringResource(R.string.PRICE_DETAILS_TITLE))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+          .horizontalDivider(DividerPosition.Bottom),
+      ) {
+        Spacer(Modifier.height(16.dp))
+        for (item in displayItems) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            {
+              HedvigText(
+                item.first,
+                fontSize = HedvigTheme.typography.label.fontSize,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            },
+            {
+              HedvigText(
+                text = item.second,
+                textAlign = TextAlign.End,
+                fontSize = HedvigTheme.typography.label.fontSize,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            },
+            spaceBetween = 8.dp,
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+      val netPriceDescription = stringResource(
+        R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS,
+        totalNet.getPerMonthDescription(),
+      )
+      val grossPriceDescription = stringResource(
+        R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
+        totalGross.getPerMonthDescription(),
+      )
+      Spacer(Modifier.height(16.dp))
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+        },
+        endSlot = {
+          Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.semantics(true) {},
+          ) {
+            HedvigText(
+              stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                totalGross,
+              ),
+              style = HedvigTheme.typography.bodySmall.copy(
+                textDecoration = TextDecoration.LineThrough,
+                color = HedvigTheme.colorScheme.textSecondary,
+              ),
+              modifier = Modifier.semantics {
+                contentDescription = grossPriceDescription
+              },
+            )
+            Spacer(Modifier.width(8.dp))
+            HedvigText(
+              stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                totalNet,
+              ),
+              modifier = Modifier.semantics {
+                contentDescription = netPriceDescription
+              },
+            )
+          }
+        },
+        spaceBetween = 8.dp,
+      )
+      Spacer(Modifier.height(32.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+          hedvigBottomSheetState.dismiss()
+        },
+      )
+      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+  }
+}
 
 @OptIn(ExperimentalSheetApi::class)
 @Composable

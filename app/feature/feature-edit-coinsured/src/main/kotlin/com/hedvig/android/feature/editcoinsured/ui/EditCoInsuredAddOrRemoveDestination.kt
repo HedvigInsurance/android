@@ -36,6 +36,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetPriceBreakdown
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -49,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -231,6 +233,20 @@ private fun EditCoInsuredScreen(
               )
             }
           }
+          val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+          val mockGross = UiMoney(200.0, UiCurrencyCode.SEK) // todo: REMOVE MOCK
+          val mockNet = UiMoney(130.0, UiCurrencyCode.SEK) // todo: REMOVE MOCK
+          val mockDisplayItems = listOf(
+            "Homeowner Insurance Max" to "179 kr/mo",
+            "Extended travel 60 days" to "21 kr/mo",
+            "15% bundle discount" to "70 kr/mo",
+          ) // todo: REMOVE MOCK
+          HedvigBottomSheetPriceBreakdown(
+            costBreakdownBottomSheetState,
+            displayItems = mockDisplayItems,
+            totalNet = mockNet,
+            totalGross = mockGross,
+          )
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = { insured ->
@@ -261,7 +277,7 @@ private fun EditCoInsuredScreen(
           Column {
             if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
               Spacer(Modifier.height(16.dp))
-              PriceInfo(uiState.listState.priceInfo)
+              PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
               HedvigButton(
                 text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
                 onClick = onCommitChanges,
@@ -298,7 +314,10 @@ private fun EditCoInsuredScreen(
 }
 
 @Composable
-private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
+private fun PriceInfo(
+  priceInfo: EditCoInsuredState.Loaded.PriceInfo,
+  costBreakdownBottomSheetState: HedvigBottomSheetState<Unit>,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   Column(
@@ -328,20 +347,26 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       modifier = Modifier
         .horizontalDivider(DividerPosition.Bottom),
     )
+
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
-          IconButton(
-            onClick = {
-              // todo
-            },
+          if (
+            true // todo: REMOVE MOCK
+            //  grossPrice!=netPrice
           ) {
-            Icon(
-              HedvigIcons.InfoFilled,
-              contentDescription = EmptyContentDescription,
-              tint = HedvigTheme.colorScheme.fillSecondary,
-            )
+            IconButton(
+              onClick = {
+                costBreakdownBottomSheetState.show(Unit)
+              },
+            ) {
+              Icon(
+                HedvigIcons.InfoFilled,
+                contentDescription = EmptyContentDescription,
+                tint = HedvigTheme.colorScheme.fillSecondary,
+              )
+            }
           }
         }
       },
