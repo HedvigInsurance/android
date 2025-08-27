@@ -262,7 +262,7 @@ internal class EditCoInsuredPresenter(
           removeBottomSheetContentState = removeBottomSheetContentState.copy(isLoading = true)
         }
 
-        createMidtermChangeUseCase
+        createMidtermChangeUseCase //todo: here
           .invoke(contractId, list)
           .fold(
             ifLeft = {
@@ -283,8 +283,8 @@ internal class EditCoInsuredPresenter(
                 listState = listState.copy(
                   updatedCoInsured = it.coInsured,
                   priceInfo = Loaded.PriceInfo(
-                    previousPrice = it.currentPremium,
-                    newPrice = it.newPremium,
+                    previousPrice = it.currentCost,
+                    newPrice = it.newCost,
                     validFrom = it.activatedDate,
                   ),
                 )

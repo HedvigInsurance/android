@@ -24,8 +24,8 @@ internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
     createMidtermChangeResult.add(
       CreateMidtermChangeResult(
         id = id,
-        currentPremium = currentPremium,
-        newPremium = newPremium,
+        currentCost = currentPremium,
+        newCost = newPremium,
         activatedDate = activatedDate,
         coInsured = listOf(),
       ),
