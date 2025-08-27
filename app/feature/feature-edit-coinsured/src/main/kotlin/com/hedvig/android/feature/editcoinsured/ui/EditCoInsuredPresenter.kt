@@ -279,9 +279,21 @@ internal class EditCoInsuredPresenter(
             },
             ifRight = {
               Snapshot.withMutableSnapshot {
+                val originalCoInsuredIds = listState.originalCoInsured?.map { originalCoInsured ->
+                  originalCoInsured.id
+                } ?: emptyList()
+                val updatedCoinsuredList = it.coInsured
+                val updatedCoinsuredListWithDate = updatedCoinsuredList
+                  .map { updatedCoinsured ->
+                    if (originalCoInsuredIds.contains(updatedCoinsured.id)) {
+                      updatedCoinsured
+                    } else {
+                      updatedCoinsured.copy(activatesOn = it.activatedDate) // todo: wdyt?
+                    }
+                  }
                 intentId = it.id
                 listState = listState.copy(
-                  updatedCoInsured = it.coInsured,
+                  updatedCoInsured = updatedCoinsuredListWithDate,
                   priceInfo = Loaded.PriceInfo(
                     previousPrice = it.currentPremium,
                     newPrice = it.newPremium,
@@ -364,7 +376,7 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
-          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about the dates
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
           terminatesOn = null,
         )
         val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
@@ -376,10 +388,11 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
-          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about the dates
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
           terminatesOn = null,
         )
-        (listState.coInsured + updatedCoInsured)
+        val result = (listState.coInsured + updatedCoInsured)
+        result
       }
     }
   }
