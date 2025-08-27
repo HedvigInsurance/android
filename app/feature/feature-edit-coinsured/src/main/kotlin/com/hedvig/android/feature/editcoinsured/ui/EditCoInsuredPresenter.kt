@@ -364,6 +364,8 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about the dates
+          terminatesOn = null,
         )
         val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
         listState.coInsured.updated(old, updatedCoInsured)
@@ -374,6 +376,8 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about the dates
+          terminatesOn = null,
         )
         (listState.coInsured + updatedCoInsured)
       }
