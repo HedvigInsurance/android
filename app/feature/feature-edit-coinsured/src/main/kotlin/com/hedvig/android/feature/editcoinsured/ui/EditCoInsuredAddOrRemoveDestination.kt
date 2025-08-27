@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -28,9 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -41,10 +44,15 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
@@ -252,7 +260,7 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.weight(1f))
           Column {
             if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-              Spacer(Modifier.height(8.dp))
+              Spacer(Modifier.height(16.dp))
               PriceInfo(uiState.listState.priceInfo)
               HedvigButton(
                 text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
@@ -299,36 +307,67 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       .fillMaxWidth(),
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { HedvigText(text = stringResource(id = R.string.PRICE_PREVIOUS_PRICE)) },
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(id = R.string.PRICE_PREVIOUS_PRICE))
+        }
+      },
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HedvigText(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.previousPrice.toString()),
+            modifier = Modifier
+              .padding(vertical = 16.dp),
+            text = stringResource(
+              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.previousPrice.toString(),
+            ),
           )
         }
       },
       spaceBetween = 8.dp,
+      modifier = Modifier
+        .horizontalDivider(DividerPosition.Bottom),
     )
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE)) },
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
+          IconButton(
+            onClick = {
+              // todo
+            },
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              contentDescription = EmptyContentDescription,
+              tint = HedvigTheme.colorScheme.fillSecondary,
+            )
+          }
+        }
+      },
       endSlot = {
-        Row(horizontalArrangement = Arrangement.End) {
+        Column(horizontalAlignment = Alignment.End) {
           HedvigText(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()),
+            modifier = Modifier
+              .padding(top = 16.dp),
+            text = stringResource(
+              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.newPrice.toString(),
+            ),
+          )
+          HedvigText(
+            text = stringResource(
+              id = R.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+              dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
+            ),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
           )
         }
       },
       spaceBetween = 8.dp,
-    )
-    HedvigText(
-      text = stringResource(
-        id = R.string.CONTRACT_ADD_COINSURED_STARTS_FROM,
-        dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
-      ),
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondary,
-      textAlign = TextAlign.End,
-      modifier = Modifier.fillMaxWidth(),
     )
   }
 }

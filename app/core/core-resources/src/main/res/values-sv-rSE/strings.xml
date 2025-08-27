@@ -600,6 +600,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Köpt %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %s</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>

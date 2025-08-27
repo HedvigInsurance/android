@@ -600,6 +600,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Purchased %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activates %s</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>

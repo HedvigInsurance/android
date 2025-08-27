@@ -46,7 +46,7 @@ internal fun InsuredRow(
           HedvigText(
             text = displayName,
             color = if (isMember) {
-              HedvigTheme.colorScheme.textSecondary
+              HedvigTheme.colorScheme.textTertiary
             } else {
               Color.Unspecified
             },
@@ -54,7 +54,12 @@ internal fun InsuredRow(
 
           HedvigText(
             text = identifier,
-            color = HedvigTheme.colorScheme.textSecondary,
+            color =
+              if (isMember) {
+                HedvigTheme.colorScheme.textTertiary
+              } else {
+                HedvigTheme.colorScheme.textSecondary
+              },
           )
         }
       }
@@ -70,7 +75,12 @@ internal fun InsuredRow(
             Icon(
               imageVector = HedvigIcons.Lock,
               contentDescription = "Locked",
-              tint = HedvigTheme.colorScheme.fillSecondary,
+              tint =
+                if (isMember) {
+                  HedvigTheme.colorScheme.fillTertiary
+                } else {
+                  HedvigTheme.colorScheme.fillSecondary
+                },
               modifier = Modifier.size(16.dp),
             )
           }
