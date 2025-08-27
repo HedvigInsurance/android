@@ -299,18 +299,20 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       .fillMaxWidth(),
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { HedvigText(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL)) },
+      startSlot = { HedvigText(text = stringResource(id = R.string.PRICE_PREVIOUS_PRICE)) },
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HedvigText(
-            text = stringResource(
-              id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
-              priceInfo.previousPrice.toString(),
-            ),
-            color = HedvigTheme.colorScheme.textSecondary,
-            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
+            text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.previousPrice.toString()),
           )
-          Spacer(modifier = Modifier.width(8.dp))
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = { HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE)) },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
           HedvigText(
             text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()),
           )
