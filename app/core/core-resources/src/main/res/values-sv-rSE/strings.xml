@@ -230,6 +230,9 @@
   <string name="DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_TITLE">Du har en aktiv försäkring</string>
   <string name="DEMO_MODE_START">Starta demoläge</string>
   <string name="DETAILS_TABLE_TENANT_LABEL">Hyresgäst</string>
+  <string name="DISCOUNTS_ACTIVE_FROM">Aktiveras %1$s</string>
+  <string name="DISCOUNTS_LABEL_ACTIVE">Aktiva</string>
+  <string name="DISCOUNTS_LABEL_PENDING">Väntande</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>
   <string name="EMBARK_RECORD_AGAIN">Spela in igen</string>

@@ -32,54 +32,33 @@ import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun DiscountRows(
-  discounts: List<Discount>,
-  affectedContracts: Set<DiscountedContract?>,
+  affectedContracts: Set<DiscountedContract>,
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
   Column(
     modifier = modifier,
   ) {
-    // null contract case - current
-    val discountsWithoutContract = discounts.filter {
-      it.affectedContract == null
-    }
-    discountsWithoutContract.forEachIndexed { index, discount ->
-      if (index != 0) {
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(16.dp))
-      }
-      DiscountRow(
-        discount,
-        modifier = Modifier.fillMaxWidth(),
-        labelColor = labelColor,
-      )
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    // contract non-null case - for the future
     affectedContracts.forEach { contract ->
-      if (contract != null) {
-        val relatedDiscounts = discounts.filter { it.affectedContract == contract }
-        Spacer(modifier = Modifier.height(16.dp))
-        HedvigText(contract.contractDisplayName)
-        Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(16.dp))
-        relatedDiscounts.forEachIndexed { index, discount ->
-          if (index != 0) {
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-          }
-          DiscountRow(
-            discount,
-            modifier = Modifier.fillMaxWidth(),
-            labelColor = labelColor,
-          )
+      val relatedDiscounts = contract.appliedDiscounts
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigText(contract.contractDisplayName)
+      Spacer(modifier = Modifier.height(8.dp))
+      HorizontalDivider()
+      Spacer(modifier = Modifier.height(16.dp))
+      relatedDiscounts.forEachIndexed { index, discount ->
+        if (index != 0) {
+          Spacer(modifier = Modifier.height(16.dp))
+          HorizontalDivider()
+          Spacer(modifier = Modifier.height(16.dp))
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        DiscountRow(
+          discount,
+          modifier = Modifier.fillMaxWidth(),
+          labelColor = labelColor,
+        )
       }
+      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
@@ -180,7 +159,29 @@ internal fun DiscountRow(
               )
             }
 
-            Discount.ExpiredState.NotExpired -> {}
+            Discount.ExpiredState.NotExpired -> {
+              HedvigText(
+                text = stringResource(
+                  id = R.string.DISCOUNTS_LABEL_ACTIVE,
+                ),
+                textAlign = TextAlign.End,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+
+            Discount.ExpiredState.Pending -> {
+              HedvigText(
+                text = stringResource(
+                  id = R.string.DISCOUNTS_LABEL_PENDING,
+                ),
+                textAlign = TextAlign.End,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
           }
         }
       },
@@ -203,10 +204,35 @@ private fun DiscountRowsPreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
         DiscountRows(
-          discounts = discountsPreviewData,
-          affectedContracts = setOf(),
+          affectedContracts = mockDiscountedContracts,
         )
       }
     }
   }
 }
+
+internal val mockDiscountedContracts = setOf(
+  DiscountedContract(
+    appliedDiscounts = discountsPreviewData,
+    contractId = "id1",
+    contractDisplayName = "House Standard ∙ Villagatan 25",
+  ),
+  DiscountedContract(
+    appliedDiscounts = discountsPreviewData,
+    contractId = "id1",
+    contractDisplayName = "Dog Premium ∙ Fido",
+  ),
+  DiscountedContract(
+    appliedDiscounts = listOf(
+      Discount(
+        code = "LOOP",
+        description = "Desc",
+        expiredState = Discount.ExpiredState.Pending,
+        amount = null,
+        isReferral = false,
+      ),
+    ),
+    contractId = "id1",
+    contractDisplayName = "Some pending contract ∙ Daboodee",
+  ),
+)

@@ -1,11 +1,30 @@
 query Discounts {
   currentMember {
+    #    activeContracts {
+    #      id
+    #      exposureDisplayNameShort
+#      discounts {
+#        code
+#        description
+#        expireDate
+#        id
+#        state
+#      } //todo: future API changes to discounts on contract level
+      #    }
     redeemedCampaigns {
       code
       description
       expiresAt
       id
       type
+      onlyApplicableToContracts {
+        id
+        currentAgreement {
+          productVariant {
+            displayName
+          }
+        }
+      }
     }
   }
 }

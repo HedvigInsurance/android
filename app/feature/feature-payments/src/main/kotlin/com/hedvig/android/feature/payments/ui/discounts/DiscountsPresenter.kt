@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -43,7 +43,7 @@ internal class DiscountsPresenter(
         },
         ifRight = { discountsOverview ->
           paymentUiState = paymentUiState.copy(
-            discounts = discountsOverview.discounts,
+            discountedContracts = discountsOverview.discountedContracts,
             foreverInformation = discountsOverview.foreverInformation,
             error = null,
             isLoadingPaymentOverView = false,
@@ -63,7 +63,7 @@ internal sealed interface DiscountsEvent {
 
 internal data class DiscountsUiState(
   val foreverInformation: ForeverInformation?,
-  val discounts: List<Discount>,
+  val discountedContracts: Set<DiscountedContract>,
   val error: Boolean? = null,
   val isLoadingPaymentOverView: Boolean = true,
   val isRetrying: Boolean = false,

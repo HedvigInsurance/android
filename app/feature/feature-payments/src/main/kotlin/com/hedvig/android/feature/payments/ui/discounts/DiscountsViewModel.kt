@@ -6,7 +6,7 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 internal class DiscountsViewModel(
   getDiscountsOverviewUseCase: GetDiscountsOverviewUseCase,
 ) : MoleculeViewModel<DiscountsEvent, DiscountsUiState>(
-    DiscountsUiState(foreverInformation = null, discounts = listOf()),
+    DiscountsUiState(foreverInformation = null, discountedContracts = setOf()),
     DiscountsPresenter(
       getDiscountsOverviewUseCase = getDiscountsOverviewUseCase,
     ),

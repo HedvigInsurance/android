@@ -54,12 +54,9 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.payments.data.Discount
-import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun DiscountsDestination(
@@ -102,11 +99,9 @@ private fun DiscountsScreen(
           .verticalScroll(rememberScrollState())
           .weight(1f),
       ) {
-        val discounts = uiState.discounts
-        val affectedContracts = discounts.map { it.affectedContract }.toSet()
-        if (!discounts.isEmpty()) {
-          Spacer(modifier = Modifier.height(24.dp))
-          DiscountRows(discounts, affectedContracts)
+        val affectedContracts = uiState.discountedContracts
+        if (!affectedContracts.isEmpty()) {
+          DiscountRows(affectedContracts)
         }
         if (uiState.foreverInformation != null) {
           Spacer(modifier = Modifier.height(24.dp))
@@ -286,37 +281,7 @@ private fun PaymentDetailsScreenPreview(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discounts =
-            listOf(
-              Discount(
-                "MYDISCOUNT1",
-                "description",
-                Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT2",
-                "description",
-                Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT3",
-                "description",
-                Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT3",
-                "description",
-                Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-            ),
+          discountedContracts = mockDiscountedContracts,
           isLoadingPaymentOverView = isLoading,
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
@@ -348,7 +313,7 @@ private fun PaymentDetailsScreenFailurePreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discounts = emptyList(),
+          discountedContracts = emptySet(),
           isLoadingPaymentOverView = false,
           error = true,
           foreverInformation = null,
@@ -370,47 +335,3 @@ private fun PreviewForeverExplanationBottomSheetContent() {
     }
   }
 }
-
-// todo: remove
-private val previewMock = listOf<Discount>(
-  Discount(
-    "ONEONEONE",
-    "description",
-    Discount.ExpiredState.NotExpired,
-    UiMoney(24.5, UiCurrencyCode.SEK),
-    isReferral = false,
-    affectedContract = DiscountedContract("dqde", "House Standard ∙ Villagatan 25"),
-  ),
-  Discount(
-    "TWOTWO",
-    "description",
-    Discount.ExpiredState.NotExpired,
-    UiMoney(78.5, UiCurrencyCode.SEK),
-    isReferral = false,
-    affectedContract = null,
-  ),
-  Discount(
-    "THREEEE",
-    "description",
-    Discount.ExpiredState.NotExpired,
-    UiMoney(90.5, UiCurrencyCode.SEK),
-    isReferral = false,
-    affectedContract = DiscountedContract("dqde", "Dog Premium ∙ Fido"),
-  ),
-  Discount(
-    "FOURFOR",
-    "description",
-    Discount.ExpiredState.NotExpired,
-    UiMoney(11.5, UiCurrencyCode.SEK),
-    isReferral = true,
-    affectedContract = null,
-  ),
-  Discount(
-    "FIVVVV",
-    "description",
-    Discount.ExpiredState.NotExpired,
-    UiMoney(53.5, UiCurrencyCode.SEK),
-    isReferral = false,
-    affectedContract = DiscountedContract("dqde", "Dog Premium ∙ Fido"),
-  ),
-)

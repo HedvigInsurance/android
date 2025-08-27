@@ -23,9 +23,9 @@ internal class GetDiscountsOverviewUseCaseImpl(
         { getForeverInformationUseCase.invoke().bind() },
         { getDiscountsUseCase.invoke().bind() },
         { getOnlyHasNonPayingContractsUseCase.invoke().bind() },
-      ) { foreverInformation, discounts, onlyHasNonPayingContracts ->
+      ) { foreverInformation, discountedContracts, onlyHasNonPayingContracts ->
         DiscountsOverview(
-          discounts = discounts,
+          discountedContracts = discountedContracts,
           foreverInformation = if (onlyHasNonPayingContracts) {
             null
           } else {
@@ -38,6 +38,6 @@ internal class GetDiscountsOverviewUseCaseImpl(
 }
 
 internal data class DiscountsOverview(
-  val discounts: List<Discount>,
+  val discountedContracts: Set<DiscountedContract>,
   val foreverInformation: ForeverInformation?,
 )
