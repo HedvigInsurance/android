@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -59,9 +61,7 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
-import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -313,7 +313,15 @@ private fun QuoteCard(
   excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
 ) {
   HedvigCard(
-    modifier = modifier,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    shape = HedvigTheme.shapes.cornerXLarge,
     onClick = quoteCardState::toggleState,
     enabled = quoteCardState.isEnabled,
     interactionSource = null,
@@ -341,7 +349,7 @@ private fun QuoteCard(
       ) {
         excludedCollapsedStateButtonContent()
       } else {
-        HedvigButton(
+        HedvigButtonGhostWithBorder(
           text = if (quoteCardState.showDetails) {
             stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
           } else {
@@ -349,8 +357,6 @@ private fun QuoteCard(
           },
           onClick = quoteCardState::toggleState,
           enabled = true,
-          buttonStyle = Secondary,
-          buttonSize = Medium,
           modifier = Modifier.fillMaxWidth(),
         )
       }
