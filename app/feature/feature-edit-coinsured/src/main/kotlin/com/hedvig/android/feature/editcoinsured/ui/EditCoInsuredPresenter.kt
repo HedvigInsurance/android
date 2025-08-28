@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
@@ -263,7 +262,7 @@ internal class EditCoInsuredPresenter(
           removeBottomSheetContentState = removeBottomSheetContentState.copy(isLoading = true)
         }
 
-        createMidtermChangeUseCase // todo: here
+        createMidtermChangeUseCase
           .invoke(contractId, list)
           .fold(
             ifLeft = {

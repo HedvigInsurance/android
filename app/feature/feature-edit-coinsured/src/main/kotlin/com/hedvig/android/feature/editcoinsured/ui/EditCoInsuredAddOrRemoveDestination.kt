@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -354,7 +353,7 @@ private fun PriceInfo(
             ) {
               Icon(
                 HedvigIcons.InfoFilled,
-                contentDescription = EmptyContentDescription,
+                contentDescription = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
                 tint = HedvigTheme.colorScheme.fillSecondary,
               )
             }
