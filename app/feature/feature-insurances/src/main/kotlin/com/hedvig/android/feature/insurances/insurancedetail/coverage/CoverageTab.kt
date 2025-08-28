@@ -100,30 +100,36 @@ internal fun CoverageTab(
       )
       Spacer(Modifier.height(16.dp))
     }
-    for (addon in addons.orEmpty()) {
-      Spacer(Modifier.height(16.dp))
-      HighlightLabel(
-        labelText = addon.addonVariant.displayName,
-        size = HighlightLabelDefaults.HighLightSize.Medium,
-        color = HighlightLabelDefaults.HighlightColor.Blue(
-          HighlightLabelDefaults.HighlightShade.LIGHT,
-        ),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-      PerilList(
-        perilItems = addon.addonVariant.perils.map {
-          PerilData(
-            title = it.title,
-            description = it.description,
-            covered = it.covered,
-            colorCode = it.colorCode,
+
+    if (!addons.isNullOrEmpty()) {
+      addons.forEach { addon ->
+        val addonPerils = addon.addonVariant.perils
+        if (addonPerils.isNotEmpty()) {
+          Spacer(Modifier.height(16.dp))
+          HighlightLabel(
+            labelText = addon.addonVariant.displayName,
+            size = HighlightLabelDefaults.HighLightSize.Medium,
+            color = HighlightLabelDefaults.HighlightColor.Blue(
+              HighlightLabelDefaults.HighlightShade.LIGHT,
+            ),
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
-        },
-        size = Small,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.height(8.dp))
+          PerilList(
+            perilItems = addonPerils.map {
+              PerilData(
+                title = it.title,
+                description = it.description,
+                covered = it.covered,
+                colorCode = it.colorCode,
+              )
+            },
+            size = Small,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(16.dp))
+        }
+      }
     }
   }
   Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -195,7 +201,27 @@ private fun PreviewCoverageTab() {
       CoverageTab(
         previewInsurableLimits,
         previewPerils,
-        listOf(Addon(fakeAddonVariant)),
+        listOf(
+          Addon(fakeAddonVariant),
+          Addon(fakeAddonVariant2),
+          Addon(fakeAddonVariant3),
+        ),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCoverageTabAddonHasNoPerils() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CoverageTab(
+        previewInsurableLimits,
+        previewPerils,
+        listOf(
+          Addon(fakeAddonVariant2),
+        ),
       )
     }
   }
@@ -239,6 +265,30 @@ private val fakeAddonVariant = AddonVariant(
     ),
   ),
   displayName = "Travel Insurance Plus",
+  product = "",
+)
+
+private val fakeAddonVariant2 = AddonVariant(
+  termsVersion = "terms",
+  documents = listOf(),
+  perils = listOf(),
+  displayName = "Vintage Plus",
+  product = "",
+)
+
+private val fakeAddonVariant3 = AddonVariant(
+  termsVersion = "terms",
+  documents = listOf(),
+  perils = List(2) { index ->
+    ProductVariantPeril(
+      id = index.toString(),
+      title = "Eldsvåda",
+      description = "description$index",
+      covered = listOf("Covered#$index"),
+      colorCode = "#FFD0ECFB",
+    )
+  },
+  displayName = "Party Plus",
   product = "",
 )
 
