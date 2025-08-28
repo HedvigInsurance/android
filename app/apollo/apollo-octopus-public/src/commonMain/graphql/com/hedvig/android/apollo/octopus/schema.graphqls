@@ -94,6 +94,7 @@ It carries the actual relevant information about the insurance, such as the form
 certificates as well as the ProductVariant.
 """
 type Agreement {
+  id: ID!
   """
   The date this agreement took effect.
   """

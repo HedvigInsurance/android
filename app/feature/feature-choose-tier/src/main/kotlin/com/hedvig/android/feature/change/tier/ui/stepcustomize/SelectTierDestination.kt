@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.change.tier.ui.stepcustomize
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -252,20 +254,7 @@ private fun SelectTierScreen(
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
-    if (uiState.tiers.size > 1) {
-      Spacer(Modifier.height(4.dp))
-      HedvigTextButton(
-        buttonSize = Large,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-        onClick = {
-          onCompareClick()
-        },
-      )
-    }
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
       text = stringResource(R.string.general_continue_button),
@@ -277,6 +266,19 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
+    if (uiState.tiers.size > 1) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        onClick = {
+          onCompareClick()
+        },
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -303,8 +305,15 @@ private fun CustomizationCard(
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    modifier = modifier,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
     shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
@@ -337,7 +346,7 @@ private fun CustomizationCard(
         hintText = hintText,
         chosenItemIndex = chosenTierIndex,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
-        containerColor = HedvigTheme.colorScheme.fillNegative,
+        containerColor = HedvigTheme.colorScheme.surfacePrimary,
         modifier = Modifier.accessibilityForDropdown(
           labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           selectedValue = chosenTierVoiceDescription,
@@ -414,7 +423,7 @@ private fun CustomizationCard(
           hintText = hintText,
           chosenItemIndex = chosenQuoteIndex,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
-          containerColor = HedvigTheme.colorScheme.fillNegative,
+          containerColor = HedvigTheme.colorScheme.surfacePrimary,
           modifier = Modifier.accessibilityForDropdown(
             labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             selectedValue = chosenDeductibleVoiceDescription,

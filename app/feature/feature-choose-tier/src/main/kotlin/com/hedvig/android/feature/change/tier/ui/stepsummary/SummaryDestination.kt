@@ -49,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -165,13 +166,43 @@ private fun SummarySuccessScreen(
   navigateUp: () -> Unit,
   onExitTierFlow: () -> Unit,
 ) {
+  var showExitDialog by rememberSaveable { mutableStateOf(false) }
   HedvigScaffold(
     navigateUp,
     topAppBarActions = {
-      SummaryTopAppBar(onExitTierFlow)
+      SummaryTopAppBar({
+        showExitDialog = true
+      })
     },
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
+    if (showExitDialog) {
+      HedvigDialog(
+        onDismissRequest = { showExitDialog = false },
+        style = Buttons(
+          onDismissRequest = { showExitDialog = false },
+          dismissButtonText = stringResource(R.string.GENERAL_NO),
+          onConfirmButtonClick = dropUnlessResumed {
+            showExitDialog = false
+            onExitTierFlow()
+          },
+          confirmButtonText = stringResource(R.string.GENERAL_YES),
+        ),
+      ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          HedvigText(
+            text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+            textAlign = TextAlign.Center,
+          )
+          HedvigText(
+            text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+            textAlign = TextAlign.Center,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+    }
+
     var showConfirmationDialog by remember { mutableStateOf(false) }
     val dateFormatter = rememberHedvigDateTimeFormatter()
     if (showConfirmationDialog) {
@@ -245,41 +276,25 @@ private fun SummarySuccessScreen(
           showConfirmationDialog = true
         },
       )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.general_cancel_button),
+        onClick = {
+          showExitDialog = true
+        },
+      )
       Spacer(Modifier.height(16.dp))
     }
   }
 }
 
 @Composable
-private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
-  var showExitDialog by rememberSaveable { mutableStateOf(false) }
-  if (showExitDialog) {
-    HedvigDialog(
-      onDismissRequest = { showExitDialog = false },
-      style = Buttons(
-        onDismissRequest = { showExitDialog = false },
-        dismissButtonText = stringResource(R.string.GENERAL_NO),
-        onConfirmButtonClick = dropUnlessResumed {
-          showExitDialog = false
-          onExitTierFlow()
-        },
-        confirmButtonText = stringResource(R.string.GENERAL_YES),
-      ),
-    ) {
-      Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        HedvigText(
-          text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
-          textAlign = TextAlign.Center,
-        )
-        HedvigText(
-          text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
-          textAlign = TextAlign.Center,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-    }
-  }
-  IconButton({ showExitDialog = true }) {
+private fun SummaryTopAppBar(onIconClick: () -> Unit) {
+  IconButton(onIconClick) {
     Icon(
       HedvigIcons.Close,
       stringResource(R.string.general_close_button),
