@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
@@ -28,8 +29,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
+import octopus.fragment.AgreementFragment
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
+import octopus.type.DisplayItemOptions
 
 internal interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
@@ -46,7 +49,12 @@ internal class GetInsuranceContractsUseCaseImpl(
           while (currentCoroutineContext().isActive) {
             emitAll(
               apolloClient
-                .query(InsuranceContractsQuery(areAddonsEnabled))
+                .query(
+                  InsuranceContractsQuery(
+                    addonsEnabled = areAddonsEnabled,
+                    options = Optional.present(DisplayItemOptions(hidePrice = Optional.present(true))),
+                  ),
+                )
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)
                 .safeFlow(::ErrorMessage),
             )
@@ -147,6 +155,7 @@ private fun ContractFragment.toContract(
       addons = currentAgreement.addons?.map {
         Addon(it.addonVariant.toAddonVariant())
       },
+      cost = currentAgreement.cost.toMonthlyCost(),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -160,6 +169,7 @@ private fun ContractFragment.toContract(
         addons = it.addons?.map { addon ->
           Addon(addon.addonVariant.toAddonVariant())
         },
+        cost = it.cost.toMonthlyCost(),
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
@@ -171,6 +181,10 @@ private fun ContractFragment.toContract(
 
 private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
   return DisplayItem.fromStrings(displayTitle, displayValue)
+}
+
+private fun AgreementFragment.Cost.toMonthlyCost(): MonthlyCost {
+  TODO()
 }
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {

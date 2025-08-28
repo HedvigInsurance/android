@@ -1,4 +1,6 @@
-query InsuranceContracts($addonsEnabled: Boolean!) {
+query InsuranceContracts(
+  $addonsEnabled: Boolean!,
+  $options: DisplayItemOptions) {
   currentMember {
     memberActions {
       isMovingEnabled
@@ -60,7 +62,7 @@ fragment AgreementFragment on Agreement {
   activeTo
   certificateUrl
   creationCause
-  displayItems {
+  displayItems (options: $options) {
     ...AgreementDisplayItemFragment
   }
   productVariant {
@@ -69,6 +71,20 @@ fragment AgreementFragment on Agreement {
   addons @include(if: $addonsEnabled) {
     addonVariant {
       ...AddonVariantFragment
+    }
+  }
+  cost {
+    monthlyGross {
+      ...MoneyFragment
+    }
+    monthlyNet {
+      ...MoneyFragment
+    }
+    discounts {
+      displayName
+      displayValue
+      explanation
+      campaignCode
     }
   }
 }

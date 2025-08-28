@@ -2,6 +2,7 @@ package com.hedvig.android.feature.insurances.data
 
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -74,6 +75,19 @@ data class Addon(
   val addonVariant: AddonVariant,
 )
 
+data class MonthlyCost(
+  val monthlyGross: UiMoney,
+  val monthlyNet: UiMoney,
+  val discounts: List<AgreementDiscount>,
+)
+
+data class AgreementDiscount(
+  val displayName: String,
+  val displayValue: String,
+  val explanation: String,
+  val campaignCode: String,
+)
+
 data class InsuranceAgreement(
   val activeFrom: LocalDate,
   val activeTo: LocalDate,
@@ -83,6 +97,7 @@ data class InsuranceAgreement(
   val coInsured: List<CoInsured>,
   val creationCause: CreationCause,
   val addons: List<Addon>?,
+  val cost: MonthlyCost,
 ) {
   data class CoInsured(
     private val ssn: String?,
