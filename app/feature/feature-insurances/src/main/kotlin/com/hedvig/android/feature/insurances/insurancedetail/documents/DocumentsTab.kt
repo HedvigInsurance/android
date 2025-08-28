@@ -54,17 +54,17 @@ internal fun DocumentsTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!addons.isNullOrEmpty()) {
-      val addonDocuments = addons.flatMap { addon -> addon.addonVariant.documents }
-      if (!addonDocuments.isEmpty()) {
-        addons.forEach {
+      addons.forEach { addon ->
+        val addonDocuments = addon.addonVariant.documents
+        if (!addonDocuments.isEmpty()) {
           HighlightLabel(
             modifier = Modifier.padding(horizontal = 16.dp),
-            labelText = it.addonVariant.displayName,
+            labelText = addon.addonVariant.displayName,
             size = HighlightLabelDefaults.HighLightSize.Medium,
             color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
           )
           Spacer(Modifier.height(8.dp))
-          it.addonVariant.documents.forEachIndexed { index, doc ->
+          addonDocuments.forEachIndexed { index, doc ->
             DocumentCard(
               onClick = { onDocumentClicked(doc.url) },
               title = doc.displayName,

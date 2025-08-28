@@ -102,9 +102,9 @@ internal fun CoverageTab(
     }
 
     if (!addons.isNullOrEmpty()) {
-      val addonsPerils = addons.flatMap { addon -> addon.addonVariant.perils }
       for (addon in addons) {
-        if (!addonsPerils.isEmpty()) {
+        val addonPerils = addon.addonVariant.perils
+        if (!addonPerils.isEmpty()) {
           Spacer(Modifier.height(16.dp))
           HighlightLabel(
             labelText = addon.addonVariant.displayName,
@@ -116,7 +116,7 @@ internal fun CoverageTab(
           )
           Spacer(Modifier.height(8.dp))
           PerilList(
-            perilItems = addon.addonVariant.perils.map {
+            perilItems = addonPerils.map {
               PerilData(
                 title = it.title,
                 description = it.description,
