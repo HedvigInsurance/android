@@ -7,7 +7,6 @@ import octopus.type.MemberReferralStatus
 data class ForeverData(
   val campaignCode: String?,
   val incentive: UiMoney?,
-  val currentDiscountAmountExcludingReferrals: UiMoney?,
   val currentNetCost: UiMoney?,
   val currentGrossCost: UiMoney?,
   val currentDiscount: UiMoney?,
@@ -18,9 +17,6 @@ data class ForeverData(
   ) : this(
     campaignCode = referralsData.currentMember.referralInformation.code,
     incentive = UiMoney.fromMoneyFragment(referralsData.currentMember.referralInformation.monthlyDiscountPerReferral),
-    currentDiscountAmountExcludingReferrals = UiMoney.fromMoneyFragment(
-      referralsData.currentMember.referralInformation.monthlyDiscountExcludingReferrals,
-    ),
     currentDiscount = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyDiscount),
     currentNetCost = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyNet),
     currentGrossCost = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyGross),
