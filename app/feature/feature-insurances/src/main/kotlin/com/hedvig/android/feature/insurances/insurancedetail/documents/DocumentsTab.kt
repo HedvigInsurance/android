@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -55,25 +54,28 @@ internal fun DocumentsTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!addons.isNullOrEmpty()) {
-      addons.forEach {
-        HighlightLabel(
-          modifier = Modifier.padding(horizontal = 16.dp),
-          labelText = it.addonVariant.displayName,
-          size = HighlightLabelDefaults.HighLightSize.Medium,
-          color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
-        )
-        Spacer(Modifier.height(8.dp))
-        it.addonVariant.documents.forEachIndexed { index, doc ->
-          DocumentCard(
-            onClick = { onDocumentClicked(doc.url) },
-            title = doc.displayName,
-            subtitle = null,
+      val addonDocuments = addons.flatMap { addon -> addon.addonVariant.documents }
+      if (!addonDocuments.isEmpty()) {
+        addons.forEach {
+          HighlightLabel(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            labelText = it.addonVariant.displayName,
+            size = HighlightLabelDefaults.HighLightSize.Medium,
+            color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
           )
-          if (index != documents.lastIndex) {
-            Spacer(Modifier.height(4.dp))
+          Spacer(Modifier.height(8.dp))
+          it.addonVariant.documents.forEachIndexed { index, doc ->
+            DocumentCard(
+              onClick = { onDocumentClicked(doc.url) },
+              title = doc.displayName,
+              subtitle = null,
+            )
+            if (index != documents.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
           }
+          Spacer(Modifier.height(16.dp))
         }
-        Spacer(Modifier.height(16.dp))
       }
     }
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
