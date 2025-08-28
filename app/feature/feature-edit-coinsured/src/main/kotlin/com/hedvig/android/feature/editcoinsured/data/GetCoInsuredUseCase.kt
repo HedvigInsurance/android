@@ -56,6 +56,8 @@ internal class GetCoInsuredUseCaseImpl(
     birthDate = birthdate,
     ssn = ssn,
     hasMissingInfo = hasMissingInfo,
+    activatesOn = activatesOn,
+    terminatesOn = terminatesOn,
   )
 }
 
