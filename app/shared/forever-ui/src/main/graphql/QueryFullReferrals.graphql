@@ -13,9 +13,6 @@ query FullReferrals {
     }
     referralInformation {
       code
-      monthlyDiscountExcludingReferrals {
-        ...MoneyFragment
-      }
       monthlyDiscountPerReferral {
         ...MoneyFragment
       }
