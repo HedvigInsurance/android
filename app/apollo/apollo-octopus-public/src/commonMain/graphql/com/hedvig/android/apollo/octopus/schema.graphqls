@@ -1524,10 +1524,6 @@ type ItemDiscount {
    Longer explanation, ex. 50% discount for 6 months 
   """
   explanation: String!
-  """
-   Discount amount 
-  """
-  amount: Money!
 }
 scalar JSON
 type LinkInfo {
@@ -1919,15 +1915,26 @@ type MidtermChangeIntent {
   currentPremium: Money! @deprecated(reason: "Use currentTotalCost")
   newPremium: Money! @deprecated(reason: "Use newTotalCost")
   """
-  Breakdown of current cost. Includes addons
+  Breakdown of current total cost. Includes addons
   """
-  currentTotalCost: ItemCost!
+  currentTotalCost: TotalCost!
   """
-  Breakdown of new cost. Includes addons
+  Breakdown of new total cost. Includes addons
   """
-  newTotalCost: ItemCost!
+  newTotalCost: TotalCost!
+  """
+  The date changes will take effect.
+  """
   activationDate: Date!
-  state: MidtermChangeIntentState!
+  """
+  The state of the intent
+  """
+  state: MidtermChangeIntentState! @deprecated(reason: "Will be removed")
+  """
+  Includes the quote price breakdown:
+  insurance base premium, addons premiums, campaigns and bundle discounts
+  """
+  newCostBreakdown: [MidtermChangePriceDetailItem!]!
 }
 input MidtermChangeIntentCreateInput {
   """
@@ -1943,6 +1950,10 @@ type MidtermChangeIntentMutationOutput {
 enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
+}
+type MidtermChangePriceDetailItem {
+  displayTitle: String!
+  displayValue: String!
 }
 """
 A monetary value with currency.
@@ -2870,27 +2881,6 @@ type ProductOfferCost {
   Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
   """
   discounts: [ItemDiscount!]!
-  """
-  How much price was reduced on the entire offer, including selected addons.
-  """
-  discount: Money! @deprecated(reason: "Use 'discounts' field instead")
-  """
-  Number of months the discount will apply.
-  """
-  discountMonths: Int! @deprecated(reason: "Use 'discounts' field instead")
-  """
-  Details about origin of a discount
-  """
-  discountSource: ProductOfferCostDiscountSource @deprecated(reason: "Use 'discounts' field instead")
-}
-"""
-@deprecated This type will be removed in a future version. Specific discount information should be obtained
-from 'ProductOfferCost.discounts' field
-"""
-type ProductOfferCostDiscountSource {
-  campaignCode: String!
-  discountPercent: Int!
-  durationMonths: Int!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -3458,6 +3448,10 @@ enum TokenizationResultType {
   COMPLETED
   PENDING
   FAILED
+}
+type TotalCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
 }
 type TravelCertificate {
   id: ID!
