@@ -230,6 +230,9 @@
   <string name="DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_TITLE">Du har en aktiv försäkring</string>
   <string name="DEMO_MODE_START">Starta demoläge</string>
   <string name="DETAILS_TABLE_TENANT_LABEL">Hyresgäst</string>
+  <string name="DISCOUNTS_ACTIVE_FROM">Aktiveras %1$s</string>
+  <string name="DISCOUNTS_LABEL_ACTIVE">Aktiv</string>
+  <string name="DISCOUNTS_LABEL_PENDING">Väntar på aktivering</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>
   <string name="EMBARK_RECORD_AGAIN">Spela in igen</string>
@@ -466,6 +469,9 @@
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
   <string name="PERMISSION_DIALOG_TITLE">Behöver tillåtelse</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Telefonnummer</string>
+  <string name="PRICE_DETAILS_TITLE">Prisinformation</string>
+  <string name="PRICE_NEW_PRICE">Nytt pris</string>
+  <string name="PRICE_PREVIOUS_PRICE">Tidigare pris</string>
   <string name="PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS">Licensrättigheter</string>
   <string name="PROFILE_ABOUT_APP_MEMBER_ID">Medlemsnummer</string>
   <string name="PROFILE_ABOUT_APP_TITLE">App info</string>
@@ -595,6 +601,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Köpt %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %s</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>
@@ -642,6 +649,8 @@
   <string name="TALKBACK_WRITE_HERE">Skriv ditt meddelande här</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Ditt nya pris: %1$s</string>
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
+  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Ditt pris med rabatter och tillägg: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Ditt pris före rabatter och tillägg: %1$s</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %s. Om du har några frågor, vänligen besök \"Hjälp och support\" här i appen.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Bekräftelse</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Ja, fortsätt</string>
