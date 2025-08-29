@@ -50,9 +50,10 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
-import com.hedvig.android.tiersandaddons.QuoteCardDocumentsSection
+import com.hedvig.android.tiersandaddons.AddonQuoteCardDocumentsSection
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -313,8 +314,12 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
             DetailsWithStrikeThrough(uiState)
           }
         }
-        if (uiState.quote.addonVariant.documents.isNotEmpty()) {
-          QuoteCardDocumentsSection(uiState.quote.addonVariant.documents)
+        if (uiState.quote.documents.isNotEmpty()) {
+          AddonQuoteCardDocumentsSection(
+            uiState.quote.documents.map {
+              it.displayName to it.url
+            },
+          )
         }
       }
     }
@@ -423,6 +428,12 @@ private class ChooseInsuranceForAddonUiStateProvider :
           price = UiMoney(
             60.0,
             UiCurrencyCode.SEK,
+          ),
+          documents = listOf(
+            TravelAddonQuoteInsuranceDocument(
+              "Some terms",
+              "url",
+            ),
           ),
         ),
         activationDateForSuccessfullyPurchasedAddon = null,

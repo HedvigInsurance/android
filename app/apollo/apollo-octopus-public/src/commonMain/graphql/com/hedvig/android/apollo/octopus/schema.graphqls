@@ -94,6 +94,11 @@ It carries the actual relevant information about the insurance, such as the form
 certificates as well as the ProductVariant.
 """
 type Agreement {
+  id: ID!
+  """
+  The cost details of this agreement on today's date or the date it starts
+  """
+  cost: ItemCost!
   """
   The date this agreement took effect.
   """
@@ -126,7 +131,7 @@ type Agreement {
   """
   A localized list of key/value pairs the define the properties of this insurance.
   """
-  displayItems: [AgreementDisplayItem!]!
+  displayItems(options: DisplayItemOptions = null): [AgreementDisplayItem!]!
   """
   Number co insured on the agreement. Null if not supported.
   """
@@ -829,6 +834,9 @@ type DirectDebitResponse2 {
   url: String!
   orderId: String!
 }
+input DisplayItemOptions {
+  hidePrice: Boolean! = false
+}
 type EmailMessage {
   id: ID!
   recipient: String
@@ -1509,10 +1517,6 @@ returned as ItemDiscount
 """
 type ItemDiscount {
   """
-   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
-  """
-  campaignCode: String!
-  """
    Short name for list display, ex. "50% puppy discount" 
   """
   displayName: String!
@@ -1525,9 +1529,9 @@ type ItemDiscount {
   """
   explanation: String!
   """
-   Discount amount 
+   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
   """
-  amount: Money!
+  campaignCode: String!
 }
 scalar JSON
 type LinkInfo {
@@ -1919,15 +1923,26 @@ type MidtermChangeIntent {
   currentPremium: Money! @deprecated(reason: "Use currentTotalCost")
   newPremium: Money! @deprecated(reason: "Use newTotalCost")
   """
-  Breakdown of current cost. Includes addons
+  Breakdown of current total cost. Includes addons
   """
-  currentTotalCost: ItemCost!
+  currentTotalCost: TotalCost!
   """
-  Breakdown of new cost. Includes addons
+  Breakdown of new total cost. Includes addons
   """
-  newTotalCost: ItemCost!
+  newTotalCost: TotalCost!
+  """
+  The date changes will take effect.
+  """
   activationDate: Date!
-  state: MidtermChangeIntentState!
+  """
+  The state of the intent
+  """
+  state: MidtermChangeIntentState! @deprecated(reason: "Will be removed")
+  """
+  Includes the quote price breakdown:
+  insurance base premium, addons premiums, campaigns and bundle discounts
+  """
+  newCostBreakdown: [MidtermChangePriceDetailItem!]!
 }
 input MidtermChangeIntentCreateInput {
   """
@@ -1943,6 +1958,10 @@ type MidtermChangeIntentMutationOutput {
 enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
+}
+type MidtermChangePriceDetailItem {
+  displayTitle: String!
+  displayValue: String!
 }
 """
 A monetary value with currency.
@@ -2576,7 +2595,7 @@ type PendingContract {
   """
   Same as `Contract.currentAgreement.displayItems`.
   """
-  displayItems: [AgreementDisplayItem!]!
+  displayItems(options: DisplayItemOptions = null): [AgreementDisplayItem!]!
   """
   A value indicating whether Hedvig will help out with the cancellation of the member's existing insurance (true)
   or if the member have to cancel it themselves and get back to us with a requested start date (false).
@@ -2870,27 +2889,6 @@ type ProductOfferCost {
   Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
   """
   discounts: [ItemDiscount!]!
-  """
-  How much price was reduced on the entire offer, including selected addons.
-  """
-  discount: Money! @deprecated(reason: "Use 'discounts' field instead")
-  """
-  Number of months the discount will apply.
-  """
-  discountMonths: Int! @deprecated(reason: "Use 'discounts' field instead")
-  """
-  Details about origin of a discount
-  """
-  discountSource: ProductOfferCostDiscountSource @deprecated(reason: "Use 'discounts' field instead")
-}
-"""
-@deprecated This type will be removed in a future version. Specific discount information should be obtained
-from 'ProductOfferCost.discounts' field
-"""
-type ProductOfferCostDiscountSource {
-  campaignCode: String!
-  discountPercent: Int!
-  durationMonths: Int!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -3459,6 +3457,10 @@ enum TokenizationResultType {
   PENDING
   FAILED
 }
+type TotalCost {
+  monthlyGross: Money!
+  monthlyNet: Money!
+}
 type TravelCertificate {
   id: ID!
   signedUrl: Url!
@@ -3656,6 +3658,10 @@ type UpsellTravelAddonQuote {
   """
   premium: Money!
   """
+  Documents to show instead of addonVariant documents
+  """
+  documents: [UpsellTravelAddonQuoteInsuranceDocument!]!
+  """
    The terms 
   """
   addonVariant: AddonVariant!
@@ -3663,6 +3669,10 @@ type UpsellTravelAddonQuote {
    Addon subtype 
   """
   addonSubtype: String!
+}
+type UpsellTravelAddonQuoteInsuranceDocument {
+  displayName: String!
+  url: String!
 }
 scalar Url
 """

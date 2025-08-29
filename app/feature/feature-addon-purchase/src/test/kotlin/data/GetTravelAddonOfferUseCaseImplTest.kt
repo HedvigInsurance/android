@@ -22,6 +22,7 @@ import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -36,6 +37,7 @@ import octopus.type.buildUpsellTravelAddonDisplayItem
 import octopus.type.buildUpsellTravelAddonOffer
 import octopus.type.buildUpsellTravelAddonOfferOutput
 import octopus.type.buildUpsellTravelAddonQuote
+import octopus.type.buildUpsellTravelAddonQuoteInsuranceDocument
 import octopus.type.buildUserError
 import org.junit.Rule
 import org.junit.Test
@@ -146,6 +148,14 @@ class GetTravelAddonOfferUseCaseImplTest {
                       perils = listOf()
                       insurableLimits = listOf()
                     }
+                    documents = buildList {
+                      add(
+                        buildUpsellTravelAddonQuoteInsuranceDocument {
+                          displayName = "Terms and conditions"
+                          url = "Url"
+                        },
+                      )
+                    }
                   },
                 )
 
@@ -174,6 +184,14 @@ class GetTravelAddonOfferUseCaseImplTest {
                       product = ""
                       perils = listOf()
                       insurableLimits = listOf()
+                    }
+                    documents = buildList {
+                      add(
+                        buildUpsellTravelAddonQuoteInsuranceDocument {
+                          displayName = "Terms and conditions"
+                          url = "Url"
+                        },
+                      )
                     }
                   },
                 )
@@ -236,6 +254,14 @@ class GetTravelAddonOfferUseCaseImplTest {
                       product = ""
                       perils = listOf()
                       insurableLimits = listOf()
+                    }
+                    documents = buildList {
+                      add(
+                        buildUpsellTravelAddonQuoteInsuranceDocument {
+                          displayName = "Terms and conditions"
+                          url = "Url"
+                        },
+                      )
                     }
                   },
                 )
@@ -326,6 +352,9 @@ private val mockWithoutUpgrade = TravelAddonOffer(
         49.0,
         UiCurrencyCode.SEK,
       ),
+      documents = listOf(
+        TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
+      ),
     ),
     TravelAddonQuote(
       displayName = "60 days",
@@ -343,6 +372,9 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       price = UiMoney(
         60.0,
         UiCurrencyCode.SEK,
+      ),
+      documents = listOf(
+        TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
       ),
     ),
   ),
@@ -370,6 +402,9 @@ private val mockWithUpgrade = TravelAddonOffer(
       price = UiMoney(
         60.0,
         UiCurrencyCode.SEK,
+      ),
+      documents = listOf(
+        TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
       ),
     ),
   ),
