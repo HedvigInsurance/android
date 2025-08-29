@@ -80,6 +80,7 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseOptionInDialog
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseSelectedOption
@@ -600,6 +601,12 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     49.0,
     SEK,
   ),
+  documents = listOf(
+    TravelAddonQuoteInsuranceDocument(
+      "Some terms",
+      "url",
+    ),
+  ),
 )
 private val fakeTravelAddonQuote2 = TravelAddonQuote(
   displayName = "60 days",
@@ -617,6 +624,12 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
   price = UiMoney(
     60.0,
     SEK,
+  ),
+  documents = listOf(
+    TravelAddonQuoteInsuranceDocument(
+      "Some terms",
+      "url",
+    ),
   ),
 )
 private val fakeTravelAddon = TravelAddonOffer(
