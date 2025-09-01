@@ -58,6 +58,7 @@ import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigSnackbar
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -487,7 +488,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
   }
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
 private fun PreviewForeverContent(
   @PreviewParameter(ForeverUiStateProvider::class) foreverUiState: ForeverUiState,
@@ -516,6 +517,29 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
           state = ACTIVE,
           activeDiscount = UiMoney(10.0, SEK),
         ),
+        referrals = listOf(
+          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#2", ReferralState.IN_PROGRESS, null),
+          Referral("Name#3", ReferralState.TERMINATED, null),
+          Referral("Name#4", ReferralState.TERMINATED, null),
+          Referral("Name#5", ReferralState.TERMINATED, null),
+          Referral("Name#6", ReferralState.TERMINATED, null),
+          Referral("Name#7", ReferralState.TERMINATED, null),
+        ),
+        campaignCode = "HEDV1G",
+        incentive = null,
+        currentNetCost = null,
+        currentDiscount = null,
+        currentGrossCost = null,
+      ),
+      referralCodeLoading = false,
+      referralCodeErrorMessage = null,
+      reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
+    ),
+    ForeverUiState.Success(
+      foreverData = ForeverData(
+        referredBy = null,
         referrals = listOf(
           Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
