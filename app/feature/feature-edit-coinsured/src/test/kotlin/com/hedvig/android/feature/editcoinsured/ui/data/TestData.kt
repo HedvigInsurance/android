@@ -2,6 +2,7 @@ package com.hedvig.android.feature.editcoinsured.ui.data
 
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import kotlinx.datetime.LocalDate
 
 internal val testContractId = "123"
 
@@ -13,6 +14,8 @@ internal val coInsuredTestList = listOf(
     birthDate = null,
     ssn = "199304111344",
     hasMissingInfo = false,
+    activatesOn = LocalDate(2025, 12, 1),
+    terminatesOn = null,
   ),
   CoInsured(
     internalId = "2",
@@ -21,6 +24,8 @@ internal val coInsuredTestList = listOf(
     birthDate = null,
     ssn = "187405053912",
     hasMissingInfo = false,
+    activatesOn = null,
+    terminatesOn = null,
   ),
   CoInsured(
     internalId = "3",
@@ -29,6 +34,8 @@ internal val coInsuredTestList = listOf(
     birthDate = null,
     ssn = "173304113940",
     hasMissingInfo = false,
+    activatesOn = LocalDate(2025, 12, 1),
+    terminatesOn = null,
   ),
 )
 

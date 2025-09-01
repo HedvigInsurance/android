@@ -279,9 +279,18 @@ internal class EditCoInsuredPresenter(
             },
             ifRight = {
               Snapshot.withMutableSnapshot {
+                val originalCoInsuredIds = listState.originalCoInsured?.map { originalCoInsured ->
+                  originalCoInsured.id
+                } ?: emptyList()
+                val updatedCoinsuredList = it.coInsured
+                val updatedCoinsuredListWithDate = updateCoInsuredWithActivationDates(
+                  coInsured = updatedCoinsuredList,
+                  originalIds = originalCoInsuredIds,
+                  activationDate = it.activatedDate,
+                ) // todo: check here
                 intentId = it.id
                 listState = listState.copy(
-                  updatedCoInsured = it.coInsured,
+                  updatedCoInsured = updatedCoinsuredListWithDate,
                   priceInfo = Loaded.PriceInfo(
                     previousPrice = it.currentPremium,
                     newPrice = it.newPremium,
@@ -364,6 +373,8 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
+          terminatesOn = null,
         )
         val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
         listState.coInsured.updated(old, updatedCoInsured)
@@ -374,8 +385,25 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
+          terminatesOn = null,
         )
-        (listState.coInsured + updatedCoInsured)
+        val result = (listState.coInsured + updatedCoInsured)
+        result
+      }
+    }
+  }
+
+  private fun updateCoInsuredWithActivationDates(
+    coInsured: List<CoInsured>,
+    originalIds: List<String>,
+    activationDate: LocalDate,
+  ): List<CoInsured> {
+    return coInsured.map { it ->
+      if (originalIds.contains(it.id)) {
+        it
+      } else {
+        it.copy(activatesOn = activationDate)
       }
     }
   }
