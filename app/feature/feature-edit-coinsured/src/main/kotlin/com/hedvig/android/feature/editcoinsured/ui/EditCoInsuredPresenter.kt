@@ -283,14 +283,11 @@ internal class EditCoInsuredPresenter(
                   originalCoInsured.id
                 } ?: emptyList()
                 val updatedCoinsuredList = it.coInsured
-                val updatedCoinsuredListWithDate = updatedCoinsuredList
-                  .map { updatedCoinsured ->
-                    if (originalCoInsuredIds.contains(updatedCoinsured.id)) {
-                      updatedCoinsured
-                    } else {
-                      updatedCoinsured.copy(activatesOn = it.activatedDate) // todo: wdyt?
-                    }
-                  }
+                val updatedCoinsuredListWithDate = updateCoInsuredWithActivationDates(
+                  coInsured = updatedCoinsuredList,
+                  originalIds = originalCoInsuredIds,
+                  activationDate = it.activatedDate,
+                ) // todo: check here
                 intentId = it.id
                 listState = listState.copy(
                   updatedCoInsured = updatedCoinsuredListWithDate,
@@ -393,6 +390,20 @@ internal class EditCoInsuredPresenter(
         )
         val result = (listState.coInsured + updatedCoInsured)
         result
+      }
+    }
+  }
+
+  private fun updateCoInsuredWithActivationDates(
+    coInsured: List<CoInsured>,
+    originalIds: List<String>,
+    activationDate: LocalDate,
+  ): List<CoInsured> {
+    return coInsured.map { it ->
+      if (originalIds.contains(it.id)) {
+        it
+      } else {
+        it.copy(activatesOn = activationDate)
       }
     }
   }
