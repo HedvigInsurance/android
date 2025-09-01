@@ -51,12 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
-import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigSnackbar
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -83,6 +84,8 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import com.hedvig.android.shared.foreverui.ui.data.ForeverData
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
+import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
 import hedvig.resources.R
@@ -364,7 +367,9 @@ private fun ForeverScrollableContent(
         .wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(24.dp))
-    if (uiState.foreverData?.referrals?.isEmpty() == true && uiState.foreverData.incentive != null) {
+    val noReferrals = uiState.foreverData?.referrals?.isEmpty() == true &&
+      uiState.foreverData.referredBy == null
+    if (noReferrals && uiState.foreverData.incentive != null) {
       HedvigText(
         text = stringResource(
           id = R.string.referrals_empty_body,
@@ -430,10 +435,11 @@ private fun ForeverScrollableContent(
           .fillMaxWidth(),
       )
     }
-    if (uiState.foreverData?.referrals?.isNotEmpty() == true) {
+    if (uiState.foreverData?.referrals?.isNotEmpty() == true || uiState.foreverData?.referredBy != null) {
       Spacer(Modifier.height(16.dp))
       ReferralList(
         referrals = uiState.foreverData.referrals,
+        referredByInfo = uiState.foreverData.referredBy,
         grossPriceAmount = uiState.foreverData.currentGrossCost,
         currentNetAmount = uiState.foreverData.currentNetCost,
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -481,7 +487,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
   }
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
 private fun PreviewForeverContent(
   @PreviewParameter(ForeverUiStateProvider::class) foreverUiState: ForeverUiState,
@@ -505,6 +511,11 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
     ForeverUiState.Error,
     ForeverUiState.Success(
       foreverData = ForeverData(
+        referredBy = ReferredByInfo(
+          name = "Sladan",
+          state = ACTIVE,
+          activeDiscount = UiMoney(10.0, SEK),
+        ),
         referrals = listOf(
           Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
@@ -519,7 +530,48 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
         currentNetCost = null,
         currentDiscount = null,
         currentGrossCost = null,
-        currentDiscountAmountExcludingReferrals = null,
+      ),
+      referralCodeLoading = false,
+      referralCodeErrorMessage = null,
+      reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
+    ),
+    ForeverUiState.Success(
+      foreverData = ForeverData(
+        referredBy = ReferredByInfo(
+          name = "Sladan",
+          state = ReferralState.TERMINATED,
+          activeDiscount = null,
+        ),
+        referrals = listOf(),
+        campaignCode = "HEDV1G",
+        incentive = null,
+        currentNetCost = null,
+        currentDiscount = null,
+        currentGrossCost = null,
+      ),
+      referralCodeLoading = false,
+      referralCodeErrorMessage = null,
+      reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
+    ),
+    ForeverUiState.Success(
+      foreverData = ForeverData(
+        referredBy = null,
+        referrals = listOf(
+          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#2", ReferralState.IN_PROGRESS, null),
+          Referral("Name#3", ReferralState.TERMINATED, null),
+          Referral("Name#4", ReferralState.TERMINATED, null),
+          Referral("Name#5", ReferralState.TERMINATED, null),
+          Referral("Name#6", ReferralState.TERMINATED, null),
+          Referral("Name#7", ReferralState.TERMINATED, null),
+        ),
+        campaignCode = "HEDV1G",
+        incentive = null,
+        currentNetCost = null,
+        currentDiscount = null,
+        currentGrossCost = null,
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
@@ -529,12 +581,12 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
     ForeverUiState.Success(
       foreverData = ForeverData(
         referrals = emptyList(),
+        referredBy = null,
         campaignCode = "HEDV1G",
         incentive = UiMoney(10.0, UiCurrencyCode.SEK),
         currentNetCost = UiMoney(80.0, UiCurrencyCode.SEK),
         currentDiscount = UiMoney(20.0, UiCurrencyCode.SEK),
         currentGrossCost = UiMoney(100.0, UiCurrencyCode.SEK),
-        currentDiscountAmountExcludingReferrals = UiMoney(100.0, UiCurrencyCode.SEK),
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
