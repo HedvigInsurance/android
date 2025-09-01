@@ -146,11 +146,7 @@ internal sealed interface SummaryState {
     val activationDate: LocalDate,
     val navigateToFail: Boolean = false,
   ) : SummaryState {
-    val total: UiMoney = quote.addons.map { it.premium }.plus(quote.premium)
-      .sumOf { it.amount }
-      .let { sum ->
-        UiMoney(sum, quote.premium.currencyCode)
-      }
+    val totalNet: UiMoney = quote.newTotalCost.monthlyNet
   }
 
   data object Failure : SummaryState

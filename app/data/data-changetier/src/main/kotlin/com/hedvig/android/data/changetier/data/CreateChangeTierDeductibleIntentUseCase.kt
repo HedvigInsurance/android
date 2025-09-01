@@ -88,6 +88,9 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           ),
           displayItems = displayItems.toDisplayItems(),
           addons = emptyList(),
+          currentTotalCost = TODO(), // todo: here: probably empty???
+          newTotalCost = TODO(), // todo: here: probably empty???
+          costBreakdown = TODO(), // todo: here: probably empty???
         )
       }
       val quotesToOffer = intent.quotes.map {
@@ -119,6 +122,9 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
               addonVariant = addon.addonVariant.toAddonVariant(),
             )
           } ?: emptyList(),
+          currentTotalCost = TODO(),
+          newTotalCost = TODO(),
+          costBreakdown = TODO(),
         )
       }
       val intentResult = ChangeTierDeductibleIntent(

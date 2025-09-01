@@ -90,12 +90,6 @@ data class QuoteDisplayItem(
   val value: String,
 )
 
-@Serializable
-data class ContractDiscount(
-  val displayName: String,
-  val discountValue: String,
-)
-
 @Stable
 interface QuoteCardState {
   var showDetails: Boolean
@@ -129,7 +123,7 @@ fun QuoteCard(
   subtitle: String,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
@@ -140,7 +134,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = false,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = productVariant.displayName,
@@ -161,7 +155,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -173,7 +167,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = isExcluded,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -210,7 +204,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -221,7 +215,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = isExcluded,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -301,7 +295,7 @@ private fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
   contractGroup: ContractGroup?,
@@ -373,9 +367,9 @@ private fun QuoteCard(
           modifier = Modifier.padding(top = 16.dp),
         )
       }
-      if (discounts.isNotEmpty()) {
+      if (costBreakdown.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
-        DiscountCostBreakdown(discounts)
+        DiscountCostBreakdown(costBreakdown)
       }
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()
@@ -544,15 +538,15 @@ private fun QuoteDetails(
 }
 
 @Composable
-fun DiscountCostBreakdown(discounts: List<ContractDiscount>, modifier: Modifier = Modifier) {
+fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: Modifier = Modifier) {
   ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      for (discount in discounts) {
+      for (item in costBreakdown) {
         HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(discount.displayName) },
+          { HedvigText(item.first) },
           {
             HedvigText(
-              text = discount.discountValue,
+              text = item.second,
               textAlign = TextAlign.End,
             )
           },
@@ -671,9 +665,7 @@ private fun PreviewQuoteCard(
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
         isExcluded = triple == TripleCase.SECOND,
-        discounts = List(3) { ContractDiscount("#$it", "discount#$it") }.takeIf {
-          triple == TripleCase.THIRD
-        }.orEmpty(),
+        costBreakdown = List(3) { "#$it" to "discount#$it" },
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",

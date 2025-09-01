@@ -96,6 +96,10 @@ certificates as well as the ProductVariant.
 type Agreement {
   id: ID!
   """
+  The cost details of this agreement on today's date or the date it starts
+  """
+  cost: ItemCost!
+  """
   The date this agreement took effect.
   """
   activeFrom: Date!
@@ -127,7 +131,7 @@ type Agreement {
   """
   A localized list of key/value pairs the define the properties of this insurance.
   """
-  displayItems: [AgreementDisplayItem!]!
+  displayItems(options: DisplayItemOptions = null): [AgreementDisplayItem!]!
   """
   Number co insured on the agreement. Null if not supported.
   """
@@ -830,6 +834,9 @@ type DirectDebitResponse2 {
   url: String!
   orderId: String!
 }
+input DisplayItemOptions {
+  hidePrice: Boolean! = false
+}
 type EmailMessage {
   id: ID!
   recipient: String
@@ -1510,10 +1517,6 @@ returned as ItemDiscount
 """
 type ItemDiscount {
   """
-   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
-  """
-  campaignCode: String!
-  """
    Short name for list display, ex. "50% puppy discount" 
   """
   displayName: String!
@@ -1525,6 +1528,10 @@ type ItemDiscount {
    Longer explanation, ex. 50% discount for 6 months 
   """
   explanation: String!
+  """
+   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+  """
+  campaignCode: String!
 }
 scalar JSON
 type LinkInfo {
@@ -2588,7 +2595,7 @@ type PendingContract {
   """
   Same as `Contract.currentAgreement.displayItems`.
   """
-  displayItems: [AgreementDisplayItem!]!
+  displayItems(options: DisplayItemOptions = null): [AgreementDisplayItem!]!
   """
   A value indicating whether Hedvig will help out with the cancellation of the member's existing insurance (true)
   or if the member have to cancel it themselves and get back to us with a requested start date (false).
@@ -3651,6 +3658,10 @@ type UpsellTravelAddonQuote {
   """
   premium: Money!
   """
+  Documents to show instead of addonVariant documents
+  """
+  documents: [UpsellTravelAddonQuoteInsuranceDocument!]!
+  """
    The terms 
   """
   addonVariant: AddonVariant!
@@ -3658,6 +3669,10 @@ type UpsellTravelAddonQuote {
    Addon subtype 
   """
   addonSubtype: String!
+}
+type UpsellTravelAddonQuoteInsuranceDocument {
+  displayName: String!
+  url: String!
 }
 scalar Url
 """

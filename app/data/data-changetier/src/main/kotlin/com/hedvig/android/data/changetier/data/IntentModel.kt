@@ -24,6 +24,15 @@ data class TierDeductibleQuote(
   val displayItems: List<ChangeTierDeductibleDisplayItem>,
   val productVariant: ProductVariant,
   val addons: List<ChangeTierDeductibleAddonQuote>,
+  val currentTotalCost: TotalCost,
+  val newTotalCost: TotalCost,
+  val costBreakdown: List<Pair<String, String>>,
+)
+
+@Serializable
+data class TotalCost(
+  val monthlyGross: UiMoney,
+  val monthlyNet: UiMoney,
 )
 
 @Serializable

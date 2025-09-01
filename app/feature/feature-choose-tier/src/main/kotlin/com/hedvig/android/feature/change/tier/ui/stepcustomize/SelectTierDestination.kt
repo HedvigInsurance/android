@@ -38,11 +38,13 @@ import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
@@ -839,6 +841,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id1",
@@ -868,6 +883,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id2",
@@ -897,6 +925,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id3",
@@ -926,6 +967,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id4",
@@ -955,5 +1009,18 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
 )
