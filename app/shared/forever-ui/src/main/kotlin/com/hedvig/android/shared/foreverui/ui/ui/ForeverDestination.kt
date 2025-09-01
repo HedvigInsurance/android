@@ -57,7 +57,6 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigSnackbar
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -526,6 +525,25 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
           Referral("Name#6", ReferralState.TERMINATED, null),
           Referral("Name#7", ReferralState.TERMINATED, null),
         ),
+        campaignCode = "HEDV1G",
+        incentive = null,
+        currentNetCost = null,
+        currentDiscount = null,
+        currentGrossCost = null,
+      ),
+      referralCodeLoading = false,
+      referralCodeErrorMessage = null,
+      reloading = false,
+      showReferralCodeSuccessfullyChangedMessage = true,
+    ),
+    ForeverUiState.Success(
+      foreverData = ForeverData(
+        referredBy = ReferredByInfo(
+          name = "Sladan",
+          state = ReferralState.TERMINATED,
+          activeDiscount = null,
+        ),
+        referrals = listOf(),
         campaignCode = "HEDV1G",
         incentive = null,
         currentNetCost = null,
