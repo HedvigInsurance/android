@@ -62,8 +62,6 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
-import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -239,6 +237,7 @@ private fun SummarySuccessScreen(
         .padding(horizontal = 16.dp),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.fillMaxWidth(),
         startSlot = {
           HedvigText(
             stringResource(R.string.TIER_FLOW_TOTAL),
@@ -247,7 +246,7 @@ private fun SummarySuccessScreen(
         },
         spaceBetween = 8.dp,
         endSlot = {
-          Row {
+          Row(horizontalArrangement = Arrangement.End) {
             val grossPriceVoiceDescription = stringResource(
               R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
               uiState.quote.newTotalCost.monthlyGross.getPerMonthDescription(),

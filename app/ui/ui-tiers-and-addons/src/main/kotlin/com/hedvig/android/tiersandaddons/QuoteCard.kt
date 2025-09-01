@@ -369,7 +369,10 @@ private fun QuoteCard(
       }
       if (costBreakdown.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
-        DiscountCostBreakdown(costBreakdown)
+        DiscountCostBreakdown(
+          costBreakdown,
+          Modifier.semantics(mergeDescendants = true) {},
+        )
       }
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()
