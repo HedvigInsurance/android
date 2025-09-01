@@ -11,6 +11,7 @@ data class ForeverData(
   val currentGrossCost: UiMoney?,
   val currentDiscount: UiMoney?,
   val referrals: List<Referral>,
+  val referredBy: ReferredByInfo?,
 ) {
   constructor(
     referralsData: FullReferralsQuery.Data,
@@ -20,19 +21,34 @@ data class ForeverData(
     currentDiscount = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyDiscount),
     currentNetCost = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyNet),
     currentGrossCost = UiMoney.fromMoneyFragment(referralsData.currentMember.insuranceCost.monthlyGross),
-    referrals = referralsData.currentMember.referralInformation.referrals.map {
+    referrals = referralsData.currentMember.referralInformation.referrals.map { referral ->
       Referral(
-        name = it.name,
-        state = when (it.status) {
-          MemberReferralStatus.PENDING -> ReferralState.IN_PROGRESS
-          MemberReferralStatus.ACTIVE -> ReferralState.ACTIVE
-          MemberReferralStatus.TERMINATED -> ReferralState.TERMINATED
-          MemberReferralStatus.UNKNOWN__ -> ReferralState.UNKNOWN
-        },
-        discount = it.activeDiscount?.let { UiMoney.fromMoneyFragment(it) },
+        name = referral.name,
+        state = referral.status.toState(),
+        discount = referral.activeDiscount?.let { UiMoney.fromMoneyFragment(it) },
       )
     },
+    referredBy = with(referralsData.currentMember.referralInformation.referredBy) {
+      if (this != null && status == MemberReferralStatus.ACTIVE) {
+        ReferredByInfo(
+          name = name,
+          activeDiscount = activeDiscount?.let { UiMoney.fromMoneyFragment(it) },
+          status.toState(),
+        )
+      } else {
+        null
+      }
+    },
   )
+}
+
+private fun MemberReferralStatus.toState(): ReferralState {
+  return when (this) {
+    MemberReferralStatus.PENDING -> ReferralState.IN_PROGRESS
+    MemberReferralStatus.ACTIVE -> ReferralState.ACTIVE
+    MemberReferralStatus.TERMINATED -> ReferralState.TERMINATED
+    MemberReferralStatus.UNKNOWN__ -> ReferralState.UNKNOWN
+  }
 }
 
 data class Referral(
@@ -47,3 +63,9 @@ enum class ReferralState {
   TERMINATED,
   UNKNOWN,
 }
+
+data class ReferredByInfo(
+  val name: String,
+  val activeDiscount: UiMoney?,
+  val state: ReferralState,
+)

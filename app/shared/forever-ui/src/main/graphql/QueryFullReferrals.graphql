@@ -23,6 +23,14 @@ query FullReferrals {
           ...MoneyFragment
         }
       }
+      referredBy {
+        activeDiscount {
+          ...MoneyFragment
+        }
+        code
+        name
+        status
+      }
     }
   }
 }

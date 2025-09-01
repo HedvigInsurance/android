@@ -41,6 +41,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
             amount = 10.0,
             currencyCode = CurrencyCode.SEK,
           ),
+          referredBy = null,
           referrals = listOf(
             FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
               name = "Adam",
