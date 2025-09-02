@@ -283,29 +283,25 @@ type ChangeTierDeductibleAddonQuote {
   """
    Id of the addon 
   """
-  addonId: ID!
+  addonId: ID! @deprecated(reason: "Will be removed")
   """
    Display name for the addon. 
   """
-  displayName: String!
+  displayName: String! @deprecated(reason: "Will be removed")
   """
    The addon details to show on summary page. 
   """
-  displayItems: [ChangeTierDeductibleDisplayItem!]!
+  displayItems: [ChangeTierDeductibleDisplayItem!]! @deprecated(reason: "Will be removed")
   """
    Previous price for the addon. 
   """
-  previousPremium: Money!
+  previousPremium: Money! @deprecated(reason: "Will be removed")
   """
    Price for the addon. 
   """
   premium: Money! @deprecated(reason: "Use cost instead")
   """
-   Cost breakdown 
-  """
-  cost: ItemCost!
-  """
-   The terms 
+  The terms
   """
   addonVariant: AddonVariant!
 }
@@ -415,9 +411,13 @@ type ChangeTierDeductibleQuote {
   """
   premium: Money! @deprecated(reason: "Use cost instead")
   """
-   Cost breakdown. Does not include addons 
+   Previous total cost including addons 
   """
-  cost: ItemCost!
+  currentTotalCost: TotalCost!
+  """
+   New total cost including addons 
+  """
+  newTotalCost: TotalCost!
   """
    List of display items for the quote 
   """
@@ -430,11 +430,20 @@ type ChangeTierDeductibleQuote {
    Changed prices for existing addons 
   """
   addons: [ChangeTierDeductibleAddonQuote!]!
+  """
+  The new price breakdown:
+  insurance base premium, addons premiums, campaigns and bundle discounts
+  """
+  costBreakdown: [ChangeTierPriceDetailItem!]!
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
+}
+type ChangeTierPriceDetailItem {
+  displayName: String!
+  displayValue: String!
 }
 interface ChatMessage {
   id: ID!
@@ -1960,7 +1969,7 @@ enum MidtermChangeIntentState {
   COMPLETED
 }
 type MidtermChangePriceDetailItem {
-  displayTitle: String!
+  displayName: String!
   displayValue: String!
 }
 """
