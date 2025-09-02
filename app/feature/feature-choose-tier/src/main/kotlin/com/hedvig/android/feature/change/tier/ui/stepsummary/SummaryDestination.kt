@@ -423,17 +423,6 @@ private class SummaryUiStateProvider :
           ),
           addons = List(2) {
             ChangeTierDeductibleAddonQuote(
-              addonId = "addonId",
-              displayName = "Addon Quote Name",
-              displayItems = listOf(
-                ChangeTierDeductibleDisplayItem(
-                  displayTitle = "Coinsured",
-                  displayValue = "You + 1",
-                  displaySubtitle = null,
-                ),
-              ),
-              previousPremium = UiMoney(29.0, SEK),
-              premium = UiMoney(45.0, SEK),
               addonVariant = AddonVariant(
                 displayName = "Addon Name",
                 perils = listOf(),

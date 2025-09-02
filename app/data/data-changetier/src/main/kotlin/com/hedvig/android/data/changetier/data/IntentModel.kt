@@ -44,11 +44,6 @@ data class ChangeTierDeductibleDisplayItem(
 
 @Serializable
 data class ChangeTierDeductibleAddonQuote(
-  val addonId: String,
-  val displayName: String,
-  val displayItems: List<ChangeTierDeductibleDisplayItem>,
-  val previousPremium: UiMoney,
-  val premium: UiMoney,
   val addonVariant: AddonVariant,
 )
 

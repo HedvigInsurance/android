@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.fragment.DeductibleFragment
 import octopus.fragment.DisplayItemFragment
+import octopus.fragment.TotalCostFragment
 
 internal interface CreateChangeTierDeductibleIntentUseCase {
   suspend fun invoke(
@@ -68,6 +69,8 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
         return@either intentResult
       }
+
+
       val currentQuote = with(intent.agreementToChange) {
         ensureNotNull(tierLevel) {
           ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierLevel was null")
@@ -88,9 +91,12 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           ),
           displayItems = displayItems.toDisplayItems(),
           addons = emptyList(),
-          currentTotalCost = TODO(), // todo: here: probably empty???
-          newTotalCost = TODO(), // todo: here: probably empty???
-          costBreakdown = TODO(), // todo: here: probably empty???
+          currentTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
+          //todo: check here. This whole thing is a fake "quote" with current conditions
+          newTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
+          //todo: see above
+          costBreakdown = emptyList()
+          //todo: see above
         )
       }
       val quotesToOffer = intent.quotes.map {
@@ -114,17 +120,14 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           ),
           addons = it.addons?.map { addon ->
             ChangeTierDeductibleAddonQuote(
-              addonId = addon.addonId,
-              displayName = addon.displayName,
-              displayItems = addon.displayItems.toDisplayItems(),
-              previousPremium = UiMoney.fromMoneyFragment(addon.previousPremium),
-              premium = UiMoney.fromMoneyFragment(addon.premium),
               addonVariant = addon.addonVariant.toAddonVariant(),
             )
           } ?: emptyList(),
-          currentTotalCost = TODO(),
-          newTotalCost = TODO(),
-          costBreakdown = TODO(),
+          currentTotalCost = it.currentTotalCost.toTotalCost(),
+          newTotalCost = it.newTotalCost.toTotalCost(),
+          costBreakdown = it.costBreakdown.map { (displayName, displayValue) ->
+            displayName to displayValue
+          },
         )
       }
       val intentResult = ChangeTierDeductibleIntent(
@@ -135,6 +138,13 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
       intentResult
     }
   }
+}
+
+private fun TotalCostFragment.toTotalCost(): TotalCost {
+  return TotalCost(
+    monthlyGross = UiMoney.fromMoneyFragment(this.monthlyGross),
+    monthlyNet = UiMoney.fromMoneyFragment(this.monthlyNet),
+  )
 }
 
 private fun DeductibleFragment.toDeductible(): Deductible {
