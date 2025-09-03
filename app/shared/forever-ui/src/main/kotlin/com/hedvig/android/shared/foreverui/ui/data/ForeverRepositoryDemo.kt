@@ -36,16 +36,12 @@ internal class ForeverRepositoryDemo : ForeverRepository {
         ),
         referralInformation = FullReferralsQuery.Data.CurrentMember.ReferralInformation(
           code = "DEMOCODE",
-          monthlyDiscountExcludingReferrals = FullReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountExcludingReferrals(
-            __typename = "",
-            amount = 120.0,
-            currencyCode = CurrencyCode.SEK,
-          ),
           monthlyDiscountPerReferral = FullReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountPerReferral(
             __typename = "",
             amount = 10.0,
             currencyCode = CurrencyCode.SEK,
           ),
+          referredBy = null,
           referrals = listOf(
             FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
               name = "Adam",

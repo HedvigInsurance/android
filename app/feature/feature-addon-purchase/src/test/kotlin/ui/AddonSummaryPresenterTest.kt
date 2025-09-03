@@ -127,6 +127,7 @@ private val newQuote = TravelAddonQuote(
     60.0,
     UiCurrencyCode.SEK,
   ),
+  documents = listOf(),
 )
 
 private val newQuote2 = TravelAddonQuote(
@@ -155,6 +156,7 @@ private val newQuote2 = TravelAddonQuote(
     60.0,
     UiCurrencyCode.NOK,
   ),
+  documents = listOf(),
 )
 
 private val currentAddon = CurrentTravelAddon(

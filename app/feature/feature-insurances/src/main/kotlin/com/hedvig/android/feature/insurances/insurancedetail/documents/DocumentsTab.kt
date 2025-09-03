@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -55,25 +54,28 @@ internal fun DocumentsTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!addons.isNullOrEmpty()) {
-      addons.forEach {
-        HighlightLabel(
-          modifier = Modifier.padding(horizontal = 16.dp),
-          labelText = it.addonVariant.displayName,
-          size = HighlightLabelDefaults.HighLightSize.Medium,
-          color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
-        )
-        Spacer(Modifier.height(8.dp))
-        it.addonVariant.documents.forEachIndexed { index, doc ->
-          DocumentCard(
-            onClick = { onDocumentClicked(doc.url) },
-            title = doc.displayName,
-            subtitle = null,
+      addons.forEach { addon ->
+        val addonDocuments = addon.addonVariant.documents
+        if (addonDocuments.isNotEmpty()) {
+          HighlightLabel(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            labelText = addon.addonVariant.displayName,
+            size = HighlightLabelDefaults.HighLightSize.Medium,
+            color = HighlightLabelDefaults.HighlightColor.Blue(HighlightLabelDefaults.HighlightShade.LIGHT),
           )
-          if (index != documents.lastIndex) {
-            Spacer(Modifier.height(4.dp))
+          Spacer(Modifier.height(8.dp))
+          addonDocuments.forEachIndexed { index, doc ->
+            DocumentCard(
+              onClick = { onDocumentClicked(doc.url) },
+              title = doc.displayName,
+              subtitle = null,
+            )
+            if (index != addonDocuments.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
           }
+          Spacer(Modifier.height(16.dp))
         }
-        Spacer(Modifier.height(16.dp))
       }
     }
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -133,24 +135,73 @@ private fun PreviewDocumentsScreen() {
           InsuranceVariantDocument("other doc", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
         ),
         onDocumentClicked = {},
-        addons = listOf(
-          Addon(
-            AddonVariant(
-              perils = listOf(),
-              termsVersion = "",
-              displayName = "Travel plus 60",
-              product = "Product",
-              documents = listOf(
-                InsuranceVariantDocument(
-                  "terms",
-                  "test",
-                  InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
-                ),
-              ),
-            ),
-          ),
-        ),
+        addons = previewAddonsWithDocs,
       )
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewDocumentsScreenNoAddonDocs() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DocumentsTab(
+        documents = listOf(
+          InsuranceVariantDocument("terms", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),
+          InsuranceVariantDocument("other doc", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
+        ),
+        onDocumentClicked = {},
+        addons = previewAddonsNoDocs,
+      )
+    }
+  }
+}
+
+private val previewAddonsWithDocs = listOf(
+  Addon(
+    AddonVariant(
+      perils = listOf(),
+      termsVersion = "",
+      displayName = "Travel plus 60",
+      product = "Product",
+      documents = emptyList(),
+    ),
+  ),
+  Addon(
+    AddonVariant(
+      perils = listOf(),
+      termsVersion = "",
+      displayName = "Party Plus",
+      product = "Product",
+      documents = listOf(
+        InsuranceVariantDocument(
+          "terms",
+          "test",
+          InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS,
+        ),
+      ),
+    ),
+  ),
+)
+
+private val previewAddonsNoDocs = listOf(
+  Addon(
+    AddonVariant(
+      perils = listOf(),
+      termsVersion = "",
+      displayName = "Travel plus 60",
+      product = "Product",
+      documents = emptyList(),
+    ),
+  ),
+  Addon(
+    AddonVariant(
+      perils = listOf(),
+      termsVersion = "",
+      displayName = "Party Plus",
+      product = "Product",
+      documents = emptyList(),
+    ),
+  ),
+)

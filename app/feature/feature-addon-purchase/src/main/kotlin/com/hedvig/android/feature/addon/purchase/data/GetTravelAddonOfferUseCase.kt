@@ -81,6 +81,12 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
         item.displayTitle to item.displayValue
       },
       addonVariant = it.addonVariant.toAddonVariant(),
+      documents = it.documents.map { doc ->
+        TravelAddonQuoteInsuranceDocument(
+          doc.displayName,
+          doc.url,
+        )
+      },
     )
   }
 }

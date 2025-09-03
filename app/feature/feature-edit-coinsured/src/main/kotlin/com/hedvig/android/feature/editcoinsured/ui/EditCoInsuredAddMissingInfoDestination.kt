@@ -339,6 +339,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = null,
+                terminatesOn = LocalDate(2025, 10, 1),
               ),
               CoInsured(
                 null,
@@ -346,6 +348,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
             ),
             updatedCoInsured = listOf(
@@ -355,6 +359,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = null,
+                terminatesOn = LocalDate(2025, 10, 1),
               ),
               CoInsured(
                 null,
@@ -362,6 +368,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
               CoInsured(
                 null,
@@ -369,6 +377,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = null,
+                terminatesOn = null,
               ),
             ),
             member = Member(
@@ -431,6 +441,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
               CoInsured(
                 null,
@@ -438,6 +450,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
             ),
             member = Member(

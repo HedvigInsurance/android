@@ -241,24 +241,24 @@ fun QuoteCard(
 }
 
 @Composable
-fun QuoteCardDocumentsSection(documents: List<InsuranceVariantDocument>) {
+fun AddonQuoteCardDocumentsSection(documentsDisplayNameUrls: List<Pair<String, String>>) {
   Column(Modifier.semantics(true) {}) {
     HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
     Column(
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      for (document in documents) {
+      for (document in documentsDisplayNameUrls) {
         val uriHandler = LocalUriHandler.current
         Row(
           modifier = Modifier
             .fillMaxWidth()
             .clip(HedvigTheme.shapes.cornerXSmall)
             .clickable {
-              uriHandler.openUri(document.url)
+              uriHandler.openUri(document.second)
             },
         ) {
           HedvigText(
-            text = document.displayName,
+            text = document.first,
             style = HedvigTheme.typography.bodySmall,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier.weight(1f),
