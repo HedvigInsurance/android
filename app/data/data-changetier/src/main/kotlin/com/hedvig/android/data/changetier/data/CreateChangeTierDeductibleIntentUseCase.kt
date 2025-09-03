@@ -70,7 +70,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         return@either intentResult
       }
 
-
       val currentQuote = with(intent.agreementToChange) {
         ensureNotNull(tierLevel) {
           ErrorMessage("For insuranceId:$insuranceId and source:$source, agreementToChange tierLevel was null")
@@ -92,11 +91,11 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           displayItems = displayItems.toDisplayItems(),
           addons = emptyList(),
           currentTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
-          //todo: check here. This whole thing is a fake "quote" with current conditions
+          // todo: check here. This whole thing is a fake "quote" with current conditions
           newTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
-          //todo: see above
-          costBreakdown = emptyList()
-          //todo: see above
+          // todo: see above
+          costBreakdown = emptyList(),
+          // todo: see above
         )
       }
       val quotesToOffer = intent.quotes.map {
