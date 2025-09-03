@@ -13,26 +13,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetPriceBreakdown
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -41,13 +42,20 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
@@ -223,6 +231,10 @@ private fun EditCoInsuredScreen(
               )
             }
           }
+          val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
+          HedvigBottomSheetPriceBreakdown(
+            costBreakdownBottomSheetState,
+          )
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = { insured ->
@@ -252,8 +264,8 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.weight(1f))
           Column {
             if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-              Spacer(Modifier.height(8.dp))
-              PriceInfo(uiState.listState.priceInfo)
+              Spacer(Modifier.height(16.dp))
+              PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
               HedvigButton(
                 text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
                 onClick = onCommitChanges,
@@ -290,7 +302,10 @@ private fun EditCoInsuredScreen(
 }
 
 @Composable
-private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
+private fun PriceInfo(
+  priceInfo: EditCoInsuredState.Loaded.PriceInfo,
+  costBreakdownBottomSheetState: HedvigBottomSheetState<PriceInfoForBottomSheet>,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   Column(
@@ -299,34 +314,75 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       .fillMaxWidth(),
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { HedvigText(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL)) },
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(id = R.string.PRICE_PREVIOUS_PRICE))
+        }
+      },
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HedvigText(
+            modifier = Modifier
+              .padding(vertical = 16.dp),
             text = stringResource(
-              id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
-              priceInfo.previousPrice.toString(),
+              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.currentCost.monthlyNet.toString(),
             ),
-            color = HedvigTheme.colorScheme.textSecondary,
-            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
-          )
-          Spacer(modifier = Modifier.width(8.dp))
-          HedvigText(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()),
           )
         }
       },
       spaceBetween = 8.dp,
+      modifier = Modifier
+        .horizontalDivider(DividerPosition.Bottom),
     )
-    HedvigText(
-      text = stringResource(
-        id = R.string.CONTRACT_ADD_COINSURED_STARTS_FROM,
-        dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
-      ),
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondary,
-      textAlign = TextAlign.End,
-      modifier = Modifier.fillMaxWidth(),
+
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
+          if (priceInfo.currentCost.monthlyGross != priceInfo.newCost.monthlyNet) {
+            IconButton(
+              onClick = {
+                val priceInfoForBottomSheet = PriceInfoForBottomSheet(
+                  displayItems = priceInfo.newCostBreakDown,
+                  totalGross = priceInfo.newCost.monthlyGross,
+                  totalNet = priceInfo.newCost.monthlyNet,
+                )
+                costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+              },
+            ) {
+              Icon(
+                HedvigIcons.InfoFilled,
+                contentDescription = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
+                tint = HedvigTheme.colorScheme.fillSecondary,
+              )
+            }
+          }
+        }
+      },
+      endSlot = {
+        Column(horizontalAlignment = Alignment.End) {
+          HedvigText(
+            modifier = Modifier
+              .padding(top = 16.dp),
+            text = stringResource(
+              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.newCost.monthlyNet.toString(),
+            ),
+          )
+          HedvigText(
+            text = stringResource(
+              id = R.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+              dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
+            ),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
     )
   }
 }
@@ -406,9 +462,19 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, UiCurrencyCode.SEK),
-              newPrice = UiMoney(200.0, UiCurrencyCode.SEK),
+              currentCost =
+                MonthlyCost(
+                  monthlyGross = UiMoney(179.0, UiCurrencyCode.SEK),
+                  monthlyNet = UiMoney(110.0, UiCurrencyCode.SEK),
+                ),
+              newCost = MonthlyCost(
+                monthlyGross = UiMoney(200.0, UiCurrencyCode.SEK),
+                monthlyNet = UiMoney(121.0, UiCurrencyCode.SEK),
+              ),
               validFrom = LocalDate.fromEpochDays(400),
+              newCostBreakDown = listOf(
+                "Bundle discount 20%" to "-79 kr/mo",
+              ),
             ),
             allCoInsured = listOf(),
           ),
