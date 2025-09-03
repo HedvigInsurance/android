@@ -5,6 +5,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
+internal data class DiscountedContract(
+  val contractId: String,
+  val contractDisplayName: String,
+  val appliedDiscounts: List<Discount>, // todo: just an assumption, don't have api yet
+)
+
+@Serializable
 internal data class Discount(
   val code: String,
   val description: String?,
@@ -16,6 +23,9 @@ internal data class Discount(
   sealed interface ExpiredState {
     @Serializable
     data object NotExpired : ExpiredState
+
+    @Serializable
+    data object Pending : ExpiredState
 
     @Serializable
     data class AlreadyExpired(val expirationDate: LocalDate) : ExpiredState
