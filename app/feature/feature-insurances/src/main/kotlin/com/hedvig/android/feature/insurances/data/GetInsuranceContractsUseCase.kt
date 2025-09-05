@@ -11,11 +11,13 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
+import com.hedvig.android.feature.insurances.data.toMonthlyCost
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -31,6 +33,7 @@ import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
 import octopus.fragment.AgreementFragment
 import octopus.fragment.ContractFragment
+import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
 import octopus.type.DisplayItemOptions
 
@@ -122,6 +125,13 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     exposureDisplayName = exposureDisplayName,
     productVariant = this.productVariant.toProductVariant(),
     displayItems = this.displayItems.map { it.toDisplayItem() },
+    addons = this.addons?.map {
+      Addon(it.addonVariant.toAddonVariant(),
+        premium = UiMoney.fromMoneyFragment( it.premium))
+    },
+    cost = this.cost.toMonthlyCost(),
+    basePremium = UiMoney.fromMoneyFragment( this.basePremium)
+
   )
 }
 
@@ -153,9 +163,11 @@ private fun ContractFragment.toContract(
       coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
-        Addon(it.addonVariant.toAddonVariant())
+        Addon(it.addonVariant.toAddonVariant(),
+          premium = UiMoney.fromMoneyFragment( it.premium))
       },
       cost = currentAgreement.cost.toMonthlyCost(),
+      basePremium = UiMoney.fromMoneyFragment( currentAgreement.basePremium)
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -166,10 +178,12 @@ private fun ContractFragment.toContract(
         certificateUrl = it.certificateUrl,
         coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
         creationCause = it.creationCause.toCreationCause(),
-        addons = it.addons?.map { addon ->
-          Addon(addon.addonVariant.toAddonVariant())
+        addons = it.addons?.map {
+          Addon(it.addonVariant.toAddonVariant(),
+            premium =UiMoney.fromMoneyFragment(  it.premium))
         },
         cost = it.cost.toMonthlyCost(),
+        basePremium = UiMoney.fromMoneyFragment( it.basePremium)
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
@@ -183,7 +197,7 @@ private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
   return DisplayItem.fromStrings(displayTitle, displayValue)
 }
 
-private fun AgreementFragment.Cost.toMonthlyCost(): MonthlyCost {
+private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
   TODO()
 }
 

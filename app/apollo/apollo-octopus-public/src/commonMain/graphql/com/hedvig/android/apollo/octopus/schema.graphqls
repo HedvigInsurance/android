@@ -7,6 +7,10 @@ type Addon {
   such as names, legal documents, perils etc.
   """
   addonVariant: AddonVariant!
+  """
+  Premium of the addon.
+  """
+  premium: Money!
 }
 """
 Root of coverage comparison result
@@ -108,9 +112,13 @@ type Agreement {
   """
   activeTo: Date!
   """
-  The monthly premium of this agreement.
+  The monthly premium of this agreement with addons.
   """
   premium: Money!
+  """
+  The monthly premium of this agreement.
+  """
+  basePremium: Money!
   """
   The deductible of the agreement.
   """
@@ -283,29 +291,25 @@ type ChangeTierDeductibleAddonQuote {
   """
    Id of the addon 
   """
-  addonId: ID!
+  addonId: ID! @deprecated(reason: "Will be removed")
   """
    Display name for the addon. 
   """
-  displayName: String!
+  displayName: String! @deprecated(reason: "Will be removed")
   """
    The addon details to show on summary page. 
   """
-  displayItems: [ChangeTierDeductibleDisplayItem!]!
+  displayItems: [ChangeTierDeductibleDisplayItem!]! @deprecated(reason: "Will be removed")
   """
    Previous price for the addon. 
   """
-  previousPremium: Money!
+  previousPremium: Money! @deprecated(reason: "Will be removed")
   """
    Price for the addon. 
   """
   premium: Money! @deprecated(reason: "Use cost instead")
   """
-   Cost breakdown 
-  """
-  cost: ItemCost!
-  """
-   The terms 
+  The terms
   """
   addonVariant: AddonVariant!
 }
@@ -415,9 +419,13 @@ type ChangeTierDeductibleQuote {
   """
   premium: Money! @deprecated(reason: "Use cost instead")
   """
-   Cost breakdown. Does not include addons 
+   Previous total cost including addons 
   """
-  cost: ItemCost!
+  currentTotalCost: TotalCost!
+  """
+   New total cost including addons 
+  """
+  newTotalCost: TotalCost!
   """
    List of display items for the quote 
   """
@@ -430,11 +438,20 @@ type ChangeTierDeductibleQuote {
    Changed prices for existing addons 
   """
   addons: [ChangeTierDeductibleAddonQuote!]!
+  """
+  The new price breakdown:
+  insurance base premium, addons premiums, campaigns and bundle discounts
+  """
+  costBreakdown: [ChangeTierPriceDetailItem!]!
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
+}
+type ChangeTierPriceDetailItem {
+  displayName: String!
+  displayValue: String!
 }
 interface ChatMessage {
   id: ID!
@@ -1529,7 +1546,7 @@ type ItemDiscount {
   """
   explanation: String!
   """
-   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc 
   """
   campaignCode: String!
 }
@@ -1960,7 +1977,7 @@ enum MidtermChangeIntentState {
   COMPLETED
 }
 type MidtermChangePriceDetailItem {
-  displayTitle: String!
+  displayName: String!
   displayValue: String!
 }
 """
@@ -2577,6 +2594,10 @@ It is split into its own type, because they are not "real" insurances until they
 type PendingContract {
   id: UUID!
   """
+  Calculated based on the pending agreement
+  """
+  cost: ItemCost!
+  """
   Same as `Contract.exposureDisplayName`.
   """
   exposureDisplayName: String!
@@ -2585,9 +2606,13 @@ type PendingContract {
   """
   exposureDisplayNameShort: String!
   """
-  Same as `Contract.currentAgreement.premium`.
+  Same as `Contract.currentAgreement.premium` - price with addons.
   """
   premium: Money!
+  """
+  Same as `Contract.currentAgreement.basePremium`.
+  """
+  basePremium: Money!
   """
   Same as `Contract.currentAgreement.productVariant`.
   """
@@ -2601,6 +2626,10 @@ type PendingContract {
   or if the member have to cancel it themselves and get back to us with a requested start date (false).
   """
   externalInsuranceCancellationHandledByHedvig: Boolean!
+  """
+  List of addons on the agreement.
+  """
+  addons: [Addon!]!
 }
 type Peril {
   id: ID!
@@ -3658,6 +3687,10 @@ type UpsellTravelAddonQuote {
   """
   premium: Money!
   """
+  Documents to show instead of addonVariant documents
+  """
+  documents: [UpsellTravelAddonQuoteInsuranceDocument!]!
+  """
    The terms 
   """
   addonVariant: AddonVariant!
@@ -3665,6 +3698,10 @@ type UpsellTravelAddonQuote {
    Addon subtype 
   """
   addonSubtype: String!
+}
+type UpsellTravelAddonQuoteInsuranceDocument {
+  displayName: String!
+  url: String!
 }
 scalar Url
 """

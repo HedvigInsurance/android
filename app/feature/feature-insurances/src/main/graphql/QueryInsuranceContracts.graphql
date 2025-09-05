@@ -28,6 +28,20 @@ query InsuranceContracts(
       displayItems {
         ...AgreementDisplayItemFragment
       }
+      addons @include(if: $addonsEnabled) {
+        addonVariant {
+          ...AddonVariantFragment
+        }
+        premium {
+          ...MoneyFragment
+        }
+      }
+      cost {
+        ...MonthlyCostFragment
+      }
+      basePremium {
+        ...MoneyFragment
+      }
     }
   }
 }
@@ -72,24 +86,34 @@ fragment AgreementFragment on Agreement {
     addonVariant {
       ...AddonVariantFragment
     }
+    premium {
+      ...MoneyFragment
+    }
   }
   cost {
-    monthlyGross {
-      ...MoneyFragment
-    }
-    monthlyNet {
-      ...MoneyFragment
-    }
-    discounts {
-      displayName
-      displayValue
-      explanation
-      campaignCode
-    }
+    ...MonthlyCostFragment
+  }
+  basePremium {
+    ...MoneyFragment
   }
 }
 
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {
   displayTitle
   displayValue
+}
+
+fragment MonthlyCostFragment on ItemCost {
+  monthlyGross {
+    ...MoneyFragment
+  }
+  monthlyNet {
+    ...MoneyFragment
+  }
+  discounts {
+    displayName
+    displayValue
+    explanation
+    campaignCode
+  }
 }
