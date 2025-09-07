@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Default
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
@@ -53,7 +55,9 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDat
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
+import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
@@ -65,6 +69,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
+import octopus.type.IconBuilder
 
 @Composable
 internal fun YourInfoTab(
@@ -85,6 +90,9 @@ internal fun YourInfoTab(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  priceToShow: UiMoney,
+  showPriceInfoIcon: Boolean,
+  onInfoIconClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -169,7 +177,12 @@ internal fun YourInfoTab(
       }
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-
+    PriceRow(
+      priceToShow,
+      showPriceInfoIcon,
+      onInfoIconClick,
+      Modifier.padding(horizontal = 16.dp)
+    )
     if (allowEditCoInsured) {
       HorizontalDivider(Modifier.padding(horizontal = 16.dp))
       Spacer(Modifier.height(16.dp))
@@ -248,6 +261,51 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
       )
     }
   }
+}
+
+@Composable
+internal fun PriceRow(priceToShow: UiMoney,
+                      showInfoIcon: Boolean,
+                      onInfoIconClick: () -> Unit,
+                      modifier: Modifier = Modifier) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = modifier.horizontalDivider(DividerPosition.Top),
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        HedvigText(stringResource(id = R.string.DETAILS_TABLE_INSURANCE_PREMIUM))
+      }
+    },
+    endSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        if (showInfoIcon) {
+          IconButton(
+            onInfoIconClick,
+            modifier = Modifier.size(16.dp),
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              null,
+              tint = HedvigTheme.colorScheme.fillSecondary
+            )
+          }
+          Spacer(Modifier.width(8.dp))
+        }
+        HedvigText(
+          text = priceToShow.toString(),
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
+      }
+    },
+    spaceBetween = 8.dp,
+  )
 }
 
 @Composable
@@ -501,6 +559,9 @@ private fun PreviewYourInfoTab() {
         openUrl = {},
         allowChangeTier = true,
         onChangeTierClick = {},
+        priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
+        showPriceInfoIcon = true,
+        onInfoIconClick = {}
       )
     }
   }

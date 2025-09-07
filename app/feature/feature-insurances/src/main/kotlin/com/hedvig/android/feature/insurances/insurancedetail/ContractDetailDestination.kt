@@ -276,6 +276,9 @@ private fun ContractDetailScreen(
                       },
                       upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
                       isTerminated = contract.isTerminated,
+                      priceToShow = TODO(),
+                      showPriceInfoIcon = TODO(),
+                      onInfoIconClick = TODO()
                     )
                   }
 
