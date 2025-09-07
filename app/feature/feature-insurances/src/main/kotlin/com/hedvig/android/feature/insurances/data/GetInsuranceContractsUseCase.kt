@@ -17,7 +17,6 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
-import com.hedvig.android.feature.insurances.data.toMonthlyCost
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
-import octopus.fragment.AgreementFragment
 import octopus.fragment.ContractFragment
 import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
