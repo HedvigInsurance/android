@@ -50,16 +50,19 @@ import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetPriceBreakdown
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTabRow
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Addon
@@ -132,6 +135,10 @@ private fun ContractDetailScreen(
         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
       ),
   ) {
+    val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
+    HedvigBottomSheetPriceBreakdown(
+      costBreakdownBottomSheetState,
+    )
     TopAppBarWithBack(
       title = stringResource(R.string.insurance_details_view_title),
       onClick = navigateUp,
@@ -246,6 +253,30 @@ private fun ContractDetailScreen(
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
+                    val priceInfoForBottomSheet = PriceInfoForBottomSheet(
+                      displayItems = buildList {
+                        add(
+                          contract.displayName to stringResource(
+                            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                            contract.basePremium.toString(),
+                          ),
+                        )
+                        contract.addons?.forEach { addon ->
+                          add(
+                            addon.addonVariant.displayName
+                              to stringResource(
+                                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                addon.premium.toString(),
+                              ),
+                          )
+                        }
+                        contract.cost.discounts.forEach { discount ->
+                          add(discount.displayName to discount.displayValue)
+                        }
+                      },
+                      totalGross = contract.cost.monthlyGross,
+                      totalNet = contract.cost.monthlyNet,
+                    )
                     YourInfoTab(
                       coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
@@ -276,9 +307,12 @@ private fun ContractDetailScreen(
                       },
                       upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
                       isTerminated = contract.isTerminated,
-                      priceToShow = TODO(),
-                      showPriceInfoIcon = TODO(),
-                      onInfoIconClick = TODO()
+                      priceToShow = contract.cost.monthlyNet, // todo: check this logic with Sladan
+                      showPriceInfoIcon = contract.cost.monthlyNet != contract.cost.monthlyGross ||
+                        contract.basePremium != contract.cost.monthlyNet, // todo: check this logic with Sladan
+                      onInfoIconClick = {
+                        costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+                      },
                     )
                   }
 
@@ -401,8 +435,8 @@ private fun PreviewContractDetailScreen() {
               cost = MonthlyCost(
                 UiMoney(89.0, UiCurrencyCode.SEK),
                 UiMoney(89.0, UiCurrencyCode.SEK),
-                discounts = emptyList()
-              )
+                discounts = emptyList(),
+              ),
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

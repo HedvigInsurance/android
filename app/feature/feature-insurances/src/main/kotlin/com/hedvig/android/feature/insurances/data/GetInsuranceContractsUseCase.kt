@@ -124,12 +124,13 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     productVariant = this.productVariant.toProductVariant(),
     displayItems = this.displayItems.map { it.toDisplayItem() },
     addons = this.addons?.map {
-      Addon(it.addonVariant.toAddonVariant(),
-        premium = UiMoney.fromMoneyFragment( it.premium))
+      Addon(
+        it.addonVariant.toAddonVariant(),
+        premium = UiMoney.fromMoneyFragment(it.premium),
+      )
     },
     cost = this.cost.toMonthlyCost(),
-    basePremium = UiMoney.fromMoneyFragment( this.basePremium)
-
+    basePremium = UiMoney.fromMoneyFragment(this.basePremium),
   )
 }
 
@@ -161,11 +162,13 @@ private fun ContractFragment.toContract(
       coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
-        Addon(it.addonVariant.toAddonVariant(),
-          premium = UiMoney.fromMoneyFragment( it.premium))
+        Addon(
+          it.addonVariant.toAddonVariant(),
+          premium = UiMoney.fromMoneyFragment(it.premium),
+        )
       },
       cost = currentAgreement.cost.toMonthlyCost(),
-      basePremium = UiMoney.fromMoneyFragment( currentAgreement.basePremium)
+      basePremium = UiMoney.fromMoneyFragment(currentAgreement.basePremium),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -177,11 +180,13 @@ private fun ContractFragment.toContract(
         coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
         creationCause = it.creationCause.toCreationCause(),
         addons = it.addons?.map {
-          Addon(it.addonVariant.toAddonVariant(),
-            premium =UiMoney.fromMoneyFragment(  it.premium))
+          Addon(
+            it.addonVariant.toAddonVariant(),
+            premium = UiMoney.fromMoneyFragment(it.premium),
+          )
         },
         cost = it.cost.toMonthlyCost(),
-        basePremium = UiMoney.fromMoneyFragment( it.basePremium)
+        basePremium = UiMoney.fromMoneyFragment(it.basePremium),
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
@@ -204,9 +209,9 @@ private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
         displayName = discount.displayName,
         displayValue = discount.displayValue,
         explanation = discount.explanation,
-        campaignCode = discount.campaignCode
+        campaignCode = discount.campaignCode,
       )
-    }
+    },
   )
 }
 

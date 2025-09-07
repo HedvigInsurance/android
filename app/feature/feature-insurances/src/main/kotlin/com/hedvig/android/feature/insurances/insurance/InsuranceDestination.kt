@@ -580,8 +580,8 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
   cost = MonthlyCost(
     UiMoney(89.0, UiCurrencyCode.SEK),
     UiMoney(89.0, UiCurrencyCode.SEK),
-    discounts = emptyList()
-  )
+    discounts = emptyList(),
+  ),
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
@@ -614,8 +614,8 @@ private val previewInsurance = EstablishedInsuranceContract(
     cost = MonthlyCost(
       UiMoney(89.0, UiCurrencyCode.SEK),
       UiMoney(89.0, UiCurrencyCode.SEK),
-      discounts = emptyList()
-    )
+      discounts = emptyList(),
+    ),
   ),
   upcomingInsuranceAgreement = null,
   renewalDate = LocalDate.fromEpochDays(500),

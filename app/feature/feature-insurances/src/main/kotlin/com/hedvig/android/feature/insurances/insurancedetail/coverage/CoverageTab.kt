@@ -204,11 +204,11 @@ private fun PreviewCoverageTab() {
         previewInsurableLimits,
         previewPerils,
         listOf(
-          Addon(fakeAddonVariant,UiMoney(19.0, UiCurrencyCode.SEK)),
-          Addon(fakeAddonVariant2,UiMoney(19.0, UiCurrencyCode.SEK)),
-          Addon(fakeAddonVariant3,UiMoney(19.0, UiCurrencyCode.SEK),
+          Addon(fakeAddonVariant, UiMoney(19.0, UiCurrencyCode.SEK)),
+          Addon(fakeAddonVariant2, UiMoney(19.0, UiCurrencyCode.SEK)),
+          Addon(fakeAddonVariant3, UiMoney(19.0, UiCurrencyCode.SEK)),
         ),
-      ))
+      )
     }
   }
 }
@@ -222,9 +222,9 @@ private fun PreviewCoverageTabAddonHasNoPerils() {
         previewInsurableLimits,
         previewPerils,
         listOf(
-          Addon(fakeAddonVariant2, UiMoney(19.0, UiCurrencyCode.SEK),
+          Addon(fakeAddonVariant2, UiMoney(19.0, UiCurrencyCode.SEK)),
         ),
-      ))
+      )
     }
   }
 }

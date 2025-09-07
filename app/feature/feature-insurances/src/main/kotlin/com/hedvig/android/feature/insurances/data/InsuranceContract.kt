@@ -68,7 +68,7 @@ sealed interface InsuranceContract {
     override val displayItems: List<DisplayItem>,
     override val addons: List<Addon>?,
     override val cost: MonthlyCost,
-    override val basePremium: UiMoney
+    override val basePremium: UiMoney,
   ) : InsuranceContract {
     override val coInsured: List<InsuranceAgreement.CoInsured> = listOf()
     override val supportsEditCoInsured: Boolean = false
@@ -81,7 +81,7 @@ sealed interface InsuranceContract {
 
 data class Addon(
   val addonVariant: AddonVariant,
-  val premium: UiMoney
+  val premium: UiMoney,
 )
 
 data class MonthlyCost(
@@ -107,7 +107,7 @@ data class InsuranceAgreement(
   val creationCause: CreationCause,
   val addons: List<Addon>?,
   val cost: MonthlyCost,
-  val basePremium: UiMoney
+  val basePremium: UiMoney,
 ) {
   data class CoInsured(
     private val ssn: String?,

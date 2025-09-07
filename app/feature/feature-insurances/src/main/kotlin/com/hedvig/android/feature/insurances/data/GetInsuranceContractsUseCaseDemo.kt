@@ -75,8 +75,8 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
             cost = MonthlyCost(
               UiMoney(89.0, UiCurrencyCode.SEK),
               UiMoney(89.0, UiCurrencyCode.SEK),
-              discounts = emptyList()
-            )
+              discounts = emptyList(),
+            ),
           ),
           upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),

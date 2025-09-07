@@ -57,7 +57,6 @@ import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
-import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
@@ -69,7 +68,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
-import octopus.type.IconBuilder
 
 @Composable
 internal fun YourInfoTab(
@@ -181,7 +179,7 @@ internal fun YourInfoTab(
       priceToShow,
       showPriceInfoIcon,
       onInfoIconClick,
-      Modifier.padding(horizontal = 16.dp)
+      Modifier.padding(horizontal = 16.dp),
     )
     if (allowEditCoInsured) {
       HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -264,10 +262,12 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
 }
 
 @Composable
-internal fun PriceRow(priceToShow: UiMoney,
-                      showInfoIcon: Boolean,
-                      onInfoIconClick: () -> Unit,
-                      modifier: Modifier = Modifier) {
+internal fun PriceRow(
+  priceToShow: UiMoney,
+  showInfoIcon: Boolean,
+  onInfoIconClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   HorizontalItemsWithMaximumSpaceTaken(
     modifier = modifier.horizontalDivider(DividerPosition.Top),
     startSlot = {
@@ -292,13 +292,16 @@ internal fun PriceRow(priceToShow: UiMoney,
             Icon(
               HedvigIcons.InfoFilled,
               null,
-              tint = HedvigTheme.colorScheme.fillSecondary
+              tint = HedvigTheme.colorScheme.fillSecondary,
             )
           }
           Spacer(Modifier.width(8.dp))
         }
         HedvigText(
-          text = priceToShow.toString(),
+          text = stringResource(
+            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            priceToShow.toString(),
+          ),
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.End,
         )
@@ -545,8 +548,8 @@ private fun PreviewYourInfoTab() {
           cost = MonthlyCost(
             UiMoney(89.0, UiCurrencyCode.SEK),
             UiMoney(89.0, UiCurrencyCode.SEK),
-            discounts = emptyList()
-          )
+            discounts = emptyList(),
+          ),
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
@@ -561,7 +564,7 @@ private fun PreviewYourInfoTab() {
         onChangeTierClick = {},
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
         showPriceInfoIcon = true,
-        onInfoIconClick = {}
+        onInfoIconClick = {},
       )
     }
   }
