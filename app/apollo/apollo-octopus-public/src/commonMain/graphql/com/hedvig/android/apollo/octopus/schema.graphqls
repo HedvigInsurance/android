@@ -419,11 +419,11 @@ type ChangeTierDeductibleQuote {
   """
   premium: Money! @deprecated(reason: "Use cost instead")
   """
-   Previous total cost including addons
+   Previous total cost including addons 
   """
   currentTotalCost: TotalCost!
   """
-   New total cost including addons
+   New total cost including addons 
   """
   newTotalCost: TotalCost!
   """
@@ -1546,7 +1546,7 @@ type ItemDiscount {
   """
   explanation: String!
   """
-   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc 
   """
   campaignCode: String!
 }
@@ -3691,7 +3691,7 @@ type UpsellTravelAddonQuote {
   """
   documents: [UpsellTravelAddonQuoteInsuranceDocument!]!
   """
-   The terms
+   The terms 
   """
   addonVariant: AddonVariant!
   """
