@@ -2,11 +2,13 @@ package com.hedvig.android.feature.change.tier.ui.stepsummary
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,11 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
@@ -32,6 +36,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -49,14 +54,14 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
-import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -165,13 +170,45 @@ private fun SummarySuccessScreen(
   navigateUp: () -> Unit,
   onExitTierFlow: () -> Unit,
 ) {
+  var showExitDialog by rememberSaveable { mutableStateOf(false) }
   HedvigScaffold(
     navigateUp,
     topAppBarActions = {
-      SummaryTopAppBar(onExitTierFlow)
+      SummaryTopAppBar(
+        {
+          showExitDialog = true
+        },
+      )
     },
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
+    if (showExitDialog) {
+      HedvigDialog(
+        onDismissRequest = { showExitDialog = false },
+        style = Buttons(
+          onDismissRequest = { showExitDialog = false },
+          dismissButtonText = stringResource(R.string.GENERAL_NO),
+          onConfirmButtonClick = dropUnlessResumed {
+            showExitDialog = false
+            onExitTierFlow()
+          },
+          confirmButtonText = stringResource(R.string.GENERAL_YES),
+        ),
+      ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          HedvigText(
+            text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+            textAlign = TextAlign.Center,
+          )
+          HedvigText(
+            text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+            textAlign = TextAlign.Center,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+    }
+
     var showConfirmationDialog by remember { mutableStateOf(false) }
     val dateFormatter = rememberHedvigDateTimeFormatter()
     if (showConfirmationDialog) {
@@ -193,18 +230,6 @@ private fun SummarySuccessScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(8.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      for (addon in uiState.quote.addons) {
-        AddonCard(
-          addonQuote = addon,
-          activationDate = uiState.activationDate,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
-    }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     Column(
@@ -212,6 +237,7 @@ private fun SummarySuccessScreen(
         .padding(horizontal = 16.dp),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.fillMaxWidth(),
         startSlot = {
           HedvigText(
             stringResource(R.string.TIER_FLOW_TOTAL),
@@ -220,20 +246,55 @@ private fun SummarySuccessScreen(
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val voiceDescription = uiState.total.getPerMonthDescription()
-          HedvigText(
-            text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.total,
-            ),
-            textAlign = TextAlign.End,
-            style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.semantics {
-              contentDescription = voiceDescription
-            },
-          )
+          Row(horizontalArrangement = Arrangement.End) {
+            val grossPriceVoiceDescription = stringResource(
+              R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
+              uiState.quote.newTotalCost.monthlyGross.getPerMonthDescription(),
+            )
+            val netPriceVoiceDescription =
+              stringResource(R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS, uiState.totalNet.getPerMonthDescription())
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                uiState.quote.newTotalCost.monthlyGross,
+              ),
+              textAlign = TextAlign.End,
+              style = LocalTextStyle.current.copy(
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                textDecoration = TextDecoration.LineThrough,
+              ),
+              modifier = Modifier.semantics {
+                contentDescription = grossPriceVoiceDescription
+              },
+            )
+            Spacer(Modifier.width(8.dp))
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                uiState.totalNet,
+              ),
+              textAlign = TextAlign.End,
+              style = HedvigTheme.typography.bodySmall,
+              modifier = Modifier.semantics {
+                contentDescription = netPriceVoiceDescription
+              },
+            )
+          }
         },
       )
+      Row(horizontalArrangement = Arrangement.End) {
+        val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+        HedvigText(
+          text = stringResource(
+            id = R.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+            dateTimeFormatter.format(uiState.activationDate.toJavaLocalDate()),
+          ),
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(R.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
@@ -245,41 +306,25 @@ private fun SummarySuccessScreen(
           showConfirmationDialog = true
         },
       )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.general_cancel_button),
+        onClick = {
+          showExitDialog = true
+        },
+      )
       Spacer(Modifier.height(16.dp))
     }
   }
 }
 
 @Composable
-private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
-  var showExitDialog by rememberSaveable { mutableStateOf(false) }
-  if (showExitDialog) {
-    HedvigDialog(
-      onDismissRequest = { showExitDialog = false },
-      style = Buttons(
-        onDismissRequest = { showExitDialog = false },
-        dismissButtonText = stringResource(R.string.GENERAL_NO),
-        onConfirmButtonClick = dropUnlessResumed {
-          showExitDialog = false
-          onExitTierFlow()
-        },
-        confirmButtonText = stringResource(R.string.GENERAL_YES),
-      ),
-    ) {
-      Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        HedvigText(
-          text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
-          textAlign = TextAlign.Center,
-        )
-        HedvigText(
-          text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
-          textAlign = TextAlign.Center,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-    }
-  }
-  IconButton({ showExitDialog = true }) {
+private fun SummaryTopAppBar(onIconClick: () -> Unit) {
+  IconButton(onIconClick) {
     Icon(
       HedvigIcons.Close,
       stringResource(R.string.general_close_button),
@@ -290,15 +335,16 @@ private fun SummaryTopAppBar(onExitTierFlow: () -> Unit) {
 
 @Composable
 private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
+  val state = rememberQuoteCardState()
+  val addonDocs = uiState.quote.addons.flatMap { it.addonVariant.documents }
+  val allDocuments: List<InsuranceVariantDocument> =
+    uiState.quote.productVariant.documents + addonDocs
   QuoteCard(
-    productVariant = uiState.quote.productVariant,
-    subtitle = stringResource(
-      R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
-      formatStartDate(uiState.activationDate),
-    ),
-    premium = uiState.quote.premium,
-    discounts = emptyList(),
-    previousPremium = uiState.currentContractData.activeDisplayPremium,
+    subtitle = uiState.currentContractData.contractDisplaySubtitle,
+    isExcluded = false,
+    premium = uiState.quote.newTotalCost.monthlyNet,
+    costBreakdown = uiState.quote.costBreakdown,
+    previousPremium = uiState.quote.newTotalCost.monthlyGross,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -307,52 +353,19 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       )
     },
     modifier = modifier,
+    quoteCardState = state,
+    displayName = uiState.quote.productVariant.displayName,
+    contractGroup = uiState.quote.productVariant.contractGroup,
+    insurableLimits = uiState.quote.productVariant.insurableLimits,
+    documents = allDocuments,
   )
-}
-
-@Composable
-private fun AddonCard(
-  addonQuote: ChangeTierDeductibleAddonQuote,
-  activationDate: LocalDate,
-  modifier: Modifier = Modifier,
-) {
-  val startDate = formatStartDate(activationDate)
-  val subtitle = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDate)
-  QuoteCard(
-    quoteCardState = rememberQuoteCardState(),
-    displayName = addonQuote.addonVariant.displayName,
-    contractGroup = null,
-    insurableLimits = emptyList(),
-    documents = addonQuote.addonVariant.documents,
-    subtitle = subtitle,
-    premium = addonQuote.premium,
-    previousPremium = addonQuote.previousPremium,
-    isExcluded = false,
-    discounts = emptyList(),
-    displayItems = addonQuote.displayItems.map {
-      QuoteDisplayItem(
-        title = it.displayTitle,
-        subtitle = it.displaySubtitle,
-        value = it.displayValue,
-      )
-    },
-    modifier = modifier,
-  )
-}
-
-@Composable
-private fun formatStartDate(startDate: LocalDate): String {
-  val locale = getLocale()
-  return remember(startDate) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
-  }
 }
 
 @HedvigMultiScreenPreview
 @Composable
-private fun PreviewChooseInsuranceScreen(
+private fun PreviewSummaryScreen(
   @PreviewParameter(
-    ChooseInsuranceUiStateProvider::class,
+    SummaryUiStateProvider::class,
   ) uiState: SummaryState,
 ) {
   HedvigTheme {
@@ -370,7 +383,7 @@ private fun PreviewChooseInsuranceScreen(
   }
 }
 
-private class ChooseInsuranceUiStateProvider :
+private class SummaryUiStateProvider :
   CollectionPreviewParameterProvider<SummaryState>(
     listOf(
       Success(
@@ -410,17 +423,6 @@ private class ChooseInsuranceUiStateProvider :
           ),
           addons = List(2) {
             ChangeTierDeductibleAddonQuote(
-              addonId = "addonId",
-              displayName = "Addon Quote Name",
-              displayItems = listOf(
-                ChangeTierDeductibleDisplayItem(
-                  displayTitle = "Coinsured",
-                  displayValue = "You + 1",
-                  displaySubtitle = null,
-                ),
-              ),
-              previousPremium = UiMoney(29.0, SEK),
-              premium = UiMoney(45.0, SEK),
               addonVariant = AddonVariant(
                 displayName = "Addon Name",
                 perils = listOf(),
@@ -436,6 +438,19 @@ private class ChooseInsuranceUiStateProvider :
               ),
             )
           },
+          currentTotalCost = TotalCost(
+            monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+            monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+          ),
+          newTotalCost = TotalCost(
+            monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+            monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+          ),
+          costBreakdown = listOf(
+            "Home Insurance Max" to "300 kr/mo",
+            "Travel Plus" to "80 kr/mo",
+            "Bundle discount 20%" to "76 kr/mo",
+          ),
         ),
       ),
       Failure,
