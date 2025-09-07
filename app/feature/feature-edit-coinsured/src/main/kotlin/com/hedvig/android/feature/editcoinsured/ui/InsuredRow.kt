@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -16,13 +18,22 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun InsuredRow(
@@ -31,6 +42,8 @@ internal fun InsuredRow(
   hasMissingInfo: Boolean,
   allowEdit: Boolean,
   isMember: Boolean,
+  activatesOn: LocalDate?,
+  terminatesOn: LocalDate?,
   onRemove: () -> Unit,
   onEdit: () -> Unit,
   contentPadding: PaddingValues,
@@ -61,6 +74,30 @@ internal fun InsuredRow(
                 HedvigTheme.colorScheme.textSecondary
               },
           )
+          val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+          if (activatesOn != null) {
+            val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+            Spacer(Modifier.height(4.dp))
+            HighlightLabel(
+              labelText = stringResource(
+                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
+                dateTimeFormatter.format(activatesOn.toJavaLocalDate()),
+              ),
+              size = Small,
+              color = Amber(MEDIUM),
+            )
+          }
+          if (terminatesOn != null) {
+            Spacer(Modifier.height(4.dp))
+            HighlightLabel(
+              labelText = stringResource(
+                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                dateTimeFormatter.format(terminatesOn.toJavaLocalDate()),
+              ),
+              size = Small,
+              color = Red(LIGHT),
+            )
+          }
         }
       }
     },
@@ -126,6 +163,8 @@ private fun InsuredRowPreviewEditable() {
         onEdit = {},
         allowEdit = true,
         contentPadding = PaddingValues(horizontal = 0.dp),
+        activatesOn = null,
+        terminatesOn = LocalDate(2025, 12, 1),
       )
     }
   }
@@ -145,6 +184,8 @@ private fun InsuredRowPreviewMissingInfo() {
         onEdit = {},
         allowEdit = false,
         contentPadding = PaddingValues(horizontal = 0.dp),
+        activatesOn = null,
+        terminatesOn = null,
       )
     }
   }
@@ -164,6 +205,8 @@ private fun InsuredRowPreviewMember() {
         onEdit = {},
         allowEdit = false,
         contentPadding = PaddingValues(horizontal = 0.dp),
+        activatesOn = LocalDate(2025, 10, 1),
+        terminatesOn = LocalDate(2026, 10, 1),
       )
     }
   }

@@ -27,6 +27,10 @@ mutation UpsellAddonOffer($contractId: ID!) {
         addonVariant {
           ...AddonVariantFragment
         }
+        documents {
+          displayName
+          url
+        }
       }
       titleDisplayName
     }

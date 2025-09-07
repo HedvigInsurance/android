@@ -486,6 +486,8 @@ private fun AddCoInsuredBottomSheetContentPreview() {
               LocalDate.fromEpochDays(300),
               "1234",
               false,
+              activatesOn = LocalDate(2025, 10, 1),
+              terminatesOn = null,
             ),
             CoInsured(
               "Test",
@@ -493,6 +495,8 @@ private fun AddCoInsuredBottomSheetContentPreview() {
               LocalDate.fromEpochDays(300),
               "1234",
               false,
+              activatesOn = null,
+              terminatesOn = LocalDate(2025, 10, 1),
             ),
           ),
         ),

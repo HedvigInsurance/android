@@ -178,6 +178,7 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     49.0,
     UiCurrencyCode.SEK,
   ),
+  documents = listOf(),
 )
 private val fakeTravelAddonQuote2 = TravelAddonQuote(
   displayName = "60 days",
@@ -202,6 +203,7 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     60.0,
     UiCurrencyCode.SEK,
   ),
+  documents = listOf(),
 )
 private val fakeTravelOfferOnlyOneOption = TravelAddonOffer(
   addonOptions = nonEmptyListOf(
