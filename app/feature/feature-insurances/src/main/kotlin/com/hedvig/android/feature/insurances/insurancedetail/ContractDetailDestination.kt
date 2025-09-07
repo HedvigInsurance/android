@@ -43,6 +43,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -66,6 +68,7 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -388,8 +391,15 @@ private fun PreviewContractDetailScreen() {
                     ),
                     perils = listOf(),
                   ),
+                  UiMoney(19.0, UiCurrencyCode.SEK),
                 ),
               ),
+              basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+              cost = MonthlyCost(
+                UiMoney(89.0, UiCurrencyCode.SEK),
+                UiMoney(89.0, UiCurrencyCode.SEK),
+                discounts = emptyList()
+              )
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

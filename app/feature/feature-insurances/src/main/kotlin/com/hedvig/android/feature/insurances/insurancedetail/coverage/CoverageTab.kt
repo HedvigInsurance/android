@@ -28,6 +28,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariantPeril
@@ -195,7 +197,7 @@ private fun PreviewCoverageTab() {
       CoverageTab(
         previewInsurableLimits,
         previewPerils,
-        listOf(Addon(fakeAddonVariant)),
+        listOf(Addon(fakeAddonVariant,UiMoney(19.0, UiCurrencyCode.SEK),)),
       )
     }
   }

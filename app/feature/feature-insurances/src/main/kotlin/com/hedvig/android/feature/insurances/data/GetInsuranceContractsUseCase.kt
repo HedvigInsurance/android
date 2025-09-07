@@ -198,7 +198,18 @@ private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
 }
 
 private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
-  TODO()
+  return MonthlyCost(
+    monthlyGross = UiMoney.fromMoneyFragment(monthlyGross),
+    monthlyNet = UiMoney.fromMoneyFragment(monthlyNet),
+    discounts = discounts.map { discount ->
+      AgreementDiscount(
+        displayName = discount.displayName,
+        displayValue = discount.displayValue,
+        explanation = discount.explanation,
+        campaignCode = discount.campaignCode
+      )
+    }
+  )
 }
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {

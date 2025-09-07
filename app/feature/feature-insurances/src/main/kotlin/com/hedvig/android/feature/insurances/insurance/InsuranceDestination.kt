@@ -44,6 +44,8 @@ import arrow.core.nonEmptyListOf
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
@@ -70,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -572,6 +575,13 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
     termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
   ),
   displayItems = listOf(),
+  addons = emptyList(),
+  basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+  cost = MonthlyCost(
+    UiMoney(89.0, UiCurrencyCode.SEK),
+    UiMoney(89.0, UiCurrencyCode.SEK),
+    discounts = emptyList()
+  )
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
@@ -600,6 +610,12 @@ private val previewInsurance = EstablishedInsuranceContract(
     coInsured = listOf(),
     creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
     addons = null,
+    basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+    cost = MonthlyCost(
+      UiMoney(89.0, UiCurrencyCode.SEK),
+      UiMoney(89.0, UiCurrencyCode.SEK),
+      discounts = emptyList()
+    )
   ),
   upcomingInsuranceAgreement = null,
   renewalDate = LocalDate.fromEpochDays(500),

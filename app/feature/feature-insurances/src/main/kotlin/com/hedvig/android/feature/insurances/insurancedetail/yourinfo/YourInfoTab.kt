@@ -16,6 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.daysUntil
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
@@ -57,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -480,6 +483,12 @@ private fun PreviewYourInfoTab() {
           ),
           creationCause = InsuranceAgreement.CreationCause.RENEWAL,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList()
+          )
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
