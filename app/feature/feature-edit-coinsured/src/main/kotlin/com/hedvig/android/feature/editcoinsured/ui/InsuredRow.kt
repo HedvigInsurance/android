@@ -71,7 +71,6 @@ internal fun InsuredRow(
           )
           val dateTimeFormatter = rememberHedvigDateTimeFormatter()
           if (activatesOn != null) {
-            val dateTimeFormatter = rememberHedvigDateTimeFormatter()
             Spacer(Modifier.height(4.dp))
             HighlightLabel(
               labelText = stringResource(
