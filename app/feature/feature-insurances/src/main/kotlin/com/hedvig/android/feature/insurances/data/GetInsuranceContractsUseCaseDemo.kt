@@ -3,6 +3,8 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -69,6 +71,12 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               ),
             ),
             addons = null,
+            basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+            cost = MonthlyCost(
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              discounts = emptyList(),
+            ),
           ),
           upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),

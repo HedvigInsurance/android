@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -167,6 +169,7 @@ private val previewAddonsWithDocs = listOf(
       product = "Product",
       documents = emptyList(),
     ),
+    UiMoney(19.0, UiCurrencyCode.SEK),
   ),
   Addon(
     AddonVariant(
@@ -182,6 +185,7 @@ private val previewAddonsWithDocs = listOf(
         ),
       ),
     ),
+    UiMoney(19.0, UiCurrencyCode.SEK),
   ),
 )
 
@@ -194,6 +198,7 @@ private val previewAddonsNoDocs = listOf(
       product = "Product",
       documents = emptyList(),
     ),
+    UiMoney(19.0, UiCurrencyCode.SEK),
   ),
   Addon(
     AddonVariant(
@@ -203,5 +208,6 @@ private val previewAddonsNoDocs = listOf(
       product = "Product",
       documents = emptyList(),
     ),
+    UiMoney(19.0, UiCurrencyCode.SEK),
   ),
 )

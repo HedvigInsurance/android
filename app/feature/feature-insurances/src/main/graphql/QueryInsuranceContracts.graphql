@@ -1,4 +1,6 @@
-query InsuranceContracts($addonsEnabled: Boolean!) {
+query InsuranceContracts(
+  $addonsEnabled: Boolean!,
+  $options: DisplayItemOptions) {
   currentMember {
     memberActions {
       isMovingEnabled
@@ -25,6 +27,20 @@ query InsuranceContracts($addonsEnabled: Boolean!) {
       exposureDisplayName
       displayItems {
         ...AgreementDisplayItemFragment
+      }
+      addons @include(if: $addonsEnabled) {
+        addonVariant {
+          ...AddonVariantFragment
+        }
+        premium {
+          ...MoneyFragment
+        }
+      }
+      cost {
+        ...MonthlyCostFragment
+      }
+      basePremium {
+        ...MoneyFragment
       }
     }
   }
@@ -60,7 +76,7 @@ fragment AgreementFragment on Agreement {
   activeTo
   certificateUrl
   creationCause
-  displayItems {
+  displayItems (options: $options) {
     ...AgreementDisplayItemFragment
   }
   productVariant {
@@ -70,10 +86,34 @@ fragment AgreementFragment on Agreement {
     addonVariant {
       ...AddonVariantFragment
     }
+    premium {
+      ...MoneyFragment
+    }
+  }
+  cost {
+    ...MonthlyCostFragment
+  }
+  basePremium {
+    ...MoneyFragment
   }
 }
 
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {
   displayTitle
   displayValue
+}
+
+fragment MonthlyCostFragment on ItemCost {
+  monthlyGross {
+    ...MoneyFragment
+  }
+  monthlyNet {
+    ...MoneyFragment
+  }
+  discounts {
+    displayName
+    displayValue
+    explanation
+    campaignCode
+  }
 }

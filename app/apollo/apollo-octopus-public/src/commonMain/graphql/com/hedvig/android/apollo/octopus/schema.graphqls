@@ -7,6 +7,10 @@ type Addon {
   such as names, legal documents, perils etc.
   """
   addonVariant: AddonVariant!
+  """
+  Premium of the addon.
+  """
+  premium: Money!
 }
 """
 Root of coverage comparison result
@@ -108,9 +112,13 @@ type Agreement {
   """
   activeTo: Date!
   """
-  The monthly premium of this agreement.
+  The monthly premium of this agreement with addons.
   """
   premium: Money!
+  """
+  The monthly premium of this agreement.
+  """
+  basePremium: Money!
   """
   The deductible of the agreement.
   """
@@ -1538,7 +1546,7 @@ type ItemDiscount {
   """
   explanation: String!
   """
-   Discount's campaign code. Not applicable for automatically added discounts like Bundle Discount 
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc 
   """
   campaignCode: String!
 }
@@ -2586,6 +2594,10 @@ It is split into its own type, because they are not "real" insurances until they
 type PendingContract {
   id: UUID!
   """
+  Calculated based on the pending agreement
+  """
+  cost: ItemCost!
+  """
   Same as `Contract.exposureDisplayName`.
   """
   exposureDisplayName: String!
@@ -2594,9 +2606,13 @@ type PendingContract {
   """
   exposureDisplayNameShort: String!
   """
-  Same as `Contract.currentAgreement.premium`.
+  Same as `Contract.currentAgreement.premium` - price with addons.
   """
   premium: Money!
+  """
+  Same as `Contract.currentAgreement.basePremium`.
+  """
+  basePremium: Money!
   """
   Same as `Contract.currentAgreement.productVariant`.
   """
@@ -2610,6 +2626,10 @@ type PendingContract {
   or if the member have to cancel it themselves and get back to us with a requested start date (false).
   """
   externalInsuranceCancellationHandledByHedvig: Boolean!
+  """
+  List of addons on the agreement.
+  """
+  addons: [Addon!]!
 }
 type Peril {
   id: ID!

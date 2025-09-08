@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -16,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.daysUntil
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
@@ -42,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Default
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
@@ -51,12 +55,14 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDat
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -82,6 +88,9 @@ internal fun YourInfoTab(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  priceToShow: UiMoney,
+  showPriceInfoIcon: Boolean,
+  onInfoIconClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -166,7 +175,12 @@ internal fun YourInfoTab(
       }
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-
+    PriceRow(
+      priceToShow,
+      showPriceInfoIcon,
+      onInfoIconClick,
+      Modifier.padding(horizontal = 16.dp),
+    )
     if (allowEditCoInsured) {
       HorizontalDivider(Modifier.padding(horizontal = 16.dp))
       Spacer(Modifier.height(16.dp))
@@ -245,6 +259,56 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
       )
     }
   }
+}
+
+@Composable
+internal fun PriceRow(
+  priceToShow: UiMoney,
+  showInfoIcon: Boolean,
+  onInfoIconClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = modifier.horizontalDivider(DividerPosition.Top),
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        HedvigText(stringResource(id = R.string.DETAILS_TABLE_INSURANCE_PREMIUM))
+      }
+    },
+    endSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        HedvigText(
+          text = stringResource(
+            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            priceToShow.toString(),
+          ),
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
+        if (showInfoIcon) {
+          Spacer(Modifier.width(8.dp))
+          IconButton(
+            onInfoIconClick,
+            modifier = Modifier.size(24.dp),
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              null,
+              tint = HedvigTheme.colorScheme.fillSecondary,
+            )
+          }
+        }
+      }
+    },
+    spaceBetween = 8.dp,
+  )
 }
 
 @Composable
@@ -480,6 +544,12 @@ private fun PreviewYourInfoTab() {
           ),
           creationCause = InsuranceAgreement.CreationCause.RENEWAL,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList(),
+          ),
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
@@ -492,6 +562,9 @@ private fun PreviewYourInfoTab() {
         openUrl = {},
         allowChangeTier = true,
         onChangeTierClick = {},
+        priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
+        showPriceInfoIcon = true,
+        onInfoIconClick = {},
       )
     }
   }

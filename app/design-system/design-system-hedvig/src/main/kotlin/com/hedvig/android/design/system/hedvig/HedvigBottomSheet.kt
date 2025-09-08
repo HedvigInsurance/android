@@ -25,14 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
@@ -50,7 +53,12 @@ fun HedvigBottomSheetPriceBreakdown(state: HedvigBottomSheetState<PriceInfoForBo
     val data = state.data
     if (data != null) {
       Column {
-        HedvigText(text = stringResource(R.string.PRICE_DETAILS_TITLE))
+        HedvigText(
+          text = stringResource(R.string.PRICE_DETAILS_TITLE),
+          modifier = Modifier.semantics {
+            heading()
+          },
+        )
         Column(
           verticalArrangement = Arrangement.spacedBy(8.dp),
           modifier = Modifier
