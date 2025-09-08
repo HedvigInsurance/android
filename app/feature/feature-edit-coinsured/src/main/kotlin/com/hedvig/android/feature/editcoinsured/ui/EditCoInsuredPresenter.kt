@@ -287,7 +287,7 @@ internal class EditCoInsuredPresenter(
                   coInsured = updatedCoinsuredList,
                   originalIds = originalCoInsuredIds,
                   activationDate = it.activatedDate,
-                ) // todo: check here
+                )
                 intentId = it.id
                 listState = listState.copy(
                   updatedCoInsured = updatedCoinsuredListWithDate,
@@ -373,7 +373,7 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
-          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
+          activatesOn = null,
           terminatesOn = null,
         )
         val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
@@ -385,7 +385,7 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
-          activatesOn = null, // todo: would that be a correct way? we don't know anything yet here about dates
+          activatesOn = null,
           terminatesOn = null,
         )
         val result = (listState.coInsured + updatedCoInsured)
