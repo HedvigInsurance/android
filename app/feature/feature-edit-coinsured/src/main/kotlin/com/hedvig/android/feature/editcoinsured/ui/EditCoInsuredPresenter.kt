@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
@@ -19,6 +18,7 @@ import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnAddCoInsuredClicked
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnDismissError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnRemoveCoInsuredClicked
@@ -292,9 +292,10 @@ internal class EditCoInsuredPresenter(
                 listState = listState.copy(
                   updatedCoInsured = updatedCoinsuredListWithDate,
                   priceInfo = Loaded.PriceInfo(
-                    previousPrice = it.currentPremium,
-                    newPrice = it.newPremium,
+                    currentCost = it.currentCost,
+                    newCost = it.newCost,
                     validFrom = it.activatedDate,
+                    newCostBreakDown = it.newCostBreakDown,
                   ),
                 )
                 selectedCoInsuredId = null
@@ -483,8 +484,9 @@ internal sealed interface EditCoInsuredState {
     }
 
     data class PriceInfo(
-      val previousPrice: UiMoney,
-      val newPrice: UiMoney,
+      val currentCost: MonthlyCost,
+      val newCost: MonthlyCost,
+      val newCostBreakDown: List<Pair<String, String>>,
       val validFrom: LocalDate,
     )
 

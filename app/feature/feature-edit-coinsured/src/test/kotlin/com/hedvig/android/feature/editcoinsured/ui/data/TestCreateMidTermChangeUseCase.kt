@@ -4,10 +4,10 @@ import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.fx.coroutines.raceN
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeResult
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import kotlinx.datetime.LocalDate
 
 internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
@@ -17,17 +17,18 @@ internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
   // Needed because the coInsured parameter to the use case is passed as output
   fun addCreateMidtermChangeResult(
     id: String,
-    currentPremium: UiMoney,
-    newPremium: UiMoney,
+    currentCost: MonthlyCost,
+    newCost: MonthlyCost,
     activatedDate: LocalDate,
   ) {
     createMidtermChangeResult.add(
       CreateMidtermChangeResult(
         id = id,
-        currentPremium = currentPremium,
-        newPremium = newPremium,
+        currentCost = currentCost,
+        newCost = newCost,
         activatedDate = activatedDate,
         coInsured = listOf(),
+        newCostBreakDown = listOf(),
       ),
     )
   }
