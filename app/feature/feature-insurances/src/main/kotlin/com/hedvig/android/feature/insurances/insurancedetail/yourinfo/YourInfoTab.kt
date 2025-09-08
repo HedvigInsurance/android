@@ -284,19 +284,6 @@ internal fun PriceRow(
         horizontalArrangement = Arrangement.End,
         modifier = Modifier.padding(vertical = 16.dp),
       ) {
-        if (showInfoIcon) {
-          IconButton(
-            onInfoIconClick,
-            modifier = Modifier.size(16.dp),
-          ) {
-            Icon(
-              HedvigIcons.InfoFilled,
-              null,
-              tint = HedvigTheme.colorScheme.fillSecondary,
-            )
-          }
-          Spacer(Modifier.width(8.dp))
-        }
         HedvigText(
           text = stringResource(
             id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -305,6 +292,19 @@ internal fun PriceRow(
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.End,
         )
+        if (showInfoIcon) {
+          Spacer(Modifier.width(8.dp))
+          IconButton(
+            onInfoIconClick,
+            modifier = Modifier.size(24.dp),
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              null,
+              tint = HedvigTheme.colorScheme.fillSecondary,
+            )
+          }
+        }
       }
     },
     spaceBetween = 8.dp,
