@@ -102,23 +102,24 @@ fun HedvigBottomSheetPriceBreakdown(state: HedvigBottomSheetState<PriceInfoForBo
           },
           endSlot = {
             Row(
-              horizontalArrangement = Arrangement.End,
+              horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
               modifier = Modifier.semantics(true) {},
             ) {
-              HedvigText(
-                stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  data.totalGross,
-                ),
-                style = HedvigTheme.typography.bodySmall.copy(
-                  textDecoration = TextDecoration.LineThrough,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                ),
-                modifier = Modifier.semantics {
-                  contentDescription = grossPriceDescription
-                },
-              )
-              Spacer(Modifier.width(8.dp))
+              if (data.totalGross != data.totalNet) {
+                HedvigText(
+                  stringResource(
+                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    data.totalGross,
+                  ),
+                  style = HedvigTheme.typography.bodySmall.copy(
+                    textDecoration = TextDecoration.LineThrough,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  ),
+                  modifier = Modifier.semantics {
+                    contentDescription = grossPriceDescription
+                  },
+                )
+              }
               HedvigText(
                 stringResource(
                   R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
