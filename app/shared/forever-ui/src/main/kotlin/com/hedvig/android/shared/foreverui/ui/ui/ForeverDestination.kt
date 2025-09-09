@@ -386,17 +386,20 @@ private fun ForeverScrollableContent(
       )
     } else {
       HedvigText(
-        text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
+        text = stringResource(id = R.string.FOREVER_TAB_MONTHLY_DISCOUNT),
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       )
-      HedvigText(
-        text = stringResource(
+      val discountValue = uiState.foreverData?.currentDiscount ?:
+      UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
+      val discountText =
+        "-" + stringResource(
           id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-          uiState.foreverData?.currentNetCost?.toString() ?: "-",
-        ),
+          discountValue.toString())
+      HedvigText(
+        text = discountText,
         textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.fillMaxWidth(),

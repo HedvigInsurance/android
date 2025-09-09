@@ -270,6 +270,7 @@
     <item quantity="other">%d vänner inbjudna</item>
   </plurals>
   <string name="FOREVER_REFERRAL_LIST_LABEL">Inbjudna vänner</string>
+  <string name="FOREVER_TAB_MONTHLY_DISCOUNT">Rabatt per månad</string>
   <string name="FOREVER_TAB_MONTLY_COST_LABEL">Din månadskostnad</string>
   <string name="FOREVER_TAB_TOTAL_DISCOUNT_LABEL">Totalt</string>
   <string name="FULL_NAME_TEXT">Fullständigt namn</string>
@@ -651,8 +652,8 @@
   <string name="TALKBACK_WRITE_HERE">Skriv ditt meddelande här</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Ditt nya pris: %1$s</string>
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
-  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Ditt pris efter rabatter och tillägg: %1$s</string>
-  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Ditt pris före rabatter och tillägg: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Ditt pris efter rabatter: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Ditt pris före rabatter: %1$s</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %s. Om du har några frågor, vänligen besök \"Hjälp och support\" här i appen.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Bekräftelse</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Ja, fortsätt</string>
