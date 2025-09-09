@@ -28,7 +28,6 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
@@ -78,22 +77,21 @@ internal fun UpcomingChangesBottomSheetContent(
       message = infoText,
       priority = NotificationPriority.Info,
       modifier = Modifier.fillMaxWidth(),
-      style = if (certificateUrl != null) {
+      style =
         Button(
-          stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-          { onOpenUrlClick(certificateUrl) },
-        )
-      } else {
-        NotificationDefaults.InfoCardStyle.Default
-      },
+          stringResource(id = R.string.open_chat),
+          onNavigateToNewConversation,
+        ),
     )
     Spacer(modifier = Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(id = R.string.open_chat),
-      enabled = true,
-      onClick = onNavigateToNewConversation,
-      modifier = Modifier.fillMaxWidth(),
-    )
+    if (certificateUrl != null) {
+      HedvigButton(
+        text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+        enabled = true,
+        onClick = { onOpenUrlClick(certificateUrl) },
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
