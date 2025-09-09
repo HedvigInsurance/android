@@ -15,7 +15,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
@@ -52,7 +51,6 @@ internal fun UpcomingChangesBottomSheetContent(
       rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
     HedvigBottomSheetPriceBreakdown(
       priceInfoBottomSheetState,
-      modifier = Modifier.zIndex(1f),
     )
     HedvigText(
       text = stringResource(id = R.string.insurance_details_update_details_sheet_title),
