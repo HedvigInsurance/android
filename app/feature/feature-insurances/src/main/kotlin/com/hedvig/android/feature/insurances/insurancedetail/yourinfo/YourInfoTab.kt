@@ -160,6 +160,10 @@ internal fun YourInfoTab(
         onDismiss = {
           upcomingChangesBottomSheet.dismiss()
         },
+        certificateUrl = upcomingChangesInsuranceAgreement.certificateUrl,
+        onOpenUrlClick = { url ->
+          openUrl(url)
+        },
       )
     }
   }

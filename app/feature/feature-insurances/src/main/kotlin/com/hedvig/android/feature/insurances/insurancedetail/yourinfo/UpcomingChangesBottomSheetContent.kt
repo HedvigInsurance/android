@@ -28,6 +28,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
@@ -39,6 +41,8 @@ internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
   sections: List<DisplayItem>,
   upcomingPriceInfo: PriceInfoForBottomSheet?,
+  certificateUrl: String?,
+  onOpenUrlClick: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -74,6 +78,14 @@ internal fun UpcomingChangesBottomSheetContent(
       message = infoText,
       priority = NotificationPriority.Info,
       modifier = Modifier.fillMaxWidth(),
+      style = if (certificateUrl != null) {
+        Button(
+          stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+          { onOpenUrlClick(certificateUrl) },
+        )
+      } else {
+        NotificationDefaults.InfoCardStyle.Default
+      },
     )
     Spacer(modifier = Modifier.height(16.dp))
     HedvigButton(
@@ -110,6 +122,8 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
           totalNet = UiMoney(100.0, UiCurrencyCode.SEK),
           totalGross = UiMoney(200.0, UiCurrencyCode.SEK),
         ),
+        certificateUrl = "String",
+        onOpenUrlClick = {},
       )
     }
   }
