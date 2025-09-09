@@ -40,6 +40,7 @@ internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
   sections: List<DisplayItem>,
   upcomingPriceInfo: PriceInfoForBottomSheet?,
+  showInfoIcon: Boolean,
   certificateUrl: String?,
   onOpenUrlClick: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -66,7 +67,7 @@ internal fun UpcomingChangesBottomSheetContent(
     upcomingPriceInfo?.let {
       PriceRow(
         priceToShow = it.totalNet,
-        showInfoIcon = it.totalNet != it.totalGross,
+        showInfoIcon = showInfoIcon,
         onInfoIconClick = {
           priceInfoBottomSheetState.show(it)
         },
@@ -122,6 +123,7 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
         ),
         certificateUrl = "String",
         onOpenUrlClick = {},
+        showInfoIcon = true,
       )
     }
   }

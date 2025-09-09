@@ -153,6 +153,9 @@ internal fun YourInfoTab(
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems,
         upcomingPriceInfo = upcomingPriceInfoForBottomSheet,
+        showInfoIcon =
+          upcomingChangesInsuranceAgreement.basePremium != upcomingChangesInsuranceAgreement.cost.monthlyNet ||
+            upcomingChangesInsuranceAgreement.cost.monthlyNet != upcomingChangesInsuranceAgreement.cost.monthlyGross,
         onNavigateToNewConversation = {
           upcomingChangesBottomSheet.dismiss()
           onNavigateToNewConversation()
