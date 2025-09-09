@@ -340,23 +340,21 @@ private fun PriceInfo(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
-          if (priceInfo.currentCost.monthlyGross != priceInfo.newCost.monthlyNet) {
-            IconButton(
-              onClick = {
-                val priceInfoForBottomSheet = PriceInfoForBottomSheet(
-                  displayItems = priceInfo.newCostBreakDown,
-                  totalGross = priceInfo.newCost.monthlyGross,
-                  totalNet = priceInfo.newCost.monthlyNet,
-                )
-                costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
-              },
-            ) {
-              Icon(
-                HedvigIcons.InfoFilled,
-                contentDescription = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
-                tint = HedvigTheme.colorScheme.fillSecondary,
+          IconButton(
+            onClick = {
+              val priceInfoForBottomSheet = PriceInfoForBottomSheet(
+                displayItems = priceInfo.newCostBreakDown,
+                totalGross = priceInfo.newCost.monthlyGross,
+                totalNet = priceInfo.newCost.monthlyNet,
               )
-            }
+              costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+            },
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              contentDescription = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
+              tint = HedvigTheme.colorScheme.fillSecondary,
+            )
           }
         }
       },
