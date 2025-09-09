@@ -10,7 +10,7 @@
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Confirm upgraded coverage</string>
-  <string name="ADDON_FLOW_COVER_BUTTON">See what is covered</string>
+  <string name="ADDON_FLOW_COVER_BUTTON">See what\'s included</string>
   <string name="ADDON_FLOW_LEARN_MORE_BUTTON">Learn more</string>
   <string name="ADDON_FLOW_PRICE_LABEL">+%s/mo</string>
   <string name="ADDON_FLOW_SEE_PRICE_BUTTON">See your price</string>
@@ -270,6 +270,7 @@
     <item quantity="other">%d friends invited</item>
   </plurals>
   <string name="FOREVER_REFERRAL_LIST_LABEL">Invited friends</string>
+  <string name="FOREVER_TAB_MONTHLY_DISCOUNT">Monthly discount</string>
   <string name="FOREVER_TAB_MONTLY_COST_LABEL">Your monthly cost</string>
   <string name="FOREVER_TAB_TOTAL_DISCOUNT_LABEL">Total</string>
   <string name="FULL_NAME_TEXT">Full Name</string>
@@ -651,8 +652,8 @@
   <string name="TALKBACK_WRITE_HERE">Write your message here</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Your new price: %1$s</string>
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
-  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Your price after discounts and addons: %1$s</string>
-  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Your price before discounts and addons: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Your price after discounts: %1$s</string>
+  <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Your price before discounts: %1$s</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %s. If you have any questions, please visit \"Help and support\" in the app.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Confirmation</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Yes, continue</string>

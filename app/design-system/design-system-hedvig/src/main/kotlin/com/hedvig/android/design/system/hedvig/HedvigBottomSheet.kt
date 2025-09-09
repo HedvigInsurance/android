@@ -46,9 +46,13 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 import hedvig.resources.R
 
 @Composable
-fun HedvigBottomSheetPriceBreakdown(state: HedvigBottomSheetState<PriceInfoForBottomSheet>) {
+fun HedvigBottomSheetPriceBreakdown(
+  state: HedvigBottomSheetState<PriceInfoForBottomSheet>,
+  modifier: Modifier = Modifier,
+) {
   HedvigBottomSheet(
     state,
+    modifier = modifier,
   ) {
     val data = state.data
     if (data != null) {
@@ -161,6 +165,7 @@ fun <T> HedvigBottomSheet(
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
   sheetPadding: PaddingValues = PaddingValues(0.dp),
   style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
+  modifier: Modifier = Modifier,
   dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
@@ -174,6 +179,7 @@ fun <T> HedvigBottomSheet(
     sheetPadding = sheetPadding,
     style = style,
     dragHandle = dragHandle,
+    modifier = modifier,
     sheetState = hedvigBottomSheetState,
   ) {
     if (hedvigBottomSheetState.data != null) {
@@ -199,12 +205,13 @@ private fun <T> InternalHedvigBottomSheet(
   contentPadding: PaddingValues,
   sheetPadding: PaddingValues,
   style: BottomSheetStyle,
+  modifier: Modifier = Modifier,
   dragHandle: @Composable (() -> Unit)?,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BottomSheet(
     onDismissRequest = onDismissRequest,
-    modifier = Modifier,
+    modifier = modifier,
     sheetState = sheetState,
     shape = bottomSheetShape.shape,
     scrimColor = style.scrimColor ?: bottomSheetColors.scrimColor,
