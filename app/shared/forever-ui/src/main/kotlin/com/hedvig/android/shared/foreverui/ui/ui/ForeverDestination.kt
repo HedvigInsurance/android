@@ -392,12 +392,13 @@ private fun ForeverScrollableContent(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       )
-      val discountValue = uiState.foreverData?.currentDiscount ?:
-      UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
+      val discountValue = uiState.foreverData?.currentDiscount
+        ?: UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
       val discountText =
         "-" + stringResource(
           id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-          discountValue.toString())
+          discountValue.toString(),
+        )
       HedvigText(
         text = discountText,
         textAlign = TextAlign.Center,

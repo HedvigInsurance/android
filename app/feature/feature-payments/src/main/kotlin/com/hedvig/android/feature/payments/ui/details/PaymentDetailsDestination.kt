@@ -249,7 +249,7 @@ private fun MemberChargeDetailsScreen(
                   .wrapContentSize(Alignment.CenterEnd)
                   .size(24.dp)
                   .clip(HedvigTheme.shapes.cornerXLarge)
-                  .clickable { paymentdetailsExplanationBottomSheetState.dismiss() }
+                  .clickable { paymentdetailsExplanationBottomSheetState.show() }
                   .minimumInteractiveComponentSize(),
               )
             },
