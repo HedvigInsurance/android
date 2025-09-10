@@ -50,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Default
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
@@ -120,6 +121,30 @@ internal fun YourInfoTab(
 
   val upcomingChangesBottomSheet = rememberHedvigBottomSheetState<Unit>()
   if (upcomingChangesInsuranceAgreement != null) {
+    val upcomingPriceInfoForBottomSheet = PriceInfoForBottomSheet(
+      displayItems = buildList {
+        add(
+          upcomingChangesInsuranceAgreement.productVariant.displayName to stringResource(
+            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            upcomingChangesInsuranceAgreement.basePremium.toString(),
+          ),
+        )
+        upcomingChangesInsuranceAgreement.addons?.forEach { addon ->
+          add(
+            addon.addonVariant.displayName
+              to stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
+          )
+        }
+        upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
+          add(discount.displayName to discount.displayValue)
+        }
+      },
+      totalGross = upcomingChangesInsuranceAgreement.cost.monthlyGross,
+      totalNet = upcomingChangesInsuranceAgreement.cost.monthlyNet,
+    )
     HedvigBottomSheet(upcomingChangesBottomSheet) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
@@ -127,12 +152,20 @@ internal fun YourInfoTab(
           dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems,
+        upcomingPriceInfo = upcomingPriceInfoForBottomSheet,
+        showInfoIcon =
+          upcomingChangesInsuranceAgreement.basePremium != upcomingChangesInsuranceAgreement.cost.monthlyNet ||
+            upcomingChangesInsuranceAgreement.cost.monthlyNet != upcomingChangesInsuranceAgreement.cost.monthlyGross,
         onNavigateToNewConversation = {
           upcomingChangesBottomSheet.dismiss()
           onNavigateToNewConversation()
         },
         onDismiss = {
           upcomingChangesBottomSheet.dismiss()
+        },
+        certificateUrl = upcomingChangesInsuranceAgreement.certificateUrl,
+        onOpenUrlClick = { url ->
+          openUrl(url)
         },
       )
     }
@@ -300,7 +333,7 @@ internal fun PriceRow(
           ) {
             Icon(
               HedvigIcons.InfoFilled,
-              null,
+              stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS),
               tint = HedvigTheme.colorScheme.fillSecondary,
             )
           }

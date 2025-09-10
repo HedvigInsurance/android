@@ -307,9 +307,9 @@ private fun ContractDetailScreen(
                       },
                       upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
                       isTerminated = contract.isTerminated,
-                      priceToShow = contract.cost.monthlyNet, // todo: check this logic with Sladan
+                      priceToShow = contract.cost.monthlyNet,
                       showPriceInfoIcon = contract.cost.monthlyNet != contract.cost.monthlyGross ||
-                        contract.basePremium != contract.cost.monthlyNet, // todo: check this logic with Sladan
+                        contract.basePremium != contract.cost.monthlyNet,
                       onInfoIconClick = {
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },

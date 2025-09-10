@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -35,7 +34,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
@@ -46,9 +44,13 @@ import eu.wewox.modalsheet.ExperimentalSheetApi
 import hedvig.resources.R
 
 @Composable
-fun HedvigBottomSheetPriceBreakdown(state: HedvigBottomSheetState<PriceInfoForBottomSheet>) {
+fun HedvigBottomSheetPriceBreakdown(
+  state: HedvigBottomSheetState<PriceInfoForBottomSheet>,
+  modifier: Modifier = Modifier,
+) {
   HedvigBottomSheet(
     state,
+    modifier = modifier,
   ) {
     val data = state.data
     if (data != null) {
@@ -161,6 +163,7 @@ fun <T> HedvigBottomSheet(
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
   sheetPadding: PaddingValues = PaddingValues(0.dp),
   style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
+  modifier: Modifier = Modifier,
   dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {
@@ -174,6 +177,7 @@ fun <T> HedvigBottomSheet(
     sheetPadding = sheetPadding,
     style = style,
     dragHandle = dragHandle,
+    modifier = modifier,
     sheetState = hedvigBottomSheetState,
   ) {
     if (hedvigBottomSheetState.data != null) {
@@ -199,12 +203,13 @@ private fun <T> InternalHedvigBottomSheet(
   contentPadding: PaddingValues,
   sheetPadding: PaddingValues,
   style: BottomSheetStyle,
+  modifier: Modifier = Modifier,
   dragHandle: @Composable (() -> Unit)?,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BottomSheet(
     onDismissRequest = onDismissRequest,
-    modifier = Modifier,
+    modifier = modifier,
     sheetState = sheetState,
     shape = bottomSheetShape.shape,
     scrimColor = style.scrimColor ?: bottomSheetColors.scrimColor,
