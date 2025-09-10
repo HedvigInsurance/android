@@ -2,6 +2,7 @@ import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
@@ -11,6 +12,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -91,6 +93,18 @@ internal val testQuote = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   addons = emptyList(),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
+  ),
 )
 
 internal val testQuote2 = TierDeductibleQuote(
@@ -122,6 +136,18 @@ internal val testQuote2 = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   addons = emptyList(),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
+  ),
 )
 
 internal val testQuote3 = TierDeductibleQuote(
@@ -153,6 +179,18 @@ internal val testQuote3 = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   addons = emptyList(),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
+  ),
 )
 
 internal val currentQuote = TierDeductibleQuote(
@@ -184,4 +222,16 @@ internal val currentQuote = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   addons = emptyList(),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
+  ),
 )

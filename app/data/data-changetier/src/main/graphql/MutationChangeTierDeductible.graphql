@@ -2,6 +2,8 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!,
   $source: ChangeTierDeductibleSource!,
 $addonsFlagOn: Boolean!) {
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
+
+
     intent {
       activationDate
       agreementToChange {
@@ -21,6 +23,17 @@ $addonsFlagOn: Boolean!) {
         tierName
       }
       quotes {
+        currentTotalCost {
+          ...TotalCostFragment
+        }
+        newTotalCost {
+          ...TotalCostFragment
+        }
+        costBreakdown {
+          displayName
+          displayValue
+        }
+
         deductible {
           ...DeductibleFragment
         }
@@ -37,17 +50,6 @@ $addonsFlagOn: Boolean!) {
         tierLevel
         tierName
         addons @include(if: $addonsFlagOn) {
-          addonId
-          displayName
-          displayItems {
-            ...DisplayItemFragment
-          }
-          previousPremium {
-            ...MoneyFragment
-          }
-          premium {
-            ...MoneyFragment
-          }
           addonVariant {
             ...AddonVariantFragment
           }
@@ -61,4 +63,13 @@ fragment DisplayItemFragment on ChangeTierDeductibleDisplayItem {
   displaySubtitle
   displayTitle
   displayValue
+}
+
+fragment TotalCostFragment on TotalCost {
+  monthlyGross {
+    ...MoneyFragment
+  }
+  monthlyNet {
+    ...MoneyFragment
+  }
 }

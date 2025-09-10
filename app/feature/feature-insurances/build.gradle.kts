@@ -36,6 +36,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
   implementation(projects.dataContractAndroid)

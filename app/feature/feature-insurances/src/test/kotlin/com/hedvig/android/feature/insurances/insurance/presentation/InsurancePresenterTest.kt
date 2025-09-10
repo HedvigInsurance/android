@@ -14,6 +14,8 @@ import assertk.assertions.isTrue
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
@@ -25,6 +27,7 @@ import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.flow.Flow
@@ -69,6 +72,12 @@ internal class InsurancePresenterTest {
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
+        basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+        cost = MonthlyCost(
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          discounts = emptyList(),
+        ),
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -106,6 +115,12 @@ internal class InsurancePresenterTest {
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
+        basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+        cost = MonthlyCost(
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          discounts = emptyList(),
+        ),
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -145,6 +160,12 @@ internal class InsurancePresenterTest {
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
+        basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+        cost = MonthlyCost(
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          discounts = emptyList(),
+        ),
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -182,6 +203,12 @@ internal class InsurancePresenterTest {
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
+        basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+        cost = MonthlyCost(
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          discounts = emptyList(),
+        ),
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),

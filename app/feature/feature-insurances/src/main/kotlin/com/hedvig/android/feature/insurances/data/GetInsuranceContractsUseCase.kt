@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
@@ -10,6 +11,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -29,7 +31,9 @@ import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
 import octopus.fragment.ContractFragment
+import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
+import octopus.type.DisplayItemOptions
 
 internal interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
@@ -46,7 +50,12 @@ internal class GetInsuranceContractsUseCaseImpl(
           while (currentCoroutineContext().isActive) {
             emitAll(
               apolloClient
-                .query(InsuranceContractsQuery(areAddonsEnabled))
+                .query(
+                  InsuranceContractsQuery(
+                    addonsEnabled = areAddonsEnabled,
+                    options = Optional.present(DisplayItemOptions(hidePrice = Optional.present(true))),
+                  ),
+                )
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)
                 .safeFlow(::ErrorMessage),
             )
@@ -114,6 +123,14 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     exposureDisplayName = exposureDisplayName,
     productVariant = this.productVariant.toProductVariant(),
     displayItems = this.displayItems.map { it.toDisplayItem() },
+    addons = this.addons?.map {
+      Addon(
+        it.addonVariant.toAddonVariant(),
+        premium = UiMoney.fromMoneyFragment(it.premium),
+      )
+    },
+    cost = this.cost.toMonthlyCost(),
+    basePremium = UiMoney.fromMoneyFragment(this.basePremium),
   )
 }
 
@@ -145,8 +162,13 @@ private fun ContractFragment.toContract(
       coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
-        Addon(it.addonVariant.toAddonVariant())
+        Addon(
+          it.addonVariant.toAddonVariant(),
+          premium = UiMoney.fromMoneyFragment(it.premium),
+        )
       },
+      cost = currentAgreement.cost.toMonthlyCost(),
+      basePremium = UiMoney.fromMoneyFragment(currentAgreement.basePremium),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -157,9 +179,14 @@ private fun ContractFragment.toContract(
         certificateUrl = it.certificateUrl,
         coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
         creationCause = it.creationCause.toCreationCause(),
-        addons = it.addons?.map { addon ->
-          Addon(addon.addonVariant.toAddonVariant())
+        addons = it.addons?.map {
+          Addon(
+            it.addonVariant.toAddonVariant(),
+            premium = UiMoney.fromMoneyFragment(it.premium),
+          )
         },
+        cost = it.cost.toMonthlyCost(),
+        basePremium = UiMoney.fromMoneyFragment(it.basePremium),
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
@@ -171,6 +198,21 @@ private fun ContractFragment.toContract(
 
 private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
   return DisplayItem.fromStrings(displayTitle, displayValue)
+}
+
+private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
+  return MonthlyCost(
+    monthlyGross = UiMoney.fromMoneyFragment(monthlyGross),
+    monthlyNet = UiMoney.fromMoneyFragment(monthlyNet),
+    discounts = discounts.map { discount ->
+      AgreementDiscount(
+        displayName = discount.displayName,
+        displayValue = discount.displayValue,
+        explanation = discount.explanation,
+        campaignCode = discount.campaignCode,
+      )
+    },
+  )
 }
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {

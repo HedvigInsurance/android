@@ -8,12 +8,15 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import com.hedvig.android.feature.insurances.data.MonthlyCost
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.flow.Flow
@@ -210,6 +213,12 @@ class TerminatedContractsPresenterTest {
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList(),
+          ),
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -247,6 +256,12 @@ class TerminatedContractsPresenterTest {
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList(),
+          ),
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -286,6 +301,12 @@ class TerminatedContractsPresenterTest {
         coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
+        basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+        cost = MonthlyCost(
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          UiMoney(89.0, UiCurrencyCode.SEK),
+          discounts = emptyList(),
+        ),
       ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
@@ -325,6 +346,12 @@ class TerminatedContractsPresenterTest {
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList(),
+          ),
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
@@ -362,6 +389,12 @@ class TerminatedContractsPresenterTest {
           coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
+          basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
+          cost = MonthlyCost(
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = emptyList(),
+          ),
         ),
         upcomingInsuranceAgreement = null,
         renewalDate = LocalDate.fromEpochDays(500),
