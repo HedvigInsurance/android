@@ -69,7 +69,7 @@ internal fun DiscountRow(
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
-  val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
+  val discountIsExpired = discount.status is Discount.DiscountStatus.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
@@ -113,7 +113,6 @@ internal fun DiscountRow(
             horizontalArrangement = Arrangement.End,
           ) {
             discount.amount?.let { discountAmount ->
-              // the copy didn't have minus and ../mo
               HedvigText(
                 text = stringResource(
                   R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -132,12 +131,12 @@ internal fun DiscountRow(
           }
           Spacer(Modifier.height(4.dp))
           val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-          when (discount.expiredState) {
-            is Discount.ExpiredState.AlreadyExpired -> {
+          when (discount.status) {
+            is Discount.DiscountStatus.AlreadyExpired -> {
               HedvigText(
                 text = stringResource(
                   id = R.string.PAYMENTS_EXPIRED_DATE,
-                  dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
+                  dateTimeFormatter.format(discount.status.expirationDate.toJavaLocalDate()),
                 ),
                 textAlign = TextAlign.End,
                 style = HedvigTheme.typography.label,
@@ -146,11 +145,11 @@ internal fun DiscountRow(
               )
             }
 
-            is Discount.ExpiredState.ExpiringInTheFuture -> {
+            is Discount.DiscountStatus.ExpiringInTheFuture -> {
               HedvigText(
                 text = stringResource(
                   id = R.string.PAYMENTS_VALID_UNTIL,
-                  dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
+                  dateTimeFormatter.format(discount.status.expirationDate.toJavaLocalDate()),
                 ),
                 textAlign = TextAlign.End,
                 style = HedvigTheme.typography.label,
@@ -159,7 +158,7 @@ internal fun DiscountRow(
               )
             }
 
-            Discount.ExpiredState.NotExpired -> {
+            Discount.DiscountStatus.NotExpired -> {
               HedvigText(
                 text = stringResource(
                   id = R.string.DISCOUNTS_LABEL_ACTIVE,
@@ -171,7 +170,7 @@ internal fun DiscountRow(
               )
             }
 
-            Discount.ExpiredState.Pending -> {
+            Discount.DiscountStatus.Pending -> {
               HedvigText(
                 text = stringResource(
                   id = R.string.DISCOUNTS_LABEL_PENDING,
@@ -227,7 +226,7 @@ internal val mockDiscountedContracts = setOf(
       Discount(
         code = "LOOP",
         description = "Desc",
-        expiredState = Discount.ExpiredState.Pending,
+        status = Discount.DiscountStatus.Pending,
         amount = null,
         isReferral = false,
       ),

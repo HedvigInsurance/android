@@ -40,32 +40,44 @@ internal val periodsPreviewData = listOf(
 internal val referralDiscountPreviewData = Discount(
   code = "APAKATT",
   description = "description",
-  expiredState = Discount.ExpiredState.NotExpired,
+  status = Discount.DiscountStatus.ACTIVE,
   amount = UiMoney(-20.0, UiCurrencyCode.SEK),
   isReferral = true,
+  statusDescription = null
 )
 
 internal val discountsPreviewData = listOf(
   Discount(
     code = "KOI15",
     description = "15% discount for 12 months",
-    expiredState = Discount.ExpiredState.NotExpired,
-    amount = UiMoney(20.0, UiCurrencyCode.SEK),
+    status = Discount.DiscountStatus.ACTIVE,
+    amount = null,
     isReferral = false,
+    statusDescription = "Activates 31 aug 2025"
   ),
   Discount(
     code = "HEJHEJ",
     description = "Desc",
-    expiredState = Discount.ExpiredState.AlreadyExpired(LocalDate(2022, 12, 14)),
-    amount = UiMoney(20.0, UiCurrencyCode.SEK),
+    status = Discount.DiscountStatus.EXPIRED,
+    amount = null,
     isReferral = false,
+    statusDescription = "Expired 31 aug 2025"
   ),
   Discount(
     code = "WOOSH",
     description = "Desc",
-    expiredState = Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2025, 12, 14)),
+    status = Discount.DiscountStatus.ACTIVE,
     amount = null,
     isReferral = false,
+    statusDescription = "Valid until 31 mars 2026"
+  ),
+  Discount(
+    code = "BUNDLE",
+    description = "Desc",
+    status = Discount.DiscountStatus.PENDING,
+    amount = null,
+    isReferral = false,
+    statusDescription = "Pending"
   ),
 )
 

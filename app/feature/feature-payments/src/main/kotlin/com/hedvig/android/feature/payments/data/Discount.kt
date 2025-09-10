@@ -8,31 +8,28 @@ import kotlinx.serialization.Serializable
 internal data class DiscountedContract(
   val contractId: String,
   val contractDisplayName: String,
-  val appliedDiscounts: List<Discount>, // todo: just an assumption, don't have api yet
+  val discountsDetails: DiscountsDetails
+)
+
+@Serializable
+internal data class DiscountsDetails (
+  val discountInfo: String?,
+  val appliedDiscounts: List<Discount>,
 )
 
 @Serializable
 internal data class Discount(
   val code: String,
   val description: String?,
-  val expiredState: ExpiredState,
+  val status: DiscountStatus,
+  val statusDescription: String?,
   val amount: UiMoney?,
   val isReferral: Boolean,
 ) {
-  @Serializable
-  sealed interface ExpiredState {
-    @Serializable
-    data object NotExpired : ExpiredState
-
-    @Serializable
-    data object Pending : ExpiredState
-
-    @Serializable
-    data class AlreadyExpired(val expirationDate: LocalDate) : ExpiredState
-
-    @Serializable
-    data class ExpiringInTheFuture(val expirationDate: LocalDate) : ExpiredState
-
-    companion object
+  enum class DiscountStatus {
+    ACTIVE,
+    PENDING,
+    EXPIRED
   }
 }
+

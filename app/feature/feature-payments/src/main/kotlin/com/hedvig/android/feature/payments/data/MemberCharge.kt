@@ -2,8 +2,7 @@ package com.hedvig.android.feature.payments.data
 
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments.data.Discount.ExpiredState
-import com.hedvig.android.feature.payments.data.from
+import com.hedvig.android.feature.payments.data.Discount.DiscountStatus
 import kotlin.String
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
@@ -149,7 +148,7 @@ internal fun MemberChargeFragment.toMemberCharge(
           code = discount.code,
           description = discount.description,
           // Expired state is not applicable in this context
-          expiredState = ExpiredState.NotExpired,
+          status = DiscountStatus.NotExpired,
           amount = UiMoney(
             discount.discount.amount,
             UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
@@ -165,7 +164,7 @@ internal fun MemberChargeFragment.toMemberCharge(
     Discount(
       code = referralInformation.code,
       // Expired state is not applicable in this context
-      expiredState = ExpiredState.NotExpired,
+      status = DiscountStatus.NotExpired,
       description = null,
       amount = UiMoney(
         it.amount.unaryMinus(),
@@ -194,15 +193,15 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   }
 }
 
-private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.ExpiredState {
+private fun Discount.DiscountStatus.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.DiscountStatus {
   if (expirationDate == null) {
-    return Discount.ExpiredState.NotExpired
+    return Discount.DiscountStatus.NotExpired
   }
   val today = clock.todayIn(TimeZone.currentSystemDefault())
   return if (expirationDate < today) {
-    Discount.ExpiredState.AlreadyExpired(expirationDate)
+    Discount.DiscountStatus.AlreadyExpired(expirationDate)
   } else {
-    Discount.ExpiredState.ExpiringInTheFuture(expirationDate)
+    Discount.DiscountStatus.ExpiringInTheFuture(expirationDate)
   }
 }
 

@@ -9,7 +9,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments.data.Discount.ExpiredState
+import com.hedvig.android.feature.payments.data.Discount.DiscountStatus
 import kotlin.String
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
@@ -39,7 +39,7 @@ internal class GetDiscountsUseCaseImpl(
         DiscountElement(
           code = it.code,
           description = it.description,
-          expiredState = Discount.ExpiredState.from(it.expiresAt, clock), // todo: here add starts in the future, pending
+          discountStatus = Discount.DiscountStatus.from(it.expiresAt, clock), // todo: here add starts in the future, pending
           amount = null,
           isReferral = false,
           contractIdAndNames = it.onlyApplicableToContracts?.map { contract ->
@@ -68,7 +68,7 @@ internal class GetDiscountsUseCaseImpl(
               Discount(
                 code = it.code,
                 description = it.description,
-                expiredState = it.expiredState,
+                status = it.discountStatus,
                 amount = null,
                 isReferral = it.isReferral,
               )
@@ -81,22 +81,22 @@ internal class GetDiscountsUseCaseImpl(
   }
 }
 
-private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.ExpiredState {
+private fun Discount.DiscountStatus.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.DiscountStatus {
   if (expirationDate == null) {
-    return Discount.ExpiredState.NotExpired
+    return Discount.DiscountStatus.NotExpired
   }
   val today = clock.todayIn(TimeZone.currentSystemDefault())
   return if (expirationDate < today) {
-    Discount.ExpiredState.AlreadyExpired(expirationDate)
+    Discount.DiscountStatus.AlreadyExpired(expirationDate)
   } else {
-    Discount.ExpiredState.ExpiringInTheFuture(expirationDate)
+    Discount.DiscountStatus.ExpiringInTheFuture(expirationDate)
   }
 }
 
 private data class DiscountElement(
   val code: String,
   val description: String?,
-  val expiredState: ExpiredState,
+  val discountStatus: DiscountStatus,
   val amount: UiMoney?,
   val isReferral: Boolean,
   val contractIdAndNames: List<Pair<String, String>>,
