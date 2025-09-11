@@ -747,6 +747,7 @@
   <string name="TOAST.NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST.READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
   <string name="app_info.submit_bug.button">Rapportera tekniska problem</string>
