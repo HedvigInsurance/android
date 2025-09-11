@@ -1,5 +1,6 @@
 package com.hedvig.android.featureflags.di
 
+import android.content.Context
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
@@ -11,6 +12,7 @@ import org.koin.dsl.module
 val featureManagerModule = module {
   single<HedvigUnleashClient> {
     HedvigUnleashClient(
+      androidContext = get<Context>().applicationContext,
       isProduction = get<HedvigBuildConstants>().isProduction,
       appVersionName = get<HedvigBuildConstants>().appVersionName,
       coroutineScope = get<ApplicationScope>(),
@@ -19,10 +21,6 @@ val featureManagerModule = module {
   }
 
   single<FeatureManager> {
-    if (get<HedvigBuildConstants>().isDebug) {
-      UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
-    } else {
-      UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
-    }
+    UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
   }
 }

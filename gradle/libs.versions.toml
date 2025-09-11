@@ -66,7 +66,6 @@ kotlinx-serialization = "1.9.0"
 kotlinxDatetime = "0.7.1-0.6.x-compat"
 media3 = "1.8.0"
 modalSheet = "0.7.0"
-moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
 okio = "3.16.0"
@@ -81,7 +80,7 @@ sqlite = "2.5.2"
 testParameterInjector = "1.18"
 timber = "5.0.1"
 turbine = "1.2.1"
-unleash = "0.5.9"
+unleash = "3.1.1"
 uuid = "0.8.4"
 zXing = "3.5.3"
 zoomable = "1.7.0"
@@ -216,7 +215,7 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
+unleash = { module = "io.getunleash:unleash-android", version.ref = "unleash" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }

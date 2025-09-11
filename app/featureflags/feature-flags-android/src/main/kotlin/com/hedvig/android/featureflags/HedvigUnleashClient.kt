@@ -1,11 +1,13 @@
 package com.hedvig.android.featureflags
 
+import android.content.Context
 import com.hedvig.android.auth.MemberIdService
-import io.getunleash.UnleashClient
-import io.getunleash.UnleashConfig
-import io.getunleash.UnleashContext
-import io.getunleash.polling.AutoPollingMode
-import io.getunleash.polling.TogglesUpdatedListener
+import com.hedvig.android.logger.logcat
+import io.getunleash.android.DefaultUnleash
+import io.getunleash.android.UnleashConfig
+import io.getunleash.android.data.UnleashContext
+import io.getunleash.android.events.HeartbeatEvent
+import io.getunleash.android.events.UnleashFetcherHeartbeatListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -19,12 +21,14 @@ private const val UNLEASH_URL = "https://eu.app.unleash-hosted.com/eubb1047/api/
 private const val APP_NAME = "android"
 
 class HedvigUnleashClient(
+  private val androidContext: Context,
   private val isProduction: Boolean,
   private val appVersionName: String,
   coroutineScope: CoroutineScope,
   private val memberIdService: MemberIdService,
 ) {
-  val client = UnleashClient(
+  val client = DefaultUnleash(
+    androidContext = androidContext,
     unleashConfig = createConfig(),
     unleashContext = createContext(
       appVersion = appVersionName,
@@ -33,17 +37,28 @@ class HedvigUnleashClient(
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
     trySend(Unit)
-    val listener = TogglesUpdatedListener { trySend(Unit) }
-    client.addTogglesUpdatedListener(listener = listener)
+    val listener = object : UnleashFetcherHeartbeatListener {
+      override fun onError(event: HeartbeatEvent) {
+      }
+
+      override fun togglesChecked() {
+      }
+
+      override fun togglesUpdated() {
+        trySend(Unit)
+      }
+    }
+
+    client.addUnleashEventListener(listener = listener)
     awaitClose {
-      client.removeTogglesUpdatedListener(listener = listener)
+      client.removeUnleashEventListener(listener = listener)
     }
   }
 
   init {
     coroutineScope.launch {
       memberIdService.getMemberId().collectLatest { memberId: String? ->
-        client.updateContext(
+        client.setContextAsync(
           createContext(
             appVersion = appVersionName,
             memberId = memberId,
@@ -51,6 +66,7 @@ class HedvigUnleashClient(
         )
       }
     }
+    client.start()
   }
 
   private fun createConfig(): UnleashConfig {
@@ -60,21 +76,16 @@ class HedvigUnleashClient(
       DEVELOPMENT_CLIENT_KEY
     }
 
-    val environmentContext = clientKey.replace("*", "").split(".").first()
-
-    return UnleashConfig.newBuilder()
+    return UnleashConfig.newBuilder(APP_NAME)
       .proxyUrl(UNLEASH_URL)
       .clientKey(clientKey)
-      .environment(environmentContext)
-      .enableMetrics()
-      .appName(APP_NAME)
-      .pollingMode(AutoPollingMode(pollRateDuration = 2000))
+      .pollingStrategy.interval(2000)
+      .metricsStrategy.interval(2000)
       .build()
   }
 
   private fun createContext(appVersion: String, memberId: String?): UnleashContext {
     return UnleashContext.newBuilder()
-      .appName(APP_NAME)
       .properties(
         buildMap {
           put("appVersion", appVersion)
