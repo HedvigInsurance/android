@@ -28,6 +28,15 @@ class HedvigLokalisePlugin : Plugin<Project> {
           """.trimMargin(),
         )
       project.tasks.register("downloadStrings", DownloadStringsTask::class.java) { task ->
+        if (!extension.lokaliseToken.isPresent) {
+          error(
+            """
+            |The lokalise extension for task "downloadStrings" does not look to be properly setup.
+            |Are you sure the `lokalise.properties` file exists in your directory?
+            |Hint: Look at the `lokalise {...` plugin extension setup in the resources gradle project.
+            """.trimMargin(),
+          )
+        }
         task.lokaliseProjectId.set(extension.lokaliseProjectId)
         task.lokaliseToken.set(extension.lokaliseToken)
         task.downloadConfig.set(extension.downloadConfig)
