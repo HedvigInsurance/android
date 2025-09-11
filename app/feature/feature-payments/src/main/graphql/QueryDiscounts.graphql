@@ -13,18 +13,18 @@ query Discounts {
         }
       }
     }
-#    pendingContracts {
-#      id
-#      exposureDisplayNameShort
-#      discountsDetails {
-#        discountsInfo
-#        discounts {
-#          campaignCode
-#          description
-#          discountStatus
-#          statusDescription
-#        }
-#      }
-#    }
+    pendingContracts {
+      id
+      exposureDisplayNameShort
+      discountsDetails {
+        discountsInfo
+        discounts {
+          campaignCode
+          description
+          discountStatus
+          statusDescription
+        }
+      }
+    }
   }
 }

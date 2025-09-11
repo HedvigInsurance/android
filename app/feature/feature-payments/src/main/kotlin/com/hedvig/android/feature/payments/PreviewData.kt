@@ -43,7 +43,7 @@ internal val referralDiscountPreviewData = Discount(
   status = Discount.DiscountStatus.ACTIVE,
   amount = UiMoney(-20.0, UiCurrencyCode.SEK),
   isReferral = true,
-  statusDescription = null
+  statusDescription = null,
 )
 
 internal val discountsPreviewData = listOf(
@@ -53,7 +53,7 @@ internal val discountsPreviewData = listOf(
     status = Discount.DiscountStatus.ACTIVE,
     amount = null,
     isReferral = false,
-    statusDescription = "Activates 31 aug 2025"
+    statusDescription = "Activates 31 aug 2025",
   ),
   Discount(
     code = "HEJHEJ",
@@ -61,7 +61,7 @@ internal val discountsPreviewData = listOf(
     status = Discount.DiscountStatus.EXPIRED,
     amount = null,
     isReferral = false,
-    statusDescription = "Expired 31 aug 2025"
+    statusDescription = "Expired 31 aug 2025",
   ),
   Discount(
     code = "WOOSH",
@@ -69,7 +69,7 @@ internal val discountsPreviewData = listOf(
     status = Discount.DiscountStatus.ACTIVE,
     amount = null,
     isReferral = false,
-    statusDescription = "Valid until 31 mars 2026"
+    statusDescription = "Valid until 31 mars 2026",
   ),
   Discount(
     code = "BUNDLE",
@@ -77,7 +77,7 @@ internal val discountsPreviewData = listOf(
     status = Discount.DiscountStatus.PENDING,
     amount = null,
     isReferral = false,
-    statusDescription = "Pending"
+    statusDescription = "Pending",
   ),
 )
 

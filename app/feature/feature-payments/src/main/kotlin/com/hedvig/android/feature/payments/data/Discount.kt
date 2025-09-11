@@ -8,11 +8,11 @@ import kotlinx.serialization.Serializable
 internal data class DiscountedContract(
   val contractId: String,
   val contractDisplayName: String,
-  val discountsDetails: DiscountsDetails
+  val discountsDetails: DiscountsDetails,
 )
 
 @Serializable
-internal data class DiscountsDetails (
+internal data class DiscountsDetails(
   val discountInfo: String?,
   val appliedDiscounts: List<Discount>,
 )
@@ -29,7 +29,6 @@ internal data class Discount(
   enum class DiscountStatus {
     ACTIVE,
     PENDING,
-    EXPIRED
+    EXPIRED,
   }
 }
-

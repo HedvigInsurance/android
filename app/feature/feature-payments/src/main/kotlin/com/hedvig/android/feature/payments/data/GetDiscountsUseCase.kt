@@ -31,53 +31,57 @@ internal class GetDiscountsUseCaseImpl(
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
-    // todo: temporary, waiting for the new API
-    val discounts = result.currentMember
-      .redeemedCampaigns
-      .filter { it.type == RedeemedCampaignType.VOUCHER }
-      .map {
-        DiscountElement(
-          code = it.code,
-          description = it.description,
-          discountStatus = Discount.DiscountStatus.from(it.expiresAt, clock), // todo: here add starts in the future, pending
-          amount = null,
-          isReferral = false,
-          contractIdAndNames = it.onlyApplicableToContracts?.map { contract ->
-            contract.id to contract.currentAgreement.productVariant.displayName
-          } ?: listOf(),
-        )
-      }
-    val discountedContractsIdsAndNames = result.currentMember
-      .redeemedCampaigns
-      .filter { it.type == RedeemedCampaignType.VOUCHER }
-      .flatMap { discount ->
-        discount.onlyApplicableToContracts?.map { contract ->
-          contract.id to
-            contract.currentAgreement.productVariant.displayName
-        }
-          ?: emptyList()
-      }.toSet()
-    val discountedContracts = buildSet {
-      discountedContractsIdsAndNames.forEach { contract ->
-        val appliedDiscounts = discounts.filter { it.contractIdAndNames.contains(contract) }
-        add(
-          DiscountedContract(
-            contractId = contract.first,
-            contractDisplayName = contract.second,
-            appliedDiscounts = appliedDiscounts.map {
-              Discount(
-                code = it.code,
-                description = it.description,
-                status = it.discountStatus,
-                amount = null,
-                isReferral = it.isReferral,
-              )
-            },
-          ),
-        )
-      }
-    }
-    discountedContracts
+    val activeContracts = result.currentMember.activeContracts
+    val pendingContracts = result.currentMember.pendingContracts
+
+//    // todo: temporary, waiting for the new API
+//    val discounts = result.currentMember
+//      .redeemedCampaigns
+//      .filter { it.type == RedeemedCampaignType.VOUCHER }
+//      .map {
+//        DiscountElement(
+//          code = it.code,
+//          description = it.description,
+//          discountStatus = Discount.DiscountStatus.from(it.expiresAt, clock),
+//          // todo: here add starts in the future, pending
+//          amount = null,
+//          isReferral = false,
+//          contractIdAndNames = it.onlyApplicableToContracts?.map { contract ->
+//            contract.id to contract.currentAgreement.productVariant.displayName
+//          } ?: listOf(),
+//        )
+//      }
+//    val discountedContractsIdsAndNames = result.currentMember
+//      .redeemedCampaigns
+//      .filter { it.type == RedeemedCampaignType.VOUCHER }
+//      .flatMap { discount ->
+//        discount.onlyApplicableToContracts?.map { contract ->
+//          contract.id to
+//            contract.currentAgreement.productVariant.displayName
+//        }
+//          ?: emptyList()
+//      }.toSet()
+//    val discountedContracts = buildSet {
+//      discountedContractsIdsAndNames.forEach { contract ->
+//        val appliedDiscounts = discounts.filter { it.contractIdAndNames.contains(contract) }
+//        add(
+//          DiscountedContract(
+//            contractId = contract.first,
+//            contractDisplayName = contract.second,
+//            appliedDiscounts = appliedDiscounts.map {
+//              Discount(
+//                code = it.code,
+//                description = it.description,
+//                status = it.discountStatus,
+//                amount = null,
+//                isReferral = it.isReferral,
+//              )
+//            },
+//          ),
+//        )
+//      }
+//    }
+//    discountedContracts
   }
 }
 
