@@ -285,6 +285,10 @@ private fun CoverageCard(
             relatedAddonQuote.coverageDisplayName,
             stringResource(R.string.TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION),
           )
+          val chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
+            false -> 0
+            true -> 1
+          }
           DropdownWithDialog(
             style = Label(
               items = relatedAddonQuoteOptions.map {
@@ -294,10 +298,7 @@ private fun CoverageCard(
             ),
             size = Small,
             hintText = "",
-            chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
-              false -> 0
-              true -> 1
-            },
+            chosenItemIndex = chosenItemIndex,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
           ) { onDismissRequest ->
             CoverageChoiceDialogContent(
@@ -313,7 +314,7 @@ private fun CoverageCard(
                   },
                 )
               },
-              initiallyChosenItemIndex = chosenCoverageItemIndex,
+              initiallyChosenItemIndex = chosenItemIndex,
               onDismissRequest = onDismissRequest,
               onItemSelected = {
                 val exclude = it == 1
