@@ -54,8 +54,12 @@ val movingFlowModule = module {
       featureManager = get<FeatureManager>(),
     )
   }
-  viewModel<ChoseCoverageLevelAndDeductibleViewModel> {
-    ChoseCoverageLevelAndDeductibleViewModel(get<MovingFlowRepository>())
+  viewModel<ChoseCoverageLevelAndDeductibleViewModel> { (intentId: String) ->
+    ChoseCoverageLevelAndDeductibleViewModel(
+      intentId,
+      get<MovingFlowRepository>(),
+      this.get()
+    )
   }
   viewModel<SummaryViewModel> {
     SummaryViewModel(

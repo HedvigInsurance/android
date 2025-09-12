@@ -144,7 +144,8 @@ internal class MovingFlowRepository(
   }
 
   // Flips the mark of a home addon which determines if they do not wish to contain that addon in their new quote
-  suspend fun toggleHomeAddonExclusion(addonId: AddonId) {
+
+  suspend fun changeHomeAddonExclusion(addonId: AddonId, exclude: Boolean) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
         movingFlowQuotes = existingState.movingFlowQuotes?.copy(
@@ -152,7 +153,7 @@ internal class MovingFlowRepository(
             homeQuote.copy(
               relatedAddonQuotes = homeQuote.relatedAddonQuotes.map { addonQuote ->
                 if (addonQuote.addonId == addonId) {
-                  addonQuote.copy(isExcludedByUser = !addonQuote.isExcludedByUser)
+                  addonQuote.copy(isExcludedByUser = exclude)
                 } else {
                   addonQuote
                 }

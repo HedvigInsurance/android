@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.ACCIDENT
@@ -68,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -117,6 +119,9 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
     },
     onSelectCoverageOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectCoverage(it)) },
     onSelectDeductibleOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectDeductible(it)) },
+    onChangeAddonExclusion = { addonId, exclude ->
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.AlterAddon(addonId, exclude))
+    },
   )
 }
 
@@ -129,6 +134,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
   onCompareCoverageClicked: () -> Unit,
 ) {
   Surface(
@@ -139,9 +145,9 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
       Box(
         modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .fillMaxWidth()
+            .weight(1f)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -162,6 +168,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
             onSelectCoverageOption = onSelectCoverageOption,
             onSelectDeductibleOption = onSelectDeductibleOption,
             onCompareCoverageClicked = onCompareCoverageClicked,
+            onChangeAddonExclusion = onChangeAddonExclusion,
           )
         }
       }
@@ -176,6 +183,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
   onCompareCoverageClicked: () -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
     FlowHeading(
@@ -186,7 +194,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
     Spacer(Modifier.height(8.dp))
     Column(Modifier.verticalScroll(rememberScrollState())) {
       Spacer(Modifier.height(8.dp))
-      CoverageCard(content.tiersInfo, onSelectCoverageOption, onSelectDeductibleOption)
+      CoverageCard(content.tiersInfo, content.totalPrice, onSelectCoverageOption, onSelectDeductibleOption, onChangeAddonExclusion)
       Spacer(Modifier.height(8.dp))
       if (content.tiersInfo.coverageOptions.isNotEmpty()) {
         HedvigTextButton(
@@ -216,8 +224,10 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 @Composable
 private fun CoverageCard(
   tiersInfo: TiersInfo,
+  totalPrice: UiMoney?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier) {
@@ -269,6 +279,49 @@ private fun CoverageCard(
             },
           )
         }
+        val relatedAddonQuotes = tiersInfo.selectedCoverage.relatedAddonQuotes
+        for (relatedAddonQuote in relatedAddonQuotes) {
+          val relatedAddonQuoteOptions = listOf(
+            relatedAddonQuote.coverageDisplayName,
+            stringResource(R.string.TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION),
+          )
+          DropdownWithDialog(
+            style = Label(
+              items = relatedAddonQuoteOptions.map {
+                SimpleDropdownItem(it)
+              },
+              label = stringResource(R.string.TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL),
+            ),
+            size = Small,
+            hintText = "",
+            chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
+              false -> 0
+              true -> 1
+            },
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+          ) { onDismissRequest ->
+            CoverageChoiceDialogContent(
+              coverageOptions = relatedAddonQuoteOptions.mapIndexed { index, optionName ->
+                CoverageInfo(
+                  moveHomeQuoteId = relatedAddonQuote.addonId.id,
+                  tierName = optionName,
+                  tierDescription = null,
+                  minimumPremiumForCoverage = if (index == 1) {
+                    UiMoney(0.0, relatedAddonQuote.premium.currencyCode)
+                  } else {
+                    relatedAddonQuote.premium
+                  },
+                )
+              },
+              initiallyChosenItemIndex = chosenCoverageItemIndex,
+              onDismissRequest = onDismissRequest,
+              onItemSelected = {
+                val exclude = it == 1
+                onChangeAddonExclusion(relatedAddonQuote.addonId, exclude)
+              },
+            )
+          }
+        }
         when (val deductibleOptions = tiersInfo.deductibleOptions) {
           NoOptions -> {}
           is MutlipleOptions -> {
@@ -318,7 +371,7 @@ private fun CoverageCard(
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              tiersInfo.selectedCoverage.premium.toString(),
+              totalPrice ?: tiersInfo.selectedCoverage.premium.toString(),
             ),
             textAlign = TextAlign.End,
             modifier = Modifier.wrapContentWidth(Alignment.End),
@@ -564,6 +617,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         selectedCoverage = allOptions[0],
         selectedDeductible = allOptions[0],
       ),
+      totalPrice = UiMoney(100.0, UiCurrencyCode.SEK),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
       comparisonParameters = null,
@@ -575,6 +629,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
     onCompareCoverageClicked = {},
+    onChangeAddonExclusion = { _, _ -> },
   )
 }
 
@@ -590,5 +645,6 @@ fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
     onCompareCoverageClicked = {},
+    onChangeAddonExclusion = { _, _ -> },
   )
 }
