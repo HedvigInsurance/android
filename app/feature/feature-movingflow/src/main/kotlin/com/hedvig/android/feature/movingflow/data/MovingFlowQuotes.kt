@@ -48,6 +48,7 @@ internal data class MovingFlowQuotes(
     val defaultChoice: Boolean,
     val relatedAddonQuotes: List<HomeAddonQuote>,
   ) : Quote {
+    val presentableRelatedAddonQuotes = relatedAddonQuotes.filterNot(HomeAddonQuote::isExcludedByUser)
     val tierDisplayName = productVariant.displayTierName ?: tierName
 
     @Serializable

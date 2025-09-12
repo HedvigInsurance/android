@@ -2,7 +2,6 @@ package com.hedvig.android.feature.movingflow.ui.summary
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,18 +24,14 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ConfirmChanges
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ToggleHomeAddonExclusion
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
@@ -46,7 +41,6 @@ internal class SummaryViewModel(
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
-  featureManager: FeatureManager,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
@@ -55,7 +49,6 @@ internal class SummaryViewModel(
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
-      featureManager = featureManager,
     ),
   )
 
@@ -65,7 +58,6 @@ internal class SummaryPresenter(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
-  private val featureManager: FeatureManager,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
@@ -75,9 +67,6 @@ internal class SummaryPresenter(
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
     var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
-    val canExcludeAddons by remember {
-      featureManager.isFeatureEnabled(Feature.ENABLE_ADDONS_REMOVAL_FROM_MOVING_FLOW)
-    }.collectAsState(false)
 
     CollectEvents { event ->
       when (event) {
@@ -96,10 +85,6 @@ internal class SummaryPresenter(
 
         DismissSubmissionError -> {
           submitChangesError = null
-        }
-
-        is ToggleHomeAddonExclusion -> {
-          launch { movingFlowRepository.toggleHomeAddonExclusion(event.addonId) }
         }
       }
     }
@@ -202,7 +187,6 @@ internal class SummaryPresenter(
         isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
-        canExcludeAddons = canExcludeAddons,
         totalPremium = totalPremium,
         grossPremium = grossPremium,
       )
@@ -232,7 +216,6 @@ internal sealed interface SummaryUiState {
     val isSubmitting: Boolean,
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
-    val canExcludeAddons: Boolean,
     val totalPremium: UiMoney?,
     val grossPremium: UiMoney?,
   ) : SummaryUiState {
@@ -252,8 +235,6 @@ internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent
 
   data object DismissSubmissionError : SummaryEvent
-
-  data class ToggleHomeAddonExclusion(val addonId: AddonId) : SummaryEvent
 }
 
 internal data class SummaryInfo(

@@ -32,7 +32,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
@@ -72,7 +71,6 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Making
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -335,16 +333,18 @@ private fun SummaryTopAppBar(onIconClick: () -> Unit) {
 
 @Composable
 private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
-  val state = rememberQuoteCardState()
   val addonDocs = uiState.quote.addons.flatMap { it.addonVariant.documents }
   val allDocuments: List<InsuranceVariantDocument> =
     uiState.quote.productVariant.documents + addonDocs
   QuoteCard(
+    displayName = uiState.quote.productVariant.displayName,
+    contractGroup = uiState.quote.productVariant.contractGroup,
+    insurableLimits = uiState.quote.productVariant.insurableLimits,
+    documents = allDocuments,
     subtitle = uiState.currentContractData.contractDisplaySubtitle,
-    isExcluded = false,
     premium = uiState.quote.newTotalCost.monthlyNet,
-    costBreakdown = uiState.quote.costBreakdown,
     previousPremium = uiState.quote.newTotalCost.monthlyGross,
+    costBreakdown = uiState.quote.costBreakdown,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -353,11 +353,6 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
       )
     },
     modifier = modifier,
-    quoteCardState = state,
-    displayName = uiState.quote.productVariant.displayName,
-    contractGroup = uiState.quote.productVariant.contractGroup,
-    insurableLimits = uiState.quote.productVariant.insurableLimits,
-    documents = allDocuments,
   )
 }
 

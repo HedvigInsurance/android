@@ -1,8 +1,6 @@
 package com.hedvig.android.tiersandaddons
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,25 +14,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -45,12 +39,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
-import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -61,15 +52,14 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.BottomSheetStyle
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -77,9 +67,12 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.ripple
+import com.hedvig.android.design.system.hedvig.show
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 
@@ -90,33 +83,6 @@ data class QuoteDisplayItem(
   val value: String,
 )
 
-@Stable
-interface QuoteCardState {
-  var showDetails: Boolean
-  val isEnabled: Boolean
-
-  fun toggleState() {
-    showDetails = !showDetails
-  }
-
-  companion object {
-    val Saver = Saver<QuoteCardState, Boolean>(
-      { it.showDetails },
-      { QuoteCardStateImpl(it) },
-    )
-  }
-}
-
-private class QuoteCardStateImpl(initialShowDetails: Boolean) : QuoteCardState {
-  override var showDetails by mutableStateOf(initialShowDetails)
-  override val isEnabled: Boolean = true
-}
-
-@Composable
-fun rememberQuoteCardState(showDetails: Boolean = false): QuoteCardState {
-  return rememberSaveable(saver = QuoteCardState.Saver) { QuoteCardStateImpl(showDetails) }
-}
-
 @Composable
 fun QuoteCard(
   productVariant: ProductVariant,
@@ -126,27 +92,23 @@ fun QuoteCard(
   costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
-  quoteCardState: QuoteCardState = rememberQuoteCardState(),
 ) {
   QuoteCard(
-    quoteCardState = quoteCardState,
-    subtitle = subtitle,
-    premium = premium,
-    previousPremium = previousPremium,
-    isExcluded = false,
-    costBreakdown = costBreakdown,
-    displayItems = displayItems,
-    modifier = modifier,
     displayName = productVariant.displayName,
     contractGroup = productVariant.contractGroup,
     insurableLimits = productVariant.insurableLimits,
     documents = productVariant.documents,
+    subtitle = subtitle,
+    premium = premium,
+    previousPremium = previousPremium,
+    costBreakdown = costBreakdown,
+    displayItems = displayItems,
+    modifier = modifier,
   )
 }
 
 @Composable
 fun QuoteCard(
-  quoteCardState: QuoteCardState,
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
@@ -154,90 +116,63 @@ fun QuoteCard(
   subtitle: String?,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  isExcluded: Boolean,
   costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
-  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
-  excludedCollapsedStateButtonContent: @Composable () -> Unit = {},
 ) {
-  QuoteCard(
-    quoteCardState = quoteCardState,
-    subtitle = subtitle,
-    premium = premium,
-    previousPremium = previousPremium,
-    isExcluded = isExcluded,
-    costBreakdown = costBreakdown,
-    displayItems = displayItems,
-    modifier = modifier,
-    displayName = displayName,
-    contractGroup = contractGroup,
-    insurableLimits = insurableLimits,
-    documents = documents,
-    titleEndSlot = {
-      Crossfade(
-        targetState = isExcluded,
-        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-      ) { show ->
-        if (show) {
-          HighlightLabel(
-            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
-            size = Small,
-            color = Grey(MEDIUM),
-          )
-        }
-      }
-    },
-    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
-    excludedCollapsedStateButtonContent = excludedCollapsedStateButtonContent,
+  val quoteDetailsBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  QuoteDetailsBottomSheet(
+    quoteDetailsBottomSheetState,
+    displayItems,
+    insurableLimits,
+    documents,
   )
-}
-
-@Composable
-fun QuoteCard(
-  quoteCardState: QuoteCardState,
-  displayName: String,
-  contractGroup: ContractGroup?,
-  insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
-  subtitle: String?,
-  premium: UiMoney,
-  previousPremium: UiMoney?,
-  isExcluded: Boolean,
-  costBreakdown: List<Pair<String, String>>,
-  displayItems: List<QuoteDisplayItem>,
-  modifier: Modifier = Modifier,
-  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
-) {
-  QuoteCard(
-    quoteCardState = quoteCardState,
-    subtitle = subtitle,
-    premium = premium,
-    previousPremium = previousPremium,
-    isExcluded = isExcluded,
-    costBreakdown = costBreakdown,
-    displayItems = displayItems,
-    modifier = modifier,
-    displayName = displayName,
-    contractGroup = contractGroup,
-    insurableLimits = insurableLimits,
-    documents = documents,
-    titleEndSlot = {
-      Crossfade(
-        targetState = isExcluded,
-        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-      ) { show ->
-        if (show) {
-          HighlightLabel(
-            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
-            size = Small,
-            color = Grey(MEDIUM),
-          )
-        }
+  HedvigCard(
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    shape = HedvigTheme.shapes.cornerXLarge,
+    interactionSource = null,
+    indication = ripple(bounded = true, radius = 1000.dp),
+  ) {
+    Column(
+      modifier = Modifier
+        .padding(16.dp)
+        .semantics {
+          isTraversalGroup = true
+        },
+    ) {
+      QuoteIconAndTitle(
+        contractGroup = contractGroup,
+        displayName = displayName,
+        subtitle = subtitle,
+        modifier = Modifier.semantics(mergeDescendants = true) {},
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigButtonGhostWithBorder(
+        text = stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
+        onClick = { quoteDetailsBottomSheetState.show() },
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      if (costBreakdown.isNotEmpty()) {
+        Spacer(Modifier.height(16.dp))
+        DiscountCostBreakdown(
+          costBreakdown,
+          Modifier.semantics(mergeDescendants = true) {},
+        )
       }
-    },
-    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
-  )
+      Spacer(Modifier.height(16.dp))
+      HorizontalDivider()
+      Spacer(Modifier.height(16.dp))
+      TotalPriceRow(premium, previousPremium, Modifier.semantics(mergeDescendants = true) {})
+    }
+  }
 }
 
 @Composable
@@ -289,96 +224,29 @@ fun AddonQuoteCardDocumentsSection(documentsDisplayNameUrls: List<Pair<String, S
 }
 
 @Composable
-private fun QuoteCard(
-  quoteCardState: QuoteCardState,
-  subtitle: String?,
-  premium: UiMoney,
-  previousPremium: UiMoney?,
-  isExcluded: Boolean,
-  costBreakdown: List<Pair<String, String>>,
-  displayItems: List<QuoteDisplayItem>,
-  displayName: String,
-  contractGroup: ContractGroup?,
+private fun QuoteDetailsBottomSheet(
+  quoteDetailsBottomSheetState: HedvigBottomSheetState<Unit>,
+  quoteDisplayItems: List<QuoteDisplayItem>,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
-  modifier: Modifier = Modifier,
-  titleEndSlot: @Composable () -> Unit = {},
-  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
-  excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
+  insuranceVariantDocuments: List<InsuranceVariantDocument>,
 ) {
-  HedvigCard(
-    modifier = modifier
-      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
-      .border(
-        shape = HedvigTheme.shapes.cornerXLarge,
-        color = HedvigTheme.colorScheme.borderPrimary,
-        width = 1.dp,
-      ),
-    color = HedvigTheme.colorScheme.backgroundPrimary,
-    shape = HedvigTheme.shapes.cornerXLarge,
-    onClick = quoteCardState::toggleState,
-    enabled = quoteCardState.isEnabled,
-    interactionSource = null,
-    indication = ripple(bounded = true, radius = 1000.dp),
+  HedvigBottomSheet(
+    hedvigBottomSheetState = quoteDetailsBottomSheetState,
   ) {
-    Column(
-      modifier = Modifier
-        .padding(16.dp)
-        .semantics {
-          isTraversalGroup = true
-        },
-    ) {
-      QuoteIconAndTitle(
-        contractGroup = contractGroup,
-        displayName = displayName,
-        quoteCardState = quoteCardState,
-        titleEndSlot = titleEndSlot,
-        subtitle = subtitle,
-        modifier = Modifier.semantics(mergeDescendants = true) {},
-      )
-      Spacer(Modifier.height(16.dp))
-      if (excludedCollapsedStateButtonContent != null &&
-        !quoteCardState.showDetails &&
-        isExcluded
-      ) {
-        excludedCollapsedStateButtonContent()
-      } else {
-        HedvigButtonGhostWithBorder(
-          text = if (quoteCardState.showDetails) {
-            stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-          } else {
-            stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
-          },
-          onClick = quoteCardState::toggleState,
-          enabled = true,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
-      AnimatedVisibility(
-        visible = quoteCardState.showDetails,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        QuoteDetails(
-          displayItems = displayItems,
-          insurableLimits = insurableLimits,
-          documents = documents,
-          betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
-          modifier = Modifier.padding(top = 16.dp),
-        )
-      }
-      if (costBreakdown.isNotEmpty()) {
-        Spacer(Modifier.height(16.dp))
-        DiscountCostBreakdown(
-          costBreakdown,
-          Modifier.semantics(mergeDescendants = true) {},
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalDivider()
-      Spacer(Modifier.height(16.dp))
-      TotalPriceRow(isExcluded, premium, previousPremium, Modifier.semantics(mergeDescendants = true) {})
-    }
+    QuoteDetails(
+      displayItems = quoteDisplayItems,
+      insurableLimits = insurableLimits,
+      documents = insuranceVariantDocuments,
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_close_button),
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+      onClick = quoteDetailsBottomSheetState::dismiss,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -386,8 +254,6 @@ private fun QuoteCard(
 private fun QuoteIconAndTitle(
   contractGroup: ContractGroup?,
   displayName: String,
-  quoteCardState: QuoteCardState,
-  titleEndSlot: @Composable (() -> Unit),
   subtitle: String?,
   modifier: Modifier = Modifier,
 ) {
@@ -405,17 +271,10 @@ private fun QuoteIconAndTitle(
         .weight(1f)
         .semantics(mergeDescendants = true) {},
     ) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(
-            text = displayName,
-            maxLines = if (quoteCardState.showDetails) Int.MAX_VALUE else 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier,
-          )
-        },
-        endSlot = { titleEndSlot() },
-        spaceBetween = 8.dp,
+      HedvigText(
+        text = displayName,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier,
       )
       AnimatedContent(
         targetState = subtitle,
@@ -444,7 +303,6 @@ private fun QuoteDetails(
   displayItems: List<QuoteDisplayItem>,
   insurableLimits: List<InsurableLimit>,
   documents: List<InsuranceVariantDocument>,
-  betweenDetailsAndDocumentsContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -476,7 +334,6 @@ private fun QuoteDetails(
         }
       }
     }
-    betweenDetailsAndDocumentsContent.invoke()
     if (documents.isNotEmpty()) {
       Column {
         HedvigText(
@@ -562,7 +419,6 @@ fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: M
 
 @Composable
 private fun TotalPriceRow(
-  isExcluded: Boolean,
   premium: UiMoney,
   previousPremium: UiMoney?,
   modifier: Modifier = Modifier,
@@ -571,14 +427,7 @@ private fun TotalPriceRow(
     modifier = modifier,
     spaceBetween = 8.dp,
     startSlot = {
-      HedvigText(
-        text = stringResource(R.string.TIER_FLOW_TOTAL),
-        color = if (isExcluded) {
-          HedvigTheme.colorScheme.textSecondaryTranslucent
-        } else {
-          Color.Unspecified
-        },
-      )
+      HedvigText(text = stringResource(R.string.TIER_FLOW_TOTAL))
     },
     endSlot = {
       val premiumPerMonthDescription = premium.getPerMonthDescription()
@@ -586,7 +435,7 @@ private fun TotalPriceRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
         modifier = Modifier.semantics { contentDescription = premiumPerMonthDescription },
       ) {
-        if (previousPremium != null && !isExcluded) {
+        if (previousPremium != null) {
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -605,14 +454,6 @@ private fun TotalPriceRow(
             premium,
           ),
           textAlign = TextAlign.End,
-          style = if (isExcluded) {
-            LocalTextStyle.current.copy(
-              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-              textDecoration = TextDecoration.LineThrough,
-            )
-          } else {
-            LocalTextStyle.current
-          },
           modifier = Modifier.wrapContentWidth(Alignment.End),
         )
       }
@@ -641,13 +482,10 @@ private fun InfoRow(leftText: String, rightText: String, modifier: Modifier = Mo
 
 @HedvigPreview
 @Composable
-private fun PreviewQuoteCard(
-  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) triple: TripleCase,
-) {
+private fun PreviewQuoteCard() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       QuoteCard(
-        quoteCardState = rememberQuoteCardState(triple == TripleCase.FIRST),
         displayName = "displayName",
         contractGroup = DOG,
         insurableLimits = List(3) {
@@ -667,7 +505,6 @@ private fun PreviewQuoteCard(
         subtitle = "subtitle",
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
-        isExcluded = triple == TripleCase.SECOND,
         costBreakdown = List(3) { "#$it" to "discount#$it" },
         displayItems = List(5) {
           QuoteDisplayItem(

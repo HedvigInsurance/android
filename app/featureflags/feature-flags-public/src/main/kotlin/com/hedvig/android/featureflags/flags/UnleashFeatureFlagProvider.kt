@@ -21,11 +21,6 @@ internal class UnleashFeatureFlagProvider(
           Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
           Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
           Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons", false)
-          Feature.ENABLE_ADDONS_REMOVAL_FROM_MOVING_FLOW -> hedvigUnleashClient.client.isEnabled(
-            "enable_addons_removal_from_moving_flow",
-            false,
-          )
-
           Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES -> hedvigUnleashClient.client.isEnabled(
             "enable_video_player_in_chat_messages",
             false,
