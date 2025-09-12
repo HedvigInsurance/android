@@ -22,10 +22,11 @@ internal data class TravelAddonQuote(
   val addonSubtype: String,
   val addonId: String,
   val displayName: String,
-  val price: UiMoney,
   val addonVariant: AddonVariant,
   val displayDetails: List<Pair<String, String>>,
   val documents: List<TravelAddonQuoteInsuranceDocument>,
+  val displayNameLong: String,
+  val itemCost: ItemCost,
 )
 
 @Serializable
@@ -36,6 +37,22 @@ internal data class TravelAddonQuoteInsuranceDocument(
 
 @Serializable
 internal data class CurrentTravelAddon(
-  val price: UiMoney,
   val displayDetails: List<Pair<String, String>>,
+  val displayNameLong: String,
+  val netPremium: UiMoney,
+)
+
+@Serializable
+data class ItemCost(
+  val monthlyNet: UiMoney,
+  val monthlyGross: UiMoney,
+  val discounts: List<ItemCostDiscount>,
+)
+
+@Serializable
+data class ItemCostDiscount(
+  val campaignCode: String,
+  val displayName: String,
+  val displayValue: String,
+  val explanation: String,
 )

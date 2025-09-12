@@ -42,7 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -79,6 +79,8 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
+import com.hedvig.android.feature.addon.purchase.data.ItemCost
+import com.hedvig.android.feature.addon.purchase.data.ItemCostDiscount
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -316,7 +318,7 @@ private fun CustomizeTravelAddonCard(
   ) {
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
-        chosenOptionPremiumExtra = uiState.currentlyChosenOption.price,
+        chosenOptionPremiumExtra = uiState.currentlyChosenOption.itemCost.monthlyNet,
         exposureName = uiState.travelAddonOffer.title,
         description = uiState.travelAddonOffer.description,
       )
@@ -446,11 +448,11 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   val data = addonOptions.map { option ->
-    val pricePerMonth = option.price.getPerMonthDescription()
+    val pricePerMonth = option.itemCost.monthlyNet.getPerMonthDescription()
     ExpandedRadioOptionData(
       chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
       title = option.displayName,
-      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price),
+      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.itemCost.monthlyNet),
       onRadioOptionClick = {
         onChooseOptionInDialog(option)
       },
@@ -604,14 +606,23 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     product = "",
   ),
   addonSubtype = "45 days",
-  price = UiMoney(
-    49.0,
-    SEK,
-  ),
   documents = listOf(
     TravelAddonQuoteInsuranceDocument(
       "Some terms",
       "url",
+    ),
+  ),
+  displayNameLong = "Travel Plus 45 days",
+  itemCost = ItemCost(
+    UiMoney(59.0, UiCurrencyCode.SEK),
+    UiMoney(69.0, UiCurrencyCode.SEK),
+    discounts = listOf(
+      ItemCostDiscount(
+        campaignCode = "Bundle",
+        displayName = "15% bundle discount",
+        displayValue = "-19kr/mo",
+        explanation = "some explanation",
+      ),
     ),
   ),
 )
@@ -627,15 +638,24 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     displayName = "60 days",
     product = "",
   ),
-  addonSubtype = "45 days",
-  price = UiMoney(
-    60.0,
-    SEK,
-  ),
+  addonSubtype = "60 days",
   documents = listOf(
     TravelAddonQuoteInsuranceDocument(
       "Some terms",
       "url",
+    ),
+  ),
+  displayNameLong = "Travel Plus 60 days",
+  itemCost = ItemCost(
+    UiMoney(79.0, UiCurrencyCode.SEK),
+    UiMoney(89.0, UiCurrencyCode.SEK),
+    discounts = listOf(
+      ItemCostDiscount(
+        campaignCode = "Bundle",
+        displayName = "15% bundle discount",
+        displayValue = "-19kr/mo",
+        explanation = "some explanation",
+      ),
     ),
   ),
 )

@@ -32,7 +32,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
@@ -70,6 +69,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import com.hedvig.android.tiersandaddons.rememberQuoteCardState
@@ -357,7 +357,9 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     displayName = uiState.quote.productVariant.displayName,
     contractGroup = uiState.quote.productVariant.contractGroup,
     insurableLimits = uiState.quote.productVariant.insurableLimits,
-    documents = allDocuments,
+    documents = allDocuments.map {
+      DisplayDocument(it.displayName, it.url)
+    },
   )
 }
 

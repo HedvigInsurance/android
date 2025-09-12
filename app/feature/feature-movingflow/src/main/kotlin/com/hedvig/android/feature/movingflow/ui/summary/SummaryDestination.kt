@@ -99,6 +99,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardState
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
@@ -466,7 +467,9 @@ private fun ExcludableAddonCard(
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    documents = quote.addonVariant.documents,
+    documents = quote.addonVariant.documents.map {
+      DisplayDocument(it.displayName, it.url)
+    },
     subtitle = subtitle,
     premium = quote.premium,
     previousPremium = quote.previousPremium,
@@ -505,7 +508,9 @@ private fun NonExcludableAddonCard(quote: MovingFlowQuotes.AddonQuote, modifier:
     displayName = quote.addonVariant.displayName,
     contractGroup = null,
     insurableLimits = emptyList(),
-    documents = quote.addonVariant.documents,
+    documents = quote.addonVariant.documents.map {
+      DisplayDocument(it.displayName, it.url)
+    },
     subtitle = subtitle,
     premium = quote.premium,
     previousPremium = quote.previousPremium,

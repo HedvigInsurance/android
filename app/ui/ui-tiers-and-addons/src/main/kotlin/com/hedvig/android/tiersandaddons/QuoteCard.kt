@@ -58,8 +58,6 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -140,7 +138,12 @@ fun QuoteCard(
     displayName = productVariant.displayName,
     contractGroup = productVariant.contractGroup,
     insurableLimits = productVariant.insurableLimits,
-    documents = productVariant.documents,
+    documents = productVariant.documents.map {
+      DisplayDocument(
+        displayName = it.displayName,
+        url = it.url,
+      )
+    },
   )
 }
 
@@ -150,7 +153,7 @@ fun QuoteCard(
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   subtitle: String?,
   premium: UiMoney,
   previousPremium: UiMoney?,
@@ -199,7 +202,7 @@ fun QuoteCard(
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   subtitle: String?,
   premium: UiMoney,
   previousPremium: UiMoney?,
@@ -300,7 +303,7 @@ private fun QuoteCard(
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   modifier: Modifier = Modifier,
   titleEndSlot: @Composable () -> Unit = {},
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -443,7 +446,7 @@ private fun QuoteIconAndTitle(
 private fun QuoteDetails(
   displayItems: List<QuoteDisplayItem>,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -539,6 +542,11 @@ private fun QuoteDetails(
     }
   }
 }
+
+data class DisplayDocument(
+  val displayName: String,
+  val url: String,
+)
 
 @Composable
 fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: Modifier = Modifier) {
@@ -658,10 +666,9 @@ private fun PreviewQuoteCard(
           )
         },
         documents = List(3) {
-          InsuranceVariantDocument(
+          DisplayDocument(
             displayName = "displayName#$it",
             url = "url#$it",
-            type = GENERAL_TERMS,
           )
         },
         subtitle = "subtitle",
