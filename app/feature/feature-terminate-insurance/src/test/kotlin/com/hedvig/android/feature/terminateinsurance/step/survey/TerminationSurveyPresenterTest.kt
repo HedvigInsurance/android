@@ -13,6 +13,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
@@ -22,6 +23,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -364,6 +366,19 @@ private val testQuote = TierDeductibleQuote(
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
+  ),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Travel Plus" to "80 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
   ),
 )
 

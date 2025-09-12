@@ -7,6 +7,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
@@ -181,6 +182,29 @@ fun HedvigRedTextButton(
   ) {
     HedvigText(text, color = ButtonDefaults.ButtonStyle.Ghost.style.buttonColors.redTextColor)
   }
+}
+
+@Composable
+fun HedvigButtonGhostWithBorder(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  interactionSource: MutableInteractionSource? = null,
+  size: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+) {
+  HedvigTextButton(
+    text = text,
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier.border(
+      width = 1.dp,
+      color = HedvigTheme.colorScheme.borderPrimary,
+      shape = size.size.shape,
+    ),
+    buttonSize = size,
+    interactionSource = interactionSource,
+  )
 }
 
 object ButtonDefaults {

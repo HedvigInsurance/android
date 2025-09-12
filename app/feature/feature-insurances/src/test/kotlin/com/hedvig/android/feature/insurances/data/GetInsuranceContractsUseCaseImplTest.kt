@@ -4,6 +4,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
@@ -17,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.InsuranceContractsQuery
 import octopus.type.AgreementCreationCause.RENEWAL
+import octopus.type.DisplayItemOptions
 import octopus.type.MemberBuilder
 import octopus.type.buildAgreement
 import octopus.type.buildContract
@@ -36,7 +38,7 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseThatSupportsTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false),
+        operation = InsuranceContractsQuery(false, Optional.Present(DisplayItemOptions(Optional.Present(true)))),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -56,7 +58,7 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseWithoutTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false),
+        operation = InsuranceContractsQuery(false, Optional.Present(DisplayItemOptions(Optional.Present(true)))),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"

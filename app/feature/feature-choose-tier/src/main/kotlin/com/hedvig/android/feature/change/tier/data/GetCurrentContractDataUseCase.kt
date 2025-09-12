@@ -31,7 +31,7 @@ internal class GetCurrentContractDataUseCaseImpl(
         logcat(ERROR) { "Tried to start Change Tier flow but got null active contract" }
         raise(ErrorMessage("Tried to start Change Tier flow but got null active contract"))
       } else {
-        val agreement = CurrentContractData(dataResult.exposureDisplayName)
+        val agreement = CurrentContractData(dataResult.exposureDisplayNameShort)
         agreement
       }
     }

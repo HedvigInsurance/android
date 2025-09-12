@@ -27,6 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun RemoveCoInsuredBottomSheetContent(
@@ -98,6 +99,8 @@ private fun RemoveCoInsuredBottomSheetContentPreview() {
           birthDate = null,
           ssn = "144412022193",
           hasMissingInfo = false,
+          activatesOn = LocalDate(2025, 10, 1),
+          terminatesOn = null,
         ),
         errorMessage = null,
       )
@@ -120,6 +123,8 @@ private fun RemoveCoInsuredBottomSheetContentWithCoInsuredPreview() {
           birthDate = null,
           ssn = "144412022193",
           hasMissingInfo = false,
+          activatesOn = LocalDate(2025, 10, 1),
+          terminatesOn = null,
         ),
         errorMessage = null,
       )

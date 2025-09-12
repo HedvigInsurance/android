@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.change.tier.ui.stepcustomize
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -36,11 +38,13 @@ import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
@@ -252,20 +256,7 @@ private fun SelectTierScreen(
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
-    if (uiState.tiers.size > 1) {
-      Spacer(Modifier.height(4.dp))
-      HedvigTextButton(
-        buttonSize = Large,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
-        onClick = {
-          onCompareClick()
-        },
-      )
-    }
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
       text = stringResource(R.string.general_continue_button),
@@ -277,6 +268,19 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
+    if (uiState.tiers.size > 1) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        onClick = {
+          onCompareClick()
+        },
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -303,8 +307,15 @@ private fun CustomizationCard(
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    modifier = modifier,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
     shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
     Column(Modifier.padding(16.dp)) {
       PillAndBasicInfo(
@@ -337,7 +348,7 @@ private fun CustomizationCard(
         hintText = hintText,
         chosenItemIndex = chosenTierIndex,
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
-        containerColor = HedvigTheme.colorScheme.fillNegative,
+        containerColor = HedvigTheme.colorScheme.surfacePrimary,
         modifier = Modifier.accessibilityForDropdown(
           labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           selectedValue = chosenTierVoiceDescription,
@@ -414,7 +425,7 @@ private fun CustomizationCard(
           hintText = hintText,
           chosenItemIndex = chosenQuoteIndex,
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
-          containerColor = HedvigTheme.colorScheme.fillNegative,
+          containerColor = HedvigTheme.colorScheme.surfacePrimary,
           modifier = Modifier.accessibilityForDropdown(
             labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             selectedValue = chosenDeductibleVoiceDescription,
@@ -830,6 +841,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id1",
@@ -859,6 +883,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id2",
@@ -888,6 +925,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id3",
@@ -917,6 +967,19 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
   TierDeductibleQuote(
     id = "id4",
@@ -946,5 +1009,18 @@ private val quotesForPreview = listOf(
       termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
     ),
     addons = emptyList(),
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    ),
+    costBreakdown = listOf(
+      "Home Insurance Max" to "300 kr/mo",
+      "Travel Plus" to "80 kr/mo",
+      "Bundle discount 20%" to "76 kr/mo",
+    ),
   ),
 )

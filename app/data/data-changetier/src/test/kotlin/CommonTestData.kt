@@ -1,9 +1,11 @@
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -42,6 +44,18 @@ internal val oldTestQuote = TierDeductibleQuote(
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
   ),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
+  ),
 )
 
 internal val testQuote = TierDeductibleQuote(
@@ -77,5 +91,17 @@ internal val testQuote = TierDeductibleQuote(
     displayTierName = "Bas",
     tierDescription = "Our most basic coverage",
     termsVersion = "termsVersion",
+  ),
+  currentTotalCost = TotalCost(
+    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  ),
+  newTotalCost = TotalCost(
+    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+  ),
+  costBreakdown = listOf(
+    "Home Insurance Max" to "300 kr/mo",
+    "Bundle discount 20%" to "76 kr/mo",
   ),
 )

@@ -41,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
@@ -338,6 +339,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = null,
+                terminatesOn = LocalDate(2025, 10, 1),
               ),
               CoInsured(
                 null,
@@ -345,6 +348,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
             ),
             updatedCoInsured = listOf(
@@ -354,6 +359,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = null,
+                terminatesOn = LocalDate(2025, 10, 1),
               ),
               CoInsured(
                 null,
@@ -361,6 +368,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
               CoInsured(
                 null,
@@ -368,6 +377,8 @@ private fun EditCoInsuredScreenEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = null,
+                terminatesOn = null,
               ),
             ),
             member = Member(
@@ -376,8 +387,15 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, UiCurrencyCode.SEK),
-              newPrice = UiMoney(200.0, UiCurrencyCode.SEK),
+              currentCost = MonthlyCost(
+                UiMoney(100.0, UiCurrencyCode.SEK),
+                UiMoney(90.0, UiCurrencyCode.SEK),
+              ),
+              newCost = MonthlyCost(
+                UiMoney(100.0, UiCurrencyCode.SEK),
+                UiMoney(90.0, UiCurrencyCode.SEK),
+              ),
+              newCostBreakDown = listOf(),
               validFrom = LocalDate.fromEpochDays(400),
             ),
             allCoInsured = listOf(),
@@ -423,6 +441,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
               CoInsured(
                 null,
@@ -430,6 +450,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
                 null,
                 null,
                 hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
               ),
             ),
             member = Member(

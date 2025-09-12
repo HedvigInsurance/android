@@ -52,10 +52,19 @@ internal class CreateMidtermChangeUseCaseImpl(
     result.midtermChangeIntentCreate.intent?.let {
       CreateMidtermChangeResult(
         id = it.id,
-        currentPremium = UiMoney.fromMoneyFragment(it.currentPremium),
-        newPremium = UiMoney.fromMoneyFragment(it.newPremium),
+        currentCost = MonthlyCost(
+          monthlyGross = UiMoney.fromMoneyFragment(it.currentTotalCost.monthlyGross),
+          monthlyNet = UiMoney.fromMoneyFragment(it.currentTotalCost.monthlyNet),
+        ),
+        newCost = MonthlyCost(
+          monthlyGross = UiMoney.fromMoneyFragment(it.newTotalCost.monthlyGross),
+          monthlyNet = UiMoney.fromMoneyFragment(it.newTotalCost.monthlyNet),
+        ),
         activatedDate = it.activationDate,
         coInsured = coInsured,
+        newCostBreakDown = it.newCostBreakdown.map { (displayTitle, displayValue) ->
+          displayTitle to displayValue
+        },
       )
     } ?: raise(ErrorMessage("No intent"))
   }
@@ -63,8 +72,14 @@ internal class CreateMidtermChangeUseCaseImpl(
 
 internal data class CreateMidtermChangeResult(
   val id: String,
-  val currentPremium: UiMoney,
-  val newPremium: UiMoney,
+  val currentCost: MonthlyCost,
+  val newCost: MonthlyCost,
+  val newCostBreakDown: List<Pair<String, String>>,
   val activatedDate: LocalDate,
   val coInsured: List<CoInsured>,
+)
+
+internal data class MonthlyCost(
+  val monthlyGross: UiMoney,
+  val monthlyNet: UiMoney,
 )

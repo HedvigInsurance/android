@@ -15,28 +15,43 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetPriceBreakdown
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import hedvig.resources.R
 
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
   sections: List<DisplayItem>,
+  upcomingPriceInfo: PriceInfoForBottomSheet?,
+  showInfoIcon: Boolean,
+  certificateUrl: String?,
+  onOpenUrlClick: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
+    val priceInfoBottomSheetState =
+      rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
+    HedvigBottomSheetPriceBreakdown(
+      priceInfoBottomSheetState,
+    )
     HedvigText(
       text = stringResource(id = R.string.insurance_details_update_details_sheet_title),
       textAlign = TextAlign.Center,
@@ -47,19 +62,35 @@ internal fun UpcomingChangesBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(32.dp))
     CoverageRows(coverageRowItems = sections)
+    upcomingPriceInfo?.let {
+      PriceRow(
+        priceToShow = it.totalNet,
+        showInfoIcon = showInfoIcon,
+        onInfoIconClick = {
+          priceInfoBottomSheetState.show(it)
+        },
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigNotificationCard(
       message = infoText,
       priority = NotificationPriority.Info,
       modifier = Modifier.fillMaxWidth(),
+      style =
+        Button(
+          stringResource(id = R.string.open_chat),
+          onNavigateToNewConversation,
+        ),
     )
     Spacer(modifier = Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(id = R.string.open_chat),
-      enabled = true,
-      onClick = onNavigateToNewConversation,
-      modifier = Modifier.fillMaxWidth(),
-    )
+    if (certificateUrl != null) {
+      HedvigButton(
+        text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+        enabled = true,
+        onClick = { onOpenUrlClick(certificateUrl) },
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
@@ -83,6 +114,14 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
         onDismiss = {},
         onNavigateToNewConversation = {},
         modifier = Modifier.padding(horizontal = 16.dp),
+        upcomingPriceInfo = PriceInfoForBottomSheet(
+          listOf("Discount 50%" to "100 kr/mo"),
+          totalNet = UiMoney(100.0, UiCurrencyCode.SEK),
+          totalGross = UiMoney(200.0, UiCurrencyCode.SEK),
+        ),
+        certificateUrl = "String",
+        onOpenUrlClick = {},
+        showInfoIcon = true,
       )
     }
   }

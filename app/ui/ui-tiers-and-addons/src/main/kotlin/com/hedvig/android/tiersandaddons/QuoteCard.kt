@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -59,9 +61,7 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
-import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -88,12 +88,6 @@ data class QuoteDisplayItem(
   val title: String,
   val subtitle: String?,
   val value: String,
-)
-
-@Serializable
-data class ContractDiscount(
-  val displayName: String,
-  val discountValue: String,
 )
 
 @Stable
@@ -129,7 +123,7 @@ fun QuoteCard(
   subtitle: String,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
@@ -140,7 +134,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = false,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = productVariant.displayName,
@@ -161,7 +155,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -173,7 +167,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = isExcluded,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -210,7 +204,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -221,7 +215,7 @@ fun QuoteCard(
     premium = premium,
     previousPremium = previousPremium,
     isExcluded = isExcluded,
-    discounts = discounts,
+    costBreakdown = costBreakdown,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -301,7 +295,7 @@ private fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  discounts: List<ContractDiscount>,
+  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
   contractGroup: ContractGroup?,
@@ -313,7 +307,15 @@ private fun QuoteCard(
   excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
 ) {
   HedvigCard(
-    modifier = modifier,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    shape = HedvigTheme.shapes.cornerXLarge,
     onClick = quoteCardState::toggleState,
     enabled = quoteCardState.isEnabled,
     interactionSource = null,
@@ -341,7 +343,7 @@ private fun QuoteCard(
       ) {
         excludedCollapsedStateButtonContent()
       } else {
-        HedvigButton(
+        HedvigButtonGhostWithBorder(
           text = if (quoteCardState.showDetails) {
             stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
           } else {
@@ -349,8 +351,6 @@ private fun QuoteCard(
           },
           onClick = quoteCardState::toggleState,
           enabled = true,
-          buttonStyle = Secondary,
-          buttonSize = Medium,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -367,9 +367,12 @@ private fun QuoteCard(
           modifier = Modifier.padding(top = 16.dp),
         )
       }
-      if (discounts.isNotEmpty()) {
+      if (costBreakdown.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
-        DiscountCostBreakdown(discounts)
+        DiscountCostBreakdown(
+          costBreakdown,
+          Modifier.semantics(mergeDescendants = true) {},
+        )
       }
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()
@@ -538,15 +541,15 @@ private fun QuoteDetails(
 }
 
 @Composable
-fun DiscountCostBreakdown(discounts: List<ContractDiscount>, modifier: Modifier = Modifier) {
+fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: Modifier = Modifier) {
   ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      for (discount in discounts) {
+      for (item in costBreakdown) {
         HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(discount.displayName) },
+          { HedvigText(item.first) },
           {
             HedvigText(
-              text = discount.discountValue,
+              text = item.second,
               textAlign = TextAlign.End,
             )
           },
@@ -665,9 +668,7 @@ private fun PreviewQuoteCard(
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
         isExcluded = triple == TripleCase.SECOND,
-        discounts = List(3) { ContractDiscount("#$it", "discount#$it") }.takeIf {
-          triple == TripleCase.THIRD
-        }.orEmpty(),
+        costBreakdown = List(3) { "#$it" to "discount#$it" },
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",

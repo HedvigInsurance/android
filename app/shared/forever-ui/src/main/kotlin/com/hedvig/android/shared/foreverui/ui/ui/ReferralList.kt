@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.DividerPosition
@@ -33,10 +34,12 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.IN_PROGRESS
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.TERMINATED
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.UNKNOWN
+import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
 import hedvig.resources.R
 
 @Composable
 internal fun ReferralList(
+  referredByInfo: ReferredByInfo?,
   referrals: List<Referral>,
   grossPriceAmount: UiMoney?,
   currentNetAmount: UiMoney?,
@@ -47,8 +50,21 @@ internal fun ReferralList(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
     )
+    if (referredByInfo != null) {
+      ReferralRow(
+        name = referredByInfo.name,
+        isReferredBy = true,
+        state = referredByInfo.state,
+        discount = referredByInfo.activeDiscount,
+      )
+    }
     for (referral in referrals) {
-      ReferralRow(referral)
+      ReferralRow(
+        name = referral.name,
+        isReferredBy = false,
+        state = referral.state,
+        discount = referral.discount,
+      )
     }
     Row(
       modifier = Modifier
@@ -71,7 +87,13 @@ internal fun ReferralList(
 }
 
 @Composable
-private fun ReferralRow(referral: Referral, modifier: Modifier = Modifier) {
+private fun ReferralRow(
+  name: String?,
+  state: ReferralState,
+  discount: UiMoney?,
+  isReferredBy: Boolean,
+  modifier: Modifier = Modifier,
+) {
   Row(
     modifier = modifier
       .horizontalDivider(DividerPosition.Top)
@@ -79,20 +101,39 @@ private fun ReferralRow(referral: Referral, modifier: Modifier = Modifier) {
       .fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      Spacer(
-        Modifier
-          .size(16.dp)
-          .wrapContentSize(Alignment.Center)
-          .size(20.dp)
-          .background(referral.state.toColor(), CircleShape),
-      )
-      Spacer(modifier = Modifier.width(8.dp))
-      HedvigText(referral.name ?: "-")
+    Column {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Spacer(
+          Modifier
+            .size(16.dp)
+            .wrapContentSize(Alignment.Center)
+            .size(20.dp)
+            .background(state.toColor(), CircleShape),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        HedvigText(name ?: "-")
+      }
+      if (isReferredBy) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Spacer(
+            Modifier
+              .size(16.dp)
+              .wrapContentSize(Alignment.Center)
+              .size(20.dp)
+              .withoutPlacement(),
+          )
+          Spacer(modifier = Modifier.width(8.dp))
+          HedvigText(
+            text = stringResource(R.string.referalls_invitee_states_invited_you),
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            fontSize = HedvigTheme.typography.label.fontSize,
+          )
+        }
+      }
     }
-    when (referral.state) {
+    when (state) {
       ACTIVE -> {
-        HedvigText(referral.discount?.toString()?.let { "-$it" } ?: "-")
+        HedvigText(discount?.toString()?.let { "-$it" } ?: "-")
       }
 
       IN_PROGRESS -> {
@@ -135,6 +176,11 @@ private fun PreviewReferralList() {
       ReferralList(
         grossPriceAmount = UiMoney(138.0, SEK),
         currentNetAmount = UiMoney(118.0, SEK),
+        referredByInfo = ReferredByInfo(
+          name = "Sladan",
+          state = ACTIVE,
+          activeDiscount = UiMoney(10.0, SEK),
+        ),
         referrals = listOf(
           Referral(
             name = "Ermir",

@@ -2,11 +2,25 @@ mutation CreateMidtermChange($contractId: ID!, $input: MidtermChangeIntentCreate
   midtermChangeIntentCreate(contractId: $contractId, input: $input) {
     intent {
       id
-      currentPremium {
-        ...MoneyFragment
+      currentTotalCost {
+        monthlyGross {
+          ...MoneyFragment
+        }
+        monthlyNet {
+          ...MoneyFragment
+        }
       }
-      newPremium {
-        ...MoneyFragment
+      newTotalCost {
+        monthlyGross {
+          ...MoneyFragment
+        }
+        monthlyNet {
+          ...MoneyFragment
+        }
+      }
+      newCostBreakdown {
+        displayName
+        displayValue
       }
       activationDate
     }

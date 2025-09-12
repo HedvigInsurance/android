@@ -39,6 +39,8 @@ internal fun CoInsuredList(
         onRemove = {},
         onEdit = {},
         contentPadding = contentPadding,
+        activatesOn = null,
+        terminatesOn = null,
       )
     }
 
@@ -50,6 +52,8 @@ internal fun CoInsuredList(
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,
+        activatesOn = coInsured.activatesOn,
+        terminatesOn = coInsured.terminatesOn,
         onRemove = {
           onRemove(coInsured)
         },
@@ -77,6 +81,8 @@ private fun PreviewCoInsuredList() {
               LocalDate.fromEpochDays(300),
               "19910113-1093",
               hasMissingInfo = false,
+              activatesOn = null,
+              terminatesOn = LocalDate(2025, 12, 1),
             ),
             CoInsured(
               null,
@@ -84,6 +90,8 @@ private fun PreviewCoInsuredList() {
               null,
               null,
               hasMissingInfo = true,
+              activatesOn = LocalDate(2025, 10, 1),
+              terminatesOn = null,
             ),
           ),
           member = Member(

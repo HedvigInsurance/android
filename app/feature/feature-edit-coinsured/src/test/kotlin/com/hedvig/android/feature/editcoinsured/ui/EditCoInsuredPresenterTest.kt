@@ -6,6 +6,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import com.hedvig.android.feature.editcoinsured.ui.data.TestCommitMidtermChangeUseCase
@@ -146,8 +147,14 @@ internal class EditCoInsuredPresenterTest {
       skipItems(1)
       testCreateMidTermChangeUseCase.addCreateMidtermChangeResult(
         "test",
-        currentPremium = UiMoney(300.0, UiCurrencyCode.SEK),
-        newPremium = UiMoney(400.0, UiCurrencyCode.SEK),
+        currentCost = MonthlyCost(
+          UiMoney(100.0, UiCurrencyCode.SEK),
+          UiMoney(90.0, UiCurrencyCode.SEK),
+        ),
+        newCost = MonthlyCost(
+          UiMoney(120.0, UiCurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
+        ),
         activatedDate = LocalDate.fromEpochDays(400),
       )
       val item = awaitItem()

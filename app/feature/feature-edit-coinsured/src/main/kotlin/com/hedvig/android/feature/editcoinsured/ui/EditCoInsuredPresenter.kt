@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
@@ -19,6 +18,7 @@ import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnAddCoInsuredClicked
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnDismissError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnRemoveCoInsuredClicked
@@ -279,13 +279,23 @@ internal class EditCoInsuredPresenter(
             },
             ifRight = {
               Snapshot.withMutableSnapshot {
+                val originalCoInsuredIds = listState.originalCoInsured?.map { originalCoInsured ->
+                  originalCoInsured.id
+                } ?: emptyList()
+                val updatedCoinsuredList = it.coInsured
+                val updatedCoinsuredListWithDate = updateCoInsuredWithActivationDates(
+                  coInsured = updatedCoinsuredList,
+                  originalIds = originalCoInsuredIds,
+                  activationDate = it.activatedDate,
+                )
                 intentId = it.id
                 listState = listState.copy(
-                  updatedCoInsured = it.coInsured,
+                  updatedCoInsured = updatedCoinsuredListWithDate,
                   priceInfo = Loaded.PriceInfo(
-                    previousPrice = it.currentPremium,
-                    newPrice = it.newPremium,
+                    currentCost = it.currentCost,
+                    newCost = it.newCost,
                     validFrom = it.activatedDate,
+                    newCostBreakDown = it.newCostBreakDown,
                   ),
                 )
                 selectedCoInsuredId = null
@@ -364,6 +374,8 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null,
+          terminatesOn = null,
         )
         val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
         listState.coInsured.updated(old, updatedCoInsured)
@@ -374,8 +386,25 @@ internal class EditCoInsuredPresenter(
           birthDate = birthDate,
           ssn = ssn,
           hasMissingInfo = false,
+          activatesOn = null,
+          terminatesOn = null,
         )
-        (listState.coInsured + updatedCoInsured)
+        val result = (listState.coInsured + updatedCoInsured)
+        result
+      }
+    }
+  }
+
+  private fun updateCoInsuredWithActivationDates(
+    coInsured: List<CoInsured>,
+    originalIds: List<String>,
+    activationDate: LocalDate,
+  ): List<CoInsured> {
+    return coInsured.map { it ->
+      if (originalIds.contains(it.id)) {
+        it
+      } else {
+        it.copy(activatesOn = activationDate)
       }
     }
   }
@@ -455,8 +484,9 @@ internal sealed interface EditCoInsuredState {
     }
 
     data class PriceInfo(
-      val previousPrice: UiMoney,
-      val newPrice: UiMoney,
+      val currentCost: MonthlyCost,
+      val newCost: MonthlyCost,
+      val newCostBreakDown: List<Pair<String, String>>,
       val validFrom: LocalDate,
     )
 
