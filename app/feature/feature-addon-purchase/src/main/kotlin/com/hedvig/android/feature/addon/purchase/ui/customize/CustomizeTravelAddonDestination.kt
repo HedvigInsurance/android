@@ -319,6 +319,7 @@ private fun CustomizeTravelAddonCard(
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
         chosenOptionPremiumExtra = uiState.currentlyChosenOption.itemCost.monthlyNet,
+        //todo: why monthly net???? should be diff!
         exposureName = uiState.travelAddonOffer.title,
         description = uiState.travelAddonOffer.description,
       )
