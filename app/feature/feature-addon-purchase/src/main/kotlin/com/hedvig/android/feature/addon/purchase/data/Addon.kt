@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.data
 
 import arrow.core.NonEmptyList
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import kotlinx.datetime.LocalDate
@@ -40,19 +41,4 @@ internal data class CurrentTravelAddon(
   val displayDetails: List<Pair<String, String>>,
   val displayNameLong: String,
   val netPremium: UiMoney,
-)
-
-@Serializable
-data class ItemCost(
-  val monthlyNet: UiMoney,
-  val monthlyGross: UiMoney,
-  val discounts: List<ItemCostDiscount>,
-)
-
-@Serializable
-data class ItemCostDiscount(
-  val campaignCode: String,
-  val displayName: String,
-  val displayValue: String,
-  val explanation: String,
 )

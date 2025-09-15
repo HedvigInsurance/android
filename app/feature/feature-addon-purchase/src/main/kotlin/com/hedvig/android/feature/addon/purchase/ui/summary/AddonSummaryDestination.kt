@@ -22,6 +22,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -43,8 +45,6 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
-import com.hedvig.android.feature.addon.purchase.data.ItemCost
-import com.hedvig.android.feature.addon.purchase.data.ItemCostDiscount
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content

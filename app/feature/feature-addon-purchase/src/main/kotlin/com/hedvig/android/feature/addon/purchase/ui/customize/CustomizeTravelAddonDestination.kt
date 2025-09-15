@@ -42,6 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
+import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -79,8 +81,6 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.ItemCost
-import com.hedvig.android.feature.addon.purchase.data.ItemCostDiscount
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -319,7 +319,7 @@ private fun CustomizeTravelAddonCard(
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
         chosenOptionPremiumExtra = uiState.currentlyChosenOption.itemCost.monthlyNet,
-        //todo: why monthly net???? should be diff!
+        // todo: why monthly net???? should be diff!
         exposureName = uiState.travelAddonOffer.title,
         description = uiState.travelAddonOffer.description,
       )

@@ -7,6 +7,8 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
 import com.hedvig.android.featureflags.FeatureManager
@@ -84,8 +86,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
           doc.url,
         )
       },
-      displayNameLong = TODO(),
-      itemCost = TODO(),
+      displayNameLong = it.displayNameLong,
+      itemCost = ItemCost.fromItemCostFragment(it.itemCost),
     )
   }
 }
@@ -97,8 +99,8 @@ private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAd
       displayDetails = displayItems.map {
         it.displayTitle to it.displayValue
       },
-      displayNameLong = TODO(),
-      netPremium = TODO(),
+      displayNameLong = displayNameLong,
+      netPremium = UiMoney.fromMoneyFragment(netPremium),
     )
   }
 }
