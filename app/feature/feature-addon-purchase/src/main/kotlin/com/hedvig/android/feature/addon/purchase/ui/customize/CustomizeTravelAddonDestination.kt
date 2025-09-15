@@ -81,6 +81,7 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -318,8 +319,7 @@ private fun CustomizeTravelAddonCard(
   ) {
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
-        chosenOptionPremiumExtra = uiState.currentlyChosenOption.itemCost.monthlyNet,
-        // todo: why monthly net???? should be diff!
+        chosenOptionPremiumExtra = uiState.chosenOptionPremiumExtra,
         exposureName = uiState.travelAddonOffer.title,
         description = uiState.travelAddonOffer.description,
       )
@@ -589,6 +589,12 @@ internal class CustomizeTravelAddonPreviewProvider :
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
         summaryParamsToNavigateFurther = null,
+        currentTravelAddon = CurrentTravelAddon(
+          listOf(),
+          "CurrentAddon",
+          netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
+        ),
+        chosenOptionPremiumExtra = UiMoney(10.0, UiCurrencyCode.SEK),
       ),
       Failure("Ooops"),
     ),
