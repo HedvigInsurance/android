@@ -145,9 +145,9 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = exitFlow)
       Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .fillMaxWidth()
+          .weight(1f)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -194,7 +194,13 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
     Spacer(Modifier.height(8.dp))
     Column(Modifier.verticalScroll(rememberScrollState())) {
       Spacer(Modifier.height(8.dp))
-      CoverageCard(content.tiersInfo, content.totalPrice, onSelectCoverageOption, onSelectDeductibleOption, onChangeAddonExclusion)
+      CoverageCard(
+        content.tiersInfo,
+        content.totalPrice,
+        onSelectCoverageOption,
+        onSelectDeductibleOption,
+        onChangeAddonExclusion,
+      )
       Spacer(Modifier.height(8.dp))
       if (content.tiersInfo.coverageOptions.isNotEmpty()) {
         HedvigTextButton(
@@ -274,6 +280,7 @@ private fun CoverageCard(
             coverageOptions = tiersInfo.coverageOptions,
             initiallyChosenItemIndex = chosenCoverageItemIndex,
             onDismissRequest = onDismissRequest,
+            isPremiumPriceExact = false,
             onItemSelected = {
               onSelectCoverageOption(tiersInfo.coverageOptions[it].moveHomeQuoteId)
             },
@@ -315,6 +322,7 @@ private fun CoverageCard(
                 )
               },
               initiallyChosenItemIndex = chosenItemIndex,
+              isPremiumPriceExact = true,
               onDismissRequest = onDismissRequest,
               onItemSelected = {
                 val exclude = it == 1
@@ -389,6 +397,7 @@ private fun CoverageCard(
 private fun CoverageChoiceDialogContent(
   coverageOptions: List<CoverageInfo>,
   initiallyChosenItemIndex: Int?,
+  isPremiumPriceExact: Boolean,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
 ) {
@@ -398,7 +407,14 @@ private fun CoverageChoiceDialogContent(
     radioOptions = coverageOptions.map {
       RadioOptionCoverageInfo(
         it.tierName,
-        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.minimumPremiumForCoverage.toString()),
+        stringResource(
+          if (isPremiumPriceExact) {
+            R.string.TIER_FLOW_PRICE_LABEL_CURRENCY
+          } else {
+            R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
+          },
+          it.minimumPremiumForCoverage.toString(),
+        ),
         it.tierDescription,
       )
     },
@@ -545,6 +561,7 @@ fun PreviewCoverageChoiceDialogContent() {
       )
     },
     initiallyChosenItemIndex = null,
+    isPremiumPriceExact = false,
     onItemSelected = {},
     onDismissRequest = {},
   )

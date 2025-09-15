@@ -725,6 +725,7 @@
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Ditt tidigare pris %1$s</string>
   <string name="TIER_FLOW_PRICE_LABEL">från %s kr/mån</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mån</string>
   <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">Från %s/mån</string>
   <string name="TIER_FLOW_PROCESSING">Hämtar skyddsnivåer...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Svar på våra medlemmars vanligaste funderingar.</string>

@@ -725,6 +725,7 @@
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Your previous price %1$s</string>
   <string name="TIER_FLOW_PRICE_LABEL">from %s SEK/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mo</string>
   <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">From %s/mo</string>
   <string name="TIER_FLOW_PROCESSING">Fetching coverage levels...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Answers to our most frequently asked questions.</string>
