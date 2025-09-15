@@ -283,7 +283,7 @@ private fun CoverageCard(
         for (relatedAddonQuote in relatedAddonQuotes) {
           val relatedAddonQuoteOptions = listOf(
             relatedAddonQuote.coverageDisplayName,
-            stringResource(R.string.TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION),
+            stringResource(R.string.MOVING_FLOW_ADDON_REMOVE_OPTION),
           )
           val chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
             false -> 0
@@ -294,7 +294,7 @@ private fun CoverageCard(
               items = relatedAddonQuoteOptions.map {
                 SimpleDropdownItem(it)
               },
-              label = stringResource(R.string.TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL),
+              label = relatedAddonQuote.exposureName,
             ),
             size = Small,
             hintText = "",
