@@ -171,6 +171,7 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = isExcluded,
     costBreakdown = costBreakdown,
+    costBreakdownComposable = null,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -219,6 +220,55 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = isExcluded,
     costBreakdown = costBreakdown,
+    costBreakdownComposable = null,
+    displayItems = displayItems,
+    modifier = modifier,
+    displayName = displayName,
+    contractGroup = contractGroup,
+    insurableLimits = insurableLimits,
+    documents = documents,
+    titleEndSlot = {
+      Crossfade(
+        targetState = isExcluded,
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+      ) { show ->
+        if (show) {
+          HighlightLabel(
+            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
+            size = Small,
+            color = Grey(MEDIUM),
+          )
+        }
+      }
+    },
+    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
+  )
+}
+
+@Composable
+fun QuoteCard(
+  quoteCardState: QuoteCardState,
+  displayName: String,
+  contractGroup: ContractGroup?,
+  insurableLimits: List<InsurableLimit>,
+  documents: List<DisplayDocument>,
+  subtitle: String?,
+  premium: UiMoney,
+  previousPremium: UiMoney?,
+  isExcluded: Boolean,
+  costBreakdownComposable: @Composable (() -> Unit)?,
+  displayItems: List<QuoteDisplayItem>,
+  modifier: Modifier = Modifier,
+  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
+) {
+  QuoteCard(
+    quoteCardState = quoteCardState,
+    subtitle = subtitle,
+    premium = premium,
+    previousPremium = previousPremium,
+    isExcluded = isExcluded,
+    costBreakdown = null,
+    costBreakdownComposable = costBreakdownComposable,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -298,7 +348,6 @@ private fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  costBreakdown: List<Pair<String, String>>,
   displayItems: List<QuoteDisplayItem>,
   displayName: String,
   contractGroup: ContractGroup?,
@@ -308,6 +357,8 @@ private fun QuoteCard(
   titleEndSlot: @Composable () -> Unit = {},
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
   excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
+  costBreakdown: List<Pair<String, String>>?,
+  costBreakdownComposable: @Composable (() -> Unit)?,
 ) {
   HedvigCard(
     modifier = modifier
@@ -370,12 +421,14 @@ private fun QuoteCard(
           modifier = Modifier.padding(top = 16.dp),
         )
       }
-      if (costBreakdown.isNotEmpty()) {
+      if (costBreakdown?.isNotEmpty() == true) {
         Spacer(Modifier.height(16.dp))
         DiscountCostBreakdown(
           costBreakdown,
           Modifier.semantics(mergeDescendants = true) {},
         )
+      } else if (costBreakdownComposable != null) {
+        costBreakdownComposable()
       }
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()

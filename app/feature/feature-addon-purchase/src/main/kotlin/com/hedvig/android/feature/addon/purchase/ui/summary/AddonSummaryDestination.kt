@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -39,7 +40,9 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
@@ -236,32 +239,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   } else {
     uiState.quote.itemCost.monthlyGross
   }
-  val costBreakdown: List<Pair<String, String>> =
-    if (uiState.currentTravelAddon != null) {
-      val currentAddonDisplayItemValue = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.currentTravelAddon.netPremium,
-      )
-      val newAddonDisplayValueNet = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyNet,
-      )
-      buildList {
-        add(uiState.currentTravelAddon.displayNameLong to currentAddonDisplayItemValue) // todo: how to streak it through??
-        add(uiState.quote.displayNameLong to newAddonDisplayValueNet)
-      }
-    } else {
-      val newAddonDisplayValueGross = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyGross,
-      )
-      buildList {
-        add(uiState.quote.displayNameLong to newAddonDisplayValueGross)
-        uiState.quote.itemCost.discounts.forEach { discount ->
-          add(discount.displayName to discount.displayValue)
-        }
-      }
-    }
   QuoteCard(
     subtitle = stringResource(
       R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
@@ -269,7 +246,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     ),
     isExcluded = false,
     premium = premium,
-    costBreakdown = costBreakdown,
+    costBreakdownComposable = {
+      AddonCostBreakdownComposable(uiState.currentTravelAddon, uiState.quote)
+    },
     previousPremium = previousPremium,
     displayItems = uiState.quote.displayDetails.map {
       QuoteDisplayItem(
@@ -287,6 +266,83 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       DisplayDocument(it.displayName, it.url)
     },
   )
+}
+
+@Composable
+private fun AddonCostBreakdownComposable(
+  currentTravelAddon: CurrentTravelAddon?,
+  quote: TravelAddonQuote,
+  modifier: Modifier = Modifier,
+) {
+  ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      Spacer(Modifier.height(8.dp))
+      if (currentTravelAddon != null) {
+        HorizontalItemsWithMaximumSpaceTaken(
+          {
+            HedvigText(
+              currentTravelAddon.displayNameLong,
+              style = LocalTextStyle.current.copy(
+                textDecoration = TextDecoration.LineThrough,
+              ),
+            )
+          },
+          {
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                currentTravelAddon.netPremium,
+              ),
+              textAlign = TextAlign.End,
+              style = LocalTextStyle.current.copy(
+                textDecoration = TextDecoration.LineThrough,
+              ),
+            )
+          },
+          spaceBetween = 8.dp,
+        )
+        HorizontalItemsWithMaximumSpaceTaken(
+          { HedvigText(quote.displayNameLong) },
+          {
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                quote.itemCost.monthlyNet,
+              ),
+              textAlign = TextAlign.End,
+            )
+          },
+          spaceBetween = 8.dp,
+        )
+      } else {
+        HorizontalItemsWithMaximumSpaceTaken(
+          { HedvigText(quote.displayNameLong) },
+          {
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                quote.itemCost.monthlyGross,
+              ),
+              textAlign = TextAlign.End,
+            )
+          },
+          spaceBetween = 8.dp,
+        )
+        quote.itemCost.discounts.forEach { discount ->
+          HorizontalItemsWithMaximumSpaceTaken(
+            { HedvigText(discount.displayName) },
+            {
+              HedvigText(
+                text = discount.displayValue,
+                textAlign = TextAlign.End,
+              )
+            },
+            spaceBetween = 8.dp,
+          )
+        }
+      }
+    }
+  }
 }
 
 @HedvigPreview
@@ -352,6 +408,56 @@ private class ChooseInsuranceForAddonUiStateProvider :
                 campaignCode = "Bundle",
                 displayName = "15% bundle discount",
                 displayValue = "-19kr/mo",
+                explanation = "some explanation",
+              ),
+            ),
+          ),
+        ),
+        activationDateForSuccessfullyPurchasedAddon = null,
+        navigateToFailure = false,
+        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
+      ),
+      Content(
+        currentTravelAddon = null,
+        offerDisplayName = "TravelPlus",
+        activationDate = LocalDate(2025, 1, 1),
+        quote = TravelAddonQuote(
+          displayName = "60 days",
+          addonId = "addonId1",
+          quoteId = "id",
+          displayDetails = listOf(
+            "Amount of insured people" to "You +1",
+            "Coverage" to "60 days",
+          ),
+          addonVariant = AddonVariant(
+            termsVersion = "terms",
+            documents = listOf(),
+            perils = listOf(),
+            displayName = "60 days",
+            product = "",
+          ),
+          addonSubtype = "60 days",
+          documents = listOf(
+            TravelAddonQuoteInsuranceDocument(
+              "Some terms",
+              "url",
+            ),
+          ),
+          displayNameLong = "Travel Plus 60 days",
+          itemCost = ItemCost(
+            UiMoney(40.0, UiCurrencyCode.SEK),
+            UiMoney(89.0, UiCurrencyCode.SEK),
+            discounts = listOf(
+              ItemCostDiscount(
+                campaignCode = "Bundle",
+                displayName = "15% bundle discount",
+                displayValue = "-10 kr/mo",
+                explanation = "some explanation",
+              ),
+              ItemCostDiscount(
+                campaignCode = "TRALALA",
+                displayName = "50% discount for 3 months",
+                displayValue = "-39 kr/mo",
                 explanation = "some explanation",
               ),
             ),
