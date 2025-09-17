@@ -744,6 +744,8 @@
   <string name="TIER_FLOW_SUMMARY_TITLE">Sammanfattning</string>
   <string name="TIER_FLOW_TITLE">Anpassa ditt skydd</string>
   <string name="TIER_FLOW_TOTAL">Totalt</string>
+  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL">Travel protection</string>
+  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION">No extra travel protection</string>
   <string name="TOAST.NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST.READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
