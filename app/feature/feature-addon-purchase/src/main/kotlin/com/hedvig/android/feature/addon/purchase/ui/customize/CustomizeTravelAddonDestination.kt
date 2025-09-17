@@ -416,7 +416,7 @@ private fun HeaderInfoWithCurrentPrice(
             color = Grey(MEDIUM),
             modifier = Modifier
               .wrapContentSize(Alignment.TopEnd)
-              .semantics {
+              .clearAndSetSemantics {
                 contentDescription = pricePerMonth
               },
           )

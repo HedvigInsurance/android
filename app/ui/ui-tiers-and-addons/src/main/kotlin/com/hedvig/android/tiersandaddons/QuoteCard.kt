@@ -564,6 +564,10 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
         } else {
           LocalTextStyle.current
         }
+        val strikeThroughDescription = stringResource(
+          R.string.TALKBACK_PREVIOUSLY,
+          "${item.displayName}, ${item.displayValue}",
+        )
         HorizontalItemsWithMaximumSpaceTaken(
           { HedvigText(item.displayName, style = style) },
           {
@@ -574,6 +578,11 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
             )
           },
           spaceBetween = 8.dp,
+          modifier = Modifier.semantics(mergeDescendants = true) {
+            if (item.hasStrikethrough) {
+              contentDescription = strikeThroughDescription
+            }
+          },
         )
       }
     }

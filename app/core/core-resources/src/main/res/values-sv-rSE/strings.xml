@@ -380,6 +380,7 @@
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Se till att vi har rätt kontaktuppgifter ifall vi behöver nå dig.</string>
+  <string name="MOVING_FLOW_ADDON_REMOVE_OPTION">No extra coverage</string>
   <string name="MOVING_FLOW_BODY">Vilken försäkring vill du byta adress för?</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO">Den här tilläggsförsäkringen kan tas bort genom att %1$s.</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO_LINK_TEXT">kontakta support</string>
@@ -642,6 +643,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR-kod</string>
@@ -724,6 +726,7 @@
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Ditt tidigare pris %1$s</string>
   <string name="TIER_FLOW_PRICE_LABEL">från %s kr/mån</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mån</string>
   <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">Från %s/mån</string>
   <string name="TIER_FLOW_PROCESSING">Hämtar skyddsnivåer...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Svar på våra medlemmars vanligaste funderingar.</string>
@@ -744,8 +747,6 @@
   <string name="TIER_FLOW_SUMMARY_TITLE">Sammanfattning</string>
   <string name="TIER_FLOW_TITLE">Anpassa ditt skydd</string>
   <string name="TIER_FLOW_TOTAL">Totalt</string>
-  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL">Travel protection</string>
-  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION">No extra travel protection</string>
   <string name="TOAST.NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST.READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
