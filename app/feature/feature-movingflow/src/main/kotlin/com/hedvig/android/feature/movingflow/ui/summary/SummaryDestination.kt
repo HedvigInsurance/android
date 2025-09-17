@@ -365,7 +365,7 @@ private fun SummaryScreen(
         )
         Spacer(Modifier.height(2.dp))
         HedvigText(
-          text = stringResource(R.string.CHANGE_ADDRESS_ACTIVATION_DATE, startDateFormatted),
+          text = stringResource(R.string.SUMMARY_TOTAL_PRICE_SUBTITLE, startDateFormatted),
           style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
           textAlign = TextAlign.End,
           modifier = Modifier.fillMaxWidth(),

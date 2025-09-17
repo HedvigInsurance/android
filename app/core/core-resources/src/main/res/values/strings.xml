@@ -744,6 +744,8 @@
   <string name="TIER_FLOW_SUMMARY_TITLE">Summary</string>
   <string name="TIER_FLOW_TITLE">Customize your coverage</string>
   <string name="TIER_FLOW_TOTAL">Total</string>
+  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL">Travel protection</string>
+  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION">No extra travel protection</string>
   <string name="TOAST.NEW_OFFER">New offer</string>
   <string name="TOAST.READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
