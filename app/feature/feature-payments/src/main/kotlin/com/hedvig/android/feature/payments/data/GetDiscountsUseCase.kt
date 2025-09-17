@@ -37,20 +37,26 @@ internal class GetDiscountsUseCaseImpl(
 
     val activeDiscountedContracts = buildList {
       activeContracts.forEach { activeContract ->
-        add (DiscountedContract(
-          contractId = activeContract.id,
-          contractDisplayName = activeContract.exposureDisplayNameShort,
-          discountsDetails = activeContract.discountsDetails.toDiscountsDetails()
-        ))
+        if (activeContract.discountsDetails.discounts.isNotEmpty()) {
+          add (DiscountedContract(
+            contractId = activeContract.id,
+            contractDisplayName = activeContract.exposureDisplayNameShort,
+            discountsDetails = activeContract.discountsDetails.toDiscountsDetails()
+          ))
+        }
+
       }
     }
     val pendingDiscountedContracts = buildList {
       pendingContracts.forEach { pendingContract ->
-        add (DiscountedContract(
-          contractId = pendingContract.id,
-          contractDisplayName = pendingContract.exposureDisplayNameShort,
-          discountsDetails = pendingContract.discountsDetails.toDiscountsDetails()
-        ))
+        if (pendingContract.discountsDetails.discounts.isNotEmpty()) {
+          add (DiscountedContract(
+            contractId = pendingContract.id,
+            contractDisplayName = pendingContract.exposureDisplayNameShort,
+            discountsDetails = pendingContract.discountsDetails.toDiscountsDetails()
+          ))
+        }
+
       }
     }
     activeDiscountedContracts + pendingDiscountedContracts
