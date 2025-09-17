@@ -335,10 +335,7 @@ private fun SummaryTopAppBar(onIconClick: () -> Unit) {
 }
 
 @Composable
-private fun SummaryCard(
-  uiState: Success,
-  modifier: Modifier = Modifier,
-) {
+private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
   val state = rememberQuoteCardState()
   val addonDocs = uiState.quote.addons.flatMap { it.addonVariant.documents }
   val allDocuments: List<InsuranceVariantDocument> =
@@ -349,8 +346,11 @@ private fun SummaryCard(
     premium = uiState.quote.newTotalCost.monthlyNet,
     costBreakdown = uiState.quote.costBreakdown,
     previousPremium =
-      if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet)
-        uiState.quote.newTotalCost.monthlyGross else null,
+      if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
+        uiState.quote.newTotalCost.monthlyGross
+      } else {
+        null
+      },
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,

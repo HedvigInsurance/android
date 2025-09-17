@@ -57,7 +57,7 @@ val paymentsModule = module {
 
   single<GetDiscountsUseCase> {
     GetDiscountsUseCaseImpl(
-      get<ApolloClient>()
+      get<ApolloClient>(),
     )
   }
 

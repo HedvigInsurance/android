@@ -154,7 +154,7 @@ internal fun MemberChargeFragment.toMemberCharge(
             UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
           ),
           isReferral = false,
-          statusDescription = null
+          statusDescription = null,
         )
       } ?: listOf(),
     )
@@ -172,7 +172,7 @@ internal fun MemberChargeFragment.toMemberCharge(
         UiCurrencyCode.fromCurrencyCode(it.currencyCode),
       ),
       isReferral = true,
-      statusDescription = null
+      statusDescription = null,
     )
   },
 )

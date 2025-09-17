@@ -37,26 +37,34 @@ internal class GetDiscountsUseCaseImpl(
 
     val activeDiscountedContracts = buildList {
       activeContracts.forEach { activeContract ->
+        val displayName = activeContract.currentAgreement.productVariant.displayNameShort?.let {
+          "$it • ${activeContract.exposureDisplayNameShort}"
+        } ?: activeContract.exposureDisplayNameShort
         if (activeContract.discountsDetails.discounts.isNotEmpty()) {
-          add (DiscountedContract(
-            contractId = activeContract.id,
-            contractDisplayName = activeContract.exposureDisplayNameShort,
-            discountsDetails = activeContract.discountsDetails.toDiscountsDetails()
-          ))
+          add(
+            DiscountedContract(
+              contractId = activeContract.id,
+              contractDisplayName = displayName,
+              discountsDetails = activeContract.discountsDetails.toDiscountsDetails(),
+            ),
+          )
         }
-
       }
     }
     val pendingDiscountedContracts = buildList {
       pendingContracts.forEach { pendingContract ->
+        val displayName = pendingContract.productVariant.displayNameShort?.let {
+          "$it • ${pendingContract.exposureDisplayNameShort}"
+        } ?: pendingContract.exposureDisplayNameShort
         if (pendingContract.discountsDetails.discounts.isNotEmpty()) {
-          add (DiscountedContract(
-            contractId = pendingContract.id,
-            contractDisplayName = pendingContract.exposureDisplayNameShort,
-            discountsDetails = pendingContract.discountsDetails.toDiscountsDetails()
-          ))
+          add(
+            DiscountedContract(
+              contractId = pendingContract.id,
+              contractDisplayName = displayName,
+              discountsDetails = pendingContract.discountsDetails.toDiscountsDetails(),
+            ),
+          )
         }
-
       }
     }
     activeDiscountedContracts + pendingDiscountedContracts
@@ -78,8 +86,8 @@ private fun DiscountsDetailsFragment.toDiscountsDetails(): DiscountsDetails {
         },
         statusDescription = discount.statusDescription,
         amount = null,
-        isReferral = false
+        isReferral = false,
       )
-    }
+    },
   )
 }

@@ -131,7 +131,7 @@ internal fun DiscountRow(
             }
           }
           Spacer(Modifier.height(4.dp))
-          if (discount.statusDescription!=null) {
+          if (discount.statusDescription != null) {
             HedvigText(
               text = discount.statusDescription,
               textAlign = TextAlign.End,
@@ -139,7 +139,7 @@ internal fun DiscountRow(
               color = when (discount.status) {
                 Discount.DiscountStatus.EXPIRED -> HedvigTheme.colorScheme.signalRedElement
                 else -> HedvigTheme.colorScheme.textSecondaryTranslucent
-              } ,
+              },
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -180,22 +180,27 @@ internal val mockDiscountedContracts = listOf(
   ),
   DiscountedContract(
     discountsDetails =
-      DiscountsDetails("Your bundle discount will activate when you have two active insurances.",
-        discountsPreviewData),
+      DiscountsDetails(
+        "Your bundle discount will activate when you have two active insurances.",
+        discountsPreviewData,
+      ),
     contractId = "id1",
     contractDisplayName = "Dog Premium ∙ Fido",
   ),
   DiscountedContract(
-    discountsDetails = DiscountsDetails(null, listOf(
-      Discount(
-        code = "LOOP",
-        description = "Desc",
-        status = Discount.DiscountStatus.PENDING,
-        amount = null,
-        isReferral = false,
-        statusDescription = "Pending"
+    discountsDetails = DiscountsDetails(
+      null,
+      listOf(
+        Discount(
+          code = "LOOP",
+          description = "Desc",
+          status = Discount.DiscountStatus.PENDING,
+          amount = null,
+          isReferral = false,
+          statusDescription = "Pending",
+        ),
       ),
-    )),
+    ),
     contractId = "id1",
     contractDisplayName = "Some pending contract ∙ Daboodee",
   ),
