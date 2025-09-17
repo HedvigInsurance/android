@@ -81,10 +81,11 @@ internal class AddonSummaryPresenter(
 
 internal fun getInitialState(summaryParameters: SummaryParameters): Content {
   val total = if (summaryParameters.currentTravelAddon == null) {
-    summaryParameters.quote.price
+    summaryParameters.quote.itemCost.monthlyNet
   } else {
-    val amountDiff = summaryParameters.quote.price.amount - summaryParameters.currentTravelAddon.price.amount
-    UiMoney(amountDiff, summaryParameters.quote.price.currencyCode)
+    val amountDiff =
+      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentTravelAddon.netPremium.amount
+    UiMoney(amountDiff, summaryParameters.quote.itemCost.monthlyNet.currencyCode)
   }
   return Content(
     offerDisplayName = summaryParameters.offerDisplayName,
