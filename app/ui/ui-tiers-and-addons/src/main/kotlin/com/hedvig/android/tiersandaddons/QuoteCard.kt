@@ -121,7 +121,7 @@ fun QuoteCard(
   subtitle: String,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  costBreakdown: List<Pair<String, String>>,
+  costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   quoteCardState: QuoteCardState = rememberQuoteCardState(),
@@ -158,7 +158,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  costBreakdown: List<Pair<String, String>>,
+  costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -171,7 +171,6 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = isExcluded,
     costBreakdown = costBreakdown,
-    costBreakdownComposable = null,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -208,7 +207,7 @@ fun QuoteCard(
   premium: UiMoney,
   previousPremium: UiMoney?,
   isExcluded: Boolean,
-  costBreakdown: List<Pair<String, String>>,
+  costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
@@ -220,55 +219,6 @@ fun QuoteCard(
     previousPremium = previousPremium,
     isExcluded = isExcluded,
     costBreakdown = costBreakdown,
-    costBreakdownComposable = null,
-    displayItems = displayItems,
-    modifier = modifier,
-    displayName = displayName,
-    contractGroup = contractGroup,
-    insurableLimits = insurableLimits,
-    documents = documents,
-    titleEndSlot = {
-      Crossfade(
-        targetState = isExcluded,
-        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-      ) { show ->
-        if (show) {
-          HighlightLabel(
-            labelText = stringResource(R.string.CONTRACT_STATUS_TERMINATED),
-            size = Small,
-            color = Grey(MEDIUM),
-          )
-        }
-      }
-    },
-    betweenDetailsAndDocumentsContent = betweenDetailsAndDocumentsContent,
-  )
-}
-
-@Composable
-fun QuoteCard(
-  quoteCardState: QuoteCardState,
-  displayName: String,
-  contractGroup: ContractGroup?,
-  insurableLimits: List<InsurableLimit>,
-  documents: List<DisplayDocument>,
-  subtitle: String?,
-  premium: UiMoney,
-  previousPremium: UiMoney?,
-  isExcluded: Boolean,
-  costBreakdownComposable: @Composable (() -> Unit)?,
-  displayItems: List<QuoteDisplayItem>,
-  modifier: Modifier = Modifier,
-  betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
-) {
-  QuoteCard(
-    quoteCardState = quoteCardState,
-    subtitle = subtitle,
-    premium = premium,
-    previousPremium = previousPremium,
-    isExcluded = isExcluded,
-    costBreakdown = null,
-    costBreakdownComposable = costBreakdownComposable,
     displayItems = displayItems,
     modifier = modifier,
     displayName = displayName,
@@ -357,8 +307,7 @@ private fun QuoteCard(
   titleEndSlot: @Composable () -> Unit = {},
   betweenDetailsAndDocumentsContent: @Composable () -> Unit = {},
   excludedCollapsedStateButtonContent: @Composable (() -> Unit)? = null,
-  costBreakdown: List<Pair<String, String>>?,
-  costBreakdownComposable: @Composable (() -> Unit)?,
+  costBreakdown: List<CostBreakdownEntry>,
 ) {
   HedvigCard(
     modifier = modifier
@@ -421,14 +370,12 @@ private fun QuoteCard(
           modifier = Modifier.padding(top = 16.dp),
         )
       }
-      if (costBreakdown?.isNotEmpty() == true) {
+      if (costBreakdown.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
         DiscountCostBreakdown(
           costBreakdown,
           Modifier.semantics(mergeDescendants = true) {},
         )
-      } else if (costBreakdownComposable != null) {
-        costBreakdownComposable()
       }
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()
@@ -437,6 +384,12 @@ private fun QuoteCard(
     }
   }
 }
+
+data class CostBreakdownEntry(
+  val displayName: String,
+  val displayValue: String,
+  val hasStrikethrough: Boolean,
+)
 
 @Composable
 private fun QuoteIconAndTitle(
@@ -602,16 +555,22 @@ data class DisplayDocument(
 )
 
 @Composable
-fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: Modifier = Modifier) {
+fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Modifier = Modifier) {
   ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
       for (item in costBreakdown) {
+        val style = if (item.hasStrikethrough) {
+          LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough)
+        } else {
+          LocalTextStyle.current
+        }
         HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(item.first) },
+          { HedvigText(item.displayName, style = style) },
           {
             HedvigText(
-              text = item.second,
+              text = item.displayValue,
               textAlign = TextAlign.End,
+              style = style,
             )
           },
           spaceBetween = 8.dp,
@@ -728,7 +687,13 @@ private fun PreviewQuoteCard(
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
         isExcluded = triple == TripleCase.SECOND,
-        costBreakdown = List(3) { "#$it" to "discount#$it" },
+        costBreakdown = List(3) {
+          CostBreakdownEntry(
+            "#$it",
+            "discount#$it",
+            false,
+          )
+        },
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",

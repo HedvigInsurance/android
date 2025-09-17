@@ -99,6 +99,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteCardState
@@ -401,7 +402,11 @@ private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifi
       )
     },
     costBreakdown = quote.discounts.map {
-      it.displayName to it.discountValue
+      CostBreakdownEntry(
+        it.displayName,
+        it.discountValue,
+        false,
+      )
     },
     modifier = modifier,
   )
@@ -475,7 +480,11 @@ private fun ExcludableAddonCard(
     previousPremium = quote.previousPremium,
     isExcluded = quote.isExcludedByUser,
     costBreakdown = quote.discounts.map {
-      it.displayName to it.discountValue
+      CostBreakdownEntry(
+        it.displayName,
+        it.discountValue,
+        false,
+      )
     },
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(
@@ -516,7 +525,11 @@ private fun NonExcludableAddonCard(quote: MovingFlowQuotes.AddonQuote, modifier:
     previousPremium = quote.previousPremium,
     isExcluded = false,
     costBreakdown = quote.discounts.map {
-      it.displayName to it.discountValue
+      CostBreakdownEntry(
+        it.displayName,
+        it.discountValue,
+        false,
+      )
     },
     displayItems = quote.displayItems.map {
       QuoteDisplayItem(

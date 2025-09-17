@@ -52,6 +52,7 @@ import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
@@ -239,6 +240,56 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   } else {
     uiState.quote.itemCost.monthlyGross
   }
+  val costBreakdown: List<CostBreakdownEntry> =
+    if (uiState.currentTravelAddon != null) {
+      val currentAddonDisplayItemValue = stringResource(
+        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        uiState.currentTravelAddon.netPremium,
+      )
+      val newAddonDisplayValueNet = stringResource(
+        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        uiState.quote.itemCost.monthlyNet,
+      )
+      buildList {
+        add(
+          CostBreakdownEntry(
+            uiState.currentTravelAddon.displayNameLong,
+            currentAddonDisplayItemValue,
+            true,
+          ),
+        )
+        add(
+          CostBreakdownEntry(
+            uiState.quote.displayNameLong,
+            newAddonDisplayValueNet,
+            false,
+          ),
+        )
+      }
+    } else {
+      val newAddonDisplayValueGross = stringResource(
+        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        uiState.quote.itemCost.monthlyGross,
+      )
+      buildList {
+        add(
+          CostBreakdownEntry(
+            uiState.quote.displayNameLong,
+            newAddonDisplayValueGross,
+            false,
+          ),
+        )
+        uiState.quote.itemCost.discounts.forEach { discount ->
+          add(
+            CostBreakdownEntry(
+              discount.displayName,
+              discount.displayValue,
+              false,
+            ),
+          )
+        }
+      }
+    }
   QuoteCard(
     subtitle = stringResource(
       R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
@@ -246,9 +297,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     ),
     isExcluded = false,
     premium = premium,
-    costBreakdownComposable = {
-      AddonCostBreakdownComposable(uiState.currentTravelAddon, uiState.quote)
-    },
+    costBreakdown = costBreakdown,
     previousPremium = previousPremium,
     displayItems = uiState.quote.displayDetails.map {
       QuoteDisplayItem(
