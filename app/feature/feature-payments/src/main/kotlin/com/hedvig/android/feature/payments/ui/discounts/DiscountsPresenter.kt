@@ -63,7 +63,7 @@ internal sealed interface DiscountsEvent {
 
 internal data class DiscountsUiState(
   val foreverInformation: ForeverInformation?,
-  val discountedContracts: Set<DiscountedContract>,
+  val discountedContracts: List<DiscountedContract>,
   val error: Boolean? = null,
   val isLoadingPaymentOverView: Boolean = true,
   val isRetrying: Boolean = false,

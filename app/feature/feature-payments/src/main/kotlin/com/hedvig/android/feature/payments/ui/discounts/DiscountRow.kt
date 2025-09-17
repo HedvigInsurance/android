@@ -26,13 +26,14 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.DiscountedContract
+import com.hedvig.android.feature.payments.data.DiscountsDetails
 import com.hedvig.android.feature.payments.discountsPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun DiscountRows(
-  affectedContracts: Set<DiscountedContract>,
+  affectedContracts: List<DiscountedContract>,
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
@@ -40,7 +41,7 @@ internal fun DiscountRows(
     modifier = modifier,
   ) {
     affectedContracts.forEach { contract ->
-      val relatedDiscounts = contract.appliedDiscounts
+      val relatedDiscounts = contract.discountsDetails.appliedDiscounts
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(contract.contractDisplayName)
       Spacer(modifier = Modifier.height(8.dp))
@@ -69,7 +70,7 @@ internal fun DiscountRow(
   modifier: Modifier = Modifier,
   labelColor: HighlightColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
 ) {
-  val discountIsExpired = discount.status is Discount.DiscountStatus.AlreadyExpired
+  val discountIsExpired = discount.status == Discount.DiscountStatus.EXPIRED
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
@@ -130,57 +131,17 @@ internal fun DiscountRow(
             }
           }
           Spacer(Modifier.height(4.dp))
-          val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-          when (discount.status) {
-            is Discount.DiscountStatus.AlreadyExpired -> {
-              HedvigText(
-                text = stringResource(
-                  id = R.string.PAYMENTS_EXPIRED_DATE,
-                  dateTimeFormatter.format(discount.status.expirationDate.toJavaLocalDate()),
-                ),
-                textAlign = TextAlign.End,
-                style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.signalRedElement,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
-
-            is Discount.DiscountStatus.ExpiringInTheFuture -> {
-              HedvigText(
-                text = stringResource(
-                  id = R.string.PAYMENTS_VALID_UNTIL,
-                  dateTimeFormatter.format(discount.status.expirationDate.toJavaLocalDate()),
-                ),
-                textAlign = TextAlign.End,
-                style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
-
-            Discount.DiscountStatus.NotExpired -> {
-              HedvigText(
-                text = stringResource(
-                  id = R.string.DISCOUNTS_LABEL_ACTIVE,
-                ),
-                textAlign = TextAlign.End,
-                style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
-
-            Discount.DiscountStatus.Pending -> {
-              HedvigText(
-                text = stringResource(
-                  id = R.string.DISCOUNTS_LABEL_PENDING,
-                ),
-                textAlign = TextAlign.End,
-                style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
+          if (discount.statusDescription!=null) {
+            HedvigText(
+              text = discount.statusDescription,
+              textAlign = TextAlign.End,
+              style = HedvigTheme.typography.label,
+              color = when (discount.status) {
+                Discount.DiscountStatus.EXPIRED -> HedvigTheme.colorScheme.signalRedElement
+                else -> HedvigTheme.colorScheme.textSecondaryTranslucent
+              } ,
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
         }
       },
@@ -210,27 +171,31 @@ private fun DiscountRowsPreview() {
   }
 }
 
-internal val mockDiscountedContracts = setOf(
+internal val mockDiscountedContracts = listOf(
   DiscountedContract(
-    appliedDiscounts = discountsPreviewData,
+    discountsDetails =
+      DiscountsDetails(null, discountsPreviewData),
     contractId = "id1",
     contractDisplayName = "House Standard ∙ Villagatan 25",
   ),
   DiscountedContract(
-    appliedDiscounts = discountsPreviewData,
+    discountsDetails =
+      DiscountsDetails("Your bundle discount will activate when you have two active insurances.",
+        discountsPreviewData),
     contractId = "id1",
     contractDisplayName = "Dog Premium ∙ Fido",
   ),
   DiscountedContract(
-    appliedDiscounts = listOf(
+    discountsDetails = DiscountsDetails(null, listOf(
       Discount(
         code = "LOOP",
         description = "Desc",
-        status = Discount.DiscountStatus.Pending,
+        status = Discount.DiscountStatus.PENDING,
         amount = null,
         isReferral = false,
+        statusDescription = "Pending"
       ),
-    ),
+    )),
     contractId = "id1",
     contractDisplayName = "Some pending contract ∙ Daboodee",
   ),

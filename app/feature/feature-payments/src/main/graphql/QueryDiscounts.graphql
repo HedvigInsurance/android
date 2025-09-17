@@ -4,27 +4,25 @@ query Discounts {
       id
       exposureDisplayNameShort
       discountsDetails {
-        discountsInfo
-        discounts {
-          campaignCode
-          description
-          discountStatus
-          statusDescription
-        }
+        ...DiscountsDetailsFragment
       }
     }
     pendingContracts {
       id
       exposureDisplayNameShort
       discountsDetails {
-        discountsInfo
-        discounts {
-          campaignCode
-          description
-          discountStatus
-          statusDescription
-        }
+        ...DiscountsDetailsFragment
       }
     }
+  }
+}
+
+fragment DiscountsDetailsFragment on ContractDiscountDetails {
+  discountsInfo
+  discounts {
+    campaignCode
+    description
+    discountStatus
+    statusDescription
   }
 }

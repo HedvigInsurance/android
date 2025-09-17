@@ -624,6 +624,7 @@ called Agreements.
 """
 type Contract {
   id: UUID!
+  discountsDetails: ContractDiscountDetails!
   """
   The first date this insurance became active - i.e. the "from date" of the first agreement.
   """
@@ -723,6 +724,40 @@ type ContractCoInsured {
   Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
   """
   hasMissingInfo: Boolean!
+}
+type ContractDiscountDetails {
+  """
+   A text to show if an extra explanation is needed, e.g. Your bundle discount will activate when you have two active insurances.
+  """
+  discountsInfo: String
+  """
+   Contract level discounts.
+  """
+  discounts: [ContractDiscountItem!]!
+}
+type ContractDiscountItem {
+  """
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / FURRY / etc
+  """
+  campaignCode: String!
+  """
+   Longer explanation for the discount, ex. "50% discount for 6 months" or "15% bundle discount
+  """
+  description: String!
+  """
+   Status of the discount itself: active, terminated or pending (an active contract can have a pending bundle discount,
+  for example).
+  """
+  discountStatus: ContractDiscountStatus!
+  """
+   Describes discount status with date if needed: Expired 31 aug 2025 or Active or Pending or Valid until 31 mars 2026
+  """
+  statusDescription: String!
+}
+enum ContractDiscountStatus {
+  ACTIVE
+  PENDING
+  TERMINATED
 }
 type ContractSelfChangeBlocker {
   reason: String!
@@ -2597,6 +2632,7 @@ type PendingContract {
   Calculated based on the pending agreement
   """
   cost: ItemCost!
+  discountsDetails: ContractDiscountDetails!
   """
   Same as `Contract.exposureDisplayName`.
   """
@@ -3613,7 +3649,15 @@ type UpsellTravelAddonCurrentAddon {
   """
   Price of the addon.
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use itemCost instead")
+  """
+  Net price of the addon.
+  """
+  netPremium: Money!
+  """
+  Used for displaying current coverage. eg Travel Insurance Plus 60 days
+  """
+  displayNameLong: String!
 }
 type UpsellTravelAddonDisplayItem {
   displayTitle: String!
@@ -3675,9 +3719,13 @@ type UpsellTravelAddonQuote {
   """
   addonId: ID!
   """
-   Display name of the addon. Will be shown in the select days dropdown. 
+   Display name of the addon. Will be shown in the select days dropdown. eg 45 days 60 days 
   """
   displayName: String!
+  """
+  Used for displaying new coverage. eg Travel Insurance Plus 60 days
+  """
+  displayNameLong: String!
   """
    The addon details to show on summary page. 
   """
@@ -3685,7 +3733,11 @@ type UpsellTravelAddonQuote {
   """
    Price of the addon. 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use itemCost instead")
+  """
+  Item cost breakdown with discounts applied.
+  """
+  itemCost: ItemCost!
   """
   Documents to show instead of addonVariant documents
   """

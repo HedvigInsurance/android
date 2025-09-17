@@ -148,12 +148,13 @@ internal fun MemberChargeFragment.toMemberCharge(
           code = discount.code,
           description = discount.description,
           // Expired state is not applicable in this context
-          status = DiscountStatus.NotExpired,
+          status = DiscountStatus.ACTIVE,
           amount = UiMoney(
             discount.discount.amount,
             UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
           ),
           isReferral = false,
+          statusDescription = null
         )
       } ?: listOf(),
     )
@@ -164,13 +165,14 @@ internal fun MemberChargeFragment.toMemberCharge(
     Discount(
       code = referralInformation.code,
       // Expired state is not applicable in this context
-      status = DiscountStatus.NotExpired,
+      status = DiscountStatus.ACTIVE,
       description = null,
       amount = UiMoney(
         it.amount.unaryMinus(),
         UiCurrencyCode.fromCurrencyCode(it.currencyCode),
       ),
       isReferral = true,
+      statusDescription = null
     )
   },
 )
@@ -190,18 +192,6 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
     )
   } else {
     null
-  }
-}
-
-private fun Discount.DiscountStatus.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.DiscountStatus {
-  if (expirationDate == null) {
-    return Discount.DiscountStatus.NotExpired
-  }
-  val today = clock.todayIn(TimeZone.currentSystemDefault())
-  return if (expirationDate < today) {
-    Discount.DiscountStatus.AlreadyExpired(expirationDate)
-  } else {
-    Discount.DiscountStatus.ExpiringInTheFuture(expirationDate)
   }
 }
 

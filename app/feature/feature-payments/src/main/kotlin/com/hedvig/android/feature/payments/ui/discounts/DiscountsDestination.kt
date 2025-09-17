@@ -313,7 +313,7 @@ private fun PaymentDetailsScreenFailurePreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discountedContracts = emptySet(),
+          discountedContracts = emptyList(),
           isLoadingPaymentOverView = false,
           error = true,
           foreverInformation = null,

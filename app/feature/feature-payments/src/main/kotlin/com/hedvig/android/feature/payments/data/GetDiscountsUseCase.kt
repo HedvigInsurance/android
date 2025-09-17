@@ -16,17 +16,18 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import octopus.DiscountsQuery
+import octopus.fragment.DiscountsDetailsFragment
+import octopus.type.ContractDiscountStatus
 import octopus.type.RedeemedCampaignType
 
 internal interface GetDiscountsUseCase {
-  suspend fun invoke(): Either<ErrorMessage, Set<DiscountedContract>>
+  suspend fun invoke(): Either<ErrorMessage, List<DiscountedContract>>
 }
 
 internal class GetDiscountsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val clock: Clock,
 ) : GetDiscountsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, Set<DiscountedContract>> = either {
+  override suspend fun invoke(): Either<ErrorMessage, List<DiscountedContract>> = either {
     val result = apolloClient.query(DiscountsQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
@@ -34,74 +35,45 @@ internal class GetDiscountsUseCaseImpl(
     val activeContracts = result.currentMember.activeContracts
     val pendingContracts = result.currentMember.pendingContracts
 
-//    // todo: temporary, waiting for the new API
-//    val discounts = result.currentMember
-//      .redeemedCampaigns
-//      .filter { it.type == RedeemedCampaignType.VOUCHER }
-//      .map {
-//        DiscountElement(
-//          code = it.code,
-//          description = it.description,
-//          discountStatus = Discount.DiscountStatus.from(it.expiresAt, clock),
-//          // todo: here add starts in the future, pending
-//          amount = null,
-//          isReferral = false,
-//          contractIdAndNames = it.onlyApplicableToContracts?.map { contract ->
-//            contract.id to contract.currentAgreement.productVariant.displayName
-//          } ?: listOf(),
-//        )
-//      }
-//    val discountedContractsIdsAndNames = result.currentMember
-//      .redeemedCampaigns
-//      .filter { it.type == RedeemedCampaignType.VOUCHER }
-//      .flatMap { discount ->
-//        discount.onlyApplicableToContracts?.map { contract ->
-//          contract.id to
-//            contract.currentAgreement.productVariant.displayName
-//        }
-//          ?: emptyList()
-//      }.toSet()
-//    val discountedContracts = buildSet {
-//      discountedContractsIdsAndNames.forEach { contract ->
-//        val appliedDiscounts = discounts.filter { it.contractIdAndNames.contains(contract) }
-//        add(
-//          DiscountedContract(
-//            contractId = contract.first,
-//            contractDisplayName = contract.second,
-//            appliedDiscounts = appliedDiscounts.map {
-//              Discount(
-//                code = it.code,
-//                description = it.description,
-//                status = it.discountStatus,
-//                amount = null,
-//                isReferral = it.isReferral,
-//              )
-//            },
-//          ),
-//        )
-//      }
-//    }
-//    discountedContracts
+    val activeDiscountedContracts = buildList {
+      activeContracts.forEach { activeContract ->
+        add (DiscountedContract(
+          contractId = activeContract.id,
+          contractDisplayName = activeContract.exposureDisplayNameShort,
+          discountsDetails = activeContract.discountsDetails.toDiscountsDetails()
+        ))
+      }
+    }
+    val pendingDiscountedContracts = buildList {
+      pendingContracts.forEach { pendingContract ->
+        add (DiscountedContract(
+          contractId = pendingContract.id,
+          contractDisplayName = pendingContract.exposureDisplayNameShort,
+          discountsDetails = pendingContract.discountsDetails.toDiscountsDetails()
+        ))
+      }
+    }
+    activeDiscountedContracts + pendingDiscountedContracts
   }
 }
 
-private fun Discount.DiscountStatus.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.DiscountStatus {
-  if (expirationDate == null) {
-    return Discount.DiscountStatus.NotExpired
-  }
-  val today = clock.todayIn(TimeZone.currentSystemDefault())
-  return if (expirationDate < today) {
-    Discount.DiscountStatus.AlreadyExpired(expirationDate)
-  } else {
-    Discount.DiscountStatus.ExpiringInTheFuture(expirationDate)
-  }
+private fun DiscountsDetailsFragment.toDiscountsDetails(): DiscountsDetails {
+  return DiscountsDetails(
+    discountInfo = discountsInfo,
+    appliedDiscounts = discounts.map { discount ->
+      Discount(
+        code = discount.campaignCode,
+        description = discount.description,
+        status = when (discount.discountStatus) {
+          ContractDiscountStatus.ACTIVE -> Discount.DiscountStatus.ACTIVE
+          ContractDiscountStatus.PENDING -> Discount.DiscountStatus.PENDING
+          ContractDiscountStatus.TERMINATED -> Discount.DiscountStatus.EXPIRED
+          ContractDiscountStatus.UNKNOWN__ -> Discount.DiscountStatus.PENDING
+        },
+        statusDescription = discount.statusDescription,
+        amount = null,
+        isReferral = false
+      )
+    }
+  )
 }
-
-private data class DiscountElement(
-  val code: String,
-  val description: String?,
-  val discountStatus: DiscountStatus,
-  val amount: UiMoney?,
-  val isReferral: Boolean,
-  val contractIdAndNames: List<Pair<String, String>>,
-)

@@ -38,6 +38,6 @@ internal class GetDiscountsOverviewUseCaseImpl(
 }
 
 internal data class DiscountsOverview(
-  val discountedContracts: Set<DiscountedContract>,
+  val discountedContracts: List<DiscountedContract>,
   val foreverInformation: ForeverInformation?,
 )
