@@ -348,8 +348,8 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
-        null,
         it.displayValue,
+        null,
       )
     },
     modifier = modifier,

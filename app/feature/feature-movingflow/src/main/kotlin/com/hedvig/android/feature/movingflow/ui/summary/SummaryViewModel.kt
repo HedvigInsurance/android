@@ -14,17 +14,20 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.AddonId
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ConfirmChanges
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.CardContent.DisplayItem
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.logger.LogPriority
@@ -42,15 +45,15 @@ internal class SummaryViewModel(
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
-    Loading,
-    SummaryPresenter(
-      summaryRoute = savedStateHandle.toRoute<Summary>(),
-      movingFlowRepository = movingFlowRepository,
-      apolloClient = apolloClient,
-      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
-      getMoveIntentCostUseCase = getMoveIntentCostUseCase,
-    ),
-  )
+  Loading,
+  SummaryPresenter(
+    summaryRoute = savedStateHandle.toRoute<Summary>(),
+    movingFlowRepository = movingFlowRepository,
+    apolloClient = apolloClient,
+    crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+    getMoveIntentCostUseCase = getMoveIntentCostUseCase,
+  ),
+)
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,
@@ -62,8 +65,7 @@ internal class SummaryPresenter(
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
     var summaryInfo: SummaryInfoState by remember { mutableStateOf(SummaryInfoState.Loading) }
-    var totalPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.totalPremium) }
-    var grossPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.grossPremium) }
+    var moveIntentCost: MoveIntentCost? by remember { mutableStateOf(null) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
     var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
@@ -126,10 +128,7 @@ internal class SummaryPresenter(
             .map(HomeAddonQuote::addonId)
             .map(AddonId::id),
         ).collect { result ->
-          Snapshot.withMutableSnapshot {
-            totalPremium = result.getOrNull()?.monthlyNet
-            grossPremium = result.getOrNull()?.monthlyGross
-          }
+          moveIntentCost = result.getOrNull()
         }
       }
     }
@@ -182,13 +181,12 @@ internal class SummaryPresenter(
       SummaryInfoState.Loading -> Loading
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
-      is SummaryInfoState.Content -> Content(
+      is SummaryInfoState.Content -> SummaryUiState.Content(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
-        totalPremium = totalPremium,
-        grossPremium = grossPremium,
+        moveIntentCost = moveIntentCost,
       )
     }
   }
@@ -212,13 +210,25 @@ internal sealed interface SummaryUiState {
   data object Error : SummaryUiState
 
   data class Content(
-    val summaryInfo: SummaryInfo,
+    private val summaryInfo: SummaryInfo,
     val isSubmitting: Boolean,
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
-    val totalPremium: UiMoney?,
-    val grossPremium: UiMoney?,
-  ) : SummaryUiState {
+    private val moveIntentCost: MoveIntentCost?,
+    ) : SummaryUiState {
+    val cards: List<CardContent> = buildList {
+      add(summaryInfo.moveHomeQuote.toCardContent())
+      addAll(
+        summaryInfo.moveMtaQuotes.map { moveMtaQuote ->
+          moveMtaQuote.toCardContent()
+        }
+      )
+    }
+    val movingStartDate = summaryInfo.moveHomeQuote.startDate
+    val hasMtaQuotes: Boolean = summaryInfo.moveMtaQuotes.isNotEmpty()
+
+    val totalPremium: UiMoney? = moveIntentCost?.monthlyNet
+    val grossPremium: UiMoney? = moveIntentCost?.monthlyGross
     val shouldDisableInput: Boolean = isSubmitting ||
       submitError != null ||
       navigateToFinishedScreenWithDate != null
@@ -228,8 +238,60 @@ internal sealed interface SummaryUiState {
 
       data class WithMessage(val message: String) : SubmitError
     }
+
+    data class CardContent(
+      val displayName: String,
+      val subtitle: String?,
+      val contractGroup: ContractGroup?,
+      val insurableLimits: List<InsurableLimit>,
+      val documents: List<InsuranceVariantDocument>,
+      val premium: UiMoney,
+      val previousPremium: UiMoney?,
+      val costBreakdown: List<Pair<String, String>>,
+      val displayItems: List<DisplayItem>,
+    ) {
+      data class InsurableLimit(
+        val label: String,
+        val limit: String,
+        val description: String,
+      )
+
+      data class DisplayItem(
+        val title: String,
+        val value: String,
+        val subtitle: String?,
+      )
+    }
   }
 }
+
+private fun MovingFlowQuotes.Quote.toCardContent(): SummaryUiState.Content.CardContent = SummaryUiState.Content.CardContent(
+  displayName = productVariant.displayName,
+  subtitle = exposureName,
+  contractGroup = productVariant.contractGroup,
+  insurableLimits = productVariant.insurableLimits.map {
+    SummaryUiState.Content.CardContent.InsurableLimit(
+      label = it.label,
+      limit = it.limit,
+      description = it.description,
+    )
+  },
+  documents = productVariant.documents,
+  // todo add money here from the backend call which includes the price of the addon too
+  premium = premium,
+  previousPremium = previousPremium,
+  costBreakdown = discounts.map {
+    // todo add info here coming from the related addons too
+    it.displayName to it.discountValue
+  },
+  displayItems = displayItems.map {
+    DisplayItem(
+      title = it.title,
+      value = it.value,
+      subtitle = it.subtitle,
+    )
+  },
+)
 
 internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent

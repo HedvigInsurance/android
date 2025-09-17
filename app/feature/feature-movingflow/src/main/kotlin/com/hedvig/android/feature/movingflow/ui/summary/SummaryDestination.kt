@@ -139,8 +139,8 @@ private fun SummaryScreen(
       )
       Box(
         modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f),
+            .fillMaxWidth()
+            .weight(1f),
         propagateMinConstraints = true,
       ) {
         when (uiState) {
@@ -171,7 +171,7 @@ private fun SummaryScreen(
   onConfirmChanges: () -> Unit,
   onDismissSubmissionError: () -> Unit,
 ) {
-  val startDateFormatted = formatStartDate(content.summaryInfo.moveHomeQuote.startDate)
+  val startDateFormatted = formatStartDate(content.movingStartDate)
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
@@ -199,26 +199,31 @@ private fun SummaryScreen(
     var bottomAttachedContentHeightPx by remember { mutableIntStateOf(0) }
     Column(
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-        .verticalScroll(rememberScrollState()),
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(16.dp))
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        QuoteCard(content.summaryInfo.moveHomeQuote)
-        for (addonQuote in content.summaryInfo.moveHomeQuote.presentableRelatedAddonQuotes) {
-          AddonQuoteCard(
-            quote = addonQuote,
+        for (card in content.cards) {
+          QuoteCard(
+            displayName = card.displayName,
+            contractGroup = card.contractGroup,
+            insurableLimits = card.insurableLimits.map {
+              InsurableLimit(it.label, it.limit, it.description)
+            },
+            documents = card.documents,
+            subtitle = card.subtitle,
+            premium = card.premium,
+            previousPremium = card.previousPremium,
+            costBreakdown = card.costBreakdown,
+            displayItems = card.displayItems.map {
+              QuoteDisplayItem(it.title, it.value, it.subtitle)
+            },
           )
         }
-        for (mtaQuote in content.summaryInfo.moveMtaQuotes) {
-          QuoteCard(mtaQuote)
-          for (addonQuote in mtaQuote.relatedAddonQuotes) {
-            AddonQuoteCard(quote = addonQuote)
-          }
-        }
       }
-      if (content.summaryInfo.moveMtaQuotes.isNotEmpty()) {
+      if (content.hasMtaQuotes) {
         Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
       }
@@ -231,15 +236,15 @@ private fun SummaryScreen(
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier
-        .wrapContentHeight(Alignment.Bottom)
-        .onPlaced {
-          bottomAttachedContentHeightPx = it.size.height
-        },
+          .wrapContentHeight(Alignment.Bottom)
+          .onPlaced {
+              bottomAttachedContentHeightPx = it.size.height
+          },
     ) {
       Column(
         Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
@@ -262,8 +267,8 @@ private fun SummaryScreen(
                     textDecoration = TextDecoration.LineThrough,
                   ),
                   modifier = Modifier
-                    .wrapContentWidth(Alignment.End)
-                    .semantics { hideFromAccessibility() },
+                      .wrapContentWidth(Alignment.End)
+                      .semantics { hideFromAccessibility() },
                 )
               }
               AnimatedContent(
@@ -285,10 +290,10 @@ private fun SummaryScreen(
                   ),
                   textAlign = TextAlign.End,
                   modifier = Modifier
-                    .wrapContentWidth(Alignment.End)
-                    .semantics {
-                      contentDescription = voiceoverDescription
-                    },
+                      .wrapContentWidth(Alignment.End)
+                      .semantics {
+                          contentDescription = voiceoverDescription
+                      },
                 )
               }
             }
@@ -316,51 +321,6 @@ private fun SummaryScreen(
       }
     }
   }
-}
-
-@Composable
-private fun QuoteCard(quote: MovingFlowQuotes.Quote, modifier: Modifier = Modifier) {
-  QuoteCard(
-    productVariant = quote.productVariant,
-    subtitle = quote.exposureName,
-    premium = quote.premium,
-    previousPremium = quote.previousPremium,
-    costBreakdown = quote.discounts.map {
-      it.displayName to it.discountValue
-    },
-    displayItems = quote.displayItems.map {
-      QuoteDisplayItem(
-        title = it.title,
-        subtitle = it.subtitle,
-        value = it.value,
-      )
-    },
-    modifier = modifier,
-  )
-}
-
-@Composable
-private fun AddonQuoteCard(quote: MovingFlowQuotes.AddonQuote, modifier: Modifier = Modifier) {
-  QuoteCard(
-    displayName = quote.addonVariant.displayName,
-    contractGroup = null,
-    insurableLimits = emptyList(),
-    documents = quote.addonVariant.documents,
-    subtitle = quote.coverageDisplayName,
-    premium = quote.premium,
-    previousPremium = quote.previousPremium,
-    costBreakdown = quote.discounts.map {
-      it.displayName to it.discountValue
-    },
-    displayItems = quote.displayItems.map {
-      QuoteDisplayItem(
-        title = it.title,
-        subtitle = it.subtitle,
-        value = it.value,
-      )
-    },
-    modifier = modifier,
-  )
 }
 
 @Composable
@@ -539,8 +499,11 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       isSubmitting = false,
       submitError = null,
       navigateToFinishedScreenWithDate = null,
-      totalPremium = UiMoney(199.0, SEK),
-      grossPremium = UiMoney(249.0, SEK),
+      moveIntentCost = MoveIntentCost(
+        monthlyNet = UiMoney(199.0, SEK),
+        monthlyGross = UiMoney(249.0, SEK),
+        quoteCosts = emptyList(),
+      ),
     ),
   )
 }

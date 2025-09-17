@@ -52,7 +52,6 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -79,8 +78,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class QuoteDisplayItem(
   val title: String,
-  val subtitle: String?,
   val value: String,
+  val subtitle: String?,
 )
 
 @Composable
@@ -509,8 +508,8 @@ private fun PreviewQuoteCard() {
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",
-            subtitle = "subtitle$it",
             value = "value$it",
+            subtitle = "subtitle$it",
           )
         },
       )
