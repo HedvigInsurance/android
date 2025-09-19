@@ -624,6 +624,7 @@ called Agreements.
 """
 type Contract {
   id: UUID!
+  discountsDetails: ContractDiscountDetails!
   """
   The first date this insurance became active - i.e. the "from date" of the first agreement.
   """
@@ -723,6 +724,40 @@ type ContractCoInsured {
   Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
   """
   hasMissingInfo: Boolean!
+}
+type ContractDiscountDetails {
+  """
+   A text to show if an extra explanation is needed, e.g. Your bundle discount will activate when you have two active insurances.
+  """
+  discountsInfo: String
+  """
+   Contract level discounts.
+  """
+  discounts: [ContractDiscountItem!]!
+}
+type ContractDiscountItem {
+  """
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / FURRY / etc
+  """
+  campaignCode: String!
+  """
+   Longer explanation for the discount, ex. "50% discount for 6 months" or "15% bundle discount
+  """
+  description: String!
+  """
+   Status of the discount itself: active, terminated or pending (an active contract can have a pending bundle discount,
+  for example).
+  """
+  discountStatus: ContractDiscountStatus!
+  """
+   Describes discount status with date if needed: Expired 31 aug 2025 or Active or Pending or Valid until 31 mars 2026
+  """
+  statusDescription: String!
+}
+enum ContractDiscountStatus {
+  ACTIVE
+  PENDING
+  TERMINATED
 }
 type ContractSelfChangeBlocker {
   reason: String!
@@ -2011,11 +2046,11 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
   Cost breakdown. Addons never have discounts unique to them, but they inherit discounts from parent contract
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Shouldn't be used, addons don't have unique discounts")
   """
    When this addon is becoming active 
   """
@@ -2114,11 +2149,15 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2281,11 +2320,15 @@ type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2597,6 +2640,7 @@ type PendingContract {
   Calculated based on the pending agreement
   """
   cost: ItemCost!
+  discountsDetails: ContractDiscountDetails!
   """
   Same as `Contract.exposureDisplayName`.
   """
