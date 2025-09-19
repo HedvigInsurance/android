@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -65,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
@@ -81,6 +84,8 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DiscountCostBreakdown
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -196,6 +201,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       Spacer(Modifier.height(8.dp))
       CoverageCard(
         content.tiersInfo,
+        content.costBreakdown,
         content.totalPrice,
         onSelectCoverageOption,
         onSelectDeductibleOption,
@@ -230,13 +236,23 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 @Composable
 private fun CoverageCard(
   tiersInfo: TiersInfo,
+  costBreakdown: List<CostBreakdownEntry>?,
   totalPrice: UiMoney?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
   onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(modifier) {
+  HedvigCard(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+  ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       modifier = Modifier.padding(16.dp),
@@ -374,6 +390,10 @@ private fun CoverageCard(
           }
         }
       }
+      if (costBreakdown != null) {
+        DiscountCostBreakdown(costBreakdown)
+      }
+      HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
         endSlot = {
@@ -629,12 +649,19 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     uiState = Content(
       tiersInfo = TiersInfo(
         allOptions = allOptions,
+        mtaQuotes = emptyList(),
         coverageOptions = List(2) {
           CoverageInfo(it.toString(), "tierName#$it", "tierDescription#$it", UiMoney(it.toDouble(), SEK))
         },
         selectedCoverage = allOptions[0],
         selectedDeductible = allOptions[0],
       ),
+      costBreakdown = List(2) {
+        CostBreakdownEntry(
+          "title#$it",
+          UiMoney(it.toDouble(), SEK),
+        )
+      },
       totalPrice = UiMoney(100.0, UiCurrencyCode.SEK),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
