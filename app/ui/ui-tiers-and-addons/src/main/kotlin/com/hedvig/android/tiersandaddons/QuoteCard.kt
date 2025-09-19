@@ -1,5 +1,6 @@
 package com.hedvig.android.tiersandaddons
 
+import android.R.attr.elevation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn

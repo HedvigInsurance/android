@@ -75,6 +75,7 @@ fun HedvigCard(
   } else {
     Surface(
       shape = shape,
+      color = color,
       modifier = modifier,
     ) {
       content()
