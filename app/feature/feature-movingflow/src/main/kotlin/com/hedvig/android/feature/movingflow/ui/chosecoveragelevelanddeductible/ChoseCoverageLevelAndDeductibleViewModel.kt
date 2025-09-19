@@ -94,12 +94,14 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
             )
           }
         )
-        tiersInfo.selectedCoverage.relatedAddonQuotes.filter { !it.isExcludedByUser }.map {
-          CostBreakdownEntry(
-            it.exposureName,
-            it.premium,
-          )
-        }
+        addAll(
+          selectedCoverage.includedRelatedAddonQuotes.mapNotNull {
+            CostBreakdownEntry(
+              it.addonVariant.displayName,
+              it.previousPremium ?: return@mapNotNull null,
+            )
+          }
+        )
         addAll(
           moveIntentCost?.quoteCosts?.flatMap {
             it.discounts.map {
