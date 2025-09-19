@@ -70,6 +70,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 
@@ -118,7 +120,6 @@ fun QuoteCard(
   subtitle: String?,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  isExcluded: Boolean,
   costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
@@ -231,7 +232,7 @@ private fun QuoteDetailsBottomSheet(
   quoteDetailsBottomSheetState: HedvigBottomSheetState<Unit>,
   quoteDisplayItems: List<QuoteDisplayItem>,
   insurableLimits: List<InsurableLimit>,
-  insuranceVariantDocuments: List<InsuranceVariantDocument>,
+  insuranceVariantDocuments: List<DisplayDocument>,
 ) {
   HedvigBottomSheet(
     hedvigBottomSheetState = quoteDetailsBottomSheetState,
@@ -255,9 +256,26 @@ private fun QuoteDetailsBottomSheet(
 
 data class CostBreakdownEntry(
   val displayName: String,
-  val displayValue: String,
-  val hasStrikethrough: Boolean,
-)
+  val displayValue: DisplayValue,
+  val hasStrikethrough: Boolean = false,
+) {
+  constructor(
+    displayName: String,
+    displayValue: String,
+    hasStrikethrough: Boolean = false,
+  ) : this(displayName, Text(displayValue), hasStrikethrough)
+
+  constructor(
+    displayName: String,
+    displayValue: UiMoney,
+    hasStrikethrough: Boolean = false,
+  ) : this(displayName, Currency(displayValue), hasStrikethrough)
+
+  sealed interface DisplayValue {
+    data class Text(val value: String) : DisplayValue
+    data class Currency(val value: UiMoney) : DisplayValue
+  }
+}
 
 @Composable
 private fun QuoteIconAndTitle(
@@ -421,15 +439,19 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
         } else {
           LocalTextStyle.current
         }
+        val displayValue = when(val displayValue = item.displayValue) {
+          is Currency -> stringResource(R.string.TIER_FLOW_PRICE_LABEL_CURRENCY, displayValue.value)
+          is Text -> displayValue.value
+        }
         val strikeThroughDescription = stringResource(
           R.string.TALKBACK_PREVIOUSLY,
-          "${item.displayName}, ${item.displayValue}",
+          "${item.displayName}, $displayValue",
         )
         HorizontalItemsWithMaximumSpaceTaken(
           { HedvigText(item.displayName, style = style) },
           {
             HedvigText(
-              text = item.displayValue,
+              text = displayValue,
               textAlign = TextAlign.End,
               style = style,
             )
@@ -533,7 +555,6 @@ private fun PreviewQuoteCard() {
         subtitle = "subtitle",
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
-        isExcluded = false,
         costBreakdown = List(3) {
           CostBreakdownEntry(
             "#$it",

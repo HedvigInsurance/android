@@ -17,7 +17,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
@@ -35,6 +34,8 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
@@ -246,10 +247,10 @@ internal sealed interface SummaryUiState {
       val subtitle: String?,
       val contractGroup: ContractGroup?,
       val insurableLimits: List<InsurableLimit>,
-      val documents: List<InsuranceVariantDocument>,
+      val documents: List<DisplayDocument>,
       val premium: UiMoney,
       val previousPremium: UiMoney?,
-      val costBreakdown: List<Pair<String, String>>,
+      val costBreakdown: List<CostBreakdownEntry>,
       val displayItems: List<DisplayItem>,
     ) {
       data class InsurableLimit(
@@ -277,23 +278,43 @@ private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.Quote
         label = it.label,
         limit = it.limit,
         description = it.description,
-
       )
     },
-    documents = productVariant.documents,
+    documents = productVariant.documents.map {
+      DisplayDocument(
+        displayName = it.displayName,
+        url = it.url,
+      )
+    },
     premium = quoteCost?.monthlyNet ?: this.premium,
     previousPremium = quoteCost?.monthlyGross ?: this.previousPremium,
     costBreakdown = buildList {
-      add(productVariant.displayName to previousPremium.toString())
+      if (previousPremium != null) {
+        add(
+          CostBreakdownEntry(
+            productVariant.displayName,
+            previousPremium!!,
+          ),
+        )
+      }
       addAll(
-        includedRelatedAddonQuotes.map { addonQuote ->
-          addonQuote.exposureName to addonQuote.previousPremium.toString()
-        }
+        includedRelatedAddonQuotes.mapNotNull { addonQuote ->
+          CostBreakdownEntry(
+            addonQuote.exposureName,
+            addonQuote.previousPremium ?: return@mapNotNull null,
+          )
+        },
       )
       val discounts = quoteCost?.discounts?.map { discount ->
-        discount.displayName to discount.displayValue
+        CostBreakdownEntry(
+          discount.displayName,
+          discount.displayValue,
+        )
       } ?: discounts.map { discount ->
-        discount.displayName to discount.discountValue
+        CostBreakdownEntry(
+          discount.displayName,
+          discount.discountValue,
+        )
       }
       addAll(discounts)
     },
