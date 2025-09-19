@@ -643,6 +643,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR-kod</string>

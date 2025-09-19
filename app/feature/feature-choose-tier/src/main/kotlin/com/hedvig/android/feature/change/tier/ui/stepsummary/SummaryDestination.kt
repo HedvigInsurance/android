@@ -69,6 +69,8 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
@@ -251,21 +253,23 @@ private fun SummarySuccessScreen(
             )
             val netPriceVoiceDescription =
               stringResource(R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS, uiState.totalNet.getPerMonthDescription())
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                uiState.quote.newTotalCost.monthlyGross,
-              ),
-              textAlign = TextAlign.End,
-              style = LocalTextStyle.current.copy(
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                textDecoration = TextDecoration.LineThrough,
-              ),
-              modifier = Modifier.semantics {
-                contentDescription = grossPriceVoiceDescription
-              },
-            )
-            Spacer(Modifier.width(8.dp))
+            if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
+              HedvigText(
+                text = stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  uiState.quote.newTotalCost.monthlyGross,
+                ),
+                textAlign = TextAlign.End,
+                style = LocalTextStyle.current.copy(
+                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                  textDecoration = TextDecoration.LineThrough,
+                ),
+                modifier = Modifier.semantics {
+                  contentDescription = grossPriceVoiceDescription
+                },
+              )
+              Spacer(Modifier.width(8.dp))
+            }
             HedvigText(
               text = stringResource(
                 R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -340,11 +344,23 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     displayName = uiState.quote.productVariant.displayName,
     contractGroup = uiState.quote.productVariant.contractGroup,
     insurableLimits = uiState.quote.productVariant.insurableLimits,
-    documents = allDocuments,
+    documents = allDocuments.map {
+      DisplayDocument(it.displayName, it.url)
+    },
     subtitle = uiState.currentContractData.contractDisplaySubtitle,
     premium = uiState.quote.newTotalCost.monthlyNet,
-    previousPremium = uiState.quote.newTotalCost.monthlyGross,
-    costBreakdown = uiState.quote.costBreakdown,
+    previousPremium = if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
+      uiState.quote.newTotalCost.monthlyGross
+    } else {
+      null
+    },
+    costBreakdown = uiState.quote.costBreakdown.map {
+      CostBreakdownEntry(
+        it.first,
+        it.second,
+        false,
+      )
+    },
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,

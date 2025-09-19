@@ -643,6 +643,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Not selected</string>
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
+  <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
   <string name="TALKBACK_PRICE">Price</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR code</string>

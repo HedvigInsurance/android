@@ -11,6 +11,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -62,6 +63,8 @@ class CustomizeTravelAddonPresenterTest {
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
         summaryParamsToNavigateFurther = null,
+        currentTravelAddon = null,
+        chosenOptionPremiumExtra = UiMoney(0.0, UiCurrencyCode.SEK),
       ),
     ) {
       skipItems(1)
@@ -174,15 +177,17 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     ),
   ),
   addonSubtype = "45_DAYS",
-  price = UiMoney(
-    49.0,
-    UiCurrencyCode.SEK,
-  ),
   documents = listOf(),
+  displayNameLong = "Mock quote 45 days",
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(49.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(49.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
 )
 private val fakeTravelAddonQuote2 = TravelAddonQuote(
   displayName = "60 days",
-  addonId = "addonId1",
+  addonId = "addonId2",
   quoteId = "id",
   addonVariant = AddonVariant(
     termsVersion = "terms",
@@ -198,12 +203,14 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     ),
   ),
   displayDetails = listOf(),
-  addonSubtype = "45_DAYS",
-  price = UiMoney(
-    60.0,
-    UiCurrencyCode.SEK,
-  ),
+  addonSubtype = "60_DAYS",
   documents = listOf(),
+  displayNameLong = "Mock quote 60 days",
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
 )
 private val fakeTravelOfferOnlyOneOption = TravelAddonOffer(
   addonOptions = nonEmptyListOf(

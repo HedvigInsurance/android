@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -93,11 +96,15 @@ internal class CustomizeTravelAddonPresenter(
         },
         ifRight = { offer ->
           selectedOptionInDialog = offer.addonOptions[0]
+          val extra = updateExtra(offer.currentTravelAddon, selectedOptionInDialog)
           currentState = CustomizeTravelAddonState.Success(
             travelAddonOffer = offer,
             currentlyChosenOption = offer.addonOptions[0],
             currentlyChosenOptionInDialog = selectedOptionInDialog,
             summaryParamsToNavigateFurther = null,
+            // .currentlyChosenOption.itemCost.monthlyNet
+            chosenOptionPremiumExtra = extra,
+            currentTravelAddon = offer.currentTravelAddon,
           )
         },
       )
@@ -108,8 +115,21 @@ internal class CustomizeTravelAddonPresenter(
       is CustomizeTravelAddonState.Failure, is CustomizeTravelAddonState.Loading -> state
       is CustomizeTravelAddonState.Success -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,
+        chosenOptionPremiumExtra = updateExtra(state.currentTravelAddon, selectedOptionInDialog),
       )
     }
+  }
+}
+
+private fun updateExtra(currentTravelAddon: CurrentTravelAddon?, chosenAddonQuote: TravelAddonQuote?): UiMoney {
+  return if (chosenAddonQuote == null) {
+    // shouldn't happen
+    UiMoney(0.0, UiCurrencyCode.SEK)
+  } else if (currentTravelAddon == null) {
+    chosenAddonQuote.itemCost.monthlyNet
+  } else {
+    val sum = chosenAddonQuote.itemCost.monthlyNet.amount - currentTravelAddon.netPremium.amount
+    UiMoney(sum, chosenAddonQuote.itemCost.monthlyNet.currencyCode)
   }
 }
 
@@ -121,6 +141,8 @@ internal sealed interface CustomizeTravelAddonState {
     val currentlyChosenOption: TravelAddonQuote,
     val currentlyChosenOptionInDialog: TravelAddonQuote?,
     val summaryParamsToNavigateFurther: SummaryParameters?,
+    val chosenOptionPremiumExtra: UiMoney,
+    val currentTravelAddon: CurrentTravelAddon?,
   ) : CustomizeTravelAddonState
 
   data class Failure(val errorMessage: String? = null) : CustomizeTravelAddonState

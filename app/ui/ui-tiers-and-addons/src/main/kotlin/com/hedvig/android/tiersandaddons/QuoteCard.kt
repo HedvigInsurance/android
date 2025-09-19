@@ -49,8 +49,6 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
@@ -88,7 +86,7 @@ fun QuoteCard(
   subtitle: String,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  costBreakdown: List<Pair<String, String>>,
+  costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
 ) {
@@ -96,7 +94,12 @@ fun QuoteCard(
     displayName = productVariant.displayName,
     contractGroup = productVariant.contractGroup,
     insurableLimits = productVariant.insurableLimits,
-    documents = productVariant.documents,
+    documents = productVariant.documents.map {
+      DisplayDocument(
+        displayName = it.displayName,
+        url = it.url,
+      )
+    },
     subtitle = subtitle,
     premium = premium,
     previousPremium = previousPremium,
@@ -111,11 +114,12 @@ fun QuoteCard(
   displayName: String,
   contractGroup: ContractGroup?,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   subtitle: String?,
   premium: UiMoney,
   previousPremium: UiMoney?,
-  costBreakdown: List<Pair<String, String>>,
+  isExcluded: Boolean,
+  costBreakdown: List<CostBreakdownEntry>,
   displayItems: List<QuoteDisplayItem>,
   modifier: Modifier = Modifier,
 ) {
@@ -249,6 +253,12 @@ private fun QuoteDetailsBottomSheet(
   }
 }
 
+data class CostBreakdownEntry(
+  val displayName: String,
+  val displayValue: String,
+  val hasStrikethrough: Boolean,
+)
+
 @Composable
 private fun QuoteIconAndTitle(
   contractGroup: ContractGroup?,
@@ -301,7 +311,7 @@ private fun QuoteIconAndTitle(
 private fun QuoteDetails(
   displayItems: List<QuoteDisplayItem>,
   insurableLimits: List<InsurableLimit>,
-  documents: List<InsuranceVariantDocument>,
+  documents: List<DisplayDocument>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -396,20 +406,40 @@ private fun QuoteDetails(
   }
 }
 
+data class DisplayDocument(
+  val displayName: String,
+  val url: String,
+)
+
 @Composable
-fun DiscountCostBreakdown(costBreakdown: List<Pair<String, String>>, modifier: Modifier = Modifier) {
+fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Modifier = Modifier) {
   ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
       for (item in costBreakdown) {
+        val style = if (item.hasStrikethrough) {
+          LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough)
+        } else {
+          LocalTextStyle.current
+        }
+        val strikeThroughDescription = stringResource(
+          R.string.TALKBACK_PREVIOUSLY,
+          "${item.displayName}, ${item.displayValue}",
+        )
         HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(item.first) },
+          { HedvigText(item.displayName, style = style) },
           {
             HedvigText(
-              text = item.second,
+              text = item.displayValue,
               textAlign = TextAlign.End,
+              style = style,
             )
           },
           spaceBetween = 8.dp,
+          modifier = Modifier.semantics(mergeDescendants = true) {
+            if (item.hasStrikethrough) {
+              contentDescription = strikeThroughDescription
+            }
+          },
         )
       }
     }
@@ -495,16 +525,22 @@ private fun PreviewQuoteCard() {
           )
         },
         documents = List(3) {
-          InsuranceVariantDocument(
+          DisplayDocument(
             displayName = "displayName#$it",
             url = "url#$it",
-            type = GENERAL_TERMS,
           )
         },
         subtitle = "subtitle",
         premium = UiMoney(281.0, UiCurrencyCode.SEK),
         previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
-        costBreakdown = List(3) { "#$it" to "discount#$it" },
+        isExcluded = false,
+        costBreakdown = List(3) {
+          CostBreakdownEntry(
+            "#$it",
+            "discount#$it",
+            false,
+          )
+        },
         displayItems = List(5) {
           QuoteDisplayItem(
             title = "title$it",
