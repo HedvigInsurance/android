@@ -29,6 +29,15 @@ internal data class MovingFlowQuotes(
     val productVariant: ProductVariant
     val startDate: LocalDate
     val displayItems: List<DisplayItem>
+    val relatedAddonQuotes: List<AddonQuote>
+
+    val includedRelatedAddonQuotes
+      get() = relatedAddonQuotes.filter { addonQuote ->
+        when (addonQuote) {
+          is HomeAddonQuote -> !addonQuote.isExcludedByUser
+          is MtaAddonQuote -> true
+        }
+      }
   }
 
   @Serializable
@@ -41,14 +50,13 @@ internal data class MovingFlowQuotes(
     override val displayItems: List<DisplayItem>,
     override val exposureName: String,
     override val productVariant: ProductVariant,
+    override val relatedAddonQuotes: List<HomeAddonQuote>,
     val tierName: String,
     val tierLevel: Int,
     val tierDescription: String?,
     val deductible: Deductible?,
     val defaultChoice: Boolean,
-    val relatedAddonQuotes: List<HomeAddonQuote>,
   ) : Quote {
-    val presentableRelatedAddonQuotes = relatedAddonQuotes.filterNot(HomeAddonQuote::isExcludedByUser)
     val tierDisplayName = productVariant.displayTierName ?: tierName
 
     @Serializable
@@ -68,7 +76,7 @@ internal data class MovingFlowQuotes(
     override val startDate: LocalDate,
     override val discounts: List<ContractDiscount>,
     override val displayItems: List<DisplayItem>,
-    val relatedAddonQuotes: List<MtaAddonQuote>,
+    override val relatedAddonQuotes: List<MtaAddonQuote>,
   ) : Quote
 
   @Serializable
@@ -97,6 +105,7 @@ internal data class MovingFlowQuotes(
 
     @Serializable
     data class HomeAddonQuote(
+      val relatedQuoteId: String,
       override val addonId: AddonId,
       override val premium: UiMoney,
       override val previousPremium: UiMoney?,
@@ -151,19 +160,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
         exposureName = houseQuote.exposureName,
         productVariant = houseQuote.productVariant.toProductVariant(),
-        tierName = houseQuote.tierName,
-        tierLevel = houseQuote.tierLevel,
-        tierDescription = houseQuote.productVariant.tierDescription,
-        deductible = houseQuote.deductible?.let { deductible ->
-          Deductible(
-            amount = UiMoney.fromMoneyFragment(deductible.amount),
-            percentage = deductible.percentage.takeIf { it != 0 },
-            displayText = deductible.displayText,
-          )
-        },
-        defaultChoice = houseQuote.defaultChoice,
         relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
           HomeAddonQuote(
+            relatedQuoteId = houseQuote.id,
             addonId = AddonId(addon.addonId),
             premium = UiMoney.fromMoneyFragment(addon.cost.monthlyNet),
             previousPremium = UiMoney.fromMoneyFragment(addon.cost.monthlyGross).takeIf {
@@ -189,6 +188,17 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             coverageDisplayName = addon.coverageDisplayName,
           )
         },
+        tierName = houseQuote.tierName,
+        tierLevel = houseQuote.tierLevel,
+        tierDescription = houseQuote.productVariant.tierDescription,
+        deductible = houseQuote.deductible?.let { deductible ->
+          Deductible(
+            amount = UiMoney.fromMoneyFragment(deductible.amount),
+            percentage = deductible.percentage.takeIf { it != 0 },
+            displayText = deductible.displayText,
+          )
+        },
+        defaultChoice = houseQuote.defaultChoice,
       )
     },
     mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->

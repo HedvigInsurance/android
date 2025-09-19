@@ -617,12 +617,12 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         tierDescription = null,
         termsVersion = "termsVersion",
       ),
+      relatedAddonQuotes = emptyList(),
       tierName = "Pat Vance",
       tierLevel = 1299,
       tierDescription = "tierDescription#$it",
       deductible = null,
       defaultChoice = false,
-      relatedAddonQuotes = emptyList(),
     )
   }
   ChoseCoverageLevelAndDeductibleScreen(

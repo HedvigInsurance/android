@@ -149,7 +149,7 @@ internal class MovingFlowRepository(
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(
         movingFlowQuotes = existingState.movingFlowQuotes?.copy(
-          existingState.movingFlowQuotes.homeQuotes.map { homeQuote ->
+          homeQuotes = existingState.movingFlowQuotes.homeQuotes.map { homeQuote ->
             homeQuote.copy(
               relatedAddonQuotes = homeQuote.relatedAddonQuotes.map { addonQuote ->
                 if (addonQuote.addonId == addonId) {

@@ -408,13 +408,13 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           id = "id",
           premium = UiMoney(99.0, SEK),
           previousPremium = UiMoney(199.0, SEK),
+          startDate = startDate,
           discounts = List(5) {
             MovingFlowQuotes.ContractDiscount(
               displayName = "displayName#$it",
               discountValue = "20.0 SEK",
             )
           },
-          startDate = startDate,
           displayItems = listOf(
             DisplayItem(
               title = "display title",
@@ -424,13 +424,9 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           ),
           exposureName = "exposureName",
           productVariant = productVariant,
-          tierName = "tierName",
-          tierLevel = 1,
-          tierDescription = "tierDescription",
-          deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
-          defaultChoice = false,
           relatedAddonQuotes = List(1) {
             HomeAddonQuote(
+              relatedQuoteId = "id",
               addonId = AddonId(it.toString()),
               premium = UiMoney(129.0, SEK),
               previousPremium = UiMoney(139.0, SEK),
@@ -454,6 +450,11 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               coverageDisplayName = "45 Days",
             )
           },
+          tierName = "tierName",
+          tierLevel = 1,
+          tierDescription = "tierDescription",
+          deductible = Deductible(UiMoney(1500.0, SEK), null, "displayText"),
+          defaultChoice = false,
         ),
         moveMtaQuotes = listOf(
           MoveMtaQuote(

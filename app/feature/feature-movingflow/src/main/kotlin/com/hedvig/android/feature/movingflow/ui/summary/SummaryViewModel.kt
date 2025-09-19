@@ -215,13 +215,15 @@ internal sealed interface SummaryUiState {
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
     private val moveIntentCost: MoveIntentCost?,
-    ) : SummaryUiState {
+  ) : SummaryUiState {
     val cards: List<CardContent> = buildList {
-      add(summaryInfo.moveHomeQuote.toCardContent())
+      val moveHomeQuote = summaryInfo.moveHomeQuote
+      val quoteCosts = moveIntentCost?.quoteCosts
+      add(moveHomeQuote.toCardContent(quoteCosts?.firstOrNull { it.id == moveHomeQuote.id }))
       addAll(
         summaryInfo.moveMtaQuotes.map { moveMtaQuote ->
-          moveMtaQuote.toCardContent()
-        }
+          moveMtaQuote.toCardContent(null)
+        },
       )
     }
     val movingStartDate = summaryInfo.moveHomeQuote.startDate
@@ -265,33 +267,44 @@ internal sealed interface SummaryUiState {
   }
 }
 
-private fun MovingFlowQuotes.Quote.toCardContent(): SummaryUiState.Content.CardContent = SummaryUiState.Content.CardContent(
-  displayName = productVariant.displayName,
-  subtitle = exposureName,
-  contractGroup = productVariant.contractGroup,
-  insurableLimits = productVariant.insurableLimits.map {
-    SummaryUiState.Content.CardContent.InsurableLimit(
-      label = it.label,
-      limit = it.limit,
-      description = it.description,
-    )
-  },
-  documents = productVariant.documents,
-  // todo add money here from the backend call which includes the price of the addon too
-  premium = premium,
-  previousPremium = previousPremium,
-  costBreakdown = discounts.map {
-    // todo add info here coming from the related addons too
-    it.displayName to it.discountValue
-  },
-  displayItems = displayItems.map {
-    DisplayItem(
-      title = it.title,
-      value = it.value,
-      subtitle = it.subtitle,
-    )
-  },
-)
+private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.QuoteCost?): SummaryUiState.Content.CardContent =
+  SummaryUiState.Content.CardContent(
+    displayName = productVariant.displayName,
+    subtitle = exposureName,
+    contractGroup = productVariant.contractGroup,
+    insurableLimits = productVariant.insurableLimits.map {
+      SummaryUiState.Content.CardContent.InsurableLimit(
+        label = it.label,
+        limit = it.limit,
+        description = it.description,
+
+      )
+    },
+    documents = productVariant.documents,
+    premium = quoteCost?.monthlyNet ?: this.premium,
+    previousPremium = quoteCost?.monthlyGross ?: this.previousPremium,
+    costBreakdown = buildList {
+      add(productVariant.displayName to previousPremium.toString())
+      addAll(
+        includedRelatedAddonQuotes.map { addonQuote ->
+          addonQuote.exposureName to addonQuote.previousPremium.toString()
+        }
+      )
+      val discounts = quoteCost?.discounts?.map { discount ->
+        discount.displayName to discount.displayValue
+      } ?: discounts.map { discount ->
+        discount.displayName to discount.discountValue
+      }
+      addAll(discounts)
+    },
+    displayItems = displayItems.map {
+      DisplayItem(
+        title = it.title,
+        value = it.value,
+        subtitle = it.subtitle,
+      )
+    },
+  )
 
 internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent
