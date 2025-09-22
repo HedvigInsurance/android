@@ -35,10 +35,27 @@ internal class GetMoveIntentCostUseCase(
           .safeFlow(::ErrorMessage)
           .map { response ->
             either {
-              val totalCost = response.bind().moveIntentCost.totalCost
+              val moveIntentCost = response.bind().moveIntentCost
+              val totalCost = moveIntentCost.totalCost
+              val quoteCosts = moveIntentCost.quoteCosts
               MoveIntentCost(
                 monthlyNet = UiMoney.fromMoneyFragment(totalCost.monthlyNet),
                 monthlyGross = UiMoney.fromMoneyFragment(totalCost.monthlyGross),
+                quoteCosts = quoteCosts.map { quoteCost ->
+                  MoveIntentCost.QuoteCost(
+                    id = quoteCost.quoteId,
+                    monthlyNet = UiMoney.fromMoneyFragment(quoteCost.cost.monthlyNet),
+                    monthlyGross = UiMoney.fromMoneyFragment(quoteCost.cost.monthlyGross),
+                    discounts = quoteCost.cost.discounts.map { discount ->
+                      MoveIntentCost.QuoteCost.Discount(
+                        displayName = discount.displayName,
+                        displayValue = discount.displayValue,
+                        explanation = discount.explanation,
+                        campaignCode = discount.campaignCode,
+                      )
+                    },
+                  )
+                },
               )
             }
           }
@@ -70,4 +87,23 @@ internal class GetMoveIntentCostUseCase(
 internal data class MoveIntentCost(
   val monthlyNet: UiMoney,
   val monthlyGross: UiMoney,
-)
+  val quoteCosts: List<QuoteCost>,
+) {
+  data class QuoteCost(
+    val id: String,
+    val monthlyNet: UiMoney,
+    val monthlyGross: UiMoney,
+    val discounts: List<Discount>,
+  ) {
+    data class Discount(
+      //Short name for list display, ex. "50% puppy discount"
+      val displayName: String,
+      //Short value for list display, ex. 50% 99 kr
+      val displayValue: String,
+      //Longer explanation, ex. 50% discount for 6 months
+      val explanation: String,
+      //Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+      val campaignCode: String,
+    )
+  }
+}

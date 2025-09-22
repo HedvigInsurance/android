@@ -56,7 +56,6 @@ import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -233,7 +232,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       locale,
     ).format(uiState.activationDate.toJavaLocalDate())
   }
-  val state = rememberQuoteCardState()
   val premium: UiMoney = uiState.quote.itemCost.monthlyNet
   val previousPremium: UiMoney? = if (uiState.currentTravelAddon != null) {
     null
@@ -295,7 +293,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
       formattedDate,
     ),
-    isExcluded = false,
     premium = premium,
     costBreakdown = costBreakdown,
     previousPremium = previousPremium,
@@ -307,7 +304,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       )
     },
     modifier = modifier,
-    quoteCardState = state,
     displayName = uiState.offerDisplayName,
     contractGroup = null,
     insurableLimits = emptyList(),

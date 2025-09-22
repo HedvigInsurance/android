@@ -8,5 +8,22 @@ query MoveIntentCost($intentId: ID!, $selectedHomeQuoteId: ID!, $selectedAddonId
         ...MoneyFragment
       }
     }
+    quoteCosts {
+      quoteId
+      cost {
+        monthlyNet {
+          ...MoneyFragment
+        }
+        monthlyGross {
+          ...MoneyFragment
+        }
+        discounts {
+          displayName
+          displayValue
+          explanation
+          campaignCode
+        }
+      }
+    }
   }
 }
