@@ -1,11 +1,36 @@
 query Discounts {
   currentMember {
-    redeemedCampaigns {
-      code
-      description
-      expiresAt
+    activeContracts {
       id
-      type
+      currentAgreement {
+        productVariant {
+          displayNameShort
+        }
+      }
+      exposureDisplayNameShort
+      discountsDetails {
+        ...DiscountsDetailsFragment
+      }
     }
+    pendingContracts {
+      id
+      exposureDisplayNameShort
+      productVariant {
+        displayNameShort
+      }
+      discountsDetails {
+        ...DiscountsDetailsFragment
+      }
+    }
+  }
+}
+
+fragment DiscountsDetailsFragment on ContractDiscountDetails {
+  discountsInfo
+  discounts {
+    campaignCode
+    description
+    discountStatus
+    statusDescription
   }
 }

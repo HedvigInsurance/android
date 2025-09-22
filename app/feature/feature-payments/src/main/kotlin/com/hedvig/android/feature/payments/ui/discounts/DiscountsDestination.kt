@@ -54,11 +54,9 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun DiscountsDestination(
@@ -101,11 +99,9 @@ private fun DiscountsScreen(
           .verticalScroll(rememberScrollState())
           .weight(1f),
       ) {
-        val discounts = uiState.discounts
-        if (!discounts.isEmpty()) {
-          Spacer(modifier = Modifier.height(24.dp))
-          DiscountRows(discounts)
-          Spacer(modifier = Modifier.height(16.dp))
+        val affectedContracts = uiState.discountedContracts
+        if (!affectedContracts.isEmpty()) {
+          DiscountRows(affectedContracts)
         }
         if (uiState.foreverInformation != null) {
           Spacer(modifier = Modifier.height(24.dp))
@@ -285,37 +281,7 @@ private fun PaymentDetailsScreenPreview(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discounts =
-            listOf(
-              Discount(
-                "MYDISCOUNT1",
-                "description",
-                Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT2",
-                "description",
-                Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT3",
-                "description",
-                Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-              Discount(
-                "MYDISCOUNT3",
-                "description",
-                Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                UiMoney(10.0, UiCurrencyCode.SEK),
-                false,
-              ),
-            ),
+          discountedContracts = mockDiscountedContracts,
           isLoadingPaymentOverView = isLoading,
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
@@ -347,7 +313,7 @@ private fun PaymentDetailsScreenFailurePreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          discounts = emptyList(),
+          discountedContracts = emptyList(),
           isLoadingPaymentOverView = false,
           error = true,
           foreverInformation = null,
