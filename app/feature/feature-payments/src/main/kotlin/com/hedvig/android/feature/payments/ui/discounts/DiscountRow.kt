@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -22,14 +23,13 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.data.DiscountsDetails
 import com.hedvig.android.feature.payments.discountsPreviewData
 import hedvig.resources.R
-import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun DiscountRows(
@@ -60,6 +60,13 @@ internal fun DiscountRows(
         )
       }
       Spacer(modifier = Modifier.height(16.dp))
+      if (contract.discountsDetails.discountInfo != null) {
+        HedvigNotificationCard(
+          contract.discountsDetails.discountInfo,
+          priority = NotificationDefaults.NotificationPriority.Info,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+      }
     }
   }
 }
