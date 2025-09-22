@@ -124,7 +124,7 @@ internal fun DiscountRow(
               HedvigText(
                 text = stringResource(
                   R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  "-$discountAmount",
+                  "$discountAmount",
                 ),
                 color = if (discountIsExpired) {
                   HedvigTheme.colorScheme.textDisabled
