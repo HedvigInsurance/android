@@ -380,6 +380,7 @@
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Make sure we have the right contact info in case we need to reach you.</string>
+  <string name="MOVING_FLOW_ADDON_REMOVE_OPTION">No extra coverage</string>
   <string name="MOVING_FLOW_BODY">Which insurance do you want to update the address for?</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO">This addon can be removed by %1$s.</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO_LINK_TEXT">contacting support</string>
@@ -642,6 +643,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Not selected</string>
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
+  <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
   <string name="TALKBACK_PRICE">Price</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR code</string>
@@ -724,6 +726,7 @@
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Your previous price %1$s</string>
   <string name="TIER_FLOW_PRICE_LABEL">from %s SEK/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mo</string>
   <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">From %s/mo</string>
   <string name="TIER_FLOW_PROCESSING">Fetching coverage levels...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Answers to our most frequently asked questions.</string>
@@ -744,8 +747,6 @@
   <string name="TIER_FLOW_SUMMARY_TITLE">Summary</string>
   <string name="TIER_FLOW_TITLE">Customize your coverage</string>
   <string name="TIER_FLOW_TOTAL">Total</string>
-  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVAL_LABEL">Travel protection</string>
-  <string name="TIER_FLOW_TRAVEL_ADDON_REMOVE_OPTION">No extra travel protection</string>
   <string name="TOAST.NEW_OFFER">New offer</string>
   <string name="TOAST.READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>

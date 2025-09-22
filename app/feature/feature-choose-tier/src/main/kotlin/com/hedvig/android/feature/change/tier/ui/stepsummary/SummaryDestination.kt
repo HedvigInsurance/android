@@ -69,6 +69,8 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import com.hedvig.android.tiersandaddons.rememberQuoteCardState
@@ -344,7 +346,13 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     subtitle = uiState.currentContractData.contractDisplaySubtitle,
     isExcluded = false,
     premium = uiState.quote.newTotalCost.monthlyNet,
-    costBreakdown = uiState.quote.costBreakdown,
+    costBreakdown = uiState.quote.costBreakdown.map {
+      CostBreakdownEntry(
+        it.first,
+        it.second,
+        false,
+      )
+    },
     previousPremium =
       if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
         uiState.quote.newTotalCost.monthlyGross
@@ -363,7 +371,9 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     displayName = uiState.quote.productVariant.displayName,
     contractGroup = uiState.quote.productVariant.contractGroup,
     insurableLimits = uiState.quote.productVariant.insurableLimits,
-    documents = allDocuments,
+    documents = allDocuments.map {
+      DisplayDocument(it.displayName, it.url)
+    },
   )
 }
 

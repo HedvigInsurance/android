@@ -7,6 +7,7 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
@@ -14,7 +15,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlin.String
 import kotlinx.coroutines.flow.first
 import octopus.UpsellAddonOfferMutation
 
@@ -76,7 +76,6 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       quoteId = it.quoteId,
       addonId = it.addonId,
       displayName = it.displayName,
-      price = UiMoney.fromMoneyFragment(it.premium),
       displayDetails = it.displayItems.map { item ->
         item.displayTitle to item.displayValue
       },
@@ -87,6 +86,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
           doc.url,
         )
       },
+      displayNameLong = it.displayNameLong,
+      itemCost = ItemCost.fromItemCostFragment(it.itemCost),
     )
   }
 }
@@ -95,10 +96,11 @@ private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAd
   CurrentTravelAddon? {
   return this?.let {
     CurrentTravelAddon(
-      price = UiMoney.fromMoneyFragment(premium),
       displayDetails = displayItems.map {
         it.displayTitle to it.displayValue
       },
+      displayNameLong = displayNameLong,
+      netPremium = UiMoney.fromMoneyFragment(netPremium),
     )
   }
 }
