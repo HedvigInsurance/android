@@ -246,6 +246,10 @@ type Cart {
   """
   cost: CartCost!
   """
+  Bundle discount information for this cart
+  """
+  bundleDiscount: CartBundleDiscountInfo!
+  """
   If false, campaigns cannot be added to this cart.
   """
   campaignsEnabled: Boolean!
@@ -259,6 +263,19 @@ type Cart {
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
   redeemedCampaignV2: RedeemedCampaignV2
+}
+"""
+Bundle discount information for a cart
+"""
+type CartBundleDiscountInfo {
+  """
+  Whether the cart currently has bundle discount active
+  """
+  hasBundleDiscount: Boolean!
+  """
+  Number of products in cart that are eligible for bundle discount
+  """
+  eligibleProductCount: Int
 }
 type CartCost {
   """
@@ -485,6 +502,7 @@ type ChatMessagePage {
 enum ChatMessageSender {
   MEMBER
   HEDVIG
+  AUTOMATION
 }
 type ChatMessageText implements ChatMessage {
   id: ID!
@@ -2046,11 +2064,11 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
   Cost breakdown. Addons never have discounts unique to them, but they inherit discounts from parent contract
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Shouldn't be used, addons don't have unique discounts")
   """
    When this addon is becoming active 
   """
@@ -2149,11 +2167,15 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2316,11 +2338,15 @@ type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2842,6 +2868,10 @@ type Product {
   """
   multiple: Boolean
   """
+  Bundle discount information for this product
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
@@ -2936,6 +2966,15 @@ type ProductOfferAddon {
   States whether this is attached to the offer or not, affected by `Mutation.productOfferAddonsSelect`.
   """
   isSelected: Boolean!
+}
+"""
+Bundle discount information for a product offer
+"""
+type ProductOfferBundleDiscountInfo {
+  """
+  Whether the product is eligible for bundle discount
+  """
+  isEligible: Boolean!
 }
 type ProductOfferCost {
   """
