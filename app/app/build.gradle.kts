@@ -192,6 +192,7 @@ dependencies {
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
+  implementation(projects.featureFlagsAndroid)
   implementation(projects.featureFlagsPublic)
   implementation(projects.featureForceUpgrade)
   implementation(projects.featureForever)

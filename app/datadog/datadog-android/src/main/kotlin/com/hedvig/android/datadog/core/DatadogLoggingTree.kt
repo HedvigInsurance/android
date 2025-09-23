@@ -10,10 +10,14 @@ internal class DatadogLoggingTree(
   }
 
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-    val tagFormatted = tag?.let { "[$tag]" }.orEmpty()
+    val tagFormatted = tag?.let { "[$tag]" }
     logger.log(
       priority = priority,
-      message = "$tagFormatted $message",
+      message = if (tagFormatted != null) {
+        "$tagFormatted $message"
+      } else {
+        message
+      },
       throwable = t,
     )
   }
