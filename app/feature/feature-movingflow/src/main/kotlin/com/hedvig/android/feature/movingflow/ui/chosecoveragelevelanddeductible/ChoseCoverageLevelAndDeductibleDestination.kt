@@ -614,7 +614,10 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         amount = (it + 1) * 100.0,
         currencyCode = SEK,
       ),
-      previousPremium = null,
+      grossPremium = UiMoney(
+        amount = (it + 1) * 110.0,
+        currencyCode = SEK,
+      ),
       startDate = LocalDate.parse("2025-01-01"),
       discounts = emptyList(),
       displayItems = List(2) {

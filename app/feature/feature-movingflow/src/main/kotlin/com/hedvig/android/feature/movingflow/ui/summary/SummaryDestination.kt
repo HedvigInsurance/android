@@ -88,8 +88,6 @@ import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.R
@@ -387,7 +385,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
     termsVersion = "termsVersion",
   )
   private val addonVariant = AddonVariant(
-    termsVersion = "terrrms",
+    termsVersion = "termsVersion",
     displayName = "Addon 1",
     product = "product",
     documents = listOf(
@@ -409,7 +407,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveHomeQuote = MoveHomeQuote(
           id = "id",
           premium = UiMoney(99.0, SEK),
-          previousPremium = UiMoney(199.0, SEK),
+          grossPremium = UiMoney(199.0, SEK),
           startDate = startDate,
           discounts = List(5) {
             MovingFlowQuotes.ContractDiscount(
@@ -431,14 +429,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               relatedQuoteId = "id",
               addonId = AddonId(it.toString()),
               premium = UiMoney(129.0, SEK),
-              previousPremium = UiMoney(139.0, SEK),
               startDate = startDate,
-              discounts = listOf(
-                MovingFlowQuotes.ContractDiscount(
-                  displayName = "displayName",
-                  discountValue = "10.0 SEK",
-                ),
-              ),
               displayItems = listOf(
                 DisplayItem(
                   title = "display title",
@@ -461,7 +452,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveMtaQuotes = listOf(
           MoveMtaQuote(
             premium = UiMoney(49.0, SEK),
-            previousPremium = null,
+            grossPremium = UiMoney(49.0, SEK),
             exposureName = "exposureName",
             productVariant = productVariant,
             startDate = startDate,
@@ -471,7 +462,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           ),
           MoveMtaQuote(
             premium = UiMoney(23.0, SEK),
-            previousPremium = null,
+            grossPremium = UiMoney(23.0, SEK),
             discounts = emptyList(),
             exposureName = "exposureName",
             productVariant = productVariant,
@@ -481,8 +472,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               MtaAddonQuote(
                 addonId = AddonId("1"),
                 premium = UiMoney(30.0, SEK),
-                previousPremium = null,
-                discounts = emptyList(),
                 startDate = startDate,
                 displayItems = listOf(
                   DisplayItem(

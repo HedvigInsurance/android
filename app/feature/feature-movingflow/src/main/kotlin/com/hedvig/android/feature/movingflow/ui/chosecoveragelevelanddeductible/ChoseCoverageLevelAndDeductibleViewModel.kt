@@ -11,7 +11,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import arrow.core.compareTo
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.AddonId
@@ -78,7 +77,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
     val costBreakdown: List<CostBreakdownEntry>? = tiersInfo.map { tiersInfo ->
       val selectedCoverage = tiersInfo?.selectedCoverage ?: return@map null
-      val previousPremium = selectedCoverage.previousPremium ?: return@map null
+      val previousPremium = selectedCoverage.grossPremium
       buildList<CostBreakdownEntry> {
         add(
           CostBreakdownEntry(
@@ -87,20 +86,20 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           ),
         )
         addAll(
-          tiersInfo.mtaQuotes.mapNotNull {
-            CostBreakdownEntry(
-              it.productVariant.displayName,
-              it.previousPremium ?: return@mapNotNull null,
-            )
-          }
+            tiersInfo.mtaQuotes.map {
+                CostBreakdownEntry(
+                    it.productVariant.displayName,
+                    it.grossPremium,
+                )
+            },
         )
         addAll(
-          selectedCoverage.includedRelatedAddonQuotes.mapNotNull {
-            CostBreakdownEntry(
-              it.addonVariant.displayName,
-              it.previousPremium ?: return@mapNotNull null,
-            )
-          }
+            selectedCoverage.includedRelatedAddonQuotes.map {
+                CostBreakdownEntry(
+                    it.addonVariant.displayName,
+                    it.premium,
+                )
+            },
         )
         addAll(
           moveIntentCost?.quoteCosts?.flatMap {
@@ -297,7 +296,13 @@ internal data class TiersInfo(
       if (deductible == null) {
         NoOptions
       } else {
-        OneOption(DeductibleOption(selectedCoverage.id, selectedCoverage.premium, deductible))
+        OneOption(
+            DeductibleOption(
+                selectedCoverage.id,
+                selectedCoverage.grossPremium,
+                deductible,
+            ),
+        )
       }
     } else {
       val allOptionsWithDeductible = moveHomeQuotes.filter { it.deductible != null }
@@ -305,12 +310,12 @@ internal data class TiersInfo(
         0 -> NoOptions
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
-          OneOption(DeductibleOption(onlyOption.id, onlyOption.premium, onlyOption.deductible!!))
+          OneOption(DeductibleOption(onlyOption.id, onlyOption.grossPremium, onlyOption.deductible!!))
         }
 
         else -> MutlipleOptions(
           allOptionsWithDeductible.map { moveHomeQuote ->
-            DeductibleOption(moveHomeQuote.id, moveHomeQuote.premium, moveHomeQuote.deductible!!)
+            DeductibleOption(moveHomeQuote.id, moveHomeQuote.grossPremium, moveHomeQuote.deductible!!)
           },
         )
       }
