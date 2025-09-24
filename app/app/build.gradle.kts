@@ -214,6 +214,7 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
+  implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)

@@ -1985,6 +1985,12 @@ input MemberUpdateEurobonusNumberInput {
 input MemberUpdateLanguageInput {
   ietfLanguageTag: String!
 }
+""" All fields should be non-empty """
+input MemberLogDeviceInput {
+  os: String!
+  brand: String!
+  model: String!
+}
 input MemberUpdatePhoneNumberInput {
   phoneNumber: String!
 }
@@ -2440,6 +2446,7 @@ type Mutation {
   memberUpdateLanguage(input: MemberUpdateLanguageInput!): MemberMutationOutput!
   memberDeletionRequest: UserError
   memberUpdateSubscriptionPreference(subscribe: Boolean): UserError
+  memberLogDevice(input: MemberLogDeviceInput!): UserError
   """
   Mutation that updates member email and phone number, or confirms them if they have not changed.
   """
