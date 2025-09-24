@@ -280,7 +280,9 @@ private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.Quote
         description = it.description,
       )
     },
-    documents = productVariant.documents.map {
+    documents = productVariant.documents.plus(
+      includedRelatedAddonQuotes.flatMap { it.addonVariant.documents },
+    ).map {
       DisplayDocument(
         displayName = it.displayName,
         url = it.url,
