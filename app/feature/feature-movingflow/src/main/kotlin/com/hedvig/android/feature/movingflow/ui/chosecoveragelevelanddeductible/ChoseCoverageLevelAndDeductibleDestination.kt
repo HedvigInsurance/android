@@ -193,7 +193,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   Column(Modifier.padding(horizontal = 16.dp)) {
     FlowHeading(
       stringResource(R.string.TIER_FLOW_TITLE),
-      stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+      stringResource(R.string.TIER_FLOW_SUBTITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
