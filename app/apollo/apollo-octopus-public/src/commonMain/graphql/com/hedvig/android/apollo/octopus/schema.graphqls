@@ -1878,6 +1878,14 @@ type MemberInsuranceCost {
   freeUntil: Date
 }
 """
+ All fields should be non-empty 
+"""
+input MemberLogDeviceInput {
+  os: String!
+  brand: String!
+  model: String!
+}
+"""
 Container for mutations that refer to the currently authenticated member.
 """
 type MemberMutationOutput {
@@ -2440,6 +2448,7 @@ type Mutation {
   memberUpdateLanguage(input: MemberUpdateLanguageInput!): MemberMutationOutput!
   memberDeletionRequest: UserError
   memberUpdateSubscriptionPreference(subscribe: Boolean): UserError
+  memberLogDevice(input: MemberLogDeviceInput!): UserError
   """
   Mutation that updates member email and phone number, or confirms them if they have not changed.
   """
