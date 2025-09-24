@@ -1878,6 +1878,14 @@ type MemberInsuranceCost {
   freeUntil: Date
 }
 """
+ All fields should be non-empty 
+"""
+input MemberLogDeviceInput {
+  os: String!
+  brand: String!
+  model: String!
+}
+"""
 Container for mutations that refer to the currently authenticated member.
 """
 type MemberMutationOutput {
@@ -1984,12 +1992,6 @@ input MemberUpdateEurobonusNumberInput {
 }
 input MemberUpdateLanguageInput {
   ietfLanguageTag: String!
-}
-""" All fields should be non-empty """
-input MemberLogDeviceInput {
-  os: String!
-  brand: String!
-  model: String!
 }
 input MemberUpdatePhoneNumberInput {
   phoneNumber: String!
