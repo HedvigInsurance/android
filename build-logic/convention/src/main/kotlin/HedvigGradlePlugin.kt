@@ -119,9 +119,11 @@ private fun DependencyHandlerScope.configureCommonDependencies(project: Project,
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
   val koinBom = libs.koin.bom
   val composeBom = libs.androidx.compose.bom
+  val okhttpBom = libs.okhttp.bom
   dependencies {
     add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
+    add(configurationName, platform(okhttpBom))
 
     with(project.name) {
       // Logging project needs to depend on this one, so we make an exception here
