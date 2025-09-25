@@ -14,7 +14,6 @@ internal class DeviceNameLoggingAuthListener(
     val androidInfoProvider = AndroidInfoProvider()
     apolloClient.mutation(
       MemberLogDeviceMutation(
-        os = androidInfoProvider.osVersion,
         brand = androidInfoProvider.deviceBrand,
         model = androidInfoProvider.deviceName,
       )

@@ -1,5 +1,5 @@
-mutation MemberLogDevice($os: String!, $brand: String!, $model: String!) {
-  memberLogDevice(input: {os: $os,brand: $brand,model: $model}) {
+mutation MemberLogDevice($brand: String!, $model: String!) {
+  memberLogDevice(input: {os: "Android", brand: $brand, model: $model}) {
     message
   }
 }
