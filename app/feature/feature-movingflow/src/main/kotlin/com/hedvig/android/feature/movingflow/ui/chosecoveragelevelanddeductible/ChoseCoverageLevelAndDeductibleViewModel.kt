@@ -14,6 +14,7 @@ import arrow.core.Some
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.AddonId
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
@@ -85,12 +86,12 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           ),
         )
         addAll(
-            selectedCoverage.includedRelatedAddonQuotes.map {
-                CostBreakdownEntry(
-                    it.addonVariant.displayName,
-                    it.premium,
-                )
-            },
+          selectedCoverage.includedRelatedAddonQuotes.map {
+            CostBreakdownEntry(
+              it.addonVariant.displayName,
+              it.premium,
+            )
+          },
         )
         addAll(
           moveIntentCost?.quoteCosts?.firstOrNull { it.id == selectedCoverage.id }?.let {
@@ -182,14 +183,15 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           .groupBy { it.tierName }
           .mapNotNull { (_, moveHomeQuotes) ->
             val alreadySelectedCoverage = moveHomeQuotes.firstOrNull { it.id == initiallySelectedHomeQuote?.id }
-            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.netPremiumWithAddons.amount }
+            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.premium.amount }
             val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
             if (moveHomeQuote == null) return@mapNotNull null
             CoverageInfo(
-              moveHomeQuote.id,
-              moveHomeQuote.tierDisplayName,
-              moveHomeQuote.tierDescription,
-              minPriceMoveQuote?.netPremiumWithAddons ?: moveHomeQuote.netPremiumWithAddons,
+              moveHomeQuoteId = moveHomeQuote.id,
+              tierName = moveHomeQuote.tierDisplayName,
+              tierDescription = moveHomeQuote.tierDescription,
+              minimumPremiumForCoverage = minPriceMoveQuote?.premium
+                ?: moveHomeQuote.premium,
             )
           }
           .toList()
@@ -294,13 +296,7 @@ internal data class TiersInfo(
       if (deductible == null) {
         NoOptions
       } else {
-        OneOption(
-            DeductibleOption(
-                selectedCoverage.id,
-                selectedCoverage.grossPremiumWithAddons,
-                deductible,
-            ),
-        )
+        OneOption(selectedCoverage.toDeductibleOption(deductible))
       }
     } else {
       val allOptionsWithDeductible = moveHomeQuotes.filter { it.deductible != null }
@@ -308,12 +304,12 @@ internal data class TiersInfo(
         0 -> NoOptions
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
-          OneOption(DeductibleOption(onlyOption.id, onlyOption.grossPremiumWithAddons, onlyOption.deductible!!))
+          OneOption(onlyOption.toDeductibleOption(onlyOption.deductible!!))
         }
 
         else -> MutlipleOptions(
           allOptionsWithDeductible.map { moveHomeQuote ->
-            DeductibleOption(moveHomeQuote.id, moveHomeQuote.grossPremiumWithAddons, moveHomeQuote.deductible!!)
+            moveHomeQuote.toDeductibleOption(moveHomeQuote.deductible!!)
           },
         )
       }
@@ -325,6 +321,10 @@ internal data class TiersInfo(
     is OneOption -> selectedDeductible?.id
     is MutlipleOptions -> selectedDeductible?.id
   }
+}
+
+private fun MoveHomeQuote.toDeductibleOption(deductible: Deductible): DeductibleOption {
+  return DeductibleOption(id, premium, deductible)
 }
 
 internal sealed interface DeductibleOptions {
