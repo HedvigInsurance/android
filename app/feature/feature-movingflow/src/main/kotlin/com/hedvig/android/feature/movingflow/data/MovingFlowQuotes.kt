@@ -23,7 +23,8 @@ internal data class MovingFlowQuotes(
 ) {
   interface Quote {
     val premium: UiMoney
-    val grossPremium: UiMoney
+    val netPremiumWithAddons: UiMoney
+    val grossPremiumWithAddons: UiMoney
     val discounts: List<ContractDiscount>
     val exposureName: String
     val productVariant: ProductVariant
@@ -44,7 +45,8 @@ internal data class MovingFlowQuotes(
   internal data class MoveHomeQuote(
     val id: String,
     override val premium: UiMoney,
-    override val grossPremium: UiMoney,
+    override val netPremiumWithAddons: UiMoney,
+    override val grossPremiumWithAddons: UiMoney,
     override val startDate: LocalDate,
     override val discounts: List<ContractDiscount>,
     override val displayItems: List<DisplayItem>,
@@ -70,7 +72,8 @@ internal data class MovingFlowQuotes(
   @Serializable
   internal data class MoveMtaQuote(
     override val premium: UiMoney,
-    override val grossPremium: UiMoney,
+    override val netPremiumWithAddons: UiMoney,
+    override val grossPremiumWithAddons: UiMoney,
     override val exposureName: String,
     override val productVariant: ProductVariant,
     override val startDate: LocalDate,
@@ -140,8 +143,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
     homeQuotes = homeQuotes.orEmpty().map { houseQuote ->
       MoveHomeQuote(
         id = houseQuote.id,
-        premium = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyNet),
-        grossPremium = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyGross),
+        premium = UiMoney.fromMoneyFragment(houseQuote.premium),
+        netPremiumWithAddons = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyNet),
+        grossPremiumWithAddons = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyGross),
         startDate = houseQuote.startDate,
         discounts = houseQuote.totalCost.discounts.map { discount ->
           MovingFlowQuotes.ContractDiscount(
@@ -186,8 +190,9 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
     },
     mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->
       MoveMtaQuote(
-        premium = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyNet),
-        grossPremium = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyGross),
+        premium = UiMoney.fromMoneyFragment(mtaQuote.premium),
+        netPremiumWithAddons = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyNet),
+        grossPremiumWithAddons = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyGross),
         discounts = mtaQuote.totalCost.discounts.map { discount ->
           MovingFlowQuotes.ContractDiscount(
             displayName = discount.displayName,

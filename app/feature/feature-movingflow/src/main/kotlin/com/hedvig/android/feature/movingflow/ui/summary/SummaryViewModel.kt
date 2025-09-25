@@ -288,13 +288,13 @@ private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.Quote
         url = it.url,
       )
     },
-    premium = quoteCost?.monthlyNet ?: this.premium,
-    previousPremium = quoteCost?.monthlyGross ?: this.grossPremium,
+    premium = quoteCost?.monthlyNet ?: this.netPremiumWithAddons,
+    previousPremium = quoteCost?.monthlyGross ?: this.grossPremiumWithAddons,
     costBreakdown = buildList {
       add(
         CostBreakdownEntry(
           productVariant.displayName,
-          grossPremium,
+          premium,
         ),
       )
       addAll(

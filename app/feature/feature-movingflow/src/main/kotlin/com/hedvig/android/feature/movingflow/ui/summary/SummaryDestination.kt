@@ -407,7 +407,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveHomeQuote = MoveHomeQuote(
           id = "id",
           premium = UiMoney(99.0, SEK),
-          grossPremium = UiMoney(199.0, SEK),
+          netPremiumWithAddons = UiMoney(228.0, SEK),
+          grossPremiumWithAddons = UiMoney(328.0, SEK),
           startDate = startDate,
           discounts = List(5) {
             MovingFlowQuotes.ContractDiscount(
@@ -452,7 +453,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
         moveMtaQuotes = listOf(
           MoveMtaQuote(
             premium = UiMoney(49.0, SEK),
-            grossPremium = UiMoney(49.0, SEK),
+            netPremiumWithAddons = UiMoney(49.0, SEK),
+            grossPremiumWithAddons = UiMoney(49.0, SEK),
             exposureName = "exposureName",
             productVariant = productVariant,
             startDate = startDate,
@@ -462,7 +464,8 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
           ),
           MoveMtaQuote(
             premium = UiMoney(23.0, SEK),
-            grossPremium = UiMoney(23.0, SEK),
+            netPremiumWithAddons = UiMoney(53.0, SEK),
+            grossPremiumWithAddons = UiMoney(53.0, SEK),
             discounts = emptyList(),
             exposureName = "exposureName",
             productVariant = productVariant,

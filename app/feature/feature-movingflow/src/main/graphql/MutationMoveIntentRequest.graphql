@@ -16,6 +16,9 @@ mutation MoveIntentV2Request(
 fragment MoveIntentQuotesFragment on MoveIntent {
   homeQuotes {
     id
+    premium {
+      ...MoneyFragment
+    }
     totalCost {
       ...ItemCostFragment
     }
@@ -43,6 +46,9 @@ fragment MoveIntentQuotesFragment on MoveIntent {
     }
   }
   mtaQuotes {
+    premium {
+      ...MoneyFragment
+    }
     totalCost {
       ...ItemCostFragment
     }

@@ -77,21 +77,12 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
     val costBreakdown: List<CostBreakdownEntry>? = tiersInfo.map { tiersInfo ->
       val selectedCoverage = tiersInfo?.selectedCoverage ?: return@map null
-      val previousPremium = selectedCoverage.grossPremium
       buildList<CostBreakdownEntry> {
         add(
           CostBreakdownEntry(
             selectedCoverage.productVariant.displayName,
-            previousPremium,
+            selectedCoverage.premium,
           ),
-        )
-        addAll(
-            tiersInfo.mtaQuotes.map {
-                CostBreakdownEntry(
-                    it.productVariant.displayName,
-                    it.grossPremium,
-                )
-            },
         )
         addAll(
             selectedCoverage.includedRelatedAddonQuotes.map {
@@ -102,7 +93,7 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
             },
         )
         addAll(
-          moveIntentCost?.quoteCosts?.flatMap {
+          moveIntentCost?.quoteCosts?.firstOrNull { it.id == selectedCoverage.id }?.let {
             it.discounts.map {
               CostBreakdownEntry(
                 it.displayName,
@@ -191,14 +182,14 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           .groupBy { it.tierName }
           .mapNotNull { (_, moveHomeQuotes) ->
             val alreadySelectedCoverage = moveHomeQuotes.firstOrNull { it.id == initiallySelectedHomeQuote?.id }
-            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.premium.amount }
+            val minPriceMoveQuote = moveHomeQuotes.minByOrNull { it.netPremiumWithAddons.amount }
             val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
             if (moveHomeQuote == null) return@mapNotNull null
             CoverageInfo(
               moveHomeQuote.id,
               moveHomeQuote.tierDisplayName,
               moveHomeQuote.tierDescription,
-              minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
+              minPriceMoveQuote?.netPremiumWithAddons ?: moveHomeQuote.netPremiumWithAddons,
             )
           }
           .toList()
@@ -225,16 +216,22 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     return when (val tiersInfoValue = tiersInfo) {
       None -> ChoseCoverageLevelAndDeductibleUiState.Loading
       is Some -> {
-        when (val state = tiersInfoValue.value) {
+        when (val info = tiersInfoValue.value) {
           null -> ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
-          else -> ChoseCoverageLevelAndDeductibleUiState.Content(
-            tiersInfo = state,
-            costBreakdown = costBreakdown,
-            navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
-            totalPrice = moveIntentCost?.monthlyNet,
-            isSubmitting = submittingSelectedHomeQuoteId != null,
-            comparisonParameters = comparisonParameters,
-          )
+          else -> {
+            val selectedQuoteCost = moveIntentCost?.quoteCosts?.firstOrNull {
+              it.id == info.selectedCoverage.id
+            }
+            ChoseCoverageLevelAndDeductibleUiState.Content(
+              tiersInfo = info,
+              costBreakdown = costBreakdown,
+              navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
+              premium = selectedQuoteCost?.monthlyNet,
+              grossPremium = selectedQuoteCost?.monthlyGross,
+              isSubmitting = submittingSelectedHomeQuoteId != null,
+              comparisonParameters = comparisonParameters,
+            )
+          }
         }
       }
     }
@@ -266,7 +263,8 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
     val tiersInfo: TiersInfo,
     val costBreakdown: List<CostBreakdownEntry>?,
     val comparisonParameters: ComparisonParameters?,
-    val totalPrice: UiMoney?,
+    val premium: UiMoney?,
+    val grossPremium: UiMoney?,
     val navigateToSummaryScreenWithHomeQuoteId: String?,
     val isSubmitting: Boolean,
   ) : ChoseCoverageLevelAndDeductibleUiState {
@@ -299,7 +297,7 @@ internal data class TiersInfo(
         OneOption(
             DeductibleOption(
                 selectedCoverage.id,
-                selectedCoverage.grossPremium,
+                selectedCoverage.grossPremiumWithAddons,
                 deductible,
             ),
         )
@@ -310,12 +308,12 @@ internal data class TiersInfo(
         0 -> NoOptions
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
-          OneOption(DeductibleOption(onlyOption.id, onlyOption.grossPremium, onlyOption.deductible!!))
+          OneOption(DeductibleOption(onlyOption.id, onlyOption.grossPremiumWithAddons, onlyOption.deductible!!))
         }
 
         else -> MutlipleOptions(
           allOptionsWithDeductible.map { moveHomeQuote ->
-            DeductibleOption(moveHomeQuote.id, moveHomeQuote.grossPremium, moveHomeQuote.deductible!!)
+            DeductibleOption(moveHomeQuote.id, moveHomeQuote.grossPremiumWithAddons, moveHomeQuote.deductible!!)
           },
         )
       }

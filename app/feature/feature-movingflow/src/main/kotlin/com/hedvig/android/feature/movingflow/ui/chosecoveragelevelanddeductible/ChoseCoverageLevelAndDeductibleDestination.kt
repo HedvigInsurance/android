@@ -34,7 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
@@ -202,7 +206,8 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       CoverageCard(
         content.tiersInfo,
         content.costBreakdown,
-        content.totalPrice,
+        content.premium,
+        content.grossPremium,
         onSelectCoverageOption,
         onSelectDeductibleOption,
         onChangeAddonExclusion,
@@ -237,7 +242,8 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 private fun CoverageCard(
   tiersInfo: TiersInfo,
   costBreakdown: List<CostBreakdownEntry>?,
-  totalPrice: UiMoney?,
+  premium: UiMoney?,
+  grossPremium: UiMoney?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
   onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
@@ -397,14 +403,29 @@ private fun CoverageCard(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
         endSlot = {
-          HedvigText(
-            text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              totalPrice ?: tiersInfo.selectedCoverage.premium.toString(),
-            ),
-            textAlign = TextAlign.End,
-            modifier = Modifier.wrapContentWidth(Alignment.End),
-          )
+          Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
+            if (grossPremium != null && grossPremium.amount != premium?.amount) {
+              HedvigText(
+                text = stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  grossPremium,
+                ),
+                textAlign = TextAlign.End,
+                style = LocalTextStyle.current.copy(
+                  textDecoration = TextDecoration.LineThrough,
+                ),
+                modifier = Modifier.semantics { hideFromAccessibility() },
+              )
+            }
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                premium ?: tiersInfo.selectedCoverage.netPremiumWithAddons.toString(),
+              ),
+              textAlign = TextAlign.End,
+              modifier = Modifier.wrapContentWidth(Alignment.End),
+            )
+          }
         },
         spaceBetween = 8.dp,
         Modifier.fillMaxWidth(),
@@ -610,11 +631,12 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
   val allOptions: List<MoveHomeQuote> = List(3) {
     MoveHomeQuote(
       id = it.toString(),
-      premium = UiMoney(
+      premium = UiMoney(100.0, SEK),
+      netPremiumWithAddons = UiMoney(
         amount = (it + 1) * 100.0,
         currencyCode = SEK,
       ),
-      grossPremium = UiMoney(
+      grossPremiumWithAddons = UiMoney(
         amount = (it + 1) * 110.0,
         currencyCode = SEK,
       ),
@@ -665,7 +687,8 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
           UiMoney(it.toDouble(), SEK),
         )
       },
-      totalPrice = UiMoney(100.0, UiCurrencyCode.SEK),
+      premium = UiMoney(100.0, UiCurrencyCode.SEK),
+      grossPremium = UiMoney(110.0, UiCurrencyCode.SEK),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
       comparisonParameters = null,
