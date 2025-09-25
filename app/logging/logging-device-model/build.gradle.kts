@@ -1,0 +1,16 @@
+plugins {
+  id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  apollo("octopus")
+}
+
+dependencies {
+  implementation(libs.apollo.runtime)
+  implementation(libs.koin.core)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.authEventCore)
+}

@@ -188,12 +188,12 @@ private abstract class ComposeHandler {
         configureComposeAndroidBuildFeature()
       }
     }
-    val isAndroidMulitplatformLibrary =
+    val isAndroidMultiplatformLibrary =
       project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
     project.dependencies {
-      if (isAndroidLibrary || isAndroidApp || isAndroidMulitplatformLibrary) {
+      if (isAndroidLibrary || isAndroidApp || isAndroidMultiplatformLibrary) {
         val bom = libs.androidx.compose.bom
-        if (isAndroidMulitplatformLibrary) {
+        if (isAndroidMultiplatformLibrary) {
           add("androidMainImplementation", libs.androidx.compose.uiToolingPreview)
           add("androidMainImplementation", libs.androidx.compose.uiTooling)
         } else {
