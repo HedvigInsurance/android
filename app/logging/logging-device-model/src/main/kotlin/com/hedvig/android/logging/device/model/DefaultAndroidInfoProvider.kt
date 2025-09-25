@@ -6,13 +6,11 @@ import java.util.Locale
 internal class AndroidInfoProvider(
   rawDeviceBrand: String,
   rawDeviceModel: String,
-  rawOsVersion: String
 ) {
 
   constructor() : this(
     Build.BRAND.orEmpty(),
     Build.MODEL.orEmpty(),
-    Build.VERSION.RELEASE.orEmpty()
   )
 
   val deviceName: String by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -32,7 +30,5 @@ internal class AndroidInfoProvider(
   }
 
   val deviceModel: String = rawDeviceModel
-
-  val osVersion: String = rawOsVersion
 }
 
