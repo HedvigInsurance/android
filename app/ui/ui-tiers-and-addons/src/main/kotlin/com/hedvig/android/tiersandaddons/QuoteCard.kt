@@ -1,6 +1,5 @@
 package com.hedvig.android.tiersandaddons
 
-import android.R.attr.elevation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -40,9 +39,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -440,7 +441,7 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
         } else {
           LocalTextStyle.current
         }
-        val displayValue = when(val displayValue = item.displayValue) {
+        val displayValue = when (val displayValue = item.displayValue) {
           is Currency -> stringResource(R.string.TIER_FLOW_PRICE_LABEL_CURRENCY, displayValue.value)
           is Text -> displayValue.value
         }
@@ -487,7 +488,7 @@ private fun TotalPriceRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
         modifier = Modifier.semantics { contentDescription = premiumPerMonthDescription },
       ) {
-        if (previousPremium != null) {
+        if (previousPremium != null && previousPremium != premium) {
           HedvigText(
             text = stringResource(
               R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -534,9 +535,13 @@ private fun InfoRow(leftText: String, rightText: String, modifier: Modifier = Mo
 
 @HedvigPreview
 @Composable
-private fun PreviewQuoteCard() {
+private fun PreviewQuoteCard(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) samePreviousPremium: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val premium = UiMoney(281.0, UiCurrencyCode.SEK)
+      val higherPremium = UiMoney(381.0, UiCurrencyCode.SEK)
       QuoteCard(
         displayName = "displayName",
         contractGroup = DOG,
@@ -554,8 +559,12 @@ private fun PreviewQuoteCard() {
           )
         },
         subtitle = "subtitle",
-        premium = UiMoney(281.0, UiCurrencyCode.SEK),
-        previousPremium = UiMoney(381.0, UiCurrencyCode.SEK),
+        premium = premium,
+        previousPremium = if (samePreviousPremium) {
+          premium
+        } else {
+          higherPremium
+        },
         costBreakdown = List(3) {
           CostBreakdownEntry(
             "#$it",

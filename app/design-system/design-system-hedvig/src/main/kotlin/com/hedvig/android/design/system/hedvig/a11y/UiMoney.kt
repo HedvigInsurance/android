@@ -9,9 +9,9 @@ import hedvig.resources.R
 @Composable
 fun UiMoney?.getDescription(): String {
   return when (this?.currencyCode) {
-    UiCurrencyCode.SEK -> this.amount.toInt().toString() + stringResource(R.string.TALKBACK_SWEDISH_KRONAS)
-    UiCurrencyCode.DKK -> this.amount.toInt().toString()
-    UiCurrencyCode.NOK -> this.amount.toInt().toString()
+    UiCurrencyCode.SEK -> this.amount.toString() + " " + stringResource(R.string.TALKBACK_SWEDISH_KRONAS)
+    UiCurrencyCode.DKK -> this.amount.toString()
+    UiCurrencyCode.NOK -> this.amount.toString()
     null -> ""
   }
 }
