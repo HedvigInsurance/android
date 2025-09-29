@@ -133,6 +133,7 @@ private val networkModule = module {
             .header("X-System-Version", Build.VERSION.SDK_INT.toString())
             .header("X-Platform", "ANDROID")
             .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
+            .header("Hedvig-App-Version","android;${BuildConfig.VERSION_NAME}")
             .build(),
         )
       }.addInterceptor(DeviceIdInterceptor(get(), get()))
