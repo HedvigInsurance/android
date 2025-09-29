@@ -95,31 +95,27 @@ fun AnimatedBorderCard(
     ),
     label = "InfiniteColors",
   )
-
   Surface(
-    modifier = modifier.clip(shape),
+    modifier = modifier
+      .clip(shape)
+      .fillMaxWidth()
+      .padding(borderWidth)
+      .drawWithContent {
+        rotate(degrees = degrees) {
+          drawCircle(
+            brush = gradient,
+            radius = size.width,
+            blendMode = BlendMode.SrcIn,
+          )
+        }
+        drawContent()
+      },
+    color = HedvigTheme.colorScheme.surfacePrimary,
     shape = shape,
   ) {
-    Surface(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(borderWidth)
-        .drawWithContent {
-          rotate(degrees = degrees) {
-            drawCircle(
-              brush = gradient,
-              radius = size.width,
-              blendMode = BlendMode.SrcIn,
-            )
-          }
-          drawContent()
-        },
-      color = HedvigTheme.colorScheme.surfacePrimary,
-      shape = shape,
-    ) {
-      content()
-    }
+    content()
   }
+
 }
 
 private val defaultGradientColors = listOf(
@@ -129,7 +125,7 @@ private val defaultGradientColors = listOf(
   Color(0xFFAA6EEE),
   Color(0xFFFF6778),
   Color(0xFFFFBA71),
-  Color(0xFFC686FF)
+  Color(0xFFC686FF),
 )
 
 @HedvigPreview
@@ -150,7 +146,7 @@ private fun PreviewAnimatedBorder() {
             withIcon = true,
             style = Default,
             modifier = Modifier,
-            )
+          )
         }
       }
     }
