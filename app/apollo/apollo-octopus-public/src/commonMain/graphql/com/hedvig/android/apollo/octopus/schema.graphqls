@@ -474,6 +474,11 @@ interface ChatMessage {
   id: ID!
   sender: ChatMessageSender!
   sentAt: Instant!
+  """
+  An optional attachment to display with the message, which can provide
+  additional relevant context to the message itself.
+  """
+  disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageAction implements ChatMessage {
   id: ID!
@@ -482,6 +487,30 @@ type ChatMessageAction implements ChatMessage {
   text: String
   actionUrl: Url!
   actionTitle: String!
+  disclaimer: ChatMessageDisclaimer
+}
+type ChatMessageDisclaimer {
+  type: ChatMessageDisclaimerType!
+  title: String
+  description: String
+  """
+  The title that goes with `detailsDescription`.
+  """
+  detailsTitle: String
+  """
+  The longer form of the description that's typically hidden behind a 'Read more' button.
+  """
+  detailsDescription: String
+}
+enum ChatMessageDisclaimerType {
+  """
+  Simple information
+  """
+  INFORMATION
+  """
+  A notice that the conversation has been escalated.
+  """
+  ESCALATION
 }
 type ChatMessageFile implements ChatMessage {
   id: ID!
@@ -489,6 +518,7 @@ type ChatMessageFile implements ChatMessage {
   sentAt: Instant!
   signedUrl: Url!
   mimeType: String!
+  disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageMutationOutput {
   message: ChatMessage
@@ -509,6 +539,7 @@ type ChatMessageText implements ChatMessage {
   sender: ChatMessageSender!
   sentAt: Instant!
   text: String!
+  disclaimer: ChatMessageDisclaimer
 }
 scalar CheckoutPaymentsAction
 type Claim {

@@ -96,13 +96,18 @@ import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -116,6 +121,7 @@ import com.hedvig.android.design.system.hedvig.icon.Refresh
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
@@ -134,6 +140,7 @@ import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.CbmChatMessage.Banner.Style
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageGif
@@ -409,31 +416,43 @@ private fun ChatLazyColumn(
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
       val defaultWidth = 0.8f
       var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
-      ChatBubble(
-        uiChatMessage = uiChatMessage,
-        chatItemIndex = index,
-        imageLoader = imageLoader,
-        enableInlineMediaPlayer = enableInlineMediaPlayer,
-        simpleVideoCache = simpleVideoCache,
-        mediaStatesWithPlayersMap = mediaStatesWithPlayers,
-        openUrl = openUrl,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        onRetrySendChatMessage = onRetrySendChatMessage,
-        onGoFullWidth = {
-          dynamicBubbleWidthFraction = 1f
-        },
-        onGoDefaultWidth = {
-          dynamicBubbleWidthFraction = defaultWidth
-        },
-        showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
-        modifier = Modifier
-          .fillParentMaxWidth()
-          .padding(horizontal = 16.dp)
-          .wrapContentWidth(alignment)
-          .fillMaxWidth(dynamicBubbleWidthFraction)
-          .wrapContentWidth(alignment)
-          .padding(bottom = 8.dp),
-      )
+      Column {
+        ChatBubble(
+          uiChatMessage = uiChatMessage,
+          chatItemIndex = index,
+          imageLoader = imageLoader,
+          enableInlineMediaPlayer = enableInlineMediaPlayer,
+          simpleVideoCache = simpleVideoCache,
+          mediaStatesWithPlayersMap = mediaStatesWithPlayers,
+          openUrl = openUrl,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          onRetrySendChatMessage = onRetrySendChatMessage,
+          onGoFullWidth = {
+            dynamicBubbleWidthFraction = 1f
+          },
+          onGoDefaultWidth = {
+            dynamicBubbleWidthFraction = defaultWidth
+          },
+          showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
+          modifier = Modifier
+            .fillParentMaxWidth()
+            .padding(horizontal = 16.dp)
+            .wrapContentWidth(alignment)
+            .fillMaxWidth(dynamicBubbleWidthFraction)
+            .wrapContentWidth(alignment)
+            .padding(bottom = 8.dp),
+        )
+        val banner = uiChatMessage?.chatMessage?.banner
+        if (banner != null) {
+          MessageBanner(
+            banner,
+            Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 8.dp),
+          )
+        }
+      }
     }
     if (appendStatus !is LoadState.NotLoading && messages.itemCount > 0) {
       item(
@@ -520,9 +539,11 @@ private fun ChatBubble(
             TextWithClickableUrls(
               text = chatMessage.text,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).semantics {
-                hideFromAccessibility()
-              },
+              modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .semantics {
+                  hideFromAccessibility()
+                },
             )
           }
         }
@@ -535,11 +556,13 @@ private fun ChatBubble(
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
-                modifier = Modifier.clickable {
-                  onNavigateToImageViewer(chatMessage.url, chatMessage.id)
-                }.semantics {
-                  hideFromAccessibility()
-                },
+                modifier = Modifier
+                  .clickable {
+                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
               )
             }
 
@@ -576,16 +599,18 @@ private fun ChatBubble(
                 imageLoader = imageLoader,
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
-                modifier = Modifier.clickable {
-                  openUrl(chatMessage.url)
-                }.semantics {
-                  hideFromAccessibility()
-                },
+                modifier = Modifier
+                  .clickable {
+                    openUrl(chatMessage.url)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
               )
             }
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -669,6 +694,71 @@ private fun ChatBubble(
     chatItemIndex = chatItemIndex,
     modifier = modifier.semantics(mergeDescendants = true) {
       contentDescription = description
+    },
+  )
+}
+
+@Composable
+private fun MessageBanner(
+  banner: CbmChatMessage.Banner,
+  modifier: Modifier = Modifier,
+) {
+  val sheetInformation = banner.sheetInformation
+  val sheetState = rememberHedvigBottomSheetState<CbmChatMessage.Banner.DisplayInfo>()
+  if (sheetInformation != null) {
+    HedvigBottomSheet(sheetState) { displayInfo ->
+      HedvigText(
+        displayInfo.title,
+        style = HedvigTheme.typography.headlineSmall,
+        color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+      )
+      if (displayInfo.subtitle != null) {
+        HedvigText(
+          displayInfo.subtitle!!,
+          style = HedvigTheme.typography.bodySmall,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        onClick = { sheetState.dismiss() },
+        text = stringResource(R.string.general_close_button),
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+    }
+  }
+  HedvigNotificationCard(
+    content = {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        HedvigText(
+          banner.bannerInformation.title,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+        )
+        val subtitle = banner.bannerInformation.subtitle
+        if (subtitle != null) {
+          HedvigText(
+            subtitle,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          )
+        }
+      }
+    },
+    priority = when (banner.style) {
+      Style.INFO -> NotificationPriority.InfoInline
+      Style.FANCY_INFO -> NotificationPriority.FancyInfo
+    },
+    modifier = modifier,
+    style = if (sheetInformation != null) {
+      InfoCardStyle.Button(
+        stringResource(R.string.important_message_read_more),
+        { sheetState.show(sheetInformation) },
+      )
+    } else {
+      InfoCardStyle.Default
     },
   )
 }
@@ -992,9 +1082,11 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
           imageVector = HedvigIcons.InfoFilled,
           contentDescription = null,
           tint = HedvigTheme.colorScheme.signalRedElement,
-          modifier = Modifier.size(16.dp).semantics {
-            hideFromAccessibility()
-          },
+          modifier = Modifier
+            .size(16.dp)
+            .semantics {
+              hideFromAccessibility()
+            },
         )
       }
     }
@@ -1023,19 +1115,21 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         },
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.semantics {
-          hideFromAccessibility()
-        }.then(
-          if (chatMessage == null) {
-            Modifier.hedvigPlaceholder(
-              visible = true,
-              shape = HedvigTheme.shapes.cornerSmall,
-              highlight = PlaceholderHighlight.shimmer(),
-            )
-          } else {
-            Modifier
-          },
-        ),
+        modifier = Modifier
+          .semantics {
+            hideFromAccessibility()
+          }
+          .then(
+            if (chatMessage == null) {
+              Modifier.hedvigPlaceholder(
+                visible = true,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.shimmer(),
+              )
+            } else {
+              Modifier
+            },
+          ),
       )
       if (uiChatMessage?.isLastDeliveredMessage == true) {
         Spacer(Modifier.width(4.dp))
@@ -1055,14 +1149,31 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 private fun PreviewChatLoadedScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val banner1 = CbmChatMessage.Banner(
+        CbmChatMessage.Banner.DisplayInfo.Both(
+          "Banner title",
+          "Banner subtitle",
+        ),
+        CbmChatMessage.Banner.DisplayInfo.Both(
+          "More info title",
+          "More info subtitle",
+        ),
+        Style.INFO,
+      )
+      val banner2 =
+        CbmChatMessage.Banner(
+          CbmChatMessage.Banner.DisplayInfo.Both("Banner title", "Banner subtitle"),
+          null,
+          Style.FANCY_INFO,
+        )
       val fakeChatMessages: List<CbmUiChatMessage> = listOf(
-        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
-        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
-        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), null, "", IMAGE),
+        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), banner1, ""),
+        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
         ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
         ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
         ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
+        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message"),
       )
         .reversed()
         .mapIndexed { index, item ->

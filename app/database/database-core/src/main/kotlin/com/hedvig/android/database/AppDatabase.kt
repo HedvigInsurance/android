@@ -15,10 +15,11 @@ import com.hedvig.android.data.chat.database.converter.UuidConverter
 
 @Database(
   entities = [ChatMessageEntity::class, RemoteKeyEntity::class],
-  version = 3,
+  version = 4,
   autoMigrations = [
     AutoMigration(from = 1, to = 2, spec = Migration1To2::class),
     AutoMigration(from = 2, to = 3, spec = Migration2To3::class),
+    AutoMigration(from = 3, to = 4, spec = Migration3To4::class),
   ],
 )
 @TypeConverters(InstantConverter::class, UuidConverter::class)
@@ -32,3 +33,5 @@ abstract class AppDatabase : RoomDatabase() {
 internal class Migration1To2 : AutoMigrationSpec
 
 internal class Migration2To3 : AutoMigrationSpec
+
+internal class Migration3To4 : AutoMigrationSpec

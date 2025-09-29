@@ -1,6 +1,7 @@
 package com.hedvig.android.data.chat.database
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.benasher44.uuid.Uuid
@@ -20,6 +21,8 @@ data class ChatMessageEntity(
   val failedToSend: FailedToSendType?,
   @ColumnInfo(defaultValue = "0")
   val isBeingSent: Boolean,
+  @Embedded
+  val banner: ChatMessageEntityBanner?,
 ) {
   enum class Sender {
     HEDVIG,
@@ -30,5 +33,19 @@ data class ChatMessageEntity(
     TEXT,
     PHOTO,
     MEDIA,
+  }
+
+}
+
+data class ChatMessageEntityBanner(
+  val title: String?,
+  val subtitle: String?,
+  val detailsTitle: String?,
+  val detailsDescription: String?,
+  val style: Style,
+) {
+  enum class Style {
+    INFO,
+    FANCY_INFO,
   }
 }
