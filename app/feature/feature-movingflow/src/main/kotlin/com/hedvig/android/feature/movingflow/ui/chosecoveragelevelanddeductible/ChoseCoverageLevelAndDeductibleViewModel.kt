@@ -11,10 +11,10 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import arrow.core.compareTo
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.AddonId
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
@@ -78,32 +78,23 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
     val costBreakdown: List<CostBreakdownEntry>? = tiersInfo.map { tiersInfo ->
       val selectedCoverage = tiersInfo?.selectedCoverage ?: return@map null
-      val previousPremium = selectedCoverage.previousPremium ?: return@map null
       buildList<CostBreakdownEntry> {
         add(
           CostBreakdownEntry(
             selectedCoverage.productVariant.displayName,
-            previousPremium,
+            selectedCoverage.premium,
           ),
         )
         addAll(
-          tiersInfo.mtaQuotes.mapNotNull {
-            CostBreakdownEntry(
-              it.productVariant.displayName,
-              it.previousPremium ?: return@mapNotNull null,
-            )
-          }
-        )
-        addAll(
-          selectedCoverage.includedRelatedAddonQuotes.mapNotNull {
+          selectedCoverage.includedRelatedAddonQuotes.map {
             CostBreakdownEntry(
               it.addonVariant.displayName,
-              it.previousPremium ?: return@mapNotNull null,
+              it.premium,
             )
-          }
+          },
         )
         addAll(
-          moveIntentCost?.quoteCosts?.flatMap {
+          moveIntentCost?.quoteCosts?.firstOrNull { it.id == selectedCoverage.id }?.let {
             it.discounts.map {
               CostBreakdownEntry(
                 it.displayName,
@@ -196,10 +187,11 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
             val moveHomeQuote = alreadySelectedCoverage ?: minPriceMoveQuote
             if (moveHomeQuote == null) return@mapNotNull null
             CoverageInfo(
-              moveHomeQuote.id,
-              moveHomeQuote.tierDisplayName,
-              moveHomeQuote.tierDescription,
-              minPriceMoveQuote?.premium ?: moveHomeQuote.premium,
+              moveHomeQuoteId = moveHomeQuote.id,
+              tierName = moveHomeQuote.tierDisplayName,
+              tierDescription = moveHomeQuote.tierDescription,
+              minimumPremiumForCoverage = minPriceMoveQuote?.premium
+                ?: moveHomeQuote.premium,
             )
           }
           .toList()
@@ -226,16 +218,22 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     return when (val tiersInfoValue = tiersInfo) {
       None -> ChoseCoverageLevelAndDeductibleUiState.Loading
       is Some -> {
-        when (val state = tiersInfoValue.value) {
+        when (val info = tiersInfoValue.value) {
           null -> ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
-          else -> ChoseCoverageLevelAndDeductibleUiState.Content(
-            tiersInfo = state,
-            costBreakdown = costBreakdown,
-            navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
-            totalPrice = moveIntentCost?.monthlyNet,
-            isSubmitting = submittingSelectedHomeQuoteId != null,
-            comparisonParameters = comparisonParameters,
-          )
+          else -> {
+            val selectedQuoteCost = moveIntentCost?.quoteCosts?.firstOrNull {
+              it.id == info.selectedCoverage.id
+            }
+            ChoseCoverageLevelAndDeductibleUiState.Content(
+              tiersInfo = info,
+              costBreakdown = costBreakdown,
+              navigateToSummaryScreenWithHomeQuoteId = navigateToSummaryScreenWithHomeQuoteId,
+              premium = selectedQuoteCost?.monthlyNet,
+              grossPremium = selectedQuoteCost?.monthlyGross,
+              isSubmitting = submittingSelectedHomeQuoteId != null,
+              comparisonParameters = comparisonParameters,
+            )
+          }
         }
       }
     }
@@ -267,7 +265,8 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
     val tiersInfo: TiersInfo,
     val costBreakdown: List<CostBreakdownEntry>?,
     val comparisonParameters: ComparisonParameters?,
-    val totalPrice: UiMoney?,
+    val premium: UiMoney?,
+    val grossPremium: UiMoney?,
     val navigateToSummaryScreenWithHomeQuoteId: String?,
     val isSubmitting: Boolean,
   ) : ChoseCoverageLevelAndDeductibleUiState {
@@ -297,7 +296,7 @@ internal data class TiersInfo(
       if (deductible == null) {
         NoOptions
       } else {
-        OneOption(DeductibleOption(selectedCoverage.id, selectedCoverage.premium, deductible))
+        OneOption(selectedCoverage.toDeductibleOption(deductible))
       }
     } else {
       val allOptionsWithDeductible = moveHomeQuotes.filter { it.deductible != null }
@@ -305,12 +304,12 @@ internal data class TiersInfo(
         0 -> NoOptions
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
-          OneOption(DeductibleOption(onlyOption.id, onlyOption.premium, onlyOption.deductible!!))
+          OneOption(onlyOption.toDeductibleOption(onlyOption.deductible!!))
         }
 
         else -> MutlipleOptions(
           allOptionsWithDeductible.map { moveHomeQuote ->
-            DeductibleOption(moveHomeQuote.id, moveHomeQuote.premium, moveHomeQuote.deductible!!)
+            moveHomeQuote.toDeductibleOption(moveHomeQuote.deductible!!)
           },
         )
       }
@@ -322,6 +321,10 @@ internal data class TiersInfo(
     is OneOption -> selectedDeductible?.id
     is MutlipleOptions -> selectedDeductible?.id
   }
+}
+
+private fun MoveHomeQuote.toDeductibleOption(deductible: Deductible): DeductibleOption {
+  return DeductibleOption(id, premium, deductible)
 }
 
 internal sealed interface DeductibleOptions {

@@ -191,7 +191,6 @@ private class EnterNewAddressPresenter(
               }
             },
           )
-        @Suppress("KotlinUnreachableCode")
         inputForSubmission = null
       }
     }
