@@ -1,42 +1,29 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shader
-import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.SweepGradientShader
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
@@ -88,55 +75,12 @@ fun Modifier.notificationCircle(showNotification: Boolean = true) = this.drawWit
   }
 }
 
-///**
-// * TODO()
-// */
-//fun Modifier.borderAnimation(width: Dp, color: Color, shape: Shape) =
-//  this.border(width = width, brush = Brush.linearGradient(listOf(color, color)), shape = shape)
-
-//@Composable
-//fun Modifier.animatedGradientBorder(
-//  borderWidth: Dp = 2.dp,
-//  shape: Shape = RectangleShape,
-//  colors: List<Color> = listOf(Color.Blue, Color.Red, Color.Green),
-//  durationMillis: Int = 1000,
-//  easing: Easing = LinearEasing
-//): Modifier = composed {
-//
-//
-//  val infiniteTransition = rememberInfiniteTransition(label = "borderGradient")
-//  val colorOne by infiniteTransition.animateColor(
-//    initialValue = Color.Red,
-//    targetValue = Color.Blue,
-//    animationSpec = infiniteRepeatable(
-//      animation = tween(durationMillis, easing = easing),
-//      repeatMode = RepeatMode.Restart
-//    ),
-//    label = "color"
-//  )
-//  val colorTwo by infiniteTransition.animateColor(
-//    initialValue = Color.Blue,
-//    targetValue = Color.Green,
-//    animationSpec = infiniteRepeatable(
-//      animation = tween(durationMillis, easing = easing),
-//      repeatMode = RepeatMode.Restart
-//    ),
-//    label = "color"
-//  )
-//  this
-//    .border(width = borderWidth,
-//      shape = shape,
-//      brush = linearGradient(
-//        colors = listOf(colorOne, colorTwo),
-//        ))
-//}
-
 @Composable
 fun AnimatedBorderCard(
   modifier: Modifier = Modifier,
   shape: Shape = HedvigTheme.shapes.cornerLarge,
   borderWidth: Dp = 1.dp,
-  colors: List<Color>,
+  colors: List<Color> = defaultGradientColors,
   animationDuration: Int = 2000,
   content: @Composable () -> Unit,
 ) {
@@ -178,6 +122,16 @@ fun AnimatedBorderCard(
   }
 }
 
+private val defaultGradientColors = listOf(
+  Color(0xFFBC82F3),
+  Color(0xFFF5B9EA),
+  Color(0xFF8D99FF),
+  Color(0xFFAA6EEE),
+  Color(0xFFFF6778),
+  Color(0xFFFFBA71),
+  Color(0xFFC686FF)
+)
+
 @HedvigPreview
 @Composable
 private fun PreviewAnimatedBorder() {
@@ -189,23 +143,13 @@ private fun PreviewAnimatedBorder() {
           .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        AnimatedBorderCard(
-          shape = HedvigTheme.shapes.cornerLarge,
-          colors = listOf(
-              HedvigTheme.colorScheme.signalGreenFill,
-              HedvigTheme.colorScheme.signalRedElement,
-              HedvigTheme.colorScheme.signalAmberElement,
-              HedvigTheme.colorScheme.backgroundWhite,
-              HedvigTheme.colorScheme.signalGreenFill,
-            ),
-        ) {
+        AnimatedBorderCard {
           HedvigNotificationCard(
             priority = NotificationDefaults.NotificationPriority.Campaign,
             message = "A short message about something that needs attention.",
             withIcon = true,
             style = Default,
             modifier = Modifier,
-
             )
         }
       }
