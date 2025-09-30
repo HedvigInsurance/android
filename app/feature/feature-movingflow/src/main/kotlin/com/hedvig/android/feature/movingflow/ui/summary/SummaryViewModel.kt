@@ -280,28 +280,28 @@ private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.Quote
         description = it.description,
       )
     },
-    documents = productVariant.documents.map {
+    documents = productVariant.documents.plus(
+      includedRelatedAddonQuotes.flatMap { it.addonVariant.documents },
+    ).map {
       DisplayDocument(
         displayName = it.displayName,
         url = it.url,
       )
     },
-    premium = quoteCost?.monthlyNet ?: this.premium,
-    previousPremium = quoteCost?.monthlyGross ?: this.previousPremium,
+    premium = quoteCost?.monthlyNet ?: this.netPremiumWithAddons,
+    previousPremium = quoteCost?.monthlyGross ?: this.grossPremiumWithAddons,
     costBreakdown = buildList {
-      if (previousPremium != null) {
-        add(
-          CostBreakdownEntry(
-            productVariant.displayName,
-            previousPremium!!,
-          ),
-        )
-      }
+      add(
+        CostBreakdownEntry(
+          productVariant.displayName,
+          premium,
+        ),
+      )
       addAll(
-        includedRelatedAddonQuotes.mapNotNull { addonQuote ->
+        includedRelatedAddonQuotes.map { addonQuote ->
           CostBreakdownEntry(
             addonQuote.exposureName,
-            addonQuote.previousPremium ?: return@mapNotNull null,
+            addonQuote.premium,
           )
         },
       )
