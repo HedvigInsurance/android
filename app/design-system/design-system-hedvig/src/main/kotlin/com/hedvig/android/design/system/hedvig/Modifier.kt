@@ -1,18 +1,35 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Default
+import com.hedvig.android.design.system.hedvig.tokens.CircularProgressIndicatorTokens.LinearEasing
 
 /**
  * This modifier is to be used with FigmaShapes if the color for border is translucent,
@@ -55,5 +72,83 @@ fun Modifier.notificationCircle(showNotification: Boolean = true) = this.drawWit
       radius = circleRadius,
       center = Offset(size.width - circleRadius, circleRadius),
     )
+  }
+}
+
+@Composable
+fun AnimatedBorderCard(
+  modifier: Modifier = Modifier,
+  shape: Shape = HedvigTheme.shapes.cornerLarge,
+  borderWidth: Dp = 1.dp,
+  colors: List<Color> = defaultGradientColors,
+  animationDuration: Int = 2000,
+  content: @Composable () -> Unit,
+) {
+  val gradient = Brush.sweepGradient(colors)
+  val infiniteTransition = rememberInfiniteTransition(label = "InfiniteColorAnimation")
+  val degrees by infiniteTransition.animateFloat(
+    initialValue = 0f,
+    targetValue = 360f,
+    animationSpec = infiniteRepeatable(
+      animation = tween(durationMillis = animationDuration, easing = LinearEasing),
+      repeatMode = RepeatMode.Restart,
+    ),
+    label = "InfiniteColors",
+  )
+  Surface(
+    modifier = modifier
+      .clip(shape)
+      .fillMaxWidth()
+      .padding(borderWidth)
+      .drawWithContent {
+        rotate(degrees = degrees) {
+          drawCircle(
+            brush = gradient,
+            radius = size.width,
+            blendMode = BlendMode.SrcIn,
+          )
+        }
+        drawContent()
+      },
+    color = HedvigTheme.colorScheme.surfacePrimary,
+    shape = shape,
+  ) {
+    content()
+  }
+
+}
+
+private val defaultGradientColors = listOf(
+  Color(0xFFBC82F3),
+  Color(0xFFF5B9EA),
+  Color(0xFF8D99FF),
+  Color(0xFFAA6EEE),
+  Color(0xFFFF6778),
+  Color(0xFFFFBA71),
+  Color(0xFFC686FF),
+)
+
+@HedvigPreview
+@Composable
+private fun PreviewAnimatedBorder() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column(
+        Modifier
+          .width(330.dp)
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        AnimatedBorderCard {
+          HedvigNotificationCard(
+            priority = NotificationDefaults.NotificationPriority.Campaign,
+            message = "A short message about something that needs attention.",
+            withIcon = true,
+            style = Default,
+            modifier = Modifier,
+          )
+        }
+      }
+    }
   }
 }
