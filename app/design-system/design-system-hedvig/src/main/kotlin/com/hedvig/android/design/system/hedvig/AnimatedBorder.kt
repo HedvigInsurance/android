@@ -40,7 +40,7 @@ fun Modifier.animatedBorder(
       startAngle = progress,
     )
     drawWithContent {
-      val stroke = Stroke(4.dp.toPx())
+      val stroke = Stroke(2.dp.toPx())
       drawContent()
       drawOutline(shape.createOutline(size, layoutDirection, this), brush, style = stroke)
     }
