@@ -7,7 +7,6 @@ internal class AndroidInfoProvider(
   rawDeviceBrand: String,
   rawDeviceModel: String,
 ) {
-
   constructor() : this(
     Build.BRAND.orEmpty(),
     Build.MODEL.orEmpty(),
@@ -31,4 +30,3 @@ internal class AndroidInfoProvider(
 
   val deviceModel: String = rawDeviceModel
 }
-

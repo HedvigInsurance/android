@@ -28,6 +28,7 @@ data class ColorScheme(
   val textTertiaryTranslucent: Color,
   val textDisabledTranslucent: Color,
   val textBlackTranslucent: Color,
+  val textBlackSecondaryTranslucent: Color,
   val textWhiteTranslucent: Color,
   val action: Color,
   val link: Color,
@@ -135,6 +136,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   textTertiaryTranslucent = ColorLightTokens.TextTertiaryTranslucent,
   textDisabledTranslucent = ColorLightTokens.TextDisabledTranslucent,
   textBlackTranslucent = ColorLightTokens.TextBlackTranslucent,
+  textBlackSecondaryTranslucent = ColorLightTokens.TextBlackSecondaryTranslucent,
   textWhiteTranslucent = ColorLightTokens.TextWhiteTranslucent,
   action = ColorLightTokens.Action,
   link = ColorLightTokens.Link,
@@ -242,6 +244,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   textTertiaryTranslucent = ColorDarkTokens.TextTertiaryTranslucent,
   textDisabledTranslucent = ColorDarkTokens.TextDisabledTranslucent,
   textBlackTranslucent = ColorDarkTokens.TextBlackTranslucent,
+  textBlackSecondaryTranslucent = ColorDarkTokens.TextBlackSecondaryTranslucent,
   textWhiteTranslucent = ColorDarkTokens.TextWhiteTranslucent,
   action = ColorDarkTokens.Action,
   link = ColorDarkTokens.Link,
@@ -375,6 +378,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.TextTertiaryTranslucent -> textTertiaryTranslucent
     ColorSchemeKeyTokens.TextDisabledTranslucent -> textDisabledTranslucent
     ColorSchemeKeyTokens.TextBlackTranslucent -> textBlackTranslucent
+    ColorSchemeKeyTokens.TextBlackSecondaryTranslucent -> textBlackSecondaryTranslucent
     ColorSchemeKeyTokens.TextWhiteTranslucent -> textWhiteTranslucent
     ColorSchemeKeyTokens.Action -> action
     ColorSchemeKeyTokens.Link -> link

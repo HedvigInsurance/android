@@ -275,6 +275,7 @@ data class CostBreakdownEntry(
 
   sealed interface DisplayValue {
     data class Text(val value: String) : DisplayValue
+
     data class Currency(val value: UiMoney) : DisplayValue
   }
 }
@@ -471,11 +472,7 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
 }
 
 @Composable
-private fun TotalPriceRow(
-  premium: UiMoney,
-  previousPremium: UiMoney?,
-  modifier: Modifier = Modifier,
-) {
+private fun TotalPriceRow(premium: UiMoney, previousPremium: UiMoney?, modifier: Modifier = Modifier) {
   HorizontalItemsWithMaximumSpaceTaken(
     modifier = modifier,
     spaceBetween = 8.dp,

@@ -16,10 +16,10 @@ internal class DeviceNameLoggingAuthListener(
       MemberLogDeviceMutation(
         brand = androidInfoProvider.deviceBrand,
         model = androidInfoProvider.deviceName,
-      )
+      ),
     ).safeExecute().fold(
       ifLeft = {
-        logcat(LogPriority.INFO) { "MemberLogDeviceMutation failed with error: ${it}" }
+        logcat(LogPriority.INFO) { "MemberLogDeviceMutation failed with error: $it" }
       },
       ifRight = {
         if (it.memberLogDevice?.message != null) {
@@ -27,7 +27,7 @@ internal class DeviceNameLoggingAuthListener(
         } else {
           logcat(LogPriority.INFO) { "MemberLogDeviceMutation succeeded" }
         }
-      }
+      },
     )
   }
 }

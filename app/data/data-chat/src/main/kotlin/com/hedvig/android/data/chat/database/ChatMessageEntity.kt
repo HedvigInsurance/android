@@ -34,7 +34,6 @@ data class ChatMessageEntity(
     PHOTO,
     MEDIA,
   }
-
 }
 
 data class ChatMessageEntityBanner(
