@@ -39,7 +39,10 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Campaign
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.FancyInfo
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.NeutralToast
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultSnackbarPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingNoIcon
@@ -52,6 +55,9 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.FillSecondary
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.HighlightPurpleFill1
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.HighlightPurpleFill3
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.HighlightPurpleFill4
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberElement
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberFill
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberText
@@ -65,6 +71,7 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.Signa
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalRedFill
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalRedText
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextBlackTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextSecondaryTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
 import com.hedvig.android.design.system.internals.InternalSnackBar
@@ -104,7 +111,7 @@ fun HedvigNotificationCard(
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
   val description = when (priority) {
     Attention, Error, Info -> stringResource(R.string.TALKBACK_NOTIFICATION_CARD)
-    Campaign, NotificationPriority.InfoInline, NotificationPriority.NeutralToast -> ""
+    Campaign, InfoInline, NeutralToast, FancyInfo -> ""
   }
 
   Surface(
@@ -115,7 +122,7 @@ fun HedvigNotificationCard(
     color = priority.colors.containerColor,
     border = priority.colors.borderColor,
   ) {
-    val buttonDarkTheme = if (priority is NotificationPriority.InfoInline) isSystemInDarkTheme() else false
+    val buttonDarkTheme = if (priority is InfoInline) isSystemInDarkTheme() else false
     ProvideTextStyle(textStyle) {
       Row(Modifier.padding(padding)) {
         if (withIcon) {
@@ -253,7 +260,7 @@ object NotificationDefaults {
   )
   internal val withIconDefault = true
   internal val defaultStyle: InfoCardStyle = Default
-  internal val defaultSnackbarPriority = NotificationPriority.NeutralToast
+  internal val defaultSnackbarPriority = NeutralToast
   internal val shape
     @Composable
     @ReadOnlyComposable
@@ -358,6 +365,26 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.InfoFilled
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
+    }
+
+    data object FancyInfo : NotificationPriority {
+      override val colors: NotificationColors
+        @Composable
+        get() = with(HedvigTheme.colorScheme) {
+          remember(this) {
+            NotificationColors(
+              containerColor = fromToken(HighlightPurpleFill1),
+              borderColor = fromToken(HighlightPurpleFill3),
+              textColor = fromToken(TextBlackTranslucent),
+              iconColor = fromToken(HighlightPurpleFill4),
+            )
+          }
+        }
+      override val icon: ImageVector
+        @Composable
+        get() = HedvigIcons.InfoFilled
       override val buttonStyle: ButtonDefaults.ButtonStyle
         get() = SecondaryAlt
     }
@@ -491,6 +518,7 @@ private class NotificationCardPriorityProvider :
       Error,
       Campaign,
       Attention,
-      NotificationPriority.InfoInline,
+      InfoInline,
+      FancyInfo,
     ),
   )

@@ -78,6 +78,7 @@ private fun textChatMessageEntity(
   mimeType = null,
   failedToSend = null,
   isBeingSent = isBeingSent,
+  banner = null,
 )
 
 @Database(
