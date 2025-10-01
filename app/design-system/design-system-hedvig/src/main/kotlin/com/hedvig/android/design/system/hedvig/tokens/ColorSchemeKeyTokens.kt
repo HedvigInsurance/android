@@ -17,7 +17,6 @@ internal enum class ColorSchemeKeyTokens {
   TextTertiaryTranslucent,
   TextDisabledTranslucent,
   TextBlackTranslucent,
-  TextBlackSecondaryTranslucent,
   TextWhiteTranslucent,
   Action,
   Link,

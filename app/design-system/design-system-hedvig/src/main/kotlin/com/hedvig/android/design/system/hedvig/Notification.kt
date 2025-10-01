@@ -72,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.Signa
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalRedFill
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalRedText
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextBlack
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextBlackTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextSecondaryTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
