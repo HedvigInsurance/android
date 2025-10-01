@@ -751,7 +751,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
     modifier = modifier,
     style = if (sheetInformation != null) {
       InfoCardStyle.Button(
-        stringResource(R.string.important_message_read_more),
+        stringResource(R.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
         { sheetState.show(sheetInformation) },
       )
     } else {
