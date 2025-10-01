@@ -29,7 +29,7 @@ fun Modifier.animatedBorder(
       label = "border rotation progress",
       animationSpec = infiniteRepeatable(
         animation = tween(
-          durationMillis = 5000,
+          durationMillis = 8000,
           easing = LinearEasing,
         ),
         repeatMode = RepeatMode.Restart,
