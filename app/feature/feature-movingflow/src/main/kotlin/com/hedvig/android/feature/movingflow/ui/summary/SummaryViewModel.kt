@@ -46,15 +46,15 @@ internal class SummaryViewModel(
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
-  Loading,
-  SummaryPresenter(
-    summaryRoute = savedStateHandle.toRoute<Summary>(),
-    movingFlowRepository = movingFlowRepository,
-    apolloClient = apolloClient,
-    crossSellAfterFlowRepository = crossSellAfterFlowRepository,
-    getMoveIntentCostUseCase = getMoveIntentCostUseCase,
-  ),
-)
+    Loading,
+    SummaryPresenter(
+      summaryRoute = savedStateHandle.toRoute<Summary>(),
+      movingFlowRepository = movingFlowRepository,
+      apolloClient = apolloClient,
+      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+      getMoveIntentCostUseCase = getMoveIntentCostUseCase,
+    ),
+  )
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,
@@ -268,64 +268,65 @@ internal sealed interface SummaryUiState {
   }
 }
 
-private fun MovingFlowQuotes.Quote.toCardContent(quoteCost: MoveIntentCost.QuoteCost?): SummaryUiState.Content.CardContent =
-  SummaryUiState.Content.CardContent(
-    displayName = productVariant.displayName,
-    subtitle = exposureName,
-    contractGroup = productVariant.contractGroup,
-    insurableLimits = productVariant.insurableLimits.map {
-      SummaryUiState.Content.CardContent.InsurableLimit(
-        label = it.label,
-        limit = it.limit,
-        description = it.description,
-      )
-    },
-    documents = productVariant.documents.plus(
-      includedRelatedAddonQuotes.flatMap { it.addonVariant.documents },
-    ).map {
-      DisplayDocument(
-        displayName = it.displayName,
-        url = it.url,
-      )
-    },
-    premium = quoteCost?.monthlyNet ?: this.netPremiumWithAddons,
-    previousPremium = quoteCost?.monthlyGross ?: this.grossPremiumWithAddons,
-    costBreakdown = buildList {
-      add(
+private fun MovingFlowQuotes.Quote.toCardContent(
+  quoteCost: MoveIntentCost.QuoteCost?,
+): SummaryUiState.Content.CardContent = SummaryUiState.Content.CardContent(
+  displayName = productVariant.displayName,
+  subtitle = exposureName,
+  contractGroup = productVariant.contractGroup,
+  insurableLimits = productVariant.insurableLimits.map {
+    SummaryUiState.Content.CardContent.InsurableLimit(
+      label = it.label,
+      limit = it.limit,
+      description = it.description,
+    )
+  },
+  documents = productVariant.documents.plus(
+    includedRelatedAddonQuotes.flatMap { it.addonVariant.documents },
+  ).map {
+    DisplayDocument(
+      displayName = it.displayName,
+      url = it.url,
+    )
+  },
+  premium = quoteCost?.monthlyNet ?: this.netPremiumWithAddons,
+  previousPremium = quoteCost?.monthlyGross ?: this.grossPremiumWithAddons,
+  costBreakdown = buildList {
+    add(
+      CostBreakdownEntry(
+        productVariant.displayName,
+        premium,
+      ),
+    )
+    addAll(
+      includedRelatedAddonQuotes.map { addonQuote ->
         CostBreakdownEntry(
-          productVariant.displayName,
-          premium,
-        ),
-      )
-      addAll(
-        includedRelatedAddonQuotes.map { addonQuote ->
-          CostBreakdownEntry(
-            addonQuote.exposureName,
-            addonQuote.premium,
-          )
-        },
-      )
-      val discounts = quoteCost?.discounts?.map { discount ->
-        CostBreakdownEntry(
-          discount.displayName,
-          discount.displayValue,
+          addonQuote.exposureName,
+          addonQuote.premium,
         )
-      } ?: discounts.map { discount ->
-        CostBreakdownEntry(
-          discount.displayName,
-          discount.discountValue,
-        )
-      }
-      addAll(discounts)
-    },
-    displayItems = displayItems.map {
-      DisplayItem(
-        title = it.title,
-        value = it.value,
-        subtitle = it.subtitle,
+      },
+    )
+    val discounts = quoteCost?.discounts?.map { discount ->
+      CostBreakdownEntry(
+        discount.displayName,
+        discount.displayValue,
       )
-    },
-  )
+    } ?: discounts.map { discount ->
+      CostBreakdownEntry(
+        discount.displayName,
+        discount.discountValue,
+      )
+    }
+    addAll(discounts)
+  },
+  displayItems = displayItems.map {
+    DisplayItem(
+      title = it.title,
+      value = it.value,
+      subtitle = it.subtitle,
+    )
+  },
+)
 
 internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent

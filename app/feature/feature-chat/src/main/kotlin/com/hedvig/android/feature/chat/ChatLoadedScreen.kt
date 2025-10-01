@@ -610,7 +610,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -699,10 +699,7 @@ private fun ChatBubble(
 }
 
 @Composable
-private fun MessageBanner(
-  banner: CbmChatMessage.Banner,
-  modifier: Modifier = Modifier,
-) {
+private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Modifier) {
   val sheetInformation = banner.sheetInformation
   val sheetState = rememberHedvigBottomSheetState<CbmChatMessage.Banner.DisplayInfo>()
   if (sheetInformation != null) {

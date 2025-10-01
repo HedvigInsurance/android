@@ -19,8 +19,8 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
-import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.AlterAddon
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.LaunchComparison
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.NavigatedToSummary
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleEvent.SelectCoverage
@@ -44,9 +44,9 @@ internal class ChoseCoverageLevelAndDeductibleViewModel(
   movingFlowRepository: MovingFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
-  ChoseCoverageLevelAndDeductibleUiState.Loading,
-  ChoseCoverageLevelAndDeductiblePresenter(intentId, movingFlowRepository, getMoveIntentCostUseCase),
-)
+    ChoseCoverageLevelAndDeductibleUiState.Loading,
+    ChoseCoverageLevelAndDeductiblePresenter(intentId, movingFlowRepository, getMoveIntentCostUseCase),
+  )
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val intentId: String,

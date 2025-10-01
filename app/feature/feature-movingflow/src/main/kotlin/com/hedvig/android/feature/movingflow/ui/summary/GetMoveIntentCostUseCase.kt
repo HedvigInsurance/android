@@ -96,13 +96,13 @@ internal data class MoveIntentCost(
     val discounts: List<Discount>,
   ) {
     data class Discount(
-      //Short name for list display, ex. "50% puppy discount"
+      // Short name for list display, ex. "50% puppy discount"
       val displayName: String,
-      //Short value for list display, ex. 50% 99 kr
+      // Short value for list display, ex. 50% 99 kr
       val displayValue: String,
-      //Longer explanation, ex. 50% discount for 6 months
+      // Longer explanation, ex. 50% discount for 6 months
       val explanation: String,
-      //Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
+      // Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc
       val campaignCode: String,
     )
   }

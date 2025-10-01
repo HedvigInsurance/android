@@ -58,7 +58,7 @@ val movingFlowModule = module {
     ChoseCoverageLevelAndDeductibleViewModel(
       intentId,
       get<MovingFlowRepository>(),
-      this.get()
+      this.get(),
     )
   }
   viewModel<SummaryViewModel> {
