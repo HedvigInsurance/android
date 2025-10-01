@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,13 +31,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.ACCIDENT
@@ -64,10 +70,13 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.DisplayItem
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
@@ -79,6 +88,8 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DiscountCostBreakdown
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -117,6 +128,9 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
     },
     onSelectCoverageOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectCoverage(it)) },
     onSelectDeductibleOption = { viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SelectDeductible(it)) },
+    onChangeAddonExclusion = { addonId, exclude ->
+      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.AlterAddon(addonId, exclude))
+    },
   )
 }
 
@@ -129,6 +143,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
   onCompareCoverageClicked: () -> Unit,
 ) {
   Surface(
@@ -162,6 +177,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
             onSelectCoverageOption = onSelectCoverageOption,
             onSelectDeductibleOption = onSelectDeductibleOption,
             onCompareCoverageClicked = onCompareCoverageClicked,
+            onChangeAddonExclusion = onChangeAddonExclusion,
           )
         }
       }
@@ -176,17 +192,26 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
   onCompareCoverageClicked: () -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
     FlowHeading(
       stringResource(R.string.TIER_FLOW_TITLE),
-      stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+      stringResource(R.string.TIER_FLOW_SUBTITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
     Column(Modifier.verticalScroll(rememberScrollState())) {
       Spacer(Modifier.height(8.dp))
-      CoverageCard(content.tiersInfo, onSelectCoverageOption, onSelectDeductibleOption)
+      CoverageCard(
+        content.tiersInfo,
+        content.costBreakdown,
+        content.premium,
+        content.grossPremium,
+        onSelectCoverageOption,
+        onSelectDeductibleOption,
+        onChangeAddonExclusion,
+      )
       Spacer(Modifier.height(8.dp))
       if (content.tiersInfo.coverageOptions.isNotEmpty()) {
         HedvigTextButton(
@@ -216,11 +241,24 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 @Composable
 private fun CoverageCard(
   tiersInfo: TiersInfo,
+  costBreakdown: List<CostBreakdownEntry>?,
+  premium: UiMoney?,
+  grossPremium: UiMoney?,
   onSelectCoverageOption: (String) -> Unit,
   onSelectDeductibleOption: (String) -> Unit,
+  onChangeAddonExclusion: (AddonId, Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(modifier) {
+  HedvigCard(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+  ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       modifier = Modifier.padding(16.dp),
@@ -264,10 +302,56 @@ private fun CoverageCard(
             coverageOptions = tiersInfo.coverageOptions,
             initiallyChosenItemIndex = chosenCoverageItemIndex,
             onDismissRequest = onDismissRequest,
+            isPremiumPriceExact = false,
             onItemSelected = {
               onSelectCoverageOption(tiersInfo.coverageOptions[it].moveHomeQuoteId)
             },
           )
+        }
+        val relatedAddonQuotes = tiersInfo.selectedCoverage.relatedAddonQuotes
+        for (relatedAddonQuote in relatedAddonQuotes) {
+          val relatedAddonQuoteOptions = listOf(
+            relatedAddonQuote.coverageDisplayName,
+            stringResource(R.string.MOVING_FLOW_ADDON_REMOVE_OPTION),
+          )
+          val chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
+            false -> 0
+            true -> 1
+          }
+          DropdownWithDialog(
+            style = Label(
+              items = relatedAddonQuoteOptions.map {
+                SimpleDropdownItem(it)
+              },
+              label = relatedAddonQuote.exposureName,
+            ),
+            size = Small,
+            hintText = "",
+            chosenItemIndex = chosenItemIndex,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+          ) { onDismissRequest ->
+            CoverageChoiceDialogContent(
+              coverageOptions = relatedAddonQuoteOptions.mapIndexed { index, optionName ->
+                CoverageInfo(
+                  moveHomeQuoteId = relatedAddonQuote.addonId.id,
+                  tierName = optionName,
+                  tierDescription = null,
+                  minimumPremiumForCoverage = if (index == 1) {
+                    UiMoney(0.0, relatedAddonQuote.premium.currencyCode)
+                  } else {
+                    relatedAddonQuote.premium
+                  },
+                )
+              },
+              initiallyChosenItemIndex = chosenItemIndex,
+              isPremiumPriceExact = true,
+              onDismissRequest = onDismissRequest,
+              onItemSelected = {
+                val exclude = it == 1
+                onChangeAddonExclusion(relatedAddonQuote.addonId, exclude)
+              },
+            )
+          }
         }
         when (val deductibleOptions = tiersInfo.deductibleOptions) {
           NoOptions -> {}
@@ -312,17 +396,36 @@ private fun CoverageCard(
           }
         }
       }
+      if (costBreakdown != null) {
+        DiscountCostBreakdown(costBreakdown)
+      }
+      HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
         endSlot = {
-          HedvigText(
-            text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              tiersInfo.selectedCoverage.premium.toString(),
-            ),
-            textAlign = TextAlign.End,
-            modifier = Modifier.wrapContentWidth(Alignment.End),
-          )
+          Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
+            if (grossPremium != null && grossPremium.amount != premium?.amount) {
+              HedvigText(
+                text = stringResource(
+                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  grossPremium,
+                ),
+                textAlign = TextAlign.End,
+                style = LocalTextStyle.current.copy(
+                  textDecoration = TextDecoration.LineThrough,
+                ),
+                modifier = Modifier.semantics { hideFromAccessibility() },
+              )
+            }
+            HedvigText(
+              text = stringResource(
+                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                premium ?: tiersInfo.selectedCoverage.netPremiumWithAddons.toString(),
+              ),
+              textAlign = TextAlign.End,
+              modifier = Modifier.wrapContentWidth(Alignment.End),
+            )
+          }
         },
         spaceBetween = 8.dp,
         Modifier.fillMaxWidth(),
@@ -335,6 +438,7 @@ private fun CoverageCard(
 private fun CoverageChoiceDialogContent(
   coverageOptions: List<CoverageInfo>,
   initiallyChosenItemIndex: Int?,
+  isPremiumPriceExact: Boolean,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
 ) {
@@ -344,7 +448,14 @@ private fun CoverageChoiceDialogContent(
     radioOptions = coverageOptions.map {
       RadioOptionCoverageInfo(
         it.tierName,
-        stringResource(R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY, it.minimumPremiumForCoverage.toString()),
+        stringResource(
+          if (isPremiumPriceExact) {
+            R.string.TIER_FLOW_PRICE_LABEL_CURRENCY
+          } else {
+            R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
+          },
+          it.minimumPremiumForCoverage.toString(),
+        ),
         it.tierDescription,
       )
     },
@@ -491,6 +602,7 @@ fun PreviewCoverageChoiceDialogContent() {
       )
     },
     initiallyChosenItemIndex = null,
+    isPremiumPriceExact = false,
     onItemSelected = {},
     onDismissRequest = {},
   )
@@ -519,11 +631,15 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
   val allOptions: List<MoveHomeQuote> = List(3) {
     MoveHomeQuote(
       id = it.toString(),
-      premium = UiMoney(
+      premium = UiMoney(100.0, SEK),
+      netPremiumWithAddons = UiMoney(
         amount = (it + 1) * 100.0,
         currencyCode = SEK,
       ),
-      previousPremium = null,
+      grossPremiumWithAddons = UiMoney(
+        amount = (it + 1) * 110.0,
+        currencyCode = SEK,
+      ),
       startDate = LocalDate.parse("2025-01-01"),
       discounts = emptyList(),
       displayItems = List(2) {
@@ -546,24 +662,33 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
         tierDescription = null,
         termsVersion = "termsVersion",
       ),
+      relatedAddonQuotes = emptyList(),
       tierName = "Pat Vance",
       tierLevel = 1299,
       tierDescription = "tierDescription#$it",
       deductible = null,
       defaultChoice = false,
-      relatedAddonQuotes = emptyList(),
     )
   }
   ChoseCoverageLevelAndDeductibleScreen(
     uiState = Content(
       tiersInfo = TiersInfo(
         allOptions = allOptions,
+        mtaQuotes = emptyList(),
         coverageOptions = List(2) {
           CoverageInfo(it.toString(), "tierName#$it", "tierDescription#$it", UiMoney(it.toDouble(), SEK))
         },
         selectedCoverage = allOptions[0],
         selectedDeductible = allOptions[0],
       ),
+      costBreakdown = List(2) {
+        CostBreakdownEntry(
+          "title#$it",
+          UiMoney(it.toDouble(), SEK),
+        )
+      },
+      premium = UiMoney(100.0, UiCurrencyCode.SEK),
+      grossPremium = UiMoney(110.0, UiCurrencyCode.SEK),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
       comparisonParameters = null,
@@ -575,6 +700,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
     onCompareCoverageClicked = {},
+    onChangeAddonExclusion = { _, _ -> },
   )
 }
 
@@ -590,5 +716,6 @@ fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
     onSelectCoverageOption = {},
     onSelectDeductibleOption = {},
     onCompareCoverageClicked = {},
+    onChangeAddonExclusion = { _, _ -> },
   )
 }

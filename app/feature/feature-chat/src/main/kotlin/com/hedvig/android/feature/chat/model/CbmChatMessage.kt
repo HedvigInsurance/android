@@ -6,6 +6,7 @@ import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.ChatMessageEntityBanner
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -15,11 +16,13 @@ internal sealed interface CbmChatMessage {
   val id: String
   val sender: Sender
   val sentAt: Instant
+  val banner: Banner?
 
   data class ChatMessageText(
     override val id: String,
     override val sender: Sender,
     override val sentAt: Instant,
+    override val banner: Banner?,
     val text: String,
   ) : CbmChatMessage
 
@@ -27,6 +30,7 @@ internal sealed interface CbmChatMessage {
     override val id: String,
     override val sender: Sender,
     override val sentAt: Instant,
+    override val banner: Banner?,
     val gifUrl: String,
   ) : CbmChatMessage
 
@@ -34,6 +38,7 @@ internal sealed interface CbmChatMessage {
     override val id: String,
     override val sender: Sender,
     override val sentAt: Instant,
+    override val banner: Banner?,
     val url: String,
     val mimeType: MimeType,
   ) : CbmChatMessage {
@@ -57,6 +62,7 @@ internal sealed interface CbmChatMessage {
       override val sentAt: Instant,
       val uri: Uri,
     ) : FailedToBeSent {
+      override val banner: Banner? = null
       override val sender: Sender = Sender.MEMBER
     }
 
@@ -69,6 +75,7 @@ internal sealed interface CbmChatMessage {
       override val sentAt: Instant,
       val uri: Uri,
     ) : FailedToBeSent {
+      override val banner: Banner? = null
       override val sender: Sender = Sender.MEMBER
     }
 
@@ -77,7 +84,46 @@ internal sealed interface CbmChatMessage {
       override val sentAt: Instant,
       val text: String,
     ) : FailedToBeSent {
+      override val banner: Banner? = null
       override val sender: Sender = Sender.MEMBER
+    }
+  }
+
+  data class Banner(
+    val bannerInformation: DisplayInfo,
+    val sheetInformation: DisplayInfo?,
+    val style: Style,
+  ) {
+    sealed interface DisplayInfo {
+      val title: String
+      val subtitle: String?
+
+      data class Both(
+        override val title: String,
+        override val subtitle: String,
+      ) : DisplayInfo
+
+      data class Title(override val title: String) : DisplayInfo {
+        override val subtitle: String? = null
+      }
+
+      companion object Companion {
+        fun fromTitleAndDescription(title: String?, description: String?): DisplayInfo? {
+          return when {
+            title == null && description == null -> return null
+            title != null && description != null -> Both(
+              title = title,
+              subtitle = description,
+            )
+            else -> Title(title = title ?: description!!)
+          }
+        }
+      }
+    }
+
+    enum class Style {
+      INFO,
+      FANCY_INFO,
     }
   }
 }
@@ -95,6 +141,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = mimeType.name,
       failedToSend = null,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
 
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
@@ -108,6 +155,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = null,
       failedToSend = null,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
 
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
@@ -121,6 +169,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = null,
       failedToSend = null,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
@@ -134,6 +183,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = null,
       failedToSend = TEXT,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -147,6 +197,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = null,
       failedToSend = PHOTO,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -160,6 +211,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       mimeType = null,
       failedToSend = MEDIA,
       isBeingSent = false,
+      banner = banner.toBannerEntity(),
     )
   }
 }
@@ -190,11 +242,11 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, text!!.trim())
-    gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, gifUrl!!)
+    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, banner.toBanner(), text!!.trim())
+    gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
     url != null && mimeType != null -> {
       val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)
-      CbmChatMessage.ChatMessageFile(id.toString(), sender, sentAt, url!!, mimeType)
+      CbmChatMessage.ChatMessageFile(id.toString(), sender, sentAt, banner.toBanner(), url!!, mimeType)
     }
 
     else -> error("Unknown ChatMessage type. Message entity:$this")
@@ -203,4 +255,30 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
 
 internal fun ChatMessageEntity.toLatestChatMessage(): LatestChatMessage {
   return LatestChatMessage(id, this.sender.toSender())
+}
+
+private fun CbmChatMessage.Banner?.toBannerEntity(): ChatMessageEntityBanner? {
+  if (this == null) return null
+  return ChatMessageEntityBanner(
+    title = bannerInformation.title,
+    subtitle = bannerInformation.subtitle,
+    detailsTitle = sheetInformation?.title,
+    detailsDescription = sheetInformation?.subtitle,
+    style = when (style) {
+      CbmChatMessage.Banner.Style.INFO -> ChatMessageEntityBanner.Style.INFO
+      CbmChatMessage.Banner.Style.FANCY_INFO -> ChatMessageEntityBanner.Style.FANCY_INFO
+    },
+  )
+}
+
+private fun ChatMessageEntityBanner?.toBanner(): CbmChatMessage.Banner? {
+  if (this == null) return null
+  return CbmChatMessage.Banner(
+    bannerInformation = CbmChatMessage.Banner.DisplayInfo.fromTitleAndDescription(title, subtitle) ?: return null,
+    sheetInformation = CbmChatMessage.Banner.DisplayInfo.fromTitleAndDescription(detailsTitle, detailsDescription),
+    style = when (style) {
+      ChatMessageEntityBanner.Style.INFO -> CbmChatMessage.Banner.Style.INFO
+      ChatMessageEntityBanner.Style.FANCY_INFO -> CbmChatMessage.Banner.Style.FANCY_INFO
+    },
+  )
 }

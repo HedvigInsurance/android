@@ -11,6 +11,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
@@ -77,19 +78,21 @@ class AddonSummaryPresenterTest {
   fun `the difference between current addon price and new addon price is shown correctly`() = runTest {
     val params = testSummaryParametersWithCurrentAddon
     val diff = getInitialState(params).totalPriceChange
-    assertThat(diff).isEqualTo(UiMoney(11.0, testSummaryParametersWithCurrentAddon.quote.price.currencyCode))
+    assertThat(
+      diff,
+    ).isEqualTo(UiMoney(10.0, testSummaryParametersWithCurrentAddon.quote.itemCost.monthlyNet.currencyCode))
     val params2 = testSummaryParametersWithMoreExpensiveCurrentAddon
     val diff2 = getInitialState(params2).totalPriceChange
     assertThat(
       diff2,
-    ).isEqualTo(UiMoney(-19.0, testSummaryParametersWithMoreExpensiveCurrentAddon.quote.price.currencyCode))
+    ).isEqualTo(UiMoney(-20.0, testSummaryParametersWithCurrentAddon.quote.itemCost.monthlyNet.currencyCode))
   }
 
   @Test
   fun `if there is no current addon, total price change should show the price of the quote`() = runTest {
     val params = testSummaryParametersNoCurrentAddon
     val diff = getInitialState(params).totalPriceChange
-    assertThat(diff).isEqualTo(testSummaryParametersNoCurrentAddon.quote.price)
+    assertThat(diff).isEqualTo(testSummaryParametersNoCurrentAddon.quote.itemCost.monthlyNet)
   }
 }
 
@@ -102,12 +105,12 @@ private class FakeSubmitAddonPurchaseUseCase() : SubmitAddonPurchaseUseCase {
 }
 
 private val newQuote = TravelAddonQuote(
-  displayName = "60 days",
+  displayName = "45 days",
   addonId = "addonId1",
   quoteId = "id",
   displayDetails = listOf(
     "Amount of insured people" to "You +1",
-    "Coverage" to "60 days",
+    "Coverage" to "45 days",
   ),
   addonVariant = AddonVariant(
     termsVersion = "terms",
@@ -123,16 +126,18 @@ private val newQuote = TravelAddonQuote(
     ),
   ),
   addonSubtype = "45_DAYS",
-  price = UiMoney(
-    60.0,
-    UiCurrencyCode.SEK,
-  ),
   documents = listOf(),
+  displayNameLong = "Mock quote 60 days",
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
 )
 
 private val newQuote2 = TravelAddonQuote(
   displayName = "60 days",
-  addonId = "addonId1",
+  addonId = "addonId2",
   quoteId = "id",
   displayDetails = listOf(
     "Amount of insured people" to "You +1",
@@ -151,22 +156,26 @@ private val newQuote2 = TravelAddonQuote(
       ),
     ),
   ),
-  addonSubtype = "45_DAYS",
-  price = UiMoney(
-    60.0,
-    UiCurrencyCode.NOK,
-  ),
+  addonSubtype = "60_DAYS",
   documents = listOf(),
+  displayNameLong = "Mock quote 60 days",
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
 )
 
 private val currentAddon = CurrentTravelAddon(
-  UiMoney(49.0, UiCurrencyCode.SEK),
   listOf("Coverage" to "45 days", "Insured people" to "You+1"),
+  displayNameLong = "Current Travel Addon",
+  netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
 )
 
 private val moreExpensiveCurrentAddon = CurrentTravelAddon(
-  UiMoney(79.0, UiCurrencyCode.SEK),
   listOf("Coverage" to "45 days", "Insured people" to "You+1"),
+  displayNameLong = "Current Travel Addon",
+  netPremium = UiMoney(79.0, UiCurrencyCode.SEK),
 )
 
 private val testSummaryParametersWithCurrentAddon = SummaryParameters(

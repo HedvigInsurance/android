@@ -7,21 +7,23 @@ mutation UpsellAddonOffer($contractId: ID!) {
           displayValue
           displayTitle
         }
-        premium {
+        netPremium {
           ...MoneyFragment
         }
+        displayNameLong
       }
       descriptionDisplayName
       quotes {
         addonId
         addonSubtype
+        displayNameLong
         displayItems {
           displayTitle
           displayValue
         }
         displayName
-        premium {
-          ...MoneyFragment
+        itemCost {
+          ...ItemCostFragment
         }
         quoteId
         addonVariant {

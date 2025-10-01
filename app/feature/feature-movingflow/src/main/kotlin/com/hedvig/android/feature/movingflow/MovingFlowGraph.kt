@@ -158,7 +158,9 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> { backStackEntry ->
       val moveIntentId = backStackEntry.toRoute<MovingFlowDestinations.ChoseCoverageLevelAndDeductible>().moveIntentId
       ChoseCoverageLevelAndDeductibleDestination(
-        viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel>(),
+        viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel> {
+          parametersOf(moveIntentId)
+        },
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         exitFlow = {

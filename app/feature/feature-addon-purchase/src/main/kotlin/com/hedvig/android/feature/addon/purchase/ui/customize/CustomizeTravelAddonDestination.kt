@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.addon.purchase.ui.customize
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -40,7 +42,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
+import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.ItemCostDiscount
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -52,10 +56,10 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.La
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -68,8 +72,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
@@ -79,6 +81,7 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
+import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -269,22 +272,7 @@ private fun CustomizeTravelAddonScreenContent(
       onChooseOptionInDialog = onChooseOptionInDialog,
       onChooseSelectedOption = onChooseSelectedOption,
       onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
-    )
-    Spacer(Modifier.height(8.dp))
-    TravelPlusInfoCard(
-      modifier = Modifier.padding(horizontal = 16.dp),
-      onButtonClick = dropUnlessResumed {
-        onNavigateToTravelInsurancePlusExplanation(
-          uiState.currentlyChosenOption.addonVariant.perils.map {
-            PerilData(
-              title = it.title,
-              description = it.description,
-              covered = it.covered,
-              colorCode = it.colorCode,
-            )
-          },
-        )
-      },
+      onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -298,6 +286,13 @@ private fun CustomizeTravelAddonScreenContent(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(R.string.general_cancel_button),
+      modifier = Modifier.fillMaxWidth(),
+      buttonSize = Large,
+      onClick = { popAddonFlow() },
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -308,15 +303,23 @@ private fun CustomizeTravelAddonCard(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    modifier = modifier,
+    modifier = modifier
+      .shadow(elevation = 2.dp, shape = HedvigTheme.shapes.cornerXLarge)
+      .border(
+        shape = HedvigTheme.shapes.cornerXLarge,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        width = 1.dp,
+      ),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     shape = HedvigTheme.shapes.cornerXLarge,
   ) {
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
-        chosenOptionPremiumExtra = uiState.currentlyChosenOption.price,
+        chosenOptionPremiumExtra = uiState.chosenOptionPremiumExtra,
         exposureName = uiState.travelAddonOffer.title,
         description = uiState.travelAddonOffer.description,
       )
@@ -336,7 +339,7 @@ private fun CustomizeTravelAddonCard(
           items = addonSimpleItems,
         ),
         size = Small,
-        containerColor = HedvigTheme.colorScheme.fillNegative,
+        containerColor = HedvigTheme.colorScheme.surfacePrimary,
         // there is always one option chosen, should never be shown anyway
         hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
@@ -364,6 +367,22 @@ private fun CustomizeTravelAddonCard(
         )
       }
       Spacer(Modifier.height(16.dp))
+      HedvigButtonGhostWithBorder(
+        modifier = Modifier.fillMaxWidth(),
+        text = stringResource(R.string.ADDON_FLOW_COVER_BUTTON),
+        onClick = dropUnlessResumed {
+          onNavigateToTravelInsurancePlusExplanation(
+            uiState.currentlyChosenOption.addonVariant.perils.map {
+              PerilData(
+                title = it.title,
+                description = it.description,
+                covered = it.covered,
+                colorCode = it.colorCode,
+              )
+            },
+          )
+        },
+      )
     }
   }
 }
@@ -395,9 +414,11 @@ private fun HeaderInfoWithCurrentPrice(
             labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
-            modifier = Modifier.wrapContentSize(Alignment.TopEnd).semantics {
-              contentDescription = pricePerMonth
-            },
+            modifier = Modifier
+              .wrapContentSize(Alignment.TopEnd)
+              .clearAndSetSemantics {
+                contentDescription = pricePerMonth
+              },
           )
         }
       },
@@ -417,19 +438,6 @@ private fun HeaderInfoWithCurrentPrice(
 }
 
 @Composable
-private fun TravelPlusInfoCard(onButtonClick: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigNotificationCard(
-    modifier = modifier,
-    message = stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT),
-    priority = InfoInline,
-    style = Button(
-      onButtonClick = onButtonClick,
-      buttonText = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
-    ),
-  )
-}
-
-@Composable
 private fun DropdownContent(
   title: String,
   subTitle: String,
@@ -441,11 +449,11 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   val data = addonOptions.map { option ->
-    val pricePerMonth = option.price.getPerMonthDescription()
+    val pricePerMonth = option.itemCost.monthlyNet.getPerMonthDescription()
     ExpandedRadioOptionData(
       chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
       title = option.displayName,
-      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.price),
+      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.itemCost.monthlyNet),
       onRadioOptionClick = {
         onChooseOptionInDialog(option)
       },
@@ -458,7 +466,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       title,
-      modifier = Modifier.fillMaxWidth().semantics { heading() },
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics { heading() },
       textAlign = TextAlign.Center,
     )
     HedvigText(
@@ -579,6 +589,12 @@ internal class CustomizeTravelAddonPreviewProvider :
         currentlyChosenOption = fakeTravelAddonQuote1,
         currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
         summaryParamsToNavigateFurther = null,
+        currentTravelAddon = CurrentTravelAddon(
+          listOf(),
+          "CurrentAddon",
+          netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
+        ),
+        chosenOptionPremiumExtra = UiMoney(10.0, UiCurrencyCode.SEK),
       ),
       Failure("Ooops"),
     ),
@@ -597,14 +613,23 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     product = "",
   ),
   addonSubtype = "45 days",
-  price = UiMoney(
-    49.0,
-    SEK,
-  ),
   documents = listOf(
     TravelAddonQuoteInsuranceDocument(
       "Some terms",
       "url",
+    ),
+  ),
+  displayNameLong = "Travel Plus 45 days",
+  itemCost = ItemCost(
+    UiMoney(59.0, UiCurrencyCode.SEK),
+    UiMoney(69.0, UiCurrencyCode.SEK),
+    discounts = listOf(
+      ItemCostDiscount(
+        campaignCode = "Bundle",
+        displayName = "15% bundle discount",
+        displayValue = "-19kr/mo",
+        explanation = "some explanation",
+      ),
     ),
   ),
 )
@@ -620,15 +645,24 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     displayName = "60 days",
     product = "",
   ),
-  addonSubtype = "45 days",
-  price = UiMoney(
-    60.0,
-    SEK,
-  ),
+  addonSubtype = "60 days",
   documents = listOf(
     TravelAddonQuoteInsuranceDocument(
       "Some terms",
       "url",
+    ),
+  ),
+  displayNameLong = "Travel Plus 60 days",
+  itemCost = ItemCost(
+    UiMoney(79.0, UiCurrencyCode.SEK),
+    UiMoney(89.0, UiCurrencyCode.SEK),
+    discounts = listOf(
+      ItemCostDiscount(
+        campaignCode = "Bundle",
+        displayName = "15% bundle discount",
+        displayValue = "-19kr/mo",
+        explanation = "some explanation",
+      ),
     ),
   ),
 )

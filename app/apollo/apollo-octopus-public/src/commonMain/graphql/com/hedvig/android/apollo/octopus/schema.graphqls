@@ -246,6 +246,10 @@ type Cart {
   """
   cost: CartCost!
   """
+  Bundle discount information for this cart
+  """
+  bundleDiscount: CartBundleDiscountInfo!
+  """
   If false, campaigns cannot be added to this cart.
   """
   campaignsEnabled: Boolean!
@@ -259,6 +263,19 @@ type Cart {
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
   redeemedCampaignV2: RedeemedCampaignV2
+}
+"""
+Bundle discount information for a cart
+"""
+type CartBundleDiscountInfo {
+  """
+  Whether the cart currently has bundle discount active
+  """
+  hasBundleDiscount: Boolean!
+  """
+  Number of products in cart that are eligible for bundle discount
+  """
+  eligibleProductCount: Int
 }
 type CartCost {
   """
@@ -457,6 +474,11 @@ interface ChatMessage {
   id: ID!
   sender: ChatMessageSender!
   sentAt: Instant!
+  """
+  An optional attachment to display with the message, which can provide
+  additional relevant context to the message itself.
+  """
+  disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageAction implements ChatMessage {
   id: ID!
@@ -465,6 +487,30 @@ type ChatMessageAction implements ChatMessage {
   text: String
   actionUrl: Url!
   actionTitle: String!
+  disclaimer: ChatMessageDisclaimer
+}
+type ChatMessageDisclaimer {
+  type: ChatMessageDisclaimerType!
+  title: String
+  description: String
+  """
+  The title that goes with `detailsDescription`.
+  """
+  detailsTitle: String
+  """
+  The longer form of the description that's typically hidden behind a 'Read more' button.
+  """
+  detailsDescription: String
+}
+enum ChatMessageDisclaimerType {
+  """
+  Simple information
+  """
+  INFORMATION
+  """
+  A notice that the conversation has been escalated.
+  """
+  ESCALATION
 }
 type ChatMessageFile implements ChatMessage {
   id: ID!
@@ -472,6 +518,7 @@ type ChatMessageFile implements ChatMessage {
   sentAt: Instant!
   signedUrl: Url!
   mimeType: String!
+  disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageMutationOutput {
   message: ChatMessage
@@ -485,12 +532,14 @@ type ChatMessagePage {
 enum ChatMessageSender {
   MEMBER
   HEDVIG
+  AUTOMATION
 }
 type ChatMessageText implements ChatMessage {
   id: ID!
   sender: ChatMessageSender!
   sentAt: Instant!
   text: String!
+  disclaimer: ChatMessageDisclaimer
 }
 scalar CheckoutPaymentsAction
 type Claim {
@@ -624,6 +673,7 @@ called Agreements.
 """
 type Contract {
   id: UUID!
+  discountsDetails: ContractDiscountDetails!
   """
   The first date this insurance became active - i.e. the "from date" of the first agreement.
   """
@@ -723,6 +773,40 @@ type ContractCoInsured {
   Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
   """
   hasMissingInfo: Boolean!
+}
+type ContractDiscountDetails {
+  """
+   A text to show if an extra explanation is needed, e.g. Your bundle discount will activate when you have two active insurances.
+  """
+  discountsInfo: String
+  """
+   Contract level discounts.
+  """
+  discounts: [ContractDiscountItem!]!
+}
+type ContractDiscountItem {
+  """
+   Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / FURRY / etc
+  """
+  campaignCode: String!
+  """
+   Longer explanation for the discount, ex. "50% discount for 6 months" or "15% bundle discount
+  """
+  description: String!
+  """
+   Status of the discount itself: active, terminated or pending (an active contract can have a pending bundle discount,
+  for example).
+  """
+  discountStatus: ContractDiscountStatus!
+  """
+   Describes discount status with date if needed: Expired 31 aug 2025 or Active or Pending or Valid until 31 mars 2026
+  """
+  statusDescription: String!
+}
+enum ContractDiscountStatus {
+  ACTIVE
+  PENDING
+  TERMINATED
 }
 type ContractSelfChangeBlocker {
   reason: String!
@@ -1825,6 +1909,14 @@ type MemberInsuranceCost {
   freeUntil: Date
 }
 """
+ All fields should be non-empty 
+"""
+input MemberLogDeviceInput {
+  os: String!
+  brand: String!
+  model: String!
+}
+"""
 Container for mutations that refer to the currently authenticated member.
 """
 type MemberMutationOutput {
@@ -2011,11 +2103,11 @@ type MoveAddonQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
   Cost breakdown. Addons never have discounts unique to them, but they inherit discounts from parent contract
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Shouldn't be used, addons don't have unique discounts")
   """
    When this addon is becoming active 
   """
@@ -2114,11 +2206,15 @@ type MoveHomeQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2281,11 +2377,15 @@ type MoveMtaQuote {
   """
    Premium 
   """
-  premium: Money! @deprecated(reason: "use cost instead")
+  premium: Money!
   """
-   Cost breakdown
+   Cost breakdown. Addons excluded 
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use total cost instead.")
+  """
+   Cost breakdown. Addons included 
+  """
+  totalCost: ItemCost!
   """
    When new insurance (or existing insurance address change) is becoming active 
   """
@@ -2379,6 +2479,7 @@ type Mutation {
   memberUpdateLanguage(input: MemberUpdateLanguageInput!): MemberMutationOutput!
   memberDeletionRequest: UserError
   memberUpdateSubscriptionPreference(subscribe: Boolean): UserError
+  memberLogDevice(input: MemberLogDeviceInput!): UserError
   """
   Mutation that updates member email and phone number, or confirms them if they have not changed.
   """
@@ -2597,6 +2698,7 @@ type PendingContract {
   Calculated based on the pending agreement
   """
   cost: ItemCost!
+  discountsDetails: ContractDiscountDetails!
   """
   Same as `Contract.exposureDisplayName`.
   """
@@ -2806,6 +2908,10 @@ type Product {
   """
   multiple: Boolean
   """
+  Bundle discount information for this product
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
@@ -2900,6 +3006,15 @@ type ProductOfferAddon {
   States whether this is attached to the offer or not, affected by `Mutation.productOfferAddonsSelect`.
   """
   isSelected: Boolean!
+}
+"""
+Bundle discount information for a product offer
+"""
+type ProductOfferBundleDiscountInfo {
+  """
+  Whether the product is eligible for bundle discount
+  """
+  isEligible: Boolean!
 }
 type ProductOfferCost {
   """
@@ -3613,7 +3728,15 @@ type UpsellTravelAddonCurrentAddon {
   """
   Price of the addon.
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use itemCost instead")
+  """
+  Net price of the addon.
+  """
+  netPremium: Money!
+  """
+  Used for displaying current coverage. eg Travel Insurance Plus 60 days
+  """
+  displayNameLong: String!
 }
 type UpsellTravelAddonDisplayItem {
   displayTitle: String!
@@ -3675,9 +3798,13 @@ type UpsellTravelAddonQuote {
   """
   addonId: ID!
   """
-   Display name of the addon. Will be shown in the select days dropdown. 
+   Display name of the addon. Will be shown in the select days dropdown. eg 45 days 60 days 
   """
   displayName: String!
+  """
+  Used for displaying new coverage. eg Travel Insurance Plus 60 days
+  """
+  displayNameLong: String!
   """
    The addon details to show on summary page. 
   """
@@ -3685,7 +3812,11 @@ type UpsellTravelAddonQuote {
   """
    Price of the addon. 
   """
-  premium: Money!
+  premium: Money! @deprecated(reason: "Use itemCost instead")
+  """
+  Item cost breakdown with discounts applied.
+  """
+  itemCost: ItemCost!
   """
   Documents to show instead of addonVariant documents
   """

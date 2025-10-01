@@ -23,30 +23,41 @@ internal data class MovingFlowQuotes(
 ) {
   interface Quote {
     val premium: UiMoney
-    val previousPremium: UiMoney?
+    val netPremiumWithAddons: UiMoney
+    val grossPremiumWithAddons: UiMoney
     val discounts: List<ContractDiscount>
     val exposureName: String
     val productVariant: ProductVariant
     val startDate: LocalDate
     val displayItems: List<DisplayItem>
+    val relatedAddonQuotes: List<AddonQuote>
+
+    val includedRelatedAddonQuotes
+      get() = relatedAddonQuotes.filter { addonQuote ->
+        when (addonQuote) {
+          is HomeAddonQuote -> !addonQuote.isExcludedByUser
+          is MtaAddonQuote -> true
+        }
+      }
   }
 
   @Serializable
   internal data class MoveHomeQuote(
     val id: String,
     override val premium: UiMoney,
-    override val previousPremium: UiMoney?,
+    override val netPremiumWithAddons: UiMoney,
+    override val grossPremiumWithAddons: UiMoney,
     override val startDate: LocalDate,
     override val discounts: List<ContractDiscount>,
     override val displayItems: List<DisplayItem>,
     override val exposureName: String,
     override val productVariant: ProductVariant,
+    override val relatedAddonQuotes: List<HomeAddonQuote>,
     val tierName: String,
     val tierLevel: Int,
     val tierDescription: String?,
     val deductible: Deductible?,
     val defaultChoice: Boolean,
-    val relatedAddonQuotes: List<HomeAddonQuote>,
   ) : Quote {
     val tierDisplayName = productVariant.displayTierName ?: tierName
 
@@ -61,13 +72,14 @@ internal data class MovingFlowQuotes(
   @Serializable
   internal data class MoveMtaQuote(
     override val premium: UiMoney,
-    override val previousPremium: UiMoney?,
+    override val netPremiumWithAddons: UiMoney,
+    override val grossPremiumWithAddons: UiMoney,
     override val exposureName: String,
     override val productVariant: ProductVariant,
     override val startDate: LocalDate,
     override val discounts: List<ContractDiscount>,
     override val displayItems: List<DisplayItem>,
-    val relatedAddonQuotes: List<MtaAddonQuote>,
+    override val relatedAddonQuotes: List<MtaAddonQuote>,
   ) : Quote
 
   @Serializable
@@ -86,8 +98,6 @@ internal data class MovingFlowQuotes(
   internal sealed interface AddonQuote {
     val addonId: AddonId
     val premium: UiMoney
-    val previousPremium: UiMoney?
-    val discounts: List<ContractDiscount>
     val startDate: LocalDate
     val displayItems: List<DisplayItem>
     val exposureName: String
@@ -96,10 +106,9 @@ internal data class MovingFlowQuotes(
 
     @Serializable
     data class HomeAddonQuote(
+      val relatedQuoteId: String,
       override val addonId: AddonId,
       override val premium: UiMoney,
-      override val previousPremium: UiMoney?,
-      override val discounts: List<ContractDiscount>,
       override val startDate: LocalDate,
       override val displayItems: List<DisplayItem>,
       override val exposureName: String,
@@ -112,8 +121,6 @@ internal data class MovingFlowQuotes(
     data class MtaAddonQuote(
       override val addonId: AddonId,
       override val premium: UiMoney,
-      override val previousPremium: UiMoney?,
-      override val discounts: List<ContractDiscount>,
       override val startDate: LocalDate,
       override val displayItems: List<DisplayItem>,
       override val exposureName: String,
@@ -136,12 +143,11 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
     homeQuotes = homeQuotes.orEmpty().map { houseQuote ->
       MoveHomeQuote(
         id = houseQuote.id,
-        premium = UiMoney.fromMoneyFragment(houseQuote.cost.monthlyNet),
-        previousPremium = UiMoney.fromMoneyFragment(houseQuote.cost.monthlyGross).takeIf {
-          houseQuote.cost.monthlyGross.amount != houseQuote.cost.monthlyNet.amount
-        },
+        premium = UiMoney.fromMoneyFragment(houseQuote.premium),
+        netPremiumWithAddons = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyNet),
+        grossPremiumWithAddons = UiMoney.fromMoneyFragment(houseQuote.totalCost.monthlyGross),
         startDate = houseQuote.startDate,
-        discounts = houseQuote.cost.discounts.map { discount ->
+        discounts = houseQuote.totalCost.discounts.map { discount ->
           MovingFlowQuotes.ContractDiscount(
             displayName = discount.displayName,
             discountValue = discount.displayValue,
@@ -150,30 +156,11 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         displayItems = houseQuote.displayItems.map { it.toDisplayItem() },
         exposureName = houseQuote.exposureName,
         productVariant = houseQuote.productVariant.toProductVariant(),
-        tierName = houseQuote.tierName,
-        tierLevel = houseQuote.tierLevel,
-        tierDescription = houseQuote.productVariant.tierDescription,
-        deductible = houseQuote.deductible?.let { deductible ->
-          Deductible(
-            amount = UiMoney.fromMoneyFragment(deductible.amount),
-            percentage = deductible.percentage.takeIf { it != 0 },
-            displayText = deductible.displayText,
-          )
-        },
-        defaultChoice = houseQuote.defaultChoice,
         relatedAddonQuotes = houseQuote.addons.orEmpty().map { addon ->
           HomeAddonQuote(
+            relatedQuoteId = houseQuote.id,
             addonId = AddonId(addon.addonId),
-            premium = UiMoney.fromMoneyFragment(addon.cost.monthlyNet),
-            previousPremium = UiMoney.fromMoneyFragment(addon.cost.monthlyGross).takeIf {
-              addon.cost.monthlyGross.amount != addon.cost.monthlyNet.amount
-            },
-            discounts = addon.cost.discounts.map { discount ->
-              MovingFlowQuotes.ContractDiscount(
-                displayName = discount.displayName,
-                discountValue = discount.displayValue,
-              )
-            },
+            premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
             exposureName = addon.displayName,
             displayItems = addon.displayItems.map {
@@ -188,15 +175,25 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
             coverageDisplayName = addon.coverageDisplayName,
           )
         },
+        tierName = houseQuote.tierName,
+        tierLevel = houseQuote.tierLevel,
+        tierDescription = houseQuote.productVariant.tierDescription,
+        deductible = houseQuote.deductible?.let { deductible ->
+          Deductible(
+            amount = UiMoney.fromMoneyFragment(deductible.amount),
+            percentage = deductible.percentage.takeIf { it != 0 },
+            displayText = deductible.displayText,
+          )
+        },
+        defaultChoice = houseQuote.defaultChoice,
       )
     },
     mtaQuotes = mtaQuotes.orEmpty().map { mtaQuote ->
       MoveMtaQuote(
-        premium = UiMoney.fromMoneyFragment(mtaQuote.cost.monthlyNet),
-        previousPremium = UiMoney.fromMoneyFragment(mtaQuote.cost.monthlyGross).takeIf {
-          mtaQuote.cost.monthlyGross.amount != mtaQuote.cost.monthlyNet.amount
-        },
-        discounts = mtaQuote.cost.discounts.map { discount ->
+        premium = UiMoney.fromMoneyFragment(mtaQuote.premium),
+        netPremiumWithAddons = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyNet),
+        grossPremiumWithAddons = UiMoney.fromMoneyFragment(mtaQuote.totalCost.monthlyGross),
+        discounts = mtaQuote.totalCost.discounts.map { discount ->
           MovingFlowQuotes.ContractDiscount(
             displayName = discount.displayName,
             discountValue = discount.displayValue,
@@ -209,16 +206,7 @@ internal fun MoveIntentQuotesFragment.toMovingFlowQuotes(): MovingFlowQuotes {
         relatedAddonQuotes = mtaQuote.addons.orEmpty().map { addon ->
           MtaAddonQuote(
             addonId = AddonId(addon.addonId),
-            premium = UiMoney.fromMoneyFragment(addon.cost.monthlyNet),
-            previousPremium = UiMoney.fromMoneyFragment(addon.cost.monthlyGross).takeIf {
-              addon.cost.monthlyGross.amount != addon.cost.monthlyNet.amount
-            },
-            discounts = addon.cost.discounts.map { discount ->
-              MovingFlowQuotes.ContractDiscount(
-                displayName = discount.displayName,
-                discountValue = discount.displayValue,
-              )
-            },
+            premium = UiMoney.fromMoneyFragment(addon.premium),
             startDate = addon.startDate,
             exposureName = addon.displayName,
             displayItems = addon.displayItems.map {

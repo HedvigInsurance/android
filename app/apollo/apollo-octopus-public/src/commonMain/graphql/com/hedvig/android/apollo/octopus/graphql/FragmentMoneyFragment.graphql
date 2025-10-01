@@ -2,3 +2,22 @@ fragment MoneyFragment on Money {
   amount
   currencyCode
 }
+
+fragment ItemCostFragment on ItemCost {
+  monthlyGross {
+    ...MoneyFragment
+  }
+  monthlyNet {
+    ...MoneyFragment
+  }
+  discounts {
+    ...ItemDiscountFragment
+  }
+}
+
+fragment ItemDiscountFragment on ItemDiscount {
+  displayName
+  displayValue
+  explanation
+  campaignCode
+}

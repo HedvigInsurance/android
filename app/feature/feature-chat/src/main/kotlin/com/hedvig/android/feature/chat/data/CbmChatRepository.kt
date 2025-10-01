@@ -59,6 +59,7 @@ import octopus.ConversationStatusMessageQuery
 import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
+import octopus.type.ChatMessageDisclaimerType
 import okhttp3.MediaType.Companion.toMediaType
 
 internal interface CbmChatRepository {
@@ -95,7 +96,7 @@ internal class CbmChatRepositoryImpl(
   private val contentResolver: ContentResolver,
   private val clock: Clock,
 ) : CbmChatRepository {
-  override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
+  override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info> {
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
@@ -212,7 +213,7 @@ internal class CbmChatRepositoryImpl(
           when (failedToSend) {
             ChatMessageEntity.FailedToSendType.PHOTO,
             ChatMessageEntity.FailedToSendType.MEDIA,
-            -> url!!.toUri().tryReleasePersistableUriPermission()
+              -> url!!.toUri().tryReleasePersistableUriPermission()
 
             else -> {}
           }
@@ -461,13 +462,13 @@ private fun octopus.fragment.ConversationInfo?.toConversationInfo(): Conversatio
   }
 }
 
-private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo.Info {
-  return ConversationInfo.Info(
+private fun octopus.fragment.ConversationInfo.toConversationInfo(): Info {
+  return Info(
     conversationId = id,
     createdAt = createdAt,
     isLegacy = isLegacy,
     claimInfo = claim?.let {
-      ConversationInfo.Info.ClaimInfo(
+      Info.ClaimInfo(
         it.id,
         it.claimType,
       )
@@ -532,6 +533,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
       "video/mp4" -> CbmChatMessage.ChatMessageFile.MimeType.MP4
       else -> CbmChatMessage.ChatMessageFile.MimeType.OTHER
     },
+    banner = disclaimer.toBanner(),
   )
 
   is ChatMessageTextChatMessageFragment -> {
@@ -541,6 +543,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
         sender = sender.toSender(),
         sentAt = sentAt,
         gifUrl = text,
+        banner = disclaimer.toBanner(),
       )
     } else {
       CbmChatMessage.ChatMessageText(
@@ -548,6 +551,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
         sender = sender.toSender(),
         sentAt = sentAt,
         text = text,
+        banner = disclaimer.toBanner(),
       )
     }
   }
@@ -556,6 +560,19 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
   }
+}
+
+private fun ChatMessageFragment.Disclaimer?.toBanner(): CbmChatMessage.Banner? {
+  if (this == null) return null
+  return CbmChatMessage.Banner(
+    bannerInformation = CbmChatMessage.Banner.DisplayInfo.fromTitleAndDescription(title, description) ?: return null,
+    sheetInformation = CbmChatMessage.Banner.DisplayInfo.fromTitleAndDescription(detailsTitle, detailsDescription),
+    style = when (type) {
+      ChatMessageDisclaimerType.INFORMATION -> CbmChatMessage.Banner.Style.INFO
+      ChatMessageDisclaimerType.ESCALATION -> CbmChatMessage.Banner.Style.FANCY_INFO
+      ChatMessageDisclaimerType.UNKNOWN__ -> CbmChatMessage.Banner.Style.INFO
+    },
+  )
 }
 
 /**
@@ -580,6 +597,7 @@ private fun ConversationInput.toChatMessageEntity(
         mimeType = CbmChatMessage.ChatMessageFile.MimeType.OTHER.toString(),
         failedToSend = null,
         isBeingSent = true,
+        banner = null,
       )
     }
 
@@ -595,6 +613,7 @@ private fun ConversationInput.toChatMessageEntity(
         mimeType = null,
         failedToSend = null,
         isBeingSent = true,
+        banner = null,
       )
     }
   }

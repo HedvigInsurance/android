@@ -2,11 +2,5 @@
 # `Either` class needs to exist after minification for Retrofit to know how to adapt the response to it
 -keep,allowobfuscation,allowshrinking class arrow.core.Either
 
-# Unleash
--keep public class io.getunleash.** {*;}
--keep class com.fasterxml.** {*;}
--dontwarn java.beans.ConstructorProperties
--dontwarn java.beans.Transient
-
 # Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.

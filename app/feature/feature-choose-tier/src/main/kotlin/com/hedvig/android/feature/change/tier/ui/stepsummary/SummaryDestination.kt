@@ -69,9 +69,10 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import com.hedvig.android.tiersandaddons.rememberQuoteCardState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -335,35 +336,39 @@ private fun SummaryTopAppBar(onIconClick: () -> Unit) {
 }
 
 @Composable
-private fun SummaryCard(
-  uiState: Success,
-  modifier: Modifier = Modifier,
-) {
-  val state = rememberQuoteCardState()
+private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
   val addonDocs = uiState.quote.addons.flatMap { it.addonVariant.documents }
   val allDocuments: List<InsuranceVariantDocument> =
     uiState.quote.productVariant.documents + addonDocs
   QuoteCard(
-    subtitle = uiState.currentContractData.contractDisplaySubtitle,
-    isExcluded = false,
-    premium = uiState.quote.newTotalCost.monthlyNet,
-    costBreakdown = uiState.quote.costBreakdown,
-    previousPremium =
-      if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet)
-        uiState.quote.newTotalCost.monthlyGross else null,
-    displayItems = uiState.quote.displayItems.map {
-      QuoteDisplayItem(
-        it.displayTitle,
-        null,
-        it.displayValue,
-      )
-    },
-    modifier = modifier,
-    quoteCardState = state,
     displayName = uiState.quote.productVariant.displayName,
     contractGroup = uiState.quote.productVariant.contractGroup,
     insurableLimits = uiState.quote.productVariant.insurableLimits,
-    documents = allDocuments,
+    documents = allDocuments.map {
+      DisplayDocument(it.displayName, it.url)
+    },
+    subtitle = uiState.currentContractData.contractDisplaySubtitle,
+    premium = uiState.quote.newTotalCost.monthlyNet,
+    previousPremium = if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
+      uiState.quote.newTotalCost.monthlyGross
+    } else {
+      null
+    },
+    costBreakdown = uiState.quote.costBreakdown.map {
+      CostBreakdownEntry(
+        it.first,
+        it.second,
+        false,
+      )
+    },
+    displayItems = uiState.quote.displayItems.map {
+      QuoteDisplayItem(
+        it.displayTitle,
+        it.displayValue,
+        null,
+      )
+    },
+    modifier = modifier,
   )
 }
 

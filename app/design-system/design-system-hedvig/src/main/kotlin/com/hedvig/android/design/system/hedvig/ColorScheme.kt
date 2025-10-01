@@ -28,6 +28,7 @@ data class ColorScheme(
   val textTertiaryTranslucent: Color,
   val textDisabledTranslucent: Color,
   val textBlackTranslucent: Color,
+  val textBlackSecondaryTranslucent: Color,
   val textWhiteTranslucent: Color,
   val action: Color,
   val link: Color,
@@ -114,6 +115,7 @@ data class ColorScheme(
   val highlightPurpleFill1: Color,
   val highlightPurpleFill2: Color,
   val highlightPurpleFill3: Color,
+  val highlightPurpleFill4: Color,
   val scrim: Color,
   val transparent: Color,
 )
@@ -134,6 +136,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   textTertiaryTranslucent = ColorLightTokens.TextTertiaryTranslucent,
   textDisabledTranslucent = ColorLightTokens.TextDisabledTranslucent,
   textBlackTranslucent = ColorLightTokens.TextBlackTranslucent,
+  textBlackSecondaryTranslucent = ColorLightTokens.TextBlackSecondaryTranslucent,
   textWhiteTranslucent = ColorLightTokens.TextWhiteTranslucent,
   action = ColorLightTokens.Action,
   link = ColorLightTokens.Link,
@@ -220,6 +223,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   highlightPurpleFill1 = ColorLightTokens.HighlightPurpleFill1,
   highlightPurpleFill2 = ColorLightTokens.HighlightPurpleFill2,
   highlightPurpleFill3 = ColorLightTokens.HighlightPurpleFill3,
+  highlightPurpleFill4 = ColorLightTokens.HighlightPurpleFill4,
   scrim = ColorLightTokens.Scrim,
   transparent = ColorLightTokens.Transparent,
 )
@@ -240,6 +244,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   textTertiaryTranslucent = ColorDarkTokens.TextTertiaryTranslucent,
   textDisabledTranslucent = ColorDarkTokens.TextDisabledTranslucent,
   textBlackTranslucent = ColorDarkTokens.TextBlackTranslucent,
+  textBlackSecondaryTranslucent = ColorDarkTokens.TextBlackSecondaryTranslucent,
   textWhiteTranslucent = ColorDarkTokens.TextWhiteTranslucent,
   action = ColorDarkTokens.Action,
   link = ColorDarkTokens.Link,
@@ -320,6 +325,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   highlightPurpleFill1 = ColorDarkTokens.HighlightPurpleFill1,
   highlightPurpleFill2 = ColorDarkTokens.HighlightPurpleFill2,
   highlightPurpleFill3 = ColorDarkTokens.HighlightPurpleFill3,
+  highlightPurpleFill4 = ColorDarkTokens.HighlightPurpleFill4,
   highlightAmberFill1 = ColorDarkTokens.HighlightAmberFill1,
   highlightAmberFill2 = ColorDarkTokens.HighlightAmberFill2,
   highlightAmberFill3 = ColorDarkTokens.HighlightAmberFill3,
@@ -372,6 +378,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.TextTertiaryTranslucent -> textTertiaryTranslucent
     ColorSchemeKeyTokens.TextDisabledTranslucent -> textDisabledTranslucent
     ColorSchemeKeyTokens.TextBlackTranslucent -> textBlackTranslucent
+    ColorSchemeKeyTokens.TextBlackSecondaryTranslucent -> textBlackSecondaryTranslucent
     ColorSchemeKeyTokens.TextWhiteTranslucent -> textWhiteTranslucent
     ColorSchemeKeyTokens.Action -> action
     ColorSchemeKeyTokens.Link -> link
@@ -458,6 +465,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.HighlightPurpleFill1 -> highlightPurpleFill1
     ColorSchemeKeyTokens.HighlightPurpleFill2 -> highlightPurpleFill2
     ColorSchemeKeyTokens.HighlightPurpleFill3 -> highlightPurpleFill3
+    ColorSchemeKeyTokens.HighlightPurpleFill4 -> highlightPurpleFill4
     ColorSchemeKeyTokens.Scrim -> scrim
     ColorSchemeKeyTokens.Transparent -> transparent
   }

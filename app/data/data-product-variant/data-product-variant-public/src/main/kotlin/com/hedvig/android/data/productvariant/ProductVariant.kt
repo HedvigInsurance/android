@@ -36,28 +36,7 @@ data class InsurableLimit(
   val label: String,
   val limit: String,
   val description: String,
-) {
-  enum class InsurableLimitType {
-    DEDUCTIBLE,
-    DEDUCTIBLE_NATURE_DAMAGE,
-    DEDUCTIBLE_ALL_RISK,
-    INSURED_AMOUNT,
-    GOODS_INDIVIDUAL,
-    GOODS_FAMILY,
-    TRAVEL_DAYS,
-    MEDICAL_EXPENSES,
-    LOST_LUGGAGE,
-    BIKE,
-    PERMANENT_INJURY,
-    TREATMENT,
-    DENTAL_TREATMENT,
-    TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME,
-    TRAVEL_DELAYED_ON_TRIP,
-    TRAVEL_DELAYED_LUGGAGE,
-    TRAVEL_CANCELLATION,
-    UNKNOWN,
-  }
-}
+)
 
 @Serializable
 data class InsuranceVariantDocument(

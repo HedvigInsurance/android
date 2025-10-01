@@ -39,6 +39,13 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">We will get back to you as soon as possible. In the meantime you can close the app.</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Conversation sent to our service team</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Read more</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TEXT">If necessary, you’ll be automatically connected to our service team.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TITLE">We use AI for faster service</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct. If necessary, you’ll be connected to our service team to help you further.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
@@ -117,7 +124,7 @@
   <string name="CHAT_NEW_CONVERSATION_TITLE">New message</string>
   <string name="CHAT_NEW_MESSAGE">New message</string>
   <string name="CHAT_SENDER_AUTOMATION">Automated message</string>
-  <string name="CHAT_SENDER_HEDVIG">Hedvig</string>
+  <string name="CHAT_SENDER_HEDVIG">Hedvig Service Team</string>
   <string name="CHAT_SENDER_MEMBER">You</string>
   <string name="CHAT_SENT_A_FILE">Sent a document</string>
   <string name="CHAT_SENT_A_MESSAGE">Sent a message</string>
@@ -380,6 +387,7 @@
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Make sure we have the right contact info in case we need to reach you.</string>
+  <string name="MOVING_FLOW_ADDON_REMOVE_OPTION">No extra coverage</string>
   <string name="MOVING_FLOW_BODY">Which insurance do you want to update the address for?</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO">This addon can be removed by %1$s.</string>
   <string name="MOVING_FLOW_REMOVE_ADDON_INFO_LINK_TEXT">contacting support</string>
@@ -604,7 +612,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Purchased %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
-  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activates %s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activate %s</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>
@@ -642,6 +650,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Not selected</string>
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
+  <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
   <string name="TALKBACK_PRICE">Price</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR code</string>
@@ -710,6 +719,8 @@
   <string name="TERMINATION_SURVEY_SUBTITLE">Why do you want to cancel your insurance?</string>
   <string name="TIER_COMPARISON_SUBTITLE">Find the best plan available for you</string>
   <string name="TIER_COMPARISON_TITLE">Compare coverage levels</string>
+  <string name="TIER_FLOW_ADDON_LABEL">Extended travel coverage</string>
+  <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">No extended coverage</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Your updates will be effective from  %s.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">The changes couldn\'t be completed. Please try again.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Processing changes...</string>
@@ -724,10 +735,12 @@
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Your previous price %1$s</string>
   <string name="TIER_FLOW_PRICE_LABEL">from %s SEK/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mo</string>
   <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">From %s/mo</string>
   <string name="TIER_FLOW_PROCESSING">Fetching coverage levels...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Answers to our most frequently asked questions.</string>
   <string name="TIER_FLOW_QA_TITLE">Questions and answers</string>
+  <string name="TIER_FLOW_SELECT_ADDON_SUBTITLE">Days covered when travelling</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_SUBTITLE">Find the right coverage for you</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_TITLE">Select your coverage</string>
   <string name="TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE">Amount deducted from your compensation</string>
@@ -747,6 +760,7 @@
   <string name="TOAST.NEW_OFFER">New offer</string>
   <string name="TOAST.READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %s</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>

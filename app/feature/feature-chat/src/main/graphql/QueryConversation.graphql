@@ -18,6 +18,13 @@ fragment ChatMessageFragment on ChatMessage {
   id
   sentAt
   sender
+  disclaimer {
+    type
+    title
+    description
+    detailsTitle
+    detailsDescription
+  }
   ... on ChatMessageFile {
     signedUrl
     mimeType

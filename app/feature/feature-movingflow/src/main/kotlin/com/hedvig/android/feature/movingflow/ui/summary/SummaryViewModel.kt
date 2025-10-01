@@ -2,7 +2,6 @@ package com.hedvig.android.feature.movingflow.ui.summary
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,28 +14,28 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
 import com.hedvig.android.feature.movingflow.data.AddonId
+import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ConfirmChanges
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryEvent.ToggleHomeAddonExclusion
-import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.CardContent.DisplayItem
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.launch
+import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.tiersandaddons.DisplayDocument
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
@@ -46,7 +45,6 @@ internal class SummaryViewModel(
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
-  featureManager: FeatureManager,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
@@ -55,7 +53,6 @@ internal class SummaryViewModel(
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
-      featureManager = featureManager,
     ),
   )
 
@@ -65,19 +62,14 @@ internal class SummaryPresenter(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
-  private val featureManager: FeatureManager,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
     var summaryInfo: SummaryInfoState by remember { mutableStateOf(SummaryInfoState.Loading) }
-    var totalPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.totalPremium) }
-    var grossPremium: UiMoney? by remember { mutableStateOf((lastState as? SummaryUiState.Content)?.grossPremium) }
+    var moveIntentCost: MoveIntentCost? by remember { mutableStateOf(null) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
     var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
-    val canExcludeAddons by remember {
-      featureManager.isFeatureEnabled(Feature.ENABLE_ADDONS_REMOVAL_FROM_MOVING_FLOW)
-    }.collectAsState(false)
 
     CollectEvents { event ->
       when (event) {
@@ -96,10 +88,6 @@ internal class SummaryPresenter(
 
         DismissSubmissionError -> {
           submitChangesError = null
-        }
-
-        is ToggleHomeAddonExclusion -> {
-          launch { movingFlowRepository.toggleHomeAddonExclusion(event.addonId) }
         }
       }
     }
@@ -141,10 +129,7 @@ internal class SummaryPresenter(
             .map(HomeAddonQuote::addonId)
             .map(AddonId::id),
         ).collect { result ->
-          Snapshot.withMutableSnapshot {
-            totalPremium = result.getOrNull()?.monthlyNet
-            grossPremium = result.getOrNull()?.monthlyGross
-          }
+          moveIntentCost = result.getOrNull()
         }
       }
     }
@@ -197,14 +182,12 @@ internal class SummaryPresenter(
       SummaryInfoState.Loading -> Loading
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
-      is SummaryInfoState.Content -> Content(
+      is SummaryInfoState.Content -> SummaryUiState.Content(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
         navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
-        canExcludeAddons = canExcludeAddons,
-        totalPremium = totalPremium,
-        grossPremium = grossPremium,
+        moveIntentCost = moveIntentCost,
       )
     }
   }
@@ -228,14 +211,27 @@ internal sealed interface SummaryUiState {
   data object Error : SummaryUiState
 
   data class Content(
-    val summaryInfo: SummaryInfo,
+    private val summaryInfo: SummaryInfo,
     val isSubmitting: Boolean,
     val submitError: SubmitError?,
     val navigateToFinishedScreenWithDate: LocalDate?,
-    val canExcludeAddons: Boolean,
-    val totalPremium: UiMoney?,
-    val grossPremium: UiMoney?,
+    private val moveIntentCost: MoveIntentCost?,
   ) : SummaryUiState {
+    val cards: List<CardContent> = buildList {
+      val moveHomeQuote = summaryInfo.moveHomeQuote
+      val quoteCosts = moveIntentCost?.quoteCosts
+      add(moveHomeQuote.toCardContent(quoteCosts?.firstOrNull { it.id == moveHomeQuote.id }))
+      addAll(
+        summaryInfo.moveMtaQuotes.map { moveMtaQuote ->
+          moveMtaQuote.toCardContent(null)
+        },
+      )
+    }
+    val movingStartDate = summaryInfo.moveHomeQuote.startDate
+    val hasMtaQuotes: Boolean = summaryInfo.moveMtaQuotes.isNotEmpty()
+
+    val totalPremium: UiMoney? = moveIntentCost?.monthlyNet
+    val grossPremium: UiMoney? = moveIntentCost?.monthlyGross
     val shouldDisableInput: Boolean = isSubmitting ||
       submitError != null ||
       navigateToFinishedScreenWithDate != null
@@ -245,15 +241,97 @@ internal sealed interface SummaryUiState {
 
       data class WithMessage(val message: String) : SubmitError
     }
+
+    data class CardContent(
+      val displayName: String,
+      val subtitle: String?,
+      val contractGroup: ContractGroup?,
+      val insurableLimits: List<InsurableLimit>,
+      val documents: List<DisplayDocument>,
+      val premium: UiMoney,
+      val previousPremium: UiMoney?,
+      val costBreakdown: List<CostBreakdownEntry>,
+      val displayItems: List<DisplayItem>,
+    ) {
+      data class InsurableLimit(
+        val label: String,
+        val limit: String,
+        val description: String,
+      )
+
+      data class DisplayItem(
+        val title: String,
+        val value: String,
+        val subtitle: String?,
+      )
+    }
   }
 }
+
+private fun MovingFlowQuotes.Quote.toCardContent(
+  quoteCost: MoveIntentCost.QuoteCost?,
+): SummaryUiState.Content.CardContent = SummaryUiState.Content.CardContent(
+  displayName = productVariant.displayName,
+  subtitle = exposureName,
+  contractGroup = productVariant.contractGroup,
+  insurableLimits = productVariant.insurableLimits.map {
+    SummaryUiState.Content.CardContent.InsurableLimit(
+      label = it.label,
+      limit = it.limit,
+      description = it.description,
+    )
+  },
+  documents = productVariant.documents.plus(
+    includedRelatedAddonQuotes.flatMap { it.addonVariant.documents },
+  ).map {
+    DisplayDocument(
+      displayName = it.displayName,
+      url = it.url,
+    )
+  },
+  premium = quoteCost?.monthlyNet ?: this.netPremiumWithAddons,
+  previousPremium = quoteCost?.monthlyGross ?: this.grossPremiumWithAddons,
+  costBreakdown = buildList {
+    add(
+      CostBreakdownEntry(
+        productVariant.displayName,
+        premium,
+      ),
+    )
+    addAll(
+      includedRelatedAddonQuotes.map { addonQuote ->
+        CostBreakdownEntry(
+          addonQuote.exposureName,
+          addonQuote.premium,
+        )
+      },
+    )
+    val discounts = quoteCost?.discounts?.map { discount ->
+      CostBreakdownEntry(
+        discount.displayName,
+        discount.displayValue,
+      )
+    } ?: discounts.map { discount ->
+      CostBreakdownEntry(
+        discount.displayName,
+        discount.discountValue,
+      )
+    }
+    addAll(discounts)
+  },
+  displayItems = displayItems.map {
+    DisplayItem(
+      title = it.title,
+      value = it.value,
+      subtitle = it.subtitle,
+    )
+  },
+)
 
 internal sealed interface SummaryEvent {
   data object ConfirmChanges : SummaryEvent
 
   data object DismissSubmissionError : SummaryEvent
-
-  data class ToggleHomeAddonExclusion(val addonId: AddonId) : SummaryEvent
 }
 
 internal data class SummaryInfo(

@@ -90,6 +90,7 @@ import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
 import com.hedvig.android.language.di.languageModule
+import com.hedvig.android.logging.device.model.di.loggingDeviceModelModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
@@ -132,6 +133,7 @@ private val networkModule = module {
             .header("X-System-Version", Build.VERSION.SDK_INT.toString())
             .header("X-Platform", "ANDROID")
             .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
+            .header("Hedvig-App-Version", "android;${BuildConfig.VERSION_NAME}")
             .build(),
         )
       }.addInterceptor(DeviceIdInterceptor(get(), get()))
@@ -339,7 +341,7 @@ private val datastoreAndroidModule = module {
 
 private val databaseChatAndroidModule = module {
   single<File>(databaseFileQualifier) {
-    val applicationContext = get<Context>()
+    val applicationContext = get<Context>().applicationContext
     val dbFile = applicationContext.getDatabasePath("hedvig_chat_database.db")
     // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
     dbFile
@@ -420,6 +422,7 @@ val applicationModule = module {
       languageAuthListenersModule,
       languageMigrationModule,
       languageModule,
+      loggingDeviceModelModule,
       loginModule,
       memberRemindersModule,
       movingFlowModule,
