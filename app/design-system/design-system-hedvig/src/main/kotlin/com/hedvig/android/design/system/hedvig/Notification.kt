@@ -19,7 +19,9 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -77,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
 import com.hedvig.android.design.system.internals.InternalSnackBar
 import com.hedvig.android.design.system.internals.SnackBarColors
 import hedvig.resources.R
+import kotlin.collections.listOf
 
 @Composable
 fun HedvigNotificationCard(
@@ -114,13 +117,16 @@ fun HedvigNotificationCard(
     Campaign, InfoInline, NeutralToast, FancyInfo -> ""
   }
 
+  val shape = NotificationDefaults.shape
   Surface(
-    modifier = modifier.semantics(mergeDescendants = true) {
-      contentDescription = description
-    },
-    shape = NotificationDefaults.shape,
+    modifier = modifier
+      .fancyInfoBorder(priority, shape)
+      .semantics(mergeDescendants = true) {
+        contentDescription = description
+      },
+    shape = shape,
     color = priority.colors.containerColor,
-    border = priority.colors.borderColor,
+    border = if (priority !is FancyInfo) priority.colors.borderColor else null,
   ) {
     val buttonDarkTheme = if (priority is InfoInline) isSystemInDarkTheme() else false
     ProvideTextStyle(textStyle) {
@@ -455,6 +461,23 @@ data class NotificationColors(
   val borderColor: Color,
   val textColor: Color,
   val iconColor: Color,
+)
+
+private fun Modifier.fancyInfoBorder(priority: NotificationPriority, shape: Shape): Modifier = then(
+  if (priority is FancyInfo) {
+    val colors = listOf(
+      Color(0xFFBC82F3),
+      Color(0xFFF5B9EA),
+      Color(0xFF8D99FF),
+      Color(0xFFAA6EEE),
+      Color(0xFFFF6778),
+      Color(0xFFFFBA71),
+      Color(0xFFBC82F3),
+    )
+    Modifier.animatedBorder(colors, shape)
+  } else {
+    Modifier
+  },
 )
 
 @HedvigPreview

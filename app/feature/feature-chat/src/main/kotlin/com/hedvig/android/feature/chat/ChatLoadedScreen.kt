@@ -1158,7 +1158,7 @@ private fun PreviewChatLoadedScreen() {
           "More info title",
           "More info subtitle",
         ),
-        Style.INFO,
+        Style.FANCY_INFO,
       )
       val banner2 =
         CbmChatMessage.Banner(
