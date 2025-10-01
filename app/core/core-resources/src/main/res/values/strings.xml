@@ -39,6 +39,13 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">We will get back to you as soon as possible. In the meantime you can close the app.</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Conversation sent to our service team</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Read more</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TEXT">If necessary, you’ll be automatically connected to our service team.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TITLE">We use AI for faster service</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct. If necessary, you’ll be connected to our service team to help you further.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
@@ -712,6 +719,8 @@
   <string name="TERMINATION_SURVEY_SUBTITLE">Why do you want to cancel your insurance?</string>
   <string name="TIER_COMPARISON_SUBTITLE">Find the best plan available for you</string>
   <string name="TIER_COMPARISON_TITLE">Compare coverage levels</string>
+  <string name="TIER_FLOW_ADDON_LABEL">Extended travel coverage</string>
+  <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">No extended coverage</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Your updates will be effective from  %s.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">The changes couldn\'t be completed. Please try again.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Processing changes...</string>
@@ -731,6 +740,7 @@
   <string name="TIER_FLOW_PROCESSING">Fetching coverage levels...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Answers to our most frequently asked questions.</string>
   <string name="TIER_FLOW_QA_TITLE">Questions and answers</string>
+  <string name="TIER_FLOW_SELECT_ADDON_SUBTITLE">Days covered when travelling</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_SUBTITLE">Find the right coverage for you</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_TITLE">Select your coverage</string>
   <string name="TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE">Amount deducted from your compensation</string>
@@ -750,6 +760,7 @@
   <string name="TOAST.NEW_OFFER">New offer</string>
   <string name="TOAST.READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %s</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
