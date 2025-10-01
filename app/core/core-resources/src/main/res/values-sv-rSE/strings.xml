@@ -123,8 +123,8 @@
   <string name="CHAT_NEW_CONVERSATION_SUBTITLE">Skriv för att börja konversationen</string>
   <string name="CHAT_NEW_CONVERSATION_TITLE">Nytt meddelande</string>
   <string name="CHAT_NEW_MESSAGE">Nytt meddelande</string>
-  <string name="CHAT_SENDER_AUTOMATION">Autogenererat meddelande</string>
-  <string name="CHAT_SENDER_HEDVIG">Hedvig</string>
+  <string name="CHAT_SENDER_AUTOMATION">Automatiskt meddelande</string>
+  <string name="CHAT_SENDER_HEDVIG">Hedvig Service Team</string>
   <string name="CHAT_SENDER_MEMBER">Du</string>
   <string name="CHAT_SENT_A_FILE">Skickade ett dokument</string>
   <string name="CHAT_SENT_A_MESSAGE">Skickade ett meddelande</string>

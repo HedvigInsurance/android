@@ -124,7 +124,7 @@
   <string name="CHAT_NEW_CONVERSATION_TITLE">New message</string>
   <string name="CHAT_NEW_MESSAGE">New message</string>
   <string name="CHAT_SENDER_AUTOMATION">Automated message</string>
-  <string name="CHAT_SENDER_HEDVIG">Hedvig</string>
+  <string name="CHAT_SENDER_HEDVIG">Hedvig Service Team</string>
   <string name="CHAT_SENDER_MEMBER">You</string>
   <string name="CHAT_SENT_A_FILE">Sent a document</string>
   <string name="CHAT_SENT_A_MESSAGE">Sent a message</string>

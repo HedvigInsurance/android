@@ -610,7 +610,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -699,10 +699,7 @@ private fun ChatBubble(
 }
 
 @Composable
-private fun MessageBanner(
-  banner: CbmChatMessage.Banner,
-  modifier: Modifier = Modifier,
-) {
+private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Modifier) {
   val sheetInformation = banner.sheetInformation
   val sheetState = rememberHedvigBottomSheetState<CbmChatMessage.Banner.DisplayInfo>()
   if (sheetInformation != null) {
@@ -710,13 +707,13 @@ private fun MessageBanner(
       HedvigText(
         displayInfo.title,
         style = HedvigTheme.typography.headlineSmall,
-        color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+        color = HedvigTheme.colorScheme.textPrimary,
       )
       if (displayInfo.subtitle != null) {
         HedvigText(
           displayInfo.subtitle!!,
           style = HedvigTheme.typography.bodySmall,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -735,14 +732,14 @@ private fun MessageBanner(
         HedvigText(
           banner.bannerInformation.title,
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+          color = HedvigTheme.colorScheme.textBlackTranslucent,
         )
         val subtitle = banner.bannerInformation.subtitle
         if (subtitle != null) {
           HedvigText(
             subtitle,
             style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            color = HedvigTheme.colorScheme.textBlackSecondaryTranslucent,
           )
         }
       }
@@ -754,7 +751,7 @@ private fun MessageBanner(
     modifier = modifier,
     style = if (sheetInformation != null) {
       InfoCardStyle.Button(
-        stringResource(R.string.important_message_read_more),
+        stringResource(R.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
         { sheetState.show(sheetInformation) },
       )
     } else {
@@ -1158,7 +1155,7 @@ private fun PreviewChatLoadedScreen() {
           "More info title",
           "More info subtitle",
         ),
-        Style.INFO,
+        Style.FANCY_INFO,
       )
       val banner2 =
         CbmChatMessage.Banner(
