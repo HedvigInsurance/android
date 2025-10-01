@@ -7,6 +7,7 @@ internal object PaletteTokens {
   val Black = Color(0xFF121212)
   val White = Color(0xFFFAFAFA)
   val BlackTransparent = Color(0xEB000000)
+  val BlackSecondaryTransparent = Color(0x980F0F0F)
   val WhiteTransparent = Color(0x01121212)
 
   val G50 = Color(0xFFF5F5F5)

@@ -710,13 +710,13 @@ private fun MessageBanner(
       HedvigText(
         displayInfo.title,
         style = HedvigTheme.typography.headlineSmall,
-        color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+        color = HedvigTheme.colorScheme.textPrimary,
       )
       if (displayInfo.subtitle != null) {
         HedvigText(
           displayInfo.subtitle!!,
           style = HedvigTheme.typography.bodySmall,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          color = HedvigTheme.colorScheme.textSecondary,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -735,14 +735,14 @@ private fun MessageBanner(
         HedvigText(
           banner.bannerInformation.title,
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textPrimaryTranslucent,
+          color = HedvigTheme.colorScheme.textBlackTranslucent,
         )
         val subtitle = banner.bannerInformation.subtitle
         if (subtitle != null) {
           HedvigText(
             subtitle,
             style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            color = HedvigTheme.colorScheme.textBlackSecondaryTranslucent,
           )
         }
       }
