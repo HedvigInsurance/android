@@ -39,6 +39,13 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Logga in med BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Öppna BankID</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">Vi återkommer till dig så fort som möjligt. Under tiden kan du stänga ner appen.</string>
+  <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Ditt ärende har skickats till vårt serviceteam</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Läs mer</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TEXT">Vid behov kopplas du automatiskt vidare till vårt serviceteam.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_CARD_TITLE">Vi använder AI för snabbare service</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">Vi använder AI för att du ska få så snabb hjälp som möjligt. Svaren genereras automatiskt och kan ibland innehålla felaktigheter. Vid behov kopplas du vidare till vårt serviceteam som hjälper dig vidare.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI och automatiska meddelanden</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
@@ -234,7 +241,7 @@
   <string name="DETAILS_TABLE_TENANT_LABEL">Hyresgäst</string>
   <string name="DISCOUNTS_ACTIVE_FROM">Aktiveras %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Aktiv</string>
-  <string name="DISCOUNTS_LABEL_PENDING">Väntar på aktivering</string>
+  <string name="DISCOUNTS_LABEL_PENDING">Aktiveras senare</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>
   <string name="EMBARK_RECORD_AGAIN">Spela in igen</string>
@@ -468,7 +475,7 @@
   <string name="PAYMENTS_SUBTITLE_PAYMENT_METHOD">Betalningsmetod</string>
   <string name="PAYMENTS_SUBTOTAL">Delsumma</string>
   <string name="PAYMENTS_UPCOMING_PAYMENT">Kommande betalning</string>
-  <string name="PAYMENTS_VALID_UNTIL">Giltigt till %1$s</string>
+  <string name="PAYMENTS_VALID_UNTIL">Giltig till %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Betalningshistorik</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
   <string name="PERMISSION_DIALOG_TITLE">Behöver tillåtelse</string>
@@ -712,6 +719,8 @@
   <string name="TERMINATION_SURVEY_SUBTITLE">Varför vill du säga upp försäkringen?</string>
   <string name="TIER_COMPARISON_SUBTITLE">Hitta den nivå som passar dina behov</string>
   <string name="TIER_COMPARISON_TITLE">Jämför skyddsnivåer</string>
+  <string name="TIER_FLOW_ADDON_LABEL">Utökat reseskydd</string>
+  <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">Inget utökat skydd</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Dina ändringar börjar gälla från och med %s.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">Det gick inte att genomföra ändringen. Vänligen försök igen.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Genomför ändringar...</string>
@@ -731,6 +740,7 @@
   <string name="TIER_FLOW_PROCESSING">Hämtar skyddsnivåer...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Svar på våra medlemmars vanligaste funderingar.</string>
   <string name="TIER_FLOW_QA_TITLE">Frågor och svar</string>
+  <string name="TIER_FLOW_SELECT_ADDON_SUBTITLE">Välj antalet resdagar som täcks</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_SUBTITLE">Hitta rätt skydd</string>
   <string name="TIER_FLOW_SELECT_COVERAGE_TITLE">Välj din skyddsnivå</string>
   <string name="TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE">Belopp avdraget från din ersättning</string>
@@ -750,6 +760,7 @@
   <string name="TOAST.NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST.READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
