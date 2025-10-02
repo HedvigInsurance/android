@@ -610,7 +610,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -732,7 +732,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
         HedvigText(
           text = banner.bannerInformation.title,
           style = HedvigTheme.typography.label,
-          color = LocalTextStyle.current.color
+          color = LocalTextStyle.current.color,
         )
         val subtitle = banner.bannerInformation.subtitle
         if (subtitle != null) {
