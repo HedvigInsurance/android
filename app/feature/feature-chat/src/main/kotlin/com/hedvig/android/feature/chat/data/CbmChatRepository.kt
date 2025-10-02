@@ -132,22 +132,14 @@ internal class CbmChatRepositoryImpl(
       }
     }
     return flow {
-      apolloClient
-        .query(ConversationStatusMessageQuery(conversationId.toString()))
-        .fetchPolicy(FetchPolicy.CacheOnly)
-        .safeExecute(::ErrorMessage)
-        .onRight {
-          emit(it.toBannerText())
-        }
       while (currentCoroutineContext().isActive) {
         val result = apolloClient
           .query(ConversationStatusMessageQuery(conversationId.toString()))
-          .fetchPolicy(FetchPolicy.NetworkOnly)
+          .fetchPolicy(FetchPolicy.CacheAndNetwork)
           .safeExecute(::ErrorMessage)
         when (result) {
           is Left -> {
             emit(null)
-            delay(10.seconds)
           }
 
           is Right -> {
@@ -155,6 +147,7 @@ internal class CbmChatRepositoryImpl(
             break
           }
         }
+        delay(10.seconds)
       }
     }
   }
@@ -213,7 +206,7 @@ internal class CbmChatRepositoryImpl(
           when (failedToSend) {
             ChatMessageEntity.FailedToSendType.PHOTO,
             ChatMessageEntity.FailedToSendType.MEDIA,
-              -> url!!.toUri().tryReleasePersistableUriPermission()
+            -> url!!.toUri().tryReleasePersistableUriPermission()
 
             else -> {}
           }
