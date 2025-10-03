@@ -2,6 +2,7 @@ package com.hedvig.android.memberreminders
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.merge
 import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -44,10 +45,7 @@ internal class GetMemberRemindersUseCaseImpl(
           },
         )
       },
-      flow {
-        val upcomingRenewals = getUpcomingRenewalRemindersUseCase.invoke().getOrNull()
-        emit(upcomingRenewals)
-      },
+      getUpcomingRenewalRemindersUseCase.invoke().map { it.mapLeft { null }.merge() },
       getNeedsCoInsuredInfoRemindersUseCase.invoke(),
       getContactInfoUpdateIsNeededUseCase.invoke(),
     ) {
