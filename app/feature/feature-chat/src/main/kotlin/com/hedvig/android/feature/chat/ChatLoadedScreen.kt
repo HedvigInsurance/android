@@ -149,6 +149,7 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatM
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
 import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
 import com.hedvig.android.feature.chat.model.Sender
+import com.hedvig.android.feature.chat.model.Sender.AUTOMATION
 import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
@@ -242,6 +243,7 @@ private fun ChatLoadedScreen(
           lazyListState = lazyListState,
           messages = uiState.messages,
           latestChatMessage = uiState.latestMessage,
+          enableMessageSenderLabeling = uiState.enableMessageSenderLabeling,
           enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
           imageLoader = imageLoader,
           simpleVideoCache = simpleVideoCache,
@@ -359,6 +361,7 @@ private fun ChatLazyColumn(
   lazyListState: LazyListState,
   messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
+  enableMessageSenderLabeling: Boolean,
   imageLoader: ImageLoader,
   enableInlineMediaPlayer: Boolean,
   simpleVideoCache: Cache,
@@ -420,6 +423,7 @@ private fun ChatLazyColumn(
         ChatBubble(
           uiChatMessage = uiChatMessage,
           chatItemIndex = index,
+          enableMessageSenderLabeling = enableMessageSenderLabeling,
           imageLoader = imageLoader,
           enableInlineMediaPlayer = enableInlineMediaPlayer,
           simpleVideoCache = simpleVideoCache,
@@ -493,6 +497,7 @@ private fun ChatLazyColumn(
 private fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
+  enableMessageSenderLabeling: Boolean,
   imageLoader: ImageLoader,
   enableInlineMediaPlayer: Boolean,
   simpleVideoCache: Cache,
@@ -610,7 +615,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -691,6 +696,7 @@ private fun ChatBubble(
       }
     },
     uiChatMessage = uiChatMessage,
+    enableMessageSenderLabeling = enableMessageSenderLabeling,
     chatItemIndex = chatItemIndex,
     modifier = modifier.semantics(mergeDescendants = true) {
       contentDescription = description
@@ -766,9 +772,9 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
     val context = LocalContext.current
     val sender = stringResource(
       when (it.sender) {
-        Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
-        Sender.AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
-        Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
+        HEDVIG -> R.string.CHAT_SENDER_HEDVIG
+        AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
+        MEMBER -> R.string.CHAT_SENDER_MEMBER
       },
     )
     val time = formatInstantForTalkBack(context, it.sentAt)
@@ -1061,6 +1067,7 @@ private fun ChatAsyncImage(
 internal fun ChatMessageWithTimeAndDeliveryStatus(
   messageSlot: @Composable () -> Unit,
   uiChatMessage: CbmUiChatMessage?,
+  enableMessageSenderLabeling: Boolean,
   chatItemIndex: Int,
   modifier: Modifier = Modifier,
 ) {
@@ -1104,18 +1111,20 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
               append(stringResource(R.string.CHAT_FAILED_TO_SEND))
               append(" • ")
             }
-            when (uiChatMessage.chatMessage.sender) {
-              Sender.HEDVIG -> {
-                append(stringResource(R.string.CHAT_SENDER_HEDVIG))
-                append(" • ")
-              }
+            if (enableMessageSenderLabeling) {
+              when (uiChatMessage.chatMessage.sender) {
+                AUTOMATION -> {
+                  append(stringResource(R.string.CHAT_SENDER_AUTOMATION))
+                  append(" • ")
+                }
 
-              Sender.AUTOMATION -> {
-                append(stringResource(R.string.CHAT_SENDER_AUTOMATION))
-                append(" • ")
-              }
+                Sender.HEDVIG -> {
+                  append(stringResource(R.string.CHAT_SENDER_HEDVIG))
+                  append(" • ")
+                }
 
-              Sender.MEMBER -> {}
+                Sender.MEMBER -> {}
+              }
             }
             append(chatMessage.formattedDateTime(getLocale()))
             if (uiChatMessage.isLastDeliveredMessage) {
@@ -1178,10 +1187,10 @@ private fun PreviewChatLoadedScreen() {
           Style.FANCY_INFO,
         )
       val fakeChatMessages: List<CbmUiChatMessage> = listOf(
-        ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), null, "", IMAGE),
-        ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), banner1, ""),
-        ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
-        ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+        ChatMessageMedia("1", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+        ChatMessageFile("2", AUTOMATION, Instant.parse("2024-05-01T00:00:00Z"), null, "", IMAGE),
+        ChatMessageGif("3", AUTOMATION, Instant.parse("2024-05-01T00:00:00Z"), banner1, ""),
+        ChatMessageFile("4", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
         ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
         ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
         CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message"),
@@ -1201,6 +1210,7 @@ private fun PreviewChatLoadedScreen() {
           messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
           latestMessage = null,
           bannerText = ClosedConversation,
+          enableMessageSenderLabeling = true,
           enableInlineMediaPlayer = true,
           showUploading = true,
           showFileTooBigErrorToast = false,

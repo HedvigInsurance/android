@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -299,6 +300,11 @@ private fun presentLoadedChat(
     remember { mutableStateOf(null) }
   }
   val lazyPagingItems = pagingData.collectAsLazyPagingItems()
+  val enableMessageSenderLabeling by produceState(false, lazyPagingItems) {
+    snapshotFlow { lazyPagingItems.itemSnapshotList }.collectLatest { messages ->
+      value = messages.any { it?.chatMessage?.sender == Sender.AUTOMATION }
+    }
+  }
 
   LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
     if (backendConversationInfo is ConversationInfo.NoConversation) return@LaunchedEffect
@@ -318,6 +324,7 @@ private fun presentLoadedChat(
     messages = lazyPagingItems,
     latestMessage = latestMessage,
     bannerText = bannerText,
+    enableMessageSenderLabeling = enableMessageSenderLabeling,
     enableInlineMediaPlayer = enableInlineMediaPlayer,
     showUploading = showUploading,
     showFileTooBigErrorToast = showFileTooBigErrorToast,
@@ -363,6 +370,7 @@ internal sealed interface CbmChatUiState {
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
+    val enableMessageSenderLabeling: Boolean,
     val enableInlineMediaPlayer: Boolean,
     val showUploading: Boolean,
     val showFileTooBigErrorToast: Boolean,
