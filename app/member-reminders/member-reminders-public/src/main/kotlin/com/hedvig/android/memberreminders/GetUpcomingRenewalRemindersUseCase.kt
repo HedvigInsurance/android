@@ -72,7 +72,7 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
               }
             },
         )
-        delay(15.seconds)
+        delay(60.seconds)
       }
     }
   }
