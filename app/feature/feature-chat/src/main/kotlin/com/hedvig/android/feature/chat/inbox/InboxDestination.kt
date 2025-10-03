@@ -233,9 +233,9 @@ private fun ConversationCard(
         Spacer(Modifier.height(8.dp))
         val sender = stringResource(
           when (latestMessage.sender) {
-            Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
             Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
-            Sender.AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
+            Sender.HEDVIG -> R.string.HEDVIG_NAME_TEXT
+            Sender.AUTOMATION -> R.string.HEDVIG_NAME_TEXT
           },
         )
         val message = when (latestMessage) {
@@ -321,7 +321,7 @@ private val mockInboxConversation1 = InboxConversation(
 private val mockInboxConversation2 = InboxConversation(
   conversationId = "2",
   header = Header.ClaimConversation("claimType"),
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  latestMessage = InboxConversation.LatestMessage.File(Sender.AUTOMATION, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = false,
