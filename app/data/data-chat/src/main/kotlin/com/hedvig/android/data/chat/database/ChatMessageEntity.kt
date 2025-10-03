@@ -26,6 +26,7 @@ data class ChatMessageEntity(
 ) {
   enum class Sender {
     HEDVIG,
+    AUTOMATION,
     MEMBER,
   }
 
