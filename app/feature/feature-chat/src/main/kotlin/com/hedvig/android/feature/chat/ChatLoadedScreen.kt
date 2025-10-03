@@ -767,6 +767,7 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
     val sender = stringResource(
       when (it.sender) {
         Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
+        Sender.AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
         Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
       },
     )
@@ -1102,6 +1103,19 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
             if (failedToBeSent) {
               append(stringResource(R.string.CHAT_FAILED_TO_SEND))
               append(" • ")
+            }
+            when (uiChatMessage.chatMessage.sender) {
+              Sender.HEDVIG -> {
+                append(stringResource(R.string.CHAT_SENDER_HEDVIG))
+                append(" • ")
+              }
+
+              Sender.AUTOMATION -> {
+                append(stringResource(R.string.CHAT_SENDER_AUTOMATION))
+                append(" • ")
+              }
+
+              Sender.MEMBER -> {}
             }
             append(chatMessage.formattedDateTime(getLocale()))
             if (uiChatMessage.isLastDeliveredMessage) {

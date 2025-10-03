@@ -22,12 +22,14 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun CbmChatMessage.backgroundColor(): Color = when (sender) {
   Sender.HEDVIG -> HedvigTheme.colorScheme.surfacePrimary
+  Sender.AUTOMATION -> HedvigTheme.colorScheme.surfacePrimary
   Sender.MEMBER -> HedvigTheme.colorScheme.signalBlueFill
 }
 
 @Composable
 internal fun CbmChatMessage.onBackgroundColor(): Color = when (sender) {
   Sender.HEDVIG -> HedvigTheme.colorScheme.textPrimary
+  Sender.AUTOMATION -> HedvigTheme.colorScheme.textPrimary
   Sender.MEMBER -> HedvigTheme.colorScheme.textBlack
 }
 
@@ -35,6 +37,7 @@ internal fun CbmChatMessage.onBackgroundColor(): Color = when (sender) {
 internal fun CbmChatMessage?.messageHorizontalAlignment(index: Int): Alignment.Horizontal = when (this?.sender) {
   null -> if (index % 2 == 0) Alignment.Start else Alignment.End
   Sender.HEDVIG -> Alignment.Start
+  Sender.AUTOMATION -> Alignment.Start
   Sender.MEMBER -> Alignment.End
 }
 

@@ -235,6 +235,7 @@ private fun ConversationCard(
           when (latestMessage.sender) {
             Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
             Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
+            Sender.AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
           },
         )
         val message = when (latestMessage) {
@@ -291,17 +292,15 @@ private fun ConversationCardPreview(
   @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
 ) {
   HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
-      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-        ConversationCard(
-          conversation = when (cases) {
-            TripleCase.FIRST -> mockInboxConversation1
-            TripleCase.SECOND -> mockInboxConversation2
-            TripleCase.THIRD -> mockInboxConversationLegacy
-          },
-          onConversationClick = {},
-        )
-      }
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ConversationCard(
+        conversation = when (cases) {
+          TripleCase.FIRST -> mockInboxConversation1
+          TripleCase.SECOND -> mockInboxConversation2
+          TripleCase.THIRD -> mockInboxConversationLegacy
+        },
+        onConversationClick = {},
+      )
     }
   }
 }
