@@ -13,7 +13,7 @@ concurrency:
 jobs:
   umbrella_release:
     name: Build and release new umbrella version
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
       - name: Setup CI
