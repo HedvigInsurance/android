@@ -1139,6 +1139,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
           .semantics {
             hideFromAccessibility()
           }
+          .weight(1f, false)
           .then(
             if (chatMessage == null) {
               Modifier.hedvigPlaceholder(
