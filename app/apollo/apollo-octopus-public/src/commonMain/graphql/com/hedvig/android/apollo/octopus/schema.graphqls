@@ -3158,6 +3158,10 @@ type ProductVariantComparisonRow {
   Color
   """
   colorCode: String
+  """
+  List of covered items for this peril
+  """
+  covered: [String!]!
 }
 type Query {
   """
