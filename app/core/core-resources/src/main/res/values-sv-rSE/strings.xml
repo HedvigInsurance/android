@@ -44,7 +44,7 @@
   <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Läs mer</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_TEXT">Vid behov kopplas du automatiskt vidare till vårt serviceteam.</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_TITLE">Vi använder AI för snabbare service</string>
-  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">Vi använder AI för att du ska få så snabb hjälp som möjligt. Svaren genereras automatiskt och kan ibland innehålla felaktigheter. Vid behov kopplas du vidare till vårt serviceteam som hjälper dig vidare.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">Vi använder AI för att du ska få så snabb hjälp som möjligt. Svaren genereras automatiskt och kan ibland innehålla felaktigheter.\n\nVid behov kopplas du till vårt serviceteam som hjälper dig.\n\nVad som gäller för din försäkring anges i ditt försäkringsbrev och i dina villkor.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI och automatiska meddelanden</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>

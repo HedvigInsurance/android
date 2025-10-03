@@ -14,6 +14,7 @@ import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.test.clock.TestClock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -63,7 +64,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
     val list = result.getOrNull()
 
     assertThat(list).isNotNull()
@@ -105,7 +106,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    val list = result.getOrNull()
+    val list = result.first().getOrNull()
     assertThat(list).isNotNull()
     list!!.forEachIndexed { index, upcomingRenewal ->
       assertThat(upcomingRenewal.renewalDate).isEqualTo(
@@ -145,7 +146,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
 
     assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
   }
@@ -178,7 +179,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
 
     assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
   }
@@ -220,7 +221,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
 
     val list = result.getOrNull()
     assertThat(list).isNotNull()
@@ -275,7 +276,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
 
     assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
 
@@ -301,7 +302,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       },
     )
 
-    val result2 = getUpcomingRenewalRemindersUseCase.invoke()
+    val result2 = getUpcomingRenewalRemindersUseCase.invoke().first()
     val list = result2.getOrNull()
     assertThat(list).isNotNull()
     assertThat(list!!.size).isEqualTo(1)
@@ -320,7 +321,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     apolloClient.enqueueTestNetworkError()
 
-    val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val result = getUpcomingRenewalRemindersUseCase.invoke().first()
 
     assertThat(result)
       .isLeft()
