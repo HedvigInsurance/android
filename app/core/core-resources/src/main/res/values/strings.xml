@@ -50,7 +50,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
-  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s\u0025 discount</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s discount</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT">No discount</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE">1 insurance</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE">3 or more</string>
@@ -382,7 +382,7 @@
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Any damage that occurs during a 30-day period after the moving out date is eligible for claims.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Certificate of validity</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">The certificate has been sent to your email.</string>
-  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details — for example, which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
+  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">What is a certificate of validity?</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>

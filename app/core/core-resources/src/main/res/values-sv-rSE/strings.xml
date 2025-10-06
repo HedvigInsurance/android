@@ -50,7 +50,7 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
-  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s\u0025 rabatt</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s rabatt</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT">Ingen rabatt</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE">1 försäkring</string>
   <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE">3 eller fler</string>
@@ -382,7 +382,7 @@
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Giltighetsintyg</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">Giltighetsintyget är nu skickat till din e-post.</string>
-  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer – till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
+  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">Vad är ett giltighetsintyg?</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>

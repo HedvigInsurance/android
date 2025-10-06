@@ -328,7 +328,7 @@ private fun RecommendationSection(
     Spacer(Modifier.height(48.dp))
     if (recommendedCrossSell.bundleProgress != null) {
       HedvigStepProgress(
-        steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
+        steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress),
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -357,12 +357,16 @@ private fun getHedvigStepProgressData(
 ): List<StepProgressItem> {
   val firstStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
   val firstStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
-  val stepOne = StepProgressItem(firstStepTitle,firstStepSubtitle,true)
+  val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle, true)
   val secondStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
-  val secondStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT, bundleProgress.discountPercent)
-  val stepTwo = StepProgressItem(secondStepTitle,secondStepSubtitle,false)
+  val secondStepSubtitle = stringResource(
+    R.string
+      .BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT,
+    "${bundleProgress.discountPercent}%",
+  )
+  val stepTwo = StepProgressItem(secondStepTitle, secondStepSubtitle, false)
   val thirdStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
-  val stepThree = StepProgressItem(thirdStepTitle,secondStepSubtitle,false)
+  val stepThree = StepProgressItem(thirdStepTitle, secondStepSubtitle, false)
   return when {
     bundleProgress.numberOfEligibleContracts < 1 -> emptyList()
     bundleProgress.numberOfEligibleContracts == 1 -> buildList {
@@ -370,11 +374,13 @@ private fun getHedvigStepProgressData(
       add(stepTwo)
       add(stepThree)
     }
+
     bundleProgress.numberOfEligibleContracts == 2 -> buildList {
       add(stepOne)
       add(stepTwo.copy(activated = true))
       add(stepThree)
     }
+
     else -> buildList {
       add(stepOne)
       add(stepTwo.copy(activated = true))
@@ -618,7 +624,7 @@ private fun PreviewCrossSellsSheetContent(
             discountText = "-50%",
             buttonDescription = "Limited time offer",
             backgroundPillowImages = ("ds" to "ds"),
-            bundleProgress = BundleProgress(1, 15)
+            bundleProgress = BundleProgress(1, 15),
           ).takeIf { case != TripleCase.THIRD },
           otherCrossSells = listOf(
             CrossSell(
@@ -659,7 +665,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
           discountText = "-50%",
           buttonDescription = "Limited time offer",
           backgroundPillowImages = ("ds" to "ds"),
-          bundleProgress = BundleProgress(1, 15)
+          bundleProgress = BundleProgress(1, 15),
         ).takeIf { case != TripleCase.THIRD },
         listOf(
           CrossSell(

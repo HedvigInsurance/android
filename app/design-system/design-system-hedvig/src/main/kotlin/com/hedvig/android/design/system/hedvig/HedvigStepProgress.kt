@@ -96,6 +96,7 @@ data class StepProgressItem(
   val title: String?,
   val subtitle: String?,
   val activated: Boolean,
+  val animate: Boolean = false
 )
 
 
