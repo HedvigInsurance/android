@@ -288,8 +288,40 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Box(Modifier.semantics(mergeDescendants = true) {}) {
+    Box(
+      contentAlignment = Alignment.Center,
+      modifier = Modifier.semantics(mergeDescendants = true) {}) {
       val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+      if (recommendedCrossSell.backgroundPillowImages!=null) {
+        Row(
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          AsyncImage(
+            model = recommendedCrossSell.backgroundPillowImages.first,
+            contentDescription = EmptyContentDescription,
+            placeholder = placeholder,
+            error = placeholder,
+            fallback = placeholder,
+            imageLoader = imageLoader,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+              .size(96.dp),
+          )
+          Spacer(Modifier.width(54.dp))
+          AsyncImage(
+            model = recommendedCrossSell.backgroundPillowImages.second,
+            contentDescription = EmptyContentDescription,
+            placeholder = placeholder,
+            error = placeholder,
+            fallback = placeholder,
+            imageLoader = imageLoader,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+              .size(96.dp),
+          )
+        }
+      }
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
@@ -308,7 +340,7 @@ private fun RecommendationSection(
           color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
           modifier = Modifier
             .align(Alignment.TopEnd)
-            .padding(top = 16.dp),
+            .padding(top = 16.dp, end = 38.dp),
         )
       }
     }
