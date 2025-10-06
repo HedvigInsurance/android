@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -64,7 +62,7 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
         keyframes {
           durationMillis = 2000
           0f at 0 using LinearEasing
-          1f at 1200 using LinearEasing
+          1f at 1200
           1f at 2500
         },
         RepeatMode.Restart,
@@ -77,8 +75,8 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
       animationSpec = infiniteRepeatable(
         keyframes {
           durationMillis = 2000
-          animationColors.inactive at 0
-          animationColors.activated at 1200 using LinearEasing
+          animationColors.inactive at 0 using LinearEasing
+          animationColors.activated at 1200
           animationColors.activated at 1800
           animationColors.activated at 2500
         },
@@ -154,8 +152,6 @@ data class StepProgressItem(
   val activated: Boolean,
   val animate: Boolean = false,
 )
-
-private fun Modifier.background(colorProvider: () -> Color, shape: Shape) = this.background(colorProvider(), shape)
 
 @Preview
 @Composable
