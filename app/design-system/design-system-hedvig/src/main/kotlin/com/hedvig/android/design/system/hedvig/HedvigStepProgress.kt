@@ -1,16 +1,12 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.DurationBasedAnimationSpec
-import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,10 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HedvigStepProgress(
-  steps: List<StepProgressItem>,
-  modifier: Modifier = Modifier,
-) {
+fun HedvigStepProgress(steps: List<StepProgressItem>, modifier: Modifier = Modifier) {
   Row(
     modifier =
       modifier
@@ -58,41 +50,57 @@ fun HedvigStepProgress(
 }
 
 @Composable
-fun ProgressStep(
-  step: StepProgressItem,
-  modifier: Modifier = Modifier,
-) {
+fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     val infiniteTransition = rememberInfiniteTransition()
-    val color0 = infiniteTransition.animateColor(
-      hedvigStepProgressColors.activated,
-      hedvigStepProgressColors.inactive,
+    val animationColors = hedvigStepProgressColors
+    val widthFraction by infiniteTransition.animateFloat(
+      initialValue = 0f,
+      targetValue = 1f,
       animationSpec = infiniteRepeatable(
-        tween(durationMillis = 1000, easing = LinearEasing),
+        keyframes {
+          durationMillis = 2000
+          0f at 0 using LinearEasing
+          1f at 1200 using LinearEasing
+          1f at 2500
+        },
         RepeatMode.Restart,
       ),
     )
-//    val endPosition by rememberInfiniteTransition().animateFloat(
-//      initialValue = 0.0001f,
-//      targetValue = 1f,
-//      animationSpec = infiniteRepeatable(
-//        tween(durationMillis = 1000, easing = LinearEasing),
-//        RepeatMode.Restart
-//      )
-//    )
-    val color = if (step.activated) hedvigStepProgressColors.activated
-    else hedvigStepProgressColors.inactive
-    Box(modifier = Modifier
-      .height(8.dp)
-      .fillMaxWidth()) {
+
+    val color0 = infiniteTransition.animateColor(
+      animationColors.activated,
+      animationColors.inactive,
+      animationSpec = infiniteRepeatable(
+        keyframes {
+          durationMillis = 2000
+          animationColors.inactive at 0
+          animationColors.activated at 1200 using LinearEasing
+          animationColors.activated at 1800
+          animationColors.activated at 2500
+        },
+        RepeatMode.Restart,
+      ),
+    )
+
+    val color = if (step.activated) {
+      hedvigStepProgressColors.activated
+    } else {
+      hedvigStepProgressColors.inactive
+    }
+    Box(
+      modifier = Modifier
+        .height(8.dp)
+        .fillMaxWidth(),
+    ) {
       Surface(
         modifier = Modifier
           .height(8.dp)
           .fillMaxWidth(),
-        color =  color,
+        color = color,
         shape = HedvigTheme.shapes.cornerLarge,
       ) {}
       if (step.animate) {
@@ -100,8 +108,8 @@ fun ProgressStep(
           Surface(
             modifier = Modifier
               .height(8.dp)
-              .fillMaxWidth(),
-            color =  color0.value,
+              .fillMaxWidth(widthFraction),
+            color = color0.value,
             shape = HedvigTheme.shapes.cornerLarge,
           ) {}
         }
@@ -129,7 +137,6 @@ private data class HedvigStepProgressColors(
   val inactive: Color,
 )
 
-
 private val hedvigStepProgressColors: HedvigStepProgressColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
@@ -141,7 +148,6 @@ private val hedvigStepProgressColors: HedvigStepProgressColors
     }
   }
 
-
 data class StepProgressItem(
   val title: String?,
   val subtitle: String?,
@@ -150,7 +156,6 @@ data class StepProgressItem(
 )
 
 private fun Modifier.background(colorProvider: () -> Color, shape: Shape) = this.background(colorProvider(), shape)
-
 
 @Preview
 @Composable

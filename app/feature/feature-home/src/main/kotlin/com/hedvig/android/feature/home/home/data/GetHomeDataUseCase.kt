@@ -84,13 +84,13 @@ internal class GetHomeDataUseCaseImpl(
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
     ) {
-        homeQueryDataResult,
-        unreadMessageCountResult,
-        isEligibleToShowTheChatIconResult,
-        memberReminders,
-        travelBannerInfo,
-        isChatDisabled,
-        isHelpCenterEnabled,
+      homeQueryDataResult,
+      unreadMessageCountResult,
+      isEligibleToShowTheChatIconResult,
+      memberReminders,
+      travelBannerInfo,
+      isChatDisabled,
+      isHelpCenterEnabled,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -119,9 +119,11 @@ internal class GetHomeDataUseCaseImpl(
         val crossSellsData = homeQueryData.currentMember.crossSell
 
         val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
-          val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null)
+          val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
             BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
-          else null
+          } else {
+            null
+          }
           RecommendedCrossSell(
             crossSell = it.crossSell.toCrossSell(),
             bannerText = it.bannerText,

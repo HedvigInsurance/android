@@ -290,12 +290,13 @@ private fun RecommendationSection(
   ) {
     Box(
       contentAlignment = Alignment.Center,
-      modifier = Modifier.semantics(mergeDescendants = true) {}) {
+      modifier = Modifier.semantics(mergeDescendants = true) {},
+    ) {
       val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
-      if (recommendedCrossSell.backgroundPillowImages!=null) {
+      if (recommendedCrossSell.backgroundPillowImages != null) {
         Row(
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           AsyncImage(
             model = recommendedCrossSell.backgroundPillowImages.first,
@@ -384,9 +385,7 @@ private fun RecommendationSection(
 }
 
 @Composable
-private fun getHedvigStepProgressData(
-  bundleProgress: BundleProgress,
-): List<StepProgressItem> {
+private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<StepProgressItem> {
   val firstStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
   val firstStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
   val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle, true)
@@ -417,7 +416,6 @@ private fun getHedvigStepProgressData(
       add(stepOne)
       add(stepTwo.copy(activated = true))
       add(stepThree.copy(activated = true))
-
     }
   }
 }

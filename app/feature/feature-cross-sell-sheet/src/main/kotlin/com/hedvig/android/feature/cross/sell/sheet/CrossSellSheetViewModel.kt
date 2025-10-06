@@ -41,9 +41,9 @@ internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
-  CrossSellSheetState.Loading,
-  CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
-)
+    CrossSellSheetState.Loading,
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
+  )
 
 sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
@@ -133,9 +133,11 @@ internal class GetCrossSellSheetDataUseCaseImpl(
             .bind()
             .currentMember.crossSell
           val recommendedData = allData.recommendedCrossSell?.let {
-            val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null)
+            val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
               BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
-            else null
+            } else {
+              null
+            }
             RecommendedCrossSell(
               crossSell = it.crossSell.toCrossSell(),
               bannerText = it.bannerText,

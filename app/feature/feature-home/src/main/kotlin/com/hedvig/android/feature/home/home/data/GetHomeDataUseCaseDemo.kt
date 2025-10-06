@@ -3,7 +3,6 @@ package com.hedvig.android.feature.home.home.data
 import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.apollo.ApolloOperationError
-import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
@@ -42,7 +41,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             buttonText = "Explore offer",
             buttonDescription = "Limited time offer",
             backgroundPillowImages = null,
-            bundleProgress = null
+            bundleProgress = null,
           ),
         otherCrossSells = listOf(
           CrossSell(

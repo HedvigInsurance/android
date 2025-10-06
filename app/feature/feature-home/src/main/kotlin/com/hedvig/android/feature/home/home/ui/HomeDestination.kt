@@ -730,7 +730,7 @@ private fun PreviewHomeScreen(
                 buttonText = "Explore offer",
                 buttonDescription = "Limited time offer",
                 backgroundPillowImages = ("ds" to "ds"),
-                bundleProgress = BundleProgress(1, 15)
+                bundleProgress = BundleProgress(1, 15),
               ),
               otherCrossSells = listOf(
                 CrossSell(

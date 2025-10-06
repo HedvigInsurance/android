@@ -213,7 +213,7 @@ internal class CbmChatRepositoryImpl(
           when (failedToSend) {
             ChatMessageEntity.FailedToSendType.PHOTO,
             ChatMessageEntity.FailedToSendType.MEDIA,
-              -> url!!.toUri().tryReleasePersistableUriPermission()
+            -> url!!.toUri().tryReleasePersistableUriPermission()
 
             else -> {}
           }
