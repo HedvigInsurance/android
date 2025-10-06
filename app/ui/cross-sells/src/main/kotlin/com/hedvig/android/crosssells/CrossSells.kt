@@ -45,16 +45,17 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigStepProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
@@ -77,6 +78,13 @@ data class RecommendedCrossSell(
   val buttonText: String,
   val discountText: String?,
   val buttonDescription: String,
+  val backgroundPillowImages: Pair<String, String>?,
+  val bundleProgress: BundleProgress?,
+)
+
+data class BundleProgress(
+  val numberOfEligibleContracts: Int,
+  val discountPercent: Int,
 )
 
 /**
@@ -318,6 +326,12 @@ private fun RecommendationSection(
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(48.dp))
+    if (recommendedCrossSell.bundleProgress != null) {
+      HedvigStepProgress(
+        steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     HedvigButton(
       text = recommendedCrossSell.buttonText,
       onClick = {
@@ -334,6 +348,39 @@ private fun RecommendationSection(
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
+  }
+}
+
+@Composable
+private fun getHedvigStepProgressData(
+  bundleProgress: BundleProgress,
+): List<StepProgressItem> {
+  val firstStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
+  val firstStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
+  val stepOne = StepProgressItem(firstStepTitle,firstStepSubtitle,true)
+  val secondStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
+  val secondStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT, bundleProgress.discountPercent)
+  val stepTwo = StepProgressItem(secondStepTitle,secondStepSubtitle,false)
+  val thirdStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
+  val stepThree = StepProgressItem(thirdStepTitle,secondStepSubtitle,false)
+  return when {
+    bundleProgress.numberOfEligibleContracts < 1 -> emptyList()
+    bundleProgress.numberOfEligibleContracts == 1 -> buildList {
+      add(stepOne)
+      add(stepTwo)
+      add(stepThree)
+    }
+    bundleProgress.numberOfEligibleContracts == 2 -> buildList {
+      add(stepOne)
+      add(stepTwo.copy(activated = true))
+      add(stepThree)
+    }
+    else -> buildList {
+      add(stepOne)
+      add(stepTwo.copy(activated = true))
+      add(stepThree.copy(activated = true))
+
+    }
   }
 }
 
@@ -570,6 +617,8 @@ private fun PreviewCrossSellsSheetContent(
             buttonText = "Explore offer",
             discountText = "-50%",
             buttonDescription = "Limited time offer",
+            backgroundPillowImages = ("ds" to "ds"),
+            bundleProgress = BundleProgress(1, 15)
           ).takeIf { case != TripleCase.THIRD },
           otherCrossSells = listOf(
             CrossSell(
@@ -609,6 +658,8 @@ private fun PreviewCrossSellsFloatingSheetContent(
           buttonText = "Explore offer",
           discountText = "-50%",
           buttonDescription = "Limited time offer",
+          backgroundPillowImages = ("ds" to "ds"),
+          bundleProgress = BundleProgress(1, 15)
         ).takeIf { case != TripleCase.THIRD },
         listOf(
           CrossSell(

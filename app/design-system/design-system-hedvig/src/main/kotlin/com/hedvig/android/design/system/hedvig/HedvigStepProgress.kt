@@ -58,15 +58,19 @@ fun ProgressStep(
       else hedvigStepProgressColors.inactive,
       shape = HedvigTheme.shapes.cornerLarge,
     ) {}
-    HedvigText(
-      step.title,
-      style = HedvigTheme.typography.label,
-    )
-    HedvigText(
-      step.subtitle,
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
+    if (step.title!=null) {
+      HedvigText(
+        step.title,
+        style = HedvigTheme.typography.label,
+      )
+    }
+    if (step.subtitle!=null) {
+      HedvigText(
+        step.subtitle,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
   }
 }
 
@@ -89,8 +93,8 @@ private val hedvigStepProgressColors: HedvigStepProgressColors
 
 
 data class StepProgressItem(
-  val title: String,
-  val subtitle: String,
+  val title: String?,
+  val subtitle: String?,
   val activated: Boolean,
 )
 

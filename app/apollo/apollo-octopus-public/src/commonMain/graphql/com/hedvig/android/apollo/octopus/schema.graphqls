@@ -3158,6 +3158,10 @@ type ProductVariantComparisonRow {
   Color
   """
   colorCode: String
+  """
+  List of covered items for this peril
+  """
+  covered: [String!]!
 }
 type Query {
   """
@@ -3221,6 +3225,13 @@ type RecommendedCrossSell {
   discountText: String
   buttonText: String!
   buttonDescription: String!
+  numberOfEligibleContracts: Int!
+  discountPercent: Int
+  backgroundPillowImages: RecommendedCrossSellBackgroundPillowImages
+}
+type RecommendedCrossSellBackgroundPillowImages {
+  leftImage: StoryblokImageAsset!
+  rightImage: StoryblokImageAsset!
 }
 """
 A type describing a redeemed campaign.
@@ -3363,6 +3374,44 @@ type ShopSession {
   """
   partnerWidgetTrial: PartnerWidgetTrial
 }
+"""
+Attribution tracking for shop sessions.
+Use this to track where the user came from, what initiated their session, and additional
+conversion source data. This data is used for analytics and understanding customer acquisition
+channels.
+The `attributedTo` and `initiatedFrom` fields cover the primary attribution, while `extras`
+allows tracking additional attribution fields beyond these two to better track conversion sources.
+**Important**: The `extras` field is for additional attribution/conversion tracking metadata only.
+This data is stored as-is and does NOT merge with or override the top-level attribution fields.
+"""
+input ShopSessionAttributionInput {
+  """
+  Partner/source this session is attributed to.
+  - Examples: "SEB", "AVY", "COMPRICER", "ZMARTA".
+  """
+  attributedTo: String
+  """
+  Platform or mechanism where the session started.
+  - Examples: "CROSS_SALE", "HOPE", "COMPARISON_API",
+  """
+  initiatedFrom: String
+  """
+  Additional attribution and conversion tracking fields beyond `attributedTo` and `initiatedFrom`.
+  Use this to capture extra conversion source data that helps better track attribution. Common fields include:
+  - `user_flow`: Differentiates between app screens and widget flows (e.g., "SMART_X_SELL")
+  - `flow_source`: Differentiates between app screens and widget flows (e.g., "MOVING_FLOW")
+  - `experiments`: Object with `version` and `variant` fields for A/B testing
+  - `version`: Experiment identifier (e.g., "smart_x_sell_logic")
+  - `variant`: Experiment variant (e.g., "ORIGINAL", "A", "B")
+  - Any other custom tracking fields specific to your conversion sources
+  This data is stored as-is and does NOT merge with or override the top-level attribution fields.
+  Examples: {
+  flow_source: "MOVING_FLOW"
+  experiments: { version: "smart_x_sell_logic"
+  variant: "ORIGINAL" }}
+  """
+  extras: JSON
+}
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!
   code: String!
@@ -3383,6 +3432,7 @@ input ShopSessionCreateInput {
   countryCode: CountryCode!
   attributedTo: String
   initiatedFrom: String
+  attribution: ShopSessionAttributionInput
 }
 input ShopSessionCreatePartnerInput {
   countryCode: CountryCode!
