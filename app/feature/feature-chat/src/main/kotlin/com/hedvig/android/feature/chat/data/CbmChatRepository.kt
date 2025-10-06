@@ -129,7 +129,7 @@ internal class CbmChatRepositoryImpl(
         conversation.isOpen == false -> BannerText.ClosedConversation
         conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
         else -> {
-          logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+          logcat(LogPriority.INFO) { "Got unknown conversation status message:$conversation" }
           null
         }
       }
