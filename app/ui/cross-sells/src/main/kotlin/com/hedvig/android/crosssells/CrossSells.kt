@@ -403,14 +403,14 @@ private fun getHedvigStepProgressData(
     bundleProgress.numberOfEligibleContracts < 1 -> emptyList()
     bundleProgress.numberOfEligibleContracts == 1 -> buildList {
       add(stepOne)
-      add(stepTwo)
+      add(stepTwo.copy(animate = true))
       add(stepThree)
     }
 
     bundleProgress.numberOfEligibleContracts == 2 -> buildList {
       add(stepOne)
       add(stepTwo.copy(activated = true))
-      add(stepThree)
+      add(stepThree.copy(animate = true))
     }
 
     else -> buildList {
