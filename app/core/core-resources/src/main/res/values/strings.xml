@@ -44,7 +44,7 @@
   <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Read more</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_TEXT">If necessary, you’ll be automatically connected to our service team.</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_TITLE">We use AI for faster service</string>
-  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct. If necessary, you’ll be connected to our service team to help you further.</string>
+  <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct.\n\nIf necessary, you’ll be connected to our service team to help you further.\n\nThe details of your insurance are outlined in your insurance letter and terms and conditions.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>

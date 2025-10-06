@@ -233,8 +233,9 @@ private fun ConversationCard(
         Spacer(Modifier.height(8.dp))
         val sender = stringResource(
           when (latestMessage.sender) {
-            Sender.HEDVIG -> R.string.CHAT_SENDER_HEDVIG
             Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
+            Sender.HEDVIG -> R.string.HEDVIG_NAME_TEXT
+            Sender.AUTOMATION -> R.string.HEDVIG_NAME_TEXT
           },
         )
         val message = when (latestMessage) {
@@ -291,17 +292,15 @@ private fun ConversationCardPreview(
   @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
 ) {
   HedvigTheme {
-    com.hedvig.android.design.system.hedvig.HedvigTheme {
-      Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-        ConversationCard(
-          conversation = when (cases) {
-            TripleCase.FIRST -> mockInboxConversation1
-            TripleCase.SECOND -> mockInboxConversation2
-            TripleCase.THIRD -> mockInboxConversationLegacy
-          },
-          onConversationClick = {},
-        )
-      }
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ConversationCard(
+        conversation = when (cases) {
+          TripleCase.FIRST -> mockInboxConversation1
+          TripleCase.SECOND -> mockInboxConversation2
+          TripleCase.THIRD -> mockInboxConversationLegacy
+        },
+        onConversationClick = {},
+      )
     }
   }
 }
@@ -322,7 +321,7 @@ private val mockInboxConversation1 = InboxConversation(
 private val mockInboxConversation2 = InboxConversation(
   conversationId = "2",
   header = Header.ClaimConversation("claimType"),
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  latestMessage = InboxConversation.LatestMessage.File(Sender.AUTOMATION, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = false,

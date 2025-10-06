@@ -45,11 +45,14 @@ import com.hedvig.android.logger.logcat
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
@@ -132,29 +135,20 @@ internal class CbmChatRepositoryImpl(
       }
     }
     return flow {
-      apolloClient
-        .query(ConversationStatusMessageQuery(conversationId.toString()))
-        .fetchPolicy(FetchPolicy.CacheOnly)
-        .safeExecute(::ErrorMessage)
-        .onRight {
-          emit(it.toBannerText())
-        }
       while (currentCoroutineContext().isActive) {
-        val result = apolloClient
-          .query(ConversationStatusMessageQuery(conversationId.toString()))
-          .fetchPolicy(FetchPolicy.NetworkOnly)
-          .safeExecute(::ErrorMessage)
-        when (result) {
-          is Left -> {
-            emit(null)
-            delay(10.seconds)
-          }
-
-          is Right -> {
-            emit(result.value.toBannerText())
-            break
-          }
-        }
+        emitAll(
+          apolloClient
+            .query(ConversationStatusMessageQuery(conversationId.toString()))
+            .fetchPolicy(FetchPolicy.CacheAndNetwork)
+            .safeFlow(::ErrorMessage)
+            .map { result ->
+              when (result) {
+                is Left -> null
+                is Right -> result.value.toBannerText()
+              }
+            },
+        )
+        delay(10.seconds)
       }
     }
   }
@@ -178,8 +172,8 @@ internal class CbmChatRepositoryImpl(
           },
           ifRight = { messagePageResponse ->
             database.withTransaction {
-              val existingRemoteKey = remoteKeyDao.remoteKeyForConversation(conversationId)
-                ?: RemoteKeyEntity(conversationId, null, null)
+              val existingRemoteKey =
+                remoteKeyDao.remoteKeyForConversation(conversationId) ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
@@ -320,18 +314,14 @@ internal class CbmChatRepositoryImpl(
   ): Either<MessageSendError, CbmChatMessage> {
     return either {
       chatDao.insert(input.toChatMessageEntity(clock, conversationId, messageId))
-      val response = apolloClient
-        .mutation(
-          ConversationSendMessageMutation(
-            conversationId = conversationId.toString(),
-            messageId = messageId.toString(),
-            text = input.text,
-            fileUploadToken = input.fileUploadToken,
-          ),
-        )
-        .safeExecute(::ErrorMessage)
-        .mapLeft { message -> message.toMessageSendError() }
-        .bind()
+      val response = apolloClient.mutation(
+        ConversationSendMessageMutation(
+          conversationId = conversationId.toString(),
+          messageId = messageId.toString(),
+          text = input.text,
+          fileUploadToken = input.fileUploadToken,
+        ),
+      ).safeExecute(::ErrorMessage).mapLeft { message -> message.toMessageSendError() }.bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
         ErrorMessage("Sent message resulted in no response from backend").toMessageSendError()
@@ -352,20 +342,15 @@ internal class CbmChatRepositoryImpl(
     pagingToken: PagingToken?,
   ): Either<String, ChatMessagePageResponse> {
     return either {
-      val data = apolloClient
-        .query(
-          ConversationQuery(
-            id = conversationId.toString(),
-            newerToken = pagingToken?.newerToken,
-            olderToken = pagingToken?.olderToken,
-          ),
-        )
-        .doNotStore(true)
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeExecute()
-        .mapLeft {
-          "$it + ${it.throwable?.message}"
-        }.bind()
+      val data = apolloClient.query(
+        ConversationQuery(
+          id = conversationId.toString(),
+          newerToken = pagingToken?.newerToken,
+          olderToken = pagingToken?.olderToken,
+        ),
+      ).doNotStore(true).fetchPolicy(FetchPolicy.NetworkOnly).safeExecute().mapLeft {
+        "$it + ${it.throwable?.message}"
+      }.bind()
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {
         "Empty message page for conversation $conversationId"
@@ -382,28 +367,20 @@ internal class CbmChatRepositoryImpl(
   private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
-    val uploadToken = botServiceService
-      .uploadFile(file, contentType)
-      .mapLeft {
-        logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
-        it.toErrorMessage().toMessageSendError()
-      }.bind()
-      .firstOrNull()
-      ?.uploadToken
+    val uploadToken = botServiceService.uploadFile(file, contentType).mapLeft {
+      logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+      it.toErrorMessage().toMessageSendError()
+    }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
     return uploadToken
   }
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
-    val uploadToken = botServiceService
-      .uploadFile(fileService.createFormData(uri))
-      .mapLeft {
-        logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
-        it.toErrorMessage().toMessageSendError()
-      }.bind()
-      .firstOrNull()
-      ?.uploadToken
+    val uploadToken = botServiceService.uploadFile(fileService.createFormData(uri)).mapLeft {
+      logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
+      it.toErrorMessage().toMessageSendError()
+    }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
