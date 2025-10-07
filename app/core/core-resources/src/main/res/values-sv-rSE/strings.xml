@@ -2,6 +2,10 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
+  <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
+    <item quantity="one">Du har %d berättigad försäkring.</item>
+    <item quantity="other">Du har %d berättigade försäkringar.</item>
+  </plurals>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>

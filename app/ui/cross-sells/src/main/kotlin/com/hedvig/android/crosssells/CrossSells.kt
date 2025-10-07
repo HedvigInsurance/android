@@ -27,7 +27,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -360,8 +362,14 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(48.dp))
     if (recommendedCrossSell.bundleProgress != null) {
+      val description = pluralStringResource(R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
+        recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+        recommendedCrossSell.bundleProgress.numberOfEligibleContracts)
       HedvigStepProgress(
         steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress),
+        modifier = Modifier.clearAndSetSemantics(){
+          contentDescription = description
+        }
       )
       Spacer(Modifier.height(16.dp))
     }

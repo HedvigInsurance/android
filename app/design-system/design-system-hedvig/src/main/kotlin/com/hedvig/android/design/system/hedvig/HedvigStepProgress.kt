@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -38,7 +39,8 @@ fun HedvigStepProgress(steps: List<StepProgressItem>, modifier: Modifier = Modif
     steps.forEachIndexed { index, step ->
       ProgressStep(
         step,
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f)
+          .semantics(true){},
       )
       if (index != steps.lastIndex) {
         Spacer(Modifier.width(4.dp))

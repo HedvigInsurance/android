@@ -2,6 +2,10 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
+  <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
+    <item quantity="one">You have %d eligible insurance.</item>
+    <item quantity="other">You have %d eligible insurances.</item>
+  </plurals>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
