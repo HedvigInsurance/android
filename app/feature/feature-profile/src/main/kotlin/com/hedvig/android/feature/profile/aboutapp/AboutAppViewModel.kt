@@ -19,17 +19,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import octopus.MemberIdQuery
 
-internal sealed interface AboutAppEvent {
-  data object Retry : AboutAppEvent
-}
-
 internal class AboutAppViewModel(
   apolloClient: ApolloClient,
   deviceIdDataStore: DeviceIdDataStore,
 ) : MoleculeViewModel<AboutAppEvent, AboutAppUiState>(
-    initialState = AboutAppUiState.Loading,
-    presenter = AboutAppPresenter(apolloClient, deviceIdDataStore),
-  )
+  initialState = AboutAppUiState.Loading,
+  presenter = AboutAppPresenter(apolloClient, deviceIdDataStore),
+)
 
 private class AboutAppPresenter(
   private val apolloClient: ApolloClient,
@@ -63,6 +59,12 @@ private class AboutAppPresenter(
 
     return currentState
   }
+}
+
+internal sealed interface AboutAppEvent {
+  data object Retry : AboutAppEvent
+  //we don't set any error state to use this event
+  // now, since null memberId is used for demo mode
 }
 
 internal sealed interface AboutAppUiState {
