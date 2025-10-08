@@ -4,6 +4,7 @@ import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,28 +13,43 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.media3.datasource.cache.SimpleCache
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.design.system.hedvig.DemoModeLabel
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import hedvig.resources.R
+import kotlinx.coroutines.flow.first
 
 @Composable
 internal fun HedvigAppUi(
@@ -47,33 +63,48 @@ internal fun HedvigAppUi(
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
+  demoManager: DemoManager,
+  logoutUseCase: LogoutUseCase,
 ) {
-  Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary,
-    contentColor = HedvigTheme.colorScheme.textPrimary,
-  ) {
-    NavigationSuite(
-      navigationSuiteType = hedvigAppState.navigationSuiteType,
-      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
-      currentDestination = hedvigAppState.currentDestination,
-      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+  val isDemoMode by demoManager.isDemoMode().collectAsState(false)
+  Box(Modifier.fillMaxSize()) {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      contentColor = HedvigTheme.colorScheme.textPrimary,
     ) {
-      HedvigNavHost(
-        hedvigAppState = hedvigAppState,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        externalNavigator = externalNavigator,
-        finishApp = finishApp,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openUrl = openUrl,
-        imageLoader = imageLoader,
-        simpleVideoCache = simpleVideoCache,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
+      NavigationSuite(
+        navigationSuiteType = hedvigAppState.navigationSuiteType,
+        topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+        topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+        currentDestination = hedvigAppState.currentDestination,
+        onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+      ) {
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          externalNavigator = externalNavigator,
+          finishApp = finishApp,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openUrl = openUrl,
+          imageLoader = imageLoader,
+          simpleVideoCache = simpleVideoCache,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .animatedNavigationBarInsetsConsumption(hedvigAppState),
+        )
+      }
+    }
+    if (isDemoMode) {
+      DemoModeLabel(
+        stringResource(R.string.EXIT_DEMO_MODE_BUTTON),
+        onButtonClick = { logoutUseCase.invoke() },
         modifier = Modifier
-          .fillMaxHeight()
-          .weight(1f)
-          .animatedNavigationBarInsetsConsumption(hedvigAppState),
+          .padding(start = 16.dp, end = 32.dp, bottom = 86.dp)
+          .align(Alignment.BottomEnd)
+          .windowInsetsPadding(WindowInsets.systemBars),
       )
     }
   }
