@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
@@ -290,65 +291,7 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Box(
-      contentAlignment = Alignment.Center,
-      modifier = Modifier.semantics(mergeDescendants = true) {},
-    ) {
-      val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
-      if (recommendedCrossSell.backgroundPillowImages != null) {
-        Row(
-          horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          AsyncImage(
-            model = recommendedCrossSell.backgroundPillowImages.first,
-            contentDescription = EmptyContentDescription,
-            placeholder = placeholder,
-            error = placeholder,
-            fallback = placeholder,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-              .size(96.dp),
-          )
-          Spacer(Modifier.width(54.dp))
-          AsyncImage(
-            model = recommendedCrossSell.backgroundPillowImages.second,
-            contentDescription = EmptyContentDescription,
-            placeholder = placeholder,
-            error = placeholder,
-            fallback = placeholder,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-              .size(96.dp),
-          )
-        }
-      }
-      Box {
-        AsyncImage(
-          model = recommendedCrossSell.crossSell.pillowImage.src,
-          contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
-          placeholder = placeholder,
-          error = placeholder,
-          fallback = placeholder,
-          imageLoader = imageLoader,
-          contentScale = ContentScale.Crop,
-          modifier = Modifier
-            .size(140.dp),
-        )
-        if (recommendedCrossSell.discountText != null) {
-          HighlightLabel(
-            labelText = recommendedCrossSell.discountText,
-            size = HighlightLabelDefaults.HighLightSize.Small,
-            color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
-            modifier = Modifier
-              .align(Alignment.TopEnd)
-              .padding(top = 16.dp),
-          )
-        }
-      }
-    }
+    StackedPillows(recommendedCrossSell, imageLoader)
     Spacer(Modifier.height(24.dp))
     HedvigText(
       text = recommendedCrossSell.crossSell.title,
@@ -393,6 +336,70 @@ private fun RecommendationSection(
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
+  }
+}
+
+@Composable
+private fun StackedPillows(
+  recommendedCrossSell: RecommendedCrossSell,
+  imageLoader: ImageLoader,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy((-43).dp, Alignment.CenterHorizontally),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.semantics(mergeDescendants = true) {},
+  ) {
+    val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+    val backgroundPillowImages = recommendedCrossSell.backgroundPillowImages
+    if (backgroundPillowImages != null) {
+      AsyncImage(
+        model = backgroundPillowImages.first,
+        contentDescription = EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(96.dp),
+      )
+    }
+    Box(Modifier.zIndex(1f)) {
+      AsyncImage(
+        model = recommendedCrossSell.crossSell.pillowImage.src,
+        contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(140.dp),
+      )
+      if (recommendedCrossSell.discountText != null) {
+        HighlightLabel(
+          labelText = recommendedCrossSell.discountText,
+          size = HighlightLabelDefaults.HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+          modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(top = 16.dp),
+        )
+      }
+    }
+    if (backgroundPillowImages != null) {
+      AsyncImage(
+        model = backgroundPillowImages.second,
+        contentDescription = EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(96.dp),
+      )
+    }
   }
 }
 
