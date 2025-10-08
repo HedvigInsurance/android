@@ -110,8 +110,8 @@ class GetMemberRemindersUseCaseTest {
   class TestGetUpcomingRenewalRemindersUseCase : GetUpcomingRenewalRemindersUseCase {
     val turbine = Turbine<Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>>()
 
-    override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>> {
-      return turbine.awaitItem()
+    override fun invoke(): Flow<Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>> {
+      return turbine.asChannel().receiveAsFlow()
     }
   }
 

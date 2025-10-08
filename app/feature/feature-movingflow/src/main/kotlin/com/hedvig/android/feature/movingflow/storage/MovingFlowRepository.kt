@@ -144,7 +144,6 @@ internal class MovingFlowRepository(
   }
 
   // Flips the mark of a home addon which determines if they do not wish to contain that addon in their new quote
-
   suspend fun changeHomeAddonExclusion(addonId: AddonId, exclude: Boolean) {
     movingFlowStorage.editMovingFlowState { existingState ->
       existingState.copy(

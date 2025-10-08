@@ -40,7 +40,6 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -48,8 +47,10 @@ import kotlin.time.Instant
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
@@ -126,35 +127,26 @@ internal class CbmChatRepositoryImpl(
         conversation.isOpen == false -> BannerText.ClosedConversation
         conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
         else -> {
-          logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+          logcat(LogPriority.INFO) { "Got unknown conversation status message:$conversation" }
           null
         }
       }
     }
     return flow {
-      apolloClient
-        .query(ConversationStatusMessageQuery(conversationId.toString()))
-        .fetchPolicy(FetchPolicy.CacheOnly)
-        .safeExecute(::ErrorMessage)
-        .onRight {
-          emit(it.toBannerText())
-        }
       while (currentCoroutineContext().isActive) {
-        val result = apolloClient
-          .query(ConversationStatusMessageQuery(conversationId.toString()))
-          .fetchPolicy(FetchPolicy.NetworkOnly)
-          .safeExecute(::ErrorMessage)
-        when (result) {
-          is Left -> {
-            emit(null)
-            delay(10.seconds)
-          }
-
-          is Right -> {
-            emit(result.value.toBannerText())
-            break
-          }
-        }
+        emitAll(
+          apolloClient
+            .query(ConversationStatusMessageQuery(conversationId.toString()))
+            .fetchPolicy(FetchPolicy.CacheAndNetwork)
+            .safeFlow(::ErrorMessage)
+            .map { result ->
+              when (result) {
+                is Left -> null
+                is Right -> result.value.toBannerText()
+              }
+            },
+        )
+        delay(10.seconds)
       }
     }
   }
@@ -178,8 +170,8 @@ internal class CbmChatRepositoryImpl(
           },
           ifRight = { messagePageResponse ->
             database.withTransaction {
-              val existingRemoteKey = remoteKeyDao.remoteKeyForConversation(conversationId)
-                ?: RemoteKeyEntity(conversationId, null, null)
+              val existingRemoteKey =
+                remoteKeyDao.remoteKeyForConversation(conversationId) ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
@@ -197,7 +189,7 @@ internal class CbmChatRepositoryImpl(
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
-        logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
+        logcat(LogPriority.ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
         ErrorMessage("Message not found").toMessageSendError()
       }
       return with(messageToRetry) {
@@ -206,7 +198,7 @@ internal class CbmChatRepositoryImpl(
           failedToSend == PHOTO && url != null -> sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
           failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
           else -> {
-            logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
+            logcat(LogPriority.ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise(ErrorMessage("Unknown message type").toMessageSendError())
           }
         }.onRight {
@@ -306,7 +298,9 @@ internal class CbmChatRepositoryImpl(
     } catch (e: SecurityException) {
       // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
       // without the persistent access permission given to us
-      logcat(ERROR, e) { "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri" }
+      logcat(LogPriority.ERROR, e) {
+        "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri"
+      }
       return MessageSendError.FailedToPersistUriPermissionError(this.originalError)
     }
     chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
@@ -320,18 +314,14 @@ internal class CbmChatRepositoryImpl(
   ): Either<MessageSendError, CbmChatMessage> {
     return either {
       chatDao.insert(input.toChatMessageEntity(clock, conversationId, messageId))
-      val response = apolloClient
-        .mutation(
-          ConversationSendMessageMutation(
-            conversationId = conversationId.toString(),
-            messageId = messageId.toString(),
-            text = input.text,
-            fileUploadToken = input.fileUploadToken,
-          ),
-        )
-        .safeExecute(::ErrorMessage)
-        .mapLeft { message -> message.toMessageSendError() }
-        .bind()
+      val response = apolloClient.mutation(
+        ConversationSendMessageMutation(
+          conversationId = conversationId.toString(),
+          messageId = messageId.toString(),
+          text = input.text,
+          fileUploadToken = input.fileUploadToken,
+        ),
+      ).safeExecute(::ErrorMessage).mapLeft { message -> message.toMessageSendError() }.bind()
       val sentMessage = response.conversationSendMessage.message
       ensureNotNull(sentMessage) {
         ErrorMessage("Sent message resulted in no response from backend").toMessageSendError()
@@ -352,20 +342,15 @@ internal class CbmChatRepositoryImpl(
     pagingToken: PagingToken?,
   ): Either<String, ChatMessagePageResponse> {
     return either {
-      val data = apolloClient
-        .query(
-          ConversationQuery(
-            id = conversationId.toString(),
-            newerToken = pagingToken?.newerToken,
-            olderToken = pagingToken?.olderToken,
-          ),
-        )
-        .doNotStore(true)
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeExecute()
-        .mapLeft {
-          "$it + ${it.throwable?.message}"
-        }.bind()
+      val data = apolloClient.query(
+        ConversationQuery(
+          id = conversationId.toString(),
+          newerToken = pagingToken?.newerToken,
+          olderToken = pagingToken?.olderToken,
+        ),
+      ).doNotStore(true).fetchPolicy(FetchPolicy.NetworkOnly).safeExecute().mapLeft {
+        "$it + ${it.throwable?.message}"
+      }.bind()
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {
         "Empty message page for conversation $conversationId"
@@ -382,28 +367,20 @@ internal class CbmChatRepositoryImpl(
   private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
-    val uploadToken = botServiceService
-      .uploadFile(file, contentType)
-      .mapLeft {
-        logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
-        it.toErrorMessage().toMessageSendError()
-      }.bind()
-      .firstOrNull()
-      ?.uploadToken
+    val uploadToken = botServiceService.uploadFile(file, contentType).mapLeft {
+      logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+      it.toErrorMessage().toMessageSendError()
+    }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
     return uploadToken
   }
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
-    val uploadToken = botServiceService
-      .uploadFile(fileService.createFormData(uri))
-      .mapLeft {
-        logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
-        it.toErrorMessage().toMessageSendError()
-      }.bind()
-      .firstOrNull()
-      ?.uploadToken
+    val uploadToken = botServiceService.uploadFile(fileService.createFormData(uri)).mapLeft {
+      logcat(LogPriority.ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
+      it.toErrorMessage().toMessageSendError()
+    }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
@@ -417,7 +394,9 @@ internal class CbmChatRepositoryImpl(
     try {
       contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     } catch (e: SecurityException) {
-      logcat(ERROR, e) { "PersistableUriPermission: Failed to release persistable uri permission for uri:$this" }
+      logcat(LogPriority.ERROR, e) {
+        "PersistableUriPermission: Failed to release persistable uri permission for uri:$this"
+      }
     }
   }
 }

@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.hedvig.android.design.system.hedvig.tokens.CircularProgressIndicatorTokens.LinearEasing
 
-fun Modifier.animatedBorder(colors: List<Color>, shape: Shape): Modifier {
+fun Modifier.animatedBorder(width: Dp, colors: List<Color>, shape: Shape): Modifier {
   return composed {
     val infiniteTransition = rememberInfiniteTransition(label = "InfiniteColorAnimation")
     val progress by infiniteTransition.animateFloat(
@@ -37,9 +37,12 @@ fun Modifier.animatedBorder(colors: List<Color>, shape: Shape): Modifier {
       startAngle = progress,
     )
     drawWithContent {
-      val stroke = Stroke(2.dp.toPx())
       drawContent()
-      drawOutline(shape.createOutline(size, layoutDirection, this), brush, style = stroke)
+      drawOutline(
+        outline = shape.createOutline(size, layoutDirection, this),
+        brush = brush,
+        style = Stroke(width.toPx()),
+      )
     }
   }
 }
