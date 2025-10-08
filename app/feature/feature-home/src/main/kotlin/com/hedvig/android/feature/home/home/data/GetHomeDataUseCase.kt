@@ -204,7 +204,7 @@ internal class GetHomeDataUseCaseImpl(
       return HomeData.ContractStatus.Terminated
     }
     return HomeData.ContractStatus.Unknown.also {
-      logcat(LogPriority.ERROR) {
+      logcat(LogPriority.WARN) {
         "HomeQuery.Data.CurrentMember:$this. Resulted in an unknown contract. It should be mapped instead"
       }
     }
