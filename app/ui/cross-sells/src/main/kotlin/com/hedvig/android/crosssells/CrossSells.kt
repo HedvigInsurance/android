@@ -325,26 +325,28 @@ private fun RecommendationSection(
           )
         }
       }
-      AsyncImage(
-        model = recommendedCrossSell.crossSell.pillowImage.src,
-        contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
-        placeholder = placeholder,
-        error = placeholder,
-        fallback = placeholder,
-        imageLoader = imageLoader,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-          .size(140.dp),
-      )
-      if (recommendedCrossSell.discountText != null) {
-        HighlightLabel(
-          labelText = recommendedCrossSell.discountText,
-          size = HighlightLabelDefaults.HighLightSize.Small,
-          color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+      Box {
+        AsyncImage(
+          model = recommendedCrossSell.crossSell.pillowImage.src,
+          contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
+          placeholder = placeholder,
+          error = placeholder,
+          fallback = placeholder,
+          imageLoader = imageLoader,
+          contentScale = ContentScale.Crop,
           modifier = Modifier
-            .align(Alignment.TopEnd)
-            .padding(top = 16.dp, end = 38.dp),
+            .size(140.dp),
         )
+        if (recommendedCrossSell.discountText != null) {
+          HighlightLabel(
+            labelText = recommendedCrossSell.discountText,
+            size = HighlightLabelDefaults.HighLightSize.Small,
+            color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+            modifier = Modifier
+              .align(Alignment.TopEnd)
+              .padding(top = 16.dp),
+          )
+        }
       }
     }
     Spacer(Modifier.height(24.dp))
@@ -362,14 +364,16 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(48.dp))
     if (recommendedCrossSell.bundleProgress != null) {
-      val description = pluralStringResource(R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
+      val description = pluralStringResource(
+        R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
         recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
-        recommendedCrossSell.bundleProgress.numberOfEligibleContracts)
+        recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+      )
       HedvigStepProgress(
         steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress),
-        modifier = Modifier.clearAndSetSemantics(){
+        modifier = Modifier.clearAndSetSemantics() {
           contentDescription = description
-        }
+        },
       )
       Spacer(Modifier.height(16.dp))
     }
