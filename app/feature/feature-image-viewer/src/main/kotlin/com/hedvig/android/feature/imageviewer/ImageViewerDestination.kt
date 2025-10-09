@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
@@ -65,8 +68,11 @@ internal fun ImageViewerDestination(
           .diskCacheKey(cacheKey)
           .memoryCacheKey(cacheKey)
           .build(),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
+        contentDescription = stringResource(R.string.TALKBACK_PINCH_TO_ZOOM),
+        modifier = Modifier.fillMaxSize().
+        semantics{
+          role = Role.Image
+        },
       )
     }
     HedvigTheme(darkTheme = true) {

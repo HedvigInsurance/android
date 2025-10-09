@@ -662,6 +662,7 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
