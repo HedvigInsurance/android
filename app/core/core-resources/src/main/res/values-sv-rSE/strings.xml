@@ -655,6 +655,7 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanderad</string>
   <string name="TALKBACK_FROM">Från</string>
   <string name="TALKBACK_INSURANCE_CARD">Din försäkring</string>
+  <string name="TALKBACK_LOADING_STATE_BUTTON">Laddar</string>
   <string name="TALKBACK_MINUS_DESCRIPTION">Minska</string>
   <string name="TALKBACK_NEW_VALUE">Nu: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Viktig information</string>

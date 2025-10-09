@@ -655,6 +655,7 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanded</string>
   <string name="TALKBACK_FROM">From</string>
   <string name="TALKBACK_INSURANCE_CARD">Your insurance</string>
+  <string name="TALKBACK_LOADING_STATE_BUTTON">Loading</string>
   <string name="TALKBACK_MINUS_DESCRIPTION">Decrease</string>
   <string name="TALKBACK_NEW_VALUE">Now: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Important information</string>
