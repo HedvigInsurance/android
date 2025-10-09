@@ -9,6 +9,16 @@ query BottomSheetCrossSells($source: CrossSellSource!) {
         discountText
         buttonText
         buttonDescription
+        discountPercent
+        numberOfEligibleContracts
+        backgroundPillowImages {
+          leftImage {
+            src
+          }
+          rightImage {
+            src
+          }
+        }
       }
       otherCrossSells {
         ...CrossSellFragment

@@ -66,6 +66,7 @@ import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -728,6 +729,8 @@ private fun PreviewHomeScreen(
                 discountText = "-50%",
                 buttonText = "Explore offer",
                 buttonDescription = "Limited time offer",
+                backgroundPillowImages = ("ds" to "ds"),
+                bundleProgress = BundleProgress(1, 15),
               ),
               otherCrossSells = listOf(
                 CrossSell(
