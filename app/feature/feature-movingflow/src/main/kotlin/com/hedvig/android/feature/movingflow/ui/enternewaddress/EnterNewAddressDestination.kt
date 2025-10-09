@@ -205,15 +205,6 @@ private fun EnterNewAddressScreen(
             else -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(validationError.string())
           },
           enabled = !uiState.shouldDisableInput,
-          modifier = Modifier.then(
-            when (uiState.address.validationError) {
-              null -> Modifier
-              else -> Modifier.semantics{
-                liveRegion = LiveRegionMode.Assertive
-              }
-            }
-
-          )
         )
         HedvigTextField(
           text = uiState.postalCode.value ?: "",
