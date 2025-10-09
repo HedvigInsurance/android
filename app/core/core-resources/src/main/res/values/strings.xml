@@ -655,6 +655,7 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanded</string>
   <string name="TALKBACK_FROM">From</string>
   <string name="TALKBACK_INSURANCE_CARD">Your insurance</string>
+  <string name="TALKBACK_MINUS_DESCRIPTION">Decrease</string>
   <string name="TALKBACK_NEW_VALUE">Now: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Important information</string>
   <string name="TALKBACK_OPEN_EXTERNAL_LINK">Open link in external browser</string>
@@ -663,6 +664,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
+  <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
   <string name="TALKBACK_PRICE">Price</string>

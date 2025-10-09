@@ -655,6 +655,7 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanderad</string>
   <string name="TALKBACK_FROM">Från</string>
   <string name="TALKBACK_INSURANCE_CARD">Din försäkring</string>
+  <string name="TALKBACK_MINUS_DESCRIPTION">Minska</string>
   <string name="TALKBACK_NEW_VALUE">Nu: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Viktig information</string>
   <string name="TALKBACK_OPEN_EXTERNAL_LINK">Öppna länk i extern webbläsare</string>
@@ -663,6 +664,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
+  <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
