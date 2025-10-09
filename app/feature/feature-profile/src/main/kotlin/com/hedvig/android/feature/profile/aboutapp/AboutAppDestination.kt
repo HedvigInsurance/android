@@ -6,11 +6,13 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +29,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -44,12 +47,8 @@ internal fun AboutAppDestination(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val memberId = uiState.memberId
-  val deviceId = uiState.deviceId
-
   AboutAppScreen(
-    memberId = memberId,
-    deviceId = deviceId,
+    uiState = uiState,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
     isProduction = hedvigBuildConstants.isProduction,
@@ -60,8 +59,7 @@ internal fun AboutAppDestination(
 
 @Composable
 private fun AboutAppScreen(
-  memberId: String?,
-  deviceId: String?,
+  uiState: AboutAppUiState,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
@@ -73,80 +71,113 @@ private fun AboutAppScreen(
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    var showSubmitBugWarning by remember { mutableStateOf(false) }
-    if (showSubmitBugWarning) {
-      SubmitBugWarningDialog(
-        memberId,
-        deviceId,
-        appVersionName,
-      ) {
-        showSubmitBugWarning = false
+    when (uiState) {
+      AboutAppUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+              .weight(1f)
+              .wrapContentHeight(),
+        )
+      }
+
+      is AboutAppUiState.Content -> {
+        AboutAppContent(
+          memberId = uiState.memberId,
+          deviceId = uiState.deviceId,
+          showOpenSourceLicenses = showOpenSourceLicenses,
+          isProduction = isProduction,
+          appVersionName = appVersionName,
+          appVersionCode = appVersionCode,
+        )
       }
     }
-    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun ColumnScope.AboutAppContent(
+  memberId: String?,
+  deviceId: String?,
+  showOpenSourceLicenses: () -> Unit,
+  isProduction: Boolean,
+  appVersionName: String,
+  appVersionCode: String,
+) {
+  var showSubmitBugWarning by remember { mutableStateOf(false) }
+  if (showSubmitBugWarning) {
+    SubmitBugWarningDialog(
+      memberId,
+      deviceId,
+      appVersionName,
+    ) {
+      showSubmitBugWarning = false
+    }
+  }
+  Spacer(Modifier.height(16.dp))
+  if (memberId != null) {
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
+          .fillMaxWidth()
+          .padding(16.dp),
       startSlot = {
         HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
       },
       endSlot = {
         HedvigText(
-          memberId ?: "",
+          memberId,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.End,
         )
       },
     )
-    HorizontalItemsWithMaximumSpaceTaken(
-      modifier = Modifier
+  }
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
-      startSlot = {
-        HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-      },
-      endSlot = {
-        HedvigText(
-          text = buildString {
-            append(appVersionName)
-            if (!isProduction) {
-              append(" (")
-              append(appVersionCode)
-              append(")")
-            }
-          },
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      },
-      spaceBetween = 8.dp,
-    )
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
+    startSlot = {
+      HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
+    },
+    endSlot = {
+      HedvigText(
+        text = buildString {
+          append(appVersionName)
+          if (!isProduction) {
+            append(" (")
+            append(appVersionCode)
+            append(")")
+          }
+        },
+        color = HedvigTheme.colorScheme.textSecondary,
+        textAlign = TextAlign.End,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    },
+    spaceBetween = 8.dp,
+  )
+  Row(
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
         .fillMaxWidth()
         .clickable(onClick = showOpenSourceLicenses)
         .padding(16.dp),
-    ) {
-      HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
-    }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.weight(1f))
-    HedvigButton(
-      text = stringResource(R.string.app_info_submit_bug_button),
-      enabled = true,
-      buttonStyle = Secondary,
-      onClick = { showSubmitBugWarning = true },
-      modifier = Modifier
+  ) {
+    HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+  }
+  Spacer(Modifier.height(16.dp))
+  Spacer(Modifier.weight(1f))
+  HedvigButton(
+    text = stringResource(R.string.app_info_submit_bug_button),
+    enabled = true,
+    buttonStyle = Secondary,
+    onClick = { showSubmitBugWarning = true },
+    modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
-  }
+  )
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable
@@ -209,8 +240,7 @@ private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AboutAppScreen(
-        memberId = "123",
-        deviceId = "123456",
+        uiState = AboutAppUiState.Content(memberId = "123", deviceId = "123456"),
         onBackPressed = {},
         showOpenSourceLicenses = {},
         isProduction = false,

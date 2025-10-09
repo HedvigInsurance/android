@@ -58,10 +58,10 @@ internal fun TerminationDateDestination(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
     onCheckedChange = {
-      viewModel.changeCheckBoxState()
+      viewModel.emit(TerminationDateEvent.ToggleCheckBox)
     },
     changeSelectedDate = { long ->
-      viewModel.changeSelectedDate(long)
+      viewModel.emit(TerminationDateEvent.ChangeSelectedDate(long))
     },
   )
 }
@@ -115,7 +115,9 @@ private fun TerminationDateScreen(
       text = stringResource(id = R.string.general_continue_button),
       onClick = submit,
       enabled = uiState.canSubmit,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
 
     Spacer(Modifier.height(16.dp))
