@@ -1,6 +1,9 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -26,21 +29,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens.FastAnimationTokens.durationMillis
 
 @Composable
 fun HedvigStepProgress(steps: List<StepProgressItem>, modifier: Modifier = Modifier) {
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .horizontalScroll(rememberScrollState()),
+    modifier = modifier
+      .fillMaxWidth()
+      .horizontalScroll(rememberScrollState()),
     horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
     steps.forEachIndexed { index, step ->
       ProgressStep(
         step,
-        modifier = Modifier.weight(1f)
-          .semantics(true){},
+        modifier = Modifier
+          .weight(1f)
+          .semantics(true) {},
       )
       if (index != steps.lastIndex) {
         Spacer(Modifier.width(4.dp))
@@ -57,32 +61,16 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
   ) {
     val infiniteTransition = rememberInfiniteTransition()
     val animationColors = hedvigStepProgressColors
-    val widthFraction by infiniteTransition.animateFloat(
+    val widthFraction = infiniteTransition.animateFloat(
       initialValue = 0f,
       targetValue = 1f,
-      animationSpec = infiniteRepeatable(
-        keyframes {
-          durationMillis = 2000
-          0f at 0 using LinearEasing
-          1f at 1200
-          1f at 2500
-        },
-        RepeatMode.Restart,
-      ),
+      animationSpec = progressAnimationSpec(0f, 1f),
     )
-
-    val color0 = infiniteTransition.animateColor(
+    val animatedStepColor = infiniteTransition.animateColor(
       animationColors.activated,
       animationColors.inactive,
-      animationSpec = infiniteRepeatable(
-        keyframes {
-          durationMillis = 2000
-          animationColors.inactive at 0 using LinearEasing
-          animationColors.activated at 1200
-          animationColors.activated at 1800
-          animationColors.activated at 2500
-        },
-        RepeatMode.Restart,
+      animationSpec = progressAnimationSpec(
+        animationColors.inactive, animationColors.activated
       ),
     )
 
@@ -104,15 +92,13 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
         shape = HedvigTheme.shapes.cornerLarge,
       ) {}
       if (step.animate) {
-        Row(Modifier.fillMaxWidth()) {
-          Surface(
-            modifier = Modifier
-              .height(8.dp)
-              .fillMaxWidth(widthFraction),
-            color = color0.value,
-            shape = HedvigTheme.shapes.cornerLarge,
-          ) {}
-        }
+        Surface(
+          modifier = Modifier
+            .height(8.dp)
+            .fillMaxWidth(widthFraction.value),
+          color = animatedStepColor.value,
+          shape = HedvigTheme.shapes.cornerLarge,
+        ) {}
       }
     }
 
@@ -132,14 +118,27 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+private fun <T> progressAnimationSpec(
+  startValue: T,
+  endValue: T,
+): InfiniteRepeatableSpec<T> = infiniteRepeatable(
+  keyframes {
+    durationMillis = 2000
+    startValue at 0 using LinearEasing
+    endValue at 1200
+    endValue at 1800
+  },
+  RepeatMode.Restart,
+)
+
 private data class HedvigStepProgressColors(
   val activated: Color,
   val inactive: Color,
 )
 
 private val hedvigStepProgressColors: HedvigStepProgressColors
-  @Composable
-  get() = with(HedvigTheme.colorScheme) {
+  @Composable get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       HedvigStepProgressColors(
         activated = signalGreenElement,
