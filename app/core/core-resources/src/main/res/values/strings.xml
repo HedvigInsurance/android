@@ -2,6 +2,10 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
+  <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
+    <item quantity="one">You have %d eligible insurance.</item>
+    <item quantity="other">You have %d eligible insurances.</item>
+  </plurals>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
@@ -50,6 +54,11 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s discount</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT">No discount</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE">1 insurance</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE">3 or more</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES">2 insurances</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig only takes 25\u0025 of your monthly premium to improve the product and experience. The rest, 75\u0025, goes into a common claims pool. Any money left in that pool by the end of the year is donated to Milkywire.</string>
   <string name="BUSINESS_MODEL_PROFILE_ROW">Our business model</string>
   <string name="CERTIFICATES.CREATE_CERTIFICATE">Create certificate</string>
@@ -252,6 +261,7 @@
   <string name="EMBARK_UPDATE_APP_BODY">Your app is out of date and needs to be updated before you can proceed.</string>
   <string name="EMBARK_UPDATE_APP_BUTTON">Update now</string>
   <string name="EMBARK_UPDATE_APP_TITLE">Update app</string>
+  <string name="EXIT_DEMO_MODE_BUTTON">Exit\ndemo\nmode</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE">If you choose to become a member later on you will have to contact your old insurer to begin the move.</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE">We can\'t automatically move your insurance</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION">Other</string>
@@ -377,7 +387,7 @@
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Any damage that occurs during a 30-day period after the moving out date is eligible for claims.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Certificate of validity</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">The certificate has been sent to your email.</string>
-  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details — for example, which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
+  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">What is a certificate of validity?</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
