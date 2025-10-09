@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -65,11 +68,16 @@ fun FirstVetScreen(
               ) {
                 Icon(
                   HedvigIcons.ColoredFirstVet,
-                  "",
-                  Modifier.size(28.dp),
+                  contentDescription = "",
+                  Modifier.size(28.dp).semantics{
+                    hideFromAccessibility()
+                  },
                   tint = Color.Unspecified,
                 )
-                HedvigText(text = section.title ?: "${sections.indexOf(section)}")
+                HedvigText(text = section.title ?: "${sections.indexOf(section)}",
+                  modifier = Modifier.semantics {
+                    heading()
+                  })
               }
               Spacer(modifier = Modifier.height(16.dp))
               HedvigText(
