@@ -44,6 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +70,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultToggleToke
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
+import hedvig.resources.R
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -111,6 +117,8 @@ fun HedvigToggle(
   }
 
   val coroutineScope = rememberCoroutineScope()
+  val turnedOnStateDescription = stringResource(R.string.TALKBACK_TURNED_ON_STATE)
+  val turnedOffStateDescription = stringResource(R.string.TALKBACK_TURNED_OFF_STATE)
   Surface(
     onClick = {
       coroutineScope.launch {
@@ -122,7 +130,14 @@ fun HedvigToggle(
     shape = toggleStyle.shape,
     color = containerColor,
     enabled = enabled,
-    modifier = modifier,
+    modifier = modifier
+      .semantics {
+        role = Role.Switch
+        stateDescription = when (turnedOn) {
+          true -> turnedOnStateDescription
+          false -> turnedOffStateDescription
+        }
+      },
   ) {
     when (toggleStyle) {
       is Default -> {

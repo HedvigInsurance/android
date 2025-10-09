@@ -667,6 +667,8 @@
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Välj en kategori för att fortsätta</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Svenska kronor</string>
   <string name="TALKBACK_TAKE_PHOTO">Ta ett foto</string>
+  <string name="TALKBACK_TURNED_OFF_STATE">Avaktiverad</string>
+  <string name="TALKBACK_TURNED_ON_STATE">Aktiverad</string>
   <string name="TALKBACK_UNKNOWN">Okänd</string>
   <string name="TALKBACK_WRITE_HERE">Skriv ditt meddelande här</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Ditt nya pris: %1$s</string>
