@@ -646,6 +646,8 @@
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Slå av</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_ON">Slå på</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE">Minimera</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND">Expandera</string>
   <string name="TALKBACK_EXPANDABLE_ITEM">%1$s, expanderbart element</string>

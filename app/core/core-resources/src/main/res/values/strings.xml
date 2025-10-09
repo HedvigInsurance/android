@@ -646,6 +646,8 @@
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Double tap to choose</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Double tap to read details</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Double tap to see all options</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Turn off</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_ON">Turn on</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE">Collapse</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND">Expand</string>
   <string name="TALKBACK_EXPANDABLE_ITEM">%1$s, expandable item</string>

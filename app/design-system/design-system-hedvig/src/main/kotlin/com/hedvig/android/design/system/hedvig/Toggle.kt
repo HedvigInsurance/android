@@ -127,6 +127,10 @@ fun HedvigToggle(
         state.animateTo(newValue)
       }
     },
+    onClickLabel = when (turnedOn) {
+      true -> stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_TURN_OFF)
+      false -> stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_TURN_ON)
+    },
     shape = toggleStyle.shape,
     color = containerColor,
     enabled = enabled,
