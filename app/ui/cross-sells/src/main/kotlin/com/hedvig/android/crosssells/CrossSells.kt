@@ -293,8 +293,15 @@ private fun RecommendationSection(
   ) {
     StackedPillows(recommendedCrossSell, imageLoader)
     Spacer(Modifier.height(24.dp))
+    val headingDescription = stringResource(R.string.CROSS_SELL_TITLE) +
+      ": ${recommendedCrossSell.crossSell.title}"
     HedvigText(
       text = recommendedCrossSell.crossSell.title,
+      modifier = Modifier
+        .clearAndSetSemantics {
+          contentDescription = headingDescription
+          heading()
+        },
     )
     HedvigText(
       recommendedCrossSell.crossSell.subtitle,
@@ -307,14 +314,17 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(48.dp))
     if (recommendedCrossSell.bundleProgress != null) {
-      val description = pluralStringResource(
-        R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
-        recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
-        recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
-      )
+      val data = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
+      val dataDescription = data.joinToString(separator = "; ") { item -> "${item.title} - ${item.subtitle}" }
+      val description = "$dataDescription; " +
+        pluralStringResource(
+          R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
+          recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+          recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+        )
       HedvigStepProgress(
-        steps = getHedvigStepProgressData(recommendedCrossSell.bundleProgress),
-        modifier = Modifier.clearAndSetSemantics() {
+        steps = data,
+        modifier = Modifier.clearAndSetSemantics {
           contentDescription = description
         },
       )
@@ -328,7 +338,13 @@ private fun RecommendationSection(
       },
       onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       enabled = true,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics {
+          contentDescription = recommendedCrossSell.crossSell.title
+          // without it really is not very clear what price do we want to show here
+          // since there is a lot of things said between the heading and the button
+        },
     )
     Spacer(Modifier.height(12.dp))
     HedvigText(
