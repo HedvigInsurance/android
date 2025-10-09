@@ -26,7 +26,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -201,6 +205,15 @@ private fun EnterNewAddressScreen(
             else -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(validationError.string())
           },
           enabled = !uiState.shouldDisableInput,
+          modifier = Modifier.then(
+            when (uiState.address.validationError) {
+              null -> Modifier
+              else -> Modifier.semantics{
+                liveRegion = LiveRegionMode.Assertive
+              }
+            }
+
+          )
         )
         HedvigTextField(
           text = uiState.postalCode.value ?: "",
