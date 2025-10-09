@@ -207,6 +207,7 @@ private fun MemberChargeDetailsScreen(
                 withIcon = false,
                 style = NotificationDefaults.InfoCardStyle.Default,
                 message = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL),
+                modifier = Modifier.fillMaxWidth(),
               )
 
             MemberCharge.MemberChargeStatus.PENDING -> HedvigNotificationCard(
@@ -214,6 +215,7 @@ private fun MemberChargeDetailsScreen(
               style = NotificationDefaults.InfoCardStyle.Default,
               priority = NotificationDefaults.NotificationPriority.Info,
               withIcon = true,
+              modifier = Modifier.fillMaxWidth()
             )
 
             MemberCharge.MemberChargeStatus.FAILED -> {
@@ -230,6 +232,7 @@ private fun MemberChargeDetailsScreen(
                 priority = NotificationDefaults.NotificationPriority.Error,
                 withIcon = true,
                 style = NotificationDefaults.InfoCardStyle.Default,
+                modifier = Modifier.fillMaxWidth()
               )
             }
 
