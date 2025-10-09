@@ -69,10 +69,10 @@ internal fun ImageViewerDestination(
           .memoryCacheKey(cacheKey)
           .build(),
         contentDescription = stringResource(R.string.TALKBACK_PINCH_TO_ZOOM),
-        modifier = Modifier.fillMaxSize().
-        semantics{
-          role = Role.Image
-        },
+        modifier = Modifier.fillMaxSize()
+          .semantics {
+            role = Role.Image
+          },
       )
     }
     HedvigTheme(darkTheme = true) {

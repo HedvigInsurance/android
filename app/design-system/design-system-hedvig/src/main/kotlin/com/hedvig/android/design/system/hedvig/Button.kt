@@ -89,7 +89,7 @@ fun HedvigButton(
             stableColor = buttonColors.activeLoadingIndicatorColor,
             temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
             modifier = Modifier.wrapContentSize(Alignment.Center)
-              .semantics{
+              .semantics {
                 contentDescription = desc
               },
           )

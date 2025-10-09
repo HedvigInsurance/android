@@ -106,7 +106,7 @@ fun HedvigTextField(
         else -> Modifier.semantics {
           liveRegion = LiveRegionMode.Assertive
         }
-      }
+      },
     ),
     enabled = enabled,
     readOnly = readOnly,
