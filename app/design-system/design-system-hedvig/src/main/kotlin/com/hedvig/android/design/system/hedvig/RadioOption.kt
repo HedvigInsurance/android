@@ -124,9 +124,16 @@ fun RadioOption(
   optionContent: @Composable (radioButtonIcon: @Composable () -> Unit) -> Unit,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
+  val optionStateDesc = when (chosenState) {
+    Chosen -> stringResource(R.string.TALKBACK_OPTION_SELECTED)
+    NotChosen -> stringResource(R.string.TALKBACK_OPTION_NOT_SELECTED)
+  }
   val clickableModifier =
     modifier
-      .semantics(true) { role = Role.RadioButton }
+      .semantics(true) {
+        role = Role.RadioButton
+        stateDescription = optionStateDesc
+      }
       .clip(size.shape)
       .clickable(
         enabled = when (lockedState) {
@@ -135,7 +142,8 @@ fun RadioOption(
         },
         interactionSource = interactionSource,
         indication = LocalIndication.current,
-      ) {
+      )
+      {
         onClick()
       }
 
@@ -203,9 +211,14 @@ fun RadioOption(
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+  val chosenDescription = stringResource(R.string.TALKBACK_OPTION_SELECTED)
+  val notChosenDescription = stringResource(R.string.TALKBACK_OPTION_NOT_SELECTED)
   val clickableModifier = if (onClick != null) {
     modifier
-      .semantics(true) { role = Role.RadioButton }
+      .semantics(true) {
+        role = Role.RadioButton
+        stateDescription = if (chosenState == ChosenState.Chosen) chosenDescription else notChosenDescription
+      }
       .clip(radioOptionSize.size(radioOptionStyle).shape)
       .clickable(
         enabled = when (lockedState) {
@@ -218,7 +231,10 @@ fun RadioOption(
         onClick()
       }
   } else {
-    modifier.semantics(true) { role = Role.RadioButton }
+    modifier.semantics(true) {
+      role = Role.RadioButton
+      stateDescription = if (chosenState == ChosenState.Chosen) chosenDescription else notChosenDescription
+    }
   }
   Surface(
     modifier = clickableModifier,
