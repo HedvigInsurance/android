@@ -142,8 +142,7 @@ fun RadioOption(
         },
         interactionSource = interactionSource,
         indication = LocalIndication.current,
-      )
-      {
+      ) {
         onClick()
       }
 
@@ -217,7 +216,7 @@ fun RadioOption(
     modifier
       .semantics(true) {
         role = Role.RadioButton
-        stateDescription = if (chosenState == ChosenState.Chosen) chosenDescription else notChosenDescription
+        stateDescription = if (chosenState == Chosen) chosenDescription else notChosenDescription
       }
       .clip(radioOptionSize.size(radioOptionStyle).shape)
       .clickable(

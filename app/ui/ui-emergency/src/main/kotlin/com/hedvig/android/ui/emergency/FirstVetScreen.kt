@@ -69,15 +69,17 @@ fun FirstVetScreen(
                 Icon(
                   HedvigIcons.ColoredFirstVet,
                   contentDescription = "",
-                  Modifier.size(28.dp).semantics{
+                  Modifier.size(28.dp).semantics {
                     hideFromAccessibility()
                   },
                   tint = Color.Unspecified,
                 )
-                HedvigText(text = section.title ?: "${sections.indexOf(section)}",
+                HedvigText(
+                  text = section.title ?: "${sections.indexOf(section)}",
                   modifier = Modifier.semantics {
                     heading()
-                  })
+                  },
+                )
               }
               Spacer(modifier = Modifier.height(16.dp))
               HedvigText(
