@@ -646,6 +646,8 @@
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Slå av</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_ON">Slå på</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE">Minimera</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND">Expandera</string>
   <string name="TALKBACK_EXPANDABLE_ITEM">%1$s, expanderbart element</string>
@@ -653,6 +655,8 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanderad</string>
   <string name="TALKBACK_FROM">Från</string>
   <string name="TALKBACK_INSURANCE_CARD">Din försäkring</string>
+  <string name="TALKBACK_LOADING_STATE_BUTTON">Laddar</string>
+  <string name="TALKBACK_MINUS_DESCRIPTION">Minska</string>
   <string name="TALKBACK_NEW_VALUE">Nu: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Viktig information</string>
   <string name="TALKBACK_OPEN_EXTERNAL_LINK">Öppna länk i extern webbläsare</string>
@@ -660,6 +664,8 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
+  <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
@@ -667,6 +673,8 @@
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Välj en kategori för att fortsätta</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Svenska kronor</string>
   <string name="TALKBACK_TAKE_PHOTO">Ta ett foto</string>
+  <string name="TALKBACK_TURNED_OFF_STATE">Avaktiverad</string>
+  <string name="TALKBACK_TURNED_ON_STATE">Aktiverad</string>
   <string name="TALKBACK_UNKNOWN">Okänd</string>
   <string name="TALKBACK_WRITE_HERE">Skriv ditt meddelande här</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Ditt nya pris: %1$s</string>

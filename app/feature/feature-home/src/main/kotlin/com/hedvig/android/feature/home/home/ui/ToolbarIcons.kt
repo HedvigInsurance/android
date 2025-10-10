@@ -46,7 +46,7 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Image(
     imageVector = HedvigIcons.ColoredFirstVet,
-    contentDescription = stringResource(R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
+    contentDescription = stringResource(R.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE),
     modifier = modifier
       .size(40.dp)
       .shadow(4.dp, CircleShape)
