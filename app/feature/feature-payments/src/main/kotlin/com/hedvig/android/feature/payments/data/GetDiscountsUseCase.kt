@@ -8,17 +8,11 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments.data.Discount.DiscountStatus
-import kotlin.String
-import kotlin.time.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import octopus.DiscountsQuery
 import octopus.fragment.DiscountsDetailsFragment
 import octopus.type.ContractDiscountStatus
-import octopus.type.RedeemedCampaignType
 
 internal interface GetDiscountsUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<DiscountedContract>>
@@ -31,7 +25,11 @@ internal class GetDiscountsUseCaseImpl(
     val result = apolloClient.query(DiscountsQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
+      .onLeft {
+        logcat(LogPriority.ERROR) { "GetDiscountsUseCase returned error: $it" }
+      }
       .bind()
+
     val activeContracts = result.currentMember.activeContracts
     val pendingContracts = result.currentMember.pendingContracts
 
