@@ -40,12 +40,10 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -129,7 +127,7 @@ internal class CbmChatRepositoryImpl(
         conversation.isOpen == false -> BannerText.ClosedConversation
         conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
         else -> {
-          logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+          logcat(LogPriority.INFO) { "Got unknown conversation status message:$conversation" }
           null
         }
       }
@@ -191,7 +189,7 @@ internal class CbmChatRepositoryImpl(
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
-        logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
+        logcat(LogPriority.ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
         ErrorMessage("Message not found").toMessageSendError()
       }
       return with(messageToRetry) {
@@ -200,14 +198,14 @@ internal class CbmChatRepositoryImpl(
           failedToSend == PHOTO && url != null -> sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
           failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
           else -> {
-            logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
+            logcat(LogPriority.ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise(ErrorMessage("Unknown message type").toMessageSendError())
           }
         }.onRight {
           when (failedToSend) {
             ChatMessageEntity.FailedToSendType.PHOTO,
             ChatMessageEntity.FailedToSendType.MEDIA,
-              -> url!!.toUri().tryReleasePersistableUriPermission()
+            -> url!!.toUri().tryReleasePersistableUriPermission()
 
             else -> {}
           }
@@ -300,7 +298,9 @@ internal class CbmChatRepositoryImpl(
     } catch (e: SecurityException) {
       // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
       // without the persistent access permission given to us
-      logcat(ERROR, e) { "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri" }
+      logcat(LogPriority.ERROR, e) {
+        "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri"
+      }
       return MessageSendError.FailedToPersistUriPermissionError(this.originalError)
     }
     chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
@@ -368,7 +368,7 @@ internal class CbmChatRepositoryImpl(
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
     val uploadToken = botServiceService.uploadFile(file, contentType).mapLeft {
-      logcat(ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+      logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
       it.toErrorMessage().toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
@@ -378,7 +378,7 @@ internal class CbmChatRepositoryImpl(
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = botServiceService.uploadFile(fileService.createFormData(uri)).mapLeft {
-      logcat(ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
+      logcat(LogPriority.ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
       it.toErrorMessage().toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
@@ -394,7 +394,9 @@ internal class CbmChatRepositoryImpl(
     try {
       contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     } catch (e: SecurityException) {
-      logcat(ERROR, e) { "PersistableUriPermission: Failed to release persistable uri permission for uri:$this" }
+      logcat(LogPriority.ERROR, e) {
+        "PersistableUriPermission: Failed to release persistable uri permission for uri:$this"
+      }
     }
   }
 }

@@ -31,6 +31,16 @@ query Home($claimsHistoryFlag: Boolean!) {
         discountText
         buttonText
         buttonDescription
+        numberOfEligibleContracts
+        discountPercent
+        backgroundPillowImages {
+          leftImage {
+            src
+          }
+          rightImage {
+            src
+          }
+        }
       }
       otherCrossSells {
         ...HomeCrossSellFragment

@@ -2,6 +2,10 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
+  <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
+    <item quantity="one">Du har %d berättigad försäkring.</item>
+    <item quantity="other">Du har %d berättigade försäkringar.</item>
+  </plurals>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
@@ -50,6 +54,11 @@
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT">%1$s rabatt</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT">Ingen rabatt</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE">1 försäkring</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE">3 eller fler</string>
+  <string name="BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES">2 försäkringar</string>
   <string name="BUSINESS_MODEL_CARD_TEXT">Hedvig tar bara 25\u0025 av din månatliga premie för att utveckla och förbättra vår tjänst. Resterande 75\u0025 går till en gemensam skadepool. Är det pengar över i den när året är slut doneras de till Milkywire.</string>
   <string name="BUSINESS_MODEL_PROFILE_ROW">Vår affärsmodell</string>
   <string name="CERTIFICATES.CREATE_CERTIFICATE">Skapa intyg</string>
@@ -252,6 +261,7 @@
   <string name="EMBARK_UPDATE_APP_BODY">Din app är inaktuell och måste uppdateras innan du kan fortsätta.</string>
   <string name="EMBARK_UPDATE_APP_BUTTON">Uppdatera nu</string>
   <string name="EMBARK_UPDATE_APP_TITLE">Uppdatera appen</string>
+  <string name="EXIT_DEMO_MODE_BUTTON">Avsluta\ndemoläge</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE">Om du väljer att bli medlem senare måste du kontakta ditt gamla försäkringsbolag för att påbörja flytten.</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE">Vi kan inte flytta din försäkring automatiskt</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION">Annat</string>
@@ -377,7 +387,7 @@
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Giltighetsintyg</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">Giltighetsintyget är nu skickat till din e-post.</string>
-  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer – till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
+  <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">Vad är ett giltighetsintyg?</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
@@ -636,6 +646,8 @@
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Slå av</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_TURN_ON">Slå på</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE">Minimera</string>
   <string name="TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND">Expandera</string>
   <string name="TALKBACK_EXPANDABLE_ITEM">%1$s, expanderbart element</string>
@@ -643,6 +655,8 @@
   <string name="TALKBACK_EXPANDABLE_STATE_EXPANDED">Expanderad</string>
   <string name="TALKBACK_FROM">Från</string>
   <string name="TALKBACK_INSURANCE_CARD">Din försäkring</string>
+  <string name="TALKBACK_LOADING_STATE_BUTTON">Laddar</string>
+  <string name="TALKBACK_MINUS_DESCRIPTION">Minska</string>
   <string name="TALKBACK_NEW_VALUE">Nu: %1$s</string>
   <string name="TALKBACK_NOTIFICATION_CARD">Viktig information</string>
   <string name="TALKBACK_OPEN_EXTERNAL_LINK">Öppna länk i extern webbläsare</string>
@@ -650,6 +664,8 @@
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
+  <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
@@ -657,6 +673,8 @@
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Välj en kategori för att fortsätta</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Svenska kronor</string>
   <string name="TALKBACK_TAKE_PHOTO">Ta ett foto</string>
+  <string name="TALKBACK_TURNED_OFF_STATE">Avaktiverad</string>
+  <string name="TALKBACK_TURNED_ON_STATE">Aktiverad</string>
   <string name="TALKBACK_UNKNOWN">Okänd</string>
   <string name="TALKBACK_WRITE_HERE">Skriv ditt meddelande här</string>
   <string name="TALKBACK_YOUR_NEW_PRICE">Ditt nya pris: %1$s</string>

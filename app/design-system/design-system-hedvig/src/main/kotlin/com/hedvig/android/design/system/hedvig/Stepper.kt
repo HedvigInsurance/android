@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -54,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeLabeledStepperTo
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeLabeledStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.StepperColorTokens
+import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -197,7 +199,7 @@ private fun StepperSymbols(
     ) {
       Icon(
         HedvigIcons.Minus,
-        null,
+        stringResource(R.string.TALKBACK_MINUS_DESCRIPTION),
         tint = minusColor,
       )
     }
@@ -209,7 +211,7 @@ private fun StepperSymbols(
     ) {
       Icon(
         HedvigIcons.Plus,
-        null,
+        stringResource(R.string.TALKBACK_PLUS_DESCRIPTION),
         tint = plusColor,
       )
     }

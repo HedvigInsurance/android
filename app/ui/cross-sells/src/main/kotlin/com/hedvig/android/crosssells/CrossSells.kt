@@ -27,7 +27,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
@@ -45,16 +48,17 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigStepProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
@@ -77,6 +81,13 @@ data class RecommendedCrossSell(
   val buttonText: String,
   val discountText: String?,
   val buttonDescription: String,
+  val backgroundPillowImages: Pair<String, String>?,
+  val bundleProgress: BundleProgress?,
+)
+
+data class BundleProgress(
+  val numberOfEligibleContracts: Int,
+  val discountPercent: Int,
 )
 
 /**
@@ -280,8 +291,98 @@ private fun RecommendationSection(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    Box(Modifier.semantics(mergeDescendants = true) {}) {
-      val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+    StackedPillows(recommendedCrossSell, imageLoader)
+    Spacer(Modifier.height(24.dp))
+    val headingDescription = stringResource(R.string.CROSS_SELL_TITLE) +
+      ": ${recommendedCrossSell.crossSell.title}"
+    HedvigText(
+      text = recommendedCrossSell.crossSell.title,
+      modifier = Modifier
+        .clearAndSetSemantics {
+          contentDescription = headingDescription
+          heading()
+        },
+    )
+    HedvigText(
+      recommendedCrossSell.crossSell.subtitle,
+      style = LocalTextStyle.current.copy(
+        lineBreak = LineBreak.Heading,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      ),
+      modifier = Modifier.padding(horizontal = 16.dp),
+      textAlign = TextAlign.Center,
+    )
+    Spacer(Modifier.height(48.dp))
+    if (recommendedCrossSell.bundleProgress != null) {
+      val stepProgressItems = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
+      val dataDescription =
+        stepProgressItems.joinToString(separator = "; ") { item -> "${item.title} - ${item.subtitle}" }
+      val description = "$dataDescription; " +
+        pluralStringResource(
+          R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
+          recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+          recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+        )
+      HedvigStepProgress(
+        steps = stepProgressItems,
+        numberOfActivatedSteps = recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
+        modifier = Modifier.clearAndSetSemantics {
+          contentDescription = description
+        },
+      )
+      Spacer(Modifier.height(16.dp))
+    }
+    HedvigButton(
+      text = recommendedCrossSell.buttonText,
+      onClick = {
+        onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
+        dismissSheet()
+      },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics {
+          contentDescription = recommendedCrossSell.crossSell.title
+          // without it really is not very clear what price do we want to show here
+          // since there is a lot of things said between the heading and the button
+        },
+    )
+    Spacer(Modifier.height(12.dp))
+    HedvigText(
+      text = recommendedCrossSell.buttonDescription,
+      style = HedvigTheme.typography.label,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+    )
+  }
+}
+
+@Composable
+private fun StackedPillows(
+  recommendedCrossSell: RecommendedCrossSell,
+  imageLoader: ImageLoader,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy((-43).dp, Alignment.CenterHorizontally),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.semantics(mergeDescendants = true) {},
+  ) {
+    val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+    val backgroundPillowImages = recommendedCrossSell.backgroundPillowImages
+    if (backgroundPillowImages != null) {
+      AsyncImage(
+        model = backgroundPillowImages.first,
+        contentDescription = EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(96.dp),
+      )
+    }
+    Box(Modifier.zIndex(1f)) {
       AsyncImage(
         model = recommendedCrossSell.crossSell.pillowImage.src,
         contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
@@ -304,37 +405,37 @@ private fun RecommendationSection(
         )
       }
     }
-    Spacer(Modifier.height(24.dp))
-    HedvigText(
-      text = recommendedCrossSell.crossSell.title,
-    )
-    HedvigText(
-      recommendedCrossSell.crossSell.subtitle,
-      style = LocalTextStyle.current.copy(
-        lineBreak = LineBreak.Heading,
-        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      ),
-      modifier = Modifier.padding(horizontal = 16.dp),
-      textAlign = TextAlign.Center,
-    )
-    Spacer(Modifier.height(48.dp))
-    HedvigButton(
-      text = recommendedCrossSell.buttonText,
-      onClick = {
-        onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
-        dismissSheet()
-      },
-      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(12.dp))
-    HedvigText(
-      text = recommendedCrossSell.buttonDescription,
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-    )
+    if (backgroundPillowImages != null) {
+      AsyncImage(
+        model = backgroundPillowImages.second,
+        contentDescription = EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(96.dp),
+      )
+    }
   }
+}
+
+@Composable
+private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<StepProgressItem> {
+  val firstStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
+  val firstStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
+  val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle)
+  val secondStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
+  val secondStepSubtitle = stringResource(
+    R.string
+      .BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT,
+    "${bundleProgress.discountPercent}%",
+  )
+  val stepTwo = StepProgressItem(secondStepTitle, secondStepSubtitle)
+  val thirdStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
+  val stepThree = StepProgressItem(thirdStepTitle, secondStepSubtitle)
+  return listOf(stepOne, stepTwo, stepThree)
 }
 
 @Composable
@@ -570,6 +671,8 @@ private fun PreviewCrossSellsSheetContent(
             buttonText = "Explore offer",
             discountText = "-50%",
             buttonDescription = "Limited time offer",
+            backgroundPillowImages = ("ds" to "ds"),
+            bundleProgress = BundleProgress(1, 15),
           ).takeIf { case != TripleCase.THIRD },
           otherCrossSells = listOf(
             CrossSell(
@@ -609,6 +712,8 @@ private fun PreviewCrossSellsFloatingSheetContent(
           buttonText = "Explore offer",
           discountText = "-50%",
           buttonDescription = "Limited time offer",
+          backgroundPillowImages = ("ds" to "ds"),
+          bundleProgress = BundleProgress(1, 15),
         ).takeIf { case != TripleCase.THIRD },
         listOf(
           CrossSell(

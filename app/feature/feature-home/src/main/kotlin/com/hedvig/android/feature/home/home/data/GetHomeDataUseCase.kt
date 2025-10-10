@@ -11,6 +11,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
@@ -116,13 +117,23 @@ internal class GetHomeDataUseCaseImpl(
           )
         }
         val crossSellsData = homeQueryData.currentMember.crossSell
+
         val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
+          val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
+            BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
+          } else {
+            null
+          }
           RecommendedCrossSell(
             crossSell = it.crossSell.toCrossSell(),
             bannerText = it.bannerText,
             buttonText = it.buttonText,
             discountText = it.discountText,
             buttonDescription = it.buttonDescription,
+            bundleProgress = bundleProgress,
+            backgroundPillowImages = it.backgroundPillowImages?.let { images ->
+              images.leftImage.src to images.rightImage.src
+            },
           )
         }
         val otherCrossSellsData = crossSellsData.otherCrossSells.map {
@@ -204,7 +215,7 @@ internal class GetHomeDataUseCaseImpl(
       return HomeData.ContractStatus.Terminated
     }
     return HomeData.ContractStatus.Unknown.also {
-      logcat(LogPriority.ERROR) {
+      logcat(LogPriority.WARN) {
         "HomeQuery.Data.CurrentMember:$this. Resulted in an unknown contract. It should be mapped instead"
       }
     }

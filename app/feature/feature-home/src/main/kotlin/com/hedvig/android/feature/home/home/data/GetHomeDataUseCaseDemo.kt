@@ -40,6 +40,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             discountText = "-50%",
             buttonText = "Explore offer",
             buttonDescription = "Limited time offer",
+            backgroundPillowImages = null,
+            bundleProgress = null,
           ),
         otherCrossSells = listOf(
           CrossSell(

@@ -27,6 +27,7 @@ import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -78,6 +79,7 @@ internal fun HedvigApp(
   finishApp: () -> Unit,
   tryShowAppStoreReviewDialog: () -> Unit,
   externalNavigator: ExternalNavigator,
+  logoutUseCase: LogoutUseCase,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
@@ -135,6 +137,8 @@ internal fun HedvigApp(
             languageService = languageService,
             hedvigBuildConstants = hedvigBuildConstants,
             simpleVideoCache = simpleVideoCache,
+            demoManager = demoManager,
+            logoutUseCase = logoutUseCase,
           )
         }
       }

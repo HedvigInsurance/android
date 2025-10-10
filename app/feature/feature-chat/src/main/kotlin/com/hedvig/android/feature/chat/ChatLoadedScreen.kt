@@ -281,6 +281,7 @@ private fun ChatLoadedScreen(
             onCloseCLick = onCloseBannerClick,
             modifier = Modifier
               .fillMaxWidth()
+              .windowInsetsPadding(WindowInsets.safeDrawing)
               .drawWithContent {
                 drawContent()
                 drawLine(
@@ -296,7 +297,7 @@ private fun ChatLoadedScreen(
           propagateMinConstraints = true,
           modifier = Modifier
             .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .drawWithContent {
               drawContent()
               drawLine(
@@ -615,7 +616,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {

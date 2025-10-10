@@ -30,6 +30,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -68,6 +69,8 @@ class MainActivity : AppCompatActivity() {
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
   private val simpleVideoCache: SimpleCache by inject()
+
+  private val logoutUseCase: LogoutUseCase by inject()
 
   private var navController: NavController? = null
 
@@ -154,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         finishApp = ::finish,
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
         externalNavigator = externalNavigator,
+        logoutUseCase = logoutUseCase,
       )
     }
   }
