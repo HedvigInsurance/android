@@ -1633,6 +1633,11 @@ type ItemDiscount {
    Campaign code or some hardcoded descriptor of discount, ex. BUNDLE / BUYHEDVIG / etc 
   """
   campaignCode: String!
+  """
+  Addition information for the discount that can be shown as a tooltip.
+  Ex. When you have at least two active insurances, you will get x off on this insurance
+  """
+  tooltip: String
 }
 scalar JSON
 type LinkInfo {
@@ -3430,8 +3435,8 @@ input ShopSessionCartEntriesRemoveInput {
 }
 input ShopSessionCreateInput {
   countryCode: CountryCode!
-  attributedTo: String
-  initiatedFrom: String
+  attributedTo: String @deprecated(reason: "Use attribution instead")
+  initiatedFrom: String @deprecated(reason: "Use attribution instead")
   attribution: ShopSessionAttributionInput
 }
 input ShopSessionCreatePartnerInput {
