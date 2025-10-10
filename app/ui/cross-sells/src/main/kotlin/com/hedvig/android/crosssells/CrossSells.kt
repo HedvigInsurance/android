@@ -314,8 +314,9 @@ private fun RecommendationSection(
     )
     Spacer(Modifier.height(48.dp))
     if (recommendedCrossSell.bundleProgress != null) {
-      val data = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
-      val dataDescription = data.joinToString(separator = "; ") { item -> "${item.title} - ${item.subtitle}" }
+      val stepProgressItems = getHedvigStepProgressData(recommendedCrossSell.bundleProgress)
+      val dataDescription =
+        stepProgressItems.joinToString(separator = "; ") { item -> "${item.title} - ${item.subtitle}" }
       val description = "$dataDescription; " +
         pluralStringResource(
           R.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
@@ -323,7 +324,8 @@ private fun RecommendationSection(
           recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
         )
       HedvigStepProgress(
-        steps = data,
+        steps = stepProgressItems,
+        numberOfActivatedSteps = recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
         modifier = Modifier.clearAndSetSemantics {
           contentDescription = description
         },
@@ -423,36 +425,17 @@ private fun StackedPillows(
 private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<StepProgressItem> {
   val firstStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
   val firstStepSubtitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
-  val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle, true)
+  val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle)
   val secondStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
   val secondStepSubtitle = stringResource(
     R.string
       .BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT,
     "${bundleProgress.discountPercent}%",
   )
-  val stepTwo = StepProgressItem(secondStepTitle, secondStepSubtitle, false)
+  val stepTwo = StepProgressItem(secondStepTitle, secondStepSubtitle)
   val thirdStepTitle = stringResource(R.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
-  val stepThree = StepProgressItem(thirdStepTitle, secondStepSubtitle, false)
-  return when {
-    bundleProgress.numberOfEligibleContracts < 1 -> emptyList()
-    bundleProgress.numberOfEligibleContracts == 1 -> buildList {
-      add(stepOne)
-      add(stepTwo.copy(animate = true))
-      add(stepThree)
-    }
-
-    bundleProgress.numberOfEligibleContracts == 2 -> buildList {
-      add(stepOne)
-      add(stepTwo.copy(activated = true))
-      add(stepThree.copy(animate = true))
-    }
-
-    else -> buildList {
-      add(stepOne)
-      add(stepTwo.copy(activated = true))
-      add(stepThree.copy(activated = true))
-    }
-  }
+  val stepThree = StepProgressItem(thirdStepTitle, secondStepSubtitle)
+  return listOf(stepOne, stepTwo, stepThree)
 }
 
 @Composable
