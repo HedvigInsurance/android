@@ -1,107 +1,115 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens.FastAnimationTokens.durationMillis
+import kotlinx.coroutines.delay
 
 @Composable
-fun HedvigStepProgress(steps: List<StepProgressItem>, modifier: Modifier = Modifier) {
+fun HedvigStepProgress(
+  steps: List<StepProgressItem>,
+  numberOfActivatedSteps: Int,
+  modifier: Modifier = Modifier,
+) {
+  val animationColors = hedvigStepProgressColors
+  val activatedStepsProgress = remember(steps, numberOfActivatedSteps) { Animatable(0f) }
+  val pulsatingStepProgress = remember(steps, numberOfActivatedSteps) { Animatable(0f) }
+  LaunchedEffect(steps, numberOfActivatedSteps) {
+    val activatedStepsAnimationSpec = tween<Float>(
+      durationMillis = 1000 * numberOfActivatedSteps,
+      delayMillis = 1000,
+      easing = LinearEasing,
+    )
+    activatedStepsProgress.animateTo(1f, activatedStepsAnimationSpec)
+    repeat(3) {
+      pulsatingStepProgress.animateTo(1f, tween(2000))
+      delay(200)
+      pulsatingStepProgress.animateTo(0f, tween(1000))
+    }
+  }
+  val inactiveColor = animationColors.inactive
+  val activatedColor = animationColors.activated
   Row(
+    verticalAlignment = Alignment.Top,
+    horizontalArrangement = Arrangement.spacedBy(4.dp),
     modifier = modifier
       .fillMaxWidth()
-      .horizontalScroll(rememberScrollState()),
-    horizontalArrangement = Arrangement.SpaceEvenly,
+      .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+      .drawWithContent {
+        drawContent()
+        val oneStepWidth = this.size.width / steps.size
+        val progressBarHeightPx = ProgressBarHeight.toPx()
+        drawRect(
+          color = activatedColor,
+          size = Size(
+            width = (oneStepWidth * numberOfActivatedSteps) * activatedStepsProgress.value,
+            height = progressBarHeightPx,
+          ),
+          blendMode = BlendMode.SrcIn,
+        )
+        if (numberOfActivatedSteps < steps.size) {
+          drawRect(
+            color = activatedColor.copy(alpha = pulsatingStepProgress.value),
+            topLeft = Offset(oneStepWidth * numberOfActivatedSteps, 0f),
+            size = Size(
+              width = oneStepWidth,
+              height = progressBarHeightPx,
+            ),
+            blendMode = BlendMode.SrcAtop,
+          )
+        }
+      },
   ) {
-    steps.forEachIndexed { index, step ->
+    for (step in steps) {
       ProgressStep(
-        step,
+        step = step,
+        colors = animationColors,
         modifier = Modifier
           .weight(1f)
           .semantics(true) {},
       )
-      if (index != steps.lastIndex) {
-        Spacer(Modifier.width(4.dp))
-      }
     }
   }
 }
 
 @Composable
-fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
+private fun ProgressStep(
+  step: StepProgressItem,
+  colors: HedvigStepProgressColors,
+  modifier: Modifier = Modifier,
+) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val animationColors = hedvigStepProgressColors
-    val widthFraction = infiniteTransition.animateFloat(
-      initialValue = 0f,
-      targetValue = 1f,
-      animationSpec = progressAnimationSpec(0f, 1f),
-    )
-    val animatedStepColor = infiniteTransition.animateColor(
-      animationColors.activated,
-      animationColors.inactive,
-      animationSpec = progressAnimationSpec(
-        animationColors.inactive, animationColors.activated
-      ),
-    )
-
-    val color = if (step.activated) {
-      hedvigStepProgressColors.activated
-    } else {
-      hedvigStepProgressColors.inactive
-    }
     Box(
       modifier = Modifier
-        .height(8.dp)
-        .fillMaxWidth(),
-    ) {
-      Surface(
-        modifier = Modifier
-          .height(8.dp)
-          .fillMaxWidth(),
-        color = color,
-        shape = HedvigTheme.shapes.cornerLarge,
-      ) {}
-      if (step.animate) {
-        Surface(
-          modifier = Modifier
-            .height(8.dp)
-            .fillMaxWidth(widthFraction.value),
-          color = animatedStepColor.value,
-          shape = HedvigTheme.shapes.cornerLarge,
-        ) {}
-      }
-    }
-
+        .height(ProgressBarHeight)
+        .fillMaxWidth()
+        .background(colors.inactive, HedvigTheme.shapes.cornerLarge),
+    )
     if (step.title != null) {
       HedvigText(
         step.title,
@@ -118,19 +126,7 @@ fun ProgressStep(step: StepProgressItem, modifier: Modifier = Modifier) {
   }
 }
 
-@Composable
-private fun <T> progressAnimationSpec(
-  startValue: T,
-  endValue: T,
-): InfiniteRepeatableSpec<T> = infiniteRepeatable(
-  keyframes {
-    durationMillis = 2000
-    startValue at 0 using LinearEasing
-    endValue at 1200
-    endValue at 1800
-  },
-  RepeatMode.Restart,
-)
+private val ProgressBarHeight = 8.dp
 
 private data class HedvigStepProgressColors(
   val activated: Color,
@@ -150,8 +146,6 @@ private val hedvigStepProgressColors: HedvigStepProgressColors
 data class StepProgressItem(
   val title: String?,
   val subtitle: String?,
-  val activated: Boolean,
-  val animate: Boolean = false,
 )
 
 @Preview
@@ -164,7 +158,8 @@ private fun PreviewCheckboxStyles() {
     ) {
       Column(Modifier.fillMaxWidth()) {
         HedvigStepProgress(
-          previewMockSteps,
+          steps = previewMockSteps,
+          numberOfActivatedSteps = 2,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -176,16 +171,13 @@ private val previewMockSteps = listOf(
   StepProgressItem(
     "1 insurance",
     "No discount",
-    true,
   ),
   StepProgressItem(
     "2 insurances",
     "15% discount",
-    true,
   ),
   StepProgressItem(
     "3 or more",
     "15% discount",
-    false,
   ),
 )
