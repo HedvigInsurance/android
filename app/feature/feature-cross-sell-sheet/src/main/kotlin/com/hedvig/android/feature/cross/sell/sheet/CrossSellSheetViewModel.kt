@@ -86,11 +86,11 @@ private class CrossSellSheetPresenter(
         emitAll(
           getCrossSellSheetDataUseCaseProvider.provide().invoke(infoType.toCrossSellSource())
             .mapLatest { result ->
-              result.fold(
-                ifLeft = { error -> CrossSellSheetState.Error(error) },
-                ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
-              )
-            },
+            result.fold(
+              ifLeft = { error -> CrossSellSheetState.Error(error) },
+              ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
+            )
+          },
         )
       }.collectLatest {
         state = it
@@ -128,37 +128,37 @@ internal class GetCrossSellSheetDataUseCaseImpl(
       .query(BottomSheetCrossSellsQuery(source))
       .safeFlow(::ErrorMessage)
       .map { response ->
-        either {
+      either {
           val allData = response
             .bind()
             .currentMember.crossSell
-          val recommendedData = allData.recommendedCrossSell?.let {
-            val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
-              BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
-            } else {
-              null
-            }
-            RecommendedCrossSell(
-              crossSell = it.crossSell.toCrossSell(),
-              bannerText = it.bannerText,
-              buttonText = it.buttonText,
-              discountText = it.discountText,
-              buttonDescription = it.buttonDescription,
-              backgroundPillowImages = it.backgroundPillowImages?.let { images ->
-                images.leftImage.src to images.rightImage.src
-              },
-              bundleProgress = bundleProgress,
-            )
+        val recommendedData = allData.recommendedCrossSell?.let {
+          val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
+            BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
+          } else {
+            null
           }
-          val otherCrossSellsData = allData.otherCrossSells.map {
-            it.toCrossSell()
-          }
-          CrossSellSheetData(
-            recommendedCrossSell = recommendedData,
-            otherCrossSells = otherCrossSellsData,
+          RecommendedCrossSell(
+            crossSell = it.crossSell.toCrossSell(),
+            bannerText = it.bannerText,
+            buttonText = it.buttonText,
+            discountText = it.discountText,
+            buttonDescription = it.buttonDescription,
+            backgroundPillowImages = it.backgroundPillowImages?.let { images ->
+              images.leftImage.src to images.rightImage.src
+            },
+            bundleProgress = bundleProgress,
           )
         }
+        val otherCrossSellsData = allData.otherCrossSells.map {
+          it.toCrossSell()
+        }
+        CrossSellSheetData(
+          recommendedCrossSell = recommendedData,
+          otherCrossSells = otherCrossSellsData,
+        )
       }
+    }
   }
 }
 
