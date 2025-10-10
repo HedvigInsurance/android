@@ -26,7 +26,7 @@ internal class GetDiscountsUseCaseImpl(
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .onLeft {
-        logcat(LogPriority.ERROR) { "GetDiscountsUseCase returned error: $it" }
+        logcat(LogPriority.WARN) { "GetDiscountsUseCase returned error: $it" }
       }
       .bind()
 
