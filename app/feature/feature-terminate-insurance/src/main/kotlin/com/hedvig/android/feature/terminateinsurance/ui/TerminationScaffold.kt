@@ -60,7 +60,7 @@ internal fun TerminationScaffold(
           content = {
             Icon(
               imageVector = HedvigIcons.InfoOutline,
-              contentDescription = null,
+              contentDescription = stringResource(R.string.TOAST_READ_MORE),
             )
           },
         )
