@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.login.marketing.ui
 
+import android.content.Context
 import android.provider.Settings
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -39,35 +40,29 @@ fun LoginBackgroundImage(painter: Painter = painterResource(R.drawable.login_sti
   )
 }
 
+private fun Context.areAnimationsEnabled(): Boolean {
+  return try {
+    Settings.Global.getFloat(
+      contentResolver,
+      Settings.Global.ANIMATOR_DURATION_SCALE,
+    ) != 0f
+  } catch (e: Settings.SettingNotFoundException) {
+    true
+  }
+}
+
 @Composable
 fun rememberAnimationsEnabled(): Boolean {
   val context = LocalContext.current
   var animationsEnabled by remember {
-    mutableStateOf(
-      try {
-        Settings.Global.getFloat(
-          context.contentResolver,
-          Settings.Global.ANIMATOR_DURATION_SCALE,
-        ) != 0f
-      } catch (e: Settings.SettingNotFoundException) {
-        true
-      },
-    )
+    mutableStateOf(context.areAnimationsEnabled())
   }
 
   val lifecycleOwner = LocalLifecycleOwner.current
   DisposableEffect(lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_RESUME) {
-        val animationDurationScale = try {
-          Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.ANIMATOR_DURATION_SCALE,
-          )
-        } catch (e: Settings.SettingNotFoundException) {
-          1f
-        }
-        animationsEnabled = animationDurationScale != 0f
+        animationsEnabled = context.areAnimationsEnabled()
       }
     }
 
@@ -105,13 +100,15 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video) {
         repeatMode = Player.REPEAT_MODE_ONE
         volume = 0f
         playWhenReady = true
-        addListener(object : Player.Listener {
-          override fun onPlaybackStateChanged(playbackState: Int) {
-            if (playbackState == Player.STATE_READY) {
-              isVideoReady = true
-            }
-          }
-        })
+        addListener(
+            object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_READY) {
+                        isVideoReady = true
+                    }
+                }
+            },
+        )
         prepare()
       }
     }
