@@ -50,7 +50,7 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
+import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
 import hedvig.resources.R
@@ -96,7 +96,7 @@ private fun MarketingScreen(
   }
   HedvigTheme(darkTheme = false) {
     Box(Modifier.fillMaxSize()) {
-      LoginBackgroundImage()
+      LoginBackgroundVideo()
       Column(
         verticalArrangement = object : Arrangement.Vertical {
           override fun Density.arrange(totalSize: Int, sizes: IntArray, outPositions: IntArray) {
