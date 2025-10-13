@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -27,7 +28,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.hedvig.android.feature.login.R
-import androidx.core.net.toUri
 
 @Composable
 fun LoginBackgroundImage(painter: Painter = painterResource(R.drawable.login_still_9x16)) {
@@ -82,53 +82,53 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video) {
 
   if (!animationsEnabled) {
     LoginBackgroundImage()
-  } else {
-    Box(modifier = Modifier.fillMaxSize()) {
-      // Show static image as fallback/placeholder
-      LoginBackgroundImage()
+    return
+  }
 
-      val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-          val videoUri = "android.resource://${context.packageName}/$videoResId".toUri()
-          setMediaItem(MediaItem.fromUri(videoUri))
-          repeatMode = Player.REPEAT_MODE_ONE
-          volume = 0f
-          playWhenReady = true
-          prepare()
-        }
+  Box(modifier = Modifier.fillMaxSize()) {
+    LoginBackgroundImage()
+
+    val exoPlayer = remember(animationsEnabled) {
+      ExoPlayer.Builder(context).build().apply {
+        val videoUri = "android.resource://${context.packageName}/$videoResId".toUri()
+        setMediaItem(MediaItem.fromUri(videoUri))
+        repeatMode = Player.REPEAT_MODE_ONE
+        volume = 0f
+        playWhenReady = true
+        prepare()
       }
-
-      val lifecycleOwner = LocalLifecycleOwner.current
-      DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-          when (event) {
-            Lifecycle.Event.ON_START -> exoPlayer.play()
-            Lifecycle.Event.ON_STOP -> exoPlayer.pause()
-            else -> {}
-          }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-          lifecycleOwner.lifecycle.removeObserver(observer)
-          exoPlayer.release()
-        }
-      }
-
-      AndroidView(
-        factory = { ctx ->
-          PlayerView(ctx).apply {
-            player = exoPlayer
-            useController = false
-            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            layoutParams = FrameLayout.LayoutParams(
-              ViewGroup.LayoutParams.MATCH_PARENT,
-              ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-          }
-        },
-        modifier = Modifier.fillMaxSize(),
-      )
     }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+      val observer = LifecycleEventObserver { _, event ->
+        when (event) {
+          Lifecycle.Event.ON_START -> exoPlayer.play()
+          Lifecycle.Event.ON_STOP -> exoPlayer.pause()
+          else -> {}
+        }
+      }
+      lifecycleOwner.lifecycle.addObserver(observer)
+
+      onDispose {
+        lifecycleOwner.lifecycle.removeObserver(observer)
+        exoPlayer.release()
+      }
+    }
+
+    AndroidView(
+      factory = { ctx ->
+        PlayerView(ctx).apply {
+          player = exoPlayer
+          useController = false
+          resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+          layoutParams = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+          )
+        }
+      },
+      modifier = Modifier.fillMaxSize(),
+    )
   }
 }
