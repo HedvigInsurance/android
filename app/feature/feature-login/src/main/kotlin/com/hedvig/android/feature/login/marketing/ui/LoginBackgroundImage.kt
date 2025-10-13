@@ -59,7 +59,7 @@ fun rememberAnimationsEnabled(): Boolean {
   }
 
   val lifecycleOwner = LocalLifecycleOwner.current
-  DisposableEffect(lifecycleOwner) {
+  DisposableEffect(context, lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_RESUME) {
         animationsEnabled = context.areAnimationsEnabled()
@@ -103,7 +103,7 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
       }
     }
 
-    val exoPlayer = remember(key1 = animationsEnabled) {
+    val exoPlayer = remember(context, listener, videoResId, animationsEnabled) {
       ExoPlayer.Builder(context).build().apply {
         val videoUri = "android.resource://${context.packageName}/$videoResId".toUri()
         setMediaItem(MediaItem.fromUri(videoUri))
@@ -116,7 +116,7 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(key1 = lifecycleOwner, key2 = animationsEnabled) {
+    DisposableEffect(lifecycleOwner, listener, exoPlayer) {
       val observer = LifecycleEventObserver { _, event ->
         when (event) {
           Lifecycle.Event.ON_START -> exoPlayer.play()
