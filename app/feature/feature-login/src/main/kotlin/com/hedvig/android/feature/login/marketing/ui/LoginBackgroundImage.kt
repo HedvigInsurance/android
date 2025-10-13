@@ -87,6 +87,12 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
   }
 
   var isVideoReady by remember { mutableStateOf(false) }
+  var hasVideoError by remember { mutableStateOf(false) }
+
+  if (hasVideoError) {
+    LoginBackgroundImage()
+    return
+  }
 
   Box(modifier = Modifier.fillMaxSize()) {
     if (!isVideoReady) {
@@ -99,6 +105,10 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
           if (playbackState == Player.STATE_READY) {
             isVideoReady = true
           }
+        }
+
+        override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+          hasVideoError = true
         }
       }
     }
