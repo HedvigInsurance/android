@@ -44,11 +44,14 @@ fun rememberAnimationsEnabled(): Boolean {
   val context = LocalContext.current
   var animationsEnabled by remember {
     mutableStateOf(
-      Settings.Global.getFloat(
-        context.contentResolver,
-        Settings.Global.ANIMATOR_DURATION_SCALE,
-        1f,
-      ) != 0f,
+      try {
+        Settings.Global.getFloat(
+          context.contentResolver,
+          Settings.Global.ANIMATOR_DURATION_SCALE,
+        ) != 0f
+      } catch (e: Settings.SettingNotFoundException) {
+        true
+      },
     )
   }
 
@@ -56,11 +59,14 @@ fun rememberAnimationsEnabled(): Boolean {
   DisposableEffect(lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_RESUME) {
-        val animationDurationScale = Settings.Global.getFloat(
-          context.contentResolver,
-          Settings.Global.ANIMATOR_DURATION_SCALE,
-          1f,
-        )
+        val animationDurationScale = try {
+          Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+          )
+        } catch (e: Settings.SettingNotFoundException) {
+          1f
+        }
         animationsEnabled = animationDurationScale != 0f
       }
     }
