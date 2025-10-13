@@ -45,7 +45,7 @@ fun HedvigStepProgress(steps: List<StepProgressItem>, numberOfActivatedSteps: In
       pulsatingStepProgress.animateTo(0f, tween(1000))
     }
   }
-  val inactiveColor = animationColors.inactive
+
   val activatedColor = animationColors.activated
   Row(
     verticalAlignment = Alignment.Top,
