@@ -85,22 +85,33 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video) {
     return
   }
 
-  Box(modifier = Modifier.fillMaxSize()) {
-    LoginBackgroundImage()
+  var isVideoReady by remember { mutableStateOf(false) }
 
-    val exoPlayer = remember(animationsEnabled) {
+  Box(modifier = Modifier.fillMaxSize()) {
+    if (!isVideoReady) {
+      LoginBackgroundImage()
+    }
+
+    val exoPlayer = remember(key1 = animationsEnabled) {
       ExoPlayer.Builder(context).build().apply {
         val videoUri = "android.resource://${context.packageName}/$videoResId".toUri()
         setMediaItem(MediaItem.fromUri(videoUri))
         repeatMode = Player.REPEAT_MODE_ONE
         volume = 0f
         playWhenReady = true
+        addListener(object : Player.Listener {
+          override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_READY) {
+              isVideoReady = true
+            }
+          }
+        })
         prepare()
       }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(key1 = lifecycleOwner, key2 = animationsEnabled) {
       val observer = LifecycleEventObserver { _, event ->
         when (event) {
           Lifecycle.Event.ON_START -> exoPlayer.play()
