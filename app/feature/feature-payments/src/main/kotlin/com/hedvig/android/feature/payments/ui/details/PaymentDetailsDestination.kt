@@ -215,7 +215,7 @@ private fun MemberChargeDetailsScreen(
               style = NotificationDefaults.InfoCardStyle.Default,
               priority = NotificationDefaults.NotificationPriority.Info,
               withIcon = true,
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier.fillMaxWidth(),
             )
 
             MemberCharge.MemberChargeStatus.FAILED -> {
@@ -232,7 +232,7 @@ private fun MemberChargeDetailsScreen(
                 priority = NotificationDefaults.NotificationPriority.Error,
                 withIcon = true,
                 style = NotificationDefaults.InfoCardStyle.Default,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
               )
             }
 

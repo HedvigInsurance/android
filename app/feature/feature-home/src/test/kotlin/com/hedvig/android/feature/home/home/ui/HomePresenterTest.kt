@@ -50,7 +50,7 @@ internal class HomePresenterTest {
     discountText = "-50%",
     buttonDescription = "Limited time offer",
     backgroundPillowImages = null,
-    bundleProgress = null
+    bundleProgress = null,
   )
 
   @Test
