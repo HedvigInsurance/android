@@ -156,6 +156,9 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
         }
       },
       modifier = Modifier.fillMaxSize(),
+      update = { playerView ->
+        playerView.player = exoPlayer
+      },
     )
   }
 }
