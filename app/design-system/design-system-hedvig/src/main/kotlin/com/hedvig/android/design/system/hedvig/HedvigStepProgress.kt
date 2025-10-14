@@ -28,11 +28,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 @Composable
-fun HedvigStepProgress(
-  steps: List<StepProgressItem>,
-  numberOfActivatedSteps: Int,
-  modifier: Modifier = Modifier,
-) {
+fun HedvigStepProgress(steps: List<StepProgressItem>, numberOfActivatedSteps: Int, modifier: Modifier = Modifier) {
   val animationColors = hedvigStepProgressColors
   val activatedStepsProgress = remember(steps, numberOfActivatedSteps) { Animatable(0f) }
   val pulsatingStepProgress = remember(steps, numberOfActivatedSteps) { Animatable(0f) }
@@ -49,7 +45,7 @@ fun HedvigStepProgress(
       pulsatingStepProgress.animateTo(0f, tween(1000))
     }
   }
-  val inactiveColor = animationColors.inactive
+
   val activatedColor = animationColors.activated
   Row(
     verticalAlignment = Alignment.Top,
@@ -95,11 +91,7 @@ fun HedvigStepProgress(
 }
 
 @Composable
-private fun ProgressStep(
-  step: StepProgressItem,
-  colors: HedvigStepProgressColors,
-  modifier: Modifier = Modifier,
-) {
+private fun ProgressStep(step: StepProgressItem, colors: HedvigStepProgressColors, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
