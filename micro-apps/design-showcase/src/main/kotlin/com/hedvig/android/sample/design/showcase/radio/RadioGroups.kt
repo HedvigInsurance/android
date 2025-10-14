@@ -1,148 +1,162 @@
 package com.hedvig.android.sample.design.showcase.radio
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.showcase.R
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Large
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithIcon
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
-import com.hedvig.android.design.system.hedvig.icon.Document
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.ID
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.Surface
 
 @Composable
-internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
-  val shortList1 = listOf(
-    RadioOptionData(
-      id = "1",
-      optionText = "Yes",
-      chosenState = Chosen,
-    ),
-    RadioOptionData(
-      id = "2",
-      optionText = "No",
-      chosenState = NotChosen,
-    ),
-  )
-
-  val shortList2 = listOf(
-    RadioOptionData(
-      id = "1",
-      optionText = "Yes",
-      chosenState = NotChosen,
-    ),
-    RadioOptionData(
-      id = "2",
-      optionText = "No",
-      chosenState = Chosen,
-    ),
-  )
-
-  val shortListLabel1 = listOf(
-    RadioOptionGroupDataWithLabel(shortList1[0], "Some label 1"),
-    RadioOptionGroupDataWithLabel(shortList1[1], "Some label 2"),
-  )
-  val shortListLabel2 = listOf(
-    RadioOptionGroupDataWithLabel(shortList2[0], "Some label 1"),
-    RadioOptionGroupDataWithLabel(shortList2[1], "Some label 2"),
-  )
-  val shortListIcon1 = listOf(
-    RadioOptionGroupDataWithIcon(shortList1[0], IconResource.Vector(HedvigIcons.ID)),
-    RadioOptionGroupDataWithIcon(shortList1[1], IconResource.Vector(HedvigIcons.Document)),
-  )
-  val shortListIcon2 = listOf(
-    RadioOptionGroupDataWithIcon(shortList2[0], IconResource.Vector(HedvigIcons.ID)),
-    RadioOptionGroupDataWithIcon(shortList2[1], IconResource.Vector(HedvigIcons.Document)),
-  )
-  var list1 by remember { mutableStateOf(shortList1) }
-  var list2 by remember { mutableStateOf(shortList1) }
-  var listLabel by remember { mutableStateOf(shortListLabel1) }
-  var listIcon by remember { mutableStateOf(shortListIcon1) }
+internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {
   Column(
     modifier
       .fillMaxSize()
+      .verticalScroll(rememberScrollState())
       .padding(horizontal = 16.dp),
   ) {
-    Spacer(Modifier.height(48.dp))
-    RadioGroup(
-      onOptionClick = { optionId ->
-        list1 = if (optionId == "2") {
-          shortList2
-        } else {
-          shortList1
-        }
-      },
-      radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.Horizontal(list1),
-    )
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+    Spacer(Modifier.height(16.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+      RadioGroupOptions()
+    }
     Spacer(Modifier.height(8.dp))
-    RadioGroup(
-      onOptionClick = { optionId ->
-        list2 = if (optionId == "2") {
-          shortList2
-        } else {
-          shortList1
-        }
-      },
-      radioGroupSize = Large,
-      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision", list2),
-    )
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
 
-    Spacer(Modifier.height(8.dp))
+@Suppress("UnusedReceiverParameter")
+@Composable
+fun ColumnScope.RadioGroupOptions() {
+  HedvigText("Sizes")
+  for (size in RadioGroupSize.entries) {
     RadioGroup(
-      onOptionClick = { optionId ->
-        list2 = if (optionId == "2") {
-          shortList2
-        } else {
-          shortList1
-        }
+      options = List(2) { index ->
+        RadioOption(
+          RadioOptionId(index.toString()),
+          "Option",
+          null,
+        )
       },
-      radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision", list2),
+      selectedOption = RadioOptionId("1"),
+      size = size,
     )
-    Spacer(Modifier.height(8.dp))
-    RadioGroup(
-      onOptionClick = { optionId ->
-        listLabel = if (optionId == "2") {
-          shortListLabel2
-        } else {
-          shortListLabel1
-        }
-      },
-      radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.Vertical.Label(listLabel),
-    )
-    Spacer(Modifier.height(8.dp))
-    RadioGroup(
-      onOptionClick = { optionId ->
-        listIcon = if (optionId == "2") {
-          shortListIcon2
-        } else {
-          shortListIcon1
-        }
-      },
-      radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.VerticalWithGroupLabel.Icon(
-        "Your decision",
-        listIcon,
-      ),
-    )
-    Spacer(Modifier.height(8.dp))
+  }
+  HedvigText("Disabled")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+    enabled = false,
+  )
+  HedvigText("Labeled")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        "Label",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+  )
+  HedvigText("Icon")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+        IconResource.Painter(R.drawable.ic_pillow_cat),
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+  )
+  HedvigText("Left Aligned")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+    style = RadioGroupStyle.LeftAligned,
+  )
+  HedvigText("Horizontal")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+    style = RadioGroupStyle.Horizontal,
+  )
+  HedvigText("Horizontal with label")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+    style = RadioGroupStyle.HorizontalFlow,
+    groupLabel = "Label",
+  )
+  HedvigText("Vertical with label")
+  RadioGroup(
+    options = List(2) { index ->
+      RadioOption(
+        RadioOptionId(index.toString()),
+        "Option",
+        null,
+      )
+    },
+    selectedOption = RadioOptionId("1"),
+    style = RadioGroupStyle.Vertical,
+    groupLabel = "Label",
+  )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewShowcaseRadioGroups() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ShowcaseRadioGroups()
+    }
   }
 }
