@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -185,19 +185,21 @@ private fun RadioGroup(
                 ) {
                   for (option in options) {
                     val interactionSource = remember { MutableInteractionSource() }
+                    val selected = option.id == selectedOptionId
                     RadioOption(
                       option = option,
-                      isSelected = option.id == selectedOptionId,
-                      isEnabled = enabled,
+                      selected = selected,
+                      enabled = enabled,
                       colors = colors,
                       style = style,
                       interactionSource = interactionSource,
-                      modifier = Modifier.optionClickable(
-                        indication = noopRipple(),
-                        interactionSource = interactionSource,
+                      modifier = Modifier.optionSelectable(
                         onRadioOptionSelected = onRadioOptionSelected,
                         radioOptionId = option.id,
-                        isEnabled = enabled,
+                        selected = selected,
+                        enabled = enabled,
+                        indication = noopRipple(),
+                        interactionSource = interactionSource,
                       ),
                     )
                   }
@@ -206,15 +208,16 @@ private fun RadioGroup(
 
               is RadioGroupStyle.Labeled.VerticalWithDivider -> {
                 options.forEachIndexed { index, option ->
+                  val selected = option.id == selectedOptionId
                   RadioOption(
                     option = option,
-                    isSelected = option.id == selectedOptionId,
-                    isEnabled = enabled,
+                    selected = selected,
+                    enabled = enabled,
                     colors = colors,
                     style = style,
                     modifier = Modifier
                       .fillMaxWidth()
-                      .optionClickable(onRadioOptionSelected, option.id, enabled)
+                      .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
                       .horizontalDivider(DividerPosition.Top, show = index != 0)
                       .optionPaddings(style, option.hasLabel),
                   )
@@ -231,15 +234,16 @@ private fun RadioGroup(
         colors = colors,
         modifier = Modifier.selectableGroup(),
       ) { option ->
+        val selected = option.id == selectedOptionId
         RadioOption(
           option = option,
-          isSelected = option.id == selectedOptionId,
-          isEnabled = enabled,
+          selected = selected,
+          enabled = enabled,
           colors = colors,
           style = style,
           modifier = Modifier
             .fillMaxWidth()
-            .optionClickable(onRadioOptionSelected, option.id, enabled)
+            .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
             .optionPaddings(style, option.hasLabel),
         )
       }
@@ -294,18 +298,20 @@ private fun RadioSurface(
 }
 
 @Composable
-private fun Modifier.optionClickable(
+private fun Modifier.optionSelectable(
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   radioOptionId: RadioOptionId,
-  isEnabled: Boolean,
+  selected: Boolean,
+  enabled: Boolean,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
 ): Modifier {
-  return clickable(
+  return selectable(
+    selected = selected,
     interactionSource = interactionSource ?: remember { MutableInteractionSource() },
     indication = indication ?: LocalIndication.current,
     onClick = { onRadioOptionSelected(radioOptionId) },
-    enabled = isEnabled,
+    enabled = enabled,
     role = Role.RadioButton,
   )
 }
@@ -319,8 +325,8 @@ private fun Modifier.optionPaddings(style: RadioGroupStyleInternal, hasLabel: Bo
 @Composable
 private fun RadioOption(
   option: RadioOption,
-  isSelected: Boolean,
-  isEnabled: Boolean,
+  selected: Boolean,
+  enabled: Boolean,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
   modifier: Modifier = Modifier,
@@ -339,7 +345,7 @@ private fun RadioOption(
         RadioOptionIcon(option.iconResource)
       }
       if (style.style.leftAlignedIndicator) {
-        RadioSelectIndicator(isSelected, isEnabled, colors, interactionSource)
+        RadioSelectIndicator(selected, enabled, colors, interactionSource)
       }
       Column {
         HedvigText(option.text, style = style.textStyle)
@@ -350,15 +356,15 @@ private fun RadioOption(
     }
     if (!style.style.leftAlignedIndicator) {
       Spacer(Modifier.width(style.horizontalItemSpacing))
-      RadioSelectIndicator(isSelected, isEnabled, colors, interactionSource)
+      RadioSelectIndicator(selected, enabled, colors, interactionSource)
     }
   }
 }
 
 @Composable
 private fun RadioSelectIndicator(
-  isSelected: Boolean,
-  isEnabled: Boolean,
+  selected: Boolean,
+  enabled: Boolean,
   colors: RadioGroupColors,
   interactionSource: MutableInteractionSource? = null,
 ) {
@@ -373,7 +379,7 @@ private fun RadioSelectIndicator(
         },
       ),
   ) {
-    if (!isSelected) {
+    if (!selected) {
       val stokeWidth = 2.dp.toPx()
       drawCircle(
         color = colors.indicatorColor,
@@ -381,7 +387,7 @@ private fun RadioSelectIndicator(
         style = Stroke(width = stokeWidth),
       )
     } else {
-      val color = if (isEnabled) {
+      val color = if (enabled) {
         colors.indicatorSelectedColor
       } else {
         colors.indicatorDisabledColor
