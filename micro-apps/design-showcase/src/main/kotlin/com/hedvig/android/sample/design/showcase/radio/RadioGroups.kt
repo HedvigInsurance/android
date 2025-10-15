@@ -55,15 +55,16 @@ internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {
 fun ColumnScope.RadioGroupOptions() {
   HedvigText("Sizes")
   var selectedOption by remember { mutableStateOf(RadioOptionId("1")) }
+  val defaultOptions = List(2) { index ->
+    RadioOption(
+      RadioOptionId(index.toString()),
+      "Option",
+      null,
+    )
+  }
   for (size in RadioGroupSize.entries) {
     RadioGroup(
-      options = List(2) { index ->
-        RadioOption(
-          RadioOptionId(index.toString()),
-          "Option",
-          null,
-        )
-      },
+      options = defaultOptions,
       selectedOption = selectedOption,
       onRadioOptionSelected = { selectedOption = it },
       size = size,
@@ -71,91 +72,51 @@ fun ColumnScope.RadioGroupOptions() {
   }
   HedvigText("Disabled")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-      )
-    },
+    options = defaultOptions,
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
     enabled = false,
   )
   HedvigText("Labeled")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        "Label",
-        null,
-      )
+    options = defaultOptions.map {
+      it.copy(label = "Label")
     },
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
   )
   HedvigText("Icon")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-        IconResource.Painter(R.drawable.ic_pillow_cat),
-      )
+    options = defaultOptions.map {
+      it.copy(iconResource = IconResource.Painter(R.drawable.ic_pillow_cat))
     },
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
   )
   HedvigText("Left Aligned")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-      )
-    },
+    options = defaultOptions,
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
     style = RadioGroupStyle.LeftAligned,
   )
   HedvigText("Horizontal")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-      )
-    },
+    options = defaultOptions,
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
     style = RadioGroupStyle.Horizontal,
   )
   HedvigText("Horizontal with label")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-      )
-    },
+    options = defaultOptions,
     selectedOption = selectedOption,
     style = RadioGroupStyle.Labeled.HorizontalFlow("Label"),
     onRadioOptionSelected = { selectedOption = it },
   )
   HedvigText("Vertical with label and divider")
   RadioGroup(
-    options = List(2) { index ->
-      RadioOption(
-        RadioOptionId(index.toString()),
-        "Option",
-        null,
-      )
-    },
+    options = defaultOptions,
     selectedOption = selectedOption,
     style = RadioGroupStyle.Labeled.VerticalWithDivider("Label"),
     onRadioOptionSelected = { selectedOption = it },
