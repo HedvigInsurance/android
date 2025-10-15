@@ -2,7 +2,11 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -179,13 +184,21 @@ private fun RadioGroup(
                   modifier = Modifier.optionPaddings(style, false),
                 ) {
                   for (option in options) {
+                    val interactionSource = remember { MutableInteractionSource() }
                     RadioOption(
                       option = option,
                       isSelected = option.id == selectedOptionId,
                       isEnabled = enabled,
                       colors = colors,
                       style = style,
-                      modifier = Modifier.optionClickable(onRadioOptionSelected, option.id, enabled),
+                      interactionSource = interactionSource,
+                      modifier = Modifier.optionClickable(
+                        indication = noopRipple(),
+                        interactionSource = interactionSource,
+                        onRadioOptionSelected = onRadioOptionSelected,
+                        radioOptionId = option.id,
+                        isEnabled = enabled,
+                      ),
                     )
                   }
                 }
@@ -280,12 +293,17 @@ private fun RadioSurface(
   }
 }
 
+@Composable
 private fun Modifier.optionClickable(
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   radioOptionId: RadioOptionId,
   isEnabled: Boolean,
+  interactionSource: MutableInteractionSource? = null,
+  indication: Indication? = null,
 ): Modifier {
   return clickable(
+    interactionSource = interactionSource ?: remember { MutableInteractionSource() },
+    indication = indication ?: LocalIndication.current,
     onClick = { onRadioOptionSelected(radioOptionId) },
     enabled = isEnabled,
     role = Role.RadioButton,
@@ -306,6 +324,7 @@ private fun RadioOption(
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
   modifier: Modifier = Modifier,
+  interactionSource: MutableInteractionSource? = null,
 ) {
   Row(
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -320,7 +339,7 @@ private fun RadioOption(
         RadioOptionIcon(option.iconResource)
       }
       if (style.style.leftAlignedIndicator) {
-        RadioSelectIndicator(isSelected, isEnabled, colors)
+        RadioSelectIndicator(isSelected, isEnabled, colors, interactionSource)
       }
       Column {
         HedvigText(option.text, style = style.textStyle)
@@ -331,14 +350,29 @@ private fun RadioOption(
     }
     if (!style.style.leftAlignedIndicator) {
       Spacer(Modifier.width(style.horizontalItemSpacing))
-      RadioSelectIndicator(isSelected, isEnabled, colors)
+      RadioSelectIndicator(isSelected, isEnabled, colors, interactionSource)
     }
   }
 }
 
 @Composable
-private fun RadioSelectIndicator(isSelected: Boolean, isEnabled: Boolean, colors: RadioGroupColors) {
-  Canvas(Modifier.size(24.dp)) {
+private fun RadioSelectIndicator(
+  isSelected: Boolean,
+  isEnabled: Boolean,
+  colors: RadioGroupColors,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  Canvas(
+    Modifier
+      .size(indicatorSize)
+      .then(
+        if (interactionSource != null) {
+          Modifier.indication(interactionSource, ripple(radius = indicatorSize / 2))
+        } else {
+          Modifier
+        },
+      ),
+  ) {
     if (!isSelected) {
       val stokeWidth = 2.dp.toPx()
       drawCircle(
@@ -460,3 +494,5 @@ internal sealed interface RadioGroupSizeTokens {
     override val TextStyleLabel: TypographyKeyTokens = TypographyKeyTokens.Label
   }
 }
+
+private val indicatorSize = 24.dp
