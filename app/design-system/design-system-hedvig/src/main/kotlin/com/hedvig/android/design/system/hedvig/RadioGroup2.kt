@@ -44,8 +44,16 @@ enum class RadioGroupSize {
   Large, Medium, Small,
 }
 
-enum class RadioGroupStyle {
-  Vertical, LeftAligned, Horizontal, HorizontalFlow, VerticalWithDivider
+sealed interface RadioGroupStyle {
+  data object Vertical : RadioGroupStyle
+  data object LeftAligned : RadioGroupStyle
+  data object Horizontal : RadioGroupStyle
+  sealed interface Labeled : RadioGroupStyle {
+    val label: String
+
+    data class HorizontalFlow(override val label: String) : Labeled
+    data class VerticalWithDivider(override val label: String) : Labeled
+  }
 }
 
 @Composable
@@ -55,7 +63,6 @@ fun RadioGroup(
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
-  groupLabel: String? = null,
   enabled: Boolean = true,
 ) {
   val colors = RadioGroupDefaults2.colors
@@ -66,7 +73,6 @@ fun RadioGroup(
     selectedOptionId = selectedOption,
     colors = colors,
     style = spacings,
-    groupLabel = groupLabel,
     enabled = enabled,
   )
 }
@@ -149,16 +155,15 @@ private fun RadioGroup(
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
-  groupLabel: String? = null,
   enabled: Boolean = true,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier) {
-    if (groupLabel != null && (style.style == RadioGroupStyle.VerticalWithDivider || style.style == RadioGroupStyle.HorizontalFlow)) {
+    if (style.style is RadioGroupStyle.Labeled) {
       RadioSurface(style, colors) {
         Column {
           HedvigText(
-            text = groupLabel,
+            text = style.style.label,
             style = style.textStyleLabel,
             color = colors.labelTextColor,
             modifier = Modifier
@@ -167,24 +172,7 @@ private fun RadioGroup(
           )
           Column(Modifier.selectableGroup()) {
             when (style.style) {
-              RadioGroupStyle.VerticalWithDivider -> {
-                options.forEachIndexed { index, option ->
-                  RadioOption(
-                    option = option,
-                    isSelected = option.id == selectedOptionId,
-                    isEnabled = enabled,
-                    colors = colors,
-                    style = style,
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .optionClickable(onRadioOptionSelected, option.id, enabled)
-                      .horizontalDivider(DividerPosition.Top, show = index != 0)
-                      .optionPaddings(style, option.hasLabel),
-                  )
-                }
-              }
-
-              RadioGroupStyle.HorizontalFlow -> {
+              is RadioGroupStyle.Labeled.HorizontalFlow -> {
                 FlowRow(
                   horizontalArrangement = Arrangement.spacedBy(style.flowLabelSpacing),
                   verticalArrangement = Arrangement.spacedBy(style.flowLabelSpacing),
@@ -203,7 +191,22 @@ private fun RadioGroup(
                 }
               }
 
-              else -> error("Impossible RadioGroup style")
+              is RadioGroupStyle.Labeled.VerticalWithDivider -> {
+                options.forEachIndexed { index, option ->
+                  RadioOption(
+                    option = option,
+                    isSelected = option.id == selectedOptionId,
+                    isEnabled = enabled,
+                    colors = colors,
+                    style = style,
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .optionClickable(onRadioOptionSelected, option.id, enabled)
+                      .horizontalDivider(DividerPosition.Top, show = index != 0)
+                      .optionPaddings(style, option.hasLabel),
+                  )
+                }
+              }
             }
           }
         }
@@ -381,7 +384,8 @@ private fun RadioOptionIcon(iconResource: IconResource) {
 }
 
 private val RadioGroupStyle.leftAlignedIndicator: Boolean
-  get() = this == RadioGroupStyle.LeftAligned || this == RadioGroupStyle.HorizontalFlow
+  get() = this == RadioGroupStyle.LeftAligned || this is RadioGroupStyle.Labeled.HorizontalFlow
+
 private val RadioOption.hasLabel: Boolean
   get() = label != null
 
