@@ -103,7 +103,7 @@ private object RadioGroupDefaults2 {
       labelTopPadding = tokens.LabelTopPadding,
       labelHorizontalPadding = tokens.LabelHorizontalPadding,
       flowLabelSpacing = RadioGroupStyleTokens.FlowLabelSpacing,
-      verticalItemSpacing = RadioGroupStyleTokens.HorizontalItemSpacing,
+      verticalItemSpacing = RadioGroupStyleTokens.VerticalItemSpacing,
       horizontalItemSpacing = RadioGroupStyleTokens.HorizontalItemSpacing,
       containerShape = RadioGroupStyleTokens.ContainerShape.value,
       textStyle = tokens.TextStyle.value,
@@ -176,6 +176,7 @@ private fun RadioGroup(
                     colors = colors,
                     style = style,
                     modifier = Modifier
+                      .fillMaxWidth()
                       .optionClickable(onRadioOptionSelected, option.id, enabled)
                       .horizontalDivider(DividerPosition.Top, show = index != 0)
                       .optionPaddings(style, option.hasLabel),
@@ -221,9 +222,9 @@ private fun RadioGroup(
           colors = colors,
           style = style,
           modifier = Modifier
+            .fillMaxWidth()
             .optionClickable(onRadioOptionSelected, option.id, enabled)
-            .optionPaddings(style, option.hasLabel)
-            .fillMaxWidth(),
+            .optionPaddings(style, option.hasLabel),
         )
       }
     }
@@ -398,6 +399,7 @@ internal object RadioGroupColorTokens {
 
 internal object RadioGroupStyleTokens {
   val FlowLabelSpacing: Dp = 16.dp
+  val VerticalItemSpacing: Dp = 4.dp
   val HorizontalItemSpacing: Dp = 8.dp
   val ContainerShape: ShapeKeyTokens = ShapeKeyTokens.CornerLarge
 }

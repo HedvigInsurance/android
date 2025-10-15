@@ -148,7 +148,7 @@ fun ColumnScope.RadioGroupOptions() {
     onRadioOptionSelected = { selectedOption = it },
     groupLabel = "Label",
   )
-  HedvigText("Vertical with label")
+  HedvigText("Vertical with label and divider")
   RadioGroup(
     options = List(2) { index ->
       RadioOption(
@@ -158,7 +158,7 @@ fun ColumnScope.RadioGroupOptions() {
       )
     },
     selectedOption = selectedOption,
-    style = RadioGroupStyle.Vertical,
+    style = RadioGroupStyle.VerticalWithDivider,
     onRadioOptionSelected = { selectedOption = it },
     groupLabel = "Label",
   )
