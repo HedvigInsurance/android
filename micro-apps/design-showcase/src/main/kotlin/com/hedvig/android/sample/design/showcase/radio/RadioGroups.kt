@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.showcase.R
@@ -50,6 +54,7 @@ internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {
 @Composable
 fun ColumnScope.RadioGroupOptions() {
   HedvigText("Sizes")
+  var selectedOption by remember { mutableStateOf(RadioOptionId("1")) }
   for (size in RadioGroupSize.entries) {
     RadioGroup(
       options = List(2) { index ->
@@ -59,7 +64,8 @@ fun ColumnScope.RadioGroupOptions() {
           null,
         )
       },
-      selectedOption = RadioOptionId("1"),
+      selectedOption = selectedOption,
+      onRadioOptionSelected = { selectedOption = it },
       size = size,
     )
   }
@@ -72,7 +78,8 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
+    onRadioOptionSelected = { selectedOption = it },
     enabled = false,
   )
   HedvigText("Labeled")
@@ -85,7 +92,8 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
+    onRadioOptionSelected = { selectedOption = it },
   )
   HedvigText("Icon")
   RadioGroup(
@@ -97,7 +105,8 @@ fun ColumnScope.RadioGroupOptions() {
         IconResource.Painter(R.drawable.ic_pillow_cat),
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
+    onRadioOptionSelected = { selectedOption = it },
   )
   HedvigText("Left Aligned")
   RadioGroup(
@@ -108,7 +117,8 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
+    onRadioOptionSelected = { selectedOption = it },
     style = RadioGroupStyle.LeftAligned,
   )
   HedvigText("Horizontal")
@@ -120,7 +130,8 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
+    onRadioOptionSelected = { selectedOption = it },
     style = RadioGroupStyle.Horizontal,
   )
   HedvigText("Horizontal with label")
@@ -132,8 +143,9 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
     style = RadioGroupStyle.HorizontalFlow,
+    onRadioOptionSelected = { selectedOption = it },
     groupLabel = "Label",
   )
   HedvigText("Vertical with label")
@@ -145,8 +157,9 @@ fun ColumnScope.RadioGroupOptions() {
         null,
       )
     },
-    selectedOption = RadioOptionId("1"),
+    selectedOption = selectedOption,
     style = RadioGroupStyle.Vertical,
+    onRadioOptionSelected = { selectedOption = it },
     groupLabel = "Label",
   )
 }

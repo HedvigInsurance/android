@@ -2,14 +2,18 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,23 +41,18 @@ data class RadioOption(
 value class RadioOptionId(val id: String)
 
 enum class RadioGroupSize {
-  Large,
-  Medium,
-  Small,
+  Large, Medium, Small,
 }
 
 enum class RadioGroupStyle {
-  Vertical,
-  LeftAligned,
-  Horizontal,
-  HorizontalFlow,
-  VerticalWithDivider
+  Vertical, LeftAligned, Horizontal, HorizontalFlow, VerticalWithDivider
 }
 
 @Composable
 fun RadioGroup(
   options: List<RadioOption>,
   selectedOption: RadioOptionId,
+  onRadioOptionSelected: (RadioOptionId) -> Unit,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
   groupLabel: String? = null,
@@ -62,6 +62,7 @@ fun RadioGroup(
   val spacings = RadioGroupDefaults2.style(size, style)
   RadioGroup(
     options = options,
+    onRadioOptionSelected = onRadioOptionSelected,
     selectedOptionId = selectedOption,
     colors = colors,
     style = spacings,
@@ -145,6 +146,7 @@ internal data class RadioGroupStyleInternal(
 private fun RadioGroup(
   options: List<RadioOption>,
   selectedOptionId: RadioOptionId,
+  onRadioOptionSelected: (RadioOptionId) -> Unit,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
   groupLabel: String? = null,
@@ -152,10 +154,7 @@ private fun RadioGroup(
   modifier: Modifier = Modifier,
 ) {
   Box(modifier) {
-    if (
-      groupLabel != null
-      && (style.style == RadioGroupStyle.VerticalWithDivider || style.style == RadioGroupStyle.HorizontalFlow)
-    ) {
+    if (groupLabel != null && (style.style == RadioGroupStyle.VerticalWithDivider || style.style == RadioGroupStyle.HorizontalFlow)) {
       RadioSurface(style, colors) {
         Column {
           HedvigText(
@@ -166,45 +165,54 @@ private fun RadioGroup(
               .padding(horizontal = style.labelHorizontalPadding)
               .padding(top = style.labelTopPadding),
           )
-          when (style.style) {
-            RadioGroupStyle.VerticalWithDivider -> {
-              options.forEachIndexed { index, option ->
-                RadioOption(
-                  option = option,
-                  isSelected = option.id == selectedOptionId,
-                  isEnabled = enabled,
-                  colors = colors,
-                  style = style,
-                  modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0),
-                )
-              }
-            }
-
-            RadioGroupStyle.HorizontalFlow -> {
-              FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(style.flowLabelSpacing),
-              ) {
-                for (option in options) {
+          Column(Modifier.selectableGroup()) {
+            when (style.style) {
+              RadioGroupStyle.VerticalWithDivider -> {
+                options.forEachIndexed { index, option ->
                   RadioOption(
                     option = option,
                     isSelected = option.id == selectedOptionId,
                     isEnabled = enabled,
                     colors = colors,
                     style = style,
+                    modifier = Modifier
+                      .optionClickable(onRadioOptionSelected, option.id, enabled)
+                      .horizontalDivider(DividerPosition.Top, show = index != 0)
+                      .optionPaddings(style, option.hasLabel),
                   )
                 }
               }
-            }
 
-            else -> error("Impossible RadioGroup style")
+              RadioGroupStyle.HorizontalFlow -> {
+                FlowRow(
+                  horizontalArrangement = Arrangement.spacedBy(style.flowLabelSpacing),
+                  verticalArrangement = Arrangement.spacedBy(style.flowLabelSpacing),
+                  modifier = Modifier.optionPaddings(style, false),
+                ) {
+                  for (option in options) {
+                    RadioOption(
+                      option = option,
+                      isSelected = option.id == selectedOptionId,
+                      isEnabled = enabled,
+                      colors = colors,
+                      style = style,
+                      modifier = Modifier.optionClickable(onRadioOptionSelected, option.id, enabled),
+                    )
+                  }
+                }
+              }
+
+              else -> error("Impossible RadioGroup style")
+            }
           }
         }
       }
     } else {
       HorizontalOrVerticalLayout(
-        options,
-        style,
-        colors,
+        options = options,
+        style = style,
+        colors = colors,
+        modifier = Modifier.selectableGroup(),
       ) { option ->
         RadioOption(
           option = option,
@@ -212,6 +220,10 @@ private fun RadioGroup(
           isEnabled = enabled,
           colors = colors,
           style = style,
+          modifier = Modifier
+            .optionClickable(onRadioOptionSelected, option.id, enabled)
+            .optionPaddings(style, option.hasLabel)
+            .fillMaxWidth(),
         )
       }
     }
@@ -230,7 +242,7 @@ private fun HorizontalOrVerticalLayout(
     if (style.style == RadioGroupStyle.Horizontal) {
       Row(horizontalArrangement = Arrangement.spacedBy(style.horizontalItemSpacing)) {
         for (option in options) {
-          RadioSurface(style, colors) {
+          RadioSurface(style, colors, Modifier.weight(1f)) {
             itemContent(option)
           }
         }
@@ -264,6 +276,24 @@ private fun RadioSurface(
   }
 }
 
+private fun Modifier.optionClickable(
+  onRadioOptionSelected: (RadioOptionId) -> Unit,
+  radioOptionId: RadioOptionId,
+  isEnabled: Boolean,
+): Modifier {
+  return clickable(
+    onClick = { onRadioOptionSelected(radioOptionId) },
+    enabled = isEnabled,
+    role = Role.RadioButton,
+  )
+}
+
+private fun Modifier.optionPaddings(style: RadioGroupStyleInternal, hasLabel: Boolean): Modifier {
+  return padding(top = if (hasLabel) style.labeledTopPadding else style.topPadding)
+    .padding(bottom = if (hasLabel) style.labeledBottomPadding else style.bottomPadding)
+    .padding(horizontal = if (hasLabel) style.labeledHorizontalPadding else style.horizontalPadding)
+}
+
 @Composable
 private fun RadioOption(
   option: RadioOption,
@@ -273,28 +303,30 @@ private fun RadioOption(
   style: RadioGroupStyleInternal,
   modifier: Modifier = Modifier,
 ) {
-  val hasLabel = option.label != null
   Row(
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-      .padding(top = if (hasLabel) style.labeledTopPadding else style.topPadding)
-      .padding(bottom = if (hasLabel) style.labeledBottomPadding else style.bottomPadding)
-      .padding(horizontal = if (hasLabel) style.labeledHorizontalPadding else style.horizontalPadding),
+    modifier = modifier,
   ) {
-    if (option.iconResource != null) {
-      RadioOptionIcon(option.iconResource)
-    }
-    if (style.style.leftAlignedIndicator) {
-      RadioSelectIndicator(isSelected, isEnabled, colors)
-    }
-    Column(Modifier.weight(1f)) {
-      HedvigText(option.text, style = style.textStyle)
-      if (hasLabel) {
-        HedvigText(option.label, style = style.textStyleLabel)
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(style.horizontalItemSpacing),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (option.iconResource != null) {
+        RadioOptionIcon(option.iconResource)
+      }
+      if (style.style.leftAlignedIndicator) {
+        RadioSelectIndicator(isSelected, isEnabled, colors)
+      }
+      Column {
+        HedvigText(option.text, style = style.textStyle)
+        if (option.label != null) {
+          HedvigText(option.label, style = style.textStyleLabel)
+        }
       }
     }
     if (!style.style.leftAlignedIndicator) {
+      Spacer(Modifier.width(style.horizontalItemSpacing))
       RadioSelectIndicator(isSelected, isEnabled, colors)
     }
   }
@@ -349,6 +381,8 @@ private fun RadioOptionIcon(iconResource: IconResource) {
 
 private val RadioGroupStyle.leftAlignedIndicator: Boolean
   get() = this == RadioGroupStyle.LeftAligned || this == RadioGroupStyle.HorizontalFlow
+private val RadioOption.hasLabel: Boolean
+  get() = label != null
 
 internal object RadioGroupColorTokens {
   val ContainerColor = ColorSchemeKeyTokens.SurfacePrimary
