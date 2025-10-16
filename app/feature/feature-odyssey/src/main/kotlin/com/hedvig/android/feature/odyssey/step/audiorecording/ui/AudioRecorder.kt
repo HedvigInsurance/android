@@ -121,6 +121,7 @@ internal fun AudioRecorder(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
       ) {
+        Spacer(Modifier.height(80.dp))
         Box(
           contentAlignment = Alignment.Center,
         ) {

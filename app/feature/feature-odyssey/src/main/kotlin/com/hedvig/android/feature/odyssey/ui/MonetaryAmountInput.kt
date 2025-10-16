@@ -73,9 +73,8 @@ internal fun MonetaryAmountInput(
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         HedvigText(currency)
-        AnimatedVisibility(text.isNotEmpty()
-        ){
-          Row(verticalAlignment = Alignment.CenterVertically){
+        AnimatedVisibility(text.isNotEmpty()) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(Modifier.width(16.dp))
             IconButton(
               onClick = {
