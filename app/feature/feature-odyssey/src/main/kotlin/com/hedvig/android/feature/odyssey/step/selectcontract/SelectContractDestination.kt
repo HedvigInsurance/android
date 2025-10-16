@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -28,11 +27,9 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
@@ -98,10 +95,12 @@ private fun SelectContractScreen(
         closeClaimFlow = closeClaimFlow,
       )
     }
+
     SelectContractUiState.Error -> HedvigErrorSection(
       onButtonClick = reload,
       modifier = Modifier.fillMaxSize(),
     )
+
     SelectContractUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
   }
 }
@@ -134,24 +133,16 @@ private fun SelectContractSuccessScreen(
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
     RadioGroup(
-      radioGroupSize = RadioGroupDefaults.RadioGroupSize.Medium,
-      radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Label(
-        dataList = uiState.contractOptions.map { option ->
-          RadioOptionGroupData.RadioOptionGroupDataWithLabel(
-            RadioOptionData(
-              id = option.id,
-              optionText = option.displayName,
-              chosenState = if (option == uiState.selectedContract) ChosenState.Chosen else ChosenState.NotChosen,
-            ),
-            labelText = option.description,
-          )
-        },
-      ),
-      onOptionClick = { id ->
-        selectLocation(id)
+      options = uiState.contractOptions.map { option ->
+        RadioOption(
+          id = RadioOptionId(option.id),
+          text = option.displayName,
+          label = option.description,
+        )
       },
+      selectedOption = RadioOptionId(uiState.selectedContract.id),
+      onRadioOptionSelected = { selectLocation(it.id) },
       modifier = sideSpacingModifier.fillMaxWidth(),
-      groupLockedState = NotLocked,
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(

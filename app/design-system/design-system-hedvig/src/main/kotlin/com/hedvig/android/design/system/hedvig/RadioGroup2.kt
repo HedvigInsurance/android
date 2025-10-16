@@ -64,11 +64,12 @@ sealed interface RadioGroupStyle {
 @Composable
 fun RadioGroup(
   options: List<RadioOption>,
-  selectedOption: RadioOptionId,
+  selectedOption: RadioOptionId?,
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
   enabled: Boolean = true,
+  modifier: Modifier = Modifier,
 ) {
   val colors = RadioGroupDefaults2.colors
   val spacings = RadioGroupDefaults2.style(size, style)
@@ -79,6 +80,7 @@ fun RadioGroup(
     colors = colors,
     style = spacings,
     enabled = enabled,
+    modifier = modifier,
   )
 }
 
@@ -86,9 +88,9 @@ private object RadioGroupDefaults2 {
   val colors: RadioGroupColors
     @Composable get() = RadioGroupColors(
       containerColor = RadioGroupColorTokens.ContainerColor.value,
-      optionTextColor = RadioGroupColorTokens.OptionTextColor.value,
+      textColor = RadioGroupColorTokens.OptionTextColor.value,
       labelTextColor = RadioGroupColorTokens.LabelTextColor.value,
-      disabledOptionTextColor = RadioGroupColorTokens.DisabledOptionTextColor.value,
+      disabledTextColor = RadioGroupColorTokens.DisabledOptionTextColor.value,
       disabledLabelTextColor = RadioGroupColorTokens.DisabledLabelTextColor.value,
       dividerColor = RadioGroupColorTokens.DividerColor.value,
       indicatorColor = RadioGroupColorTokens.IndicatorColor.value,
@@ -125,9 +127,9 @@ private object RadioGroupDefaults2 {
 
 private data class RadioGroupColors(
   val containerColor: Color,
-  val optionTextColor: Color,
+  val textColor: Color,
   val labelTextColor: Color,
-  val disabledOptionTextColor: Color,
+  val disabledTextColor: Color,
   val disabledLabelTextColor: Color,
   val dividerColor: Color,
   val indicatorColor: Color,
@@ -156,7 +158,7 @@ internal data class RadioGroupStyleInternal(
 @Composable
 private fun RadioGroup(
   options: List<RadioOption>,
-  selectedOptionId: RadioOptionId,
+  selectedOptionId: RadioOptionId?,
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
@@ -290,7 +292,7 @@ private fun RadioSurface(
   Surface(
     shape = style.containerShape,
     color = colors.containerColor,
-    contentColor = colors.labelTextColor,
+    contentColor = colors.textColor,
     modifier = modifier,
   ) {
     content()
@@ -348,9 +350,9 @@ private fun RadioOption(
         RadioSelectIndicator(selected, enabled, colors, interactionSource)
       }
       Column {
-        HedvigText(option.text, style = style.textStyle)
+        HedvigText(option.text, style = style.textStyle, color = colors.textColor)
         if (option.label != null) {
-          HedvigText(option.label, style = style.textStyleLabel)
+          HedvigText(option.label, style = style.textStyleLabel, color = colors.labelTextColor)
         }
       }
     }
@@ -407,7 +409,7 @@ private fun RadioOptionIcon(iconResource: IconResource) {
   Box(Modifier.size(32.dp), propagateMinConstraints = true) {
     when (iconResource) {
       is IconResource.Vector -> {
-        Icon(
+        Image(
           imageVector = iconResource.imageVector,
           contentDescription = EmptyContentDescription,
         )

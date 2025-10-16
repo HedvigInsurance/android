@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -40,9 +39,9 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
@@ -202,19 +201,16 @@ private fun ColumnScope.PreferencesSheetContent(
   )
   Spacer(Modifier.height(24.dp))
   RadioGroup(
-    radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
-      dataList = Language.entries.map { language ->
-        RadioOptionGroupData.RadioOptionGroupDataWithIcon(
-          RadioOptionData(
-            id = language.name,
-            optionText = stringResource(language.label),
-            chosenState = if (language == chosenLanguage) ChosenState.Chosen else ChosenState.NotChosen,
-          ),
-          IconResource.Vector(language.flag()),
-        )
-      },
-    ),
-    onOptionClick = { selectLanguage(Language.valueOf(it)) },
+    options = Language.entries.map { language ->
+      RadioOption(
+        id = RadioOptionId(language.name),
+        text = stringResource(language.label),
+        iconResource = IconResource.Vector(language.flag()),
+      )
+    },
+    selectedOption = RadioOptionId(chosenLanguage.name),
+    onRadioOptionSelected = { selectLanguage(Language.valueOf(it.id)) },
+    size = RadioGroupSize.Large,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(8.dp))
