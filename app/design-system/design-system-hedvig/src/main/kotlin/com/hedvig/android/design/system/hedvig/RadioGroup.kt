@@ -22,15 +22,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
@@ -66,20 +72,59 @@ fun RadioGroup(
   options: List<RadioOption>,
   selectedOption: RadioOptionId?,
   onRadioOptionSelected: (RadioOptionId) -> Unit,
+  modifier: Modifier = Modifier,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
   enabled: Boolean = true,
-  modifier: Modifier = Modifier,
 ) {
   val colors = RadioGroupDefaults.colors
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
     options = options,
     onRadioOptionSelected = onRadioOptionSelected,
-    selectedOptionId = selectedOption,
+    selectedOptionIds = listOfNotNull(selectedOption),
     colors = colors,
     style = spacings,
     enabled = enabled,
+    selectIndicator = { selected, enabled, colors, interactionSource ->
+      RadioSelectIndicator(
+        selected,
+        enabled,
+        colors,
+        interactionSource,
+      )
+    },
+    modifier = modifier,
+  )
+}
+
+@Composable
+fun CheckboxGroup(
+  options: List<RadioOption>,
+  selectedOptions: List<RadioOptionId>,
+  onRadioOptionSelected: (RadioOptionId) -> Unit,
+  modifier: Modifier = Modifier,
+  size: RadioGroupSize = RadioGroupSize.Medium,
+  style: RadioGroupStyle = RadioGroupStyle.Vertical,
+  enabled: Boolean = true,
+) {
+  val colors = RadioGroupDefaults.colors
+  val spacings = RadioGroupDefaults.style(size, style)
+  RadioGroup(
+    options = options,
+    onRadioOptionSelected = onRadioOptionSelected,
+    selectedOptionIds = selectedOptions,
+    colors = colors,
+    style = spacings,
+    enabled = enabled,
+    selectIndicator = { selected, enabled, colors, interactionSource ->
+      CheckboxSelectIndicator(
+        selected,
+        enabled,
+        colors,
+        interactionSource,
+      )
+    },
     modifier = modifier,
   )
 }
@@ -137,7 +182,7 @@ private data class RadioGroupColors(
   val indicatorDisabledColor: Color,
 )
 
-internal data class RadioGroupStyleInternal(
+private data class RadioGroupStyleInternal(
   val style: RadioGroupStyle,
   val topPadding: Dp,
   val bottomPadding: Dp,
@@ -158,12 +203,13 @@ internal data class RadioGroupStyleInternal(
 @Composable
 private fun RadioGroup(
   options: List<RadioOption>,
-  selectedOptionId: RadioOptionId?,
+  selectedOptionIds: List<RadioOptionId>,
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
-  enabled: Boolean = true,
+  selectIndicator: SelectIndicator,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
 ) {
   Box(modifier) {
     if (style.style is RadioGroupStyle.Labeled) {
@@ -187,7 +233,7 @@ private fun RadioGroup(
                 ) {
                   for (option in options) {
                     val interactionSource = remember { MutableInteractionSource() }
-                    val selected = option.id == selectedOptionId
+                    val selected = option.id in selectedOptionIds
                     RadioOption(
                       option = option,
                       selected = selected,
@@ -195,6 +241,7 @@ private fun RadioGroup(
                       colors = colors,
                       style = style,
                       interactionSource = interactionSource,
+                      selectIndicator = selectIndicator,
                       modifier = Modifier.optionSelectable(
                         onRadioOptionSelected = onRadioOptionSelected,
                         radioOptionId = option.id,
@@ -210,13 +257,14 @@ private fun RadioGroup(
 
               is RadioGroupStyle.Labeled.VerticalWithDivider -> {
                 options.forEachIndexed { index, option ->
-                  val selected = option.id == selectedOptionId
+                  val selected = option.id in selectedOptionIds
                   RadioOption(
                     option = option,
                     selected = selected,
                     enabled = enabled,
                     colors = colors,
                     style = style,
+                    selectIndicator = selectIndicator,
                     modifier = Modifier
                       .fillMaxWidth()
                       .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
@@ -236,13 +284,14 @@ private fun RadioGroup(
         colors = colors,
         modifier = Modifier.selectableGroup(),
       ) { option ->
-        val selected = option.id == selectedOptionId
+        val selected = option.id in selectedOptionIds
         RadioOption(
           option = option,
           selected = selected,
           enabled = enabled,
           colors = colors,
           style = style,
+          selectIndicator = selectIndicator,
           modifier = Modifier
             .fillMaxWidth()
             .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
@@ -331,6 +380,7 @@ private fun RadioOption(
   enabled: Boolean,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
+  selectIndicator: SelectIndicator,
   modifier: Modifier = Modifier,
   interactionSource: MutableInteractionSource? = null,
 ) {
@@ -347,7 +397,7 @@ private fun RadioOption(
         RadioOptionIcon(option.iconResource)
       }
       if (style.style.leftAlignedIndicator) {
-        RadioSelectIndicator(selected, enabled, colors, interactionSource)
+        selectIndicator(selected, enabled, colors, interactionSource)
       }
       Column {
         HedvigText(option.text, style = style.textStyle, color = colors.textColor)
@@ -358,10 +408,17 @@ private fun RadioOption(
     }
     if (!style.style.leftAlignedIndicator) {
       Spacer(Modifier.width(style.horizontalItemSpacing))
-      RadioSelectIndicator(selected, enabled, colors, interactionSource)
+      selectIndicator(selected, enabled, colors, interactionSource)
     }
   }
 }
+
+private typealias SelectIndicator = @Composable (
+  selected: Boolean,
+  enabled: Boolean,
+  colors: RadioGroupColors,
+  interactionSource: MutableInteractionSource?
+) -> Unit
 
 @Composable
 private fun RadioSelectIndicator(
@@ -400,6 +457,50 @@ private fun RadioSelectIndicator(
         radius = size.minDimension / 2.0f - stokeWidth / 2,
         style = Stroke(width = stokeWidth),
       )
+    }
+  }
+}
+
+@Composable
+private fun CheckboxSelectIndicator(
+  selected: Boolean,
+  enabled: Boolean,
+  colors: RadioGroupColors,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  val shape = HedvigTheme.shapes.cornerXSmall
+  val checkmarkVector = rememberVectorPainter(
+    image = HedvigIcons.Checkmark,
+  )
+  val checkmarkTint = colors.containerColor
+  Canvas(
+    Modifier
+      .size(indicatorSize)
+      .clip(shape)
+      .then(
+        if (interactionSource != null) {
+          Modifier.indication(interactionSource, ripple())
+        } else {
+          Modifier
+        },
+      ),
+  ) {
+    if (!selected) {
+      drawOutline(
+        color = colors.indicatorColor,
+        outline = shape.createOutline(size, layoutDirection, this),
+        style = Stroke(width = 4.dp.toPx())
+      )
+    } else {
+      val color = if (enabled) {
+        colors.indicatorSelectedColor
+      } else {
+        colors.indicatorDisabledColor
+      }
+      drawRect(color = color)
+      with(checkmarkVector) {
+        draw(checkmarkVector.intrinsicSize, colorFilter = ColorFilter.tint(checkmarkTint))
+      }
     }
   }
 }
