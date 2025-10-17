@@ -292,6 +292,7 @@
   <string name="FOREVER_TAB_TOTAL_DISCOUNT_LABEL">Totalt</string>
   <string name="FULL_NAME_TEXT">Fullständigt namn</string>
   <string name="GENERAL.ARE_YOU_SURE">Är du säker?</string>
+  <string name="GENERAL.EDIT">Ändra</string>
   <string name="GENERAL.EMAIL">team@hedvig.com</string>
   <string name="GENERAL.ERROR_BODY">Vi kunde inte ladda in den här informationen. Dubbelkolla din internetuppkoppling och försök igen.</string>
   <string name="GENERAL.NO">Nej</string>
@@ -670,6 +671,8 @@
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR-kod</string>
+  <string name="TALKBACK_RECORDING_DURATION">Inspelningslängd: %1$s</string>
+  <string name="TALKBACK_RECORDING_NOW">Spelar in nu. Dubbeltryck för att stoppa.</string>
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Välj en kategori för att fortsätta</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Svenska kronor</string>
   <string name="TALKBACK_TAKE_PHOTO">Ta ett foto</string>

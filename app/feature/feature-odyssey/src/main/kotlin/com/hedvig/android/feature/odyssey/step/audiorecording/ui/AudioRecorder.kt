@@ -36,8 +36,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -117,6 +121,7 @@ internal fun AudioRecorder(
       val startRecordingText = stringResource(R.string.EMBARK_START_RECORDING)
       val stopRecordingText = stringResource(R.string.EMBARK_STOP_RECORDING)
       val audioRecordingText = stringResource(R.string.A11Y_AUDIO_RECORDING)
+      val recordingState = stringResource(R.string.TALKBACK_RECORDING_NOW)
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
@@ -134,10 +139,15 @@ internal fun AudioRecorder(
               .shadow(2.dp, CircleShape)
               .size(72.dp)
               .background(Color.White, CircleShape)
-              .semantics { contentDescription = audioRecordingText }
+              .semantics {
+                contentDescription = audioRecordingText
+                stateDescription = if (isRecording) recordingState else ""
+              }
               .clickable(
                 onClickLabel = when (isRecording) {
                   true -> stopRecordingText
+                  //todo: this one is not working somehow,
+                  // so added onClickLabel inside val recordingState
                   false -> startRecordingText
                 },
                 role = Role.Button,
@@ -197,11 +207,15 @@ internal fun AudioRecorder(
             val diff = clock.now() - (startedRecordingAt ?: clock.now())
             val label =
               "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+            val durationDescription = stringResource(R.string.TALKBACK_RECORDING_DURATION, label)
             HedvigText(
               text = label,
               style = HedvigTheme.typography.bodySmall,
               textAlign = TextAlign.Center,
-              modifier = Modifier.padding(bottom = 16.dp),
+              modifier = Modifier.padding(bottom = 16.dp)
+                .clearAndSetSemantics{
+                  contentDescription = durationDescription
+                },
             )
           } else {
             if (allowFreeText) {
