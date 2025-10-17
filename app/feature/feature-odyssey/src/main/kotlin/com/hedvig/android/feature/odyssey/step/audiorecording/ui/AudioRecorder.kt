@@ -38,8 +38,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
@@ -212,8 +210,9 @@ internal fun AudioRecorder(
               text = label,
               style = HedvigTheme.typography.bodySmall,
               textAlign = TextAlign.Center,
-              modifier = Modifier.padding(bottom = 16.dp)
-                .clearAndSetSemantics{
+              modifier = Modifier
+                .padding(bottom = 16.dp)
+                .clearAndSetSemantics {
                   contentDescription = durationDescription
                 },
             )
