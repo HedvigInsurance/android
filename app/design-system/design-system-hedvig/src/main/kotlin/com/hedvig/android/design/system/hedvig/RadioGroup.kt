@@ -71,8 +71,8 @@ fun RadioGroup(
   enabled: Boolean = true,
   modifier: Modifier = Modifier,
 ) {
-  val colors = RadioGroupDefaults2.colors
-  val spacings = RadioGroupDefaults2.style(size, style)
+  val colors = RadioGroupDefaults.colors
+  val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
     options = options,
     onRadioOptionSelected = onRadioOptionSelected,
@@ -84,7 +84,7 @@ fun RadioGroup(
   )
 }
 
-private object RadioGroupDefaults2 {
+private object RadioGroupDefaults {
   val colors: RadioGroupColors
     @Composable get() = RadioGroupColors(
       containerColor = RadioGroupColorTokens.ContainerColor.value,
