@@ -16,11 +16,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.showcase.R
+import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -44,6 +47,7 @@ internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {
     Spacer(Modifier.height(16.dp))
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       RadioGroupOptions()
+      CheckboxGroupOptions()
     }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -52,7 +56,7 @@ internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-fun ColumnScope.RadioGroupOptions() {
+private fun ColumnScope.RadioGroupOptions() {
   HedvigText("Sizes")
   var selectedOption by remember { mutableStateOf(RadioOptionId("1")) }
   val defaultOptions = List(2) { index ->
@@ -120,6 +124,86 @@ fun ColumnScope.RadioGroupOptions() {
     selectedOption = selectedOption,
     style = RadioGroupStyle.Labeled.VerticalWithDivider("Label"),
     onRadioOptionSelected = { selectedOption = it },
+  )
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.CheckboxGroupOptions() {
+  HedvigText("Sizes")
+  val selectedOptions = remember { mutableStateSetOf(RadioOptionId("1")) }
+  val onRadioOptionSelected: (RadioOptionId) -> Unit = {
+    Snapshot.withMutableSnapshot {
+      if (!selectedOptions.add(it)) {
+        selectedOptions.remove(it)
+      }
+    }
+  }
+  val defaultOptions = List(2) { index ->
+    RadioOption(
+      RadioOptionId(index.toString()),
+      "Option",
+      null,
+    )
+  }
+  for (size in RadioGroupSize.entries) {
+    CheckboxGroup(
+      options = defaultOptions,
+      selectedOptions = selectedOptions.toList(),
+      onRadioOptionSelected = onRadioOptionSelected,
+      size = size,
+    )
+  }
+  HedvigText("Disabled")
+  CheckboxGroup(
+    options = defaultOptions,
+    selectedOptions = selectedOptions.toList(),
+    onRadioOptionSelected = onRadioOptionSelected,
+    enabled = false,
+  )
+  HedvigText("Labeled")
+  CheckboxGroup(
+    options = defaultOptions.map {
+      it.copy(label = "Label")
+    },
+    selectedOptions = selectedOptions.toList(),
+    onRadioOptionSelected = onRadioOptionSelected,
+  )
+  HedvigText("Icon")
+  CheckboxGroup(
+    options = defaultOptions.map {
+      it.copy(iconResource = IconResource.Painter(R.drawable.ic_pillow_cat))
+    },
+    selectedOptions = selectedOptions.toList(),
+    onRadioOptionSelected = onRadioOptionSelected,
+  )
+  HedvigText("Left Aligned")
+  CheckboxGroup(
+    options = defaultOptions,
+    selectedOptions = selectedOptions.toList(),
+    onRadioOptionSelected = onRadioOptionSelected,
+    style = RadioGroupStyle.LeftAligned,
+  )
+  HedvigText("Horizontal")
+  CheckboxGroup(
+    options = defaultOptions,
+    selectedOptions = selectedOptions.toList(),
+    onRadioOptionSelected = onRadioOptionSelected,
+    style = RadioGroupStyle.Horizontal,
+  )
+  HedvigText("Horizontal with label")
+  CheckboxGroup(
+    options = defaultOptions,
+    selectedOptions = selectedOptions.toList(),
+    style = RadioGroupStyle.Labeled.HorizontalFlow("Label"),
+    onRadioOptionSelected = onRadioOptionSelected,
+  )
+  HedvigText("Vertical with label and divider")
+  CheckboxGroup(
+    options = defaultOptions,
+    selectedOptions = selectedOptions.toList(),
+    style = RadioGroupStyle.Labeled.VerticalWithDivider("Label"),
+    onRadioOptionSelected = onRadioOptionSelected,
   )
 }
 
