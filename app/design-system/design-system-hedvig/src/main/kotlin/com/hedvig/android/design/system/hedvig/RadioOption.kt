@@ -69,25 +69,6 @@ data class RadioOptionData(
   val lockedState: LockedState = NotLocked,
 )
 
-sealed interface RadioOptionGroupData {
-  val radioOptionData: RadioOptionData
-
-  data class RadioOptionGroupDataSimple(
-    override val radioOptionData: RadioOptionData,
-  ) :
-    RadioOptionGroupData
-
-  data class RadioOptionGroupDataWithLabel(
-    override val radioOptionData: RadioOptionData,
-    val labelText: String,
-  ) : RadioOptionGroupData
-
-  data class RadioOptionGroupDataWithIcon(
-    override val radioOptionData: RadioOptionData,
-    val iconResource: IconResource,
-  ) : RadioOptionGroupData
-}
-
 @Composable
 internal fun RadioOption(
   data: RadioOptionData,
@@ -670,7 +651,7 @@ private class RadioOptionStyleProvider :
     listOf(
       Default,
       Label("Label"),
-      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      RadioOptionStyle.Icon(IconResource.Painter(R.drawable.pillow_hedvig)),
       RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       LeftAligned,
     ),
