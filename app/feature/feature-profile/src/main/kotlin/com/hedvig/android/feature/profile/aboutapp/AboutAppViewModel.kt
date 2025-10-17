@@ -22,7 +22,7 @@ import octopus.MemberIdQuery
 internal class AboutAppViewModel(
   apolloClient: ApolloClient,
   deviceIdDataStore: DeviceIdDataStore,
-) : MoleculeViewModel<AboutAppEvent, AboutAppUiState>(
+) : MoleculeViewModel<Unit, AboutAppUiState>(
   initialState = AboutAppUiState.Loading,
   presenter = AboutAppPresenter(apolloClient, deviceIdDataStore),
 )
@@ -30,17 +30,11 @@ internal class AboutAppViewModel(
 private class AboutAppPresenter(
   private val apolloClient: ApolloClient,
   private val deviceIdDataStore: DeviceIdDataStore,
-) : MoleculePresenter<AboutAppEvent, AboutAppUiState> {
+) : MoleculePresenter<Unit, AboutAppUiState> {
   @Composable
-  override fun MoleculePresenterScope<AboutAppEvent>.present(lastState: AboutAppUiState): AboutAppUiState {
+  override fun MoleculePresenterScope<Unit>.present(lastState: AboutAppUiState): AboutAppUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-
-    CollectEvents { event ->
-      when (event) {
-        AboutAppEvent.Retry -> loadIteration++
-      }
-    }
 
     LaunchedEffect(loadIteration) {
       currentState = AboutAppUiState.Loading
@@ -59,12 +53,6 @@ private class AboutAppPresenter(
 
     return currentState
   }
-}
-
-internal sealed interface AboutAppEvent {
-  data object Retry : AboutAppEvent
-  //we don't set any error state to use this event
-  // now, since null memberId is used for demo mode
 }
 
 internal sealed interface AboutAppUiState {
