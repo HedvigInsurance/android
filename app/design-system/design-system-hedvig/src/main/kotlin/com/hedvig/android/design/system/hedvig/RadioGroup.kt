@@ -35,6 +35,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
@@ -43,6 +44,12 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 
 data class RadioOption(
   val id: RadioOptionId,
+  val text: String,
+  val label: String? = null,
+  val iconResource: IconResource? = null,
+)
+
+data class CheckboxOption(
   val text: String,
   val label: String? = null,
   val iconResource: IconResource? = null,
@@ -75,9 +82,10 @@ fun RadioGroup(
   modifier: Modifier = Modifier,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
+  colors: RadioGroupColors = RadioGroupDefaults.colors,
+  disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
 ) {
-  val colors = RadioGroupDefaults.colors
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
     options = options,
@@ -85,6 +93,7 @@ fun RadioGroup(
     selectedOptionIds = listOfNotNull(selectedOption),
     colors = colors,
     style = spacings,
+    disabledOptions = disabledOptions,
     enabled = enabled,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       RadioSelectIndicator(
@@ -99,6 +108,30 @@ fun RadioGroup(
 }
 
 @Composable
+fun Checkbox(
+  option: CheckboxOption,
+  selected: Boolean,
+  onCheckboxSelected: () -> Unit,
+  modifier: Modifier = Modifier,
+  size: RadioGroupSize = RadioGroupSize.Medium,
+  style: RadioGroupStyle = RadioGroupStyle.Vertical,
+  colors: RadioGroupColors = RadioGroupDefaults.colors,
+  enabled: Boolean = true,
+) {
+  val id = RadioOptionId("1")
+  CheckboxGroup(
+    options = listOf(RadioOption(id, option.text, option.label, option.iconResource)),
+    selectedOptions = if (selected) listOf(id) else emptyList(),
+    onRadioOptionSelected = { onCheckboxSelected() },
+    modifier = modifier,
+    size = size,
+    style = style,
+    colors = colors,
+    enabled = enabled,
+  )
+}
+
+@Composable
 fun CheckboxGroup(
   options: List<RadioOption>,
   selectedOptions: List<RadioOptionId>,
@@ -106,9 +139,10 @@ fun CheckboxGroup(
   modifier: Modifier = Modifier,
   size: RadioGroupSize = RadioGroupSize.Medium,
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
+  colors: RadioGroupColors = RadioGroupDefaults.colors,
+  disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
 ) {
-  val colors = RadioGroupDefaults.colors
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
     options = options,
@@ -116,6 +150,7 @@ fun CheckboxGroup(
     selectedOptionIds = selectedOptions,
     colors = colors,
     style = spacings,
+    disabledOptions = disabledOptions,
     enabled = enabled,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       CheckboxSelectIndicator(
@@ -129,7 +164,7 @@ fun CheckboxGroup(
   )
 }
 
-private object RadioGroupDefaults {
+object RadioGroupDefaults {
   val colors: RadioGroupColors
     @Composable get() = RadioGroupColors(
       containerColor = RadioGroupColorTokens.ContainerColor.value,
@@ -144,7 +179,7 @@ private object RadioGroupDefaults {
     )
 
   @Composable
-  fun style(size: RadioGroupSize, style: RadioGroupStyle): RadioGroupStyleInternal {
+  internal fun style(size: RadioGroupSize, style: RadioGroupStyle): RadioGroupStyleInternal {
     val tokens = when (size) {
       RadioGroupSize.Large -> RadioGroupSizeTokens.Large
       RadioGroupSize.Medium -> RadioGroupSizeTokens.Medium
@@ -170,7 +205,7 @@ private object RadioGroupDefaults {
   }
 }
 
-private data class RadioGroupColors(
+data class RadioGroupColors(
   val containerColor: Color,
   val textColor: Color,
   val labelTextColor: Color,
@@ -182,7 +217,7 @@ private data class RadioGroupColors(
   val indicatorDisabledColor: Color,
 )
 
-private data class RadioGroupStyleInternal(
+internal data class RadioGroupStyleInternal(
   val style: RadioGroupStyle,
   val topPadding: Dp,
   val bottomPadding: Dp,
@@ -209,6 +244,7 @@ private fun RadioGroup(
   style: RadioGroupStyleInternal,
   selectIndicator: SelectIndicator,
   modifier: Modifier = Modifier,
+  disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
 ) {
   Box(modifier) {
@@ -234,6 +270,7 @@ private fun RadioGroup(
                   for (option in options) {
                     val interactionSource = remember { MutableInteractionSource() }
                     val selected = option.id in selectedOptionIds
+                    val enabled = enabled && option.id !in disabledOptions
                     RadioOption(
                       option = option,
                       selected = selected,
@@ -258,6 +295,7 @@ private fun RadioGroup(
               is RadioGroupStyle.Labeled.VerticalWithDivider -> {
                 options.forEachIndexed { index, option ->
                   val selected = option.id in selectedOptionIds
+                  val enabled = enabled && option.id !in disabledOptions
                   RadioOption(
                     option = option,
                     selected = selected,
@@ -285,6 +323,7 @@ private fun RadioGroup(
         modifier = Modifier.selectableGroup(),
       ) { option ->
         val selected = option.id in selectedOptionIds
+        val enabled = enabled && option.id !in disabledOptions
         RadioOption(
           option = option,
           selected = selected,

@@ -6,18 +6,6 @@ sealed interface QuickAction {
   val titleRes: Int
   val hintTextRes: Int
 
-  // todo: do not really have them anymore; but may be useful later on?
-  data class MultiSelectQuickLink(
-    override val titleRes: Int,
-    override val hintTextRes: Int,
-    val links: List<QuickLinkForMultiSelect>,
-  ) : QuickAction {
-    data class QuickLinkForMultiSelect(
-      val displayName: String,
-      val quickLinkDestination: QuickLinkDestination,
-    )
-  }
-
   data class StandaloneQuickLink(
     override val titleRes: Int,
     override val hintTextRes: Int,

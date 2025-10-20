@@ -55,10 +55,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,8 +69,6 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -89,9 +83,9 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
-import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -108,7 +102,6 @@ import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
-import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectQuickLink
 import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -188,32 +181,6 @@ private fun HelpCenterHomeScreen(
   reload: () -> Unit,
 ) {
   when (selectedQuickAction) {
-    is MultiSelectQuickLink -> {
-      var chosenIndex by remember { mutableStateOf<Int?>(null) }
-      val entries = buildList {
-        selectedQuickAction.links.forEachIndexed { index, quickLink ->
-          add(
-            RadioOptionData(
-              id = quickLink.hashCode().toString(),
-              chosenState = if (index == chosenIndex) Chosen else NotChosen,
-              optionText = quickLink.displayName,
-            ),
-          )
-        }
-      }
-      SingleSelectDialog(
-        onDismissRequest = onDismissQuickActionDialog,
-        title = stringResource(id = selectedQuickAction.titleRes),
-        optionsList = entries,
-        onSelected = { data ->
-          val chosen = entries.indexOf(data)
-          chosenIndex = chosen
-          onDismissQuickActionDialog()
-          onNavigateToQuickLink(selectedQuickAction.links[chosen].quickLinkDestination)
-        },
-      )
-    }
-
     is StandaloneQuickLink -> {
       LaunchedEffect(Unit) {
         onDismissQuickActionDialog()
@@ -234,44 +201,19 @@ private fun HelpCenterHomeScreen(
         Column(Modifier.verticalScroll(rememberScrollState())) {
           var selectedIndex by remember { mutableStateOf<Int?>(null) }
           Spacer(Modifier.height(24.dp))
-          selectedQuickAction.links.forEachIndexed { index, standaloneQuickLink ->
-            val voiceoverDescription = "${stringResource(
-              standaloneQuickLink.titleRes,
-            )}, ${stringResource(
-              standaloneQuickLink.hintTextRes,
-            )}, ${stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_CHOOSE)}"
-            RadioOptionRightAligned(
-              modifier = Modifier.clearAndSetSemantics {
-                // had to do that, it didn't grip on role.RadioButton any other way,
-                // just skipped somehow top level composable modifier and its role as RadioButton.
-                contentDescription = voiceoverDescription
-                role = Role.RadioButton
-              },
-              chosenState = if (index == selectedIndex) Chosen else NotChosen,
-              onClick = {
-                selectedIndex = index
-              },
-              optionContent = {
-                Column {
-                  HedvigText(
-                    text = stringResource(
-                      standaloneQuickLink.titleRes,
-                    ),
-                  )
-                  HedvigText(
-                    text = stringResource(
-                      standaloneQuickLink.hintTextRes,
-                    ),
-                    color = HedvigTheme.colorScheme.textSecondary,
-                    style = HedvigTheme.typography.label,
-                  )
-                }
-              },
-            )
-            if (index != selectedQuickAction.links.lastIndex) {
-              Spacer(Modifier.height(4.dp))
-            }
-          }
+          RadioGroup(
+            options = selectedQuickAction.links.mapIndexed { index, link ->
+              RadioOption(
+                id = RadioOptionId(index.toString()),
+                text = stringResource(link.titleRes),
+                label = stringResource(link.hintTextRes),
+              )
+            },
+            selectedOption = selectedIndex?.let { RadioOptionId(it.toString()) },
+            onRadioOptionSelected = {
+              selectedIndex = it.id.toInt()
+            },
+          )
           Spacer(Modifier.height(16.dp))
           HedvigButton(
             text = stringResource(R.string.general_continue_button),
@@ -960,15 +902,6 @@ private class QuickLinkUiStatePreviewProvider :
                 ),
               )
             },
-          )
-          add(
-            HelpCenterUiState.QuickLink(
-              MultiSelectQuickLink(
-                R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                emptyList(),
-              ),
-            ),
           )
         }.toNonEmptyListOrNull()!!,
       ),

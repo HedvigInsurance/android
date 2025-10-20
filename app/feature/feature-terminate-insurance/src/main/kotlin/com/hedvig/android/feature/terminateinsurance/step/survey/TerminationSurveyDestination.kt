@@ -47,8 +47,10 @@ import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
@@ -202,24 +204,22 @@ private fun TerminationSurveyScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          for (reason in uiState.reasons) {
+        RadioGroup(
+          options = uiState.reasons.map { reason ->
             RadioOption(
-              optionText = reason.title,
-              chosenState = if (uiState.selectedOption == reason) Chosen else NotChosen,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              onClick = {
-                if (!reason.isDisabled) {
-                  selectOption(reason)
-                }
-              },
-              lockedState = if (reason.isDisabled) Locked else NotLocked,
-              radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+              id = RadioOptionId(reason.id),
+              text = reason.title,
             )
-          }
-        }
+          },
+          selectedOption = uiState.selectedOptionId?.let { RadioOptionId(it) },
+          onRadioOptionSelected = {id ->
+            selectOption(uiState.reasons.first { it.id == id.id })
+          },
+          disabledOptions = uiState.reasons.filter { it.isDisabled }.map { RadioOptionId(it.id) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
         SelectedSurveyInfoBox(
           selectedOption = uiState.selectedOption,
           actionButtonLoading = uiState.actionButtonLoading,
@@ -373,7 +373,9 @@ private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
       stringResource(R.string.general_close_button),
       onClick = closeEmptyQuotesDialog,
       buttonSize = Large,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }

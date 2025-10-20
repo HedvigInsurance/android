@@ -15,10 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.Checkbox
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.CheckboxGroup
+import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -28,6 +26,8 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -99,29 +99,26 @@ private fun TravelCertificateTravellersInput(
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(16.dp))
           Checkbox(
-            optionText = uiState.memberFullName,
-            chosenState = if (uiState.isMemberIncluded) Chosen else NotChosen,
+            option = CheckboxOption(uiState.memberFullName),
+            selected = uiState.isMemberIncluded,
+            onCheckboxSelected = changeMemberChecked,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-            onClick = changeMemberChecked,
-            checkboxStyle = CheckboxStyle.Default,
-            checkboxSize = Large,
           )
-          for (coInsured in uiState.coInsuredList) {
-            Spacer(Modifier.height(4.dp))
-
-            Checkbox(
-              optionText = coInsured.name,
-              chosenState = if (coInsured.isIncluded) Chosen else NotChosen,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              onClick = { changeCoInsuredChecked(coInsured) },
-              checkboxStyle = CheckboxStyle.Default,
-              checkboxSize = Large,
-            )
-          }
+          Spacer(Modifier.height(4.dp))
+          CheckboxGroup(
+            options = uiState.coInsuredList.map { coInsured ->
+              RadioOption(RadioOptionId(coInsured.id.value), coInsured.name)
+            },
+            selectedOptions = uiState.coInsuredList.filter { it.isIncluded }.map { RadioOptionId(it.id.value) },
+            onRadioOptionSelected = {
+              changeCoInsuredChecked(uiState.coInsuredList.first { it.id.value == it.id.value })
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
           if (uiState.coInsuredHasMissingInfo) {
             Spacer(Modifier.height(16.dp))
             HedvigNotificationCard(
