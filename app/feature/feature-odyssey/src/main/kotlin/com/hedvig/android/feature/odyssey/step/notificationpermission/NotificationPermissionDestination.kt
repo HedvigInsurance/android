@@ -84,14 +84,6 @@ private fun NotificationPermissionScreen(
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.weight(1f))
-    if (notificationPermissionState.status.isGranted.not()) {
-      HedvigTextButton(
-        onClick = onNotificationPermissionDecided,
-        text = stringResource(R.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
-        modifier = sideSpacingModifier.fillMaxWidth(),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
     val bottomButton: Pair<String, () -> Unit> = when (notificationPermissionState.status) {
       is Granted -> {
         stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
@@ -110,6 +102,14 @@ private fun NotificationPermissionScreen(
       enabled = true,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
+    if (notificationPermissionState.status.isGranted.not()) {
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        onClick = onNotificationPermissionDecided,
+        text = stringResource(R.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
+        modifier = sideSpacingModifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }

@@ -292,6 +292,7 @@
   <string name="FOREVER_TAB_TOTAL_DISCOUNT_LABEL">Total</string>
   <string name="FULL_NAME_TEXT">Full Name</string>
   <string name="GENERAL.ARE_YOU_SURE">Are you sure?</string>
+  <string name="GENERAL.EDIT">Edit</string>
   <string name="GENERAL.EMAIL">team@hedvig.com</string>
   <string name="GENERAL.ERROR_BODY">We were unable to load this information. Check your internet connection and try again.</string>
   <string name="GENERAL.NO">No</string>
@@ -670,6 +671,8 @@
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
   <string name="TALKBACK_PRICE">Price</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR code</string>
+  <string name="TALKBACK_RECORDING_DURATION">Recording duration: %1$s</string>
+  <string name="TALKBACK_RECORDING_NOW">Recording now. Double tap to stop.</string>
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Select one category to continue</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Swedish kronas</string>
   <string name="TALKBACK_TAKE_PHOTO">Take a photo</string>

@@ -28,7 +28,8 @@ import kotlin.math.sqrt
 fun RecordingAmplitudeIndicator(amplitude: Int, modifier: Modifier = Modifier) {
   val color = LocalContentColor.current.copy(alpha = 0.12f)
   val animated by animateIntAsState(
-    targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(1000),
+    targetValue = (sqrt(amplitude.toDouble()).toInt() * 10)
+      .coerceAtMost(300),
     animationSpec = spring(
       stiffness = Spring.StiffnessLow,
     ),
