@@ -50,8 +50,6 @@ import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_BRF
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
@@ -73,7 +71,10 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.movingflow.data.AddonId
@@ -300,7 +301,7 @@ private fun CoverageCard(
         ) { onDismissRequest ->
           CoverageChoiceDialogContent(
             coverageOptions = tiersInfo.coverageOptions,
-            initiallyChosenItemIndex = chosenCoverageItemIndex,
+            chosenItemIndex = chosenCoverageItemIndex,
             onDismissRequest = onDismissRequest,
             isPremiumPriceExact = false,
             onItemSelected = {
@@ -343,7 +344,7 @@ private fun CoverageCard(
                   },
                 )
               },
-              initiallyChosenItemIndex = chosenItemIndex,
+              chosenItemIndex = chosenItemIndex,
               isPremiumPriceExact = true,
               onDismissRequest = onDismissRequest,
               onItemSelected = {
@@ -376,7 +377,7 @@ private fun CoverageCard(
             ) { onDismissRequest ->
               DeductibleChoiceDialogContent(
                 deductibleOptions = deductibleOptions.deductibleOptions,
-                initiallyChosenItemIndex = chosenDeductibleItemIndex,
+                chosenItemIndex = chosenDeductibleItemIndex,
                 onDismissRequest = onDismissRequest,
                 onItemSelected = {
                   onSelectDeductibleOption(deductibleOptions.deductibleOptions[it].homeQuoteId)
@@ -437,79 +438,119 @@ private fun CoverageCard(
 @Composable
 private fun CoverageChoiceDialogContent(
   coverageOptions: List<CoverageInfo>,
-  initiallyChosenItemIndex: Int?,
+  chosenItemIndex: Int?,
   isPremiumPriceExact: Boolean,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
 ) {
+  var dialogLocalChosenItemIndex by remember { mutableStateOf(chosenItemIndex) }
   CommonChoiceDialogContent(
     firstText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
     secondText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
-    radioOptions = coverageOptions.map {
-      RadioOptionCoverageInfo(
-        it.tierName,
-        stringResource(
-          if (isPremiumPriceExact) {
-            R.string.TIER_FLOW_PRICE_LABEL_CURRENCY
-          } else {
-            R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
-          },
-          it.minimumPremiumForCoverage.toString(),
-        ),
-        it.tierDescription,
+    radioGroup = {
+      RadioGroup(
+        options = coverageOptions.map { coverageInfo ->
+          RadioOption(
+            id = RadioOptionId(coverageInfo.id),
+            text = coverageInfo.tierName,
+            label = coverageInfo.tierDescription,
+          )
+        },
+        selectedOption = dialogLocalChosenItemIndex?.let { RadioOptionId(coverageOptions[it].id) },
+        onRadioOptionSelected = { id ->
+          dialogLocalChosenItemIndex = coverageOptions.indexOfFirst { it.id == id.id }
+        },
+        style = RadioGroupStyle.LeftAligned,
+        textEndContent = { id ->
+          val coverageInfo = coverageOptions.first { it.id == id.id }
+          HighlightLabel(
+            labelText = stringResource(
+              if (isPremiumPriceExact) {
+                R.string.TIER_FLOW_PRICE_LABEL_CURRENCY
+              } else {
+                R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
+              },
+              coverageInfo.minimumPremiumForCoverage.toString(),
+            ),
+            size = HighLightSize.Small,
+            color = HighlightColor.Grey(MEDIUM),
+          )
+        },
       )
     },
-    initiallyChosenItemIndex = initiallyChosenItemIndex,
-    onItemSelected = onItemSelected,
-    onDismissRequest = onDismissRequest,
+    selectedOptionIndex = chosenItemIndex,
+    onConfirm = {
+      onItemSelected(dialogLocalChosenItemIndex!!)
+      onDismissRequest()
+    },
+    onDismissRequest = {
+      onDismissRequest()
+    },
   )
 }
 
 @Composable
 private fun DeductibleChoiceDialogContent(
   deductibleOptions: List<DeductibleOption>,
-  initiallyChosenItemIndex: Int?,
+  chosenItemIndex: Int?,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
 ) {
+  var dialogLocalChosenItemIndex by remember { mutableStateOf(chosenItemIndex) }
   CommonChoiceDialogContent(
     firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
     secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
-    radioOptions = deductibleOptions.map {
-      RadioOptionCoverageInfo(
-        buildString {
-          append(it.deductible.amount.toString())
-          val percentage = it.deductible.percentage
-          if (percentage != null) {
-            append(" + $percentage%")
-          }
+    radioGroup = {
+      RadioGroup(
+        options = deductibleOptions.map { deductibleOption ->
+          RadioOption(
+            id = RadioOptionId(deductibleOption.id),
+            text = buildString {
+              append(deductibleOption.deductible.amount.toString())
+              val percentage = deductibleOption.deductible.percentage
+              if (percentage != null) {
+                append(" + $percentage%")
+              }
+            },
+          )
         },
-        stringResource(R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, it.homeQuotePremium.toString()),
-        null,
+        selectedOption = dialogLocalChosenItemIndex?.let { RadioOptionId(deductibleOptions[it].id) },
+        onRadioOptionSelected = { id ->
+          dialogLocalChosenItemIndex = deductibleOptions.indexOfFirst { it.id == id.id }
+        },
+        style = RadioGroupStyle.LeftAligned,
+        textEndContent = { id ->
+          val deductibleOption = deductibleOptions.first { it.id == id.id }
+          HighlightLabel(
+            labelText = stringResource(
+              R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+              deductibleOption.homeQuotePremium.toString(),
+            ),
+            size = HighLightSize.Small,
+            color = HighlightColor.Grey(MEDIUM),
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+          )
+        },
       )
     },
-    initiallyChosenItemIndex = initiallyChosenItemIndex,
-    onItemSelected = onItemSelected,
+    selectedOptionIndex = chosenItemIndex,
+    onConfirm = {
+      onItemSelected(dialogLocalChosenItemIndex!!)
+      onDismissRequest()
+    },
     onDismissRequest = onDismissRequest,
   )
 }
-
-private data class RadioOptionCoverageInfo(
-  val title: String,
-  val premiumLabel: String,
-  val description: String?,
-)
 
 @Composable
 private fun CommonChoiceDialogContent(
   firstText: String,
   secondText: String,
-  radioOptions: List<RadioOptionCoverageInfo>,
-  initiallyChosenItemIndex: Int?,
-  onItemSelected: (Int) -> Unit,
+  radioGroup: @Composable () -> Unit,
+  selectedOptionIndex: Int?,
+  onConfirm: () -> Unit,
   onDismissRequest: () -> Unit,
 ) {
-  var chosenItemIndex by remember { mutableStateOf(initiallyChosenItemIndex) }
   Column(
     Modifier.verticalScroll(rememberScrollState()),
   ) {
@@ -518,62 +559,14 @@ private fun CommonChoiceDialogContent(
       secondText,
       baseStyle = HedvigTheme.typography.bodySmall,
     )
-    Spacer(Modifier.height(12.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-      Spacer(Modifier.height(12.dp))
-      radioOptions.forEachIndexed { index, option ->
-        RadioOption(
-          chosenState = if (chosenItemIndex == index) Chosen else NotChosen,
-          onClick = {
-            chosenItemIndex = index
-          },
-          optionContent = { radioButtonIcon ->
-            Row {
-              radioButtonIcon()
-              Spacer(Modifier.width(8.dp))
-              Column(Modifier.weight(1f)) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = {
-                    HedvigText(
-                      text = option.title,
-                      modifier = Modifier.wrapContentSize(Alignment.CenterStart),
-                    )
-                  },
-                  endSlot = {
-                    HighlightLabel(
-                      labelText = option.premiumLabel,
-                      size = HighLightSize.Small,
-                      color = HighlightColor.Grey(MEDIUM),
-                      modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-                    )
-                  },
-                  modifier = Modifier.fillMaxWidth(),
-                  spaceBetween = 8.dp,
-                )
-                if (option.description != null) {
-                  HedvigText(
-                    text = option.description,
-                    color = HedvigTheme.colorScheme.textSecondary,
-                    style = HedvigTheme.typography.label,
-                  )
-                }
-              }
-            }
-          },
-        )
-      }
-    }
+    Spacer(Modifier.height(30.dp))
+    radioGroup()
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(R.string.GENERAL_CONFIRM),
-      onClick = {
-        if (chosenItemIndex != null) {
-          onItemSelected(chosenItemIndex!!)
-          onDismissRequest()
-        }
-      },
+      onClick = onConfirm,
       buttonSize = Large,
-      enabled = chosenItemIndex != null,
+      enabled = selectedOptionIndex != null,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
@@ -601,7 +594,7 @@ fun PreviewCoverageChoiceDialogContent() {
         ),
       )
     },
-    initiallyChosenItemIndex = null,
+    chosenItemIndex = null,
     isPremiumPriceExact = false,
     onItemSelected = {},
     onDismissRequest = {},
@@ -619,7 +612,7 @@ fun PreviewDeductibleChoiceDialogContent() {
         deductible = Deductible(UiMoney(it.toDouble(), SEK), 15, "Display text#$it"),
       )
     },
-    initiallyChosenItemIndex = null,
+    chosenItemIndex = null,
     onItemSelected = {},
     onDismissRequest = {},
   )

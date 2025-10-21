@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
+import arrow.core.raise.option
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -73,7 +74,10 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.PerilData
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
@@ -448,18 +452,6 @@ private fun DropdownContent(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val data = addonOptions.map { option ->
-    val pricePerMonth = option.itemCost.monthlyNet.getPerMonthDescription()
-    ExpandedRadioOptionData(
-      chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
-      title = option.displayName,
-      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.itemCost.monthlyNet),
-      onRadioOptionClick = {
-        onChooseOptionInDialog(option)
-      },
-      voiceoverDescription = "${option.displayName}, $pricePerMonth",
-    )
-  }
   Column(
     modifier.verticalScroll(rememberScrollState()),
   ) {
@@ -478,26 +470,27 @@ private fun DropdownContent(
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(24.dp))
-    data.forEachIndexed { index, option ->
-      RadioOption(
-        chosenState = option.chosenState,
-        onClick = option.onRadioOptionClick,
-        optionContent = { radioButtonIcon ->
-          ExpandedOptionContent(
-            title = option.title,
-            premium = option.premium,
-            radioButtonIcon = radioButtonIcon,
-          )
-        },
-        modifier = Modifier.clearAndSetSemantics {
-          contentDescription = option.voiceoverDescription
-          role = Role.RadioButton
-        },
-      )
-      if (index != data.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
-    }
+    RadioGroup(
+      options = addonOptions.map { addonQuote ->
+        RadioOption(
+          id = RadioOptionId(addonQuote.addonId),
+          text = addonQuote.displayName,
+        )
+      },
+      selectedOption = currentlyChosenOptionInDialog?.addonId?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        onChooseOptionInDialog(addonOptions.first { it.addonId == id.id })
+      },
+      style = RadioGroupStyle.LeftAligned,
+      textEndContent = { id ->
+        val addon = addonOptions.first { it.addonId == id.id }
+        HighlightLabel(
+          labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyNet),
+          size = HighLightSize.Small,
+          color = Grey(MEDIUM),
+        )
+      },
+    )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(R.string.ADDON_FLOW_SELECT_BUTTON),

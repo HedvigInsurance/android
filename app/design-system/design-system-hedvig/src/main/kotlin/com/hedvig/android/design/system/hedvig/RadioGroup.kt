@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
@@ -35,7 +37,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
-import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
@@ -85,6 +86,7 @@ fun RadioGroup(
   colors: RadioGroupColors = RadioGroupDefaults.colors,
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
@@ -95,6 +97,7 @@ fun RadioGroup(
     style = spacings,
     disabledOptions = disabledOptions,
     enabled = enabled,
+    textEndContent = textEndContent,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       RadioSelectIndicator(
         selected,
@@ -199,6 +202,7 @@ object RadioGroupDefaults {
       verticalItemSpacing = RadioGroupStyleTokens.VerticalItemSpacing,
       horizontalItemSpacing = RadioGroupStyleTokens.HorizontalItemSpacing,
       containerShape = RadioGroupStyleTokens.ContainerShape.value,
+      textToLabelSpacing = RadioGroupStyleTokens.TextToLabelSpacing,
       textStyle = tokens.TextStyle.value,
       textStyleLabel = tokens.TextStyleLabel.value,
     )
@@ -231,6 +235,7 @@ internal data class RadioGroupStyleInternal(
   val verticalItemSpacing: Dp,
   val horizontalItemSpacing: Dp,
   val containerShape: Shape,
+  val textToLabelSpacing: Dp,
   val textStyle: TextStyle,
   val textStyleLabel: TextStyle,
 )
@@ -246,6 +251,7 @@ private fun RadioGroup(
   modifier: Modifier = Modifier,
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   Box(modifier) {
     if (style.style is RadioGroupStyle.Labeled) {
@@ -279,6 +285,7 @@ private fun RadioGroup(
                       style = style,
                       interactionSource = interactionSource,
                       selectIndicator = selectIndicator,
+                      textEndContent = textEndContent,
                       modifier = Modifier.optionSelectable(
                         onRadioOptionSelected = onRadioOptionSelected,
                         radioOptionId = option.id,
@@ -303,6 +310,7 @@ private fun RadioGroup(
                     colors = colors,
                     style = style,
                     selectIndicator = selectIndicator,
+                    textEndContent = textEndContent,
                     modifier = Modifier
                       .fillMaxWidth()
                       .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
@@ -331,6 +339,7 @@ private fun RadioGroup(
           colors = colors,
           style = style,
           selectIndicator = selectIndicator,
+          textEndContent = textEndContent,
           modifier = Modifier
             .fillMaxWidth()
             .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
@@ -422,6 +431,7 @@ private fun RadioOption(
   selectIndicator: SelectIndicator,
   modifier: Modifier = Modifier,
   interactionSource: MutableInteractionSource? = null,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   Row(
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -439,8 +449,20 @@ private fun RadioOption(
         selectIndicator(selected, enabled, colors, interactionSource)
       }
       Column {
-        HedvigText(option.text, style = style.textStyle, color = colors.textColor)
+        val textComposable: @Composable () -> Unit = {
+          HedvigText(option.text, style = style.textStyle, color = colors.textColor)
+        }
+        if (textEndContent != null) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            startSlot = { textComposable() },
+            endSlot = { Box(Modifier.wrapContentSize(Alignment.TopEnd)) { textEndContent(option.id) } },
+            spaceBetween = style.horizontalItemSpacing,
+          )
+        } else {
+          textComposable()
+        }
         if (option.label != null) {
+          Spacer(Modifier.height(style.textToLabelSpacing))
           HedvigText(option.label, style = style.textStyleLabel, color = colors.labelTextColor)
         }
       }
@@ -456,7 +478,7 @@ private typealias SelectIndicator = @Composable (
   selected: Boolean,
   enabled: Boolean,
   colors: RadioGroupColors,
-  interactionSource: MutableInteractionSource?
+  interactionSource: MutableInteractionSource?,
 ) -> Unit
 
 @Composable
@@ -528,7 +550,7 @@ private fun CheckboxSelectIndicator(
       drawOutline(
         color = colors.indicatorColor,
         outline = shape.createOutline(size, layoutDirection, this),
-        style = Stroke(width = 4.dp.toPx())
+        style = Stroke(width = 4.dp.toPx()),
       )
     } else {
       val color = if (enabled) {
@@ -566,7 +588,7 @@ private fun RadioOptionIcon(iconResource: IconResource) {
 }
 
 private val RadioGroupStyle.leftAlignedIndicator: Boolean
-  get() = this == RadioGroupStyle.LeftAligned || this is RadioGroupStyle.Labeled.HorizontalFlow
+  get() = this is RadioGroupStyle.LeftAligned || this is RadioGroupStyle.Labeled.HorizontalFlow
 
 private val RadioOption.hasLabel: Boolean
   get() = label != null
@@ -587,6 +609,7 @@ internal object RadioGroupStyleTokens {
   val FlowLabelSpacing: Dp = 16.dp
   val VerticalItemSpacing: Dp = 4.dp
   val HorizontalItemSpacing: Dp = 8.dp
+  val TextToLabelSpacing: Dp = 4.dp
   val ContainerShape: ShapeKeyTokens = ShapeKeyTokens.CornerLarge
 }
 

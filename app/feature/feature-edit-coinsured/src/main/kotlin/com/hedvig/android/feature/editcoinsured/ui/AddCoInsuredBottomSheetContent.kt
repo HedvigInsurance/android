@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
-import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -54,7 +53,9 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
@@ -182,14 +183,19 @@ internal fun SelectableCoInsuredList(
   onAddNewCoInsured: () -> Unit,
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
-  selectableCoInsured.forEach {
-    SelectableHedvigCard(
-      text = it.displayName,
-      isSelected = it == selectedCoInsured,
-      onClick = { onCoInsuredSelected(it) },
-    )
-    Spacer(Modifier.height(4.dp))
-  }
+  RadioGroup(
+    options = selectableCoInsured.map { coInsured ->
+      RadioOption(
+        id = RadioOptionId(coInsured.id),
+        text = coInsured.displayName,
+      )
+    },
+    selectedOption = selectedCoInsured?.id?.let { RadioOptionId(it) },
+    onRadioOptionSelected = { id ->
+      onCoInsuredSelected(selectableCoInsured.first { it.id == id.id })
+    },
+  )
+  Spacer(Modifier.height(4.dp))
   AnimatedVisibility(visible = errorMessage != null) {
     HedvigNotificationCard(
       message = errorMessage ?: "",
@@ -202,19 +208,6 @@ internal fun SelectableCoInsuredList(
     onClick = { onAddNewCoInsured() },
     modifier = Modifier.fillMaxWidth(),
   )
-}
-
-@Composable
-private fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () -> Unit) {
-  RadioOption(
-    chosenState = if (isSelected) ChosenState.Chosen else ChosenState.NotChosen,
-    onClick = onClick,
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    HedvigText(
-      text = text,
-    )
-  }
 }
 
 @Composable
