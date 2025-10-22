@@ -67,7 +67,9 @@ val terminateInsuranceModule = module {
   }
 
   viewModel<DeflectAutoDecomStepViewModel> {
-    DeflectAutoDecomStepViewModel()
+    DeflectAutoDecomStepViewModel(
+      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+    )
   }
 
   single<TerminateInsuranceRepository> {

@@ -55,6 +55,8 @@ internal sealed interface DeflectAutoDecomUiState {
   data class Success(
     val nextStep: TerminateInsuranceStep? = null
   ) : DeflectAutoDecomUiState
+
+  data object Failure: DeflectAutoDecomUiState
 }
 
 internal sealed interface DeflectAutoDecomEvent {
