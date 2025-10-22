@@ -43,44 +43,6 @@ import com.hedvig.android.design.system.hedvig.tokens.RadioGroupColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupSizeTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupStyleTokens
 
-data class RadioOption(
-  val id: RadioOptionId,
-  val text: String,
-  val label: String? = null,
-  val iconResource: IconResource? = null,
-)
-
-data class CheckboxOption(
-  val text: String,
-  val label: String? = null,
-  val iconResource: IconResource? = null,
-)
-
-@JvmInline
-value class RadioOptionId(val id: String)
-
-enum class RadioGroupSize {
-  Large,
-  Medium,
-  Small,
-}
-
-sealed interface RadioGroupStyle {
-  data object Vertical : RadioGroupStyle
-
-  data object LeftAligned : RadioGroupStyle
-
-  data object Horizontal : RadioGroupStyle
-
-  sealed interface Labeled : RadioGroupStyle {
-    val label: String
-
-    data class HorizontalFlow(override val label: String) : Labeled
-
-    data class VerticalWithDivider(override val label: String) : Labeled
-  }
-}
-
 @Composable
 fun RadioGroup(
   options: List<RadioOption>,
@@ -103,6 +65,7 @@ fun RadioGroup(
     style = spacings,
     disabledOptions = disabledOptions,
     enabled = enabled,
+    role = Role.RadioButton,
     textEndContent = textEndContent,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       RadioSelectIndicator(
@@ -162,6 +125,7 @@ fun CheckboxGroup(
     style = spacings,
     disabledOptions = disabledOptions,
     enabled = enabled,
+    role = Role.Checkbox,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       CheckboxSelectIndicator(
         selected = selected,
@@ -173,6 +137,44 @@ fun CheckboxGroup(
     },
     modifier = modifier,
   )
+}
+
+data class RadioOption(
+  val id: RadioOptionId,
+  val text: String,
+  val label: String? = null,
+  val iconResource: IconResource? = null,
+)
+
+data class CheckboxOption(
+  val text: String,
+  val label: String? = null,
+  val iconResource: IconResource? = null,
+)
+
+@JvmInline
+value class RadioOptionId(val id: String)
+
+enum class RadioGroupSize {
+  Large,
+  Medium,
+  Small,
+}
+
+sealed interface RadioGroupStyle {
+  data object Vertical : RadioGroupStyle
+
+  data object LeftAligned : RadioGroupStyle
+
+  data object Horizontal : RadioGroupStyle
+
+  sealed interface Labeled : RadioGroupStyle {
+    val label: String
+
+    data class HorizontalFlow(override val label: String) : Labeled
+
+    data class VerticalWithDivider(override val label: String) : Labeled
+  }
 }
 
 object RadioGroupDefaults {
@@ -258,6 +260,7 @@ private fun RadioGroup(
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
   selectIndicator: SelectIndicator,
+  role: Role,
   modifier: Modifier = Modifier,
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
@@ -301,6 +304,7 @@ private fun RadioGroup(
                         radioOptionId = option.id,
                         selected = selected,
                         enabled = enabled,
+                        role = role,
                         indication = noopRipple(),
                         interactionSource = interactionSource,
                       ),
@@ -323,7 +327,7 @@ private fun RadioGroup(
                     textEndContent = textEndContent,
                     modifier = Modifier
                       .fillMaxWidth()
-                      .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
+                      .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
                       .horizontalDivider(DividerPosition.Top, show = index != 0)
                       .optionPaddings(style, option.hasLabel),
                   )
@@ -352,7 +356,7 @@ private fun RadioGroup(
           textEndContent = textEndContent,
           modifier = Modifier
             .fillMaxWidth()
-            .optionSelectable(onRadioOptionSelected, option.id, selected, enabled)
+            .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
             .optionPaddings(style, option.hasLabel),
         )
       }
@@ -412,6 +416,7 @@ private fun Modifier.optionSelectable(
   radioOptionId: RadioOptionId,
   selected: Boolean,
   enabled: Boolean,
+  role: Role,
   interactionSource: MutableInteractionSource? = null,
   indication: Indication? = null,
 ): Modifier {
@@ -421,7 +426,7 @@ private fun Modifier.optionSelectable(
     indication = indication ?: LocalIndication.current,
     onClick = { onRadioOptionSelected(radioOptionId) },
     enabled = enabled,
-    role = Role.RadioButton,
+    role = role,
   )
 }
 
