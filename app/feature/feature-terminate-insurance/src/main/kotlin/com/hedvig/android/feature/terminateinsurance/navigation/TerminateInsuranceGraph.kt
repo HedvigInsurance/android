@@ -259,7 +259,16 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
     navdestination<TerminateInsuranceDestination.DeflectAutoDecom> {
       val viewModel: DeflectAutoDecomStepViewModel = koinViewModel()
-      DeflectAutoDecomStepDestination(viewModel)
+      DeflectAutoDecomStepDestination(
+        viewModel = viewModel,
+        closeTerminationFlow = closeTerminationFlow,
+        navigateUp = navigator::navigateUp,
+        onContinueTermination = { step ->
+          navigator.navigateToTerminateFlowDestination(
+            destination = step.toTerminateInsuranceDestination(commonParams),
+          )
+        },
+      )
     }
   }
 }
@@ -273,7 +282,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
-      -> {
+        -> {
         typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }

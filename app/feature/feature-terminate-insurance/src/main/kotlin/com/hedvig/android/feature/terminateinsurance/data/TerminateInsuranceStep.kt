@@ -242,7 +242,9 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
 
     is TerminateInsuranceStep.DeflectAutoCancelStep -> TerminateInsuranceDestination.DeflectAutoCancel(message)
 
-    is TerminateInsuranceStep.DeflectAutoDecomStep -> TerminateInsuranceDestination.DeflectAutoDecom
+    is TerminateInsuranceStep.DeflectAutoDecomStep -> TerminateInsuranceDestination.DeflectAutoDecom(
+      commonParams = commonParams,
+    )
   }
 }
 
