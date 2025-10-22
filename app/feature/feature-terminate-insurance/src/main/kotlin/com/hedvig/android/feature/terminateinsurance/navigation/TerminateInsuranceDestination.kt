@@ -134,7 +134,13 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class DeflectAutoDecom(
     val commonParams: TerminationGraphParameters,
-  ) : TerminateInsuranceDestination, Destination
+  ) : TerminateInsuranceDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<TerminationGraphParameters>(),
+      )
+    }
+  }
 }
 
 @Serializable

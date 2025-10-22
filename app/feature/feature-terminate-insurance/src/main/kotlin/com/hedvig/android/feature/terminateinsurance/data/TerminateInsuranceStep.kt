@@ -232,7 +232,7 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       )
     }
 
-    is TerminateInsuranceStep.InsuranceDeletion -> TerminateInsuranceDestination.InsuranceDeletion(
+    is TerminateInsuranceStep.InsuranceDeletion -> InsuranceDeletion(
       commonParams = commonParams,
       extraCoverageItems = extraCoverageItems,
     )
@@ -241,16 +241,16 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       terminationDate = terminationDate,
     )
 
-    is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
+    is TerminateInsuranceStep.UnknownStep -> UnknownScreen
 
     is TerminateInsuranceStep.Survey -> TerminationSurveyFirstStep(
       options = options,
       commonParams = commonParams,
     )
 
-    is TerminateInsuranceStep.DeflectAutoCancelStep -> TerminateInsuranceDestination.DeflectAutoCancel(message)
+    is TerminateInsuranceStep.DeflectAutoCancelStep -> DeflectAutoCancel(message)
 
-    is TerminateInsuranceStep.DeflectAutoDecomStep -> TerminateInsuranceDestination.DeflectAutoDecom(
+    is TerminateInsuranceStep.DeflectAutoDecomStep -> DeflectAutoDecom(
       commonParams = commonParams,
     )
   }
