@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.*
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -46,6 +47,10 @@ internal sealed interface TerminateInsuranceStep {
    * screen
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
+
+  data class DeflectAutoCancelStep(val message: String): TerminateInsuranceStep
+
+  data class DeflectAutoDecomStep(val message: String): TerminateInsuranceStep
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -208,10 +213,10 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
 ): Destination {
   return when (this) {
-    is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
+    is TerminateInsuranceStep.Failure -> TerminationFailure(message)
 
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
-      TerminateInsuranceDestination.TerminationDate(
+      TerminationDate(
         minDate = minDate,
         maxDate = maxDate,
         extraCoverageItems = extraCoverageItems,
@@ -224,16 +229,20 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       extraCoverageItems = extraCoverageItems,
     )
 
-    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminateInsuranceDestination.TerminationSuccess(
+    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminationSuccess(
       terminationDate = terminationDate,
     )
 
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
 
-    is TerminateInsuranceStep.Survey -> TerminateInsuranceDestination.TerminationSurveyFirstStep(
+    is TerminateInsuranceStep.Survey -> TerminationSurveyFirstStep(
       options = options,
       commonParams = commonParams,
     )
+
+    is TerminateInsuranceStep.DeflectAutoCancelStep -> TerminateInsuranceDestination.DeflectAutoCancel(message)
+
+    is TerminateInsuranceStep.DeflectAutoDecomStep -> TerminateInsuranceDestination.DeflectAutoDecom
   }
 }
 

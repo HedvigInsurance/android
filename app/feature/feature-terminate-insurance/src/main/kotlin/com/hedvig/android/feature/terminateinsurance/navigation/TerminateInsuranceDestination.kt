@@ -125,6 +125,12 @@ internal sealed interface TerminateInsuranceDestination {
 
   @Serializable
   data object UnknownScreen : TerminateInsuranceDestination, Destination
+
+  @Serializable
+  data class DeflectAutoCancel(val message: String) : TerminateInsuranceDestination, Destination
+
+  @Serializable
+  data object DeflectAutoDecom : TerminateInsuranceDestination, Destination
 }
 
 @Serializable

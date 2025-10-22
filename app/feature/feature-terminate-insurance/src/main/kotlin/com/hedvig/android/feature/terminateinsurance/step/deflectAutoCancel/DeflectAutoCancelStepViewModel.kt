@@ -5,12 +5,16 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
-internal class DeflectAutoCancelStepViewModel : MoleculeViewModel<DeflectAutoCancelEvent, DeflectAutoCancelUiState>(
+internal class DeflectAutoCancelStepViewModel(
+  val message: String
+) : MoleculeViewModel<DeflectAutoCancelEvent, DeflectAutoCancelUiState>(
   initialState = DeflectAutoCancelUiState.Loading,
-  presenter = DeflectAutoCancelStepPresenter(),
+  presenter = DeflectAutoCancelStepPresenter(message),
 )
 
-private class DeflectAutoCancelStepPresenter() : MoleculePresenter<DeflectAutoCancelEvent, DeflectAutoCancelUiState> {
+private class DeflectAutoCancelStepPresenter(
+ private val message: String
+) : MoleculePresenter<DeflectAutoCancelEvent, DeflectAutoCancelUiState> {
   @Composable
   override fun MoleculePresenterScope<DeflectAutoCancelEvent>.present(
     lastState: DeflectAutoCancelUiState,
