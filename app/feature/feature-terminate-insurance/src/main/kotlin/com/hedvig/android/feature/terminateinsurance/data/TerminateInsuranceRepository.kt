@@ -34,6 +34,8 @@ internal interface TerminateInsuranceRepository {
   suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
 
   suspend fun getContractId(): String
+
+  suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
@@ -116,5 +118,20 @@ internal class TerminateInsuranceRepositoryImpl(
 
   override suspend fun getContractId(): String {
     return terminationFlowContextStorage.getContractId()
+  }
+
+  override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
+    // todo: wait for api
+//    val result = apolloClient
+//      .mutation(FlowTerminationCarAutoDecomNextMutation(
+//        context= terminationFlowContextStorage.getContext(),
+//        input = true
+//      ))
+//      .safeExecute(::ErrorMessage)
+//      .bind()
+//      .flowTerminationCarAutoDecomNext
+//    terminationFlowContextStorage.saveContext(result.context)
+//    result.currentStep.toTerminateInsuranceStep()
+    return either { raise(ErrorMessage()) }
   }
 }

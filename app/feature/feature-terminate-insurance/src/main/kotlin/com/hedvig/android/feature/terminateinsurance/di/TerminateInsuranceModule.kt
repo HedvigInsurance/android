@@ -62,7 +62,7 @@ val terminateInsuranceModule = module {
   }
   viewModel<DeflectAutoCancelStepViewModel> { params ->
     DeflectAutoCancelStepViewModel(
-      params.get<String>()
+      params.get<String>(),
     )
   }
 
@@ -85,5 +85,4 @@ val terminateInsuranceModule = module {
   single<TerminationFlowContextStorage> {
     TerminationFlowContextStorage(datastore = get<DataStore<Preferences>>())
   }
-
 }

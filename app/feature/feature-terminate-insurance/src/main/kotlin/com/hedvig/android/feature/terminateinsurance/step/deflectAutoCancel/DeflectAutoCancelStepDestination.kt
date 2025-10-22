@@ -36,7 +36,6 @@ internal fun DeflectAutoCancelStepDestination(
       navigateUp = navigateUp,
     )
   }
-
 }
 
 @Composable
@@ -57,13 +56,17 @@ private fun DeflectAutoCancelScreen(
     )
 
     Spacer(Modifier.height(16.dp))
-    HedvigText(uiState.message,
+    HedvigText(
+      uiState.message,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      modifier = Modifier.padding(horizontal = 16.dp))
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(id = R.string.TERMINATION_FLOW_AUTO_CANCEL_ABOUT),
+    HedvigText(
+      stringResource(id = R.string.TERMINATION_FLOW_AUTO_CANCEL_ABOUT),
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      modifier = Modifier.padding(horizontal = 16.dp))
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -75,10 +78,12 @@ private fun DeflectAutoCancelScreen(
       onClick = closeTerminationFlow,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigTextButton(text = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+    HedvigTextButton(
+      text = stringResource(R.string.DASHBOARD_OPEN_CHAT),
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp),) {
+        .padding(horizontal = 16.dp),
+    ) {
       onNavigateToNewConversation()
     }
     Spacer(Modifier.height(16.dp))

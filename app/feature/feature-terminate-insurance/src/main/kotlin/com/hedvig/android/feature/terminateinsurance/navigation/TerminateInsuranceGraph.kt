@@ -282,7 +282,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
-        -> {
+      -> {
         typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }

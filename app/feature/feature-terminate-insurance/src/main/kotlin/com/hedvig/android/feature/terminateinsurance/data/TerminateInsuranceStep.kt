@@ -48,9 +48,9 @@ internal sealed interface TerminateInsuranceStep {
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 
-  data class DeflectAutoCancelStep(val message: String): TerminateInsuranceStep
+  data class DeflectAutoCancelStep(val message: String) : TerminateInsuranceStep
 
-  data class DeflectAutoDecomStep(val message: String): TerminateInsuranceStep
+  data object DeflectAutoDecomStep : TerminateInsuranceStep
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -77,6 +77,14 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
         options.toOptionList(),
       )
     }
+
+    // todo: add
+    // is TerminationFlowStepFragment.FlowTerminationCarAutoDecomStep -> {
+    // TerminateInsuranceStep.DeflectAutoDecomStep
+    // }
+    // is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStep -> {
+    // TerminateInsuranceStep.DeflectAutoCancelStep(message)
+    // }
 
     else -> TerminateInsuranceStep.UnknownStep()
   }
