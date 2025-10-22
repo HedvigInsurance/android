@@ -1,12 +1,21 @@
 package com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
-internal class DeflectAutoDecomStepViewModel : MoleculeViewModel<DeflectAutoDecomEvent, DeflectAutoDecomUiState>(
+internal class DeflectAutoDecomStepViewModel(
+  terminateInsuranceRepository: TerminateInsuranceRepository,
+) : MoleculeViewModel<DeflectAutoDecomEvent, DeflectAutoDecomUiState>(
   initialState = DeflectAutoDecomUiState.Loading,
   presenter = DeflectAutoDecomStepPresenter(),
 )
@@ -16,7 +25,24 @@ private class DeflectAutoDecomStepPresenter() : MoleculePresenter<DeflectAutoDec
   override fun MoleculePresenterScope<DeflectAutoDecomEvent>.present(
     lastState: DeflectAutoDecomUiState,
   ): DeflectAutoDecomUiState {
-    TODO("Not yet implemented")
+    var loadIteration by remember { mutableIntStateOf(0) }
+    var currentState by remember {
+      mutableStateOf(lastState)
+    }
+    CollectEvents { event ->
+      when (event) {
+        DeflectAutoDecomEvent.ClearTerminationStep -> TODO()
+        DeflectAutoDecomEvent.FetchNextStep -> TODO()
+        DeflectAutoDecomEvent.RetryLoadData -> TODO()
+      }
+    }
+    LaunchedEffect(loadIteration) {
+      if (loadIteration>0) {
+
+      }
+
+    }
+    return currentState
   }
 }
 
