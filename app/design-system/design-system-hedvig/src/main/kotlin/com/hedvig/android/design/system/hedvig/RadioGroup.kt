@@ -60,17 +60,23 @@ data class CheckboxOption(
 value class RadioOptionId(val id: String)
 
 enum class RadioGroupSize {
-  Large, Medium, Small,
+  Large,
+  Medium,
+  Small,
 }
 
 sealed interface RadioGroupStyle {
   data object Vertical : RadioGroupStyle
+
   data object LeftAligned : RadioGroupStyle
+
   data object Horizontal : RadioGroupStyle
+
   sealed interface Labeled : RadioGroupStyle {
     val label: String
 
     data class HorizontalFlow(override val label: String) : Labeled
+
     data class VerticalWithDivider(override val label: String) : Labeled
   }
 }

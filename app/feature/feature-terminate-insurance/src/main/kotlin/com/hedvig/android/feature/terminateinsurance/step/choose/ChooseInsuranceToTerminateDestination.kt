@@ -135,7 +135,7 @@ private fun ChooseInsuranceToTerminateScreen(
             RadioOption(
               id = RadioOptionId(insurance.id),
               text = insurance.displayName,
-              label = insurance.contractExposure
+              label = insurance.contractExposure,
             )
           },
           selectedOption = uiState.selectedInsurance?.id?.let { RadioOptionId(it) },

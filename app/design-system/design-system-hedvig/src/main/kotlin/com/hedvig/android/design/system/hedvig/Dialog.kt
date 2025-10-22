@@ -154,7 +154,7 @@ fun MultiSelectDialog(
     ),
   ) {
     CheckboxGroup(
-      options= options,
+      options = options,
       selectedOptions = selectedOptions,
       onRadioOptionSelected = onOptionSelected,
     )

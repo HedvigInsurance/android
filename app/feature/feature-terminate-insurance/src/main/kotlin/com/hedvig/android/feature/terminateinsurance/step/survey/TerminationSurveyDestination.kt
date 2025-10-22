@@ -207,7 +207,7 @@ private fun TerminationSurveyScreen(
             )
           },
           selectedOption = uiState.selectedOptionId?.let { RadioOptionId(it) },
-          onRadioOptionSelected = {id ->
+          onRadioOptionSelected = { id ->
             selectOption(uiState.reasons.first { it.id == id.id })
           },
           disabledOptions = uiState.reasons.filter { it.isDisabled }.map { RadioOptionId(it.id) },

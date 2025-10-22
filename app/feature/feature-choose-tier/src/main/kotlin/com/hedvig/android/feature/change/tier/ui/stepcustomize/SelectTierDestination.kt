@@ -494,7 +494,7 @@ private fun QuoteDeductibleRadioGroup(
       RadioOption(
         id = RadioOptionId(quote.id),
         text = deductible.optionText,
-        label = deductible.description.takeIf { it.isNotEmpty() }
+        label = deductible.description.takeIf { it.isNotEmpty() },
       )
     },
     selectedOption = chosenQuoteInDialog?.id?.let { RadioOptionId(it) },

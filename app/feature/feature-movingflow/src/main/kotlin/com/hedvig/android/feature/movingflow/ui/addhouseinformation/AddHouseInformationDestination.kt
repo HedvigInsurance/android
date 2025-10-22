@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.movingflow.ui.addhouseinformation
 
-import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +62,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
@@ -392,7 +392,9 @@ private fun ExtraBuildingsDialogContent(
             },
             selectedOption = chosenBuilding?.name?.let { RadioOptionId(it) },
             onRadioOptionSelected = { chosenBuilding = MoveExtraBuildingType.valueOf(it.id) },
-            style = RadioGroupStyle.Labeled.VerticalWithDivider(stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE)),
+            style = RadioGroupStyle.Labeled.VerticalWithDivider(
+              stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+            ),
           )
         }
         HedvigTextField(

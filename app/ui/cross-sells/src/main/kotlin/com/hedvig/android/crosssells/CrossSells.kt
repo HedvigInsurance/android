@@ -358,10 +358,7 @@ private fun RecommendationSection(
 }
 
 @Composable
-private fun StackedPillows(
-  recommendedCrossSell: RecommendedCrossSell,
-  imageLoader: ImageLoader,
-) {
+private fun StackedPillows(recommendedCrossSell: RecommendedCrossSell, imageLoader: ImageLoader) {
   Row(
     horizontalArrangement = Arrangement.spacedBy((-43).dp, Alignment.CenterHorizontally),
     verticalAlignment = Alignment.CenterVertically,

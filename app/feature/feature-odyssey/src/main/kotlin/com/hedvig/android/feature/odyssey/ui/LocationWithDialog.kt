@@ -38,7 +38,7 @@ internal fun LocationWithDialog(
         )
       },
       selectedOption = selectedLocation?.displayName?.let { RadioOptionId(it) },
-      onRadioOptionSelected = {id ->
+      onRadioOptionSelected = { id ->
         selectLocationOption(locationOptions.first { it.displayName == id.id })
       },
       onDismissRequest = { showLocationPickerDialog = false },

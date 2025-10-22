@@ -191,5 +191,6 @@ private val DefaultUnboundedRipple = RippleNodeFactory(
 
 private object NoopIndication : Indication {
   override fun equals(other: Any?): Boolean = other === NoopIndication
+
   override fun hashCode(): Int = System.identityHashCode(this)
 }
