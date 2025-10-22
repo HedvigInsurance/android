@@ -257,7 +257,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.DeflectAutoDecom> {
+    navdestination<TerminateInsuranceDestination.DeflectAutoDecom>(
+      TerminateInsuranceDestination.DeflectAutoDecom,
+    ) {
       val viewModel: DeflectAutoDecomStepViewModel = koinViewModel()
       DeflectAutoDecomStepDestination(
         viewModel = viewModel,
