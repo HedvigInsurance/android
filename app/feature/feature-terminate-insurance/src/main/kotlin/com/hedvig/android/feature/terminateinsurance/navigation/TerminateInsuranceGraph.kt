@@ -245,13 +245,16 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.DeflectAutoCancel> {
+    navdestination<TerminateInsuranceDestination.DeflectAutoCancel> { backStackEntry ->
       val viewModel: DeflectAutoCancelStepViewModel = koinViewModel {
-        parametersOf(
-          message
-        )
+        parametersOf(message)
       }
-      DeflectAutoCancelStepDestination(viewModel)
+      DeflectAutoCancelStepDestination(
+        viewModel = viewModel,
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        closeTerminationFlow = closeTerminationFlow,
+        navigateUp = navigator::navigateUp,
+      )
     }
 
     navdestination<TerminateInsuranceDestination.DeflectAutoDecom> {

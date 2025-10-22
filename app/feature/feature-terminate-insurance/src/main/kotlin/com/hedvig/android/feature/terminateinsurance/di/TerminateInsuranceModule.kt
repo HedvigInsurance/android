@@ -15,6 +15,8 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepViewModel
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
@@ -58,6 +60,16 @@ val terminateInsuranceModule = module {
       clock = get<Clock>(),
     )
   }
+  viewModel<DeflectAutoCancelStepViewModel> { params ->
+    DeflectAutoCancelStepViewModel(
+      params.get<String>()
+    )
+  }
+
+  viewModel<DeflectAutoDecomStepViewModel> {
+    DeflectAutoDecomStepViewModel()
+  }
+
   single<TerminateInsuranceRepository> {
     TerminateInsuranceRepositoryImpl(
       apolloClient = get<ApolloClient>(),
@@ -71,4 +83,5 @@ val terminateInsuranceModule = module {
   single<TerminationFlowContextStorage> {
     TerminationFlowContextStorage(datastore = get<DataStore<Preferences>>())
   }
+
 }
