@@ -100,10 +100,11 @@ fun RadioGroup(
     textEndContent = textEndContent,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       RadioSelectIndicator(
-        selected,
-        enabled,
-        colors,
-        interactionSource,
+        selected = selected,
+        enabled = enabled,
+        colors = colors,
+        style = spacings,
+        interactionSource = interactionSource,
       )
     },
     modifier = modifier,
@@ -157,10 +158,11 @@ fun CheckboxGroup(
     enabled = enabled,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       CheckboxSelectIndicator(
-        selected,
-        enabled,
-        colors,
-        interactionSource,
+        selected = selected,
+        enabled = enabled,
+        colors = colors,
+        style = spacings,
+        interactionSource = interactionSource,
       )
     },
     modifier = modifier,
@@ -205,6 +207,7 @@ object RadioGroupDefaults {
       textToLabelSpacing = RadioGroupStyleTokens.TextToLabelSpacing,
       textStyle = tokens.TextStyle.value,
       textStyleLabel = tokens.TextStyleLabel.value,
+      indicatorSize = RadioGroupStyleTokens.IndicatorSize,
     )
   }
 }
@@ -238,6 +241,7 @@ internal data class RadioGroupStyleInternal(
   val textToLabelSpacing: Dp,
   val textStyle: TextStyle,
   val textStyleLabel: TextStyle,
+  val indicatorSize: Dp,
 )
 
 @Composable
@@ -486,14 +490,15 @@ private fun RadioSelectIndicator(
   selected: Boolean,
   enabled: Boolean,
   colors: RadioGroupColors,
+  style: RadioGroupStyleInternal,
   interactionSource: MutableInteractionSource? = null,
 ) {
   Canvas(
     Modifier
-      .size(indicatorSize)
+      .size(style.indicatorSize)
       .then(
         if (interactionSource != null) {
-          Modifier.indication(interactionSource, ripple(radius = indicatorSize / 2))
+          Modifier.indication(interactionSource, ripple(radius = style.indicatorSize / 2))
         } else {
           Modifier
         },
@@ -527,6 +532,7 @@ private fun CheckboxSelectIndicator(
   selected: Boolean,
   enabled: Boolean,
   colors: RadioGroupColors,
+  style: RadioGroupStyleInternal,
   interactionSource: MutableInteractionSource? = null,
 ) {
   val shape = HedvigTheme.shapes.cornerXSmall
@@ -536,7 +542,7 @@ private fun CheckboxSelectIndicator(
   val checkmarkTint = colors.containerColor
   Canvas(
     Modifier
-      .size(indicatorSize)
+      .size(style.indicatorSize)
       .clip(shape)
       .then(
         if (interactionSource != null) {
@@ -610,6 +616,7 @@ internal object RadioGroupStyleTokens {
   val VerticalItemSpacing: Dp = 4.dp
   val HorizontalItemSpacing: Dp = 8.dp
   val TextToLabelSpacing: Dp = 4.dp
+  val IndicatorSize: Dp = 24.dp
   val ContainerShape: ShapeKeyTokens = ShapeKeyTokens.CornerLarge
 }
 
@@ -665,5 +672,3 @@ internal sealed interface RadioGroupSizeTokens {
     override val TextStyleLabel: TypographyKeyTokens = TypographyKeyTokens.Label
   }
 }
-
-private val indicatorSize = 24.dp
