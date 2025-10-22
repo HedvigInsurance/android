@@ -26,21 +26,24 @@ private class DeflectAutoDecomStepPresenter() : MoleculePresenter<DeflectAutoDec
     lastState: DeflectAutoDecomUiState,
   ): DeflectAutoDecomUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
+    val nextStep by remember { mutableStateOf<TerminateInsuranceStep?>(null) }
     var currentState by remember {
       mutableStateOf(lastState)
     }
     CollectEvents { event ->
       when (event) {
-        DeflectAutoDecomEvent.ClearTerminationStep -> TODO()
-        DeflectAutoDecomEvent.FetchNextStep -> TODO()
-        DeflectAutoDecomEvent.RetryLoadData -> TODO()
+        DeflectAutoDecomEvent.ClearTerminationStep -> {
+          val state = currentState as? DeflectAutoDecomUiState.Success ?: return@CollectEvents
+          currentState = state.copy(nextStep = null)
+        }
+        DeflectAutoDecomEvent.FetchNextStep -> loadIteration++
+
       }
     }
     LaunchedEffect(loadIteration) {
       if (loadIteration>0) {
 
       }
-
     }
     return currentState
   }
@@ -55,7 +58,6 @@ internal sealed interface DeflectAutoDecomUiState {
 }
 
 internal sealed interface DeflectAutoDecomEvent {
-  data object RetryLoadData: DeflectAutoDecomEvent
   data object FetchNextStep: DeflectAutoDecomEvent
   data object ClearTerminationStep: DeflectAutoDecomEvent
 }
