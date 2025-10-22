@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
@@ -49,9 +48,6 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
@@ -357,26 +353,6 @@ private fun CustomizationCard(
           isEnabled = isTierChoiceEnabled,
         ),
       ) { onDismissRequest ->
-        val listOfOptions = tiers.map { pair ->
-          val tierDescription = pair.first.tierDescription ?: ""
-          val price = stringResource(R.string.TALKBACK_PRICE)
-          val premiumDescription = pair.second.getPerMonthDescription()
-          val voiceDescription = "${pair.first.tierDisplayName}, $tierDescription, $price: ${
-            stringResource(
-              R.string.TALKBACK_FROM,
-            )
-          } $premiumDescription"
-          ExpandedRadioOptionData(
-            chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-            title = pair.first.tierDisplayName ?: "-",
-            premiumString = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
-            tierDescription = pair.first.tierDescription,
-            onRadioOptionClick = {
-              onChooseTierInDialogClick(pair.first)
-            },
-            voiceoverDescription = voiceDescription,
-          )
-        }
         DropdownContent(
           title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
           subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
@@ -390,7 +366,6 @@ private fun CustomizationCard(
           onCancelButtonClick = {
             onDismissRequest()
           },
-          data = listOfOptions,
         )
       }
       if (!isTierChoiceEnabled) {
@@ -437,29 +412,6 @@ private fun CustomizationCard(
             isEnabled = quotesForChosenTier.size > 1,
           ),
         ) { onDismissRequest ->
-          val listOfOptions = buildList {
-            quotesForChosenTier.forEach { quote ->
-              val price = stringResource(R.string.TALKBACK_PRICE)
-              val premiumDescription = quote.premium.getPerMonthDescription()
-              val deductibleDescription = quote.deductible?.getVoiceDescription()
-              val voiceDescription =
-                "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
-              quote.deductible?.let {
-                add(
-                  ExpandedRadioOptionData(
-                    chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
-                    title = it.optionText,
-                    premiumString = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
-                    tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
-                    onRadioOptionClick = {
-                      onChooseDeductibleInDialogClick(quote)
-                    },
-                    voiceoverDescription = voiceDescription,
-                  ),
-                )
-              }
-            }
-          }
           DropdownContent(
             radioGroup = {
               QuoteDeductibleRadioGroup(quotesForChosenTier, chosenQuoteInDialog, onChooseDeductibleInDialogClick)
@@ -472,7 +424,6 @@ private fun CustomizationCard(
               onDismissRequest()
             },
             title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-            data = listOfOptions,
             subTitle = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
           )
         }
@@ -615,7 +566,6 @@ private fun DropdownContent(
   radioGroup: @Composable () -> Unit,
   onContinueButtonClick: () -> Unit,
   onCancelButtonClick: () -> Unit,
-  data: List<ExpandedRadioOptionData>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -653,15 +603,6 @@ private fun DropdownContent(
     )
   }
 }
-
-private data class ExpandedRadioOptionData(
-  val onRadioOptionClick: () -> Unit,
-  val chosenState: ChosenState,
-  val title: String,
-  val premiumString: String,
-  val tierDescription: String?,
-  val voiceoverDescription: String,
-)
 
 @Composable
 internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
@@ -766,16 +707,6 @@ private fun PreviewDropdownContent() {
         },
         {},
         {},
-        List(2) {
-          ExpandedRadioOptionData(
-            {},
-            Chosen,
-            "Title",
-            "from 231 kr/mo",
-            "TierDescription",
-            voiceoverDescription = " Title, tier description, from 231 kr/mo",
-          )
-        },
       )
     }
   }
@@ -872,12 +803,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -914,12 +845,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -956,12 +887,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -998,12 +929,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -1040,12 +971,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
