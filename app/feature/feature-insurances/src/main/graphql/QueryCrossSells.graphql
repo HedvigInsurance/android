@@ -1,15 +1,17 @@
 query CrossSells {
   currentMember {
     id
-    crossSells {
-      id
-      title
-      description
-      storeUrl
-      pillowImageLarge {
-        src
+    crossSellV2(input: { userFlow: INSURANCES, flowSource: null, experiments: [] }) {
+      otherCrossSells {
         id
-        alt
+        title
+        description
+        storeUrl
+        pillowImageLarge {
+          src
+          id
+          alt
+        }
       }
     }
   }

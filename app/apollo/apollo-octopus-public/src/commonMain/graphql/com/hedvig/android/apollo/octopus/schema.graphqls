@@ -871,12 +871,30 @@ type CrossSell {
   title: String!
   description: String!
   """
-  A url pointing to a product page where the member can complete the purchase
+  Product page URL for completing the purchase
   """
   storeUrl: String!
   type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
+}
+"""
+A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
+"""
+input CrossSellExperimentInput {
+  name: String!
+  variant: String!
+}
+input CrossSellInput {
+  userFlow: UserFlow!
+  """
+  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL and INSURANCES
+  """
+  flowSource: FlowSource
+  """
+  A/B test experiments for attribution tracking
+  """
+  experiments: [CrossSellExperimentInput!]!
 }
 enum CrossSellSource {
   HOME
@@ -898,7 +916,13 @@ enum CrossSellType {
   HOUSE
 }
 type CrossSellV2 {
+  """
+  Prioritized recommendation (null for INSURANCES)
+  """
   recommendedCrossSell: RecommendedCrossSell
+  """
+  Other available cross-sells (behavior varies by userFlow)
+  """
   otherCrossSells: [CrossSell!]!
 }
 enum CurrencyCode {
@@ -1415,8 +1439,25 @@ type FlowProgress {
   clearedSteps: Int!
   totalSteps: Int!
 }
+enum FlowSource {
+  CLOSED_CLAIM
+  CHANGE_TIER
+  ADDON
+  EDIT_COINSURED
+  MOVING
+}
 interface FlowStep {
   id: ID!
+}
+input FlowTerminationCarAutoDecomInput {
+  proceedToCancel: Boolean!
+}
+type FlowTerminationCarAutoDecomStep implements FlowStep {
+  id: ID!
+}
+type FlowTerminationCarDeflectAutoCancelStep implements FlowStep {
+  id: ID!
+  message: String!
 }
 input FlowTerminationDateInput {
   terminationDate: Date!
@@ -1456,6 +1497,7 @@ enum FlowTerminationNotificationType {
 }
 input FlowTerminationStartInput {
   contractId: ID!
+  supportedSteps: [String!]
 }
 type FlowTerminationSuccessStep implements FlowStep {
   id: ID!
@@ -1726,11 +1768,23 @@ type Member {
   referralInformation: MemberReferralInformation!
   travelCertificateSpecifications: TravelCertificateSpecification!
   travelCertificates: [TravelCertificate!]!
-  crossSells: [CrossSell!]!
   """
-  Returns a list of cross-sells for the member with recommendations.
+  DEPRECATED: Returns all available cross-sells without recommendations.
+  Use crossSellV2 with userFlow: INSURANCES instead.
   """
-  crossSell(source: CrossSellSource!): CrossSellV2!
+  crossSells: [CrossSell!]! @deprecated(reason: "Use crossSellV2 with userFlow: INSURANCES")
+  """
+  DEPRECATED: Returns cross-sells with optional recommendations based on source context.
+  Use crossSellV2 instead for better type safety and experiment tracking.
+  """
+  crossSell(source: CrossSellSource!): CrossSellV2! @deprecated(reason: "Use crossSellV2")
+  """
+  Returns cross-sells with optional smart recommendation.
+  - INSURANCES: All options in otherCrossSells, no recommendation
+  - HOME_X_SELL: Recommendation + other options
+  - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
+  """
+  crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
@@ -2511,6 +2565,7 @@ type Mutation {
   flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow!
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
+  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
   """
   Tokenize payment details per member in order to be used in future and returns the status
   """
@@ -3384,10 +3439,6 @@ Attribution tracking for shop sessions.
 Use this to track where the user came from, what initiated their session, and additional
 conversion source data. This data is used for analytics and understanding customer acquisition
 channels.
-The `attributedTo` and `initiatedFrom` fields cover the primary attribution, while `extras`
-allows tracking additional attribution fields beyond these two to better track conversion sources.
-**Important**: The `extras` field is for additional attribution/conversion tracking metadata only.
-This data is stored as-is and does NOT merge with or override the top-level attribution fields.
 """
 input ShopSessionAttributionInput {
   """
@@ -3401,21 +3452,17 @@ input ShopSessionAttributionInput {
   """
   initiatedFrom: String
   """
-  Additional attribution and conversion tracking fields beyond `attributedTo` and `initiatedFrom`.
-  Use this to capture extra conversion source data that helps better track attribution. Common fields include:
-  - `user_flow`: Differentiates between app screens and widget flows (e.g., "SMART_X_SELL")
-  - `flow_source`: Differentiates between app screens and widget flows (e.g., "MOVING_FLOW")
-  - `experiments`: Object with `version` and `variant` fields for A/B testing
-  - `version`: Experiment identifier (e.g., "smart_x_sell_logic")
-  - `variant`: Experiment variant (e.g., "ORIGINAL", "A", "B")
-  - Any other custom tracking fields specific to your conversion sources
-  This data is stored as-is and does NOT merge with or override the top-level attribution fields.
-  Examples: {
-  flow_source: "MOVING_FLOW"
-  experiments: { version: "smart_x_sell_logic"
-  variant: "ORIGINAL" }}
+  Differentiates between app screens and widget flows (e.g., "SMART_X_SELL")
   """
-  extras: JSON
+  userFlow: String
+  """
+  Differentiates between app screens and widget flows (e.g., "MOVING_FLOW")
+  """
+  flowSource: String
+  """
+  A/B testing experiments
+  """
+  experiments: [ShopSessionExperimentInput!]
 }
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!
@@ -3489,6 +3536,20 @@ input ShopSessionCustomerUpdateInput {
   phoneNumber: String
   firstName: String
   lastName: String
+}
+"""
+A/B testing experiment configuration for shop sessions.
+Both name and variant should be in SCREAMING_SNAKE_CASE format.
+"""
+input ShopSessionExperimentInput {
+  """
+  Experiment name in SCREAMING_SNAKE_CASE (e.g., 'CROSS_SELL', 'HOME_BONUS_OFFER')
+  """
+  name: String!
+  """
+  Experiment variant in SCREAMING_SNAKE_CASE (e.g., 'CONTROL', 'VARIANT_A', 'NEW')
+  """
+  variant: String!
 }
 type ShopSessionExperiments {
   bundleDiscount: Boolean
@@ -3897,6 +3958,20 @@ The errors are usually translated through the `Hedvig-Language` header.
 """
 type UserError {
   message: String
+}
+enum UserFlow {
+  """
+  Insurances screen - all options, no recommendation
+  """
+  INSURANCES
+  """
+  Home screen - recommendation + other options
+  """
+  HOME_X_SELL
+  """
+  Smart cross-sell - focused recommendation OR all options
+  """
+  SMART_X_SELL
 }
 scalar UUID
 type ValueArray {
