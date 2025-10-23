@@ -6,6 +6,8 @@ fragment TerminationFlowStepFragment on Flow {
     ...FlowTerminationFailedStepFragment
     ...FlowTerminationSuccessStepFragment
     ...FlowTerminationSurveyStepFragment
+    ...FlowTerminationAutoDecomStepFragment
+    ...FlowTerminationCarDeflectAutoCancelStepFragment
   }
 }
 
@@ -88,6 +90,15 @@ fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
 fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
   id
   terminationDate
+}
+
+fragment FlowTerminationAutoDecomStepFragment on FlowTerminationCarAutoDecomStep {
+  id
+}
+
+fragment FlowTerminationCarDeflectAutoCancelStepFragment on FlowTerminationCarDeflectAutoCancelStep {
+  id
+  message
 }
 
 fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {

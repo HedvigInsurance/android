@@ -1,7 +1,13 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.*
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoCancel
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecom
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.InsuranceDeletion
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationDate
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationFailure
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationSuccess
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationSurveyFirstStep
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.UnknownScreen
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -78,13 +84,13 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
       )
     }
 
-    // todo: add
-    // is TerminationFlowStepFragment.FlowTerminationCarAutoDecomStep -> {
-    // TerminateInsuranceStep.DeflectAutoDecomStep
-    // }
-    // is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStep -> {
-    // TerminateInsuranceStep.DeflectAutoCancelStep(message)
-    // }
+    is TerminationFlowStepFragment.FlowTerminationCarAutoDecomStepCurrentStep -> {
+      TerminateInsuranceStep.DeflectAutoDecomStep
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStepCurrentStep -> {
+      TerminateInsuranceStep.DeflectAutoCancelStep(message)
+    }
 
     else -> TerminateInsuranceStep.UnknownStep()
   }
