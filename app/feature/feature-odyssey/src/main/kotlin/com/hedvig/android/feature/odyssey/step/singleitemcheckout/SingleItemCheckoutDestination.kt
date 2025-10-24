@@ -42,11 +42,8 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
-import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation
 import com.hedvig.android.data.claimflow.ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -60,14 +57,10 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.LockedState.Locked
-import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Small
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
@@ -369,7 +362,6 @@ private fun RepairPair.getVoiceDescription(): String {
   return "${this.label}, $amountDescription"
 }
 
-@Suppress("UnusedReceiverParameter")
 @Composable
 private fun CheckoutMethods(
   availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
@@ -383,22 +375,16 @@ private fun CheckoutMethods(
     Spacer(Modifier.height(8.dp))
     if (allowSelectingCheckoutMethod) {
       RadioGroup(
-        radioGroupStyle = RadioGroupStyle.Vertical.Default(
-          availableCheckoutMethods.map { checkoutMethod ->
-            RadioOptionGroupDataSimple(
-              RadioOptionData(
-                checkoutMethod.id,
-                checkoutMethod.displayName,
-                if (checkoutMethod == selectedCheckoutMethod) Chosen else NotChosen,
-              ),
-            )
-          },
-        ),
-        radioGroupSize = Small,
-        onOptionClick = { id ->
-          selectCheckoutMethod(availableCheckoutMethods.first { it.id == id })
+        options = availableCheckoutMethods.map { checkoutMethod ->
+          RadioOption(
+            id = RadioOptionId(checkoutMethod.id),
+            text = checkoutMethod.displayName,
+          )
         },
-        groupLockedState = if (enabled) NotLocked else Locked,
+        selectedOption = RadioOptionId(selectedCheckoutMethod.id),
+        onRadioOptionSelected = { radioOptionId ->
+          selectCheckoutMethod(availableCheckoutMethods.first { it.id == radioOptionId.id })
+        },
         modifier = Modifier.fillMaxWidth(),
       )
     } else {
@@ -451,7 +437,7 @@ private fun PreviewSingleItemCheckoutScreenWithRepair() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemCheckoutScreen(
         uiState = SingleItemCheckoutUiState.Content(
-          compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
+          compensation = RepairCompensation(
             repairCost = UiMoney(3999.0, UiCurrencyCode.SEK),
             deductible = UiMoney(1000.0, UiCurrencyCode.SEK),
             payoutAmount = UiMoney(2999.0, UiCurrencyCode.SEK),
@@ -492,7 +478,7 @@ private fun PreviewSingleItemCheckoutScreenValueCompensation(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
-          ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
+          ValueCompensation(
             price = UiMoney(3999.0, UiCurrencyCode.SEK),
             depreciation = UiMoney(500.0, UiCurrencyCode.SEK),
             deductible = UiMoney(1000.0, UiCurrencyCode.SEK),

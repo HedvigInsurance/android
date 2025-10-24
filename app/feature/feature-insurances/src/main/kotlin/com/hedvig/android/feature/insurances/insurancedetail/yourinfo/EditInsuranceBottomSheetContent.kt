@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -22,16 +21,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.RadioOptionRightAligned
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
+import kotlin.collections.buildList
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
@@ -44,7 +44,36 @@ internal fun EditInsuranceBottomSheetContent(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
+  var selectedItemId: String? by rememberSaveable { mutableStateOf(null) }
+  val options = buildList {
+    if (allowChangeTier) {
+      add(
+        RadioOption(
+          RadioOptionId("0"),
+          stringResource(R.string.insurance_details_change_coverage),
+          stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
+        ),
+      )
+    }
+    if (allowEditCoInsured) {
+      add(
+        RadioOption(
+          RadioOptionId("1"),
+          stringResource(R.string.CONTRACT_EDIT_COINSURED),
+          stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+        ),
+      )
+    }
+    if (allowTerminatingInsurance) {
+      add(
+        RadioOption(
+          RadioOptionId("2"),
+          stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
+          stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
+        ),
+      )
+    }
+  }
   Column(
     modifier = modifier,
   ) {
@@ -57,75 +86,21 @@ internal fun EditInsuranceBottomSheetContent(
         .semantics { heading() },
     )
     Spacer(modifier = Modifier.height(24.dp))
-    Column(
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-      if (allowChangeTier) {
-        RadioOptionRightAligned(
-          optionContent = {
-            Column {
-              HedvigText(
-                text = stringResource(R.string.insurance_details_change_coverage),
-              )
-              HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
-                color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.label,
-              )
-            }
-          },
-          chosenState = if (selectedItemIndex == 0) Chosen else NotChosen,
-          onClick = { selectedItemIndex = 0 },
-        )
-      }
-      if (allowEditCoInsured) {
-        RadioOptionRightAligned(
-          optionContent = {
-            Column {
-              HedvigText(
-                text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
-              )
-              HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
-                color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.label,
-              )
-            }
-          },
-          chosenState = if (selectedItemIndex == 1) Chosen else NotChosen,
-          onClick = { selectedItemIndex = 1 },
-        )
-      }
-      if (allowTerminatingInsurance) {
-        RadioOptionRightAligned(
-          chosenState = if (selectedItemIndex == 2) Chosen else NotChosen,
-          onClick = { selectedItemIndex = 2 },
-          optionContent = {
-            Column {
-              HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
-              )
-              HedvigText(
-                text = stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
-                color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.label,
-              )
-            }
-          },
-        )
-      }
-    }
+    RadioGroup(
+      options = options,
+      selectedOption = selectedItemId?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { selectedItemId = it.id },
+    )
     Spacer(modifier = Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(id = R.string.general_continue_button),
-      enabled = selectedItemIndex != -1,
+      enabled = selectedItemId != null,
       onClick = dropUnlessResumed {
-        if (selectedItemIndex == 2 && allowTerminatingInsurance) {
-          onCancelInsuranceClick()
-        } else if (selectedItemIndex == 1 && allowEditCoInsured) {
-          onEditCoInsuredClick()
-        } else if (selectedItemIndex == 0 && allowChangeTier) {
-          onChangeTierClick()
+        when (selectedItemId) {
+          "0" if allowChangeTier -> onChangeTierClick()
+          "1" if allowEditCoInsured -> onEditCoInsuredClick()
+          "2" if allowTerminatingInsurance -> onCancelInsuranceClick()
+          else -> {}
         }
       },
       modifier = Modifier.fillMaxWidth(),

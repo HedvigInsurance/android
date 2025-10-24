@@ -27,11 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -48,9 +46,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
@@ -73,7 +68,10 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.PerilData
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
@@ -387,14 +385,6 @@ private fun CustomizeTravelAddonCard(
   }
 }
 
-private data class ExpandedRadioOptionData(
-  val onRadioOptionClick: () -> Unit,
-  val chosenState: ChosenState,
-  val title: String,
-  val premium: String,
-  val voiceoverDescription: String,
-)
-
 @Composable
 private fun HeaderInfoWithCurrentPrice(
   chosenOptionPremiumExtra: UiMoney,
@@ -448,18 +438,6 @@ private fun DropdownContent(
   onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val data = addonOptions.map { option ->
-    val pricePerMonth = option.itemCost.monthlyNet.getPerMonthDescription()
-    ExpandedRadioOptionData(
-      chosenState = if (currentlyChosenOptionInDialog == option) Chosen else NotChosen,
-      title = option.displayName,
-      premium = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, option.itemCost.monthlyNet),
-      onRadioOptionClick = {
-        onChooseOptionInDialog(option)
-      },
-      voiceoverDescription = "${option.displayName}, $pricePerMonth",
-    )
-  }
   Column(
     modifier.verticalScroll(rememberScrollState()),
   ) {
@@ -478,26 +456,27 @@ private fun DropdownContent(
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(24.dp))
-    data.forEachIndexed { index, option ->
-      RadioOption(
-        chosenState = option.chosenState,
-        onClick = option.onRadioOptionClick,
-        optionContent = { radioButtonIcon ->
-          ExpandedOptionContent(
-            title = option.title,
-            premium = option.premium,
-            radioButtonIcon = radioButtonIcon,
-          )
-        },
-        modifier = Modifier.clearAndSetSemantics {
-          contentDescription = option.voiceoverDescription
-          role = Role.RadioButton
-        },
-      )
-      if (index != data.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
-    }
+    RadioGroup(
+      options = addonOptions.map { addonQuote ->
+        RadioOption(
+          id = RadioOptionId(addonQuote.addonId),
+          text = addonQuote.displayName,
+        )
+      },
+      selectedOption = currentlyChosenOptionInDialog?.addonId?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        onChooseOptionInDialog(addonOptions.first { it.addonId == id.id })
+      },
+      style = RadioGroupStyle.LeftAligned,
+      textEndContent = { id ->
+        val addon = addonOptions.first { it.addonId == id.id }
+        HighlightLabel(
+          labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyNet),
+          size = HighLightSize.Small,
+          color = Grey(MEDIUM),
+        )
+      },
+    )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(R.string.ADDON_FLOW_SELECT_BUTTON),

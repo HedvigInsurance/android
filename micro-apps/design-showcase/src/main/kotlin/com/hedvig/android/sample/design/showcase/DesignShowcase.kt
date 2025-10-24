@@ -39,7 +39,7 @@ import com.hedvig.android.sample.design.showcase.materialBottomSheet.MaterialExp
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
 import com.hedvig.android.sample.design.showcase.peril.PerilsShowcase
 import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
-import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
+import com.hedvig.android.sample.design.showcase.radio.ShowcaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.tabs.TabsShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
@@ -48,15 +48,16 @@ import com.hedvig.android.sample.design.showcase.topbar.TopAppBarShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
-  val showcase = ShowMaterialBottomSheet
+  val showcase = ShowRadio
   Box(modifier) {
+    @Suppress("KotlinConstantConditions")
     when (showcase) {
       ShowIcons -> ShowcaseIcons()
       ShowButton -> ShowcaseButton()
       ShowBottomSheet -> ShowcaseBottomSheet()
       ShowStepper -> StepperShowcase()
       ShowTextField -> ShowcaseTextField()
-      ShowRadio -> ShowCaseRadioGroups()
+      ShowRadio -> ShowcaseRadioGroups()
       ShowToggle -> ToggleShowcase()
       ShowDialog -> DialogShowcase()
       ShowDatePicker -> DatePickerShowcase()

@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.material.ripple.RippleAlpha
@@ -36,6 +37,8 @@ fun ripple(
     RippleNodeFactory(bounded, radius, color)
   }
 }
+
+fun noopRipple(): Indication = NoopIndication
 
 @Suppress("unused")
 @Stable
@@ -185,3 +188,9 @@ private val DefaultUnboundedRipple = RippleNodeFactory(
   radius = Dp.Unspecified,
   color = Color.Unspecified,
 )
+
+private object NoopIndication : Indication {
+  override fun equals(other: Any?): Boolean = other === NoopIndication
+
+  override fun hashCode(): Int = System.identityHashCode(this)
+}
