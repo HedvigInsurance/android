@@ -11,6 +11,17 @@ import com.hedvig.android.design.system.hedvig.Surface
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * Paparazzi Snapshot Testing Commands:
+ *
+ * Record/Update snapshots:
+ * `./gradlew :feature-terminate-insurance:recordPaparazziDebug`
+ *
+ * Verify snapshots:
+ * `./gradlew :feature-terminate-insurance:verifyPaparazziDebug`
+ *
+ * Snapshot location: app/feature/feature-terminate-insurance/src/test/snapshots/images/
+ */
 class ChooseInsuranceToTerminateDestinationSnapshotTest {
 
   @get:Rule
