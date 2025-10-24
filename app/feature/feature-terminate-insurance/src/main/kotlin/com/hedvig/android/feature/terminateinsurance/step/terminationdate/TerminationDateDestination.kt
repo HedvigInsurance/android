@@ -61,10 +61,10 @@ internal fun TerminationDateDestination(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
     onCheckedChange = {
-      viewModel.changeCheckBoxState()
+      viewModel.emit(TerminationDateEvent.ToggleCheckBox)
     },
     changeSelectedDate = { long ->
-      viewModel.changeSelectedDate(long)
+      viewModel.emit(TerminationDateEvent.ChangeSelectedDate(long))
     },
   )
 }

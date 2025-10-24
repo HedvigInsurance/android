@@ -10,6 +10,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
@@ -35,15 +36,18 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
+import octopus.type.CrossSellInput
 import octopus.type.CrossSellSource
+import octopus.type.FlowSource
+import octopus.type.UserFlow
 
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
-    CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
-  )
+  CrossSellSheetState.Loading,
+  CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
+)
 
 sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
@@ -100,13 +104,20 @@ private class CrossSellSheetPresenter(
   }
 }
 
-internal fun CrossSellInfoType.toCrossSellSource(): CrossSellSource {
+internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
+  val smartCrossSellInput: (FlowSource) -> CrossSellInput = { flowSource ->
+    CrossSellInput(
+      userFlow = UserFlow.SMART_X_SELL,
+      flowSource = Optional.present(flowSource),
+      experiments = emptyList(),
+    )
+  }
   return when (this) {
-    CrossSellInfoType.Addon -> CrossSellSource.ADDON
-    CrossSellInfoType.ChangeTier -> CrossSellSource.CHANGE_TIER
-    is CrossSellInfoType.ClosedClaim -> CrossSellSource.CLOSED_CLAIM
-    CrossSellInfoType.EditCoInsured -> CrossSellSource.EDIT_COINSURED
-    CrossSellInfoType.MovingFlow -> CrossSellSource.MOVING_FLOW
+    CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON)
+    CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
+    is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
+    CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
+    CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
   }
 }
 
@@ -117,13 +128,13 @@ internal class GetCrossSellSheetDataUseCaseProvider(
 ) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
 
 internal interface GetCrossSellSheetDataUseCase {
-  suspend fun invoke(source: CrossSellSource): Flow<Either<ErrorMessage, CrossSellSheetData>>
+  suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
-  override suspend fun invoke(source: CrossSellSource): Flow<Either<ErrorMessage, CrossSellSheetData>> {
+  override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return apolloClient
       .query(BottomSheetCrossSellsQuery(source))
       .safeFlow(::ErrorMessage)
@@ -131,7 +142,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
         either {
           val allData = response
             .bind()
-            .currentMember.crossSell
+            .currentMember.crossSellV2
           val recommendedData = allData.recommendedCrossSell?.let {
             val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
               BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
@@ -179,7 +190,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
 }
 
 internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
-  override suspend fun invoke(source: CrossSellSource): Flow<Either<ErrorMessage, CrossSellSheetData>> {
+  override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
 }
