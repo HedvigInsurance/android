@@ -15,10 +15,10 @@ import org.junit.Test
  * Paparazzi Snapshot Testing Commands:
  *
  * Record/Update snapshots:
- * `./gradlew :feature-terminate-insurance:recordPaparazziDebug`
+ * `./gradlew recordPaparazziDebug`
  *
  * Verify snapshots:
- * `./gradlew :feature-terminate-insurance:verifyPaparazziDebug`
+ * `./gradlew verifyPaparazziDebug`
  *
  * Snapshot location: app/feature/feature-terminate-insurance/src/test/snapshots/images/
  */
