@@ -27,7 +27,6 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 internal fun NavigationSuite(
   navigationSuiteType: NavigationSuiteType,
   topLevelGraphs: Set<TopLevelGraph>,
-  topLevelGraphsWithNotifications: Set<TopLevelGraph>,
   currentDestination: NavDestination?,
   onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
@@ -46,7 +45,6 @@ internal fun NavigationSuite(
       ) {
         NavigationRail(
           destinations = topLevelGraphs,
-          destinationsWithNotifications = topLevelGraphsWithNotifications,
           onNavigateToDestination = onNavigateToTopLevelGraph,
           getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
           isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
@@ -61,7 +59,6 @@ internal fun NavigationSuite(
     ) {
       NavigationBar(
         destinations = topLevelGraphs,
-        destinationsWithNotifications = topLevelGraphsWithNotifications,
         onNavigateToDestination = onNavigateToTopLevelGraph,
         getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
       )
@@ -86,7 +83,6 @@ private fun PreviewNavigationSuite(
           NavigationSuiteType.NavigationRail
         },
         topLevelGraphs = TopLevelGraph.entries.toSet(),
-        topLevelGraphsWithNotifications = TopLevelGraph.entries.toSet(),
         currentDestination = null,
         onNavigateToTopLevelGraph = {},
       ) {

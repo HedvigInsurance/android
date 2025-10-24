@@ -69,7 +69,6 @@ import hedvig.resources.R
 @Composable
 fun NavigationBar(
   destinations: Set<TopLevelGraph>,
-  destinationsWithNotifications: Set<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   modifier: Modifier = Modifier,
@@ -98,7 +97,6 @@ fun NavigationBar(
             destination.unselectedIcon()
           },
           text = name,
-          withNotification = destination in destinationsWithNotifications,
           selected = selected,
           onClick = { onNavigateToDestination(destination) },
           itemPaddings = PaddingValues(
@@ -121,7 +119,6 @@ fun NavigationBar(
 @Composable
 fun NavigationRail(
   destinations: Set<TopLevelGraph>,
-  destinationsWithNotifications: Set<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   isExtraTall: Boolean,
@@ -167,7 +164,6 @@ fun NavigationRail(
             destination.unselectedIcon()
           },
           text = stringResource(destination.titleTextId()),
-          withNotification = destination in destinationsWithNotifications,
           selected = selected,
           onClick = { onNavigateToDestination(destination) },
           itemPaddings = PaddingValues(
@@ -209,7 +205,6 @@ private fun NavigationContainer(modifier: Modifier = Modifier, content: @Composa
 private fun NavigationItem(
   icon: ImageVector,
   text: String,
-  withNotification: Boolean,
   selected: Boolean,
   onClick: () -> Unit,
   itemPaddings: PaddingValues,
@@ -219,10 +214,10 @@ private fun NavigationItem(
   var itemWidthPx by remember { mutableIntStateOf(0) }
   val deltaOffset: Offset = with(LocalDensity.current) {
     val indicatorWidth = NavigationTokens.IndicatorWidth.toPx()
-    Offset((itemWidthPx - indicatorWidth).toFloat() / 2, itemPaddings.calculateTopPadding().toPx())
+    Offset((itemWidthPx - indicatorWidth) / 2, itemPaddings.calculateTopPadding().toPx())
   }
   val offsetInteractionSource = remember(interactionSource, deltaOffset) {
-    MappedInteractionSource(interactionSource, { -deltaOffset })
+    MappedInteractionSource(underlyingInteractionSource = interactionSource, delta = { -deltaOffset })
   }
   val indicatorShape = HedvigTheme.shapes.cornerLarge
   Column(
@@ -245,9 +240,7 @@ private fun NavigationItem(
         } else {
           NavigationTokens.UnselectedIconColor.value
         },
-        modifier = Modifier
-          .size(NavigationTokens.IconSize)
-          .notificationCircle(withNotification),
+        modifier = Modifier.size(NavigationTokens.IconSize),
       )
       Box(
         Modifier
@@ -317,7 +310,6 @@ private fun PreviewNavigationBar(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationBar(
         destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = TopLevelGraph.entries.take(1).toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { selected },
       )
@@ -337,7 +329,6 @@ private fun PreviewNavigationRail(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
         destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = TopLevelGraph.entries.take(1).toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { selected },
         isExtraTall = false,
@@ -353,7 +344,6 @@ private fun PreviewTallNavigationRail() {
     Surface(Modifier.fillMaxHeight(), color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
         destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = TopLevelGraph.entries.take(1).toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { false },
         isExtraTall = true,
@@ -369,7 +359,6 @@ private fun PreviewShortNavigationRail() {
     Surface(Modifier.fillMaxHeight(), color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
         destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = TopLevelGraph.entries.take(1).toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { false },
         isExtraTall = false,

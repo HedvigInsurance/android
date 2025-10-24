@@ -43,7 +43,6 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
-import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import java.util.Locale
@@ -65,7 +64,6 @@ class MainActivity : AppCompatActivity() {
   private val imageLoader: ImageLoader by inject()
   private val languageService: LanguageService by inject()
   private val settingsDataStore: SettingsDataStore by inject()
-  private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
   private val simpleVideoCache: SimpleCache by inject()
@@ -88,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value == true }
+      setKeepOnScreenCondition { showSplash.value }
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
@@ -112,10 +110,10 @@ class MainActivity : AppCompatActivity() {
     }
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-        if (showSplash.value == false) return@repeatOnLifecycle
+        if (!showSplash.value) return@repeatOnLifecycle
         raceN(
           { authTokenService.authStatus.first { it != null } },
-          { demoManager.isDemoMode().first { it == true } },
+          { demoManager.isDemoMode().first { it } },
         )
         showSplash.update { false }
       }
@@ -134,7 +132,6 @@ class MainActivity : AppCompatActivity() {
       HedvigApp(
         navHostController = navHostController,
         windowSizeClass = windowSizeClass,
-        tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
         featureManager = featureManager,
@@ -239,6 +236,7 @@ private fun getSystemLocale(config: android.content.res.Configuration): Locale {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
     Resources.getSystem().configuration.locales[0]
   } else {
+    @Suppress("DEPRECATION")
     config.locale
   }
 }

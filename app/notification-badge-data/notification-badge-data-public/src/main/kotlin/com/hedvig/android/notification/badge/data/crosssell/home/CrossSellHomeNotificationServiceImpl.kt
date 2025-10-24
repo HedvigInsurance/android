@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.notification.badge.data.crosssell.CrossSellBadgeType
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
+import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
@@ -52,7 +52,7 @@ internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
   private val dataStore: DataStore<Preferences>,
 ) : CrossSellHomeNotificationService {
-  private val crossSellRedDotBadgeType = CrossSellBadgeType.InsuranceFragmentCard
+  private val crossSellRedDotBadgeType = NotificationBadge.CrossSellInsuranceFragmentCard
 
   override fun showRedDotNotification(): Flow<Boolean> {
     return crossSellNotificationBadgeService.showNotification(crossSellRedDotBadgeType)
