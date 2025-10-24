@@ -37,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupColorTokens
@@ -448,25 +449,33 @@ private fun RadioOption(
   interactionSource: MutableInteractionSource? = null,
   textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
+  val textAlignedSelectIndicator = @Composable {
+    TextAlignedIndicator(style) {
+      selectIndicator(
+        selected,
+        enabled,
+        colors,
+        interactionSource,
+      )
+    }
+  }
   Row(
     horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
     modifier = modifier,
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(style.horizontalItemSpacing),
-      verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.weight(1f, false),
     ) {
       if (option.iconResource != null) {
         RadioOptionIcon(option.iconResource)
       }
       if (style.style.leftAlignedIndicator) {
-        selectIndicator(selected, enabled, colors, interactionSource)
+        textAlignedSelectIndicator()
       }
       Column {
         val textComposable: @Composable () -> Unit = {
-          HedvigText(option.text, style = style.textStyle, color = colors.textColor)
+          HedvigText(option.text.repeat(8), style = style.textStyle, color = colors.textColor)
         }
         if (textEndContent != null) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -485,9 +494,26 @@ private fun RadioOption(
     }
     if (!style.style.leftAlignedIndicator) {
       Spacer(Modifier.width(style.horizontalItemSpacing))
-      selectIndicator(selected, enabled, colors, interactionSource)
+      textAlignedSelectIndicator()
     }
   }
+}
+
+@Composable
+private fun TextAlignedIndicator(
+  style: RadioGroupStyleInternal,
+  content: @Composable () -> Unit,
+) {
+  LayoutWithoutPlacement(
+    sizeAdjustingContent = {
+      HedvigText("H", style = style.textStyle)
+    },
+    content = {
+      Box(contentAlignment = Alignment.Center) {
+        content()
+      }
+    },
+  )
 }
 
 private typealias SelectIndicator = @Composable (
@@ -503,10 +529,11 @@ private fun RadioSelectIndicator(
   enabled: Boolean,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
+  modifier: Modifier = Modifier,
   interactionSource: MutableInteractionSource? = null,
 ) {
   Canvas(
-    Modifier
+    modifier
       .size(style.indicatorSize)
       .then(
         if (interactionSource != null) {
@@ -545,6 +572,7 @@ private fun CheckboxSelectIndicator(
   enabled: Boolean,
   colors: RadioGroupColors,
   style: RadioGroupStyleInternal,
+  modifier: Modifier = Modifier,
   interactionSource: MutableInteractionSource? = null,
 ) {
   val shape = HedvigTheme.shapes.cornerXSmall
@@ -553,7 +581,7 @@ private fun CheckboxSelectIndicator(
   )
   val checkmarkTint = colors.containerColor
   Canvas(
-    Modifier
+    modifier
       .size(style.indicatorSize)
       .clip(shape)
       .then(
