@@ -456,6 +456,7 @@ private fun RadioOption(
     Row(
       horizontalArrangement = Arrangement.spacedBy(style.horizontalItemSpacing),
       verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.weight(1f, false),
     ) {
       if (option.iconResource != null) {
         RadioOptionIcon(option.iconResource)
