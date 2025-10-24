@@ -70,6 +70,7 @@ navigationRecentsUrlSharing = "1.0.0"
 okhttpBom = "5.1.0"
 okio = "3.16.0"
 paging = "3.3.6"
+paparazzi = "2.0.0-SNAPSHOT"
 playReview = "2.0.2"
 playServicesBase = "18.7.2"
 retrofit = "3.0.0"
@@ -262,6 +263,7 @@ kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 room = { id = "androidx.room", version.ref = "room" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
