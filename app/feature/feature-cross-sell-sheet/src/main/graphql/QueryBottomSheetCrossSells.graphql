@@ -1,6 +1,6 @@
-query BottomSheetCrossSells($source: CrossSellSource!) {
+query BottomSheetCrossSells($input: CrossSellInput!) {
   currentMember {
-    crossSell(source: $source) {
+    crossSellV2(input: $input) {
       recommendedCrossSell {
         crossSell {
           ...CrossSellFragment

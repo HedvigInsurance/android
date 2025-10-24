@@ -21,6 +21,8 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -35,7 +37,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import octopus.CrossSellsQuery
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -221,13 +222,13 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
     ),
   )
-  private val validCrossSells: List<CrossSellsQuery.Data.CurrentMember.CrossSell> = listOf(
-    CrossSellsQuery.Data.CurrentMember.CrossSell(
+  private val validCrossSells: List<CrossSell> = listOf(
+    CrossSell(
       id = "crossSellId",
       title = "crossSellTitle",
-      description = "crossSellDescription",
+      subtitle = "crossSellDescription",
       storeUrl = "",
-      pillowImageLarge = CrossSellsQuery.Data.CurrentMember.CrossSell.PillowImageLarge("", "", ""),
+      pillowImage = ImageAsset("", "", ""),
     ),
   )
 
@@ -504,9 +505,9 @@ internal class InsurancePresenterTest {
 
   private class FakeGetCrossSellsUseCase : GetCrossSellsUseCase {
     val errorMessages = Turbine<ErrorMessage>()
-    val crossSells = Turbine<List<CrossSellsQuery.Data.CurrentMember.CrossSell>>()
+    val crossSells = Turbine<List<CrossSell>>()
 
-    override suspend fun invoke(): Either<ErrorMessage, List<CrossSellsQuery.Data.CurrentMember.CrossSell>> {
+    override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
       return raceN(
         { errorMessages.awaitItem() },
         { crossSells.awaitItem() },

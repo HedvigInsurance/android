@@ -143,23 +143,10 @@ private fun loadInsuranceData(
       val result = contractsResult.bind()
       val contracts = result.filterIsInstance<EstablishedInsuranceContract>()
       val pendingContracts = result.filterIsInstance<PendingInsuranceContract>()
-      val crossSellsData = crossSellsDataResult.bind()
+      val crossSells = crossSellsDataResult.bind()
       val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
       val insuranceCards = contracts.filterNot(EstablishedInsuranceContract::isTerminated)
 
-      val crossSells = crossSellsData.map { crossSell ->
-        CrossSell(
-          id = crossSell.id,
-          title = crossSell.title,
-          subtitle = crossSell.description,
-          storeUrl = crossSell.storeUrl,
-          pillowImage = ImageAsset(
-            id = crossSell.pillowImageLarge.id,
-            src = crossSell.pillowImageLarge.src,
-            description = crossSell.pillowImageLarge.alt,
-          ),
-        )
-      }
       InsuranceData(
         contracts = insuranceCards,
         pendingContracts = pendingContracts,
