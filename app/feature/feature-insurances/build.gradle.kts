@@ -68,5 +68,4 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
-  testImplementation(projects.notificationBadgeDataFake)
 }

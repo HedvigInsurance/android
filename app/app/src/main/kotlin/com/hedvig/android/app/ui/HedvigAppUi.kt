@@ -75,7 +75,6 @@ internal fun HedvigAppUi(
       NavigationSuite(
         navigationSuiteType = hedvigAppState.navigationSuiteType,
         topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-        topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
         currentDestination = hedvigAppState.currentDestination,
         onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
       ) {

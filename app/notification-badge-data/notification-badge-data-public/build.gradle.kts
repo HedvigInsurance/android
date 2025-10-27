@@ -23,5 +23,6 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.featureFlagsTest)
 }

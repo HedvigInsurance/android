@@ -76,6 +76,5 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-  testImplementation(projects.notificationBadgeDataFake)
   testImplementation(projects.testClock)
 }

@@ -1,6 +1,6 @@
 query CrossSellTypes {
   currentMember {
-    crossSellV2(input: { userFlow: INSURANCES, flowSource: null, experiments: [] }) {
+    crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: [] }) {
       recommendedCrossSell {
         crossSell {
           id

@@ -1,5 +1,6 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
+import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -16,11 +17,9 @@ internal class CrossSellNotificationBadgeService(
   private val getCrossSellRecommendationIdUseCase: GetCrossSellRecommendationIdUseCase,
   private val notificationBadgeStorage: NotificationBadgeStorage,
 ) {
-  fun showNotification(badgeType: CrossSellBadgeType): Flow<Boolean> {
-    val notificationBadge = badgeType.associatedNotificationBadge
+  fun showNotification(notificationBadge: NotificationBadge): Flow<Boolean> {
     return combine(
-      getCrossSellRecommendationIdUseCase
-        .invoke(),
+      getCrossSellRecommendationIdUseCase.invoke(),
       notificationBadgeStorage.getValue(notificationBadge),
     ) { potentialCrossSellRecommendationData, seenCrossSells ->
       val potentialCrossSellRecommendation = potentialCrossSellRecommendationData?.rawValue
@@ -32,10 +31,10 @@ internal class CrossSellNotificationBadgeService(
     }
   }
 
-  suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
-    val notificationBadge = badgeType.associatedNotificationBadge
+  suspend fun markCurrentCrossSellsAsSeen(notificationBadge: NotificationBadge) {
     val potentialCrossSellRecommendation = getCrossSellRecommendationIdUseCase
-      .invoke().first()
+      .invoke()
+      .first()
       ?.rawValue
     notificationBadgeStorage.setValue(
       notificationBadge = notificationBadge,
