@@ -42,7 +42,11 @@ internal class AudioRecordingViewModel(
     if (incomingAudioContent != null) {
       PrerecordedWithAudioContent(incomingAudioContent)
     } else if (incomingFreeText != null) {
-      WhatHappenedUiState.FreeTextDescription(freeText = incomingFreeText, showOverlay = false)
+      WhatHappenedUiState.FreeTextDescription(
+        freeText = incomingFreeText,
+        showOverlay = false,
+        errorType = null
+        )
     } else {
       NotRecording
     },
@@ -72,7 +76,13 @@ internal class AudioRecordingViewModel(
   fun updateFreeText(text: String?) {
     val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
     _uiState.update {
-      uiState.copy(freeText = text, hasError = false)
+      if (text!=null && text.length>=MIN_TEXT_LENGTH) {
+        uiState.copy(freeText = text, hasError = false, errorType = null)
+      } else {
+        uiState.copy(freeText = text,
+          hasError = true,
+          errorType =  WhatHappenedUiState.FreeTextErrorType.TOO_SHORT)
+      }
     }
     currentFreeText.update {
       text
@@ -138,7 +148,10 @@ internal class AudioRecordingViewModel(
     when (mode) {
       ScreenMode.RECORDING -> redo()
       ScreenMode.FREE_TEXT -> _uiState.update {
-        WhatHappenedUiState.FreeTextDescription(freeText = currentFreeText.value, showOverlay = false)
+        WhatHappenedUiState.FreeTextDescription(
+          freeText = currentFreeText.value,
+          showOverlay = false,
+          errorType = null)
       }
     }
   }
@@ -290,6 +303,7 @@ internal sealed interface WhatHappenedUiState {
   data class FreeTextDescription(
     val freeText: String?,
     val showOverlay: Boolean,
+    val errorType: FreeTextErrorType?,
     override val nextStep: ClaimFlowStep? = null,
     override val isLoading: Boolean = false,
     override val hasError: Boolean = false,
@@ -326,4 +340,10 @@ internal sealed interface WhatHappenedUiState {
     RECORDING,
     FREE_TEXT,
   }
+
+  enum class FreeTextErrorType {
+    TOO_SHORT,
+  }
 }
+
+private const val MIN_TEXT_LENGTH = 50

@@ -146,7 +146,13 @@ private fun AudioRecordingScreen(
         navigateUp = navigateUp,
         closeClaimFlow = closeClaimFlow,
         modifier = Modifier.fillMaxSize(),
-        errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
+        errorSnackbarState =
+          ErrorSnackbarState(
+            uiState.hasError,
+            showedError,
+            messageText = if (uiState is WhatHappenedUiState.FreeTextDescription
+              && uiState.errorType==WhatHappenedUiState.FreeTextErrorType.TOO_SHORT)
+          stringResource(R.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR) else null),
       ) { sideSpacingModifier ->
         Spacer(Modifier.height(16.dp))
         AnimatedContent(
