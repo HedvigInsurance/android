@@ -15,42 +15,42 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class DeflectAutoDecomStepViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
-) : MoleculeViewModel<DeflectAutoDecomEvent, DeflectAutoDecomUiState>(
-    initialState = DeflectAutoDecomUiState.Success,
+) : MoleculeViewModel<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState>(
+    initialState = DeflectAutoDecommissionUiState.Success,
     presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository),
   )
 
 private class DeflectAutoDecomStepPresenter(
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
-) : MoleculePresenter<DeflectAutoDecomEvent, DeflectAutoDecomUiState> {
+) : MoleculePresenter<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState> {
   @Composable
-  override fun MoleculePresenterScope<DeflectAutoDecomEvent>.present(
-    lastState: DeflectAutoDecomUiState,
-  ): DeflectAutoDecomUiState {
+  override fun MoleculePresenterScope<DeflectAutoDecommissionEvent>.present(
+    lastState: DeflectAutoDecommissionUiState,
+  ): DeflectAutoDecommissionUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember {
       mutableStateOf(lastState)
     }
     CollectEvents { event ->
       when (event) {
-        DeflectAutoDecomEvent.ClearTerminationStep -> {
+        DeflectAutoDecommissionEvent.ClearTerminationStep -> {
           val state =
-            currentState as? DeflectAutoDecomUiState.Loading ?: return@CollectEvents
+            currentState as? DeflectAutoDecommissionUiState.Loading ?: return@CollectEvents
           currentState = state.copy(nextStep = null)
         }
 
-        DeflectAutoDecomEvent.FetchNextStep -> loadIteration++
+        DeflectAutoDecommissionEvent.FetchNextStep -> loadIteration++
       }
     }
     LaunchedEffect(loadIteration) {
       if (loadIteration > 0) {
-        currentState = DeflectAutoDecomUiState.Loading(null)
+        currentState = DeflectAutoDecommissionUiState.Loading(null)
         currentState = terminateInsuranceRepository.continueAfterAutoDecomDeflect().fold(
           ifLeft = {
-            DeflectAutoDecomUiState.Failure
+            DeflectAutoDecommissionUiState.Failure
           },
           ifRight = { result ->
-            DeflectAutoDecomUiState.Loading(
+            DeflectAutoDecommissionUiState.Loading(
               nextStep = result,
             )
           },
@@ -61,18 +61,18 @@ private class DeflectAutoDecomStepPresenter(
   }
 }
 
-internal sealed interface DeflectAutoDecomUiState {
+internal sealed interface DeflectAutoDecommissionUiState {
   data class Loading(
     val nextStep: TerminateInsuranceStep? = null,
-  ) : DeflectAutoDecomUiState
+  ) : DeflectAutoDecommissionUiState
 
-  data object Success : DeflectAutoDecomUiState
+  data object Success : DeflectAutoDecommissionUiState
 
-  data object Failure : DeflectAutoDecomUiState
+  data object Failure : DeflectAutoDecommissionUiState
 }
 
-internal sealed interface DeflectAutoDecomEvent {
-  data object FetchNextStep : DeflectAutoDecomEvent
+internal sealed interface DeflectAutoDecommissionEvent {
+  data object FetchNextStep : DeflectAutoDecommissionEvent
 
-  data object ClearTerminationStep : DeflectAutoDecomEvent
+  data object ClearTerminationStep : DeflectAutoDecommissionEvent
 }
