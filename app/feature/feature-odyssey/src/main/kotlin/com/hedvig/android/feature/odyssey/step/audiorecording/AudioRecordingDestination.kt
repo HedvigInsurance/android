@@ -23,18 +23,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -148,11 +152,12 @@ private fun AudioRecordingScreen(
         modifier = Modifier.fillMaxSize(),
         errorSnackbarState =
           ErrorSnackbarState(
-            uiState.hasError,
+            uiState.hasError && !(
+              uiState is WhatHappenedUiState.FreeTextDescription &&
+                uiState.errorType is WhatHappenedUiState.FreeTextErrorType.TooShort
+            ),
             showedError,
-            messageText = if (uiState is WhatHappenedUiState.FreeTextDescription
-              && uiState.errorType==WhatHappenedUiState.FreeTextErrorType.TOO_SHORT)
-          stringResource(R.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR) else null),
+          ),
       ) { sideSpacingModifier ->
         Spacer(Modifier.height(16.dp))
         AnimatedContent(
@@ -242,6 +247,12 @@ private fun FreeTextInputSection(
       onClick = { onLaunchFullScreenEditText() },
       freeTextValue = uiState.freeText,
       freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+      supportingText = if (uiState.errorType is WhatHappenedUiState.FreeTextErrorType.TooShort) {
+        stringResource(R.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, uiState.errorType.minLength)
+      } else {
+        null
+      },
+      hasError = uiState.hasError,
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -317,13 +328,15 @@ private fun AudioRecordingSection(
   )
 }
 
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Composable
-private fun PreviewAudioRecordingScreen() {
+private fun PreviewAudioRecordingScreen(
+  @PreviewParameter(AudioRecordingUiStateProvider::class) uiState: WhatHappenedUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecordingScreen(
-        NotRecording,
+        uiState,
         WindowSizeClass.calculateForPreview(),
         listOf(
           "Perfect, now you need to make a voice recording. Try and answer the questions with as much detail as",
@@ -357,3 +370,21 @@ private fun PreviewAudioRecordingScreen() {
     }
   }
 }
+
+private class AudioRecordingUiStateProvider : CollectionPreviewParameterProvider<WhatHappenedUiState>(
+  listOf(
+    WhatHappenedUiState.AudioRecording.NotRecording,
+    WhatHappenedUiState.FreeTextDescription(
+      freeText = "good long text",
+      showOverlay = false,
+      errorType = null,
+      hasError = false,
+    ),
+    WhatHappenedUiState.FreeTextDescription(
+      freeText = "bad short text",
+      showOverlay = false,
+      errorType = WhatHappenedUiState.FreeTextErrorType.TooShort(50),
+      hasError = true,
+    ),
+  ),
+)

@@ -45,8 +45,8 @@ internal class AudioRecordingViewModel(
       WhatHappenedUiState.FreeTextDescription(
         freeText = incomingFreeText,
         showOverlay = false,
-        errorType = null
-        )
+        errorType = null,
+      )
     } else {
       NotRecording
     },
@@ -76,12 +76,14 @@ internal class AudioRecordingViewModel(
   fun updateFreeText(text: String?) {
     val uiState = _uiState.value as? WhatHappenedUiState.FreeTextDescription ?: return
     _uiState.update {
-      if (text!=null && text.length>=MIN_TEXT_LENGTH) {
+      if (text != null && text.length >= MIN_TEXT_LENGTH) {
         uiState.copy(freeText = text, hasError = false, errorType = null)
       } else {
-        uiState.copy(freeText = text,
+        uiState.copy(
+          freeText = text,
           hasError = true,
-          errorType =  WhatHappenedUiState.FreeTextErrorType.TOO_SHORT)
+          errorType = WhatHappenedUiState.FreeTextErrorType.TooShort(MIN_TEXT_LENGTH),
+        )
       }
     }
     currentFreeText.update {
@@ -151,7 +153,8 @@ internal class AudioRecordingViewModel(
         WhatHappenedUiState.FreeTextDescription(
           freeText = currentFreeText.value,
           showOverlay = false,
-          errorType = null)
+          errorType = null,
+        )
       }
     }
   }
@@ -341,8 +344,8 @@ internal sealed interface WhatHappenedUiState {
     FREE_TEXT,
   }
 
-  enum class FreeTextErrorType {
-    TOO_SHORT,
+  sealed interface FreeTextErrorType {
+    data class TooShort(val minLength: Int) : FreeTextErrorType
   }
 }
 
