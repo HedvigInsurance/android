@@ -110,7 +110,7 @@ internal class TerminateInsuranceRepositoryImpl(
         .bind()
         .flowTerminationSurveyNext
       terminationFlowContextStorage.saveContext(result.context)
-      logcat { "Mariia: after submitReasonForCancelling we get step: ${result.currentStep}" }
+      logcat { "After: after submitReasonForCancelling we get step: ${result.currentStep}" }
       result.currentStep.toTerminateInsuranceStep()
     }
   }
