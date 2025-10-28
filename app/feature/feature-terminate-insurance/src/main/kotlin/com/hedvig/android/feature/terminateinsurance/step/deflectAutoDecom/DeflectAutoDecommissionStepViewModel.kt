@@ -13,7 +13,7 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
-internal class DeflectAutoDecomStepViewModel(
+internal class DeflectAutoDecommissionStepViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState>(
   initialState = DeflectAutoDecommissionUiState.Success(),

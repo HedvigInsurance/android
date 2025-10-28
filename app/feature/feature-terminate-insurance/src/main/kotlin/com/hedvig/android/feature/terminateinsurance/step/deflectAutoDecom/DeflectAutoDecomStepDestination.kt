@@ -31,7 +31,7 @@ import hedvig.resources.R
 
 @Composable
 internal fun DeflectAutoDecomStepDestination(
-  viewModel: DeflectAutoDecomStepViewModel,
+  viewModel: DeflectAutoDecommissionStepViewModel,
   closeTerminationFlow: () -> Unit,
   navigateUp: () -> Unit,
   onContinueTermination: (step: TerminateInsuranceStep) -> Unit,
