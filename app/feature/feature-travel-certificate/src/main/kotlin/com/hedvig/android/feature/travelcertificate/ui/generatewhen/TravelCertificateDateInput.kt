@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -142,7 +144,9 @@ private fun TravelCertificateDateInput(
           stringResource(id = R.string.general_continue_button),
           onClick = submitInput,
           enabled = true,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -191,6 +195,7 @@ private fun MovingDateButton(
   // Workaround to get the layout of the hedvigTextField, without the functionality of it. Perhaps room for another
   //  component here
   Box(modifier) {
+    val onClick = { showDatePicker = true }
     HedvigTextField(
       text = travelDate.toString(),
       onValueChange = {},
@@ -199,12 +204,14 @@ private fun MovingDateButton(
       labelText = stringResource(R.string.travel_certificate_start_date_title),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
+      modifier = Modifier.clickable(onClick = onClick),
     )
     Box(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
-        .clickable { showDatePicker = true },
+        .clickable(onClick = onClick)
+        .semantics { hideFromAccessibility() },
     )
   }
 }
