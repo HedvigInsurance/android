@@ -307,10 +307,12 @@
   <string name="GENERAL_ADD_NEW">Lägg till ny</string>
   <string name="GENERAL_CONFIRM">Bekräfta</string>
   <string name="GENERAL_CONTACT_US_TITLE">Kontakta vårt serviceteam</string>
+  <string name="GENERAL_DOWNLOAD">Ladda ner</string>
   <string name="GENERAL_INVALID_INPUT">Felaktig inmatning</string>
   <string name="GENERAL_NOT_SURE">Vet inte</string>
   <string name="GENERAL_RETRY">Försök igen</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Spara ändringar</string>
+  <string name="GENERAL_SHOW">Visa</string>
   <string name="HC_ALL_QUESTION_TITLE">Alla frågor</string>
   <string name="HC_ANSWER_TITLE">Svar</string>
   <string name="HC_CHAT_ANSWER">Vi är tillgängliga vardagar 08–22 och helger 10–22</string>

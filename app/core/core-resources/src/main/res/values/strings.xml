@@ -307,10 +307,12 @@
   <string name="GENERAL_ADD_NEW">Add new</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
+  <string name="GENERAL_DOWNLOAD">Download</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
   <string name="GENERAL_RETRY">Try again</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Save changes</string>
+  <string name="GENERAL_SHOW">Show</string>
   <string name="HC_ALL_QUESTION_TITLE">All questions</string>
   <string name="HC_ANSWER_TITLE">Answer</string>
   <string name="HC_CHAT_ANSWER">Reach us on weekdays 08–22 or weekends &amp; public holidays 10–22</string>
