@@ -2,6 +2,7 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
+  <string name="A11Y_CLEAR_FIELD">Clear field</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
     <item quantity="one">You have %d eligible insurance.</item>
     <item quantity="other">You have %d eligible insurances.</item>
