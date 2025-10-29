@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,6 +77,29 @@ fun ErrorDialog(
 @Composable
 fun HedvigAlertDialog(
   title: String,
+  text: String?,
+  onConfirmClick: () -> Unit,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
+  buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
+) {
+  HedvigAlertDialog(
+    title = AnnotatedString(title),
+    text = text,
+    onConfirmClick = onConfirmClick,
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+    confirmButtonLabel = confirmButtonLabel,
+    dismissButtonLabel = dismissButtonLabel,
+    buttonSize = buttonSize,
+  )
+}
+
+@Composable
+fun HedvigAlertDialog(
+  title: AnnotatedString,
   text: String?,
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
