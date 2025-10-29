@@ -9,6 +9,7 @@
   </plurals>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
+  <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
@@ -804,9 +805,9 @@
   <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Technical Issue Report</string>
   <string name="app_info.submit_bug.warning">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.</string>
-  <string name="app_info_submit_bug_warning_with_chat_link_1">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please </string>
+  <string name="app_info_submit_bug_warning_with_chat_link_1">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please</string>
   <string name="app_info_submit_bug_warning_with_chat_link_2">write to us</string>
-  <string name="app_info_submit_bug_warning_with_chat_link_3"> here in the app.</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_3">here in the app.</string>
   <string name="app_update_needed.app_store_button">Open App Store</string>
   <string name="app_update_needed.body">It seems like you are using an app version that is not supported anymore. To use Hedvig, update to the latest version on the App Store.</string>
   <string name="app_update_needed.title">App update necessary</string>

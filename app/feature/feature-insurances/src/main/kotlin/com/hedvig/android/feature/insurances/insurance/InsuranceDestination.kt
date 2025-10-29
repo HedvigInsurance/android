@@ -328,7 +328,7 @@ private fun InsuranceCard(
     modifier = modifier
       .padding(horizontal = 16.dp)
       .clip(HedvigTheme.shapes.cornerXLarge)
-      .clickable {
+      .clickable(onClickLabel = stringResource(R.string.A11Y_VIEW_DETAILS)) {
         onInsuranceCardClick(contract.id)
       },
     fallbackPainter = contract.createPainter(),
