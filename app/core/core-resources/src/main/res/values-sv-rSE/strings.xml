@@ -804,6 +804,9 @@
   <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Rapport om tekniska problem</string>
   <string name="app_info.submit_bug.warning">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, skicka ett meddelande direkt här i appen.</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_1">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, </string>
+  <string name="app_info_submit_bug_warning_with_chat_link_2">skicka ett meddelande</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_3"> direkt här i appen.</string>
   <string name="app_update_needed.app_store_button">Gå till App Store</string>
   <string name="app_update_needed.body">Det verkar som om du använder en appversion som inte längre stöds. För att använda Hedvig, uppdatera till den senaste versionen i App Store.</string>
   <string name="app_update_needed.title">Appuppdatering krävs</string>
