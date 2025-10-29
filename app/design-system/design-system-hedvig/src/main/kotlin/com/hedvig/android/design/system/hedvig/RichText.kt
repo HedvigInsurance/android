@@ -47,6 +47,31 @@ fun RichText(
   }
 }
 
+/**
+ * [tag] is also used to name the a11y action, so it must be an appropriate user-facing copy
+ */
+@Composable
+inline fun <R : Any> AnnotatedString.Builder.withHedvigLink(
+  tag: String,
+  noinline onClick: () -> Unit,
+  block: AnnotatedString.Builder.() -> R,
+): R {
+  return withLink(
+    LinkAnnotation.Clickable(
+      tag = tag,
+      linkInteractionListener = { onClick() },
+      styles = TextLinkStyles(
+        SpanStyle(
+          textDecoration = TextDecoration.Underline,
+          color = HedvigTheme.colorScheme.link,
+        ),
+      ),
+    ),
+  ) {
+    block()
+  }
+}
+
 @Composable
 inline fun <R : Any> AnnotatedString.Builder.withHedvigLink(url: String, block: AnnotatedString.Builder.() -> R): R {
   return withLink(
