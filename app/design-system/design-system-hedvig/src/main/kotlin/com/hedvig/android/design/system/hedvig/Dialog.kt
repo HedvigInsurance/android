@@ -148,7 +148,10 @@ fun SingleSelectDialog(
   onRadioOptionSelected: (RadioOptionId) -> Unit,
   onDismissRequest: () -> Unit,
 ) {
-  CoreSelectDialog(onDismissRequest, DialogStyle.TitleNoButtons(title)) {
+  CoreSelectDialog(
+    onDismissRequest,
+    DialogStyle.TitlePlusButton(title, onDismissRequest, stringResource(R.string.general_close_button)),
+  ) {
     RadioGroup(
       options = options,
       selectedOption = selectedOption,
