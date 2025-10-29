@@ -45,9 +45,9 @@ internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
-  CrossSellSheetState.Loading,
-  CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
-)
+    CrossSellSheetState.Loading,
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
+  )
 
 sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent

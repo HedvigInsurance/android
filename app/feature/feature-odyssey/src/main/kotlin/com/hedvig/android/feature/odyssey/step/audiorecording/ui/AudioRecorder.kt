@@ -144,7 +144,7 @@ internal fun AudioRecorder(
               .clickable(
                 onClickLabel = when (isRecording) {
                   true -> stopRecordingText
-                  //todo: this one is not working somehow,
+                  // todo: this one is not working somehow,
                   // so added onClickLabel inside val recordingState
                   false -> startRecordingText
                 },
