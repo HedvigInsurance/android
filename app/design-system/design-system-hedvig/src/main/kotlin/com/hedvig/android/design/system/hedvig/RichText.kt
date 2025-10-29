@@ -4,9 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import com.halilibo.richtext.ui.BasicRichText
 import com.halilibo.richtext.ui.RichTextScope
 import com.halilibo.richtext.ui.RichTextStyle
@@ -19,7 +22,7 @@ import com.halilibo.richtext.ui.string.RichTextStringStyle
  *
  */
 @Composable
-public fun RichText(
+fun RichText(
   modifier: Modifier = Modifier,
   style: RichTextStyle? = null,
   children: @Composable RichTextScope.() -> Unit,
@@ -41,6 +44,23 @@ public fun RichText(
       style = linkStyle.merge(style),
       children = children,
     )
+  }
+}
+
+@Composable
+inline fun <R : Any> AnnotatedString.Builder.withHedvigLink(url: String, block: AnnotatedString.Builder.() -> R): R {
+  return withLink(
+    LinkAnnotation.Url(
+      url = url,
+      styles = TextLinkStyles(
+        SpanStyle(
+          textDecoration = TextDecoration.Underline,
+          color = HedvigTheme.colorScheme.link,
+        ),
+      ),
+    ),
+  ) {
+    block()
   }
 }
 

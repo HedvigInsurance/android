@@ -10,6 +10,8 @@ hedvig {
 dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.coil.coil)
+  api(libs.compose.richtext)
+  api(libs.compose.richtextCommonmark)
   api(projects.designSystemApi)
   api(projects.placeholder)
 
@@ -21,7 +23,6 @@ dependencies {
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.androidx.other.core)
   implementation(libs.coil.compose)
-  implementation(libs.compose.richtext)
   implementation(libs.modal.sheet)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
