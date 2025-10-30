@@ -23,9 +23,9 @@ internal class AboutAppViewModel(
   apolloClient: ApolloClient,
   deviceIdDataStore: DeviceIdDataStore,
 ) : MoleculeViewModel<Unit, AboutAppUiState>(
-  initialState = AboutAppUiState.Loading,
-  presenter = AboutAppPresenter(apolloClient, deviceIdDataStore),
-)
+    initialState = AboutAppUiState.Loading,
+    presenter = AboutAppPresenter(apolloClient, deviceIdDataStore),
+  )
 
 private class AboutAppPresenter(
   private val apolloClient: ApolloClient,

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
  */
 internal interface NotificationBadgeStorage {
   fun getValue(notificationBadge: NotificationBadge): Flow<Set<String>>
+
   suspend fun setValue(notificationBadge: NotificationBadge, newStatus: Set<String>)
 }
 
@@ -28,7 +29,6 @@ internal sealed interface NotificationBadge {
 internal class DatastoreNotificationBadgeStorage(
   private val dataStore: DataStore<Preferences>,
 ) : NotificationBadgeStorage {
-
   override fun getValue(notificationBadge: NotificationBadge): Flow<Set<String>> {
     return dataStore
       .data
@@ -37,6 +37,7 @@ internal class DatastoreNotificationBadgeStorage(
       }
       .distinctUntilChanged()
   }
+
   override suspend fun setValue(notificationBadge: NotificationBadge, newStatus: Set<String>) {
     dataStore.edit { preferences ->
       preferences[notificationBadge.preferencesKey] = newStatus

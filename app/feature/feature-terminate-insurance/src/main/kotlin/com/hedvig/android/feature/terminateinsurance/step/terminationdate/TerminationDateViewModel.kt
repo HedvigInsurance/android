@@ -18,6 +18,7 @@ import kotlinx.datetime.atStartOfDayIn
 
 internal sealed interface TerminationDateEvent {
   data class ChangeSelectedDate(val dateMillis: Long?) : TerminationDateEvent
+
   data object ToggleCheckBox : TerminationDateEvent
 }
 
@@ -25,19 +26,19 @@ internal class TerminationDateViewModel(
   parameters: TerminationDateParameters,
   languageService: LanguageService,
 ) : MoleculeViewModel<TerminationDateEvent, TerminateInsuranceUiState>(
-  initialState = TerminateInsuranceUiState(
-    datePickerState = DatePickerConfiguration(
-      languageService.getLocale(),
-      parameters.minDate,
-      parameters.maxDate,
-    ).datePickerState,
-    isLoading = false,
-    exposureName = parameters.commonParams.exposureName,
-    displayName = parameters.commonParams.insuranceDisplayName,
-    isCheckBoxChecked = false,
-  ),
-  presenter = TerminationDatePresenter(),
-)
+    initialState = TerminateInsuranceUiState(
+      datePickerState = DatePickerConfiguration(
+        languageService.getLocale(),
+        parameters.minDate,
+        parameters.maxDate,
+      ).datePickerState,
+      isLoading = false,
+      exposureName = parameters.commonParams.exposureName,
+      displayName = parameters.commonParams.insuranceDisplayName,
+      isCheckBoxChecked = false,
+    ),
+    presenter = TerminationDatePresenter(),
+  )
 
 private class TerminationDatePresenter : MoleculePresenter<TerminationDateEvent, TerminateInsuranceUiState> {
   @Composable
