@@ -2,6 +2,7 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
+  <string name="A11Y_CHARACTER_LIMIT">%1$d av %2$d tecken angivna</string>
   <string name="A11Y_CLEAR_FIELD">Rensa fält</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
     <item quantity="one">Du har %d berättigad försäkring.</item>
