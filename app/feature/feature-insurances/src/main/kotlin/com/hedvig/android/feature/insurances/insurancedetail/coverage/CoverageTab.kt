@@ -61,7 +61,7 @@ internal fun CoverageTab(
 ) {
   val bottomSheetState = rememberHedvigBottomSheetState<InsurableLimit>()
   HedvigBottomSheet(bottomSheetState) { selectedInsurableLimit ->
-    HedvigText(stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO), Modifier.semantics { heading() })
+    HedvigText(selectedInsurableLimit.label, Modifier.semantics { heading() })
     Spacer(Modifier.height(8.dp))
     HedvigText(
       text = selectedInsurableLimit.description,
