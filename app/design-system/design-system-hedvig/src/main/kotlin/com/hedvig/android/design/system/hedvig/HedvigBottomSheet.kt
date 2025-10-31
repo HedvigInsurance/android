@@ -161,10 +161,10 @@ data class PriceInfoForBottomSheet(
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
+  modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
   sheetPadding: PaddingValues = PaddingValues(0.dp),
   style: BottomSheetStyle = BottomSheetDefaults.bottomSheetStyle,
-  modifier: Modifier = Modifier,
   dragHandle: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.(T) -> Unit,
 ) {

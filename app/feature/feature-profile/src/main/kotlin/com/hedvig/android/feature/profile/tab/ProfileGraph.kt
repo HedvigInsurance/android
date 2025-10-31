@@ -106,6 +106,7 @@ fun NavGraphBuilder.profileGraph(
         showOpenSourceLicenses = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.Licenses) }
         },
+        navigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         hedvigBuildConstants = hedvigBuildConstants,
       )
     }

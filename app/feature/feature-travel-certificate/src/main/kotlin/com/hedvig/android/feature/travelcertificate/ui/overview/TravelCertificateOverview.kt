@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.ui.overview
 
+import android.R.attr.enabled
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -99,7 +100,9 @@ internal fun TravelCertificateOverview(
         HedvigNotificationCard(
           message = stringResource(R.string.travel_certificate_download_recommendation),
           priority = NotificationPriority.Info,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(
@@ -115,6 +118,11 @@ internal fun TravelCertificateOverview(
               onDownloadCertificate(travelCertificateUrl)
             }
           },
+          onClickLabel = if (uiState.travelCertificateUri != null) {
+            stringResource(R.string.GENERAL_SHOW)
+          } else {
+            stringResource(R.string.GENERAL_DOWNLOAD)
+          },
           enabled = true,
           modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +132,9 @@ internal fun TravelCertificateOverview(
         HedvigTextButton(
           text = stringResource(id = R.string.general_done_button),
           onClick = navigateUp,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
       }

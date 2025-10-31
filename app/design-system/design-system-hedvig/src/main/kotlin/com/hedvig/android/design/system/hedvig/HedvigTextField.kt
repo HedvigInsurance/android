@@ -691,7 +691,7 @@ private fun ReadOnlyTrailingIcon(tint: Color) {
 @Composable
 private fun IsNotEmptyTrailingIcon(tint: Color, onClick: () -> Unit) {
   IconButton(onClick, Modifier.size(24.dp)) {
-    Icon(HedvigIcons.Close, stringResource(R.string.GENERAL_REMOVE), tint = tint)
+    Icon(HedvigIcons.Close, stringResource(R.string.A11Y_CLEAR_FIELD), tint = tint)
   }
 }
 

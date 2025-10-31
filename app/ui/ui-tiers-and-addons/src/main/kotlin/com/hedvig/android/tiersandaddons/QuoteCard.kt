@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -336,11 +337,11 @@ private fun QuoteDetails(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.semantics(true) {},
+    modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     if (displayItems.isNotEmpty()) {
-      Column {
+      Column(Modifier.semantics(true) {}) {
         HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
         for (displayItem in displayItems) {
           InfoRow(displayItem.title, displayItem.value)
@@ -348,9 +349,7 @@ private fun QuoteDetails(
       }
     }
     if (insurableLimits.isNotEmpty()) {
-      Column(
-        modifier = Modifier.semantics(true) {},
-      ) {
+      Column(modifier = Modifier.semantics(true) {}) {
         HedvigText(
           stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
         )
@@ -365,26 +364,19 @@ private fun QuoteDetails(
       }
     }
     if (documents.isNotEmpty()) {
-      Column {
-        HedvigText(
-          stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE),
-          modifier = Modifier.semantics(true) {},
-        )
-        Column(
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-          modifier = Modifier.semantics(true) {},
-        ) {
+      Column(modifier = Modifier.semantics(true) {}) {
+        HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
           for (document in documents) {
             val uriHandler = LocalUriHandler.current
             Row(
               modifier = Modifier
                 .fillMaxWidth()
                 .clip(HedvigTheme.shapes.cornerXSmall)
-                .clickable {
+                .clickable(onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)) {
                   uriHandler.openUri(document.url)
                 },
             ) {
-              val voiceoverDescription = stringResource(R.string.TALKBACK_DOCUMENT, document.displayName)
               HedvigText(
                 text = stringWithShiftedLabel(
                   text = document.displayName,
@@ -394,11 +386,7 @@ private fun QuoteDetails(
                   textFontSize = LocalTextStyle.current.fontSize,
                 ),
                 style = HedvigTheme.typography.bodySmall,
-                modifier = Modifier
-                  .weight(1f)
-                  .semantics {
-                    contentDescription = voiceoverDescription
-                  },
+                modifier = Modifier.weight(1f),
               )
               Spacer(Modifier.width(8.dp))
               LayoutWithoutPlacement(
@@ -412,7 +400,7 @@ private fun QuoteDetails(
                 val density = LocalDensity.current
                 Icon(
                   imageVector = HedvigIcons.ArrowNorthEast,
-                  contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+                  contentDescription = null,
                   tint = HedvigTheme.colorScheme.fillPrimary,
                   modifier = Modifier
                     .wrapContentSize(Alignment.Center)
