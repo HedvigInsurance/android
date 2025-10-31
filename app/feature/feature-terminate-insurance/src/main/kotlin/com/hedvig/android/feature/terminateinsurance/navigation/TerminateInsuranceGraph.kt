@@ -12,7 +12,6 @@ import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDe
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepDestination
-import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepDestination
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
@@ -246,11 +245,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     }
 
     navdestination<TerminateInsuranceDestination.DeflectAutoCancel> { backStackEntry ->
-      val viewModel: DeflectAutoCancelStepViewModel = koinViewModel {
-        parametersOf(message)
-      }
       DeflectAutoCancelStepDestination(
-        viewModel = viewModel,
+        message = message,
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navigator::navigateUp,
@@ -284,7 +280,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
-      -> {
+        -> {
         typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }

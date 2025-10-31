@@ -36,11 +36,11 @@ internal fun DeflectAutoDecomStepDestination(
   navigateUp: () -> Unit,
   onContinueTermination: (step: TerminateInsuranceStep) -> Unit,
 ) {
-  val uiState: DeflectAutoDecomUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: DeflectAutoDecommissionUiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? DeflectAutoDecomUiState.Loading ?: return@LaunchedEffect
+    val uiStateValue = uiState as? DeflectAutoDecommissionUiState.Loading ?: return@LaunchedEffect
     if (uiStateValue.nextStep != null) {
-      viewModel.emit(DeflectAutoDecomEvent.ClearTerminationStep)
+      viewModel.emit(DeflectAutoDecommissionEvent.ClearTerminationStep)
       onContinueTermination(uiStateValue.nextStep)
     }
   }
@@ -48,21 +48,21 @@ internal fun DeflectAutoDecomStepDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-    reload = { viewModel.emit(DeflectAutoDecomEvent.FetchNextStep) },
-    fetchTerminationStep = { viewModel.emit(DeflectAutoDecomEvent.FetchNextStep) },
+    reload = { viewModel.emit(DeflectAutoDecommissionEvent.FetchNextStep) },
+    fetchTerminationStep = { viewModel.emit(DeflectAutoDecommissionEvent.FetchNextStep) },
   )
 }
 
 @Composable
 private fun DeflectAutoDecomStepScreen(
-  uiState: DeflectAutoDecomUiState,
+  uiState: DeflectAutoDecommissionUiState,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   reload: () -> Unit,
   fetchTerminationStep: () -> Unit,
 ) {
   when (uiState) {
-    DeflectAutoDecomUiState.Failure -> {
+    DeflectAutoDecommissionUiState.Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -73,8 +73,8 @@ private fun DeflectAutoDecomStepScreen(
       }
     }
 
-    is DeflectAutoDecomUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    DeflectAutoDecomUiState.Success -> DeflectAutoDecomStepSuccessScreen(
+    is DeflectAutoDecommissionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    DeflectAutoDecommissionUiState.Success -> DeflectAutoDecomStepSuccessScreen(
       navigateUp = navigateUp,
       closeTerminationFlow = closeTerminationFlow,
       fetchTerminationStep = fetchTerminationStep,
@@ -158,7 +158,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
 private fun PreviewChooseInsuranceToTerminateScreen(
   @PreviewParameter(
     DeflectAutoDecomUiStateProvider::class,
-  ) uiState: DeflectAutoDecomUiState,
+  ) uiState: DeflectAutoDecommissionUiState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -174,10 +174,10 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 }
 
 private class DeflectAutoDecomUiStateProvider :
-  CollectionPreviewParameterProvider<DeflectAutoDecomUiState>(
+  CollectionPreviewParameterProvider<DeflectAutoDecommissionUiState>(
     listOf(
-      DeflectAutoDecomUiState.Success,
-      DeflectAutoDecomUiState.Loading(null),
-      DeflectAutoDecomUiState.Failure,
+      DeflectAutoDecommissionUiState.Success,
+      DeflectAutoDecommissionUiState.Loading(null),
+      DeflectAutoDecommissionUiState.Failure,
     ),
   )
