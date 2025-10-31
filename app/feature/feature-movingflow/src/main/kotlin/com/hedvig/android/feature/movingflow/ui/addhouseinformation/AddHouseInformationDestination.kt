@@ -42,8 +42,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -64,10 +62,9 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
 import com.hedvig.android.design.system.hedvig.Surface
@@ -122,7 +119,7 @@ internal fun AddHouseInformationDestination(
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
   if (uiState is Content && uiState.navigateToChoseCoverage) {
-    LaunchedEffect(uiState.navigateToChoseCoverage) {
+    LaunchedEffect(Unit) {
       viewModel.emit(NavigatedToChoseCoverage)
       onNavigateToChoseCoverageLevelAndDeductible()
     }
@@ -387,20 +384,17 @@ private fun ExtraBuildingsDialogContent(
       ) {
         HedvigCard {
           RadioGroup(
-            radioGroupStyle = RadioGroupStyle.VerticalWithGroupLabel.LeftAligned(
-              groupLabelText = stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
-              dataList = MoveExtraBuildingType.entries.map { extraBuildingType ->
-                RadioOptionGroupDataSimple(
-                  RadioOptionData(
-                    id = extraBuildingType.name,
-                    optionText = extraBuildingType.string(),
-                    chosenState = if (chosenBuilding == extraBuildingType) Chosen else NotChosen,
-                  ),
-                )
-              },
+            options = MoveExtraBuildingType.entries.map { extraBuildingType ->
+              RadioOption(
+                RadioOptionId(extraBuildingType.name),
+                extraBuildingType.string(),
+              )
+            },
+            selectedOption = chosenBuilding?.name?.let { RadioOptionId(it) },
+            onRadioOptionSelected = { chosenBuilding = MoveExtraBuildingType.valueOf(it.id) },
+            style = RadioGroupStyle.Labeled.VerticalWithDivider(
+              stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
             ),
-            onOptionClick = { chosenBuilding = MoveExtraBuildingType.valueOf(it) },
-            radioGroupSize = RadioGroupSize.Medium,
           )
         }
         HedvigTextField(
@@ -515,7 +509,7 @@ private fun PreviewAddHouseInformationScreenFailure() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddHouseInformationScreen(
-        uiState = AddHouseInformationUiState.MissingOngoingMovingFlow,
+        uiState = MissingOngoingMovingFlow,
         navigateUp = {},
         popBackStack = {},
         exitFlow = {},

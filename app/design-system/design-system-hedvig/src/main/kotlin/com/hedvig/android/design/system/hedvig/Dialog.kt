@@ -8,9 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
@@ -36,11 +35,6 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
@@ -49,12 +43,8 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButt
 import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
-import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
-import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionSize.Small
-import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
 import hedvig.resources.R
-import kotlin.collections.listOf
 
 @Composable
 fun ErrorDialog(
@@ -127,55 +117,19 @@ fun HedvigAlertDialog(
 }
 
 @Composable
-fun <T> SingleSelectDialog(
-  title: String,
-  optionsList: List<T>,
-  onSelected: (T) -> Unit,
-  getDisplayText: (T) -> String,
-  getIsSelected: ((T) -> Boolean)?,
-  getId: (T) -> String,
-  getItemForId: (String) -> T,
-  onDismissRequest: () -> Unit,
-) {
-  SingleSelectDialog(
-    title = title,
-    optionsList = optionsList.map {
-      RadioOptionData(
-        id = getId(it),
-        optionText = getDisplayText(it),
-        chosenState = if (getIsSelected?.invoke(it) ?: false) Chosen else NotChosen,
-      )
-    },
-    onSelected = {
-      onSelected(getItemForId(it.id))
-    },
-    onDismissRequest = onDismissRequest,
-    radioOptionStyle = RadioOptionStyle.LeftAligned,
-    radioOptionSize = Small,
-  )
-}
-
-@Composable
 fun SingleSelectDialog(
   title: String,
-  optionsList: List<RadioOptionData>,
-  onSelected: (RadioOptionData) -> Unit,
+  options: List<RadioOption>,
+  selectedOption: RadioOptionId?,
+  onRadioOptionSelected: (RadioOptionId) -> Unit,
   onDismissRequest: () -> Unit,
-  radioOptionStyle: RadioOptionStyle = RadioOptionStyle.LeftAligned,
-  radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
 ) {
-  CoreSelectDialog(
-    optionsList = optionsList,
-    onDismissRequest = onDismissRequest,
-    style = DialogStyle.TitleNoButtons(title = title),
-  ) { radioOptionData ->
-    RadioOption(
-      data = radioOptionData,
-      radioOptionStyle = radioOptionStyle,
-      radioOptionSize = radioOptionSize,
-      groupLockedState = NotLocked,
-      onOptionClick = {
-        onSelected(radioOptionData)
+  CoreSelectDialog(onDismissRequest, DialogStyle.TitleNoButtons(title)) {
+    RadioGroup(
+      options = options,
+      selectedOption = selectedOption,
+      onRadioOptionSelected = {
+        onRadioOptionSelected(it)
         onDismissRequest()
       },
     )
@@ -183,59 +137,26 @@ fun SingleSelectDialog(
 }
 
 @Composable
-fun <T> MultiSelectDialog(
-  title: String,
-  optionsList: List<T>,
-  onSelected: (T) -> Unit,
-  getDisplayText: (T) -> String,
-  getIsSelected: ((T) -> Boolean)?,
-  getId: (T) -> String,
-  getItemForId: (String) -> T,
-  onDismissRequest: () -> Unit,
-  buttonText: String? = null,
-) {
-  MultiSelectDialog(
-    title = title,
-    buttonText = buttonText,
-    optionsList = optionsList.map {
-      RadioOptionData(
-        id = getId(it),
-        optionText = getDisplayText(it),
-        chosenState = if (getIsSelected?.invoke(it) ?: false) Chosen else NotChosen,
-      )
-    },
-    onSelected = { onSelected(getItemForId(it.id)) },
-    onDismissRequest = onDismissRequest,
-    checkboxStyle = CheckboxStyle.LeftAligned,
-    checkboxSize = CheckboxSize.Small,
-  )
-}
-
-@Composable
 fun MultiSelectDialog(
   title: String,
-  optionsList: List<RadioOptionData>,
-  onSelected: (RadioOptionData) -> Unit,
+  options: List<RadioOption>,
+  selectedOptions: List<RadioOptionId>,
+  onOptionSelected: (RadioOptionId) -> Unit,
   onDismissRequest: () -> Unit,
   buttonText: String? = null,
-  checkboxStyle: CheckboxStyle = CheckboxStyle.Default,
-  checkboxSize: CheckboxSize = Medium,
 ) {
   CoreSelectDialog(
-    optionsList = optionsList,
     onDismissRequest = onDismissRequest,
     style = DialogStyle.TitlePlusButton(
       title = title,
       onButtonClick = onDismissRequest,
       buttonText = buttonText ?: stringResource(R.string.general_close_button),
     ),
-  ) { radioOptionData ->
-    Checkbox(
-      data = radioOptionData,
-      checkboxStyle = checkboxStyle,
-      checkboxSize = checkboxSize,
-      lockedState = NotLocked,
-      onClick = { onSelected(radioOptionData) },
+  ) {
+    CheckboxGroup(
+      options = options,
+      selectedOptions = selectedOptions,
+      onRadioOptionSelected = onOptionSelected,
     )
   }
 }
@@ -455,10 +376,9 @@ private fun DialogContentTitle(contentPadding: PaddingValues, style: DialogStyle
 
 @Composable
 private fun CoreSelectDialog(
-  optionsList: List<RadioOptionData>,
   onDismissRequest: () -> Unit,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
-  itemContent: @Composable (RadioOptionData) -> Unit,
+  radioGroup: @Composable () -> Unit,
 ) {
   HedvigDialog(
     onDismissRequest = { onDismissRequest.invoke() },
@@ -468,35 +388,28 @@ private fun CoreSelectDialog(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Spacer(Modifier.height(8.dp))
-      val state = rememberLazyListState()
-      val lazyColumnContentPadding = PaddingValues(vertical = 16.dp)
+      val state = rememberScrollState()
+      val topSpacing = 16.dp
       val density = LocalDensity.current
       val drawTopBorder by remember {
         derivedStateOf {
-          state.firstVisibleItemIndex != 0 ||
-            state.firstVisibleItemScrollOffset > with(density) {
-              lazyColumnContentPadding.calculateTopPadding().roundToPx()
-            }
+          state.value > with(density) { topSpacing.toPx() }
         }
       }
       val borderColor = HedvigTheme.colorScheme.borderSecondary
-      LazyColumn(
-        state = state,
+      Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = lazyColumnContentPadding,
-        modifier = Modifier.drawWithContent {
-          drawContent()
-          if (drawTopBorder) {
-            drawLine(borderColor, Offset.Zero, Offset(size.width, 0f))
+        modifier = Modifier
+          .drawWithContent {
+            drawContent()
+            if (drawTopBorder) {
+              drawLine(borderColor, Offset.Zero, Offset(size.width, 0f))
+            }
           }
-        },
+          .verticalScroll(state),
       ) {
-        items(
-          items = optionsList,
-          key = { data -> data.id },
-        ) { radioOptionData ->
-          itemContent(radioOptionData)
-        }
+        Spacer(Modifier.height(topSpacing))
+        radioGroup()
       }
     }
   }
@@ -604,37 +517,13 @@ private fun BigVerticalButtons(
 private fun PreviewSingleSelectDialog() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val optionsList = listOf("optionsList")
       SingleSelectDialog(
         title = "title",
-        optionsList = optionsList,
-        onSelected = {},
-        getDisplayText = { "getDisplayText" },
-        getIsSelected = { true },
-        getId = { "getId" },
-        getItemForId = { optionsList.first() },
-        onDismissRequest = {},
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewMultiSelectDialog() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val optionsList = listOf("optionsList").run {
-        this + this + this + this + this
-      }
-      MultiSelectDialog(
-        title = "title",
-        optionsList = optionsList,
-        onSelected = {},
-        getDisplayText = { "getDisplayText" },
-        getIsSelected = { true },
-        getId = { "getId" },
-        getItemForId = { optionsList.first() },
+        options = List(3) {
+          RadioOption(RadioOptionId(it.toString()), "#$it")
+        },
+        selectedOption = RadioOptionId("#0"),
+        onRadioOptionSelected = {},
         onDismissRequest = {},
       )
     }

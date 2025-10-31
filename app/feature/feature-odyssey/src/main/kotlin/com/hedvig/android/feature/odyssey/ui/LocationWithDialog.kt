@@ -10,12 +10,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.claimflow.LocationOption
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.R
@@ -32,15 +31,15 @@ internal fun LocationWithDialog(
   if (showLocationPickerDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.claims_incident_screen_location),
-      optionsList = locationOptions.map { locationOption ->
-        RadioOptionData(
-          locationOption.displayName,
-          locationOption.displayName,
-          if (selectedLocation?.displayName == locationOption.displayName) Chosen else NotChosen,
+      options = locationOptions.map { locationOption ->
+        RadioOption(
+          id = RadioOptionId(locationOption.displayName),
+          text = locationOption.displayName,
         )
       },
-      onSelected = { radioOptionData ->
-        selectLocationOption(locationOptions.first { it.displayName == radioOptionData.id })
+      selectedOption = selectedLocation?.displayName?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        selectLocationOption(locationOptions.first { it.displayName == id.id })
       },
       onDismissRequest = { showLocationPickerDialog = false },
     )

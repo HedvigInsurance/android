@@ -23,19 +23,14 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical.Default
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.movingflow.data.HousingType
@@ -134,20 +129,15 @@ private fun StartContentScreen(
     Column(Modifier.verticalScroll(rememberScrollState())) {
       Spacer(Modifier.height(8.dp))
       RadioGroup(
-        radioGroupStyle = Default(
-          uiState.possibleHousingTypes.map {
-            RadioOptionGroupDataSimple(
-              RadioOptionData(
-                id = it.name,
-                optionText = stringResource(it.stringResource()),
-                chosenState = if (it == uiState.selectedHousingType) Chosen else NotChosen,
-                lockedState = NotLocked,
-              ),
-            )
-          },
-        ),
-        onOptionClick = { onSelectHousingType(HousingType.valueOf(it)) },
-        radioGroupSize = Medium,
+        options = uiState.possibleHousingTypes.map { housingType ->
+          RadioOption(
+            id = RadioOptionId(housingType.name),
+            text = stringResource(housingType.stringResource()),
+          )
+        },
+        selectedOption = RadioOptionId(uiState.selectedHousingType.name),
+        onRadioOptionSelected = { onSelectHousingType(HousingType.valueOf(it.id)) },
+        modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(

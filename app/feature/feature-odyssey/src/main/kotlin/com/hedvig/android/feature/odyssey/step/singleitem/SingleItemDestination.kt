@@ -50,6 +50,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextField
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
@@ -280,17 +282,17 @@ private fun SelectDialogWithFreeTextField(
   val resources = LocalContext.current.resources
   SingleSelectDialog(
     title = stringResource(R.string.claims_item_screen_model_button),
-    optionsList = uiState.availableItemModels,
-    getDisplayText = { it.displayName(resources) },
-    getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
-    getId = { it.asKnown()?.itemModelId ?: "id" },
-    getItemForId = { id ->
-      uiState.availableItemModels.first { it.asKnown()?.itemModelId ?: "id" == id }
+    options = uiState.availableItemModels.map { model ->
+      RadioOption(
+        id = RadioOptionId(model.asKnown()?.itemModelId ?: "id"),
+        text = model.displayName(resources),
+      )
     },
-    onSelected =
-      { selectedModel ->
-        selectModel(selectedModel)
-      },
+    selectedOption = uiState.selectedItemModel?.asKnown()?.itemModelId?.let { RadioOptionId(it) },
+    onRadioOptionSelected = { optionId ->
+      val model = uiState.availableItemModels.first { it.asKnown()?.itemModelId == optionId.id }
+      selectModel(model)
+    },
     onDismissRequest = onDismissRequest,
   )
 }
@@ -308,14 +310,16 @@ private fun Brands(
   if (showDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
-      optionsList = uiState.availableItemBrands,
-      getDisplayText = { it.displayName(resources) },
-      getId = { it.asKnown()?.itemBrandId ?: "id" },
-      getIsSelected = { it: ItemBrand -> it == uiState.selectedItemBrand },
-      getItemForId = { id ->
-        uiState.availableItemBrands.first { it.asKnown()?.itemBrandId ?: "id" == id }
+      options = uiState.availableItemBrands.map { itemBrand ->
+        RadioOption(
+          id = RadioOptionId(itemBrand.asKnown()?.itemBrandId ?: "id"),
+          text = itemBrand.displayName(resources),
+        )
       },
-      onSelected = selectBrand,
+      selectedOption = uiState.selectedItemBrand?.asKnown()?.itemBrandId?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        selectBrand(uiState.availableItemBrands.first { it.asKnown()?.itemBrandId == id.id })
+      },
       onDismissRequest = { showDialog = false },
     )
   }
@@ -355,16 +359,14 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
 
 @Composable
 private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, modifier: Modifier = Modifier) {
-  var text by remember { mutableStateOf(initialValue) }
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
   HedvigTextField(
     text = initialValue,
     onValueChange = { newValue ->
-      text = newValue
       onInput(newValue)
     },
-    labelText = stringResource(id = R.string.claims_item_enter_model_name),
+    labelText = stringResource(R.string.claims_item_enter_model_name),
     textFieldSize = TextFieldSize.Medium,
     modifier = modifier.focusRequester(focusRequester),
     keyboardOptions = KeyboardOptions(
@@ -391,18 +393,18 @@ private fun ItemProblems(
   if (showDialog) {
     MultiSelectDialog(
       title = stringResource(R.string.claims_item_screen_type_of_damage_button),
+      options = uiState.availableItemProblems.map { itemProblem ->
+        RadioOption(
+          id = RadioOptionId(itemProblem.itemProblemId),
+          text = itemProblem.displayName,
+        )
+      },
+      selectedOptions = uiState.selectedItemProblems.map { RadioOptionId(it.itemProblemId) },
+      onOptionSelected = { id ->
+        selectProblem(uiState.availableItemProblems.first { it.itemProblemId == id.id })
+      },
+      onDismissRequest = { showDialog = false },
       buttonText = stringResource(R.string.general_save_button),
-      optionsList = uiState.availableItemProblems,
-      onSelected = selectProblem,
-      getDisplayText = { it.displayName },
-      getIsSelected = { uiState.selectedItemProblems.contains(it) },
-      getId = { it.itemProblemId },
-      getItemForId = { id ->
-        uiState.availableItemProblems.first { it.itemProblemId == id }
-      },
-      onDismissRequest = {
-        showDialog = false
-      },
     )
   }
 
@@ -411,7 +413,7 @@ private fun ItemProblems(
     labelText = stringResource(R.string.claims_item_screen_type_of_damage_button),
     inputText = when {
       uiState.selectedItemProblems.isEmpty() -> null
-      else -> uiState.selectedItemProblems.map(ItemProblem::displayName).joinToString()
+      else -> uiState.selectedItemProblems.joinToString(transform = ItemProblem::displayName)
     },
     modifier = modifier,
     enabled = enabled,

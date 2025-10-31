@@ -34,7 +34,7 @@ internal class GetCrossSellRecommendationIdUseCaseImpl(
           },
           { data ->
             val result = data.currentMember
-              .crossSell.recommendedCrossSell?.crossSell?.id?.let {
+              .crossSellV2.recommendedCrossSell?.crossSell?.id?.let {
                 CrossSellIdentifier(it)
               }
             result
