@@ -439,6 +439,10 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
   override suspend fun getContractId(): String {
     return fakeContractId
   }
+
+  override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
+    return terminationFlowTurbine.awaitItem()
+  }
 }
 
 private val fakeContractId = "fakeContractId"

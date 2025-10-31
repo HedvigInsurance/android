@@ -1,0 +1,9 @@
+mutation FlowTerminationAutoDecomNext($context: FlowContext!,
+  $input: FlowTerminationCarAutoDecomInput!,
+  $addonsEnabled: Boolean!) {
+  flowTerminationCarAutoDecomNext(context: $context, input: $input) {
+    id
+    context
+    ...TerminationFlowStepFragment
+  }
+}

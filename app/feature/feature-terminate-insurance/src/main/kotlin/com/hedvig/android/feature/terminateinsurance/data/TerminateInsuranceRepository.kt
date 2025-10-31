@@ -10,12 +10,15 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature.TRAVEL_ADDON
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
+import octopus.FlowTerminationAutoDecomNextMutation
 import octopus.FlowTerminationDateNextMutation
 import octopus.FlowTerminationDeletionNextMutation
 import octopus.FlowTerminationStartMutation
 import octopus.FlowTerminationSurveyNextMutation
+import octopus.type.FlowTerminationCarAutoDecomInput
 import octopus.type.FlowTerminationDateInput
 import octopus.type.FlowTerminationStartInput
 import octopus.type.FlowTerminationSurveyDataInput
@@ -34,6 +37,8 @@ internal interface TerminateInsuranceRepository {
   suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
 
   suspend fun getContractId(): String
+
+  suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
@@ -45,7 +50,15 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
       val result = apolloClient
-        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id), isAddonsEnabled))
+        .mutation(
+          FlowTerminationStartMutation(
+            FlowTerminationStartInput(
+              insuranceId.id,
+              supportedSteps = SUPPORTED_STEPS,
+            ),
+            isAddonsEnabled,
+          ),
+        )
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationStart
@@ -97,6 +110,7 @@ internal class TerminateInsuranceRepositoryImpl(
         .bind()
         .flowTerminationSurveyNext
       terminationFlowContextStorage.saveContext(result.context)
+      logcat { "After: after submitReasonForCancelling we get step: ${result.currentStep}" }
       result.currentStep.toTerminateInsuranceStep()
     }
   }
@@ -117,4 +131,35 @@ internal class TerminateInsuranceRepositoryImpl(
   override suspend fun getContractId(): String {
     return terminationFlowContextStorage.getContractId()
   }
+
+  override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
+    return either {
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
+      val result = apolloClient
+        .mutation(
+          FlowTerminationAutoDecomNextMutation(
+            context = terminationFlowContextStorage.getContext(),
+            addonsEnabled = isAddonsEnabled,
+            input = FlowTerminationCarAutoDecomInput(true),
+          ),
+        )
+        .safeExecute(::ErrorMessage)
+        .bind()
+        .flowTerminationCarAutoDecomNext
+      terminationFlowContextStorage.saveContext(result.context)
+      result.currentStep.toTerminateInsuranceStep()
+    }
+  }
+
+  private val SUPPORTED_STEPS = Optional.present(
+    listOf(
+      "FlowTerminationSurveyStep",
+      "FlowTerminationDateStep",
+      "FlowTerminationDeletionStep",
+      "FlowTerminationSuccessStep",
+      "FlowTerminationFailedStep",
+      "FlowTerminationCarDeflectAutoCancelStep",
+      "FlowTerminationCarAutoDecomStep",
+    ),
+  )
 }
