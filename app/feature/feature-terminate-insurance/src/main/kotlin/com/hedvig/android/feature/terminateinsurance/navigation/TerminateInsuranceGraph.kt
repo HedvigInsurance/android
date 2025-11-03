@@ -244,9 +244,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.DeflectAutoCancel> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.DeflectAutoCancel>(
+      TerminateInsuranceDestination.DeflectAutoCancel,
+    ) { backStackEntry ->
       DeflectAutoCancelStepDestination(
-        message = message,
+        params = autoCancelDeflectStepParameters,
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navigator::navigateUp,
@@ -280,7 +282,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
-        -> {
+      -> {
         typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }

@@ -170,7 +170,7 @@ fun HedvigTextButton(
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
     buttonSize = buttonSize,
     interactionSource = interactionSource,
-    isLoading = isLoading
+    isLoading = isLoading,
   )
 }
 
