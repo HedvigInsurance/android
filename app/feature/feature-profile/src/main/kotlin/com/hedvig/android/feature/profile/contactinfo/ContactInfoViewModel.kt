@@ -97,7 +97,7 @@ internal sealed interface ContactInfoUiState {
 }
 
 internal class ContactInfoViewModel(
-  private val repository: Provider<ContactInfoRepository>,
+  repository: Provider<ContactInfoRepository>,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(
     ContactInfoUiState.Loading,
     ContactInfoPresenter(repository),
