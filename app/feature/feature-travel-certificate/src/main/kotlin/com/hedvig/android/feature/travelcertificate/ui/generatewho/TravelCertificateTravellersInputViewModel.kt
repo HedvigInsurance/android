@@ -208,7 +208,7 @@ internal data class CoInsured(
         // Backend does not return a non-null ID here, so to make sure we don't accidentally consider two entries as
         // duplicate since they'd have the same key ("null"), we make our own key based on the data available to us.
         coInsuredData.id
-          ?: coInsuredData.firstName + coInsuredData.lastName + coInsuredData.ssn + coInsuredData.dateOfBirth,
+          ?: (coInsuredData.firstName + coInsuredData.lastName + coInsuredData.ssn + coInsuredData.dateOfBirth),
       )
     }
   }

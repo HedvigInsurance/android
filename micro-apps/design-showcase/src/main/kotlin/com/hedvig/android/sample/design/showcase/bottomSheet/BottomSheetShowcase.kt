@@ -1,7 +1,5 @@
 package com.hedvig.android.sample.design.showcase.bottomSheet
 
-import android.R.attr.enabled
-import android.R.attr.text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
@@ -23,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -32,9 +28,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -88,12 +83,9 @@ fun ShowcaseBottomSheet() {
 private fun BottomSheetWithList(sheetState: HedvigBottomSheetState<Unit>) {
   val chosenOption = remember { mutableStateOf<Int?>(null) }
   val listOfOptions = List(6) { index ->
-    RadioOptionGroupData.RadioOptionGroupDataSimple(
-      RadioOptionData(
-        id = index.toString(),
-        optionText = "Option $index",
-        chosenState = if (index == chosenOption.value) Chosen else NotChosen,
-      ),
+    RadioOption(
+      id = RadioOptionId(index.toString()),
+      text = "Option $index",
     )
   }
   HedvigBottomSheet(sheetState) {
@@ -103,8 +95,9 @@ private fun BottomSheetWithList(sheetState: HedvigBottomSheetState<Unit>) {
     ) {
       Spacer(Modifier.height(40.dp))
       RadioGroup(
-        radioGroupStyle = RadioGroupStyle.Vertical.Default(listOfOptions),
-        onOptionClick = { chosenOption.value = it.toInt() },
+        options = listOfOptions,
+        selectedOption = chosenOption.value?.toString()?.let { RadioOptionId(it) },
+        onRadioOptionSelected = { chosenOption.value = it.id.toInt() },
       )
       Spacer(Modifier.height(40.dp))
       HedvigButton(
@@ -130,12 +123,9 @@ private fun BottomSheetWithList(sheetState: HedvigBottomSheetState<Unit>) {
 private fun BottomSheetWithLongList(sheetState: HedvigBottomSheetState<Unit>) {
   val chosenOption = remember { mutableStateOf<Int?>(null) }
   val listOfOptions = List(20) { index ->
-    RadioOptionGroupData.RadioOptionGroupDataSimple(
-      RadioOptionData(
-        id = index.toString(),
-        optionText = "Option $index",
-        chosenState = if (index == chosenOption.value) Chosen else NotChosen,
-      ),
+    RadioOption(
+      id = RadioOptionId(index.toString()),
+      text = "Option $index",
     )
   }
   HedvigBottomSheet(sheetState) {
@@ -145,8 +135,9 @@ private fun BottomSheetWithLongList(sheetState: HedvigBottomSheetState<Unit>) {
     ) {
       Spacer(Modifier.height(40.dp))
       RadioGroup(
-        radioGroupStyle = RadioGroupStyle.Vertical.Default(listOfOptions),
-        onOptionClick = { chosenOption.value = it.toInt() },
+        options = listOfOptions,
+        selectedOption = chosenOption.value?.toString()?.let { RadioOptionId(it) },
+        onRadioOptionSelected = { chosenOption.value = it.id.toInt() },
       )
       Spacer(Modifier.height(40.dp))
       HedvigButton(

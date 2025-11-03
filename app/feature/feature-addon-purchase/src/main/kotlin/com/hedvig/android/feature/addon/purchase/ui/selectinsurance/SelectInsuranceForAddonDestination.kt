@@ -15,8 +15,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -26,10 +24,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -132,14 +128,21 @@ private fun SelectInsuranceForAddonContentScreen(
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    val radioOptionData = uiState.listOfInsurances.toListOfDataWithLabel(uiState.currentlySelected?.id)
     RadioGroup(
-      onOptionClick = { insuranceId -> selectInsurance(uiState.listOfInsurances.first { it.id == insuranceId }) },
+      options = uiState.listOfInsurances.map { insuranceForAddon ->
+        RadioOption(
+          id = RadioOptionId(insuranceForAddon.id),
+          text = insuranceForAddon.displayName,
+          label = insuranceForAddon.contractExposure,
+        )
+      },
+      selectedOption = uiState.currentlySelected?.id?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        selectInsurance(uiState.listOfInsurances.first { it.id == id.id })
+      },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      radioGroupSize = RadioGroupSize.Medium,
-      radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
     )
     Spacer(Modifier.height(12.dp))
     HedvigButton(
@@ -152,21 +155,6 @@ private fun SelectInsuranceForAddonContentScreen(
       isLoading = false,
     )
     Spacer(Modifier.height(16.dp))
-  }
-}
-
-private fun List<InsuranceForAddon>.toListOfDataWithLabel(
-  selectedInsuranceId: String?,
-): List<RadioOptionGroupDataWithLabel> {
-  return this.map { i ->
-    RadioOptionGroupDataWithLabel(
-      RadioOptionData(
-        id = i.id,
-        optionText = i.displayName,
-        chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
-      ),
-      labelText = i.contractExposure,
-    )
   }
 }
 

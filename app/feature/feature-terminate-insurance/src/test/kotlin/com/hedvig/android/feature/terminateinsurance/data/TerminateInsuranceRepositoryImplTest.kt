@@ -8,6 +8,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
@@ -59,7 +60,23 @@ class TerminateInsuranceRepositoryImplTest {
   private val apolloClientWithGoodResponse: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = FlowTerminationStartMutation(FlowTerminationStartInput(testId), false),
+        operation = FlowTerminationStartMutation(
+          FlowTerminationStartInput(
+            testId,
+            supportedSteps = Optional.present(
+              listOf(
+                "FlowTerminationSurveyStep",
+                "FlowTerminationDateStep",
+                "FlowTerminationDeletionStep",
+                "FlowTerminationSuccessStep",
+                "FlowTerminationFailedStep",
+                "FlowTerminationCarDeflectAutoCancelStep",
+                "FlowTerminationCarAutoDecomStep",
+              ),
+            ),
+          ),
+          false,
+        ),
         data = FlowTerminationStartMutation.Data(OctopusFakeResolver) {
           flowTerminationStart = buildFlow {
             id = "flowId"

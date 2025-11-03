@@ -116,7 +116,7 @@ internal class GetHomeDataUseCaseImpl(
             },
           )
         }
-        val crossSellsData = homeQueryData.currentMember.crossSell
+        val crossSellsData = homeQueryData.currentMember.crossSellV2
 
         val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
           val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {

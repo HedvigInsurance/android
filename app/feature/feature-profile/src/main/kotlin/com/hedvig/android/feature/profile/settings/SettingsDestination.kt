@@ -30,8 +30,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
@@ -41,7 +39,8 @@ import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -55,7 +54,6 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
-import com.hedvig.android.theme.Theme.SYSTEM_DEFAULT
 import hedvig.resources.R
 
 @Composable
@@ -199,24 +197,17 @@ internal fun LanguageWithDialog(
 ) {
   var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLanguagePickerDialog) {
-    val entries = buildList {
-      languageOptions.forEachIndexed { index, language ->
-        add(
-          RadioOptionData(
-            id = index.toString(),
-            optionText = stringResource(language.label),
-            chosenState = if (selectedLanguage == language) Chosen else NotChosen,
-          ),
-        )
-      }
-    }
     SingleSelectDialog(
       title = stringResource(R.string.language_picker_modal_title),
-      optionsList = entries,
-      onSelected = {
-        val index = it.id.toInt()
-        val language = languageOptions[index]
-        selectLanguage(language)
+      options = languageOptions.map { language ->
+        RadioOption(
+          id = RadioOptionId(language.name),
+          text = stringResource(language.label),
+        )
+      },
+      selectedOption = RadioOptionId(selectedLanguage.name),
+      onRadioOptionSelected = {
+        selectLanguage(Language.valueOf(it.id))
       },
       onDismissRequest = { showLanguagePickerDialog = false },
     )
@@ -293,24 +284,17 @@ internal fun ThemeWithDialog(
 ) {
   var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showThemePickerDialog) {
-    val entries = buildList {
-      Theme.entries.forEachIndexed { index, theme ->
-        add(
-          RadioOptionData(
-            id = index.toString(),
-            optionText = stringResource(theme.getLabel()),
-            chosenState = if (selectedTheme == theme) Chosen else NotChosen,
-          ),
-        )
-      }
-    }
     SingleSelectDialog(
       title = stringResource(R.string.SETTINGS_THEME_TITLE),
-      optionsList = entries,
-      onSelected = {
-        val index = it.id.toInt()
-        val theme = Theme.entries[index] // todo: could be outOfBounds etc?
-        selectTheme(theme)
+      options = Theme.entries.map { theme ->
+        RadioOption(
+          id = RadioOptionId(theme.name),
+          text = stringResource(theme.getLabel()),
+        )
+      },
+      selectedOption = selectedTheme?.name?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        selectTheme(Theme.valueOf(id.id))
       },
       onDismissRequest = { showThemePickerDialog = false },
     )
@@ -370,7 +354,7 @@ fun PreviewSettingsScreen() {
         uiState = Loaded(
           selectedLanguage = SV_SE,
           languageOptions = listOf(SV_SE, EN_SE),
-          selectedTheme = SYSTEM_DEFAULT,
+          selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
           isSubscribedToEmails = true,
           emailSubscriptionPreferenceError = true,

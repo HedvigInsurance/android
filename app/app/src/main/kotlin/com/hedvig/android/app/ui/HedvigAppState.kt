@@ -45,8 +45,6 @@ import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.android.notification.badge.data.tab.BottomNavTab
-import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
@@ -55,15 +53,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalTrackingApi::class)
 @Composable
 internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
@@ -71,12 +66,11 @@ internal fun rememberHedvigAppState(
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   NavigationViewTrackingEffect(navController = navHostController)
-  RegisterOnDestinationChangedListenerSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
+  RegisterOnDestinationChangedListenerSideEffect(navHostController, coroutineScope)
   return remember(
     navHostController,
     windowSizeClass,
     coroutineScope,
-    tabNotificationBadgeService,
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
     featureManager,
@@ -85,7 +79,6 @@ internal fun rememberHedvigAppState(
       navController = navHostController,
       windowSizeClass = windowSizeClass,
       coroutineScope = coroutineScope,
-      tabNotificationBadgeService = tabNotificationBadgeService,
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
       featureManager = featureManager,
@@ -98,7 +91,6 @@ internal class HedvigAppState(
   val navController: NavHostController,
   val windowSizeClass: WindowSizeClass,
   coroutineScope: CoroutineScope,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
@@ -168,26 +160,6 @@ internal class HedvigAppState(
     ),
   )
 
-  val topLevelGraphsWithNotifications: StateFlow<Set<TopLevelGraph>> =
-    tabNotificationBadgeService
-      .unseenTabNotificationBadges()
-      .map { bottomNavTabs: Set<BottomNavTab> ->
-        bottomNavTabs
-          .map { bottomNavTab ->
-            when (bottomNavTab) {
-              BottomNavTab.HOME -> TopLevelGraph.Home
-              BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
-              BottomNavTab.FOREVER -> TopLevelGraph.Forever
-              BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
-              BottomNavTab.PROFILE -> TopLevelGraph.Profile
-            }
-          }.toSet()
-      }.stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = setOf(),
-      )
-
   /**
    * UI logic for navigating to a top level destination in the app. Top level destinations have
    * only one copy of the destination of the back stack, and save and restore state whenever you
@@ -217,7 +189,7 @@ internal class HedvigAppState(
    * These should also save/restore state when it's possible to do so.
    * Should also try to find a way to *not* save the state when explicitly logging out. The backstack saving should
    * only happen in scenarios where the logout was due to token expiration. The most common scenario there would be
-   * when coming into the app from a deep link while not having valid cretentials lying around already.
+   * when coming into the app from a deep link while not having valid credentials lying around already.
    * https://issuetracker.google.com/issues/334413738
    * todo: Now that we clear the backstack of all graphs on logout manually perhaps we can make this work properly
    */
@@ -269,10 +241,9 @@ value class NavigationSuiteType private constructor(
 @Composable
 private fun RegisterOnDestinationChangedListenerSideEffect(
   navController: NavController,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,
 ) {
-  DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
+  DisposableEffect(navController, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, bundle ->
       logcat { "Navigated to route:${destination.route} | bundle:$bundle" }
       CurrentDestinationInMemoryStorage.currentDestination = destination
@@ -280,27 +251,22 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
       when (topLevelDestination) {
         TopLevelDestination.Home -> {
           logcat { "Navigated to top level screen: HOME" }
-          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.HOME) }
         }
 
         TopLevelDestination.Insurances -> {
           logcat { "Navigated to top level screen: INSURANCES" }
-          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE) }
         }
 
         TopLevelDestination.Forever -> {
           logcat { "Navigated to top level screen: FOREVER" }
-          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.FOREVER) }
         }
 
         TopLevelDestination.Payments -> {
           logcat { "Navigated to top level screen: PAYMENTS" }
-          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.PAYMENTS) }
         }
 
         TopLevelDestination.Profile -> {
           logcat { "Navigated to top level screen: PROFILE" }
-          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE) }
         }
       }
     }

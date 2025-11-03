@@ -13,23 +13,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
@@ -150,16 +149,21 @@ private fun SuccessScreen(
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    val radioOptionData = mapToListOfDataWithLabel(uiState.list, uiState.selected)
     RadioGroup(
-      onOptionClick = { insuranceId -> selectInsurance(insuranceId) },
+      options = uiState.list.map { insurance ->
+        RadioOption(
+          id = RadioOptionId(insurance.id),
+          text = insurance.displayName,
+          label = insurance.exposureName,
+        )
+      },
+      selectedOption = uiState.selected?.id?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { selectInsurance(it.id) },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      radioGroupSize = RadioGroupSize.Medium,
-      radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
     )
-    Spacer(Modifier.height(12.dp))
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       stringResource(id = R.string.general_continue_button),
       enabled = uiState.selected != null,
@@ -172,18 +176,39 @@ private fun SuccessScreen(
   }
 }
 
-private fun mapToListOfDataWithLabel(
-  list: List<InsuranceForEditOrAddCoInsured>,
-  selectedInsurance: InsuranceForEditOrAddCoInsured?,
-): List<RadioOptionGroupDataWithLabel> {
-  return list.map { insurance ->
-    RadioOptionGroupDataWithLabel(
-      RadioOptionData(
-        id = insurance.id,
-        optionText = insurance.displayName,
-        chosenState = if (selectedInsurance == insurance) Chosen else NotChosen,
-      ),
-      labelText = insurance.exposureName,
-    )
+@HedvigPreview
+@Composable
+private fun PreviewEditCoInsuredTriageScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EditCoInsuredTriageScreen(
+        uiState = Success(
+          list = listOf(
+            InsuranceForEditOrAddCoInsured(
+              id = "1",
+              displayName = "Home insurance",
+              exposureName = "Lulanden 85H, 71220",
+              destination = EditCoInsuredDestination.MISSING_INFO,
+            ),
+            InsuranceForEditOrAddCoInsured(
+              id = "2",
+              displayName = "Home insurance",
+              exposureName = "Drottninggatan 1, 11111",
+              destination = EditCoInsuredDestination.MISSING_INFO,
+            ),
+          ),
+          selected = null,
+          null,
+          null,
+        ),
+        navigateUp = {},
+        reload = {},
+        navigateToAddMissingInfo = {},
+        navigateToAddOrRemoveCoInsured = {},
+        submitSelectedInsurance = {},
+        selectInsurance = {},
+        clearNavigation = {},
+      )
+    }
   }
 }

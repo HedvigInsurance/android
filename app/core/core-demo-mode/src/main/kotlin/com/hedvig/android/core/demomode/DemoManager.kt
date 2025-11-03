@@ -4,9 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 interface DemoManager {
   fun isDemoMode(): Flow<Boolean>
@@ -20,10 +22,13 @@ internal class DataStoreDemoManager(
   override fun isDemoMode(): Flow<Boolean> {
     return dataStore.data.map {
       it[demoModeKey] ?: false
-    }.distinctUntilChanged()
+    }.distinctUntilChanged().onEach {
+      logcat { "DemoManager: isDemoMode:$it" }
+    }
   }
 
   override suspend fun setDemoMode(demoMode: Boolean) {
+    logcat { "DemoManager: setDemoMode:$demoMode" }
     dataStore.edit {
       it[demoModeKey] = demoMode
     }

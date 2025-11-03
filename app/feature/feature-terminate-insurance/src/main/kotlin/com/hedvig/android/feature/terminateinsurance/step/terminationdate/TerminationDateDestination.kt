@@ -17,14 +17,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.Checkbox
-import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Small
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.CheckboxGroup
+import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -58,10 +61,10 @@ internal fun TerminationDateDestination(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
     onCheckedChange = {
-      viewModel.changeCheckBoxState()
+      viewModel.emit(TerminationDateEvent.ToggleCheckBox)
     },
     changeSelectedDate = { long ->
-      viewModel.changeSelectedDate(long)
+      viewModel.emit(TerminationDateEvent.ChangeSelectedDate(long))
     },
   )
 }
@@ -115,7 +118,9 @@ private fun TerminationDateScreen(
       text = stringResource(id = R.string.general_continue_button),
       onClick = submit,
       enabled = uiState.canSubmit,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
 
     Spacer(Modifier.height(16.dp))
@@ -147,11 +152,13 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
         Spacer(Modifier.height(16.dp))
         HedvigTheme(darkTheme = false) {
           Checkbox(
-            checkboxSize = Small,
-            optionText = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
-            chosenState = if (isChecked) Chosen else NotChosen,
-            onClick = onCheckedChange,
-            containerColor = HedvigTheme.colorScheme.fillNegative,
+            option = CheckboxOption(
+              text = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+            ),
+            selected = isChecked,
+            onCheckboxSelected = onCheckedChange,
+            size = RadioGroupSize.Small,
+            colors = RadioGroupDefaults.colors.copy(containerColor = HedvigTheme.colorScheme.fillNegative),
           )
         }
       }

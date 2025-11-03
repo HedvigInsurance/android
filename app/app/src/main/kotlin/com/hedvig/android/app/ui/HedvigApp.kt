@@ -44,7 +44,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -61,7 +60,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 internal fun HedvigApp(
   navHostController: NavHostController,
   windowSizeClass: WindowSizeClass,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
@@ -83,7 +81,6 @@ internal fun HedvigApp(
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
-    tabNotificationBadgeService = tabNotificationBadgeService,
     settingsDataStore = settingsDataStore,
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     featureManager = featureManager,
@@ -228,6 +225,13 @@ private fun LogoutOnInvalidCredentialsEffect(
       ) { authStatus: AuthStatus, isDemoMode: Boolean, navBackStackEntry ->
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
           navDestination.typedHasRoute<LoginDestination>()
+        }
+        logcat {
+          "LogoutOnInvalidCredentialsEffect: " +
+            "authStatus:$authStatus | " +
+            "isDemoMode:$isDemoMode | " +
+            "isLoggedOut:$isLoggedOut | " +
+            "currentRoute:${navBackStackEntry.destination.route}"
         }
         if (isLoggedOut) {
           return@combine

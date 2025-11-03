@@ -2,12 +2,15 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
+  <string name="A11Y_CHARACTER_LIMIT">%1$d av %2$d tecken angivna</string>
+  <string name="A11Y_CLEAR_FIELD">Rensa fält</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
     <item quantity="one">Du har %d berättigad försäkring.</item>
     <item quantity="other">Du har %d berättigade försäkringar.</item>
   </plurals>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
+  <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
@@ -172,6 +175,7 @@
   <string name="CLAIMS_SUMMARY_CLAIM">Skadeanmälan</string>
   <string name="CLAIMS_SUMMARY_DETAIL_INFO">Detaljinformation</string>
   <string name="CLAIMS_SUMMARY_WHAT_IS_ABOUT">Vad skadan gäller</string>
+  <string name="CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR">Texten måste innehålla minst %1$d tecken.</string>
   <string name="CLAIMS_TEXT_INPUT_PLACEHOLDER">Beskriv ditt ärende</string>
   <string name="CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER">Vad har hänt?</string>
   <string name="CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE">Vad har hänt?</string>
@@ -292,6 +296,7 @@
   <string name="FOREVER_TAB_TOTAL_DISCOUNT_LABEL">Totalt</string>
   <string name="FULL_NAME_TEXT">Fullständigt namn</string>
   <string name="GENERAL.ARE_YOU_SURE">Är du säker?</string>
+  <string name="GENERAL.EDIT">Ändra</string>
   <string name="GENERAL.EMAIL">team@hedvig.com</string>
   <string name="GENERAL.ERROR_BODY">Vi kunde inte ladda in den här informationen. Dubbelkolla din internetuppkoppling och försök igen.</string>
   <string name="GENERAL.NO">Nej</string>
@@ -304,10 +309,12 @@
   <string name="GENERAL_ADD_NEW">Lägg till ny</string>
   <string name="GENERAL_CONFIRM">Bekräfta</string>
   <string name="GENERAL_CONTACT_US_TITLE">Kontakta vårt serviceteam</string>
+  <string name="GENERAL_DOWNLOAD">Ladda ner</string>
   <string name="GENERAL_INVALID_INPUT">Felaktig inmatning</string>
   <string name="GENERAL_NOT_SURE">Vet inte</string>
   <string name="GENERAL_RETRY">Försök igen</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Spara ändringar</string>
+  <string name="GENERAL_SHOW">Visa</string>
   <string name="HC_ALL_QUESTION_TITLE">Alla frågor</string>
   <string name="HC_ANSWER_TITLE">Svar</string>
   <string name="HC_CHAT_ANSWER">Vi är tillgängliga vardagar 08–22 och helger 10–22</string>
@@ -670,6 +677,8 @@
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>
   <string name="TALKBACK_PRICE">Pris</string>
   <string name="TALKBACK_QR_CODE_DESCRIPTION">QR-kod</string>
+  <string name="TALKBACK_RECORDING_DURATION">Inspelningslängd: %1$s</string>
+  <string name="TALKBACK_RECORDING_NOW">Spelar in nu. Dubbeltryck för att stoppa.</string>
   <string name="TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION">Välj en kategori för att fortsätta</string>
   <string name="TALKBACK_SWEDISH_KRONAS">Svenska kronor</string>
   <string name="TALKBACK_TAKE_PHOTO">Ta ett foto</string>
@@ -693,6 +702,15 @@
   <string name="TERMINATION_A_03">Du tecknar enkelt en ny försäkring på [hedvig.com](https://www.hedvig.com/)</string>
   <string name="TERMINATION_BUTTON">Säg upp försäkring</string>
   <string name="TERMINATION_DATE_TEXT">Välj slutdatum</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">Vi avslutar din försäkring automatiskt</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">Vad kostar det</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">Försäkringen ersätter skador såsom stöld, brand, skadegörelse och karosskada medan bilen är avställd. Rättsskydd ingår också, så länge bilen stannar i Sverige.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE">Vad som ingår</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">Om du har ställt av din bil via Transportstyrelsen kommer din bilförsäkring automatiskt övergå till en avställningsförsäkring.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Din försäkring kommer övergå till en avställningsförsäkring</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Säg upp försäkring</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Avsluta din försäkring</string>
@@ -788,6 +806,9 @@
   <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Rapport om tekniska problem</string>
   <string name="app_info.submit_bug.warning">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, skicka ett meddelande direkt här i appen.</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_1">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor,</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_2">skicka ett meddelande</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_3">direkt här i appen.</string>
   <string name="app_update_needed.app_store_button">Gå till App Store</string>
   <string name="app_update_needed.body">Det verkar som om du använder en appversion som inte längre stöds. För att använda Hedvig, uppdatera till den senaste versionen i App Store.</string>
   <string name="app_update_needed.title">Appuppdatering krävs</string>

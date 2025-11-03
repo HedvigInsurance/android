@@ -1,49 +1,71 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.setValue
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import java.util.Locale
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
+internal sealed interface TerminationDateEvent {
+  data class ChangeSelectedDate(val dateMillis: Long?) : TerminationDateEvent
+
+  data object ToggleCheckBox : TerminationDateEvent
+}
+
 internal class TerminationDateViewModel(
   parameters: TerminationDateParameters,
   languageService: LanguageService,
-) : ViewModel() {
-  private val datePickerConfiguration = DatePickerConfiguration(
-    languageService.getLocale(),
-    parameters.minDate,
-    parameters.maxDate,
-  )
-  private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
-    TerminateInsuranceUiState(
-      datePickerState = datePickerConfiguration.datePickerState,
+) : MoleculeViewModel<TerminationDateEvent, TerminateInsuranceUiState>(
+    initialState = TerminateInsuranceUiState(
+      datePickerState = DatePickerConfiguration(
+        languageService.getLocale(),
+        parameters.minDate,
+        parameters.maxDate,
+      ).datePickerState,
       isLoading = false,
       exposureName = parameters.commonParams.exposureName,
       displayName = parameters.commonParams.insuranceDisplayName,
       isCheckBoxChecked = false,
     ),
+    presenter = TerminationDatePresenter(),
   )
-  val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
 
-  fun changeSelectedDate(date: Long?) {
-    _uiState.value = uiState.value.copy(
-      datePickerState =
-        uiState.value.datePickerState.copy(selectedDateMillis = date),
-    )
-  }
+private class TerminationDatePresenter : MoleculePresenter<TerminationDateEvent, TerminateInsuranceUiState> {
+  @Composable
+  override fun MoleculePresenterScope<TerminationDateEvent>.present(
+    lastState: TerminateInsuranceUiState,
+  ): TerminateInsuranceUiState {
+    var currentState by remember { mutableStateOf(lastState) }
 
-  fun changeCheckBoxState() {
-    val isCheckedNow = uiState.value.isCheckBoxChecked
-    _uiState.value = uiState.value.copy(isCheckBoxChecked = !isCheckedNow)
+    CollectEvents { event ->
+      when (event) {
+        is TerminationDateEvent.ChangeSelectedDate -> {
+          currentState = currentState.copy(
+            datePickerState = currentState.datePickerState.copy(
+              selectedDateMillis = event.dateMillis,
+            ),
+          )
+        }
+
+        TerminationDateEvent.ToggleCheckBox -> {
+          currentState = currentState.copy(
+            isCheckBoxChecked = !currentState.isCheckBoxChecked,
+          )
+        }
+      }
+    }
+
+    return currentState
   }
 }
 

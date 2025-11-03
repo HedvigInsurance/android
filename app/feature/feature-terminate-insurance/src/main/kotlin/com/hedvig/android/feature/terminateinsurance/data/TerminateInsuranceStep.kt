@@ -1,6 +1,14 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.AutoCancelDeflectStepParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoCancel
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecom
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.InsuranceDeletion
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationDate
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationFailure
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationSuccess
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationSurveyFirstStep
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.UnknownScreen
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -46,6 +54,14 @@ internal sealed interface TerminateInsuranceStep {
    * screen
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
+
+  data class DeflectAutoCancelStep(
+    val title: String,
+    val message: String,
+    val extraMessage: String?,
+  ) : TerminateInsuranceStep
+
+  data object DeflectAutoDecommissionStep : TerminateInsuranceStep
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -70,6 +86,18 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
     is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
       TerminateInsuranceStep.Survey(
         options.toOptionList(),
+      )
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationCarAutoDecomStepCurrentStep -> {
+      TerminateInsuranceStep.DeflectAutoDecommissionStep
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStepCurrentStep -> {
+      TerminateInsuranceStep.DeflectAutoCancelStep(
+        title = title,
+        message = message,
+        extraMessage = extraMessage,
       )
     }
 
@@ -208,10 +236,10 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
 ): Destination {
   return when (this) {
-    is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
+    is TerminateInsuranceStep.Failure -> TerminationFailure(message)
 
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
-      TerminateInsuranceDestination.TerminationDate(
+      TerminationDate(
         minDate = minDate,
         maxDate = maxDate,
         extraCoverageItems = extraCoverageItems,
@@ -219,19 +247,31 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       )
     }
 
-    is TerminateInsuranceStep.InsuranceDeletion -> TerminateInsuranceDestination.InsuranceDeletion(
+    is TerminateInsuranceStep.InsuranceDeletion -> InsuranceDeletion(
       commonParams = commonParams,
       extraCoverageItems = extraCoverageItems,
     )
 
-    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminateInsuranceDestination.TerminationSuccess(
+    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminationSuccess(
       terminationDate = terminationDate,
     )
 
-    is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
+    is TerminateInsuranceStep.UnknownStep -> UnknownScreen
 
-    is TerminateInsuranceStep.Survey -> TerminateInsuranceDestination.TerminationSurveyFirstStep(
+    is TerminateInsuranceStep.Survey -> TerminationSurveyFirstStep(
       options = options,
+      commonParams = commonParams,
+    )
+
+    is TerminateInsuranceStep.DeflectAutoCancelStep -> DeflectAutoCancel(
+      AutoCancelDeflectStepParameters(
+        title = title,
+        message = message,
+        extraMessage = extraMessage,
+      ),
+    )
+
+    is TerminateInsuranceStep.DeflectAutoDecommissionStep -> DeflectAutoDecom(
       commonParams = commonParams,
     )
   }

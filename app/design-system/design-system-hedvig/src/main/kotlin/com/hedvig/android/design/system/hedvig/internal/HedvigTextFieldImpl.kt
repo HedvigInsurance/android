@@ -295,14 +295,14 @@ private fun AnimatedTextFieldContent(
         ),
       ) {
         SharedTextFieldContent(
-          size,
-          inputPhase,
-          configuration,
-          sharedLabel,
-          sharedSuffix,
-          sharedInnerTextField,
-          sharedLeadingContent,
-          sharedTrailingContent,
+          size = size,
+          inputPhase = inputPhase,
+          configuration = configuration,
+          label = sharedLabel,
+          suffix = sharedSuffix,
+          innerTextField = sharedInnerTextField,
+          leadingContent = sharedLeadingContent,
+          trailingContent = sharedTrailingContent,
         )
       }
     }

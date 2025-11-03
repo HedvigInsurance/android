@@ -17,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupp
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingStart
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingTop
 import com.hedvig.android.design.system.hedvig.value
+import hedvig.resources.R
 
 @Composable
 fun FreeTextDisplay(
@@ -120,10 +124,15 @@ fun FreeTextDisplay(
               Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
             }
             Spacer(Modifier.width(2.dp))
+            val characterLimitDescription =
+              stringResource(R.string.A11Y_CHARACTER_LIMIT, textValue.length, maxLength)
             HedvigText(
               text = "${textValue.length}/$maxLength",
               style = FreeTextDisplayDefaults.countLabelStyle.value,
               color = displayColors.counterColor,
+              modifier = Modifier.semantics {
+                contentDescription = characterLimitDescription
+              },
             )
           }
         }
@@ -146,7 +155,7 @@ object FreeTextDisplayDefaults {
   val defaultHeight = Limited()
   val defaultStyle = Style.Default
   internal val textStyle = FreeTextTokens.TextStyle
-  internal val maxLength: Int = FreeTextTokens.TextDefaultMaxLength
+  internal const val maxLength: Int = FreeTextTokens.TextDefaultMaxLength
   internal val countLabelStyle = FreeTextTokens.CountLabel
   internal val supportingTextPadding = PaddingValues(
     bottom = DisplaySupportingTextPaddingBottom,

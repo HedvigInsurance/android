@@ -2,15 +2,16 @@ package com.hedvig.android.feature.profile.aboutapp
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,13 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -34,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.withHedvigLink
 import hedvig.resources.R
 
 @Composable
@@ -41,112 +46,147 @@ internal fun AboutAppDestination(
   viewModel: AboutAppViewModel,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
+  navigateToNewConversation: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val memberId = uiState.memberId
-  val deviceId = uiState.deviceId
-
   AboutAppScreen(
-    memberId = memberId,
-    deviceId = deviceId,
+    uiState = uiState,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
     isProduction = hedvigBuildConstants.isProduction,
     appVersionName = hedvigBuildConstants.appVersionName,
     appVersionCode = hedvigBuildConstants.appVersionCode,
+    navigateToNewConversation = navigateToNewConversation,
   )
 }
 
 @Composable
 private fun AboutAppScreen(
-  memberId: String?,
-  deviceId: String?,
-  onBackPressed: () -> Unit,
-  showOpenSourceLicenses: () -> Unit,
+  uiState: AboutAppUiState,
   isProduction: Boolean,
   appVersionName: String,
   appVersionCode: String,
+  onBackPressed: () -> Unit,
+  showOpenSourceLicenses: () -> Unit,
+  navigateToNewConversation: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    var showSubmitBugWarning by remember { mutableStateOf(false) }
-    if (showSubmitBugWarning) {
-      SubmitBugWarningDialog(
-        memberId,
-        deviceId,
-        appVersionName,
-      ) {
-        showSubmitBugWarning = false
+    when (uiState) {
+      AboutAppUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+
+      is AboutAppUiState.Content -> {
+        AboutAppContent(
+          memberId = uiState.memberId,
+          deviceId = uiState.deviceId,
+          showOpenSourceLicenses = showOpenSourceLicenses,
+          isProduction = isProduction,
+          appVersionName = appVersionName,
+          appVersionCode = appVersionCode,
+          navigateToNewConversation = navigateToNewConversation,
+        )
       }
     }
-    Spacer(Modifier.height(16.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      spaceBetween = 8.dp,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      startSlot = {
-        HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-      },
-      endSlot = {
-        HedvigText(
-          memberId ?: "",
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-        )
-      },
-    )
-    HorizontalItemsWithMaximumSpaceTaken(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      startSlot = {
-        HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-      },
-      endSlot = {
-        HedvigText(
-          text = buildString {
-            append(appVersionName)
-            if (!isProduction) {
-              append(" (")
-              append(appVersionCode)
-              append(")")
-            }
-          },
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      },
-      spaceBetween = 8.dp,
-    )
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = showOpenSourceLicenses)
-        .padding(16.dp),
-    ) {
-      HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
-    }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.weight(1f))
-    HedvigButton(
-      text = stringResource(R.string.app_info_submit_bug_button),
-      enabled = true,
-      buttonStyle = Secondary,
-      onClick = { showSubmitBugWarning = true },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
   }
+}
+
+@Composable
+private fun ColumnScope.AboutAppContent(
+  memberId: String?,
+  deviceId: String?,
+  showOpenSourceLicenses: () -> Unit,
+  isProduction: Boolean,
+  appVersionName: String,
+  appVersionCode: String,
+  navigateToNewConversation: () -> Unit,
+) {
+  var showSubmitBugWarning by remember { mutableStateOf(false) }
+  if (showSubmitBugWarning) {
+    SubmitBugWarningDialog(
+      memberId = memberId,
+      deviceId = deviceId,
+      appVersionName = appVersionName,
+      navigateToNewConversation = navigateToNewConversation,
+      onDismissRequest = {
+        showSubmitBugWarning = false
+      },
+    )
+  }
+  Spacer(Modifier.height(16.dp))
+  if (memberId != null) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      spaceBetween = 8.dp,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      startSlot = {
+        HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+      },
+      endSlot = {
+        HedvigText(
+          memberId,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
+      },
+    )
+  }
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(16.dp),
+    startSlot = {
+      HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_VERSION))
+    },
+    endSlot = {
+      HedvigText(
+        text = buildString {
+          append(appVersionName)
+          if (!isProduction) {
+            append(" (")
+            append(appVersionCode)
+            append(")")
+          }
+        },
+        color = HedvigTheme.colorScheme.textSecondary,
+        textAlign = TextAlign.End,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    },
+    spaceBetween = 8.dp,
+  )
+  Row(
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .fillMaxWidth()
+      .clickable(onClick = showOpenSourceLicenses)
+      .padding(16.dp),
+  ) {
+    HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+  }
+  Spacer(Modifier.height(16.dp))
+  Spacer(Modifier.weight(1f))
+  HedvigButton(
+    text = stringResource(R.string.app_info_submit_bug_button),
+    enabled = true,
+    buttonStyle = Secondary,
+    onClick = { showSubmitBugWarning = true },
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  )
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable
@@ -154,10 +194,11 @@ private fun SubmitBugWarningDialog(
   memberId: String?,
   deviceId: String?,
   appVersionName: String,
+  navigateToNewConversation: () -> Unit,
   onDismissRequest: () -> Unit,
 ) {
   val localContext = LocalContext.current
-  val letterSubject = stringResource(id = R.string.app_info_submit_bug_prefilled_letter_subject)
+  val letterSubject = stringResource(R.string.app_info_submit_bug_prefilled_letter_subject)
   val letterBody = String.format(
     stringResource(R.string.app_info_submit_bug_prefilled_letter_body),
     memberId,
@@ -166,7 +207,18 @@ private fun SubmitBugWarningDialog(
     "Android ${Build.VERSION.SDK_INT}",
   )
   HedvigAlertDialog(
-    title = stringResource(id = R.string.app_info_submit_bug_warning),
+    title = buildAnnotatedString {
+      append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_1))
+      append(" ")
+      withHedvigLink(
+        tag = stringResource(R.string.HC_CHAT_BUTTON),
+        onClick = navigateToNewConversation,
+      ) {
+        append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_2))
+      }
+      append(" ")
+      append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_3))
+    },
     text = null,
     onDismissRequest = onDismissRequest,
     onConfirmClick = {
@@ -177,8 +229,8 @@ private fun SubmitBugWarningDialog(
         letterBody,
       )
     },
-    confirmButtonLabel = stringResource(id = R.string.app_info_submit_bug_continue),
-    dismissButtonLabel = stringResource(id = R.string.app_info_submit_bug_go_back),
+    confirmButtonLabel = stringResource(R.string.app_info_submit_bug_continue),
+    dismissButtonLabel = stringResource(R.string.app_info_submit_bug_go_back),
   )
 }
 
@@ -190,7 +242,7 @@ private fun openEmailClientWithPrefilledData(
 ) {
   val sendLetterIntent: Intent = Intent().apply {
     action = Intent.ACTION_SENDTO
-    data = Uri.parse("mailto:")
+    data = "mailto:".toUri()
     putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
     putExtra(Intent.EXTRA_SUBJECT, letterSubject)
     putExtra(Intent.EXTRA_TEXT, letterBody)
@@ -209,13 +261,13 @@ private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AboutAppScreen(
-        memberId = "123",
-        deviceId = "123456",
+        uiState = AboutAppUiState.Content(memberId = "123", deviceId = "123456"),
         onBackPressed = {},
         showOpenSourceLicenses = {},
         isProduction = false,
         appVersionName = "11.3.2",
         appVersionCode = "43",
+        navigateToNewConversation = {},
       )
     }
   }

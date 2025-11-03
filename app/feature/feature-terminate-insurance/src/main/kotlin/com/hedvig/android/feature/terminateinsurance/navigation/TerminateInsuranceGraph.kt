@@ -11,6 +11,9 @@ import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepDestination
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepDestination
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecommissionStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
@@ -238,6 +241,33 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
         navigateUp = navigator::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
+      )
+    }
+
+    navdestination<TerminateInsuranceDestination.DeflectAutoCancel>(
+      TerminateInsuranceDestination.DeflectAutoCancel,
+    ) { backStackEntry ->
+      DeflectAutoCancelStepDestination(
+        params = autoCancelDeflectStepParameters,
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        closeTerminationFlow = closeTerminationFlow,
+        navigateUp = navigator::navigateUp,
+      )
+    }
+
+    navdestination<TerminateInsuranceDestination.DeflectAutoDecom>(
+      TerminateInsuranceDestination.DeflectAutoDecom,
+    ) {
+      val viewModel: DeflectAutoDecommissionStepViewModel = koinViewModel()
+      DeflectAutoDecomStepDestination(
+        viewModel = viewModel,
+        closeTerminationFlow = closeTerminationFlow,
+        navigateUp = navigator::navigateUp,
+        onContinueTermination = { step ->
+          navigator.navigateToTerminateFlowDestination(
+            destination = step.toTerminateInsuranceDestination(commonParams),
+          )
+        },
       )
     }
   }

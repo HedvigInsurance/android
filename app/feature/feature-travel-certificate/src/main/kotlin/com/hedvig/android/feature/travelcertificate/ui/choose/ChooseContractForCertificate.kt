@@ -13,8 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -22,9 +20,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -76,26 +73,24 @@ private fun ChooseContractForCertificate(
         FlowHeading(
           stringResource(R.string.travel_certificate_select_contract_title),
           null,
-          Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         RadioGroup(
-          radioGroupStyle = RadioGroupStyle.Vertical.Default(
-            uiState.eligibleContracts.map {
-              RadioOptionGroupDataSimple(
-                radioOptionData = RadioOptionData(
-                  id = it.contractId,
-                  optionText = it.address,
-                  chosenState = if (it.contractId == selectedContractId) Chosen else NotChosen,
-                ),
-              )
-            },
-          ),
-          onOptionClick = { contractId ->
-            selectedContractId = contractId
+          options = uiState.eligibleContracts.map { contract ->
+            RadioOption(
+              id = RadioOptionId(contract.contractId),
+              text = contract.address,
+            )
           },
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          selectedOption = selectedContractId?.let { RadioOptionId(it) },
+          onRadioOptionSelected = { selectedContractId = it.id },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(

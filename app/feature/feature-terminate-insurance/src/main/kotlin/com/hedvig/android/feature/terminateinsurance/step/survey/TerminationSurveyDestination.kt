@@ -30,8 +30,6 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
@@ -42,17 +40,17 @@ import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.LockedState.Locked
-import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
-import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
@@ -202,24 +200,22 @@ private fun TerminationSurveyScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          for (reason in uiState.reasons) {
+        RadioGroup(
+          options = uiState.reasons.map { reason ->
             RadioOption(
-              optionText = reason.title,
-              chosenState = if (uiState.selectedOption == reason) Chosen else NotChosen,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              onClick = {
-                if (!reason.isDisabled) {
-                  selectOption(reason)
-                }
-              },
-              lockedState = if (reason.isDisabled) Locked else NotLocked,
-              radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+              id = RadioOptionId(reason.id),
+              text = reason.title,
             )
-          }
-        }
+          },
+          selectedOption = uiState.selectedOptionId?.let { RadioOptionId(it) },
+          onRadioOptionSelected = { id ->
+            selectOption(uiState.reasons.first { it.id == id.id })
+          },
+          disabledOptions = uiState.reasons.filter { it.isDisabled }.map { RadioOptionId(it.id) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
         SelectedSurveyInfoBox(
           selectedOption = uiState.selectedOption,
           actionButtonLoading = uiState.actionButtonLoading,
@@ -373,7 +369,9 @@ private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
       stringResource(R.string.general_close_button),
       onClick = closeEmptyQuotesDialog,
       buttonSize = Large,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }

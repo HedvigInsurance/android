@@ -15,8 +15,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -26,10 +24,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -137,21 +133,23 @@ private fun SelectContractScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
-        val radioOptionData = uiState.intent.currentHomeAddresses
-          .toListOfDataWithLabel(uiState.selectedAddress?.id)
         RadioGroup(
-          onOptionClick = { insuranceId ->
-            val address = uiState.intent.currentHomeAddresses.first { it.id == insuranceId }
-            selectInsurance(address)
+          options = uiState.intent.currentHomeAddresses.map { address ->
+            RadioOption(
+              id = RadioOptionId(address.id),
+              text = address.displayTitle,
+              label = address.displaySubtitle,
+            )
+          },
+          selectedOption = uiState.selectedAddress?.id?.let { RadioOptionId(it) },
+          onRadioOptionSelected = { radioOptionId ->
+            selectInsurance(uiState.intent.currentHomeAddresses.first { it.id == radioOptionId.id })
           },
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-          radioGroupSize = RadioGroupSize.Medium,
-          radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
         )
-        Spacer(Modifier.height(12.dp))
-
+        Spacer(Modifier.height(16.dp))
         HedvigButton(
           stringResource(id = R.string.general_continue_button),
           enabled = uiState.selectedAddress != null,
@@ -167,21 +165,6 @@ private fun SelectContractScreen(
         Spacer(Modifier.height(16.dp))
       }
     }
-  }
-}
-
-private fun List<MoveIntentFragment.CurrentHomeAddress>.toListOfDataWithLabel(
-  selectedInsuranceId: String?,
-): List<RadioOptionGroupDataWithLabel> {
-  return this.map { i ->
-    RadioOptionGroupDataWithLabel(
-      RadioOptionData(
-        id = i.id,
-        optionText = i.displayTitle,
-        chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
-      ),
-      labelText = i.displaySubtitle ?: " ",
-    )
   }
 }
 

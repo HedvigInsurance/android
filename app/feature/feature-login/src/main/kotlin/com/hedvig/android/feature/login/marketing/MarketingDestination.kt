@@ -24,13 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -40,9 +41,9 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
-import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionGroupData
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
@@ -50,7 +51,7 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
+import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
 import hedvig.resources.R
@@ -96,7 +97,7 @@ private fun MarketingScreen(
   }
   HedvigTheme(darkTheme = false) {
     Box(Modifier.fillMaxSize()) {
-      LoginBackgroundImage()
+      LoginBackgroundVideo()
       Column(
         verticalArrangement = object : Arrangement.Vertical {
           override fun Density.arrange(totalSize: Int, sizes: IntArray, outPositions: IntArray) {
@@ -197,24 +198,22 @@ private fun ColumnScope.PreferencesSheetContent(
     text = stringResource(R.string.SETTINGS_LANGUAGE_TITLE),
     textAlign = TextAlign.Center,
     modifier = Modifier
+      .semantics { heading() }
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(24.dp))
   RadioGroup(
-    radioGroupStyle = RadioGroupDefaults.RadioGroupStyle.Vertical.Icon(
-      dataList = Language.entries.map { language ->
-        RadioOptionGroupData.RadioOptionGroupDataWithIcon(
-          RadioOptionData(
-            id = language.name,
-            optionText = stringResource(language.label),
-            chosenState = if (language == chosenLanguage) ChosenState.Chosen else ChosenState.NotChosen,
-          ),
-          IconResource.Vector(language.flag()),
-        )
-      },
-    ),
-    onOptionClick = { selectLanguage(Language.valueOf(it)) },
+    options = Language.entries.map { language ->
+      RadioOption(
+        id = RadioOptionId(language.name),
+        text = stringResource(language.label),
+        iconResource = IconResource.Vector(language.flag()),
+      )
+    },
+    selectedOption = RadioOptionId(chosenLanguage.name),
+    onRadioOptionSelected = { selectLanguage(Language.valueOf(it.id)) },
+    size = RadioGroupSize.Large,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(8.dp))
