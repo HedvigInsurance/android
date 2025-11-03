@@ -161,7 +161,7 @@ class ContactInfoPresenterTest {
         submittingUpdatedInfo = false,
       ),
     ) {
-      with(awaitItem().content!!) {
+      with(expectMostRecentItem().content!!) {
         assertThat(canSubmit).isTrue()
         phoneNumberState.setTextAndPlaceCursorAtEnd(validPhoneNumbers.first())
         assertThat(canSubmit).isTrue()
@@ -182,7 +182,7 @@ class ContactInfoPresenterTest {
         phoneNumberState.setTextAndPlaceCursorAtEnd(originalPhoneNumber)
         assertThat(canSubmit).isTrue()
       }
-      awaitUnchanged()
+      expectNoEvents()
     }
   }
 
