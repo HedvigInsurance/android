@@ -172,10 +172,11 @@ private abstract class ApolloHandler {
 private abstract class ComposeHandler {
   fun configure(project: Project) {
     val libs = project.the<LibrariesForLibs>()
-    project.pluginManager.apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
-    project.extensions.configure<ComposeCompilerGradlePluginExtension> {
-      configureComposeCompilerMetrics(project)
-    }
+    project.pluginManager.apply(libs.plugins.composeKotlinCompilerGradlePlugin.get().pluginId)
+    // consider enabling this again if we are interested in these reports
+//    project.extensions.configure<ComposeCompilerGradlePluginExtension> {
+//      configureComposeCompilerMetrics(project)
+//    }
     val isAndroidLibrary = project.extensions.findByType<LibraryExtension>() != null
     if (isAndroidLibrary) {
       project.extensions.configure<LibraryExtension> {
@@ -190,6 +191,9 @@ private abstract class ComposeHandler {
     }
     val isAndroidMultiplatformLibrary =
       project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
+    if (isAndroidMultiplatformLibrary) {
+      project.pluginManager.apply(libs.plugins.composeJetbrainsCompilerGradlePlugin.get().pluginId)
+    }
     project.dependencies {
       if (isAndroidLibrary || isAndroidApp || isAndroidMultiplatformLibrary) {
         val bom = libs.androidx.compose.bom

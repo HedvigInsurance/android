@@ -5,7 +5,8 @@ plugins {
   alias(libs.plugins.apollo) apply false
   alias(libs.plugins.appIconBannerGenerator) apply false
   alias(libs.plugins.cacheFix) apply false
-  alias(libs.plugins.composeCompilerGradlePlugin) apply false
+  alias(libs.plugins.composeKotlinCompilerGradlePlugin) apply false
+  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin) apply false
   alias(libs.plugins.crashlytics) apply false
   alias(libs.plugins.datadog) apply false
   alias(libs.plugins.dependencyAnalysis)
