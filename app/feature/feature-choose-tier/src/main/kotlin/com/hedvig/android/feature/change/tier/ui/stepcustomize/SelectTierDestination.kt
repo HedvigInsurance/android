@@ -30,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
@@ -50,9 +48,6 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ChosenState
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
@@ -73,7 +68,10 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
@@ -355,27 +353,12 @@ private fun CustomizationCard(
           isEnabled = isTierChoiceEnabled,
         ),
       ) { onDismissRequest ->
-        val listOfOptions = tiers.map { pair ->
-          val tierDescription = pair.first.tierDescription ?: ""
-          val price = stringResource(R.string.TALKBACK_PRICE)
-          val premiumDescription = pair.second.getPerMonthDescription()
-          val voiceDescription = "${pair.first.tierDisplayName}, $tierDescription, $price: ${
-            stringResource(
-              R.string.TALKBACK_FROM,
-            )
-          } $premiumDescription"
-          ExpandedRadioOptionData(
-            chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
-            title = pair.first.tierDisplayName ?: "-",
-            premiumString = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
-            tierDescription = pair.first.tierDescription,
-            onRadioOptionClick = {
-              onChooseTierInDialogClick(pair.first)
-            },
-            voiceoverDescription = voiceDescription,
-          )
-        }
         DropdownContent(
+          title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+          subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
+          radioGroup = {
+            TierCoverageRadioGroup(tiers, chosenTierInDialog, onChooseTierInDialogClick)
+          },
           onContinueButtonClick = {
             onChooseTierClick()
             onDismissRequest()
@@ -383,9 +366,6 @@ private fun CustomizationCard(
           onCancelButtonClick = {
             onDismissRequest()
           },
-          title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-          data = listOfOptions,
-          subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
         )
       }
       if (!isTierChoiceEnabled) {
@@ -432,30 +412,10 @@ private fun CustomizationCard(
             isEnabled = quotesForChosenTier.size > 1,
           ),
         ) { onDismissRequest ->
-          val listOfOptions = buildList {
-            quotesForChosenTier.forEach { quote ->
-              val price = stringResource(R.string.TALKBACK_PRICE)
-              val premiumDescription = quote.premium.getPerMonthDescription()
-              val deductibleDescription = quote.deductible?.getVoiceDescription()
-              val voiceDescription =
-                "$deductibleDescription, ${quote.deductible?.description ?: ""}, $price: $premiumDescription"
-              quote.deductible?.let {
-                add(
-                  ExpandedRadioOptionData(
-                    chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
-                    title = it.optionText,
-                    premiumString = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
-                    tierDescription = it.description.takeIf { description -> description.isNotEmpty() },
-                    onRadioOptionClick = {
-                      onChooseDeductibleInDialogClick(quote)
-                    },
-                    voiceoverDescription = voiceDescription,
-                  ),
-                )
-              }
-            }
-          }
           DropdownContent(
+            radioGroup = {
+              QuoteDeductibleRadioGroup(quotesForChosenTier, chosenQuoteInDialog, onChooseDeductibleInDialogClick)
+            },
             onContinueButtonClick = {
               onChooseDeductibleClick()
               onDismissRequest()
@@ -464,7 +424,6 @@ private fun CustomizationCard(
               onDismissRequest()
             },
             title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-            data = listOfOptions,
             subTitle = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
           )
         }
@@ -524,6 +483,69 @@ private fun CustomizationCard(
 }
 
 @Composable
+private fun QuoteDeductibleRadioGroup(
+  quotesForChosenTier: List<TierDeductibleQuote>,
+  chosenQuoteInDialog: TierDeductibleQuote?,
+  onChooseDeductibleInDialogClick: (TierDeductibleQuote) -> Unit,
+) {
+  RadioGroup(
+    options = quotesForChosenTier.mapNotNull { quote ->
+      val deductible = quote.deductible ?: return@mapNotNull null
+      RadioOption(
+        id = RadioOptionId(quote.id),
+        text = deductible.optionText,
+        label = deductible.description.takeIf { it.isNotEmpty() },
+      )
+    },
+    selectedOption = chosenQuoteInDialog?.id?.let { RadioOptionId(it) },
+    onRadioOptionSelected = { id ->
+      onChooseDeductibleInDialogClick(quotesForChosenTier.first { it.id == id.id })
+    },
+    style = RadioGroupStyle.LeftAligned,
+    textEndContent = { id ->
+      val quote = quotesForChosenTier.first { it.id == id.id }
+      HighlightLabel(
+        labelText = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+        size = HighLightSize.Small,
+        color = HighlightColor.Grey(MEDIUM),
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+      )
+    },
+  )
+}
+
+@Composable
+private fun TierCoverageRadioGroup(
+  tiers: List<Pair<Tier, UiMoney>>,
+  chosenTierInDialog: Tier?,
+  onChooseTierInDialogClick: (Tier) -> Unit,
+) {
+  RadioGroup(
+    options = tiers.map { pair ->
+      RadioOption(
+        id = RadioOptionId(pair.first.tierName),
+        text = pair.first.tierDisplayName ?: "-",
+        label = pair.first.tierDescription,
+      )
+    },
+    selectedOption = chosenTierInDialog?.tierName?.let { RadioOptionId(it) },
+    onRadioOptionSelected = { id ->
+      onChooseTierInDialogClick(tiers.first { it.first.tierName == id.id }.first)
+    },
+    style = RadioGroupStyle.LeftAligned,
+    textEndContent = { id ->
+      val pair = tiers.first { it.first.tierName == id.id }
+      HighlightLabel(
+        labelText = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
+        size = HighLightSize.Small,
+        color = HighlightColor.Grey(MEDIUM),
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd),
+      )
+    },
+  )
+}
+
+@Composable
 private fun Deductible.getVoiceDescription(): String {
   val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
   return if (percentageNotZero && deductibleAmount != null) {
@@ -541,9 +563,9 @@ private fun Deductible.getVoiceDescription(): String {
 private fun DropdownContent(
   title: String,
   subTitle: String,
+  radioGroup: @Composable () -> Unit,
   onContinueButtonClick: () -> Unit,
   onCancelButtonClick: () -> Unit,
-  data: List<ExpandedRadioOptionData>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -564,26 +586,7 @@ private fun DropdownContent(
       textAlign = Companion.Center,
     )
     Spacer(Modifier.height(24.dp))
-    data.forEachIndexed { index, option ->
-      RadioOption(
-        chosenState = option.chosenState,
-        onClick = option.onRadioOptionClick,
-        optionContent = { radioButtonIcon ->
-          ExpandedOptionContent(
-            title = option.title,
-            premium = option.premiumString,
-            comment = option.tierDescription,
-            radioButtonIcon = radioButtonIcon,
-          )
-        },
-        modifier = Modifier.semantics(mergeDescendants = true) {
-          contentDescription = option.voiceoverDescription
-        },
-      )
-      if (index != data.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
-    }
+    radioGroup()
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(R.string.general_continue_button),
@@ -600,15 +603,6 @@ private fun DropdownContent(
     )
   }
 }
-
-private data class ExpandedRadioOptionData(
-  val onRadioOptionClick: () -> Unit,
-  val chosenState: ChosenState,
-  val title: String,
-  val premiumString: String,
-  val tierDescription: String?,
-  val voiceoverDescription: String,
-)
 
 @Composable
 internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
@@ -629,49 +623,6 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
         text = displaySubtitle,
         style = HedvigTheme.typography.bodySmall,
       )
-    }
-  }
-}
-
-@Composable
-private fun ExpandedOptionContent(
-  title: String,
-  premium: String,
-  comment: String?,
-  radioButtonIcon: @Composable () -> Unit,
-) {
-  Row(
-    Modifier.semantics {
-      hideFromAccessibility()
-    },
-  ) {
-    radioButtonIcon()
-    Spacer(Modifier.width(8.dp))
-    Column(Modifier.weight(1f)) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        { HedvigText(title) },
-        {
-          HighlightLabel(
-            labelText = premium,
-            size = HighLightSize.Small,
-            color = HighlightColor.Grey(MEDIUM),
-            modifier = Modifier.wrapContentSize(Alignment.TopEnd),
-          )
-        },
-        spaceBetween = 8.dp,
-        Modifier.semantics {
-          hideFromAccessibility()
-        },
-      )
-      if (comment != null) {
-        Spacer(Modifier.height(4.dp))
-        HedvigText(
-          text = comment,
-          modifier = Modifier.fillMaxWidth(),
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
     }
   }
 }
@@ -734,18 +685,28 @@ private fun PreviewDropdownContent() {
       DropdownContent(
         "Title",
         "Subtitle",
-        {},
-        {},
-        List(2) {
-          ExpandedRadioOptionData(
-            {},
-            Chosen,
-            "Title",
-            "from 231 kr/mo",
-            "TierDescription",
-            voiceoverDescription = " Title, tier description, from 231 kr/mo",
+        {
+          TierCoverageRadioGroup(
+            tiers = listOf(
+              Tier(
+                tierName = "BAS",
+                tierLevel = 0,
+                tierDescription = "Vårt paket med grundläggande villkor.",
+                tierDisplayName = "Bas",
+              ) to UiMoney(199.0, SEK),
+              Tier(
+                tierName = "STANDARD",
+                tierLevel = 1,
+                tierDescription = "Vårt mellanpaket med hög ersättning.",
+                tierDisplayName = "Standard",
+              ) to UiMoney(155.0, SEK),
+            ),
+            chosenTierInDialog = null,
+            onChooseTierInDialogClick = {},
           )
         },
+        {},
+        {},
       )
     }
   }
@@ -842,12 +803,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -884,12 +845,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -926,12 +887,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -968,12 +929,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",
@@ -1010,12 +971,12 @@ private val quotesForPreview = listOf(
     ),
     addons = emptyList(),
     currentTotalCost = TotalCost(
-      monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
     ),
     newTotalCost = TotalCost(
-      monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-      monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
       "Home Insurance Max" to "300 kr/mo",

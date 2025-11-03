@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import androidx.compose.animation.AnimatedContent
@@ -62,6 +63,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -128,13 +130,7 @@ private fun ContractDetailScreen(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  Column(
-    Modifier
-      .fillMaxSize()
-      .consumeWindowInsets(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-      ),
-  ) {
+  Column(Modifier.fillMaxSize()) {
     val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
     HedvigBottomSheetPriceBreakdown(
       costBreakdownBottomSheetState,
@@ -159,7 +155,14 @@ private fun ContractDetailScreen(
       transitionSpec = { fadeIn() togetherWith fadeOut() },
     ) { state ->
       when (state) {
-        ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
+        ContractDetailsUiState.Error -> {
+          HedvigErrorSection(
+            onButtonClick = retry,
+            modifier = Modifier.fillMaxSize().windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            ),
+          )
+        }
         ContractDetailsUiState.Loading -> {
           Column(
             Modifier
@@ -184,7 +187,9 @@ private fun ContractDetailScreen(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
             buttonText = stringResource(R.string.general_back_button),
             onButtonClick = navigateBack,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            ),
           )
         }
 
@@ -200,15 +205,7 @@ private fun ContractDetailScreen(
               .plus(PaddingValues(top = 16.dp)),
             modifier = Modifier
               .fillMaxSize()
-              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
-              .windowInsetsPadding(
-                WindowInsets
-                  .safeDrawing
-                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-              )
-              .consumeWindowInsets(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-              ),
+              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           ) {
             item(
               key = 1,

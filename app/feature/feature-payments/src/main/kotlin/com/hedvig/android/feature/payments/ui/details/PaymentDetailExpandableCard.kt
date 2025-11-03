@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -108,6 +110,7 @@ internal fun PaymentDetailExpandableCard(
                 textAlign = TextAlign.End,
                 textDecoration = TextDecoration.LineThrough,
                 color = HedvigTheme.colorScheme.textSecondary,
+                modifier = Modifier.semantics { hideFromAccessibility() },
               )
               Spacer(Modifier.width(6.dp))
             }
@@ -169,6 +172,7 @@ internal fun PaymentDetailExpandableCard(
                       R.string.PAYMENTS_PERIOD_DAYS,
                       it.description.daysBetween,
                     )
+
                     FullPeriod -> stringResource(
                       R.string.PAYMENTS_PERIOD_FULL,
                     )
@@ -209,6 +213,7 @@ internal fun PaymentDetailExpandableCard(
                       textAlign = TextAlign.End,
                       textDecoration = TextDecoration.LineThrough,
                       color = HedvigTheme.colorScheme.textSecondary,
+                      modifier = Modifier.semantics { hideFromAccessibility() },
                     )
                     Spacer(Modifier.width(6.dp))
                   }

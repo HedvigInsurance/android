@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 
 /**
  * A [Layout] which places [sizeAdjustingContent] first in a box, making that box take *at least* its size but does not
@@ -21,7 +23,7 @@ fun LayoutWithoutPlacement(
   Layout(
     modifier = modifier,
     content = {
-      Box(propagateMinConstraints = true) { sizeAdjustingContent() }
+      Box(Modifier.semantics { hideFromAccessibility() }, propagateMinConstraints = true) { sizeAdjustingContent() }
       Box(propagateMinConstraints = true) { content() }
     },
   ) { measurable, constraints ->

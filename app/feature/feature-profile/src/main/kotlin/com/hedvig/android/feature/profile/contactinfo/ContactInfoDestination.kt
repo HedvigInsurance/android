@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
@@ -19,6 +20,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -119,7 +122,7 @@ private fun ColumnScope.SuccessState(
   showedSnackBar: () -> Unit,
   focusManager: FocusManager,
 ) {
-  Box(modifier = Modifier.weight(1f)) {
+  Box(modifier = Modifier.requiredHeight(0.dp).wrapContentHeight(Alignment.Top, unbounded = true).zIndex(1f)) {
     HedvigSnackbar(
       snackbarText = when (uiState.errorSnackBarText) {
         ErrorSnackBarText.General -> stringResource(R.string.something_went_wrong)
@@ -139,6 +142,7 @@ private fun ColumnScope.SuccessState(
       modifier = Modifier.padding(16.dp),
     )
   }
+  Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
   HedvigNotificationCard(
     message = stringResource(R.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),

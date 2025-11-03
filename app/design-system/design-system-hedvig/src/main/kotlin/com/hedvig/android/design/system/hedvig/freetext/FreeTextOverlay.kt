@@ -37,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -216,6 +218,8 @@ private fun FreeTextOverlayContent(
               .wrapContentSize(Alignment.TopStart),
           )
 
+          val characterLimitDescription =
+            stringResource(R.string.A11Y_CHARACTER_LIMIT, textValue.text.length, textMaxLength)
           HedvigText(
             text = "${textValue.text.length}/$textMaxLength",
             style = FreeTextDefaults.countLabelStyle.value,
@@ -223,7 +227,10 @@ private fun FreeTextOverlayContent(
             modifier = Modifier
               .fillMaxWidth()
               .padding(counterPadding)
-              .wrapContentWidth(Alignment.End),
+              .wrapContentWidth(Alignment.End)
+              .semantics {
+                contentDescription = characterLimitDescription
+              },
           )
         }
       },

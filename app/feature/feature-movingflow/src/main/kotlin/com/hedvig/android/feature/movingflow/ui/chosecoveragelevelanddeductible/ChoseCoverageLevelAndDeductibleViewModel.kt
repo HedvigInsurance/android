@@ -279,7 +279,9 @@ data class CoverageInfo(
   val tierName: String,
   val tierDescription: String?,
   val minimumPremiumForCoverage: UiMoney,
-)
+) {
+  val id = "$moveHomeQuoteId$tierName$tierDescription$minimumPremiumForCoverage"
+}
 
 internal data class TiersInfo(
   val allOptions: List<MoveHomeQuote>,
@@ -341,4 +343,6 @@ internal data class DeductibleOption(
   val homeQuoteId: String,
   val homeQuotePremium: UiMoney,
   val deductible: Deductible,
-)
+) {
+  val id = "$homeQuoteId$homeQuotePremium$deductible"
+}

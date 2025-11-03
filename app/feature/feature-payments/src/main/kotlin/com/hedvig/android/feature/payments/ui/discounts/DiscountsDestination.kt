@@ -143,7 +143,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
         Icon(
           imageVector = HedvigIcons.InfoFilled,
           tint = HedvigTheme.colorScheme.fillSecondary,
-          contentDescription = null,
+          contentDescription = stringResource(R.string.general_more_information_button),
           modifier = Modifier
             .wrapContentSize(Alignment.CenterEnd)
             .size(24.dp)

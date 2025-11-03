@@ -2,12 +2,15 @@
 <resources>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
+  <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
+  <string name="A11Y_CLEAR_FIELD">Clear field</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
     <item quantity="one">You have %d eligible insurance.</item>
     <item quantity="other">You have %d eligible insurances.</item>
   </plurals>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
+  <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
@@ -172,6 +175,7 @@
   <string name="CLAIMS_SUMMARY_CLAIM">Skadeanmälan</string>
   <string name="CLAIMS_SUMMARY_DETAIL_INFO">Details</string>
   <string name="CLAIMS_SUMMARY_WHAT_IS_ABOUT">Subject of claim</string>
+  <string name="CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR">Input text must be at least %1$d characters.</string>
   <string name="CLAIMS_TEXT_INPUT_PLACEHOLDER">Describe your claim</string>
   <string name="CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER">What happened?</string>
   <string name="CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE">What has happened?</string>
@@ -305,10 +309,12 @@
   <string name="GENERAL_ADD_NEW">Add new</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
+  <string name="GENERAL_DOWNLOAD">Download</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
   <string name="GENERAL_RETRY">Try again</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Save changes</string>
+  <string name="GENERAL_SHOW">Show</string>
   <string name="HC_ALL_QUESTION_TITLE">All questions</string>
   <string name="HC_ANSWER_TITLE">Answer</string>
   <string name="HC_CHAT_ANSWER">Reach us on weekdays 08–22 or weekends &amp; public holidays 10–22</string>
@@ -702,7 +708,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">The insurance covers damage such as theft, fire, vandalism, and body damage while the car is decommissioned. Legal protection is also included, as long as the car remains in Sweden.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE">What’s covered</string>
-  <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportverket, your car insurance will automatically switch to decommission insurance.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your car insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
@@ -800,6 +806,9 @@
   <string name="app_info.submit_bug.prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nDID: %s\nAVC: %s\nSV: %s</string>
   <string name="app_info.submit_bug.prefilled_letter_subject">Technical Issue Report</string>
   <string name="app_info.submit_bug.warning">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_1">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_2">write to us</string>
+  <string name="app_info_submit_bug_warning_with_chat_link_3">here in the app.</string>
   <string name="app_update_needed.app_store_button">Open App Store</string>
   <string name="app_update_needed.body">It seems like you are using an app version that is not supported anymore. To use Hedvig, update to the latest version on the App Store.</string>
   <string name="app_update_needed.title">App update necessary</string>
