@@ -119,8 +119,8 @@ abstract class DownloadStringsTask @Inject constructor(
     while (true) {
       iteration++
       logger.debug("{} iteration:{}", tag, iteration)
-      if (iteration >= 5) {
-        error("Lokalise failed after 10 retries")
+      if (iteration >= 20) {
+        error("Lokalise failed after 20 retries")
       }
       Thread.sleep(3000L)
       val getProcessStatusRequest = Request.Builder()
@@ -142,7 +142,7 @@ abstract class DownloadStringsTask @Inject constructor(
         ?.content
         ?.toProcessStatus()
         ?: error("Lokalise responded with a null process status")
-      logger.debug("{} process status: {}", tag, status)
+      logger.info("{} process status for iteration#{}: {}", tag, iteration, status)
       when (status) {
         is ProcessStatus.Other -> error("Lokalise responded with an unknown process status: ${status.status}")
         ProcessStatus.Queued, ProcessStatus.Running -> continue
