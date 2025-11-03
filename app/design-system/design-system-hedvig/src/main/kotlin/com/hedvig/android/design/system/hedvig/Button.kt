@@ -157,6 +157,7 @@ fun HedvigTextButton(
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
   buttonSize: ButtonSize = ButtonDefaults.ButtonSize.Large,
+  isLoading: Boolean = false,
   onClickLabel: String? = null,
   onClick: () -> Unit,
 ) {
@@ -169,6 +170,7 @@ fun HedvigTextButton(
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
     buttonSize = buttonSize,
     interactionSource = interactionSource,
+    isLoading = isLoading,
   )
 }
 

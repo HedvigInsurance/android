@@ -13,7 +13,7 @@ import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsurance
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepDestination
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepDestination
-import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepViewModel
+import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecommissionStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
@@ -244,9 +244,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.DeflectAutoCancel> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.DeflectAutoCancel>(
+      TerminateInsuranceDestination.DeflectAutoCancel,
+    ) { backStackEntry ->
       DeflectAutoCancelStepDestination(
-        message = message,
+        params = autoCancelDeflectStepParameters,
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navigator::navigateUp,
@@ -256,7 +258,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.DeflectAutoDecom>(
       TerminateInsuranceDestination.DeflectAutoDecom,
     ) {
-      val viewModel: DeflectAutoDecomStepViewModel = koinViewModel()
+      val viewModel: DeflectAutoDecommissionStepViewModel = koinViewModel()
       DeflectAutoDecomStepDestination(
         viewModel = viewModel,
         closeTerminationFlow = closeTerminationFlow,
@@ -280,7 +282,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
-        -> {
+      -> {
         typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }

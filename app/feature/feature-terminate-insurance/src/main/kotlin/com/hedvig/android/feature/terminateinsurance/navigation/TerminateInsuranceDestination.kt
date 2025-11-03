@@ -128,8 +128,14 @@ internal sealed interface TerminateInsuranceDestination {
 
   @Serializable
   data class DeflectAutoCancel(
-    val message: String,
-  ) : TerminateInsuranceDestination, Destination
+    val autoCancelDeflectStepParameters: AutoCancelDeflectStepParameters,
+  ) : TerminateInsuranceDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<AutoCancelDeflectStepParameters>(),
+      )
+    }
+  }
 
   @Serializable
   data class DeflectAutoDecom(
@@ -163,4 +169,11 @@ internal data class TerminationGraphParameters(
   val insuranceDisplayName: String,
   val exposureName: String,
   val contractGroup: ContractGroup,
+)
+
+@Serializable
+internal data class AutoCancelDeflectStepParameters(
+  val title: String,
+  val message: String,
+  val extraMessage: String?,
 )

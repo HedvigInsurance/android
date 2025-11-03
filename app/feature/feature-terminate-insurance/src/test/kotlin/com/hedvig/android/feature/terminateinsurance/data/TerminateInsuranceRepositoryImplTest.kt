@@ -60,18 +60,23 @@ class TerminateInsuranceRepositoryImplTest {
   private val apolloClientWithGoodResponse: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = FlowTerminationStartMutation(FlowTerminationStartInput(testId,
-          supportedSteps = Optional.present(listOf(
-            "FlowTerminationSurveyStep",
-            "FlowTerminationDateStep",
-            "FlowTerminationDeletionStep",
-            "FlowTerminationSuccessStep",
-            "FlowTerminationFailedStep",
-            "FlowTerminationCarDeflectAutoCancelStep",
-            "FlowTerminationCarAutoDecomStep",
-          ))
-
-        ), false),
+        operation = FlowTerminationStartMutation(
+          FlowTerminationStartInput(
+            testId,
+            supportedSteps = Optional.present(
+              listOf(
+                "FlowTerminationSurveyStep",
+                "FlowTerminationDateStep",
+                "FlowTerminationDeletionStep",
+                "FlowTerminationSuccessStep",
+                "FlowTerminationFailedStep",
+                "FlowTerminationCarDeflectAutoCancelStep",
+                "FlowTerminationCarAutoDecomStep",
+              ),
+            ),
+          ),
+          false,
+        ),
         data = FlowTerminationStartMutation.Data(OctopusFakeResolver) {
           flowTerminationStart = buildFlow {
             id = "flowId"
