@@ -1,10 +1,12 @@
 package com.hedvig.android.design.system.hedvig.api
 
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
 @Stable
 interface HedvigDatePickerState {
+  val locale: CalendarLocale
   var selectedDateMillis: Long?
   var displayedMonthMillis: Long
   var displayMode: HedvigDisplayMode

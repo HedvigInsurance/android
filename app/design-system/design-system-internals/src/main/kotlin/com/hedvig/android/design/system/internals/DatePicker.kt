@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.internals
 
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
@@ -231,6 +232,8 @@ private data class SelectableDatesImmutableImpl(
 private class HedvigDatePickerStateImpl(
   val materialState: DatePickerState,
 ) : HedvigDatePickerState {
+  override val locale: CalendarLocale
+    get() = materialState.locale
   override var selectedDateMillis: Long?
     set(value) {
       materialState.selectedDateMillis = value
@@ -258,6 +261,8 @@ private class HedvigDatePickerStateImpl(
 private class MaterialDatePickerStateImpl(
   val hedvigState: HedvigDatePickerState,
 ) : DatePickerState {
+  override val locale: CalendarLocale
+    get() = hedvigState.locale
   override var selectedDateMillis: Long?
     get() = hedvigState.selectedDateMillis
     set(value) {
