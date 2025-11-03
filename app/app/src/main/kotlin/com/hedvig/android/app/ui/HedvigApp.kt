@@ -226,6 +226,13 @@ private fun LogoutOnInvalidCredentialsEffect(
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
           navDestination.typedHasRoute<LoginDestination>()
         }
+        logcat {
+          "LogoutOnInvalidCredentialsEffect: " +
+            "authStatus:$authStatus | " +
+            "isDemoMode:$isDemoMode | " +
+            "isLoggedOut:$isLoggedOut | " +
+            "currentRoute:${navBackStackEntry.destination.route}"
+        }
         if (isLoggedOut) {
           return@combine
         }

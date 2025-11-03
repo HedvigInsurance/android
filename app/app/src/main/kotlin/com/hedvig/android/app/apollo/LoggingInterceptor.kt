@@ -86,6 +86,7 @@ internal class LogoutOnUnauthenticatedInterceptor(
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       val isUnauthenticated = errors.isUnathenticated()
       if (isUnauthenticated && !demoManager.isDemoMode().first()) {
+        logcat { "LogoutOnUnauthenticatedInterceptor detected unauthenticated request, force logging out" }
         authTokenService.logoutAndInvalidateTokens()
       }
     }
