@@ -99,6 +99,8 @@ fragment FlowTerminationAutoDecomStepFragment on FlowTerminationCarAutoDecomStep
 fragment FlowTerminationCarDeflectAutoCancelStepFragment on FlowTerminationCarDeflectAutoCancelStep {
   id
   message
+  title
+  extraMessage
 }
 
 fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {

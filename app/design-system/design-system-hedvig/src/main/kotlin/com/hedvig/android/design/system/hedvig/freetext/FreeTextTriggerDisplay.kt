@@ -132,7 +132,7 @@ fun FreeTextDisplay(
               color = displayColors.counterColor,
               modifier = Modifier.semantics {
                 contentDescription = characterLimitDescription
-              }
+              },
             )
           }
         }

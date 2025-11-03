@@ -198,6 +198,19 @@ input BrowserInfo {
   timeZoneOffset: Int!
   javaEnabled: Boolean!
 }
+"""
+Yearly savings from bundle discount
+"""
+type BundleYearlySavings {
+  """
+  Total yearly savings amount from bundle discount
+  """
+  amount: Money!
+  """
+  Whether the bundle discount covers the full period (true) or has pending/future items (false)
+  """
+  bundleDiscountCoversFullPeriod: Boolean!
+}
 type CampaignDiscount {
   """
   The type of discount, determines the relevancy of the other fields.
@@ -276,6 +289,10 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
+  """
+  Yearly savings from bundle discount
+  """
+  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -612,6 +629,153 @@ type ClaimFile {
   """
   thumbnailUrl: Url
 }
+"""
+Root type expressing the entire flow for members trying to report a new claim.
+"""
+type ClaimIntent {
+  id: ID!
+  currentStep: ClaimIntentStep!
+}
+input ClaimIntentFormSubmitInputField {
+  fieldId: ID!
+  values: [ClaimIntentStepContentFormFieldValue!]
+}
+type ClaimIntentMutationOutput {
+  intent: ClaimIntent
+  userError: UserError
+}
+"""
+Represents a single step in the claim submission flow.
+Steps have some universally shared properties, as well as variable `content` which comes in many different
+shapes (see the `ClaimIntentStepContent` union).
+"""
+type ClaimIntentStep {
+  id: ID!
+  text: String!
+  content: ClaimIntentStepContent!
+}
+"""
+A union of all the different kinds of "step content".
+"""
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary
+"""
+An audio recording step is one where the user is meant to record some audio.
+Submitted using `Mutation.claimIntentSubmitAudio`.
+"""
+type ClaimIntentStepContentAudioRecording {
+  hint: String!
+  """
+  The relative URI towards where one should upload the audio recording.
+  """
+  uploadUri: String!
+}
+"""
+A form step is one that contains a form in the shape of a list of "fields".
+Submitted using `Mutation.claimIntentSubmitForm`.
+"""
+type ClaimIntentStepContentForm {
+  fields: [ClaimIntentStepContentFormField!]!
+}
+"""
+A single field to render in the form.
+"""
+type ClaimIntentStepContentFormField {
+  """
+  Use the ID when submitting a value for this field.
+  """
+  id: ID!
+  """
+  Indicates what kind of form field this is. Specific form fields can be either present or null depending on this
+  type - such as `options` existing if type is SINGLE_SELECT.
+  """
+  type: ClaimIntentStepContentFormFieldType!
+  """
+  Localized display title of this field.
+  """
+  title: String!
+  """
+  Optional printed context on the side of the field. Typical value would be a currency like 'SEK'.
+  """
+  suffix: String
+  """
+  If true, must contain a value when submitted.
+  """
+  isRequired: Boolean!
+  """
+  A list of selectable options for field types such as SINGLE_SELECT.
+  """
+  options: [ClaimIntentStepContentFormFieldOption!]
+  """
+  If present - the pre-defined value of this field.
+  """
+  defaultValue: ClaimIntentStepContentFormFieldValue
+  """
+  If present - the minimal value this field can hold.
+  """
+  minValue: ClaimIntentStepContentFormFieldValue
+  """
+  If present - the maximal value this field can hold.
+  """
+  maxValue: ClaimIntentStepContentFormFieldValue
+}
+type ClaimIntentStepContentFormFieldOption {
+  title: String!
+  value: ClaimIntentStepContentFormFieldValue!
+}
+enum ClaimIntentStepContentFormFieldType {
+  TEXT
+  DATE
+  NUMBER
+  SINGLE_SELECT
+  BINARY
+}
+"""
+A scalar representing client-server agreed upon submittable form values.
+This typically will be backed by a String - but other formats could appear.
+"""
+scalar ClaimIntentStepContentFormFieldValue
+"""
+A read-only step where the entire claim intent information is displayed before submitting.
+Submitted using `Mutation.claimIntentSubmitSummary`.
+"""
+type ClaimIntentStepContentSummary {
+  items: [ClaimIntentStepContentSummaryItem!]!
+  audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
+  fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
+}
+type ClaimIntentStepContentSummaryAudioRecording {
+  url: Url!
+}
+type ClaimIntentStepContentSummaryFileUpload {
+  url: Url!
+}
+type ClaimIntentStepContentSummaryItem {
+  title: String!
+  value: String!
+}
+"""
+A task step is one that eventually completes itself.
+This is meant to be polled until `isCompleted` is true, and then concluded using `Mutation.claimIntentSubmitTask`.
+"""
+type ClaimIntentStepContentTask {
+  description: String!
+  isCompleted: Boolean!
+}
+input ClaimIntentSubmitAudioInput {
+  stepId: ID!
+  audioReference: String
+  freeText: String
+}
+input ClaimIntentSubmitFormInput {
+  stepId: ID!
+  fields: [ClaimIntentFormSubmitInputField!]!
+}
+input ClaimIntentSubmitSummaryInput {
+  stepId: ID!
+}
+input ClaimIntentSubmitTaskInput {
+  stepId: ID!
+}
 type ClaimMutationOutput {
   claim: Claim
   userError: UserError
@@ -663,9 +827,6 @@ type CommonClaimLayoutTitleAndBulletPoints {
   title: String!
   buttonTitle: String!
   bulletPoints: [CommonClaimLayoutBulletPoint!]!
-}
-type ConsentResponse {
-  consentGiven: Boolean!
 }
 """
 A contract is a container for a specific insurance, and contains a history of the versions of that insurance,
@@ -1457,7 +1618,9 @@ type FlowTerminationCarAutoDecomStep implements FlowStep {
 }
 type FlowTerminationCarDeflectAutoCancelStep implements FlowStep {
   id: ID!
+  title: String!
   message: String!
+  extraMessage: String
 }
 input FlowTerminationDateInput {
   terminationDate: Date!
@@ -2529,6 +2692,26 @@ type Mutation {
   conversationSendMessage(input: ConversationSendMessageInput!): ChatMessageMutationOutput!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
   """
+  Create or (reuse and existing) unsubmitted claim intent.
+  """
+  claimIntentStart: ClaimIntent!
+  """
+  Submit a step containing a `ClaimIntentStepContentForm`.
+  """
+  claimIntentSubmitForm(input: ClaimIntentSubmitFormInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentAudioRecording`.
+  """
+  claimIntentSubmitAudio(input: ClaimIntentSubmitAudioInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentTask`.
+  """
+  claimIntentSubmitTask(input: ClaimIntentSubmitTaskInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentSummary`.
+  """
+  claimIntentSubmitSummary(input: ClaimIntentSubmitSummaryInput!): ClaimIntentMutationOutput!
+  """
   This is a re-implementation of the existing Mutation.externalInsurnaceProvider.initiateIframeDataCollection
   mutation, as the old one uses an unsupported resolver design (nested/namespaced mutations).
   """
@@ -2596,7 +2779,6 @@ type Mutation {
   Create partner-specific `ShopSession`.  Validates partnerName and may provide partner-specific behaviour.
   """
   shopSessionCreatePartner(input: ShopSessionCreatePartnerInput): ShopSession!
-  updateConsent(trialId: UUID!, consentGiven: Boolean!): ConsentResponse
   """
   Set the external insurer ID (value of `ExternalInsurer.id`) for this price intent.
   Mostly used for helping the user with cancellation/switching.
@@ -3230,6 +3412,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
@@ -3801,8 +3984,6 @@ type TrialExtension {
   priceIntent: PriceIntent!
   trialContract: TrialContract!
   shopSession: ShopSession!
-  collectConsent: Boolean!
-  consentGiven: Boolean!
 }
 """
 Output type for upsellTravelAddonActivate mutation.

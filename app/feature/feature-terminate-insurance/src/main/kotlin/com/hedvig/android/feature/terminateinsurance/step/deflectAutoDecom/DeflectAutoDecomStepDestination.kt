@@ -31,14 +31,14 @@ import hedvig.resources.R
 
 @Composable
 internal fun DeflectAutoDecomStepDestination(
-  viewModel: DeflectAutoDecomStepViewModel,
+  viewModel: DeflectAutoDecommissionStepViewModel,
   closeTerminationFlow: () -> Unit,
   navigateUp: () -> Unit,
   onContinueTermination: (step: TerminateInsuranceStep) -> Unit,
 ) {
   val uiState: DeflectAutoDecommissionUiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? DeflectAutoDecommissionUiState.Loading ?: return@LaunchedEffect
+    val uiStateValue = uiState as? DeflectAutoDecommissionUiState.Success ?: return@LaunchedEffect
     if (uiStateValue.nextStep != null) {
       viewModel.emit(DeflectAutoDecommissionEvent.ClearTerminationStep)
       onContinueTermination(uiStateValue.nextStep)
@@ -73,8 +73,9 @@ private fun DeflectAutoDecomStepScreen(
       }
     }
 
-    is DeflectAutoDecommissionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    DeflectAutoDecommissionUiState.Success -> DeflectAutoDecomStepSuccessScreen(
+    DeflectAutoDecommissionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    is DeflectAutoDecommissionUiState.Success -> DeflectAutoDecomStepSuccessScreen(
+      isNextStepLoading = uiState.buttonLoading,
       navigateUp = navigateUp,
       closeTerminationFlow = closeTerminationFlow,
       fetchTerminationStep = fetchTerminationStep,
@@ -84,6 +85,7 @@ private fun DeflectAutoDecomStepScreen(
 
 @Composable
 private fun DeflectAutoDecomStepSuccessScreen(
+  isNextStepLoading: Boolean,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   fetchTerminationStep: () -> Unit,
@@ -134,7 +136,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
-      enabled = true,
+      enabled = !isNextStepLoading,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -143,6 +145,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(R.string.TERMINATION_BUTTON),
+      isLoading = isNextStepLoading,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -176,8 +179,9 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 private class DeflectAutoDecomUiStateProvider :
   CollectionPreviewParameterProvider<DeflectAutoDecommissionUiState>(
     listOf(
-      DeflectAutoDecommissionUiState.Success,
-      DeflectAutoDecommissionUiState.Loading(null),
+      DeflectAutoDecommissionUiState.Success(),
+      DeflectAutoDecommissionUiState.Success(buttonLoading = true),
+      DeflectAutoDecommissionUiState.Loading,
       DeflectAutoDecommissionUiState.Failure,
     ),
   )

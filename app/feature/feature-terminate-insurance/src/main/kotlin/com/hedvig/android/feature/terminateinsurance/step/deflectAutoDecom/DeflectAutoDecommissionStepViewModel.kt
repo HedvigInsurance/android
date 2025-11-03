@@ -13,10 +13,10 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
-internal class DeflectAutoDecomStepViewModel(
+internal class DeflectAutoDecommissionStepViewModel(
   terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState>(
-    initialState = DeflectAutoDecommissionUiState.Success,
+    initialState = DeflectAutoDecommissionUiState.Success(),
     presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository),
   )
 
@@ -35,8 +35,8 @@ private class DeflectAutoDecomStepPresenter(
       when (event) {
         DeflectAutoDecommissionEvent.ClearTerminationStep -> {
           val state =
-            currentState as? DeflectAutoDecommissionUiState.Loading ?: return@CollectEvents
-          currentState = state.copy(nextStep = null)
+            currentState as? DeflectAutoDecommissionUiState.Success ?: return@CollectEvents
+          currentState = state.copy(nextStep = null, buttonLoading = false)
         }
 
         DeflectAutoDecommissionEvent.FetchNextStep -> loadIteration++
@@ -44,13 +44,19 @@ private class DeflectAutoDecomStepPresenter(
     }
     LaunchedEffect(loadIteration) {
       if (loadIteration > 0) {
-        currentState = DeflectAutoDecommissionUiState.Loading(null)
+        val state = currentState
+        currentState = when (state) {
+          DeflectAutoDecommissionUiState.Failure -> DeflectAutoDecommissionUiState.Loading
+          DeflectAutoDecommissionUiState.Loading -> return@LaunchedEffect
+          is DeflectAutoDecommissionUiState.Success -> state.copy(buttonLoading = true)
+        }
         currentState = terminateInsuranceRepository.continueAfterAutoDecomDeflect().fold(
           ifLeft = {
             DeflectAutoDecommissionUiState.Failure
           },
           ifRight = { result ->
-            DeflectAutoDecommissionUiState.Loading(
+            DeflectAutoDecommissionUiState.Success(
+              buttonLoading = true,
               nextStep = result,
             )
           },
@@ -62,11 +68,12 @@ private class DeflectAutoDecomStepPresenter(
 }
 
 internal sealed interface DeflectAutoDecommissionUiState {
-  data class Loading(
+  data object Loading : DeflectAutoDecommissionUiState
+
+  data class Success(
+    val buttonLoading: Boolean = false,
     val nextStep: TerminateInsuranceStep? = null,
   ) : DeflectAutoDecommissionUiState
-
-  data object Success : DeflectAutoDecommissionUiState
 
   data object Failure : DeflectAutoDecommissionUiState
 }

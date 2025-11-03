@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
+import com.hedvig.android.feature.terminateinsurance.navigation.AutoCancelDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoCancel
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecom
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.InsuranceDeletion
@@ -54,7 +55,11 @@ internal sealed interface TerminateInsuranceStep {
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 
-  data class DeflectAutoCancelStep(val message: String) : TerminateInsuranceStep
+  data class DeflectAutoCancelStep(
+    val title: String,
+    val message: String,
+    val extraMessage: String?,
+  ) : TerminateInsuranceStep
 
   data object DeflectAutoDecommissionStep : TerminateInsuranceStep
 }
@@ -89,7 +94,11 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
     }
 
     is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStepCurrentStep -> {
-      TerminateInsuranceStep.DeflectAutoCancelStep(message)
+      TerminateInsuranceStep.DeflectAutoCancelStep(
+        title = title,
+        message = message,
+        extraMessage = extraMessage,
+      )
     }
 
     else -> TerminateInsuranceStep.UnknownStep()
@@ -254,7 +263,13 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       commonParams = commonParams,
     )
 
-    is TerminateInsuranceStep.DeflectAutoCancelStep -> DeflectAutoCancel(message)
+    is TerminateInsuranceStep.DeflectAutoCancelStep -> DeflectAutoCancel(
+      AutoCancelDeflectStepParameters(
+        title = title,
+        message = message,
+        extraMessage = extraMessage,
+      ),
+    )
 
     is TerminateInsuranceStep.DeflectAutoDecommissionStep -> DeflectAutoDecom(
       commonParams = commonParams,
