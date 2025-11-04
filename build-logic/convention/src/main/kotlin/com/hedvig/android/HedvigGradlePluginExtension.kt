@@ -192,7 +192,7 @@ private abstract class ComposeHandler {
     val isAndroidMultiplatformLibrary =
       project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
     if (isAndroidMultiplatformLibrary) {
-      project.pluginManager.apply(libs.plugins.composeJetbrainsCompilerGradlePlugin.get().pluginId)
+//      project.pluginManager.apply(libs.plugins.composeJetbrainsCompilerGradlePlugin.get().pluginId)
     }
     project.dependencies {
       if (isAndroidLibrary || isAndroidApp || isAndroidMultiplatformLibrary) {

@@ -185,6 +185,7 @@ dependencies {
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
+  implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
   implementation(projects.featureClaimTriaging)
