@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - makerdays/chat-claim
   workflow_dispatch:
 
 concurrency:
