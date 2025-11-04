@@ -706,7 +706,7 @@
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">You’ll receive a confirmation email within a few days, where you can see your new price.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
-  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">The insurance covers damage such as theft, fire, vandalism, and body damage while the car is decommissioned. Legal protection is also included, as long as the car remains in Sweden.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">The insurance covers damage such as theft, fire, vandalism, and body damage while the car is decommissioned. Legal protection is also included. The insurance is only valid as long as the car remains in Sweden.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE">What’s covered</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your car insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
