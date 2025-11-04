@@ -8,15 +8,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ClaimChatDestination(
-  claimChatViewModel: ClaimChatViewModel,
-) {
-  ClaimChatScreen()
+fun ClaimChatDestination() {
+  val claimChatViewModel = ClaimChatViewModel() // todo real VM
+  ClaimChatScreen(claimChatViewModel)
 }
 
 
 @Composable
-fun ClaimChatScreen() {
+fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     BasicText("Hello Multiplatform")
   }

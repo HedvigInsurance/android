@@ -12,9 +12,6 @@ object ClaimChatDestination : Destination
 
 fun NavGraphBuilder.claimChatGraph() {
   navdestination<ClaimChatDestination> {
-    val claimChatViewModel = ClaimChatViewModel() // todo real VM
-    ClaimChatDestination(
-      claimChatViewModel = claimChatViewModel,
-    )
+    ClaimChatDestination()
   }
 }
