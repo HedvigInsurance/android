@@ -30,6 +30,7 @@ public val HedvigIcons.ColoredChat: ImageVector
       viewportWidth = 40.0f,
       viewportHeight = 40.0f,
     ).apply {
+      addGroup(scaleX = 1.25f, scaleY = 1.25f, pivotX = 20f, pivotY = 20f)
       // M20 4 A16 16 0 1 0 20 36 16 16 0 1 0 20 4z
       path(
         fill = SolidColor(Color(0xFF51BFFB)),
@@ -119,6 +120,7 @@ public val HedvigIcons.ColoredChat: ImageVector
           y1 = 20.0f,
         )
       }
+      clearGroup()
     }.build().also { _chat = it }
   }
 
