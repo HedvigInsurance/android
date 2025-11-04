@@ -26,6 +26,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToContactInfo: (NavBackStackEntry) -> Unit,
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
+  navigateToClaimChat: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -43,6 +44,7 @@ fun NavGraphBuilder.homeGraph(
         viewModel = viewModel,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        navigateToClaimChat = navigateToClaimChat,
         onClaimDetailCardClicked = { claimId: String ->
           navigateToClaimDetails(backStackEntry, claimId)
         },

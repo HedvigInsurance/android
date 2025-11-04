@@ -143,6 +143,7 @@ internal fun HomeDestination(
   viewModel: HomeViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -162,6 +163,7 @@ internal fun HomeDestination(
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToClaimChat = navigateToClaimChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
@@ -187,6 +189,7 @@ private fun HomeScreen(
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -266,6 +269,9 @@ private fun HomeScreen(
       TopAppBarLayoutForActions {
         val currentState = uiState as? HomeUiState.Success
         if (currentState != null) {
+          ToolbarClaimChatIcon(
+            onClick = navigateToClaimChat,
+          )
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
@@ -769,6 +775,7 @@ private fun PreviewHomeScreen(
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
@@ -798,6 +805,7 @@ private fun PreviewHomeScreenWithError() {
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
@@ -847,6 +855,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},

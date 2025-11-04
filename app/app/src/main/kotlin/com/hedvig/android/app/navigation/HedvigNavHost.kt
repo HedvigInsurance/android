@@ -84,6 +84,8 @@ import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ClaimChatDestination
+import com.hedvig.feature.claim.com.hedvig.feature.claim.chat.claimChatGraph
 
 @Composable
 internal fun HedvigNavHost(
@@ -189,6 +191,9 @@ internal fun HedvigNavHost(
       },
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
+      },
+      navigateToClaimChat = {
+        hedvigAppState.navController.navigate(ClaimChatDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
@@ -423,6 +428,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigateToNewConversation: (NavBackStackEntry, (NavOptionsBuilder.() -> Unit)?) -> Unit,
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
+  claimChatGraph()
   claimDetailsGraph(
     navigator = navigator,
     imageLoader = imageLoader,
