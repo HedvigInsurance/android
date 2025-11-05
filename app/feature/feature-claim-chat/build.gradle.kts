@@ -21,6 +21,8 @@ kotlin {
     commonMain.dependencies {
       implementation(compose.animation)
       implementation(compose.foundation)
+      implementation(compose.material3)
+      implementation(compose.material)
       implementation(compose.ui)
       implementation(libs.apollo.api)
       implementation(libs.apollo.runtime)
@@ -37,6 +39,7 @@ kotlin {
       implementation(libs.koin.coreViewmodel)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
+      implementation(projects.designSystemHedvig)
     }
   }
 }
