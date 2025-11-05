@@ -635,6 +635,7 @@ Root type expressing the entire flow for members trying to report a new claim.
 type ClaimIntent {
   id: ID!
   currentStep: ClaimIntentStep!
+  sourceMessages: [ClaimIntentSourceMessage!]
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
@@ -643,6 +644,17 @@ input ClaimIntentFormSubmitInputField {
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
   userError: UserError
+}
+type ClaimIntentSourceMessage {
+  id: ID!
+  text: String!
+}
+input ClaimIntentStartInput {
+  """
+  Optionally inject a chat message ID to start the claim intent from. This will replace the audio recording
+  as the first step, using the chat history as the implicit first step.
+  """
+  sourceMessageId: ID
 }
 """
 Represents a single step in the claim submission flow.
@@ -748,6 +760,8 @@ type ClaimIntentStepContentSummaryAudioRecording {
 }
 type ClaimIntentStepContentSummaryFileUpload {
   url: Url!
+  contentType: String!
+  fileName: String!
 }
 type ClaimIntentStepContentSummaryItem {
   title: String!
@@ -1893,6 +1907,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2694,7 +2710,7 @@ type Mutation {
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
-  claimIntentStart: ClaimIntent!
+  claimIntentStart(input: ClaimIntentStartInput): ClaimIntent!
   """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
@@ -2899,6 +2915,16 @@ type Mutation {
   Call this to accept an addon offer and activate addon.
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
+}
+type PartnerClaim {
+  id: ID!
+  outcome: ClaimOutcome
+  status: ClaimStatus
+  submittedAt: Date!
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  incidentDate: Date @deprecated(reason: "Use displayItems instead")
 }
 type PartnerData {
   sas: SasPartnerData
@@ -3412,6 +3438,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
