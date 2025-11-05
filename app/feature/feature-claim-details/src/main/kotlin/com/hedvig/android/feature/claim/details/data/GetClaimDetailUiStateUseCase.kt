@@ -2,8 +2,6 @@ package com.hedvig.android.feature.claim.details.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.raise.ensure
-import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -26,6 +24,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.ClaimQuery
 import octopus.fragment.ClaimFragment
+import octopus.fragment.PartnerClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 import octopus.type.InsuranceDocumentType
@@ -53,32 +52,55 @@ internal class GetClaimDetailUiStateUseCase(
         either {
           val claim = response.bind().claim
           val partnerClaim = response.bind().partnerClaim //todo
-          if (claim!=null) {
+          if (claim != null) {
             if (claim.showClaimClosedFlow) {
               crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
             }
-            ClaimDetailUiState.Content.ClaimContent.fromClaim(claim, claim.conversation?.id,
-              claim.conversation?.unreadMessageCount)
-          }
-//          else if (partnerClaim!=null) {
+            ClaimDetailUiState.Content.ClaimContent.fromClaim(
+              claim, claim.conversation?.id,
+              claim.conversation?.unreadMessageCount,
+            )
+          } else if (partnerClaim != null) {
 //            if (partnerClaim.showClaimClosedFlow) {
 //              crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(partnerClaim)
 //            }
-//            ClaimDetailUiState.Content.PartnerClaimContent.fromPartnerClaim(partnerClaim)
-//          } //todo
-//          else if (true) { //TODO: remove mock!!!
-//            ClaimDetailUiState.Content.PartnerClaimContent()
-//          }
-          else raise(Error.NoClaimFound)
+            ClaimDetailUiState.Content.PartnerClaimContent.fromPartnerClaim(partnerClaim)
+          } else raise(Error.NoClaimFound)
         }
       }
   }
 
-//  private fun ClaimDetailUiState.Content.PartnerClaimContent.Companion.fromPartnerClaim(
-//    partnerClaim: PartnerClaimFragment
-//  ): ClaimDetailUiState.Content.PartnerClaimContent {
-//    TODO()
-//  }
+  private fun ClaimDetailUiState.Content.PartnerClaimContent.Companion.fromPartnerClaim(
+    partnerClaim: PartnerClaimFragment,
+  ): ClaimDetailUiState.Content.PartnerClaimContent {
+
+    //CLAIM_DETAILS_DATE_OF_ACCIDENT
+    return ClaimDetailUiState.Content.PartnerClaimContent(
+      claimId = partnerClaim.id,
+      claimStatus = partnerClaim.status.toStatus(),
+      submittedAt = partnerClaim.submittedAt,
+      termsConditionsUrl = null,
+      appealInstructionsUrl = null,
+      displayItems = emptyList(),
+      handlerEmail = "motor@hedvig.com",
+      savedFileUri = null,
+      downloadError = null,
+      isLoadingPdf = null,
+      claimStatusCardUiState = ClaimStatusCardUiState.fromPartnerClaim(partnerClaim),
+    )
+  }
+
+  private fun ClaimStatus?.toStatus(): ClaimDetailUiState.Content.ClaimStatus {
+    return when (this) {
+      ClaimStatus.CREATED -> ClaimDetailUiState.Content.ClaimStatus.CREATED
+      ClaimStatus.IN_PROGRESS -> ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS
+      ClaimStatus.CLOSED -> ClaimDetailUiState.Content.ClaimStatus.CLOSED
+      ClaimStatus.REOPENED -> ClaimDetailUiState.Content.ClaimStatus.REOPENED
+      ClaimStatus.UNKNOWN__,
+      null,
+        -> ClaimDetailUiState.Content.ClaimStatus.UNKNOWN
+    }
+  }
 
   private fun ClaimDetailUiState.Content.ClaimContent.Companion.fromClaim(
     claim: ClaimFragment,
@@ -103,7 +125,11 @@ internal class GetClaimDetailUiStateUseCase(
       hasUnreadMessages = (conversationUnreadMessageCount ?: 0) > 0,
       submittedContent = when {
         audioUrl != null -> {
-          ClaimDetailUiState.Content.ClaimContent.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
+          ClaimDetailUiState.Content.ClaimContent.SubmittedContent.Audio(
+            SignedAudioUrl.fromSignedAudioUrlString(
+              audioUrl,
+            ),
+          )
         }
 
         memberFreeText != null -> ClaimDetailUiState.Content.ClaimContent.SubmittedContent.FreeText(memberFreeText)
@@ -119,22 +145,14 @@ internal class GetClaimDetailUiStateUseCase(
         )
       },
       claimStatusCardUiState = ClaimStatusCardUiState.fromClaimStatusCardsQuery(claim),
-      claimStatus = when (claim.status) {
-        ClaimStatus.CREATED -> ClaimDetailUiState.Content.ClaimStatus.CREATED
-        ClaimStatus.IN_PROGRESS -> ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS
-        ClaimStatus.CLOSED -> ClaimDetailUiState.Content.ClaimStatus.CLOSED
-        ClaimStatus.REOPENED -> ClaimDetailUiState.Content.ClaimStatus.REOPENED
-        ClaimStatus.UNKNOWN__,
-        null,
-        -> ClaimDetailUiState.Content.ClaimStatus.UNKNOWN
-      },
+      claimStatus = claim.status.toStatus(),
       claimOutcome = when (claim.outcome) {
         ClaimOutcome.PAID -> ClaimDetailUiState.Content.ClaimOutcome.PAID
         ClaimOutcome.NOT_COMPENSATED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED
         ClaimOutcome.NOT_COVERED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED
         ClaimOutcome.UNKNOWN__,
         null,
-        -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+          -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 
         ClaimOutcome.UNRESPONSIVE -> ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE
       },

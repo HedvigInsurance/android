@@ -25,6 +25,7 @@ import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
@@ -195,31 +196,25 @@ internal sealed interface ClaimDetailUiState {
     val claimId: String
     val claimStatusCardUiState: ClaimStatusCardUiState
     val claimStatus: ClaimStatus
-    val submittedAt: LocalDateTime
-    val insuranceDisplayName: String?
     val termsConditionsUrl: String?
     val appealInstructionsUrl: String?
     val displayItems: List<DisplayItem>
-    val claimOutcome: ClaimOutcome
     val downloadError: Boolean?
     val isLoadingPdf: String?
 
     val savedFileUri: File?
-
-    fun claimIsInUndeterminedState(): Boolean =
-      claimStatus == ClaimStatus.CLOSED && claimOutcome == ClaimOutcome.UNKNOWN
 
     data class ClaimContent(
       override val claimId: String,
       override val claimStatusCardUiState: ClaimStatusCardUiState,
       override val claimStatus: ClaimStatus,
        val claimType: String?,
-      override val submittedAt: LocalDateTime,
-      override val insuranceDisplayName: String?,
+      val submittedAt: LocalDateTime,
+      val insuranceDisplayName: String?,
       override val termsConditionsUrl: String?,
       override val appealInstructionsUrl: String?,
       override val displayItems: List<DisplayItem>,
-      override val claimOutcome: ClaimOutcome,
+      val claimOutcome: ClaimOutcome,
       override val downloadError: Boolean?,
       override val isLoadingPdf: String?,
       override val savedFileUri: File?,
@@ -234,6 +229,9 @@ internal sealed interface ClaimDetailUiState {
       val infoText: String?,
     ) : Content {
 
+      fun claimIsInUndeterminedState(): Boolean =
+        claimStatus == ClaimStatus.CLOSED && claimOutcome == ClaimOutcome.UNKNOWN
+
       sealed interface SubmittedContent {
         data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
 
@@ -247,18 +245,17 @@ internal sealed interface ClaimDetailUiState {
       override val claimId: String,
       override val claimStatusCardUiState: ClaimStatusCardUiState,
       override val claimStatus: ClaimStatus,
-      override val submittedAt: LocalDateTime,
-      override val insuranceDisplayName: String?,
+      val submittedAt: LocalDate,
       override val termsConditionsUrl: String?,
       override val appealInstructionsUrl: String?,
       override val displayItems: List<DisplayItem>,
-      override val claimOutcome: ClaimOutcome,
       override val downloadError: Boolean?,
       override val isLoadingPdf: String?,
       override val savedFileUri: File?,
-      val handlerPhoneNumber: String?,
       val handlerEmail: String?,
-    ) : Content
+    ) : Content {
+      companion object
+    }
 
     enum class ClaimStatus {
       CREATED,

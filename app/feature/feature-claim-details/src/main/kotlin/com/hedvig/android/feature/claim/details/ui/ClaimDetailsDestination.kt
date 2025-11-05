@@ -92,7 +92,6 @@ import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
@@ -104,7 +103,6 @@ import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
-import kotlin.String
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -234,7 +232,7 @@ private fun PartnerClaimDetailContentScreen(
   downloadFromUrl: (String) -> Unit,
   onDismissDownloadError: () -> Unit,
   sharePdf: (File) -> Unit,
- // startCall: (() -> Unit)?, //todo
+  // startCall: (() -> Unit)?, //todo
   // writeEmail: (() -> Unit)?, //todo
 ) {
   if (uiState.savedFileUri != null) {
@@ -933,42 +931,40 @@ private fun PreviewClaimDetailPartnerClaim() {
       PartnerClaimDetailContentScreen(
         ClaimDetailUiState.Content.PartnerClaimContent(
           claimId = "id",
-        claimStatusCardUiState = ClaimStatusCardUiState(
-          id = "id",
-          claimType = "Broken car something",
-          insuranceDisplayName = null, // "Home Insurance Homeowner",
-          submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
-          pillTypes = listOf(
-            ClaimPillType.Claim,
-            ClaimPillType.Closed.GenericClosed,
+          claimStatusCardUiState = ClaimStatusCardUiState(
+            id = "id",
+            claimType = "Broken car something",
+            insuranceDisplayName = null, // "Home Insurance Homeowner",
+            submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
+            pillTypes = listOf(
+              ClaimPillType.Claim,
+              ClaimPillType.Closed.GenericClosed,
+            ),
+            claimProgressItemsUiState = listOf(
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.Submitted,
+                ClaimProgressSegment.SegmentType.ACTIVE,
+              ),
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.BeingHandled,
+                ClaimProgressSegment.SegmentType.ACTIVE,
+              ),
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.Closed,
+                ClaimProgressSegment.SegmentType.ACTIVE,
+              ),
+            ),
           ),
-          claimProgressItemsUiState = listOf(
-            ClaimProgressSegment(
-              ClaimProgressSegment.SegmentText.Submitted,
-              ClaimProgressSegment.SegmentType.ACTIVE,
-            ),
-            ClaimProgressSegment(
-              ClaimProgressSegment.SegmentText.BeingHandled,
-              ClaimProgressSegment.SegmentType.ACTIVE,
-            ),
-            ClaimProgressSegment(
-              ClaimProgressSegment.SegmentText.Closed,
-              ClaimProgressSegment.SegmentType.ACTIVE,
-            ),
-          ),
-        ),
-      claimStatus = ClaimStatus.IN_PROGRESS,
-      submittedAt =  LocalDateTime(2023, 1, 5, 12, 35),
-      insuranceDisplayName = "Insurance display name",
-      termsConditionsUrl = null,
-      appealInstructionsUrl = null,
+          claimStatus = ClaimStatus.IN_PROGRESS,
+          submittedAt = LocalDate(2023, 1, 5),
+          termsConditionsUrl = null,
+          appealInstructionsUrl = null,
           displayItems = emptyList(),
-      claimOutcome = ClaimOutcome.NOT_COMPENSATED,
-      downloadError = null,
-      isLoadingPdf = null,
-      savedFileUri = null,
-      handlerPhoneNumber = null,
-      handlerEmail = null,),
+          downloadError = null,
+          isLoadingPdf = null,
+          savedFileUri = null,
+          handlerEmail = null,
+        ),
         openUrl = {},
         downloadFromUrl = {},
         onDismissDownloadError = {},
