@@ -3,5 +3,8 @@ query ClaimsHistory {
     claimsHistory {
       ...ClaimFragment
     }
+#    partnerClaimHistory {
+#      ...PartnerClaimFragment
+#    }
   }
 }

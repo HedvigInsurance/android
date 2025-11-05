@@ -34,3 +34,21 @@ fragment ClaimFragment on Claim {
     displayValue
   }
 }
+
+#fragment PartnerClaimFragment on PartnerClaim {
+#  id
+#  status
+#  submittedAt
+#  claimType
+#  productVariant {
+#    typeOfContract
+#    displayName
+#    documents {
+#      type
+#      url
+#    }
+#  }
+#  appealInstructionsUrl
+#  handlerEmail
+#  handlerPhoneNumber
+#}

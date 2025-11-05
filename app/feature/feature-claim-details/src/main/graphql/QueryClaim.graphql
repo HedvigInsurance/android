@@ -7,3 +7,9 @@ query Claim($claimId: ID!) {
     }
   }
 }
+
+#query PartnerClaim($claimId: ID!) {
+#  partnerClaim(id: $claimId) {
+#    ...PartnerClaimFragment
+#  }
+#}

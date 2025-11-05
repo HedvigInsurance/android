@@ -92,6 +92,8 @@ import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -102,7 +104,9 @@ import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
+import kotlin.String
 import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
@@ -165,7 +169,7 @@ private fun ClaimDetailScreen(
         navigateUp = navigateUp,
       )
       when (uiState) {
-        is ClaimDetailUiState.Content -> {
+        is ClaimDetailUiState.Content.ClaimContent -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending photoCaptureState uri:$uri" }
             onFilesToUploadSelected(listOf(uri), uiState.uploadUri)
@@ -194,10 +198,20 @@ private fun ClaimDetailScreen(
             onLaunchMediaRequest = { photoPicker.launch(PickVisualMediaRequest()) },
             onPickFile = { filePicker.launch("*/*") },
             onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
-            hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages == true,
-            navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
+            hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content.ClaimContent>()?.hasUnreadMessages == true,
+            navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content.ClaimContent>()?.conversationId?.let {
               { navigateToConversation(it) }
             },
+          )
+        }
+
+        is ClaimDetailUiState.Content.PartnerClaimContent -> {
+          PartnerClaimDetailContentScreen(
+            uiState,
+            openUrl = openUrl,
+            downloadFromUrl = downloadFromUrl,
+            onDismissDownloadError = onDismissDownloadError,
+            sharePdf = sharePdf,
           )
         }
 
@@ -214,8 +228,37 @@ private fun ClaimDetailScreen(
 }
 
 @Composable
+private fun PartnerClaimDetailContentScreen(
+  uiState: ClaimDetailUiState.Content.PartnerClaimContent,
+  openUrl: (String) -> Unit,
+  downloadFromUrl: (String) -> Unit,
+  onDismissDownloadError: () -> Unit,
+  sharePdf: (File) -> Unit,
+ // startCall: (() -> Unit)?, //todo
+  // writeEmail: (() -> Unit)?, //todo
+) {
+  if (uiState.savedFileUri != null) {
+    LaunchedEffect(uiState.savedFileUri) {
+      sharePdf(uiState.savedFileUri)
+    }
+  }
+  if (uiState.downloadError == true) {
+    ErrorDialog(
+      title = stringResource(id = R.string.general_error),
+      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      onDismiss = {
+        onDismissDownloadError()
+      },
+    )
+  }
+  BeforeGridContent(
+    uiState,
+  )
+}
+
+@Composable
 private fun ClaimDetailContentScreen(
-  uiState: ClaimDetailUiState.Content,
+  uiState: ClaimDetailUiState.Content.ClaimContent,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onDismissUploadError: () -> Unit,
@@ -284,7 +327,7 @@ private fun ClaimDetailTopAppBar(navigateUp: () -> Unit) {
 
 @Composable
 private fun NonDynamicGrid(
-  uiState: ClaimDetailUiState.Content,
+  uiState: ClaimDetailUiState.Content.ClaimContent,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onDismissUploadError: () -> Unit,
@@ -373,7 +416,19 @@ internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
 
 @Composable
 private fun BeforeGridContent(
-  uiState: ClaimDetailUiState.Content,
+  uiState: ClaimDetailUiState.Content.PartnerClaimContent,
+//  startCall:() -> Unit,
+//  startEmail: () -> Unit
+) {
+  Column {
+    Spacer(Modifier.height(8.dp))
+    ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
+  }
+}
+
+@Composable
+private fun BeforeGridContent(
+  uiState: ClaimDetailUiState.Content.ClaimContent,
   hasUnreadMessages: Boolean,
   navigateToConversation: (() -> Unit)?,
   onExplanationButtonClick: () -> Unit,
@@ -389,17 +444,17 @@ private fun BeforeGridContent(
       Spacer(Modifier.height(8.dp))
     }
     ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
-    if (navigateToConversation != null || !uiState.claimIsInUndeterminedState) {
+    if (navigateToConversation != null || !uiState.claimIsInUndeterminedState()) {
       Spacer(Modifier.height(8.dp))
       HedvigCard {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-          if (!uiState.claimIsInUndeterminedState) {
+          if (!uiState.claimIsInUndeterminedState()) {
             HedvigText(
               text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
               style = HedvigTheme.typography.bodySmall,
             )
           }
-          if (navigateToConversation != null && !uiState.claimIsInUndeterminedState) {
+          if (navigateToConversation != null && !uiState.claimIsInUndeterminedState()) {
             HorizontalDivider()
           }
           if (navigateToConversation != null) {
@@ -483,11 +538,11 @@ private fun BeforeGridContent(
   )
   Spacer(Modifier.height(8.dp))
   when (uiState.submittedContent) {
-    is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+    is ClaimDetailUiState.Content.ClaimContent.SubmittedContent.Audio -> {
       ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
     }
 
-    is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+    is ClaimDetailUiState.Content.ClaimContent.SubmittedContent.FreeText -> {
       HedvigCard(Modifier.fillMaxWidth()) {
         HedvigText(
           uiState.submittedContent.text,
@@ -503,7 +558,7 @@ private fun BeforeGridContent(
 
 @Composable
 private fun AfterGridContent(
-  uiState: ClaimDetailUiState.Content,
+  uiState: ClaimDetailUiState.Content.ClaimContent,
   onAddFilesButtonClick: () -> Unit,
   onDismissUploadError: () -> Unit,
   downloadFromUrl: (url: String) -> Unit,
@@ -778,11 +833,11 @@ private fun PreviewClaimDetailScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimDetailContentScreen(
-        uiState = ClaimDetailUiState.Content(
+        uiState = ClaimDetailUiState.Content.ClaimContent(
           claimId = "id",
           conversationId = "idd",
           hasUnreadMessages = true,
-          submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
+          submittedContent = ClaimDetailUiState.Content.ClaimContent.SubmittedContent.FreeText("Some free input text"),
           claimStatusCardUiState = ClaimStatusCardUiState(
             id = "id",
             claimType = "Broken item",
@@ -869,3 +924,57 @@ private fun PreviewClaimDetailTopAppBar() {
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewClaimDetailPartnerClaim() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      PartnerClaimDetailContentScreen(
+        ClaimDetailUiState.Content.PartnerClaimContent(
+          claimId = "id",
+        claimStatusCardUiState = ClaimStatusCardUiState(
+          id = "id",
+          claimType = "Broken car something",
+          insuranceDisplayName = null, // "Home Insurance Homeowner",
+          submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
+          pillTypes = listOf(
+            ClaimPillType.Claim,
+            ClaimPillType.Closed.GenericClosed,
+          ),
+          claimProgressItemsUiState = listOf(
+            ClaimProgressSegment(
+              ClaimProgressSegment.SegmentText.Submitted,
+              ClaimProgressSegment.SegmentType.ACTIVE,
+            ),
+            ClaimProgressSegment(
+              ClaimProgressSegment.SegmentText.BeingHandled,
+              ClaimProgressSegment.SegmentType.ACTIVE,
+            ),
+            ClaimProgressSegment(
+              ClaimProgressSegment.SegmentText.Closed,
+              ClaimProgressSegment.SegmentType.ACTIVE,
+            ),
+          ),
+        ),
+      claimStatus = ClaimStatus.IN_PROGRESS,
+      submittedAt =  LocalDateTime(2023, 1, 5, 12, 35),
+      insuranceDisplayName = "Insurance display name",
+      termsConditionsUrl = null,
+      appealInstructionsUrl = null,
+          displayItems = emptyList(),
+      claimOutcome = ClaimOutcome.NOT_COMPENSATED,
+      downloadError = null,
+      isLoadingPdf = null,
+      savedFileUri = null,
+      handlerPhoneNumber = null,
+      handlerEmail = null,),
+        openUrl = {},
+        downloadFromUrl = {},
+        onDismissDownloadError = {},
+        sharePdf = {},
+      )
+    }
+  }
+}
+

@@ -14,8 +14,6 @@ import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
-import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -35,9 +33,9 @@ internal class ClaimDetailsViewModel(
   uploadFileUseCase: UploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
-    ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase, downloadPdfUseCase),
-  )
+  ClaimDetailUiState.Loading,
+  ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase, downloadPdfUseCase),
+)
 
 private class ClaimDetailPresenter(
   private val claimId: String,
@@ -78,56 +76,93 @@ private class ClaimDetailPresenter(
 
     LaunchedEffect(downloadingUrl) {
       val downloadingUrlValue = downloadingUrl ?: return@LaunchedEffect
+      val currentContent = content ?: return@LaunchedEffect
       logcat(LogPriority.INFO) { "Downloading terms and conditions with url:$downloadingUrl" }
       downloadPdfUseCase.invoke(downloadingUrlValue)
         .fold(
           ifLeft = { errorMessage ->
             logcat(LogPriority.ERROR) { "Downloading terms and conditions failed:$errorMessage" }
-            content = content?.copy(downloadError = true, isLoadingPdf = null)
+            content = when (currentContent) {
+              is ClaimDetailUiState.Content.ClaimContent ->
+                currentContent.copy(downloadError = true, isLoadingPdf = null)
+              is ClaimDetailUiState.Content.PartnerClaimContent ->
+                currentContent.copy(downloadError = true, isLoadingPdf = null)
+            }
             downloadingUrl = null
           },
           ifRight = { uri ->
             logcat(
               LogPriority.INFO,
             ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
-            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
+            content = when (currentContent) {
+              is ClaimDetailUiState.Content.ClaimContent ->
+                currentContent.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
+              is ClaimDetailUiState.Content.PartnerClaimContent ->
+                currentContent.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
+            }
             downloadingUrl = null
           },
         )
     }
 
     LaunchedEffect(mediaToSend) {
+      val claimContent = content as? ClaimDetailUiState.Content.ClaimContent ?: return@LaunchedEffect
       mediaToSend.receiveAsFlow().parMap { uri: Uri ->
-        content?.uploadUri?.let { uploadUri ->
-          content = content?.copy(
-            isUploadingFile = true,
-            uploadError = null,
-          )
-          uploadFileUseCase.invoke(uploadUri, uri).fold(
-            ifLeft = {
-              content = content?.copy(
-                isUploadingFile = false,
-                uploadError = it.message,
-              )
-            },
-            ifRight = {
-              loadIteration++
-            },
-          )
-        }
+        content = claimContent.copy(
+          isUploadingFile = true,
+          uploadError = null,
+        )
+        uploadFileUseCase.invoke(claimContent.uploadUri, uri).fold(
+          ifLeft = {
+            content = claimContent.copy(
+              isUploadingFile = false,
+              uploadError = it.message,
+            )
+          },
+          ifRight = {
+            loadIteration++
+          },
+        )
       }.collect()
     }
 
     CollectEvents { event ->
       when (event) {
         ClaimDetailsEvent.Retry -> loadIteration++
-        ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
+        ClaimDetailsEvent.DismissUploadError -> {
+          val claimContent = content as? ClaimDetailUiState.Content.ClaimContent ?: return@CollectEvents
+          content = claimContent.copy(uploadError = null)
+        }
+
         is ClaimDetailsEvent.DownloadPdf -> {
-          content = content?.copy(isLoadingPdf = event.url)
+          val currentContent = content ?: return@CollectEvents
+          content = when (currentContent) {
+            is ClaimDetailUiState.Content.ClaimContent -> currentContent.copy(isLoadingPdf = event.url)
+            is ClaimDetailUiState.Content.PartnerClaimContent -> currentContent.copy(isLoadingPdf = event.url)
+          }
           downloadingUrl = event.url
         }
-        ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
-        ClaimDetailsEvent.HandledSharingPdfFile -> content = content?.copy(downloadError = null, savedFileUri = null)
+
+        ClaimDetailsEvent.DismissDownloadError -> {
+          val currentContent = content ?: return@CollectEvents
+          content = when (currentContent) {
+            is ClaimDetailUiState.Content.ClaimContent -> currentContent.copy(downloadError = null)
+            is ClaimDetailUiState.Content.PartnerClaimContent -> currentContent.copy(downloadError = null)
+          }
+        }
+
+        ClaimDetailsEvent.HandledSharingPdfFile -> {
+          val currentContent = content ?: return@CollectEvents
+          content = when (currentContent) {
+            is ClaimDetailUiState.Content.ClaimContent -> currentContent.copy(
+              downloadError = null, savedFileUri = null,
+            )
+
+            is ClaimDetailUiState.Content.PartnerClaimContent -> currentContent.copy(
+              downloadError = null, savedFileUri = null,
+            )
+          }
+        }
       }
     }
 
@@ -155,37 +190,75 @@ internal sealed interface ClaimDetailUiState {
 
   data object Error : ClaimDetailUiState
 
-  data class Content(
-    val claimId: String,
-    val conversationId: String?,
-    val hasUnreadMessages: Boolean,
-    val submittedContent: SubmittedContent?,
-    val files: List<UiFile>,
-    val claimStatusCardUiState: ClaimStatusCardUiState,
-    val claimStatus: ClaimStatus,
-    val claimOutcome: ClaimOutcome,
-    val uploadUri: String,
-    val isUploadingFile: Boolean,
-    val uploadError: String?,
-    val claimType: String?,
-    val submittedAt: LocalDateTime,
-    val insuranceDisplayName: String?,
-    val termsConditionsUrl: String?,
-    val savedFileUri: File?,
-    val downloadError: Boolean?,
-    val isLoadingPdf: String?,
-    val appealInstructionsUrl: String?,
-    val isUploadingFilesEnabled: Boolean,
-    val infoText: String?,
-    val displayItems: List<DisplayItem>,
-  ) : ClaimDetailUiState {
-    val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
+  sealed interface Content : ClaimDetailUiState {
 
-    sealed interface SubmittedContent {
-      data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
+    val claimId: String
+    val claimStatusCardUiState: ClaimStatusCardUiState
+    val claimStatus: ClaimStatus
+    val submittedAt: LocalDateTime
+    val insuranceDisplayName: String?
+    val termsConditionsUrl: String?
+    val appealInstructionsUrl: String?
+    val displayItems: List<DisplayItem>
+    val claimOutcome: ClaimOutcome
+    val downloadError: Boolean?
+    val isLoadingPdf: String?
 
-      data class FreeText(val text: String) : SubmittedContent
+    val savedFileUri: File?
+
+    fun claimIsInUndeterminedState(): Boolean =
+      claimStatus == ClaimStatus.CLOSED && claimOutcome == ClaimOutcome.UNKNOWN
+
+    data class ClaimContent(
+      override val claimId: String,
+      override val claimStatusCardUiState: ClaimStatusCardUiState,
+      override val claimStatus: ClaimStatus,
+       val claimType: String?,
+      override val submittedAt: LocalDateTime,
+      override val insuranceDisplayName: String?,
+      override val termsConditionsUrl: String?,
+      override val appealInstructionsUrl: String?,
+      override val displayItems: List<DisplayItem>,
+      override val claimOutcome: ClaimOutcome,
+      override val downloadError: Boolean?,
+      override val isLoadingPdf: String?,
+      override val savedFileUri: File?,
+      val conversationId: String?,
+      val hasUnreadMessages: Boolean,
+      val submittedContent: SubmittedContent?,
+      val files: List<UiFile>,
+      val uploadUri: String,
+      val isUploadingFile: Boolean,
+      val uploadError: String?,
+      val isUploadingFilesEnabled: Boolean,
+      val infoText: String?,
+    ) : Content {
+
+      sealed interface SubmittedContent {
+        data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
+
+        data class FreeText(val text: String) : SubmittedContent
+      }
+
+      companion object
     }
+
+    data class PartnerClaimContent(
+      override val claimId: String,
+      override val claimStatusCardUiState: ClaimStatusCardUiState,
+      override val claimStatus: ClaimStatus,
+      override val submittedAt: LocalDateTime,
+      override val insuranceDisplayName: String?,
+      override val termsConditionsUrl: String?,
+      override val appealInstructionsUrl: String?,
+      override val displayItems: List<DisplayItem>,
+      override val claimOutcome: ClaimOutcome,
+      override val downloadError: Boolean?,
+      override val isLoadingPdf: String?,
+      override val savedFileUri: File?,
+      val handlerPhoneNumber: String?,
+      val handlerEmail: String?,
+    ) : Content
 
     enum class ClaimStatus {
       CREATED,
@@ -202,7 +275,5 @@ internal sealed interface ClaimDetailUiState {
       UNKNOWN,
       UNRESPONSIVE,
     }
-
-    companion object
   }
 }

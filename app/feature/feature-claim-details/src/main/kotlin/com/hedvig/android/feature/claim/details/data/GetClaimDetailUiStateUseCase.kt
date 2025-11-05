@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claim.details.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
@@ -51,20 +52,39 @@ internal class GetClaimDetailUiStateUseCase(
       .map { response ->
         either {
           val claim = response.bind().claim
-          ensureNotNull(claim) { Error.NoClaimFound }
-          if (claim.showClaimClosedFlow) {
-            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
+          //val partnerClaim = response.bind().partnerClaim //todo
+          if (claim!=null) {
+            if (claim.showClaimClosedFlow) {
+              crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
+            }
+            ClaimDetailUiState.Content.ClaimContent.fromClaim(claim, claim.conversation?.id,
+              claim.conversation?.unreadMessageCount)
           }
-          ClaimDetailUiState.Content.fromClaim(claim, claim.conversation?.id, claim.conversation?.unreadMessageCount)
+//          else if (partnerClaim!=null) {
+//            if (partnerClaim.showClaimClosedFlow) {
+//              crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(partnerClaim)
+//            }
+//            ClaimDetailUiState.Content.PartnerClaimContent.fromPartnerClaim(partnerClaim)
+//          } //todo
+//          else if (true) { //TODO: remove mock!!!
+//            ClaimDetailUiState.Content.PartnerClaimContent()
+//          }
+          else raise(Error.NoClaimFound)
         }
       }
   }
 
-  private fun ClaimDetailUiState.Content.Companion.fromClaim(
+//  private fun ClaimDetailUiState.Content.PartnerClaimContent.Companion.fromPartnerClaim(
+//    partnerClaim: PartnerClaimFragment
+//  ): ClaimDetailUiState.Content.PartnerClaimContent {
+//    TODO()
+//  }
+
+  private fun ClaimDetailUiState.Content.ClaimContent.Companion.fromClaim(
     claim: ClaimFragment,
     conversationId: String?,
     conversationUnreadMessageCount: Int?,
-  ): ClaimDetailUiState.Content {
+  ): ClaimDetailUiState.Content.ClaimContent {
     val audioUrl = claim.audioUrl
     val memberFreeText = claim.memberFreeText
 
@@ -77,16 +97,16 @@ internal class GetClaimDetailUiStateUseCase(
         ?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }
         ?.url
 
-    return ClaimDetailUiState.Content(
+    return ClaimDetailUiState.Content.ClaimContent(
       claimId = claim.id,
       conversationId = conversationId,
       hasUnreadMessages = (conversationUnreadMessageCount ?: 0) > 0,
       submittedContent = when {
         audioUrl != null -> {
-          ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
+          ClaimDetailUiState.Content.ClaimContent.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
         }
 
-        memberFreeText != null -> ClaimDetailUiState.Content.SubmittedContent.FreeText(memberFreeText)
+        memberFreeText != null -> ClaimDetailUiState.Content.ClaimContent.SubmittedContent.FreeText(memberFreeText)
         else -> null
       },
       files = claim.files.map {
