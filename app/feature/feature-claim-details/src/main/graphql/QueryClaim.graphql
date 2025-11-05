@@ -6,10 +6,13 @@ query Claim($claimId: ID!) {
       unreadMessageCount
     }
   }
-}
-
-query PartnerClaim($claimId: ID!) {
   partnerClaim(id: $claimId) {
     ...PartnerClaimFragment
   }
 }
+
+#query PartnerClaim($claimId: ID!) {
+#  partnerClaim(id: $claimId) {
+#    ...PartnerClaimFragment
+#  }
+#}

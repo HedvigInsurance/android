@@ -52,7 +52,7 @@ internal class GetClaimDetailUiStateUseCase(
       .map { response ->
         either {
           val claim = response.bind().claim
-          //val partnerClaim = response.bind().partnerClaim //todo
+          val partnerClaim = response.bind().partnerClaim //todo
           if (claim!=null) {
             if (claim.showClaimClosedFlow) {
               crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
