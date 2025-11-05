@@ -11,8 +11,9 @@ plugins {
 }
 
 hedvig {
-  serialization()
+  apollo("octopus")
   compose()
+  serialization()
 }
 
 kotlin {
