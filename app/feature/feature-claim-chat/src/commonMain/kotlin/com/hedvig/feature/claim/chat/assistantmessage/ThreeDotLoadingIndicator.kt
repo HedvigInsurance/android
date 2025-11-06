@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.assistantmessage
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing

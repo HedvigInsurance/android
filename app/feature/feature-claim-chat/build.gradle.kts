@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import org.gradle.kotlin.dsl.libs
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
@@ -25,6 +24,7 @@ kotlin {
       implementation(compose.material3)
       implementation(compose.material)
       implementation(compose.ui)
+      implementation(libs.androidx.lifecycle.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
