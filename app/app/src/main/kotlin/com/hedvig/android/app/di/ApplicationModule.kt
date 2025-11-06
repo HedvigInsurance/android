@@ -162,6 +162,7 @@ private val networkModule = module {
     ApolloClient
       .Builder()
       .okHttpClient(get<OkHttpClient>())
+      .addInterceptor()
       .addInterceptor(LoggingInterceptor())
       .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
       .normalizedCache(get<NormalizedCacheFactory>())
