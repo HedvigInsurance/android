@@ -49,6 +49,7 @@ fragment PartnerClaimFragment on PartnerClaim {
     ...MoneyFragment
   }
   handlerEmail
+  exposureDisplayName
   productVariant {
     typeOfContract
     displayName

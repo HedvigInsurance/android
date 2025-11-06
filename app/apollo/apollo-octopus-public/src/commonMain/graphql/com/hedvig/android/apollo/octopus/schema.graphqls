@@ -198,19 +198,6 @@ input BrowserInfo {
   timeZoneOffset: Int!
   javaEnabled: Boolean!
 }
-"""
-Yearly savings from bundle discount
-"""
-type BundleYearlySavings {
-  """
-  Total yearly savings amount from bundle discount
-  """
-  amount: Money!
-  """
-  Whether the bundle discount covers the full period (true) or has pending/future items (false)
-  """
-  bundleDiscountCoversFullPeriod: Boolean!
-}
 type CampaignDiscount {
   """
   The type of discount, determines the relevancy of the other fields.
@@ -289,10 +276,6 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
-  """
-  Yearly savings from bundle discount
-  """
-  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -669,7 +652,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -746,6 +729,13 @@ A scalar representing client-server agreed upon submittable form values.
 This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
+"""
+A step that shows the outcome of a claim intent.
+This is a terminal step - there is no way to submit it.
+"""
+type ClaimIntentStepContentOutcome {
+  claimId: ID!
+}
 """
 A read-only step where the entire claim intent information is displayed before submitting.
 Submitted using `Mutation.claimIntentSubmitSummary`.
@@ -1965,6 +1955,11 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
+  Young Pet Guide stories for the member.
+  Returns a list of educational content stories for young pet owners.
+  """
+  puppyGuideStories: [PuppyGuideStory!]!
+  """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
   """
@@ -2839,6 +2834,10 @@ type Mutation {
   """
   productOfferAddonsSelect(productOfferId: UUID!, addonIds: [UUID!]!): ProductOffersMutationOutput!
   """
+  Mark a young pet guide story as read for a specific member.
+  """
+  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
+  """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
   The session can be placed in a "point of no return" state where it is no longer legal to update the customer,
@@ -2919,6 +2918,8 @@ type Mutation {
 }
 type PartnerClaim {
   id: ID!
+  externalId: String!
+  exposureDisplayName: String
   status: ClaimStatus
   submittedAt: Date!
   payoutAmount: Money
@@ -3435,6 +3436,53 @@ type ProductVariantComparisonRow {
   List of covered items for this peril
   """
   covered: [String!]!
+}
+input PuppyEngagementInput {
+  name: String!
+  rating: Int
+  opened: Boolean
+  read: Boolean
+  closed: Boolean
+}
+type PuppyGuideStory {
+  """
+  The unique name/identifier of the story.
+  """
+  name: String!
+  """
+  The display title of the story.
+  """
+  title: String!
+  """
+  The subtitle or description of the story.
+  """
+  subtitle: String!
+  """
+  The main content of the story.
+  """
+  content: String!
+  """
+  The image associated with this story.
+  """
+  image: String!
+  """
+  Categories this story belongs to.
+  """
+  categories: [String!]!
+  """
+  The date when the story was marked as read by the user.
+  """
+  read: Boolean!
+  """
+   The user's rating of the story.
+  """
+  rating: Int
+}
+type PuppyGuideStoryMutationOutput {
+  """
+  Indicates whether the mutation was successful.
+  """
+  success: Boolean!
 }
 type Query {
   """

@@ -400,7 +400,7 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
-  <string name="LETTER_TO_EIR_SUBJECT">Claim %1$s</string>
+  <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>

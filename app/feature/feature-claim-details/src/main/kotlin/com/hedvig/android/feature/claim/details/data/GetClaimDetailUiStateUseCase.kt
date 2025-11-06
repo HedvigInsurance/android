@@ -9,9 +9,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
@@ -75,7 +73,7 @@ internal class GetClaimDetailUiStateUseCase(
   private fun ClaimDetailUiState.Content.PartnerClaimContent.Companion.fromPartnerClaim(
     partnerClaim: PartnerClaimFragment,
   ): ClaimDetailUiState.Content.PartnerClaimContent {
-    val termsAndConditionsUrl = partnerClaim.productVariant?.documents?.firstOrNull{
+    val termsAndConditionsUrl = partnerClaim.productVariant?.documents?.firstOrNull {
       it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS
     }?.url
     return ClaimDetailUiState.Content.PartnerClaimContent(
@@ -92,7 +90,7 @@ internal class GetClaimDetailUiStateUseCase(
       downloadError = null,
       isLoadingPdf = null,
       claimStatusCardUiState = ClaimStatusCardUiState.fromPartnerClaim(partnerClaim),
-      regNumber = null //todo: add when api is there
+      regNumber = partnerClaim.exposureDisplayName,
     )
   }
 

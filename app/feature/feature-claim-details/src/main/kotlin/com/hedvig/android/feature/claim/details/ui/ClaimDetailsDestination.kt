@@ -262,7 +262,7 @@ private fun PartnerClaimDetailContentScreen(
     )
     .verticalScroll(rememberScrollState())) {
     val localContext = LocalContext.current
-    val letterSubject = stringResource(R.string.LETTER_TO_EIR_SUBJECT, uiState.regNumber ?: "") //todo!!
+    val letterSubject = stringResource(R.string.LETTER_TO_EIR_SUBJECT, uiState.regNumber ?: "")
     BeforeGridContent(
       uiState,
       startEmail = {
