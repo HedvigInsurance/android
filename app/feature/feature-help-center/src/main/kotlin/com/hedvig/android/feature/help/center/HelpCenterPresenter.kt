@@ -157,7 +157,7 @@ internal class HelpCenterPresenter(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = flow { emit(getPuppyGuideUseCase.invoke()) }
-      ) { quickLinks, faq, puppyGuide ->
+      ) { quickLinks, faq, puppyGuideResult ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
             HelpCenterUiState.QuickLinkUiState.NoQuickLinks
@@ -175,12 +175,14 @@ internal class HelpCenterPresenter(
         )
         val topics = faq.getOrNull()?.topics ?: listOf()
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
+        val puppyGuide = puppyGuideResult.getOrNull()
         currentState = currentState.copy(
           topics = topics,
           questions = questions,
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
+          puppyGuide = puppyGuide
         )
       }.collect()
     }

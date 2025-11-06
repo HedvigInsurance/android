@@ -15,6 +15,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,10 +47,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -71,6 +75,7 @@ import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -119,6 +124,7 @@ internal fun HelpCenterHomeDestination(
   onNavigateUp: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateToPuppyGuide: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState.destinationToNavigate) {
@@ -158,7 +164,8 @@ internal fun HelpCenterHomeDestination(
     reload = {
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
     },
-    puppyGuide = uiState.puppyGuide
+    puppyGuide = uiState.puppyGuide,
+    onNavigateToPuppyGuide = onNavigateToPuppyGuide
   )
 }
 
@@ -182,6 +189,7 @@ private fun HelpCenterHomeScreen(
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
   reload: () -> Unit,
+  onNavigateToPuppyGuide: () -> Unit,
 ) {
   when (selectedQuickAction) {
     is StandaloneQuickLink -> {
@@ -329,7 +337,8 @@ private fun HelpCenterHomeScreen(
                 showNavigateToInboxButton = showNavigateToInboxButton,
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
-                puppyGuide = puppyGuide
+                puppyGuide = puppyGuide,
+                onNavigateToPuppyGuide = onNavigateToPuppyGuide
               )
             } else {
               SearchResults(
@@ -361,6 +370,7 @@ private fun ContentWithoutSearch(
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  onNavigateToPuppyGuide: () -> Unit,
 ) {
   Column {
     Column(
@@ -368,16 +378,26 @@ private fun ContentWithoutSearch(
         Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       Spacer(Modifier.height(32.dp))
-      if (puppyGuide!=null) {
-        PuppyGuideCard()
-      } else {
-        Image(
-          painter = painterResource(id = R.drawable.pillow_hedvig),
-          contentDescription = null,
-          modifier = Modifier
-            .size(170.dp)
-            .align(Alignment.CenterHorizontally),
-        )
+      AnimatedContent(puppyGuide!=null,
+        contentAlignment = Alignment.Center) { puppyGuideAvailable ->
+        Column(
+          Modifier.fillMaxWidth()
+        ) {
+          if (puppyGuideAvailable) {
+            PuppyGuideCard(
+              onClick = onNavigateToPuppyGuide,
+              modifier = Modifier.padding(horizontal = 16.dp)
+            )
+          } else {
+            Image(
+              painter = painterResource(id = R.drawable.pillow_hedvig),
+              contentDescription = null,
+              modifier = Modifier
+                .size(170.dp)
+                .align(Alignment.CenterHorizontally),
+            )
+          }
+        }
       }
       Spacer(Modifier.height(50.dp))
       Column(
@@ -455,8 +475,43 @@ private fun ContentWithoutSearch(
 }
 
 @Composable
-private fun PuppyGuideCard() {
-  TODO()
+private fun PuppyGuideCard(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = modifier
+      .fillMaxWidth()
+      .shadow(1.dp, HedvigTheme.shapes.cornerXLarge)
+      .clickable(enabled = true) {
+      onClick()
+    }
+  ) {
+    Column {
+      Image(
+        painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .height(182.dp)
+          .clip(HedvigTheme.shapes.cornerXLargeTop)
+          .align(Alignment.CenterHorizontally),
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE),
+        modifier = Modifier.padding(horizontal = 16.dp))
+      HedvigText(stringResource(R.string.PUPPY_GUIDE_SUBTITLE),
+        modifier = Modifier.padding(horizontal = 16.dp),
+        color = HedvigTheme.colorScheme.textSecondary)
+      Spacer(Modifier.height(16.dp))
+      HedvigButtonGhostWithBorder(
+        stringResource(R.string.PUPPY_GUIDE_GO_BUTTON),
+        onClick = onClick,
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth())
+      Spacer(Modifier.height(16.dp))
+    }
+  }
 }
 
 @Composable
@@ -820,6 +875,17 @@ private fun PreviewHelpCenterHomeScreen(
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
+        puppyGuide = listOf(PuppyGuideStory(
+          categories = listOf("Food"),
+          content = "some content",
+          image = "",
+          name = "",
+          rating = 5,
+          isRead = false,
+          subtitle = "Subtitle",
+          title = "Title"
+        )),
+        onNavigateToPuppyGuide = {}
       )
     }
   }
@@ -865,6 +931,8 @@ private fun PreviewQuickLinkAnimations() {
           onUpdateSearchResults = { _, _ -> },
           search = null,
           reload = {},
+          puppyGuide = null,
+          onNavigateToPuppyGuide = {}
         )
       }
     }
@@ -894,6 +962,8 @@ private fun PreviewQuickLinkEmptyState() {
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
+        puppyGuide = null,
+        onNavigateToPuppyGuide = {}
       )
     }
   }

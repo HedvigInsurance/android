@@ -46,13 +46,7 @@ internal sealed interface HelpCenterDestinations {
   }
 
   @Serializable
-  data class PuppyGuide(
-    val puppyArticles: List<PuppyGuideStory>
-  ): HelpCenterDestinations, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<PuppyGuideStory>>())
-    }
-  }
+  data object PuppyGuide: HelpCenterDestinations, Destination
 }
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(

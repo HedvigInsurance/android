@@ -85,6 +85,13 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToNewConversation(backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
+        onNavigateToPuppyGuide = {
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuide,
+            )
+          }
+        }
       )
     }
 
@@ -142,10 +149,8 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuide>(HelpCenterDestinations.PuppyGuide) {
-      val viewModel = koinViewModel<PuppyGuideViewModel> {
-        parametersOf(puppyArticles)
-      }
+    navdestination<HelpCenterDestinations.PuppyGuide> {
+      val viewModel = koinViewModel<PuppyGuideViewModel>()
       PuppyGuideDestination(viewModel)
     }
   }
