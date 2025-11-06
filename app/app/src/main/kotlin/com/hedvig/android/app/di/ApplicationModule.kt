@@ -103,6 +103,7 @@ import com.hedvig.android.shared.tier.comparison.di.comparisonModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.feature.claim.chat.di.claimChatModule
 import java.io.File
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
@@ -383,6 +384,7 @@ val applicationModule = module {
       buildConstantsModule,
       chatModule,
       chooseTierModule,
+      claimChatModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimHistoryModule,

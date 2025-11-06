@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat
 
 import androidx.lifecycle.ViewModel
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.feature.claim.chat.audiorecorder.AudioRecorderUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,9 @@ sealed class UserAction {
   data class FormSubmitted(val selectedValue: String) : UserAction()
 }
 
-class ClaimChatViewModel : ViewModel() {
+class ClaimChatViewModel(
+  private val apolloClient: ApolloClient,
+) : ViewModel() {
 
   private val scope = CoroutineScope(Dispatchers.Default)
 
