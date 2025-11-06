@@ -14,8 +14,6 @@ kotlin {
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     commonMain.dependencies {
       api(libs.androidx.lifecycle.viewModel)
-      api(projects.moleculePublic)
-
       implementation(libs.coroutines.core)
       implementation(libs.molecule)
       implementation(libs.androidx.compose.runtime)
