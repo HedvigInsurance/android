@@ -92,6 +92,7 @@ internal class GetClaimDetailUiStateUseCase(
       downloadError = null,
       isLoadingPdf = null,
       claimStatusCardUiState = ClaimStatusCardUiState.fromPartnerClaim(partnerClaim),
+      regNumber = null //todo: add when api is there
     )
   }
 

@@ -262,7 +262,7 @@ private fun PartnerClaimDetailContentScreen(
     )
     .verticalScroll(rememberScrollState())) {
     val localContext = LocalContext.current
-    val letterSubject = stringResource(R.string.LETTER_TO_EIR_SUBJECT, "SOME_REG_NUMBER") //todo!!
+    val letterSubject = stringResource(R.string.LETTER_TO_EIR_SUBJECT, uiState.regNumber ?: "") //todo!!
     BeforeGridContent(
       uiState,
       startEmail = {
@@ -1085,19 +1085,20 @@ private fun PreviewClaimDetailPartnerClaim() {
               ),
               ClaimProgressSegment(
                 ClaimProgressSegment.SegmentText.Closed,
-                ClaimProgressSegment.SegmentType.ACTIVE,
+                ClaimProgressSegment.SegmentType.INACTIVE,
               ),
             ),
           ),
           claimStatus = ClaimStatus.IN_PROGRESS,
           submittedAt = LocalDate(2023, 1, 5),
-          termsConditionsUrl = null,
+          termsConditionsUrl = "url",
           appealInstructionsUrl = null,
-          displayItems = emptyList(),
+          displayItems = listOf(DisplayItem("Incident date", DisplayItem.DisplayItemValue.Date(LocalDate(2025,11,1)))),
           downloadError = null,
           isLoadingPdf = null,
           savedFileUri = null,
-          handlerEmail = null,
+          handlerEmail = "email",
+          regNumber = "SOME_REG_NUMBER"
         ),
         openUrl = {},
         downloadFromUrl = {},

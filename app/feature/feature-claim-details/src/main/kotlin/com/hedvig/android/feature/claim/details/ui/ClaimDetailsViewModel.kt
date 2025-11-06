@@ -253,6 +253,7 @@ internal sealed interface ClaimDetailUiState {
       override val isLoadingPdf: String?,
       override val savedFileUri: File?,
       val handlerEmail: String?,
+      val regNumber: String?
     ) : Content {
       companion object
     }
