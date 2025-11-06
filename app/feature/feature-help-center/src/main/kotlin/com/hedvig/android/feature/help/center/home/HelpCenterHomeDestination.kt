@@ -99,6 +99,7 @@ import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
+import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
@@ -157,6 +158,7 @@ internal fun HelpCenterHomeDestination(
     reload = {
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
     },
+    puppyGuide = uiState.puppyGuide
   )
 }
 
@@ -165,6 +167,7 @@ private fun HelpCenterHomeScreen(
   search: HelpCenterUiState.Search?,
   topics: List<FAQTopic>,
   questions: List<FAQItem>,
+  puppyGuide: List<PuppyGuideStory>?,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topicId: String) -> Unit,
@@ -326,6 +329,7 @@ private fun HelpCenterHomeScreen(
                 showNavigateToInboxButton = showNavigateToInboxButton,
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
+                puppyGuide = puppyGuide
               )
             } else {
               SearchResults(
@@ -352,6 +356,7 @@ private fun ContentWithoutSearch(
   topics: List<FAQTopic>,
   onNavigateToTopic: (topicId: String) -> Unit,
   questions: List<FAQItem>,
+  puppyGuide: List<PuppyGuideStory>?,
   onNavigateToQuestion: (questionId: String) -> Unit,
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
@@ -363,13 +368,17 @@ private fun ContentWithoutSearch(
         Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       Spacer(Modifier.height(32.dp))
-      Image(
-        painter = painterResource(id = R.drawable.pillow_hedvig),
-        contentDescription = null,
-        modifier = Modifier
-          .size(170.dp)
-          .align(Alignment.CenterHorizontally),
-      )
+      if (puppyGuide!=null) {
+        PuppyGuideCard()
+      } else {
+        Image(
+          painter = painterResource(id = R.drawable.pillow_hedvig),
+          contentDescription = null,
+          modifier = Modifier
+            .size(170.dp)
+            .align(Alignment.CenterHorizontally),
+        )
+      }
       Spacer(Modifier.height(50.dp))
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -443,6 +452,11 @@ private fun ContentWithoutSearch(
         PaddingValues(horizontal = 16.dp),
     )
   }
+}
+
+@Composable
+private fun PuppyGuideCard() {
+  TODO()
 }
 
 @Composable

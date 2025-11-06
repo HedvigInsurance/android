@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
+import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
 
 internal interface GetPuppyGuideUseCase {
@@ -39,6 +40,7 @@ internal class GetPuppyGuideUseCaseImpl(
   }
 }
 
+@Serializable
 internal data class PuppyGuideStory(
   val categories : List<String>,
   val content : String,

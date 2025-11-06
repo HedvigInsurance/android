@@ -1897,6 +1897,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2914,6 +2916,22 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date!
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
+}
 type PartnerData {
   sas: SasPartnerData
 }
@@ -3473,6 +3491,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """

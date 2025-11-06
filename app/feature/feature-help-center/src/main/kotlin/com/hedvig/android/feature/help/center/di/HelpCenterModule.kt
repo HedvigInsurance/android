@@ -14,6 +14,8 @@ import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredU
 import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
+import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
+import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
@@ -29,6 +31,10 @@ val helpCenterModule = module {
 
   single<GetHelpCenterTopicUseCase> {
     GetHelpCenterTopicUseCaseImpl(get<GetHelpCenterFAQUseCase>())
+  }
+
+  single<GetPuppyGuideUseCase> {
+    GetPuppyGuideUseCaseImpl(get<ApolloClient>())
   }
 
   single<GetQuickLinksUseCase> {
@@ -54,6 +60,7 @@ val helpCenterModule = module {
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
       getHelpCenterFAQUseCase = get<GetHelpCenterFAQUseCase>(),
+      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>()
     )
   }
 

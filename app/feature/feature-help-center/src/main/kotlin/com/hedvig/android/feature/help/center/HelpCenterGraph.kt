@@ -12,6 +12,8 @@ import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
@@ -138,6 +140,13 @@ fun NavGraphBuilder.helpCenterGraph(
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
       )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuide>(HelpCenterDestinations.PuppyGuide) {
+      val viewModel = koinViewModel<PuppyGuideViewModel> {
+        parametersOf(puppyArticles)
+      }
+      PuppyGuideDestination(viewModel)
     }
   }
 }
