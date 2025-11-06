@@ -6,9 +6,9 @@ query Home($claimsHistoryFlag: Boolean!) {
     claimsActive@include(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
-#    partnerClaimsActive {
-#      ...PartnerClaimFragment
-#    }
+    partnerClaimsActive {
+      ...PartnerClaimFragment
+    }
     terminatedContracts {
       id
     }

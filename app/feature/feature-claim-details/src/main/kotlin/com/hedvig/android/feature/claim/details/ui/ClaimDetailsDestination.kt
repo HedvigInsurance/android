@@ -249,9 +249,20 @@ private fun PartnerClaimDetailContentScreen(
       },
     )
   }
-  BeforeGridContent(
-    uiState,
-  )
+  Column(Modifier
+    .padding(
+      PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+        .only(
+          WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+        ).asPaddingValues(),
+    )
+    .verticalScroll(rememberScrollState())) {
+    BeforeGridContent(
+      uiState,
+    )
+  }
+
+
 }
 
 @Composable
