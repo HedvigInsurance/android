@@ -1,12 +1,10 @@
-package com.hedvig.android.molecule.android
+package com.hedvig.android.molecule.public
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.AndroidUiDispatcher
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
-import com.hedvig.android.molecule.public.MoleculePresenter
-import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -20,11 +18,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 
+internal expect val mainDispatcher: CoroutineContext
+
 abstract class MoleculeViewModel<Event, State>(
   initialState: State,
   presenter: MoleculePresenter<Event, State>,
   sharingStarted: SharingStarted = SharingStarted.WhileSubscribed(5.seconds),
-  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + mainDispatcher),
 ) : ViewModel(coroutineScope) {
   /**
    * Events have a capacity large enough to handle simultaneous UI events, but small enough to surface issues if they
