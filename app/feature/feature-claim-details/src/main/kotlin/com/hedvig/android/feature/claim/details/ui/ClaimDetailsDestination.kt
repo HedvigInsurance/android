@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.claim.details.ui
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -34,11 +36,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -257,10 +261,18 @@ private fun PartnerClaimDetailContentScreen(
         ).asPaddingValues(),
     )
     .verticalScroll(rememberScrollState())) {
+    val localContext = LocalContext.current
+    val letterSubject = stringResource(R.string.LETTER_TO_EIR_SUBJECT, "SOME_REG_NUMBER") //todo!!
     BeforeGridContent(
       uiState,
       startEmail = {
-        //todo
+        if (uiState.handlerEmail!=null) {
+          openEmailClientWithPrefilledData(
+            localContext,
+            uiState.handlerEmail,
+            letterSubject
+          )
+        }
       }
     )
     AfterGridContent(uiState) { url ->
@@ -888,6 +900,25 @@ private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modif
       }
     }
   }
+}
+
+private fun openEmailClientWithPrefilledData(
+  context: Context,
+  email: String,
+  letterSubject: String,
+) {
+  val sendLetterIntent: Intent = Intent().apply {
+    action = Intent.ACTION_SENDTO
+    data = "mailto:".toUri()
+    putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+    putExtra(Intent.EXTRA_SUBJECT, letterSubject)
+  }
+  context.startActivity(
+    Intent.createChooser(
+      sendLetterIntent,
+      letterSubject,
+    ),
+  )
 }
 
 @HedvigPreview

@@ -78,7 +78,6 @@ internal class GetClaimDetailUiStateUseCase(
     val termsAndConditionsUrl = partnerClaim.productVariant?.documents?.firstOrNull{
       it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS
     }?.url
-    logcat { "Mariia: termsAndConditionsUrl: $termsAndConditionsUrl, handlerEmail ${partnerClaim.handlerEmail}" }
     return ClaimDetailUiState.Content.PartnerClaimContent(
       claimId = partnerClaim.id,
       claimStatus = partnerClaim.status.toStatus(),

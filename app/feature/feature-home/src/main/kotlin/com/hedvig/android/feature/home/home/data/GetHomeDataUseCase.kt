@@ -94,6 +94,7 @@ internal class GetHomeDataUseCaseImpl(
       isHelpCenterEnabled,
       ->
       either {
+        logcat { "Mariia: homeQueryDataResult: $homeQueryDataResult" }
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
         val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
