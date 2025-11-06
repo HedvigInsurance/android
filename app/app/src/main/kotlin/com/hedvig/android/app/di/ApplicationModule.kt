@@ -94,6 +94,8 @@ import com.hedvig.android.logging.device.model.di.loggingDeviceModelModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
+import com.hedvig.android.networking.ApolloClientBuilderMultiplatform
+import com.hedvig.android.networking.networkingModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -111,9 +113,6 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
-  single<NormalizedCacheFactory> {
-    MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
-  }
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
@@ -159,12 +158,10 @@ private val networkModule = module {
     okHttpBuilder.build()
   }
   single<ApolloClient.Builder> {
-    ApolloClient
-      .Builder()
+    get<ApolloClientBuilderMultiplatform>()
       .okHttpClient(get<OkHttpClient>())
-      .addInterceptor(LoggingInterceptor())
       .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
-      .normalizedCache(get<NormalizedCacheFactory>())
+      .addInterceptor(LoggingInterceptor())
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
@@ -430,6 +427,7 @@ val applicationModule = module {
       movingFlowModule,
       networkCacheManagerModule,
       networkModule,
+      networkingModule,
       notificationBadgeModule,
       notificationModule,
       odysseyModule,

@@ -222,6 +222,7 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+  implementation(projects.networking)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
