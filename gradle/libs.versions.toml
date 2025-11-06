@@ -19,13 +19,13 @@ doctor = "0.11.0"
 easylauncher = "6.4.1"
 googleServices = "4.4.3"
 gradleDevelocity = "4.1"
+kmpNativeCoroutines = "1.0.0-ALPHA-48"
 kotlin = "2.2.21"
 kotlinter = "5.2.0"
 ksp = "2.2.21-2.0.4"
 ktor = "3.2.3"
 license = "0.9.8"
 molecule = "2.2.0"
-skie = "0.10.6"
 squareSortDependencies = "0.14"
 
 # Other versions sorted alphabetically
@@ -248,14 +248,15 @@ androidLibraryMultiplatform = { id = "com.android.kotlin.multiplatform.library",
 apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
-composeKotlinCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 composeJetbrainsCompilerGradlePlugin = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
+composeKotlinCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 gradleDevelocity = { id = "com.gradle.develocity", version.ref = "gradleDevelocity" }
+kmpNativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmpNativeCoroutines" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -265,5 +266,4 @@ license = { id = "com.jaredsburrows.license", version.ref = "license" }
 lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 room = { id = "androidx.room", version.ref = "room" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-skie = { id = "co.touchlab.skie", version.ref = "skie" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }

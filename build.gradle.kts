@@ -5,13 +5,14 @@ plugins {
   alias(libs.plugins.apollo) apply false
   alias(libs.plugins.appIconBannerGenerator) apply false
   alias(libs.plugins.cacheFix) apply false
-  alias(libs.plugins.composeKotlinCompilerGradlePlugin) apply false
   alias(libs.plugins.composeJetbrainsCompilerGradlePlugin) apply false
+  alias(libs.plugins.composeKotlinCompilerGradlePlugin) apply false
   alias(libs.plugins.crashlytics) apply false
   alias(libs.plugins.datadog) apply false
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.doctor)
   alias(libs.plugins.googleServices) apply false
+  alias(libs.plugins.kmpNativeCoroutines) apply false
   alias(libs.plugins.kotlin) apply false
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.kotlinMultiplatform) apply false
@@ -21,7 +22,6 @@ plugins {
   alias(libs.plugins.lintGradlePlugin) apply false
   alias(libs.plugins.room) apply false
   alias(libs.plugins.serialization) apply false
-  alias(libs.plugins.skie) apply false
   alias(libs.plugins.squareSortDependencies) apply false
   id("hedvig.gradle.plugin") apply false
 }

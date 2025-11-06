@@ -1,5 +1,6 @@
 package com.hedvig.authlib
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 
 public interface AuthRepository {
@@ -16,6 +17,7 @@ public interface AuthRepository {
    * When the last [LoginStatusResult] response which is not [LoginStatusResult.Pending] is sent, the sequence ends
    * successfully.
    */
+  @NativeCoroutines
   public fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult>
 
   public suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult

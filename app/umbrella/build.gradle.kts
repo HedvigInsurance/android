@@ -4,10 +4,13 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
-//  alias(libs.plugins.skie)
+  alias(libs.plugins.kmpNativeCoroutines)
 }
 
 kotlin {
+  sourceSets.configureEach {
+    languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+  }
   val frameworkName = "HedvigShared"
   val xcf = XCFramework(frameworkName)
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
@@ -42,9 +45,3 @@ kotlin.targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarge
     freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis,DCEPhase"
   }
 }
-
-//skie {
-//  build {
-//    enableSwiftLibraryEvolution.set(true)
-//  }
-//}
