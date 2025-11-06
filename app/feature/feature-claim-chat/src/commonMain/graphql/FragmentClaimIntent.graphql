@@ -4,48 +4,52 @@ fragment ClaimIntentFragment on ClaimIntent {
     id
     text
     content {
-      ... on ClaimIntentStepContentAudioRecording {
-        hint
-        uploadUri
-      }
-      ... on ClaimIntentStepContentForm {
-        fields {
-          id
-          type
-          title
-          suffix
-          isRequired
-          options {
-            title
-            value
-          }
-          defaultValue
-          minValue
-          maxValue
-        }
-      }
-      ... on ClaimIntentStepContentTask {
-        description
-        isCompleted
-      }
-      ... on ClaimIntentStepContentSummary {
-        items {
-          title
-          value
-        }
-        audioRecordings {
-          url
-        }
-        fileUploads {
-          url
-          contentType
-          fileName
-        }
-      }
+      ...ClaimIntentStepContentFragment
     }
   }
   sourceMessages {
     id
     text
+  }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+  ... on ClaimIntentStepContentAudioRecording {
+    hint
+    uploadUri
+  }
+  ... on ClaimIntentStepContentForm {
+    fields {
+      id
+      type
+      title
+      suffix
+      isRequired
+      options {
+        title
+        value
+      }
+      defaultValue
+      minValue
+      maxValue
+    }
+  }
+  ... on ClaimIntentStepContentTask {
+    description
+    isCompleted
+  }
+  ... on ClaimIntentStepContentSummary {
+    items {
+      title
+      value
+    }
+    audioRecordings {
+      url
+    }
+    fileUploads {
+      url
+      contentType
+      fileName
+    }
   }
 }
