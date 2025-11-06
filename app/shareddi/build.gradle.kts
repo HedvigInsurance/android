@@ -11,6 +11,7 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.koin.core)
       implementation(projects.coreBuildConstants)
+      implementation(projects.featureClaimChat)
     }
   }
 }

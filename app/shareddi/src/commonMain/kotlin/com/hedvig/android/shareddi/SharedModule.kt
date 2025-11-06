@@ -1,4 +1,4 @@
-package com.hedvig.android.networking
+package com.hedvig.android.shareddi
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
@@ -9,7 +9,7 @@ import org.koin.dsl.module
 
 typealias ApolloClientBuilderMultiplatform = ApolloClient.Builder
 
-val networkingModule = module {
+val sharedModule = module {
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
@@ -22,6 +22,7 @@ val networkingModule = module {
     get<ApolloClient.Builder>()
       .copy()
       .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
+      .addInterceptor(get<IosAuthTokenInterceptor>())
       .build()
   }
 }

@@ -17,9 +17,6 @@ import coil.decode.SvgDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
-import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
@@ -94,8 +91,8 @@ import com.hedvig.android.logging.device.model.di.loggingDeviceModelModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
-import com.hedvig.android.networking.ApolloClientBuilderMultiplatform
-import com.hedvig.android.networking.networkingModule
+import com.hedvig.android.shareddi.ApolloClientBuilderMultiplatform
+import com.hedvig.android.shareddi.sharedModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -427,13 +424,13 @@ val applicationModule = module {
       movingFlowModule,
       networkCacheManagerModule,
       networkModule,
-      networkingModule,
       notificationBadgeModule,
       notificationModule,
       odysseyModule,
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
+      sharedModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
       terminationDataModule,
