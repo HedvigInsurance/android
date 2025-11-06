@@ -23,7 +23,7 @@ dependencies {
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)

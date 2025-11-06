@@ -23,7 +23,7 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)

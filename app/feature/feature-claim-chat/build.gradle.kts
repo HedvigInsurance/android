@@ -28,6 +28,7 @@ kotlin {
       implementation(libs.apollo.api)
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
+      implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.ktor.client.core)
       implementation(libs.ktor.client.contentNegotiation)
@@ -38,9 +39,6 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.androidx.navigation.compose)
-      implementation(libs.koin.compose)
-      implementation(libs.koin.core)
-      implementation(libs.koin.coreViewmodel)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.designSystemHedvig)

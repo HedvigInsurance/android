@@ -21,7 +21,7 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)

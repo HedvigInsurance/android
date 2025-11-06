@@ -19,7 +19,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.media3.exoplayer)

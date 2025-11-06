@@ -21,7 +21,7 @@ import com.hedvig.android.navigation.core.Navigator
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 sealed interface ClaimTriagingDestination {

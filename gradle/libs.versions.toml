@@ -61,7 +61,7 @@ datadog = "2.25.0"
 dependencyAnalysis = "2.19.0"
 firebaseCrashlyticsBuildtools = "3.0.6"
 junit = "4.13.2"
-koinBom = "4.1.0"
+koinBom = "4.1.1"
 kotlinx-serialization = "1.9.0"
 kotlinxDatetime = "0.7.1"
 media3 = "1.8.0"
@@ -169,10 +169,9 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
-koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-composeViewModel = { module = "io.insert-koin:koin-compose-viewmodel" }
 koin-core = { module = "io.insert-koin:koin-core" }
-koin-coreViewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
-koin-coreViewmodelNavigation = { module = "io.insert-koin:koin-core-viewmodel-navigation" }
 koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
