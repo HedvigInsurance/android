@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import coil.ImageLoader
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
@@ -33,6 +34,7 @@ fun NavGraphBuilder.helpCenterGraph(
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -91,7 +93,7 @@ fun NavGraphBuilder.helpCenterGraph(
               HelpCenterDestinations.PuppyGuide,
             )
           }
-        }
+        },
       )
     }
 
@@ -151,7 +153,14 @@ fun NavGraphBuilder.helpCenterGraph(
 
     navdestination<HelpCenterDestinations.PuppyGuide> {
       val viewModel = koinViewModel<PuppyGuideViewModel>()
-      PuppyGuideDestination(viewModel)
+      PuppyGuideDestination(
+        viewModel,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateToArticle = {
+          // todo
+        },
+        imageLoader = imageLoader,
+      )
     }
   }
 }

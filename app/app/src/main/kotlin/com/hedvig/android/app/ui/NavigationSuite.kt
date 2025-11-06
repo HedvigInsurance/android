@@ -39,8 +39,8 @@ internal fun NavigationSuite(
         .fillMaxWidth(),
     ) {
       AnimatedVisibility(
-        visible = navigationSuiteType == NavigationSuiteType.NavigationRail
-          || navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
+        visible = navigationSuiteType == NavigationSuiteType.NavigationRail ||
+          navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
         enter = expandHorizontally(expandFrom = Alignment.End),
         exit = shrinkHorizontally(shrinkTowards = Alignment.End),
       ) {

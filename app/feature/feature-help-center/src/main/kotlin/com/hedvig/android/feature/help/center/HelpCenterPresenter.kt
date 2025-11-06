@@ -63,7 +63,7 @@ internal data class HelpCenterUiState(
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
   val destinationToNavigate: QuickLinkDestination? = null,
-  val puppyGuide: List<PuppyGuideStory>?
+  val puppyGuide: List<PuppyGuideStory>?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -96,7 +96,7 @@ internal class HelpCenterPresenter(
   private val getQuickLinksUseCase: GetQuickLinksUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
-  private val getPuppyGuideUseCase: GetPuppyGuideUseCase
+  private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -156,7 +156,7 @@ internal class HelpCenterPresenter(
       combine(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
-        flow3 = flow { emit(getPuppyGuideUseCase.invoke()) }
+        flow3 = flow { emit(getPuppyGuideUseCase.invoke()) },
       ) { quickLinks, faq, puppyGuideResult ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
@@ -182,7 +182,7 @@ internal class HelpCenterPresenter(
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
-          puppyGuide = puppyGuide
+          puppyGuide = puppyGuide,
         )
       }.collect()
     }

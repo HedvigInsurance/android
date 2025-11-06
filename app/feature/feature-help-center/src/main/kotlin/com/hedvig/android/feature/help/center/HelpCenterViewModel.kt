@@ -10,8 +10,7 @@ internal class HelpCenterViewModel(
   getQuickLinksUseCase: GetQuickLinksUseCase,
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
-  getPuppyGuideUseCase: GetPuppyGuideUseCase
-
+  getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculeViewModel<HelpCenterEvent, HelpCenterUiState>(
     initialState = HelpCenterUiState(
       topics = listOf(),
@@ -20,12 +19,12 @@ internal class HelpCenterViewModel(
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
       search = null,
       showNavigateToInboxButton = false,
-      puppyGuide = null
+      puppyGuide = null,
     ),
     presenter = HelpCenterPresenter(
       getQuickLinksUseCase = getQuickLinksUseCase,
       hasAnyActiveConversationUseCase = hasAnyActiveConversationUseCase,
       getHelpCenterFAQUseCase = getHelpCenterFAQUseCase,
-      getPuppyGuideUseCase = getPuppyGuideUseCase
+      getPuppyGuideUseCase = getPuppyGuideUseCase,
     ),
   )

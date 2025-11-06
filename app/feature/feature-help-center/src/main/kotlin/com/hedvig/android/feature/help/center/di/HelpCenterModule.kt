@@ -61,7 +61,7 @@ val helpCenterModule = module {
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
       getHelpCenterFAQUseCase = get<GetHelpCenterFAQUseCase>(),
-      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>()
+      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>(),
     )
   }
 
@@ -93,6 +93,6 @@ val helpCenterModule = module {
   }
 
   viewModel<PuppyGuideViewModel> {
-    PuppyGuideViewModel( getPuppyGuideUseCase = get<GetPuppyGuideUseCase>())
+    PuppyGuideViewModel(getPuppyGuideUseCase = get<GetPuppyGuideUseCase>())
   }
 }

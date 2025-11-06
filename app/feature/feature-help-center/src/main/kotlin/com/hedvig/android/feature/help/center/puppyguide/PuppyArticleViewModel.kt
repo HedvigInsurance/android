@@ -17,19 +17,16 @@ internal class PuppyArticleViewModel(
     initialState = PuppyArticleUiState.Success(story),
   )
 
-private class PuppyArticlePresenter(
-) : MoleculePresenter<PuppyArticleEvent, PuppyArticleUiState> {
+private class PuppyArticlePresenter() : MoleculePresenter<PuppyArticleEvent, PuppyArticleUiState> {
   @Composable
-  override fun MoleculePresenterScope<PuppyArticleEvent>.present(
-    lastState: PuppyArticleUiState,
-  ): PuppyArticleUiState {
+  override fun MoleculePresenterScope<PuppyArticleEvent>.present(lastState: PuppyArticleUiState): PuppyArticleUiState {
     var currentState by remember { mutableStateOf(lastState) }
 
     CollectEvents { event ->
       when (event) {
         // Handle events here if needed
         else -> {
-          //todo
+          // todo
         }
       }
     }

@@ -24,9 +24,7 @@ private class PuppyGuidePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculePresenter<PuppyGuideEvent, PuppyGuideUiState> {
   @Composable
-  override fun MoleculePresenterScope<PuppyGuideEvent>.present(
-    lastState: PuppyGuideUiState,
-  ): PuppyGuideUiState {
+  override fun MoleculePresenterScope<PuppyGuideEvent>.present(lastState: PuppyGuideUiState): PuppyGuideUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
@@ -61,6 +59,8 @@ internal sealed interface PuppyGuideEvent {
 
 internal sealed interface PuppyGuideUiState {
   data class Success(val stories: List<PuppyGuideStory>) : PuppyGuideUiState
+
   data object Loading : PuppyGuideUiState
+
   data object Failure : PuppyGuideUiState
 }

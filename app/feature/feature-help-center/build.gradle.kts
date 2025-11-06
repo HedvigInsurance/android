@@ -12,6 +12,7 @@ hedvig {
 
 dependencies {
   api(libs.androidx.navigation.common)
+  api(libs.coil.coil)
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
@@ -20,6 +21,7 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
+  implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextCommonmark)
   implementation(libs.coroutines.core)

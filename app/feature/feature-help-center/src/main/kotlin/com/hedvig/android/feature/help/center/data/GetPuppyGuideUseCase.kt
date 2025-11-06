@@ -12,6 +12,7 @@ import octopus.PuppyGuideQuery
 internal interface GetPuppyGuideUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<PuppyGuideStory>?>
 }
+
 internal class GetPuppyGuideUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPuppyGuideUseCase {
@@ -42,12 +43,12 @@ internal class GetPuppyGuideUseCaseImpl(
 
 @Serializable
 internal data class PuppyGuideStory(
-  val categories : List<String>,
-  val content : String,
+  val categories: List<String>,
+  val content: String,
   val image: String,
-  val name:String,
+  val name: String,
   val rating: Int?,
   val isRead: Boolean,
   val subtitle: String,
-  val title: String
+  val title: String,
 )

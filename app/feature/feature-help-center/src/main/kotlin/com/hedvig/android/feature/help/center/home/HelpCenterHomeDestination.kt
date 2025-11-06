@@ -167,7 +167,7 @@ internal fun HelpCenterHomeDestination(
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
     },
     puppyGuide = uiState.puppyGuide,
-    onNavigateToPuppyGuide = onNavigateToPuppyGuide
+    onNavigateToPuppyGuide = onNavigateToPuppyGuide,
   )
 }
 
@@ -340,7 +340,7 @@ private fun HelpCenterHomeScreen(
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
                 puppyGuide = puppyGuide,
-                onNavigateToPuppyGuide = onNavigateToPuppyGuide
+                onNavigateToPuppyGuide = onNavigateToPuppyGuide,
               )
             } else {
               SearchResults(
@@ -380,16 +380,17 @@ private fun ContentWithoutSearch(
         Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       Spacer(Modifier.height(32.dp))
-      AnimatedContent(puppyGuide!=null,
+      AnimatedContent(
+        puppyGuide != null,
         contentAlignment = Alignment.Center,
       ) { puppyGuideAvailable ->
         Column(
-          Modifier.fillMaxWidth()
+          Modifier.fillMaxWidth(),
         ) {
           if (puppyGuideAvailable) {
             PuppyGuideCard(
               onClick = onNavigateToPuppyGuide,
-              modifier = Modifier.padding(horizontal = 16.dp)
+              modifier = Modifier.padding(horizontal = 16.dp),
             )
           } else {
             Image(
@@ -478,18 +479,15 @@ private fun ContentWithoutSearch(
 }
 
 @Composable
-private fun PuppyGuideCard(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = modifier
       .fillMaxWidth()
       .shadow(1.dp, HedvigTheme.shapes.cornerXLarge)
       .clickable(enabled = true) {
-      onClick()
-    }
+        onClick()
+      },
   ) {
     Column {
       Box(Modifier.align(Alignment.CenterHorizontally)) {
@@ -501,23 +499,30 @@ private fun PuppyGuideCard(
             .height(182.dp)
             .clip(HedvigTheme.shapes.cornerXLargeTop),
         )
-        HighlightLabel(stringResource(R.string.PUPPY_GUIDE_LABEL),
+        HighlightLabel(
+          stringResource(R.string.PUPPY_GUIDE_LABEL),
           size = HighlightLabelDefaults.HighLightSize.Small,
-          color = HighlightLabelDefaults.HighlightColor.Pink(LIGHT),
-          modifier= Modifier.padding(top = 16.dp, start = 16.dp))
+          color = HighlightColor.Pink(LIGHT),
+          modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+        )
       }
 
       Spacer(Modifier.height(16.dp))
-      HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE),
-        modifier = Modifier.padding(horizontal = 16.dp))
-      HedvigText(stringResource(R.string.PUPPY_GUIDE_SUBTITLE),
+      HedvigText(
+        stringResource(R.string.PUPPY_GUIDE_TITLE),
         modifier = Modifier.padding(horizontal = 16.dp),
-        color = HedvigTheme.colorScheme.textSecondary)
+      )
+      HedvigText(
+        stringResource(R.string.PUPPY_GUIDE_SUBTITLE),
+        modifier = Modifier.padding(horizontal = 16.dp),
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
       Spacer(Modifier.height(16.dp))
       HedvigButtonGhostWithBorder(
         stringResource(R.string.PUPPY_GUIDE_GO_BUTTON),
         onClick = onClick,
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth())
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      )
       Spacer(Modifier.height(16.dp))
     }
   }
@@ -884,17 +889,19 @@ private fun PreviewHelpCenterHomeScreen(
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
-        puppyGuide = listOf(PuppyGuideStory(
-          categories = listOf("Food"),
-          content = "some content",
-          image = "",
-          name = "",
-          rating = 5,
-          isRead = false,
-          subtitle = "Subtitle",
-          title = "Title"
-        )),
-        onNavigateToPuppyGuide = {}
+        puppyGuide = listOf(
+          PuppyGuideStory(
+            categories = listOf("Food"),
+            content = "some content",
+            image = "",
+            name = "",
+            rating = 5,
+            isRead = false,
+            subtitle = "Subtitle",
+            title = "Title",
+          ),
+        ),
+        onNavigateToPuppyGuide = {},
       )
     }
   }
@@ -941,7 +948,7 @@ private fun PreviewQuickLinkAnimations() {
           search = null,
           reload = {},
           puppyGuide = null,
-          onNavigateToPuppyGuide = {}
+          onNavigateToPuppyGuide = {},
         )
       }
     }
@@ -972,7 +979,7 @@ private fun PreviewQuickLinkEmptyState() {
         search = null,
         reload = {},
         puppyGuide = null,
-        onNavigateToPuppyGuide = {}
+        onNavigateToPuppyGuide = {},
       )
     }
   }

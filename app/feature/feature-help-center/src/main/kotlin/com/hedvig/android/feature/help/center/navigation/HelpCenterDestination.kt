@@ -46,7 +46,7 @@ internal sealed interface HelpCenterDestinations {
   }
 
   @Serializable
-  data object PuppyGuide: HelpCenterDestinations, Destination
+  data object PuppyGuide : HelpCenterDestinations, Destination
 }
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
