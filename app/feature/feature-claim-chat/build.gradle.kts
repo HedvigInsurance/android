@@ -29,6 +29,9 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.contentNegotiation)
+      implementation(libs.ktor.client.logging)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
     }
