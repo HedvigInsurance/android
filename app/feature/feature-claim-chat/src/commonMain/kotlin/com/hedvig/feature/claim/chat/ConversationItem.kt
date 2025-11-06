@@ -3,7 +3,7 @@ package com.hedvig.feature.claim.chat
 import com.hedvig.feature.claim.chat.audiorecorder.AudioRecorderUiState
 
 sealed class ConversationItem() {
-  data class AudioRecording(val uiState: AudioRecorderUiState) : ConversationItem()
+  data class AudioRecording(val uiState: AudioRecorderUiState, val hint: String?, val uploadUri: String) : ConversationItem()
   data class UserMessage(val text: String) : ConversationItem()
   data class AssistantMessage(val text: String, val subText: String) : ConversationItem()
   data class AssistantLoadingState(val text: String, val subText: String, val isLoading: Boolean) : ConversationItem()

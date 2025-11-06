@@ -37,7 +37,9 @@ fun PreviewChatScreen() {
         listOf(
           ConversationItem.AssistantMessage("Tell us what happened.", "Please be as detailed as possible."),
           ConversationItem.AudioRecording(
-            AudioRecorderUiState.AudioRecording.Playback(
+            hint = "Test",
+            uploadUri = "123",
+            uiState = AudioRecorderUiState.AudioRecording.Playback(
               filePath = "",
               isPlaying = false,
               isPrepared = true,

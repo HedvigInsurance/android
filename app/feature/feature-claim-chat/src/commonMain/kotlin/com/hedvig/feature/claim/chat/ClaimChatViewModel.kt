@@ -2,8 +2,10 @@ package com.hedvig.feature.claim.chat
 
 import androidx.lifecycle.ViewModel
 import com.hedvig.feature.claim.chat.audiorecorder.AudioRecorderUiState
+import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
@@ -20,8 +22,10 @@ import kotlinx.coroutines.launch
 
 data class ConversationUiState(
   val conversation: List<ConversationItem> = emptyList(),
-  val isInputActive: Boolean = true, // We start with the ability to type
+  val isInputActive: Boolean = true,
   val currentInputText: String = "",
+  val claimIntent: ClaimIntent? = null,
+  val errorMessage: String? = null,
 )
 
 sealed class UserAction {
@@ -47,28 +51,63 @@ internal class ClaimChatViewModel(
 
   init {
     scope.launch {
-      _state.update {
-        it.copy(
-          conversation = listOf(
-            ConversationItem.AssistantMessage(
-              text = "Hello.",
-              subText = "How can we help you?",
-            ),
-          ),
-        )
-      }
+      startClaimIntentUseCase.invoke(sourceMessageId = null).fold(
+        ifLeft = { errorMessage ->
+          _state.update { it.copy(errorMessage = errorMessage.message) }
+        },
+        ifRight = { claimIntent ->
 
-      delay(500)
-
-      _state.update {
-        it.copy(
-          conversation = it.conversation +
-            ConversationItem.AudioRecording(
-              AudioRecorderUiState.AudioRecording.NotRecording,
-            ),
-        )
-      }
+          _state.update {
+            it.copy(
+              conversation = it.conversation + claimIntent.createConversationItem(),
+              claimIntent = claimIntent,
+            )
+          }
+        },
+      )
     }
+  }
+
+  private fun ClaimIntent.createConversationItem() = when (val content = step.stepContent) {
+    is StepContent.AudioRecording -> ConversationItem.AudioRecording(
+      hint = content.hint,
+      uploadUri = content.uploadUri,
+      uiState = AudioRecorderUiState.AudioRecording.NotRecording,
+    )
+
+
+    is StepContent.Form -> ConversationItem.Form(
+      formFieldList = content.fields.map { field ->
+        FormField(
+          id = field.id,
+          title = field.title,
+          type = FormFieldType.TEXT, // todo
+          defaultValue = field.defaultValue,
+          currentValue = "",
+          isRequired = field.isRequired,
+          minValue = field.minValue,
+          maxValue = field.maxValue,
+          options = emptyList(), // todo
+          suffix = field.suffix,
+        )
+      },
+    )
+
+    is StepContent.Summary -> ConversationItem.AssistantMessage(
+      text = content.todo,
+      subText = "",
+    )
+
+    is StepContent.Task -> ConversationItem.AssistantLoadingState(
+      text = content.description,
+      subText = "",
+      isLoading = content.isCompleted,
+    )
+
+    StepContent.Unknown -> ConversationItem.AssistantMessage(
+      text = "I do not know how to respond to that...",
+      subText = "(unknown step content)",
+    )
   }
 
   fun processUserAction(action: UserAction) {
