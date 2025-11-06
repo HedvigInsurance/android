@@ -4,6 +4,7 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 
 public interface AuthRepository {
+  @NativeCoroutines
   public suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
     market: OtpMarket,
@@ -20,12 +21,16 @@ public interface AuthRepository {
   @NativeCoroutines
   public fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult>
 
+  @NativeCoroutines
   public suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult
 
+  @NativeCoroutines
   public suspend fun resendOtp(resendUrl: String): ResendOtpResult
 
+  @NativeCoroutines
   public suspend fun exchange(grant: Grant): AuthTokenResult
 
+  @NativeCoroutines
   public suspend fun revoke(token: String): RevokeResult
 }
 
