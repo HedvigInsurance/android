@@ -9,7 +9,9 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
@@ -73,16 +75,20 @@ internal class GetClaimDetailUiStateUseCase(
   private fun ClaimDetailUiState.Content.PartnerClaimContent.Companion.fromPartnerClaim(
     partnerClaim: PartnerClaimFragment,
   ): ClaimDetailUiState.Content.PartnerClaimContent {
-
-    //CLAIM_DETAILS_DATE_OF_ACCIDENT
+    val termsAndConditionsUrl = partnerClaim.productVariant?.documents?.firstOrNull{
+      it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS
+    }?.url
+    logcat { "Mariia: termsAndConditionsUrl: $termsAndConditionsUrl, handlerEmail ${partnerClaim.handlerEmail}" }
     return ClaimDetailUiState.Content.PartnerClaimContent(
       claimId = partnerClaim.id,
       claimStatus = partnerClaim.status.toStatus(),
       submittedAt = partnerClaim.submittedAt,
-      termsConditionsUrl = null,
+      termsConditionsUrl = termsAndConditionsUrl,
       appealInstructionsUrl = null,
-      displayItems = emptyList(),
-      handlerEmail = "motor@hedvig.com",
+      displayItems = partnerClaim.displayItems.map { item ->
+        DisplayItem.fromStrings(item.displayTitle, item.displayValue)
+      },
+      handlerEmail = partnerClaim.handlerEmail,
       savedFileUri = null,
       downloadError = null,
       isLoadingPdf = null,

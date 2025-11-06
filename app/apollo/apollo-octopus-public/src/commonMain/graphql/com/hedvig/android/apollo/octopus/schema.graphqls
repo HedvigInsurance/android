@@ -2153,6 +2153,7 @@ input MemberLogDeviceInput {
   os: String!
   brand: String!
   model: String!
+  pushNotificationEnabled: Boolean
 }
 """
 Container for mutations that refer to the currently authenticated member.
@@ -2918,13 +2919,17 @@ type Mutation {
 }
 type PartnerClaim {
   id: ID!
-  outcome: ClaimOutcome
   status: ClaimStatus
   submittedAt: Date!
   payoutAmount: Money
   associatedTypeOfContract: String
   claimType: String
-  incidentDate: Date @deprecated(reason: "Use displayItems instead")
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
 }
 type PartnerData {
   sas: SasPartnerData

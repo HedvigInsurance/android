@@ -259,7 +259,13 @@ private fun PartnerClaimDetailContentScreen(
     .verticalScroll(rememberScrollState())) {
     BeforeGridContent(
       uiState,
+      startEmail = {
+        //todo
+      }
     )
+    AfterGridContent(uiState) { url ->
+      downloadFromUrl(url)
+    }
   }
 
 
@@ -426,12 +432,64 @@ internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
 @Composable
 private fun BeforeGridContent(
   uiState: ClaimDetailUiState.Content.PartnerClaimContent,
-//  startCall:() -> Unit,
-//  startEmail: () -> Unit
+  startEmail: (String) -> Unit
 ) {
   Column {
     Spacer(Modifier.height(8.dp))
     ClaimStatusCard(uiState = uiState.claimStatusCardUiState)
+    Spacer(Modifier.height(8.dp))
+    HedvigCard {
+      Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+          HedvigText(
+            text = statusParagraphText(uiState.claimStatus, null),
+            style = HedvigTheme.typography.bodySmall,
+          )
+        if (uiState.handlerEmail!=null) {
+          HorizontalDivider()
+          HorizontalItemsWithMaximumSpaceTaken(
+            modifier = Modifier
+              .clip(HedvigTheme.shapes.cornerXSmall)
+              .clickable(onClick = {
+                startEmail(uiState.handlerEmail)
+              }),
+            startSlot = {
+              HedvigText(
+                text = stringResource(R.string.claim_status_detail_email),
+                style = HedvigTheme.typography.bodySmall,
+                modifier = Modifier.wrapContentSize(Alignment.CenterStart),
+              )
+            },
+            endSlot = {
+              IconButton(
+                onClick = {
+                  startEmail(uiState.handlerEmail)
+                },
+                modifier = Modifier
+                  .size(40.dp)
+                  .wrapContentSize(Alignment.CenterEnd),
+              ) {
+                Icon(
+                  imageVector = HedvigIcons.Chat,
+                  contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+                  tint = HedvigTheme.colorScheme.signalGreyElement,
+                  modifier = Modifier
+                    .size(32.dp)
+                )
+              }
+            },
+            spaceBetween = 8.dp,
+          )
+        }
+      }
+    }
+    Spacer(Modifier.height(8.dp))
+    DisplayItemsSection(
+      displayItems = uiState.displayItems,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 2.dp),
+    )
+
   }
 }
 
@@ -563,6 +621,39 @@ private fun BeforeGridContent(
     else -> {}
   }
   Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+private fun AfterGridContent(
+  uiState: ClaimDetailUiState.Content.PartnerClaimContent,
+  downloadFromUrl: (url: String) -> Unit,
+) {
+  Column {
+    if (uiState.termsConditionsUrl != null || uiState.appealInstructionsUrl != null) {
+      Spacer(Modifier.height(16.dp))
+      HedvigText(
+        stringResource(R.string.claim_status_detail_documents_title),
+        Modifier.padding(horizontal = 2.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+    }
+    if (uiState.termsConditionsUrl != null) {
+      TermsConditionsCard(
+        onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
+        modifier = Modifier.padding(16.dp),
+        isLoading = uiState.termsConditionsUrl == uiState.isLoadingPdf,
+      )
+      Spacer(Modifier.height(8.dp))
+    }
+    if (uiState.appealInstructionsUrl != null) {
+      AppealInstructionCard(
+        onClick = { downloadFromUrl(uiState.appealInstructionsUrl) },
+        modifier = Modifier.padding(16.dp),
+        isLoading = uiState.appealInstructionsUrl == uiState.isLoadingPdf,
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+  }
 }
 
 @Composable
@@ -736,7 +827,7 @@ private fun DocumentCard(title: String) {
 @Composable
 private fun statusParagraphText(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
-  claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
+  claimOutcome: ClaimDetailUiState.Content.ClaimOutcome?,
 ): String = when (claimStatus) {
   ClaimDetailUiState.Content.ClaimStatus.CREATED -> stringResource(R.string.claim_status_submitted_support_text)
   ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS -> stringResource(R.string.claim_status_being_handled_support_text)
@@ -751,6 +842,7 @@ private fun statusParagraphText(
     }
 
     ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
+    null -> stringResource(R.string.claim_outcome_null)
     ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(
       R.string.claim_outcome_unresponsive_support_text,
     )

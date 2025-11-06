@@ -184,6 +184,7 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Gör röstinspelning</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">DatumDate</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>
   <string name="CLAIM_TRIAGING_NAVIGATION_TITLE">Vad gäller ditt ärende?</string>
   <string name="CLAIM_TRIAGING_TITLE">Berätta vad som hände</string>
@@ -706,7 +707,7 @@
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">Vi avslutar din försäkring automatiskt</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">Vad kostar det</string>
-  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">Försäkringen ersätter skador såsom stöld, brand, skadegörelse och karosskada medan bilen är avställd. Rättsskydd ingår också, så länge bilen stannar i Sverige.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">Försäkringen ersätter skador såsom stöld, brand, skadegörelse och vagnskada medan bilen är avställd. Rättsskydd ingår också. Försäkringen gäller endast så länge bilen är kvar i Sverige.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE">Vad som ingår</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">Om du har ställt av din bil via Transportstyrelsen kommer din bilförsäkring automatiskt övergå till en avställningsförsäkring.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.</string>
@@ -824,6 +825,7 @@
   <string name="claim.status_bar.closed">Stängt</string>
   <string name="claim_history.empty_state.body">Dina tidigare skador visas här automatiskt efter att de har hanterats.</string>
   <string name="claim_history.empty_state.title">Ingen skadehistorik</string>
+  <string name="claim_outcome_null">Ditt skadeärende har stängts.</string>
   <string name="claim_outcome_unresponsive_support_text">Ditt skadeärende har stängts eftersom vi inte har fått någon återkoppling från dig. Se konversation för mer information.</string>
   <string name="claim_status.being_handled.support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status.being_handled_reopened.support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
@@ -853,6 +855,7 @@
   <string name="claim_status_detail.missing_receipt">Kvitto saknas</string>
   <string name="claim_status_detail.submitted">Inskickat</string>
   <string name="claim_status_detail.uploaded_files_info_title">Uppladdade filer</string>
+  <string name="claim_status_detail_email">Skriv ett mejl</string>
   <string name="claims.alert.body">Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.</string>
   <string name="claims.continue.button">Fortsätt</string>
   <string name="claims.edit.button">Edit</string>

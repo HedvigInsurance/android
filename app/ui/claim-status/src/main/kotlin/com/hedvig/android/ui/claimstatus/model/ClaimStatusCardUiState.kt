@@ -31,7 +31,7 @@ data class ClaimStatusCardUiState(
       return ClaimStatusCardUiState(
         id = partnerClaim.id,
         claimType = partnerClaim.claimType,
-        insuranceDisplayName = partnerClaim.associatedTypeOfContract,
+        insuranceDisplayName = partnerClaim.productVariant?.displayName,
         submittedDate = partnerClaim.submittedAt.atStartOfDayIn(TimeZone.UTC), //todo: which TimeZone???
         pillTypes = ClaimPillType.fromClaimFragment(partnerClaim.status, null, partnerClaim.payoutAmount),
         claimProgressItemsUiState = ClaimProgressSegment.fromClaimFragment(partnerClaim.status),

@@ -39,10 +39,22 @@ fragment PartnerClaimFragment on PartnerClaim {
   id
   status
   submittedAt
+  displayItems {
+    displayTitle
+    displayValue
+  }
   claimType
   associatedTypeOfContract
   payoutAmount {
     ...MoneyFragment
   }
-  #handlerEmail //todo: ask BE to add
+  handlerEmail
+  productVariant {
+    typeOfContract
+    displayName
+    documents {
+      type
+      url
+    }
+  }
 }

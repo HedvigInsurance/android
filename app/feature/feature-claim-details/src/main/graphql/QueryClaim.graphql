@@ -10,9 +10,3 @@ query Claim($claimId: ID!) {
     ...PartnerClaimFragment
   }
 }
-
-#query PartnerClaim($claimId: ID!) {
-#  partnerClaim(id: $claimId) {
-#    ...PartnerClaimFragment
-#  }
-#}
