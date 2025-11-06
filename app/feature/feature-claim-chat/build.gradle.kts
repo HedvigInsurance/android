@@ -30,7 +30,6 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloCore)
-      implementation(projects.koin)
       implementation(projects.apolloOctopusPublic)
     }
     androidMain.dependencies {
