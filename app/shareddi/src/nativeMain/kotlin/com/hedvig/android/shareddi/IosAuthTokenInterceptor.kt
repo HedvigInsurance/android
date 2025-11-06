@@ -3,12 +3,13 @@ package com.hedvig.android.shareddi
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import kotlinx.coroutines.flow.Flow
 
-internal class IosAuthTokenInterceptorImpl(
+internal class IosAuthTokenInterceptor(
   private val getAuthToken: () -> String,
-) : IosAuthTokenInterceptor {
+) : ApolloInterceptor {
   override fun <D : Operation.Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,

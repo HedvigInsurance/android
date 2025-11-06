@@ -1,4 +1,3 @@
-
 package com.hedvig.android.shareddi
 
 import com.hedvig.feature.claim.chat.di.claimChatModule
@@ -10,9 +9,9 @@ fun initKoin(getAuthToken: () -> String) {
   startKoin {
     module {
       single<IosAuthTokenInterceptor> {
-        IosAuthTokenInterceptorImpl(getAuthToken)
+        IosAuthTokenInterceptor(getAuthToken)
       }
     }
-    modules(claimChatModule, sharedModule)
+    modules(claimChatModule, platformModule, sharedModule)
   }
 }
