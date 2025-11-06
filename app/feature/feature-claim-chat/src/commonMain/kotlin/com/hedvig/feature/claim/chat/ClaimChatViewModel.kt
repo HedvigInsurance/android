@@ -1,8 +1,14 @@
 package com.hedvig.feature.claim.chat
 
 import androidx.lifecycle.ViewModel
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.feature.claim.chat.audiorecorder.AudioRecorderUiState
+import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
+import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
+import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
+import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
+import com.hedvig.feature.claim.chat.data.UploadAudioUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,8 +30,14 @@ sealed class UserAction {
   data class FormSubmitted(val selectedValue: String) : UserAction()
 }
 
-class ClaimChatViewModel(
-  private val apolloClient: ApolloClient,
+internal class ClaimChatViewModel(
+  private val startClaimIntentUseCase: StartClaimIntentUseCase,
+  private val getClaimIntentUseCase: GetClaimIntentUseCase,
+  private val submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  private val uploadAudioUseCase: UploadAudioUseCase,
+  private val submitFormUseCase: SubmitFormUseCase,
+  private val submitTaskUseCase: SubmitTaskUseCase,
+  private val submitSummaryUseCase: SubmitSummaryUseCase,
 ) : ViewModel() {
 
   private val scope = CoroutineScope(Dispatchers.Default)

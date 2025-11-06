@@ -16,7 +16,7 @@ fun ClaimChatDestination() {
 }
 
 @Composable
-fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
+internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
   val uiState by claimChatViewModel.state.collectAsState()
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {
