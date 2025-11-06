@@ -9,7 +9,7 @@ on:
 
 concurrency:
   group: ref-${{ github.workflow }}
-  cancel-in-progress: true
+#  cancel-in-progress: true
 
 jobs:
   umbrella_release:
