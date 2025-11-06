@@ -17,6 +17,16 @@ fun ClaimChatDestination() {
 @Composable
 fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
   Box(Modifier.fillMaxSize(), Alignment.Center) {
-    BasicText("Hello Multiplatform")
+    ConversationScreen(
+      listOf(
+        ConversationItem.AssistantMessage("Hello.", "how can we help you?"),
+        ConversationItem.UserMessage("I dropped my AirPods in the pool, they're completely ruined."),
+        ConversationItem.AssistantMessage("Ok, I see.", "If you have a receipt please scan in and we can sort this out."),
+        ConversationItem.ActionPrompt,
+        ConversationItem.AssistantLoadingState("Processing audio file", "Interpreting information..."),
+        ConversationItem.CompensationSelection,
+      ),
+      onAction = {},
+    )
   }
 }
