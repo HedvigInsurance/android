@@ -83,6 +83,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.Icon
@@ -379,7 +381,8 @@ private fun ContentWithoutSearch(
     ) {
       Spacer(Modifier.height(32.dp))
       AnimatedContent(puppyGuide!=null,
-        contentAlignment = Alignment.Center) { puppyGuideAvailable ->
+        contentAlignment = Alignment.Center,
+      ) { puppyGuideAvailable ->
         Column(
           Modifier.fillMaxWidth()
         ) {
@@ -489,15 +492,21 @@ private fun PuppyGuideCard(
     }
   ) {
     Column {
-      Image(
-        painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-          .height(182.dp)
-          .clip(HedvigTheme.shapes.cornerXLargeTop)
-          .align(Alignment.CenterHorizontally),
-      )
+      Box(Modifier.align(Alignment.CenterHorizontally)) {
+        Image(
+          painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+          contentDescription = null,
+          contentScale = ContentScale.Crop,
+          modifier = Modifier
+            .height(182.dp)
+            .clip(HedvigTheme.shapes.cornerXLargeTop),
+        )
+        HighlightLabel(stringResource(R.string.PUPPY_GUIDE_LABEL),
+          size = HighlightLabelDefaults.HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Pink(LIGHT),
+          modifier= Modifier.padding(top = 16.dp, start = 16.dp))
+      }
+
       Spacer(Modifier.height(16.dp))
       HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE),
         modifier = Modifier.padding(horizontal = 16.dp))

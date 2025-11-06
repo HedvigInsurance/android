@@ -528,6 +528,7 @@
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Go to guides</string>
+  <string name="PUPPY_GUIDE_LABEL">Featured guides</string>
   <string name="PUPPY_GUIDE_SUBTITLE">Helpful guides for you and your puppy</string>
   <string name="PUPPY_GUIDE_TITLE">Puppy Guide</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW">Not now</string>

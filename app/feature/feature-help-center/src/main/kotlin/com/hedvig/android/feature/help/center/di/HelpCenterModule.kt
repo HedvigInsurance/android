@@ -17,6 +17,7 @@ import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.featureflags.FeatureManager
@@ -89,5 +90,9 @@ val helpCenterModule = module {
     ShowNavigateToInboxViewModel(
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
     )
+  }
+
+  viewModel<PuppyGuideViewModel> {
+    PuppyGuideViewModel( getPuppyGuideUseCase = get<GetPuppyGuideUseCase>())
   }
 }
