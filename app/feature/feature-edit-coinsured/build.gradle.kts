@@ -34,7 +34,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

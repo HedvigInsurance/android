@@ -43,7 +43,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.fileUploadUi)
   implementation(projects.languageCore)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

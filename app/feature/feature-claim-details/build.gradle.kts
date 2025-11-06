@@ -49,7 +49,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.fileUploadUi)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

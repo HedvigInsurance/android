@@ -6,7 +6,7 @@ import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class SettingsViewModel(
   languageService: LanguageService,

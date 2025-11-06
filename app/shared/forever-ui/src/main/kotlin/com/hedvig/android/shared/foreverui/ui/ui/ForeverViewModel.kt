@@ -11,7 +11,7 @@ import arrow.core.raise.either
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.shared.foreverui.ui.data.ForeverData

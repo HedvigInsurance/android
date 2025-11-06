@@ -35,7 +35,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.languageAndroid)
   implementation(projects.languageCore)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

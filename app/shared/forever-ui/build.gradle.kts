@@ -27,7 +27,6 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
 }

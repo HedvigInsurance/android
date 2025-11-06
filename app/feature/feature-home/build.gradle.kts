@@ -49,7 +49,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

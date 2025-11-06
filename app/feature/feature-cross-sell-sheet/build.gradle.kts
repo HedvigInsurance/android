@@ -23,6 +23,5 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
 }

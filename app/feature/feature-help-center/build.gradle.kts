@@ -37,7 +37,6 @@ dependencies {
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
