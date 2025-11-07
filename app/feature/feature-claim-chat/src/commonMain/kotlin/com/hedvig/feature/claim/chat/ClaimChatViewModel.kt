@@ -60,7 +60,7 @@ internal class ClaimChatViewModel(
   }
 
   private fun startClaimIntent() = scope.launch {
-    startClaimIntentUseCase.invoke(sourceMessageId = "afe8dfc2-ee65-4f45-8b2b-beeabffe9cf3").fold(
+    startClaimIntentUseCase.invoke(sourceMessageId = "2ec77791-0705-4bb9-9689-80ba3aed7202").fold(
       ifLeft = { errorMessage ->
         _state.update { it.copy(errorMessage = errorMessage.message) }
       },
