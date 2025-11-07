@@ -11,8 +11,17 @@ internal actual val platformModule: Module = module {
   }
 }
 
+/**
+ * Like [platformModule] but allows for dynamic input, for pieces of information that need to be injected from iOS
+ */
+internal fun iosPlatformModule(getAuthToken: () -> String) = module {
+  single<IosAuthTokenInterceptor> {
+    IosAuthTokenInterceptor(getAuthToken)
+  }
+}
+
 private class IosExtraApolloClientConfiguration(
-  private val iosAuthTokenInterceptor: IosAuthTokenInterceptor
+  private val iosAuthTokenInterceptor: IosAuthTokenInterceptor,
 ) : ExtraApolloClientConfiguration {
   override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
     return builder

@@ -148,7 +148,6 @@ class ProfilePresenterTest {
   fun `claims history feature flag hides the navigation option`(
     @TestParameter claimHistoryFlag: Boolean,
   ) = runTest {
-    println("stelios flag:$claimHistoryFlag")
     val presenter = ProfilePresenter(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       FakeCheckCertificatesAvailabilityUseCase().apply { turbine.add(Unit.right()) },

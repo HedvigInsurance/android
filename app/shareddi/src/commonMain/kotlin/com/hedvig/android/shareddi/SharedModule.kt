@@ -22,9 +22,10 @@ val sharedModule = module {
   }
   single<ApolloClient> {
     val extra = get<ExtraApolloClientConfiguration>()
-    get<ApolloClient.Builder>()
+    get<ApolloClient.Builder>(qualifier = apolloClientBuilderMultiplatformQualifier)
       .copy()
-      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
+      // todo bring this also from iOS or move outside of android string resources
+      .httpServerUrl("https://apollo-router.dev.hedvigit.com")
       .run { extra.configure(this) }
       .build()
   }
