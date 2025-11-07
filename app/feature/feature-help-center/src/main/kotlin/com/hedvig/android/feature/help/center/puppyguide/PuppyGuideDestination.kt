@@ -24,13 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -208,37 +211,62 @@ private fun CategoryWithArticlesSection(
     ) {
       val size = 148.dp
       stories.forEach { story ->
-        Column(
-          Modifier
-            .width(size)
-            .clickable(
-              onClick = {
-                onNavigateToArticle(story)
-              },
-            ),
-        ) {
-          val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
-          AsyncImage(
-            model = story.image,
-            contentDescription = EmptyContentDescription, // todo
-            placeholder = fallbackPainter,
-            error = fallbackPainter,
-            fallback = fallbackPainter,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-              .size(size)
-              .clip(HedvigTheme.shapes.cornerMedium),
-          )
-          Spacer(Modifier.height(8.dp))
-          HedvigText(
-            story.title,
-            fontSize = HedvigTheme.typography.label.fontSize,
-          )
-        }
+        ArticleItem(
+          story = story,
+          onNavigateToArticle = onNavigateToArticle,
+          imageLoader = imageLoader,
+          size = size
+        )
       }
     }
     Spacer(Modifier.height(48.dp))
+  }
+}
+
+@Composable
+private fun ArticleItem(
+  story: PuppyGuideStory,
+  onNavigateToArticle: (PuppyGuideStory) -> Unit,
+  imageLoader: ImageLoader,
+  size: Dp,
+  modifier: Modifier = Modifier,
+  shape: Shape = HedvigTheme.shapes.cornerMedium
+) {
+  Column(
+    modifier
+      .width(size)
+      .clip(shape)
+      .clickable(
+        onClick = {
+          onNavigateToArticle(story)
+        },
+      ),
+  ) {
+    val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
+    AsyncImage(
+      model = story.image,
+      contentDescription = EmptyContentDescription, // todo
+      placeholder = fallbackPainter,
+      error = fallbackPainter,
+      fallback = fallbackPainter,
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier
+        .size(size)
+        .clip(shape),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigText(
+      story.title,
+      style = HedvigTheme.typography.label,
+      maxLines = 1,
+      overflow= TextOverflow.Ellipsis, //todo: not by a11y req
+    )
+    HedvigText(
+      story.subtitle,
+      style = HedvigTheme.typography.label,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent
+    )
   }
 }
 
@@ -275,7 +303,7 @@ private class PuppyGuideUiStatePreviewProvider :
             rating = 5,
             isRead = false,
             subtitle = "5 min read",
-            title = "Puppy food",
+            title = "Puppy food food food food food food food ",
           ),
           PuppyGuideStory(
             categories = listOf("Training"),
@@ -285,8 +313,8 @@ private class PuppyGuideUiStatePreviewProvider :
             name = "",
             rating = 5,
             isRead = false,
-            subtitle = "Puppy training",
-            title = "4 min read",
+            subtitle = "4 min read",
+            title = "Puppy training",
           ),
         ),
       ),
