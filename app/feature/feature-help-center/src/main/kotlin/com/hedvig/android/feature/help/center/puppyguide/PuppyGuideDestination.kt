@@ -17,14 +17,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,8 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -121,88 +118,98 @@ private fun PuppyGuideSuccessScreen(
   onNavigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
+  val categories = uiState.stories.flatMap { it.categories }.toSet().toList()
+  var selectedCategory by remember { mutableStateOf<String?>(null) }
+  val listState = rememberLazyListState()
+  val scope = rememberCoroutineScope()
+
+  LaunchedEffect(selectedCategory) {
+    selectedCategory?.let { cat ->
+      val index = categories.indexOf(cat)
+      if (index >= 0) {
+        // +2 to account for header item and sticky header
+        // Negative offset to scroll less and avoid sticky header covering the title
+        scope.launch {
+          listState.animateScrollToItem(index + 2, scrollOffset = -100)
+        }
+      }
+    }
+  }
+
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
   ) {
     Column(
-      Modifier
-        .fillMaxSize(),
+      Modifier.fillMaxSize(),
     ) {
       TopAppBarWithBack(
         title = "",
         onClick = onNavigateUp,
       )
-      Column(
+
+      LazyColumn(
+        state = listState,
         modifier = Modifier
-          .padding(horizontal = 16.dp)
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp)
       ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier
-            .fillMaxWidth(),
-        ) {
-          Image(
-            painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-            modifier = Modifier
-              .height(300.dp)
-              .clip(HedvigTheme.shapes.cornerXLarge),
+        // Header content
+        item {
+          Column {
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              Image(
+                painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+                modifier = Modifier
+                  .height(300.dp)
+                  .clip(HedvigTheme.shapes.cornerXLarge),
+              )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE))
+            Spacer(modifier = Modifier.height(8.dp))
+            HedvigText(
+              stringResource(R.string.PUPPY_GUIDE_INFO),
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+          }
+        }
+
+        // Sticky category row
+        stickyHeader {
+          Surface(
+            color = HedvigTheme.colorScheme.backgroundPrimary,
+            modifier = Modifier.fillMaxWidth()
+          ) {
+            Column {
+              GuideCategoriesRow(
+                categories,
+                onCategoryClick = {
+                  selectedCategory = it
+                },
+              )
+              Spacer(modifier = Modifier.height(24.dp))
+            }
+          }
+        }
+
+        // Category sections
+        items(categories) { cat ->
+          CategoryWithArticlesSection(
+            cat,
+            stories = uiState.stories.filter { it.categories.contains(cat) },
+            onNavigateToArticle = onNavigateToArticle,
+            imageLoader = imageLoader,
           )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE))
-        Spacer(modifier = Modifier.height(8.dp))
-        HedvigText(
-          stringResource(R.string.PUPPY_GUIDE_INFO),
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-        Spacer(modifier = Modifier.height(48.dp))
-        val categories = uiState.stories.flatMap { it.categories }.toSet().toList()
-
-        var selectedCategory by remember { mutableStateOf<String?>(null) }
-        val requesters = remember { mutableStateMapOf<String, BringIntoViewRequester>() }
-
-        val scope = rememberCoroutineScope()
-        LaunchedEffect(selectedCategory) {
-          selectedCategory?.let { cat ->
-            requesters[cat]?.let { requester ->
-              scope.launch { requester.bringIntoView() }
-            }
-          }
-        }
-
-        GuideCategoriesRow(
-          categories,
-          onCategoryClick = {
-            selectedCategory = it
-          },
-        )
-        Spacer(modifier = Modifier.height(48.dp))
-        Column(Modifier.fillMaxWidth()) {
-          categories.forEach { cat ->
-            val requester = remember(cat) {
-              BringIntoViewRequester().also {
-                requesters[cat] = it
-              }
-            }
-            CategoryWithArticlesSection(
-              cat,
-              stories = uiState.stories.filter { it.categories.contains(cat) },
-              onNavigateToArticle = onNavigateToArticle,
-              imageLoader = imageLoader,
-              modifier = Modifier
-                .bringIntoViewRequester(requester)
-            )
-          }
-        }
-
       }
     }
   }
