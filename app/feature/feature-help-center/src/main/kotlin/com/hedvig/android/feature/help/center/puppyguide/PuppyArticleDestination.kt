@@ -188,6 +188,7 @@ private fun PuppyArticleSuccessScreen(
         Spacer(Modifier.height(16.dp))
         RatingSection(
           onRatingClick = onRatingClick,
+          selectedRating = uiState.story.rating
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -197,6 +198,7 @@ private fun PuppyArticleSuccessScreen(
 
 @Composable
 private fun RatingSection(
+  selectedRating: Int?,
   onRatingClick: (Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -214,11 +216,15 @@ private fun RatingSection(
           modifier = Modifier.weight(1f),
           onClick = {
             onRatingClick(rating)
-          }
+          },
+          color = if (selectedRating ==rating) HedvigTheme.colorScheme.signalGreenFill
+          else HedvigTheme.colorScheme.surfacePrimary
         ) {
           HedvigText(
             text = rating.toString(),
             style = HedvigTheme.typography.bodyLarge,
+            color = if (selectedRating ==rating) HedvigTheme.colorScheme.textBlack
+              else HedvigTheme.colorScheme.textSecondaryTranslucent,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 16.dp)
           )
