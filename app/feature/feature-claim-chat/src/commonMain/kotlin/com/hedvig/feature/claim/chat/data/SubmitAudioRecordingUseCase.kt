@@ -34,7 +34,7 @@ internal class SubmitAudioRecordingUseCase(
 
     when {
       data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> data.intent.currentStep.toClaimIntentStep()
+      data.intent != null -> ClaimIntent(id = data.intent.id, step = data.intent.currentStep.toClaimIntentStep())
       else -> raise(ErrorMessage("No data"))
     }
   }

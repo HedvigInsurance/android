@@ -20,7 +20,7 @@ internal class SubmitSummaryUseCase(
 
     when {
       data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> data.intent.currentStep.toClaimIntentStep()
+      data.intent != null -> ClaimIntent(data.intent.id, data.intent.currentStep.toClaimIntentStep())
       else -> raise(ErrorMessage("No data"))
     }
   }

@@ -18,6 +18,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...FormFragment
   ...TaskFragment
   ...SummaryFragment
+  ...OutcomeFragment
 }
 
 fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
@@ -60,5 +61,9 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
+}
+
+fragment OutcomeFragment on ClaimIntentStepContentOutcome {
+  claimId
 }
 

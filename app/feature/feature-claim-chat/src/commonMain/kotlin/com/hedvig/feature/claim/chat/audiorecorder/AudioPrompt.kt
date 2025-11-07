@@ -1,12 +1,111 @@
-package com.hedvig.feature.claim.chat.audiorecorder.audioplayer.audiowaves
+package com.hedvig.feature.claim.chat.audiorecorder
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import com.hedvig.feature.claim.chat.assistantmessage.AssistantChatMessage
 
+@Composable
+fun AudioPrompt(
+  text: String,
+  hint: String?,
+  uploadUri: String,
+  onStartRecording: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(
+    modifier = modifier.fillMaxSize().padding(top = 100.dp, bottom = 100.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxHeight(),
+    ) {
+      AssistantChatMessage(
+        text = text,
+        subText = hint ?: ""
+      )
+
+      PulsingMicrophone(
+        onMicrophoneClicked = onStartRecording,
+        modifier = Modifier.padding(32.dp),
+      )
+
+      Text(
+        text = "Tap the microphone to begin speaking.",
+        style = MaterialTheme.typography.bodyLarge,
+        color = Color.Black.copy(alpha = 0.7f),
+      )
+    }
+  }
+}
+
+@Composable
+fun PulsingMicrophone(
+  onMicrophoneClicked: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val infiniteTransition = rememberInfiniteTransition(label = "microphonePulse")
+  val scale by infiniteTransition.animateFloat(
+    initialValue = 1.0f, targetValue = 1.15f,
+    animationSpec = infiniteRepeatable(
+      animation = tween(800, easing = FastOutSlowInEasing),
+      repeatMode = RepeatMode.Reverse,
+    ),
+    label = "scale",
+  )
+
+  Box(
+    modifier = modifier
+      .size(72.dp) // Large button size
+      .graphicsLayer { scaleX = scale; scaleY = scale }
+      .clip(CircleShape)
+      .background(Color.White.copy(alpha = 0.5f)) // Translucent white background
+      .clickable(onClick = onMicrophoneClicked),
+    contentAlignment = Alignment.Center,
+  ) {
+    Icon(
+      imageVector = Play,
+      contentDescription = "Start recording audio",
+      tint = MaterialTheme.colorScheme.primary, // Or a contrasting color
+      modifier = Modifier.size(32.dp),
+    )
+  }
+}
+
+@Suppress("ObjectPropertyName", "ktlint:standard:backing-property-naming")
+private var _play: ImageVector? = null
+
+@Suppress("UnusedReceiverParameter")
 val Play: ImageVector
   get() {
     val current = _play
@@ -144,6 +243,3 @@ val Play: ImageVector
       }
     }.build().also { _play = it }
   }
-
-@Suppress("ObjectPropertyName", "ktlint:standard:backing-property-naming")
-private var _play: ImageVector? = null

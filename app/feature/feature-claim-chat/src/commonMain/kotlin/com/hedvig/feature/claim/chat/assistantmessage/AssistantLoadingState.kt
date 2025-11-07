@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,13 +36,15 @@ fun AssistantLoadingState(
       color = MaterialTheme.colorScheme.secondary,
       fontSize = 14.sp,
     )
-    Spacer(Modifier.padding(top = 6.dp))
+    Spacer(Modifier.height(6.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      if (isLoading) {
-        ThreeDotLoadingIndicator()
-      } else {
+      Column {
+        if (isLoading) {
+          ThreeDotLoadingIndicator()
+        }
+        Spacer(Modifier.height(4.dp))
         AssistantLabel(modifier)
       }
     }

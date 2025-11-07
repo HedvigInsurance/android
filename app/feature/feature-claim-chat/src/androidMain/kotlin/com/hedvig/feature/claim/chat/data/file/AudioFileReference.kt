@@ -4,9 +4,7 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-actual class AudioFileReference(
-  actual val pathOrUri: String
-) {
+actual class AudioFileReference actual constructor(val pathOrUri: String) {
   actual suspend fun readBytes(): ByteArray {
     return withContext(Dispatchers.IO) {
       File(pathOrUri).readBytes()
