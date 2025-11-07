@@ -12,12 +12,14 @@ import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.SharingStarted
 
 internal class PuppyGuideViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculeViewModel<PuppyGuideEvent, PuppyGuideUiState>(
     presenter = PuppyGuidePresenter(getPuppyGuideUseCase),
     initialState = PuppyGuideUiState.Loading,
+    sharingStarted = SharingStarted.WhileSubscribed(),
   )
 
 private class PuppyGuidePresenter(

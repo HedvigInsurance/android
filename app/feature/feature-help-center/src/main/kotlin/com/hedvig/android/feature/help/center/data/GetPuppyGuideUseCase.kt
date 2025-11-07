@@ -3,6 +3,8 @@ package com.hedvig.android.feature.help.center.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
@@ -20,14 +22,15 @@ internal class GetPuppyGuideUseCaseImpl(
     return either {
       apolloClient
         .query(PuppyGuideQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
         .getOrNull()
         ?.currentMember
         ?.puppyGuideStories
         ?.map { story ->
-          //todo: remove log
-          if (story.name=="Ögonvård") {
+          // todo: remove log
+          if (story.name == "Ögonvård") {
             logcat { "Mariia: story Ögonvård read or not: ${story.read} rating: ${story.rating} " }
           }
           PuppyGuideStory(

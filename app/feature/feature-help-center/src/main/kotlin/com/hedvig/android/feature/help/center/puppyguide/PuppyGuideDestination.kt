@@ -132,7 +132,7 @@ private fun PuppyGuideSuccessScreen(
         scope.launch {
           listState.animateScrollToItem(
             index + 2,
-            scrollOffset = -200 //todo: wtf
+            scrollOffset = -200, // todo: wtf
           )
         }
       }
@@ -302,7 +302,7 @@ private fun ArticleItem(
           .size(size)
           .clip(shape),
       )
-      if (story.isRead || story.rating!=null) {
+      if (story.isRead || story.rating != null) {
         HighlightLabel(
           modifier = modifier.padding(
             end = 12.dp,

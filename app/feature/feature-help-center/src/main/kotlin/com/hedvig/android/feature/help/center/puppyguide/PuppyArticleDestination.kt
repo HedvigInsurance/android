@@ -212,7 +212,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       modifier = Modifier,
     ) {
       ratings.forEach { rating ->
-        val isSelectedRating =selectedRating == rating
+        val isSelectedRating = selectedRating == rating
         logcat { "Mariia: isSelectedRating $isSelectedRating" }
         HedvigCard(
           modifier = Modifier.weight(1f),

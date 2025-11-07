@@ -54,7 +54,7 @@ private class PuppyArticlePresenter(
           currentState = if (matchingStory == null) {
             PuppyArticleUiState.Failure
           } else {
-            logcat { "Mariia. Story rating is: ${matchingStory.rating} "}
+            logcat { "Mariia. Story rating is: ${matchingStory.rating} " }
             rating = matchingStory.rating
             PuppyArticleUiState.Success(matchingStory)
           }
