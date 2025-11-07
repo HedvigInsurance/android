@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,8 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -242,25 +245,41 @@ private fun ArticleItem(
         },
       ),
   ) {
-    val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
-    AsyncImage(
-      model = story.image,
-      contentDescription = EmptyContentDescription, // todo
-      placeholder = fallbackPainter,
-      error = fallbackPainter,
-      fallback = fallbackPainter,
-      imageLoader = imageLoader,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier
-        .size(size)
-        .clip(shape),
-    )
+    Box(
+      contentAlignment = Alignment.TopEnd,
+    ) {
+      val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
+      AsyncImage(
+        model = story.image,
+        contentDescription = EmptyContentDescription, // todo
+        placeholder = fallbackPainter,
+        error = fallbackPainter,
+        fallback = fallbackPainter,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(size)
+          .clip(shape),
+      )
+      if (story.isRead) {
+        HighlightLabel(
+          modifier = modifier.padding(end = 12.dp,
+            top = 12.dp),
+          labelText = stringResource(R.string.PUPPY_GUIDE_LABEL_READ),
+          size =  HighlightLabelDefaults.HighLightSize.Small,
+          color =  HighlightLabelDefaults.HighlightColor.Grey(
+            HighlightLabelDefaults.HighlightShade.LIGHT)
+        )
+      }
+
+    }
+
     Spacer(Modifier.height(8.dp))
     HedvigText(
       story.title,
       style = HedvigTheme.typography.label,
       maxLines = 1,
-      overflow= TextOverflow.Ellipsis, //todo: not by a11y req
+      overflow = TextOverflow.Ellipsis, //todo: not by a11y req
     )
     HedvigText(
       story.subtitle,
@@ -301,7 +320,7 @@ private class PuppyGuideUiStatePreviewProvider :
             image = "",
             name = "",
             rating = 5,
-            isRead = false,
+            isRead = true,
             subtitle = "5 min read",
             title = "Puppy food food food food food food food ",
           ),

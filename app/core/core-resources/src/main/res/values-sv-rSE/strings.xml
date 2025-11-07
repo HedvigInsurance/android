@@ -530,8 +530,9 @@
   <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
   <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
   <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
+  <string name="PUPPY_GUIDE_LABEL_READ">Läst</string>
   <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
-  <string name="PUPPY_GUIDE_RATING_QUESTION">Hur hittade du den här artikeln?</string>
+  <string name="PUPPY_GUIDE_RATING_QUESTION">Var den här artikeln hjälpsam?</string>
   <string name="PUPPY_GUIDE_RATING_VERY_HELPFUL">Mycket hjälpsam</string>
   <string name="PUPPY_GUIDE_SUBTITLE">Hjälpsamma guider för dig och din valp</string>
   <string name="PUPPY_GUIDE_TITLE">Valpguiden</string>
