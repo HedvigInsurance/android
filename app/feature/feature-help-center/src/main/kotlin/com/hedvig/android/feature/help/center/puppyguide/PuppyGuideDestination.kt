@@ -33,7 +33,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
@@ -41,7 +40,6 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -120,20 +118,27 @@ private fun PuppyGuideSuccessScreen(
         onClick = onNavigateUp,
       )
       Column(
-        Modifier
+        modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
-        Image(
-          painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
-          contentDescription = null,
-          contentScale = ContentScale.Crop,
-          alignment = Alignment.Center,
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier
-            .height(300.dp)
-            .clip(HedvigTheme.shapes.cornerXLarge),
-        )
+            .fillMaxWidth(),
+        ) {
+          Image(
+            painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.Center,
+            modifier = Modifier
+              .height(300.dp)
+              .clip(HedvigTheme.shapes.cornerXLarge),
+          )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
         HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE))
         Spacer(modifier = Modifier.height(8.dp))
@@ -199,15 +204,18 @@ private fun CategoryWithArticlesSection(
     Spacer(Modifier.height(12.dp))
     Row(
       horizontalArrangement = Arrangement.spacedBy(24.dp),
-      modifier = Modifier.horizontalScroll(rememberScrollState())) {
+      modifier = Modifier.horizontalScroll(rememberScrollState()),
+    ) {
       val size = 148.dp
       stories.forEach { story ->
         Column(
           Modifier
             .width(size)
-            .clickable(onClick = {
-            onNavigateToArticle(story)
-          }),
+            .clickable(
+              onClick = {
+                onNavigateToArticle(story)
+              },
+            ),
         ) {
           val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
           AsyncImage(
@@ -223,8 +231,10 @@ private fun CategoryWithArticlesSection(
               .clip(HedvigTheme.shapes.cornerMedium),
           )
           Spacer(Modifier.height(8.dp))
-          HedvigText(story.title,
-            fontSize = HedvigTheme.typography.label.fontSize)
+          HedvigText(
+            story.title,
+            fontSize = HedvigTheme.typography.label.fontSize,
+          )
         }
       }
     }
@@ -257,16 +267,16 @@ private class PuppyGuideUiStatePreviewProvider :
       PuppyGuideUiState.Success(
         stories = listOf(
           PuppyGuideStory(
-          categories = listOf("Food"),
-          content = "some long long long long long long long long long long long long" +
-            " long long long long long long long long long long long long content",
-          image = "",
-          name = "",
-          rating = 5,
-          isRead = false,
-          subtitle = "5 min read",
-          title = "Puppy food",
-        ),
+            categories = listOf("Food"),
+            content = "some long long long long long long long long long long long long" +
+              " long long long long long long long long long long long long content",
+            image = "",
+            name = "",
+            rating = 5,
+            isRead = false,
+            subtitle = "5 min read",
+            title = "Puppy food",
+          ),
           PuppyGuideStory(
             categories = listOf("Training"),
             content = "some long long long long long long long long long long long long" +
@@ -277,7 +287,8 @@ private class PuppyGuideUiStatePreviewProvider :
             isRead = false,
             subtitle = "Puppy training",
             title = "4 min read",
-          )),
+          ),
+        ),
       ),
       PuppyGuideUiState.Loading,
       PuppyGuideUiState.Failure,
