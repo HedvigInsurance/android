@@ -21,6 +21,9 @@ fun FormText(
     TextField(
       value = value ?: "",
       onValueChange = onValueChange,
+      supportingText = {
+        Text(title ?: "")
+      },
       placeholder = { defaultValue?.let { Text(it) } },
       singleLine = true,
       colors = TextFieldDefaults.colors(

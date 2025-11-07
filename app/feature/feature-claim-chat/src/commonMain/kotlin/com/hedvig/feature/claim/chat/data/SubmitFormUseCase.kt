@@ -2,10 +2,11 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.feature.claim.chat.data.StepContent.Form.Field
+import com.hedvig.feature.claim.chat.FormField
 import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
 import octopus.type.ClaimIntentSubmitFormInput
@@ -15,7 +16,7 @@ internal class SubmitFormUseCase(
 ) {
   suspend fun invoke(
     stepId: String,
-    fields: List<Field>,
+    fields: List<FormField>,
   ) = either {
     val data = apolloClient
       .mutation(
@@ -23,7 +24,8 @@ internal class SubmitFormUseCase(
           ClaimIntentSubmitFormInput(
             stepId = stepId,
             fields = fields.map {
-              ClaimIntentFormSubmitInputField(it.id) // todo
+              val list = Optional.presentIfNotNull(listOf(it.defaultValue ?: it.options.firstOrNull()?.second ?: ""))
+              ClaimIntentFormSubmitInputField(it.fieldId, list) // todo
             },
           ),
         ),
@@ -35,7 +37,7 @@ internal class SubmitFormUseCase(
 
     when {
       data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> data.intent.currentStep.toClaimIntentStep()
+      data.intent != null -> ClaimIntent(data.intent.id, data.intent.currentStep.toClaimIntentStep())
       else -> raise(ErrorMessage("No data"))
     }
   }

@@ -27,6 +27,7 @@ kotlin {
       implementation(libs.androidx.lifecycle.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.runtime)
+      implementation(libs.apollo.normalizedCache)
       implementation(libs.arrow.core)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)

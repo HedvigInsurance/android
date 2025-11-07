@@ -12,12 +12,12 @@ internal class UploadAudioUseCase(private val client: HttpClient) {
 
   suspend fun invoke(
     fileReference: AudioFileReference,
+    uploadUrl: String,
   ): String {
 
-    val url = "https://yourbackend.com/api/upload-audio"
     val fileBytes = fileReference.readBytes()
 
-    val response = client.post(url) {
+    val response = client.post(uploadUrl) {
       setBody(
         formData {
           append(

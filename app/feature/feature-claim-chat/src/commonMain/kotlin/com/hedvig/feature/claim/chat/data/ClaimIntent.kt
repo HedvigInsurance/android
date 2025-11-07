@@ -34,12 +34,18 @@ sealed interface StepContent {
       val maxValue: String?,
       val minValue: String?,
       val type: String?,
-      val optionsTodo: String?,
+      val options: List<Pair<String, String>>,
     )
   }
 
   data class Summary(
-    val todo: String,
+    val items: List<Item>,
+  ) : StepContent {
+    data class Item(val title: String, val value: String)
+  }
+
+  data class Outcome(
+    val claimId: String
   ) : StepContent
 
   object Unknown : StepContent
