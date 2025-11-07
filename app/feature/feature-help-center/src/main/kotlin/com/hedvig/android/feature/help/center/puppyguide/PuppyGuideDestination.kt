@@ -3,6 +3,7 @@ package com.hedvig.android.feature.help.center.puppyguide
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -174,10 +175,15 @@ private fun CategoryWithArticlesSection(
       fontFamily = HedvigTheme.typography.headlineSmall.fontFamily,
     )
     Spacer(Modifier.height(12.dp))
-    Row(Modifier.horizontalScroll(rememberScrollState())) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(24.dp),
+      modifier = Modifier.horizontalScroll(rememberScrollState())) {
+      val size = 148.dp
       stories.forEach { story ->
         Column(
-          Modifier.clickable(onClick = {
+          Modifier
+            .width(size)
+            .clickable(onClick = {
             onNavigateToArticle(story)
           }),
         ) {
@@ -191,7 +197,7 @@ private fun CategoryWithArticlesSection(
             imageLoader = imageLoader,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-              .size(148.dp)
+              .size(size)
               .clip(HedvigTheme.shapes.cornerMedium),
           )
           Spacer(Modifier.height(8.dp))
