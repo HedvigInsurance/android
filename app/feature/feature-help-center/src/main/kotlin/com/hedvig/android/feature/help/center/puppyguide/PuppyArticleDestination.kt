@@ -22,8 +22,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -64,7 +62,7 @@ internal fun PuppyArticleDestination(
     imageLoader = imageLoader,
     onRatingClick = {
       viewModel.emit(PuppyArticleEvent.RatingClick(it))
-    }
+    },
   )
 }
 
@@ -92,7 +90,7 @@ private fun PuppyArticleScreen(
       uiState,
       navigateUp = navigateUp,
       imageLoader = imageLoader,
-      onRatingClick = onRatingClick
+      onRatingClick = onRatingClick,
     )
   }
 }
@@ -154,22 +152,24 @@ private fun PuppyArticleSuccessScreen(
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
         Spacer(Modifier.height(24.dp))
-        ProvideTextStyle(HedvigTheme.typography.bodySmall) {
+        ProvideTextStyle(
+          HedvigTheme.typography.bodySmall
+            .copy(color = HedvigTheme.colorScheme.textSecondaryTranslucent),
+        ) {
+          val headingColor = HedvigTheme.colorScheme.textPrimary
           RichText(
             style = RichTextStyle(
               headingStyle = { _, currentStyle ->
                 currentStyle.copy(
-                  fontFamily = FontFamily.Default,
-                  fontWeight = FontWeight.SemiBold,
+                  color = headingColor,
                 )
               },
-              stringStyle  = RichTextStringStyle(
+              stringStyle = RichTextStringStyle(
                 boldStyle = SpanStyle(
-                  fontFamily = FontFamily.Default,
-                  fontWeight = FontWeight.SemiBold,
+                  color = headingColor,
                 ),
               ),
-            )
+            ),
           ) {
             Markdown(
               content = uiState.story.content,
@@ -179,7 +179,7 @@ private fun PuppyArticleSuccessScreen(
         Spacer(Modifier.height(48.dp))
         HedvigText(stringResource(R.string.PUPPY_GUIDE_RATING_QUESTION))
         RatingSection(
-          onRatingClick = onRatingClick
+          onRatingClick = onRatingClick,
         )
       }
     }
@@ -189,10 +189,10 @@ private fun PuppyArticleSuccessScreen(
 @Composable
 private fun RatingSection(
   onRatingClick: (Int) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier =  modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
 
