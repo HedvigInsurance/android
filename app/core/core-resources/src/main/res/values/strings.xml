@@ -528,8 +528,11 @@
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Go to guides</string>
-  <string name="PUPPY_GUIDE_INFO">Welcome to Hedvig\'s puppy guide. We’ve gathered useful articles and guides to help you with everything from first walks to vet visits.</string>
+  <string name="PUPPY_GUIDE_INFO">In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.</string>
   <string name="PUPPY_GUIDE_LABEL">Featured guides</string>
+  <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Not helpful</string>
+  <string name="PUPPY_GUIDE_RATING_QUESTION">How did you find this article?</string>
+  <string name="PUPPY_GUIDE_RATING_VERY_HELPFUL">Very helpful</string>
   <string name="PUPPY_GUIDE_SUBTITLE">Helpful guides for you and your puppy</string>
   <string name="PUPPY_GUIDE_TITLE">Puppy Guide</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW">Not now</string>

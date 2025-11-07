@@ -110,8 +110,7 @@ private fun PuppyGuideSuccessScreen(
   ) {
     Column(
       Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()),
+        .fillMaxSize(),
     ) {
       TopAppBarWithBack(
         title = "",
@@ -120,7 +119,8 @@ private fun PuppyGuideSuccessScreen(
       Column(
         modifier = Modifier
           .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+          .fillMaxWidth()
+          .verticalScroll(rememberScrollState()),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         Column(

@@ -33,6 +33,9 @@ private class PuppyArticlePresenter(
     CollectEvents { event ->
       when (event) {
         PuppyArticleEvent.Reload -> loadIteration++
+        is PuppyArticleEvent.RatingClick -> {
+          //todo
+        }
       }
     }
 
@@ -58,6 +61,7 @@ private class PuppyArticlePresenter(
 
 internal sealed interface PuppyArticleEvent {
   data object Reload: PuppyArticleEvent
+  data class RatingClick(val rating: Int): PuppyArticleEvent
 }
 
 internal sealed interface PuppyArticleUiState {

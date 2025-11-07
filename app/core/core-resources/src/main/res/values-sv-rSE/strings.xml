@@ -527,11 +527,14 @@
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Koppla autogiro</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
-  <string name="PUPPY_GUIDE_GO_BUTTON">Läs guider</string>
-  <string name="PUPPY_GUIDE_INFO">Välkommen till Hedvigs valpguide. Vi har samlat användbara artiklar och guider för att hjälpa dig med allt från första promenader till veterinärbesök.</string>
+  <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
+  <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
   <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
+  <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
+  <string name="PUPPY_GUIDE_RATING_QUESTION">Hur hittade du den här artikeln?</string>
+  <string name="PUPPY_GUIDE_RATING_VERY_HELPFUL">Mycket hjälpsam</string>
   <string name="PUPPY_GUIDE_SUBTITLE">Hjälpsamma guider för dig och din valp</string>
-  <string name="PUPPY_GUIDE_TITLE">Valpguide</string>
+  <string name="PUPPY_GUIDE_TITLE">Valpguiden</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW">Inte nu</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_OK">Slå på</string>
   <string name="REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION">Läs mer</string>
