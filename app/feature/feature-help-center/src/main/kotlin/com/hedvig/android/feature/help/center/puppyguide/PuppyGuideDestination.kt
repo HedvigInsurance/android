@@ -17,10 +17,18 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import hedvig.resources.R
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun PuppyGuideDestination(
@@ -126,7 +137,7 @@ private fun PuppyGuideSuccessScreen(
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState()),
+          .verticalScroll(rememberScrollState())
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         Column(
@@ -154,21 +165,44 @@ private fun PuppyGuideSuccessScreen(
         )
         Spacer(modifier = Modifier.height(48.dp))
         val categories = uiState.stories.flatMap { it.categories }.toSet().toList()
+
+        var selectedCategory by remember { mutableStateOf<String?>(null) }
+        val requesters = remember { mutableStateMapOf<String, BringIntoViewRequester>() }
+
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(selectedCategory) {
+          selectedCategory?.let { cat ->
+            requesters[cat]?.let { requester ->
+              scope.launch { requester.bringIntoView() }
+            }
+          }
+        }
+
         GuideCategoriesRow(
           categories,
           onCategoryClick = {
-            // todo
+            selectedCategory = it
           },
         )
         Spacer(modifier = Modifier.height(48.dp))
-        categories.forEach { cat ->
-          CategoryWithArticlesSection(
-            cat,
-            stories = uiState.stories.filter { it.categories.contains(cat) },
-            onNavigateToArticle = onNavigateToArticle,
-            imageLoader = imageLoader,
-          )
+        Column(Modifier.fillMaxWidth()) {
+          categories.forEach { cat ->
+            val requester = remember(cat) {
+              BringIntoViewRequester().also {
+                requesters[cat] = it
+              }
+            }
+            CategoryWithArticlesSection(
+              cat,
+              stories = uiState.stories.filter { it.categories.contains(cat) },
+              onNavigateToArticle = onNavigateToArticle,
+              imageLoader = imageLoader,
+              modifier = Modifier
+                .bringIntoViewRequester(requester)
+            )
+          }
         }
+
       }
     }
   }
