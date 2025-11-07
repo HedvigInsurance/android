@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +26,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -32,12 +37,14 @@ import com.halilibo.richtext.commonmark.Markdown
 import com.halilibo.richtext.ui.RichTextStyle
 import com.halilibo.richtext.ui.string.RichTextStringStyle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
@@ -178,9 +185,11 @@ private fun PuppyArticleSuccessScreen(
         }
         Spacer(Modifier.height(48.dp))
         HedvigText(stringResource(R.string.PUPPY_GUIDE_RATING_QUESTION))
+        Spacer(Modifier.height(16.dp))
         RatingSection(
           onRatingClick = onRatingClick,
         )
+        Spacer(Modifier.height(16.dp))
       }
     }
   }
@@ -192,10 +201,51 @@ private fun RatingSection(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxWidth(),
+   modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-
+    val ratings = listOf(1,2,3,4,5)
+    Row(
+      horizontalArrangement = Arrangement.SpaceAround,
+      modifier = Modifier
+    ) {
+      ratings.forEach { rating ->
+        HedvigCard(
+          modifier = Modifier.weight(1f),
+          onClick = {
+            onRatingClick(rating)
+          }
+        ) {
+          HedvigText(
+            text = rating.toString(),
+            style = HedvigTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 16.dp)
+          )
+        }
+        Spacer(Modifier.width(6.dp))
+      }
+    }
+    Spacer(Modifier.height(16.dp))
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        HedvigText(
+          stringResource(R.string.PUPPY_GUIDE_RATING_NOT_HELPFUL),
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        )
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          HedvigText(
+            stringResource(R.string.PUPPY_GUIDE_RATING_VERY_HELPFUL),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          )
+        }
+      },
+      spaceBetween = 8.dp
+    )
   }
 }
 
