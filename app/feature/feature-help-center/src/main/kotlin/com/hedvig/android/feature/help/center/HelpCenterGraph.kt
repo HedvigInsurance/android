@@ -13,6 +13,8 @@ import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
@@ -151,15 +153,28 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuide> {
+    navdestination<HelpCenterDestinations.PuppyGuide> { backStackEntry ->
       val viewModel = koinViewModel<PuppyGuideViewModel>()
       PuppyGuideDestination(
         viewModel,
         onNavigateUp = navigator::navigateUp,
-        onNavigateToArticle = {
-          // todo
+        onNavigateToArticle = { story ->
+          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.PuppyGuideArticle(
+            story.name
+          ))}
         },
         imageLoader = imageLoader,
+      )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuideArticle> {
+      val viewModel = koinViewModel<PuppyArticleViewModel>() {
+        parametersOf(storyName)
+      }
+      PuppyArticleDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        imageLoader = imageLoader
       )
     }
   }

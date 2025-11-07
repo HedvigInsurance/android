@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -30,8 +29,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
@@ -39,11 +41,14 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import hedvig.resources.R
 
@@ -55,21 +60,38 @@ internal fun PuppyGuideDestination(
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  when (val state = uiState) {
+  PuppyGuideScreen(
+    uiState,
+    onNavigateToArticle = onNavigateToArticle,
+    onNavigateUp = onNavigateUp,
+    reload = {
+      viewModel.emit(PuppyGuideEvent.Reload)
+    },
+    imageLoader = imageLoader,
+  )
+}
+
+@Composable
+private fun PuppyGuideScreen(
+  uiState: PuppyGuideUiState,
+  onNavigateToArticle: (PuppyGuideStory) -> Unit,
+  onNavigateUp: () -> Unit,
+  reload: () -> Unit,
+  imageLoader: ImageLoader,
+) {
+  when (uiState) {
     PuppyGuideUiState.Failure -> HedvigScaffold(
       navigateUp = onNavigateUp,
     ) {
       HedvigErrorSection(
-        onButtonClick = {
-          viewModel.emit(PuppyGuideEvent.Reload)
-        },
+        onButtonClick = reload,
         modifier = Modifier.weight(1f),
       )
     }
 
     PuppyGuideUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    is PuppyGuideUiState.Success -> PuppyGuideScreen(
-      state,
+    is PuppyGuideUiState.Success -> PuppyGuideSuccessScreen(
+      uiState,
       onNavigateUp = onNavigateUp,
       onNavigateToArticle = onNavigateToArticle,
       imageLoader = imageLoader,
@@ -78,7 +100,7 @@ internal fun PuppyGuideDestination(
 }
 
 @Composable
-private fun PuppyGuideScreen(
+private fun PuppyGuideSuccessScreen(
   uiState: PuppyGuideUiState.Success,
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
   onNavigateUp: () -> Unit,
@@ -201,10 +223,63 @@ private fun CategoryWithArticlesSection(
               .clip(HedvigTheme.shapes.cornerMedium),
           )
           Spacer(Modifier.height(8.dp))
-          HedvigText(story.title)
+          HedvigText(story.title,
+            fontSize = HedvigTheme.typography.label.fontSize)
         }
       }
     }
     Spacer(Modifier.height(48.dp))
   }
 }
+
+@HedvigShortMultiScreenPreview
+@Composable
+private fun PuppyArticleScreenAnimations(
+  @PreviewParameter(PuppyGuideUiStatePreviewProvider::class) uiState: PuppyGuideUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      PuppyGuideScreen(
+        uiState,
+        {},
+        {},
+        reload = {},
+        imageLoader = rememberPreviewImageLoader(),
+      )
+    }
+  }
+}
+
+
+private class PuppyGuideUiStatePreviewProvider :
+  CollectionPreviewParameterProvider<PuppyGuideUiState>(
+    listOf(
+      PuppyGuideUiState.Success(
+        stories = listOf(
+          PuppyGuideStory(
+          categories = listOf("Food"),
+          content = "some long long long long long long long long long long long long" +
+            " long long long long long long long long long long long long content",
+          image = "",
+          name = "",
+          rating = 5,
+          isRead = false,
+          subtitle = "5 min read",
+          title = "Puppy food",
+        ),
+          PuppyGuideStory(
+            categories = listOf("Training"),
+            content = "some long long long long long long long long long long long long" +
+              " long long long long long long long long long long long long content",
+            image = "",
+            name = "",
+            rating = 5,
+            isRead = false,
+            subtitle = "Puppy training",
+            title = "4 min read",
+          )),
+      ),
+      PuppyGuideUiState.Loading,
+      PuppyGuideUiState.Failure,
+    ),
+  )

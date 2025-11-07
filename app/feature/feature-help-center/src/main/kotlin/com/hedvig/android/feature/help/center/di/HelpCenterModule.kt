@@ -17,6 +17,7 @@ import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
@@ -94,5 +95,12 @@ val helpCenterModule = module {
 
   viewModel<PuppyGuideViewModel> {
     PuppyGuideViewModel(getPuppyGuideUseCase = get<GetPuppyGuideUseCase>())
+  }
+
+  viewModel<PuppyArticleViewModel> { params ->
+    PuppyArticleViewModel(
+      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>(),
+      storyName = params.get(),
+    )
   }
 }
