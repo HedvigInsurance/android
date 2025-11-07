@@ -127,10 +127,12 @@ private fun PuppyGuideSuccessScreen(
     selectedCategory?.let { cat ->
       val index = categories.indexOf(cat)
       if (index >= 0) {
-        // +2 to account for header item and sticky header
         // Negative offset to scroll less and avoid sticky header covering the title
         scope.launch {
-          listState.animateScrollToItem(index + 2, scrollOffset = -100)
+          listState.animateScrollToItem(
+            index + 2,
+            scrollOffset = -200 //todo: wtf
+          )
         }
       }
     }
@@ -154,7 +156,6 @@ private fun PuppyGuideSuccessScreen(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
-        // Header content
         item {
           Column {
             Spacer(modifier = Modifier.height(8.dp))
@@ -183,7 +184,6 @@ private fun PuppyGuideSuccessScreen(
           }
         }
 
-        // Sticky category row
         stickyHeader {
           Surface(
             color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -201,7 +201,6 @@ private fun PuppyGuideSuccessScreen(
           }
         }
 
-        // Category sections
         items(categories) { cat ->
           CategoryWithArticlesSection(
             cat,

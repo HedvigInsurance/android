@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -143,7 +144,8 @@ private fun PuppyArticleSuccessScreen(
             imageLoader = imageLoader,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-              .height(200.dp)
+              .fillMaxWidth()
+              .defaultMinSize(minHeight = 200.dp)
               .clip(HedvigTheme.shapes.cornerMedium),
           )
         }
