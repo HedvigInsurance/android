@@ -188,7 +188,7 @@ private fun PuppyArticleSuccessScreen(
         Spacer(Modifier.height(16.dp))
         RatingSection(
           onRatingClick = onRatingClick,
-          selectedRating = uiState.story.rating
+          selectedRating = uiState.story.rating,
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -197,19 +197,15 @@ private fun PuppyArticleSuccessScreen(
 }
 
 @Composable
-private fun RatingSection(
-  selectedRating: Int?,
-  onRatingClick: (Int) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, modifier: Modifier = Modifier) {
   Column(
-   modifier = modifier,
+    modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    val ratings = listOf(1,2,3,4,5)
+    val ratings = listOf(1, 2, 3, 4, 5)
     Row(
       horizontalArrangement = Arrangement.SpaceAround,
-      modifier = Modifier
+      modifier = Modifier,
     ) {
       ratings.forEach { rating ->
         HedvigCard(
@@ -217,16 +213,22 @@ private fun RatingSection(
           onClick = {
             onRatingClick(rating)
           },
-          color = if (selectedRating ==rating) HedvigTheme.colorScheme.signalGreenFill
-          else HedvigTheme.colorScheme.surfacePrimary
+          color = if (selectedRating == rating) {
+            HedvigTheme.colorScheme.signalGreenFill
+          } else {
+            HedvigTheme.colorScheme.surfacePrimary
+          },
         ) {
           HedvigText(
             text = rating.toString(),
             style = HedvigTheme.typography.bodyLarge,
-            color = if (selectedRating ==rating) HedvigTheme.colorScheme.textBlack
-              else HedvigTheme.colorScheme.textSecondaryTranslucent,
+            color = if (selectedRating == rating) {
+              HedvigTheme.colorScheme.textBlack
+            } else {
+              HedvigTheme.colorScheme.textSecondaryTranslucent
+            },
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = 16.dp),
           )
         }
         Spacer(Modifier.width(6.dp))
@@ -250,7 +252,7 @@ private fun RatingSection(
           )
         }
       },
-      spaceBetween = 8.dp
+      spaceBetween = 8.dp,
     )
   }
 }
@@ -272,7 +274,6 @@ private fun PuppyArticleScreenPreview(
     }
   }
 }
-
 
 private class PuppyArticleUiStatePreviewProvider :
   CollectionPreviewParameterProvider<PuppyArticleUiState>(

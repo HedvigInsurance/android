@@ -159,22 +159,26 @@ fun NavGraphBuilder.helpCenterGraph(
         viewModel,
         onNavigateUp = navigator::navigateUp,
         onNavigateToArticle = { story ->
-          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.PuppyGuideArticle(
-            story.name
-          ))}
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuideArticle(
+                story.name,
+              ),
+            )
+          }
         },
         imageLoader = imageLoader,
       )
     }
 
     navdestination<HelpCenterDestinations.PuppyGuideArticle> {
-      val viewModel = koinViewModel<PuppyArticleViewModel>() {
+      val viewModel = koinViewModel<PuppyArticleViewModel> {
         parametersOf(storyName)
       }
       PuppyArticleDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        imageLoader = imageLoader
+        imageLoader = imageLoader,
       )
     }
   }

@@ -17,6 +17,8 @@ import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCase
+import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCaseImpl
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
@@ -100,7 +102,12 @@ val helpCenterModule = module {
   viewModel<PuppyArticleViewModel> { params ->
     PuppyArticleViewModel(
       getPuppyGuideUseCase = get<GetPuppyGuideUseCase>(),
+      setArticleRatingUseCase = get<SetArticleRatingUseCase>(),
       storyName = params.get(),
     )
+  }
+
+  single<SetArticleRatingUseCase> {
+    SetArticleRatingUseCaseImpl(apolloClient = get())
   }
 }

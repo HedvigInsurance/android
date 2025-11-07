@@ -152,7 +152,7 @@ private fun PuppyGuideSuccessScreen(
         state = listState,
         modifier = Modifier
           .fillMaxWidth()
-          .padding(horizontal = 16.dp)
+          .padding(horizontal = 16.dp),
       ) {
         // Header content
         item {
@@ -187,7 +187,7 @@ private fun PuppyGuideSuccessScreen(
         stickyHeader {
           Surface(
             color = HedvigTheme.colorScheme.backgroundPrimary,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
           ) {
             Column {
               GuideCategoriesRow(
@@ -259,7 +259,7 @@ private fun CategoryWithArticlesSection(
           story = story,
           onNavigateToArticle = onNavigateToArticle,
           imageLoader = imageLoader,
-          size = size
+          size = size,
         )
       }
     }
@@ -274,7 +274,7 @@ private fun ArticleItem(
   imageLoader: ImageLoader,
   size: Dp,
   modifier: Modifier = Modifier,
-  shape: Shape = HedvigTheme.shapes.cornerMedium
+  shape: Shape = HedvigTheme.shapes.cornerMedium,
 ) {
   Column(
     modifier
@@ -304,15 +304,15 @@ private fun ArticleItem(
       )
       if (story.isRead) {
         HighlightLabel(
-          modifier = modifier.padding(end = 12.dp,
-            top = 12.dp),
+          modifier = modifier.padding(
+            end = 12.dp,
+            top = 12.dp,
+          ),
           labelText = stringResource(R.string.PUPPY_GUIDE_LABEL_READ),
-          size =  HighlightLabelDefaults.HighLightSize.Small,
-          color =  HighlightLabelDefaults.HighlightColor.Grey(
-            HighlightLabelDefaults.HighlightShade.LIGHT)
+          size = HighlightLabelDefaults.HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
         )
       }
-
     }
 
     Spacer(Modifier.height(8.dp))
@@ -320,12 +320,12 @@ private fun ArticleItem(
       story.title,
       style = HedvigTheme.typography.label,
       maxLines = 1,
-      overflow = TextOverflow.Ellipsis, //todo: not by a11y req
+      overflow = TextOverflow.Ellipsis, // todo: not by a11y req
     )
     HedvigText(
       story.subtitle,
       style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
   }
 }
@@ -347,7 +347,6 @@ private fun PuppyArticleScreenAnimations(
     }
   }
 }
-
 
 private class PuppyGuideUiStatePreviewProvider :
   CollectionPreviewParameterProvider<PuppyGuideUiState>(
