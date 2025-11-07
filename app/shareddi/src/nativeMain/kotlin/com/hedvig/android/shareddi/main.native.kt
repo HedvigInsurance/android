@@ -12,6 +12,6 @@ fun initKoin(getAuthToken: () -> String) {
         IosAuthTokenInterceptor(getAuthToken)
       }
     }
-    modules(claimChatModule, platformModule, sharedModule)
+    modules(platformModule, sharedModule, claimChatModule)
   }
 }
