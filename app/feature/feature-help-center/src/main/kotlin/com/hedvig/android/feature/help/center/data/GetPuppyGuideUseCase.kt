@@ -26,6 +26,10 @@ internal class GetPuppyGuideUseCaseImpl(
         ?.currentMember
         ?.puppyGuideStories
         ?.map { story ->
+          //todo: remove log
+          if (story.name=="Ögonvård") {
+            logcat { "Mariia: story Ögonvård read or not: ${story.read} rating: ${story.rating} " }
+          }
           PuppyGuideStory(
             categories = story.categories,
             content = story.content,

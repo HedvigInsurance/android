@@ -72,6 +72,7 @@ internal fun PuppyGuideDestination(
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
   PuppyGuideScreen(
     uiState,
     onNavigateToArticle = onNavigateToArticle,
@@ -301,7 +302,7 @@ private fun ArticleItem(
           .size(size)
           .clip(shape),
       )
-      if (story.isRead) {
+      if (story.isRead || story.rating!=null) {
         HighlightLabel(
           modifier = modifier.padding(
             end = 12.dp,

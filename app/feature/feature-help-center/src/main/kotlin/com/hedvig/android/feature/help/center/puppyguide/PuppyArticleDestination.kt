@@ -52,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -188,6 +189,7 @@ private fun PuppyArticleSuccessScreen(
         Spacer(Modifier.height(48.dp))
         HedvigText(stringResource(R.string.PUPPY_GUIDE_RATING_QUESTION))
         Spacer(Modifier.height(16.dp))
+        logcat { "Mariia: uiState.story.rating ${uiState.story.rating}" }
         RatingSection(
           onRatingClick = onRatingClick,
           selectedRating = uiState.story.rating,
@@ -210,12 +212,14 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       modifier = Modifier,
     ) {
       ratings.forEach { rating ->
+        val isSelectedRating =selectedRating == rating
+        logcat { "Mariia: isSelectedRating $isSelectedRating" }
         HedvigCard(
           modifier = Modifier.weight(1f),
           onClick = {
             onRatingClick(rating)
           },
-          color = if (selectedRating == rating) {
+          color = if (isSelectedRating) {
             HedvigTheme.colorScheme.signalGreenFill
           } else {
             HedvigTheme.colorScheme.surfacePrimary
@@ -224,7 +228,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
           HedvigText(
             text = rating.toString(),
             style = HedvigTheme.typography.bodyLarge,
-            color = if (selectedRating == rating) {
+            color = if (isSelectedRating) {
               HedvigTheme.colorScheme.textBlack
             } else {
               HedvigTheme.colorScheme.textSecondaryTranslucent

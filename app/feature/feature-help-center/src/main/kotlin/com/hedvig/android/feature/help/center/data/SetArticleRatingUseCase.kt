@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import octopus.PuppyGuideEngagementMutation
 
 interface SetArticleRatingUseCase {
@@ -23,10 +24,12 @@ internal class SetArticleRatingUseCaseImpl(
         PuppyGuideEngagementMutation(
           name = articleName,
           rating = Optional.present(rating),
-          read = Optional.present(true),
         ),
       )
       .safeExecute()
       .mapLeft { _ -> ErrorMessage() }
+      .onRight { data ->
+        logcat { "Mariia. Rating $rating for story $articleName set successfully" }
+      }
   }
 }

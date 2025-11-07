@@ -54,6 +54,8 @@ private class PuppyArticlePresenter(
           currentState = if (matchingStory == null) {
             PuppyArticleUiState.Failure
           } else {
+            logcat { "Mariia. Story rating is: ${matchingStory.rating} "}
+            rating = matchingStory.rating
             PuppyArticleUiState.Success(matchingStory)
           }
         },
@@ -72,7 +74,7 @@ private class PuppyArticlePresenter(
           // todo: snackbar?
         },
         ifRight = {
-          // todo: snackbar?
+          logcat { "Mariia: rating set!" }
         },
       )
     }
