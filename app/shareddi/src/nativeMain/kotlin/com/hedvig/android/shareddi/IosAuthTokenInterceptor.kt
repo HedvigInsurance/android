@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 internal class IosAuthTokenInterceptor(
-//  private val getAuthToken: () -> String,
   private val accessTokenFetcher: AccessTokenFetcher,
 ) : ApolloInterceptor {
   override fun <D : Operation.Data> intercept(
@@ -18,13 +17,12 @@ internal class IosAuthTokenInterceptor(
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
     return flow {
-      var accessToken: String? = null
-      accessTokenFetcher.fetch { accessToken = it }
+      val accessToken = accessTokenFetcher.fetch()
       emitAll(
         chain.proceed(
           request
             .newBuilder()
-            .addHttpHeader("Authorization", "Bearer ${accessToken!!}")
+            .addHttpHeader("Authorization", "Bearer $accessToken")
             .build(),
         ),
       )
@@ -33,5 +31,5 @@ internal class IosAuthTokenInterceptor(
 }
 
 interface AccessTokenFetcher {
-  fun fetch(completionHandler: (String) -> Unit)
+  fun fetch(): String
 }

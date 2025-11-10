@@ -4,6 +4,14 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/../../build-logic" name="build-logic" />
+              <build path="$PROJECT_DIR$/../../lokalise-gradle-plugin" name="lokalise-gradle-plugin" />
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$/../.." />
         <option name="gradleJvm" value="#JAVA_HOME" />
       </GradleProjectSettings>

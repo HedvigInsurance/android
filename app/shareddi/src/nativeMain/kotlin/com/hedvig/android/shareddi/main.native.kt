@@ -5,7 +5,6 @@ import org.koin.core.context.startKoin
 
 @Suppress("unused") // Used from iOS
 fun initKoin(
-//  getAuthToken: () -> String,
   accessTokenFetcher: AccessTokenFetcher,
 ) {
   startKoin {

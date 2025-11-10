@@ -21,14 +21,15 @@ class IosAccessTokenFetcher: AccessTokenFetcher {
         self.keychainAbstraction = keychainAbstraction
     }
     
-    func fetch(completionHandler: @escaping (String) -> Void) {
+    func fetch() -> String {
         let semaphore = DispatchSemaphore(value: 0)
+        var token: String? = nil
         Task {
-            let token = try await keychainAbstraction.getToken()
-            completionHandler(token)
+            token = try await keychainAbstraction.getToken()
             semaphore.signal()
         }
         semaphore.wait()
+        return token!
     }
 }
 
@@ -39,6 +40,6 @@ protocol KeychainAbstraction {
 class IosKeychainAbstraction: KeychainAbstraction {
     func getToken() async throws -> String {
         try await Task.sleep(for: .seconds(2))
-        return "eyJraWQiOiJCSnd5VGNnek5WUmpmX0VuZjFKUFgxd3lrUjZSMElOTXRiR015UkduVkhNIiwiYWxnIjoiUlMyNTYifQ.eyJpbXBlcnNvbmF0ZWQtYnkiOiJhZG1fNWNmOTA4ZjAtMGZhMi00ZGE0LWExNzAtMjcyNjQwNTc3MDVhIiwic3ViIjoibWVtXzQ1NTQ2OTk5NyIsImV4cCI6MTc2Mjc3Njk5NywiaWF0IjoxNzYyNzczMzk3fQ.MnpLETxgaw46hUT9R_GyUn3GJli2CCqVoulvkILIa2qSki8cwKmN_y0HKRFbqjLVGumjyyuMO5vcJZljjtm-zhcwjkf44xSTdPFdi4dkWgbWAvQXL9mTytsGuLcoJoShTd5ZPkh0xHGKVj7VAmVagnveBFluuEeVM8-J2gt-XjehD2XGzJaqIp_rOJLn5Y8pmChj1b3zGfNhnzn9BKDZkLIzuy-qaeX5gsTOc4Wy2FsF1YyiQMWBUtds1Drkjdz20Arpu1_4QNSAnPd4i0qPstS0lULBp52vkP784BX0nV61oDHWULr7e3fhbLq3o_pNVl2KgLqeen3QrecNaGqdmA"
+        return "eyJraWQiOiJCSnd5VGNnek5WUmpmX0VuZjFKUFgxd3lrUjZSMElOTXRiR015UkduVkhNIiwiYWxnIjoiUlMyNTYifQ.eyJpbXBlcnNvbmF0ZWQtYnkiOiJhZG1fNWNmOTA4ZjAtMGZhMi00ZGE0LWExNzAtMjcyNjQwNTc3MDVhIiwic3ViIjoibWVtXzQ1NTQ2OTk5NyIsImV4cCI6MTc2Mjc4NDQyMiwiaWF0IjoxNzYyNzgwODIyfQ.OiSA4vQvWUunCV91RkwyW7zbsjQNjjl-SzTavkDLHr8m_xlZzAnnawHvssp8Lbhx880rSVJi-fE-akrZUYucnvlrP99Tht-G6L_igoeIIG66yFrvyUV6UAtqEyENJFptr_p-7BN-M5zkWuy1y3cunJDUXS0GGj8xsQ9CF9RAu0XkzVa-9Qeo7c2Ya73rHylR8yV8_AVaZ9fVl8bgeJGBnjjK_QT8Nbi7EuS2BKfB4TGPFp2phJnHu1Xio4Nx1CKNt4MiAsm2YYF8apEaquajyDngsstvjcUrnRU2ajmvY5s8UN4ErMAswSgKd_XondVZ_OokJHNTDXIE2Kj-StOYig"
     }
 }
