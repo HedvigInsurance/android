@@ -17,12 +17,17 @@ internal class IosAuthTokenInterceptor(
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
     return flow {
-      val accessToken = accessTokenFetcher.fetch()
       emitAll(
         chain.proceed(
           request
             .newBuilder()
-            .addHttpHeader("Authorization", "Bearer $accessToken")
+            .run {
+              if (accessTokenFetcher.fetch() != null) {
+                addHttpHeader("Authorization", "Bearer ${accessTokenFetcher.fetch()}")
+              } else {
+                this
+              }
+            }
             .build(),
         ),
       )
@@ -31,5 +36,5 @@ internal class IosAuthTokenInterceptor(
 }
 
 interface AccessTokenFetcher {
-  fun fetch(): String
+  fun fetch(): String?
 }
