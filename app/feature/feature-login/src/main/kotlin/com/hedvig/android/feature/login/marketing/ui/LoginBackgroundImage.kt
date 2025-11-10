@@ -1,6 +1,10 @@
 package com.hedvig.android.feature.login.marketing.ui
 
+import android.content.ContentResolver
 import android.content.Context
+import android.content.res.Resources
+import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -19,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -29,6 +32,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.hedvig.android.feature.login.R
+import com.hedvig.android.logger.logcat
 
 @Composable
 fun LoginBackgroundImage(painter: Painter = painterResource(R.drawable.login_still_9x16)) {
@@ -115,13 +119,19 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
 
     val exoPlayer = remember(context, listener, videoResId, animationsEnabled) {
       ExoPlayer.Builder(context).build().apply {
-        val videoUri = "android.resource://${context.packageName}/$videoResId".toUri()
-        setMediaItem(MediaItem.fromUri(videoUri))
-        repeatMode = Player.REPEAT_MODE_ONE
-        volume = 0f
-        playWhenReady = true
-        addListener(listener)
-        prepare()
+        try {
+          val videoUri = Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .path(Integer.toString(videoResId)).build()
+          setMediaItem(MediaItem.fromUri(videoUri))
+          repeatMode = Player.REPEAT_MODE_ONE
+          volume = 0f
+          playWhenReady = true
+          addListener(listener)
+          prepare()
+        } catch (e: Resources.NotFoundException) {
+          logcat { "Video resource not found: $videoResId on ${Build.MODEL}" }
+          hasVideoError = true
+        }
       }
     }
 
