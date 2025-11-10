@@ -145,7 +145,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT\"\npwd\ncd ../..\necho $JAVA_HOME\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\necho $JAVA_HOME\npwd\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT\"\ncd ../..\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
