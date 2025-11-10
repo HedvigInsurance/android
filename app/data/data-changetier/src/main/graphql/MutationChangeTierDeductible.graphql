@@ -2,8 +2,6 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!,
   $source: ChangeTierDeductibleSource!,
 $addonsFlagOn: Boolean!) {
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
-
-
     intent {
       activationDate
       agreementToChange {
@@ -55,6 +53,10 @@ $addonsFlagOn: Boolean!) {
           }
         }
       }
+    }
+    deflectMessage {
+      title
+      description
     }
   }
 }

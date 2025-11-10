@@ -30,6 +30,7 @@ fun NavGraphBuilder.changeTierGraph(
   navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  onNavigateToNewConversation: () -> Unit
 ) {
   navdestination<StartTierFlowDestination> (
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
@@ -49,6 +50,8 @@ fun NavGraphBuilder.changeTierGraph(
           }
         }
       },
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      navigateUp = navigator::navigateUp,
     )
   }
 

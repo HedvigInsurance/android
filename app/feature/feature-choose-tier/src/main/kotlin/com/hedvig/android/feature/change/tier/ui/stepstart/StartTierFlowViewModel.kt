@@ -53,7 +53,13 @@ internal class StartTierChangePresenter(
         },
         ifRight = { result ->
           if (result.quotes.isEmpty()) {
-            currentState = Failure(QUOTES_ARE_EMPTY)
+            currentState =  if (result.deflectMessage!=null) {
+              StartTierChangeState.Deflect(
+                title = result.deflectMessage.title,
+                message = result.deflectMessage.message
+              )
+            } else
+            Failure(QUOTES_ARE_EMPTY)
           } else {
             val parameters = InsuranceCustomizationParameters(
               insuranceId = insuranceID,
@@ -83,6 +89,11 @@ internal sealed interface StartTierChangeState {
   ) : StartTierChangeState
 
   data class Failure(val reason: FailureReason) : StartTierChangeState
+
+  data class Deflect(
+    val title: String,
+    val message: String
+  ): StartTierChangeState
 }
 
 internal sealed interface StartTierChangeEvent {
