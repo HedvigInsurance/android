@@ -47,6 +47,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -310,6 +311,8 @@ private fun ContractDetailScreen(
                       onInfoIconClick = {
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },
+                      isDecommissioned = contract.productVariant.contractType
+                        == ContractType.SE_CAR_DECOMMISSIONED
                     )
                   }
 
