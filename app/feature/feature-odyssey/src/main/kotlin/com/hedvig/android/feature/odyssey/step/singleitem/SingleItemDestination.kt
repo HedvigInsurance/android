@@ -290,8 +290,10 @@ private fun SelectDialogWithFreeTextField(
     },
     selectedOption = uiState.selectedItemModel?.asKnown()?.itemModelId?.let { RadioOptionId(it) },
     onRadioOptionSelected = { optionId ->
-      val model = uiState.availableItemModels.first { it.asKnown()?.itemModelId == optionId.id }
-      selectModel(model)
+      val model = uiState.availableItemModels.firstOrNull { (it.asKnown()?.itemModelId ?: "id") == optionId.id }
+      model?.let {
+        selectModel(it)
+      }
     },
     onDismissRequest = onDismissRequest,
   )
