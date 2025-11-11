@@ -155,19 +155,27 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
 
     AndroidView(
       factory = { ctx ->
-        PlayerView(ctx).apply {
-          player = exoPlayer
-          useController = false
-          resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-          layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-          )
+        try {
+          PlayerView(ctx).apply {
+            player = exoPlayer
+            useController = false
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            layoutParams = FrameLayout.LayoutParams(
+              ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+          }
+        } catch (e: Exception) {
+          logcat { "Failed to create PlayerView: ${e.message} on ${Build.MODEL}" }
+          hasVideoError = true
+          android.view.View(ctx)
         }
       },
       modifier = Modifier.fillMaxSize(),
       update = { playerView ->
-        playerView.player = exoPlayer
+        if (playerView is PlayerView) {
+          playerView.player = exoPlayer
+        }
       },
     )
   }
