@@ -156,13 +156,18 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
     AndroidView(
       factory = { ctx ->
         PlayerView(ctx).apply {
-          player = exoPlayer
-          useController = false
-          resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-          layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-          )
+          try {
+            player = exoPlayer
+            useController = false
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            layoutParams = FrameLayout.LayoutParams(
+              ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+          } catch (e: Resources.NotFoundException) {
+            logcat { "Video resource not found: $videoResId on ${Build.MODEL}" }
+            hasVideoError = true
+          }
         }
       },
       modifier = Modifier.fillMaxSize(),
