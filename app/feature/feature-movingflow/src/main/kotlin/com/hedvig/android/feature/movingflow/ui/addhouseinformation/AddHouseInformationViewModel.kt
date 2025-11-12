@@ -55,14 +55,14 @@ internal class AddHouseInformationViewModel(
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
-  AddHouseInformationUiState.Loading,
-  AddHouseInformationPresenter(
-    savedStateHandle.toRoute<MovingFlowDestinations.AddHouseInformation>().moveIntentId,
-    movingFlowRepository,
-    apolloClient,
-    featureManager,
-  ),
-)
+    AddHouseInformationUiState.Loading,
+    AddHouseInformationPresenter(
+      savedStateHandle.toRoute<MovingFlowDestinations.AddHouseInformation>().moveIntentId,
+      movingFlowRepository,
+      apolloClient,
+      featureManager,
+    ),
+  )
 
 internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
@@ -234,7 +234,7 @@ internal sealed interface AddHouseInformationUiState {
     val addressInput: AddressInput,
     val isLoadingNextStep: Boolean,
     val submittingInfoFailure: SubmittingInfoFailure?,
-    val navigateToChoseCoverage: Boolean
+    val navigateToChoseCoverage: Boolean,
   ) : AddHouseInformationUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
       isLoadingNextStep == true ||

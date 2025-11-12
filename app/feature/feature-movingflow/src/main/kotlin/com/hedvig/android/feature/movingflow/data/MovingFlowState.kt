@@ -200,7 +200,7 @@ private fun MoveIntentFragment.ExtraBuildingTypesV2.toMoveExtraBuildingType():
   MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType {
   return MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType(
     type = this.type,
-    displayName = this.displayName
+    displayName = this.displayName,
   )
 }
 
