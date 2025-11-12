@@ -164,12 +164,21 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) { title ->
-        if (uiState.showEmptyQuotesDialog) {
+        if (uiState.showEmptyQuotesDialog!=null) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
             contentPadding = PaddingValues(0.dp),
           ) {
-            EmptyQuotesDialogContent(closeEmptyQuotesDialog)
+            EmptyQuotesDialogContent(
+              title = when (uiState.showEmptyQuotesDialog) {
+                DeflectType.EmptyQuotes -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
+                is DeflectType.Deflect -> uiState.showEmptyQuotesDialog.title
+              },
+              description = when (uiState.showEmptyQuotesDialog) {
+                DeflectType.EmptyQuotes -> null
+                is DeflectType.Deflect -> uiState.showEmptyQuotesDialog.message
+              },
+              closeEmptyQuotesDialog = closeEmptyQuotesDialog)
           }
         }
         FlowHeading(
@@ -356,14 +365,17 @@ private fun ColumnScope.SelectedSurveyTextDisplay(
 }
 
 @Composable
-private fun EmptyQuotesDialogContent(closeEmptyQuotesDialog: () -> Unit) {
+private fun EmptyQuotesDialogContent(
+  title: String,
+  description: String?,
+  closeEmptyQuotesDialog: () -> Unit) {
   Column {
     EmptyState(
-      text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+      text = title,
       iconStyle = INFO,
       buttonStyle = NoButton,
       modifier = Modifier.fillMaxWidth(),
-      description = null,
+      description = description,
     )
     HedvigTextButton(
       stringResource(R.string.general_close_button),
@@ -408,7 +420,11 @@ private fun PreviewTerminationSurveyScreen(
 private fun PreviewEmptyQuotesDialogContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      EmptyQuotesDialogContent({})
+      EmptyQuotesDialogContent(
+        "How to change back to your previous coverage",
+        "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
+          "Once that’s done, your insurance will be updated automatically.",
+        {})
     }
   }
 }

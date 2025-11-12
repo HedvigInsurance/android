@@ -105,7 +105,7 @@ private fun StartChangeTierFlowScreen(
 }
 
 @Composable
-private fun DeflectScreen(
+internal fun DeflectScreen(
   title: String,
   message: String,
   closeFlow: () -> Unit,

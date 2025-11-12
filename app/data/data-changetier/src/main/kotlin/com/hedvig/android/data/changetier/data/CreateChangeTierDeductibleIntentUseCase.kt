@@ -46,7 +46,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           ),
         )
         .safeExecute()
-      val intent = changeTierDeductibleResponse.fold(
+      val result = changeTierDeductibleResponse.fold(
         {
           logcat(ERROR, it) { "Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!" }
           raise(
@@ -54,17 +54,30 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           )
         },
         {
-          it.changeTierDeductibleCreateIntent.intent
+          it.changeTierDeductibleCreateIntent
         },
       )
+      val intent = result.intent
+      val deflectOutput = result.deflectOutput
+      if (deflectOutput!=null) {
+        val intentResult = ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = DeflectOutput(deflectOutput.title, deflectOutput.message)
+        )
+        logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
+        return@either intentResult
+      }
       if (intent == null) {
         logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
         raise(ErrorMessage("Tried to get changeTierQuotes but output intent is null!"))
       }
       if (intent.quotes.isEmpty()) {
         val intentResult = ChangeTierDeductibleIntent(
-          activationDate = intent.activationDate,
-          quotes = listOf(),
+          intentOutput = IntentOutput(
+            activationDate = intent.activationDate,
+            quotes = listOf()
+          ),
+          deflectOutput = null
         )
         logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
         return@either intentResult
@@ -91,11 +104,8 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           displayItems = displayItems.toDisplayItems(),
           addons = emptyList(),
           currentTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
-          // todo: check here. This whole thing is a fake "quote" with current conditions
           newTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
-          // todo: see above
           costBreakdown = emptyList(),
-          // todo: see above
         )
       }
       val quotesToOffer = intent.quotes.map {
@@ -130,8 +140,9 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         )
       }
       val intentResult = ChangeTierDeductibleIntent(
-        activationDate = intent.activationDate,
-        quotes = listOf(currentQuote) + quotesToOffer,
+        intentOutput = IntentOutput(activationDate = intent.activationDate,
+          quotes = listOf(currentQuote) + quotesToOffer,),
+        deflectOutput = null
       )
       logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
       intentResult

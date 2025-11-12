@@ -11,8 +11,19 @@ import kotlinx.serialization.Serializable
 import octopus.type.ChangeTierDeductibleSource
 
 data class ChangeTierDeductibleIntent(
+  val intentOutput: IntentOutput?,
+  val deflectOutput: DeflectOutput?
+)
+
+data class IntentOutput(
   val activationDate: LocalDate,
   val quotes: List<TierDeductibleQuote>,
+)
+
+@Serializable
+data class DeflectOutput(
+  val title: String,
+  val message: String
 )
 
 @Serializable

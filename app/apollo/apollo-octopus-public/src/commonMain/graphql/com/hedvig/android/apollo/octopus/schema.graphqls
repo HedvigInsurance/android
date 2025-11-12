@@ -198,19 +198,6 @@ input BrowserInfo {
   timeZoneOffset: Int!
   javaEnabled: Boolean!
 }
-"""
-Yearly savings from bundle discount
-"""
-type BundleYearlySavings {
-  """
-  Total yearly savings amount from bundle discount
-  """
-  amount: Money!
-  """
-  Whether the bundle discount covers the full period (true) or has pending/future items (false)
-  """
-  bundleDiscountCoversFullPeriod: Boolean!
-}
 type CampaignDiscount {
   """
   The type of discount, determines the relevancy of the other fields.
@@ -289,10 +276,6 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
-  """
-  Yearly savings from bundle discount
-  """
-  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -307,6 +290,10 @@ type CartCost {
   Price you will pay after discount.
   """
   net: Money!
+  """
+  Whether the cart has bundle discount.
+  """
+  hasBundleDiscount: Boolean!
 }
 type CartItem {
   """
@@ -381,6 +368,10 @@ type ChangeTierDeductibleCreateIntentOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Deflect output 
+  """
+  deflectOutput: ChangeTierDeflectOutput
 }
 type ChangeTierDeductibleDisplayItem {
   displayTitle: String!
@@ -482,6 +473,10 @@ enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
+}
+type ChangeTierDeflectOutput {
+  title: String!
+  message: String!
 }
 type ChangeTierPriceDetailItem {
   displayName: String!
@@ -635,6 +630,7 @@ Root type expressing the entire flow for members trying to report a new claim.
 type ClaimIntent {
   id: ID!
   currentStep: ClaimIntentStep!
+  sourceMessages: [ClaimIntentSourceMessage!]
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
@@ -643,6 +639,17 @@ input ClaimIntentFormSubmitInputField {
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
   userError: UserError
+}
+type ClaimIntentSourceMessage {
+  id: ID!
+  text: String!
+}
+input ClaimIntentStartInput {
+  """
+  Optionally inject a chat message ID to start the claim intent from. This will replace the audio recording
+  as the first step, using the chat history as the implicit first step.
+  """
+  sourceMessageId: ID
 }
 """
 Represents a single step in the claim submission flow.
@@ -657,7 +664,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -735,6 +742,13 @@ This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
 """
+A step that shows the outcome of a claim intent.
+This is a terminal step - there is no way to submit it.
+"""
+type ClaimIntentStepContentOutcome {
+  claimId: ID!
+}
+"""
 A read-only step where the entire claim intent information is displayed before submitting.
 Submitted using `Mutation.claimIntentSubmitSummary`.
 """
@@ -748,6 +762,8 @@ type ClaimIntentStepContentSummaryAudioRecording {
 }
 type ClaimIntentStepContentSummaryFileUpload {
   url: Url!
+  contentType: String!
+  fileName: String!
 }
 type ClaimIntentStepContentSummaryItem {
   title: String!
@@ -1893,6 +1909,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2044,6 +2062,7 @@ type MemberChargeBreakdownItem {
   displayTitle: String!
   displaySubtitle: String
   periods: [MemberChargeBreakdownItemPeriod!]!
+  insurancePriceBreakdown: [MemberChargePriceBreakdownItem!]!
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
@@ -2055,6 +2074,10 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
+}
+type MemberChargePriceBreakdownItem {
+  displayTitle: String!
+  amount: Money!
 }
 """
 The status of the charge
@@ -2137,6 +2160,7 @@ input MemberLogDeviceInput {
   os: String!
   brand: String!
   model: String!
+  pushNotificationEnabled: Boolean
 }
 """
 Container for mutations that refer to the currently authenticated member.
@@ -2398,7 +2422,7 @@ input MoveExtraBuildingInput {
   """
    Extra building type 
   """
-  type: MoveExtraBuildingType!
+  type: String!
   """
    If extra building has water connected 
   """
@@ -2419,6 +2443,10 @@ enum MoveExtraBuildingType {
   BARN
   BOATHOUSE
   OTHER
+}
+type MoveExtraBuildingTypeV2 {
+  type: String!
+  displayName: String!
 }
 type MoveHomeQuote {
   """
@@ -2507,7 +2535,11 @@ type MoveIntent {
   """
    All available external building types accepted for new address 
   """
-  extraBuildingTypes: [MoveExtraBuildingType!]!
+  extraBuildingTypes: [MoveExtraBuildingType!]! @deprecated(reason: "Use extraBuildingTypesV2")
+  """
+   All available external building types accepted for new address 
+  """
+  extraBuildingTypesV2: [MoveExtraBuildingTypeV2!]!
   """
    Number of co-insured from existing contract to use as default 
   """
@@ -2694,7 +2726,7 @@ type Mutation {
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
-  claimIntentStart: ClaimIntent!
+  claimIntentStart(input: ClaimIntentStartInput): ClaimIntent!
   """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
@@ -2856,7 +2888,6 @@ type Mutation {
   insurance the day after.
   """
   switcherCaseComplete(id: UUID!, currentExpiryDate: Date!): SwitcherCaseMutationOutput!
-  partnerWidgetInit(input: PartnerWidgetInitInput!): ShopSession! @deprecated(reason: "To be removed with old widget app")
   """
    Initiate a Move intent 
   """
@@ -2900,32 +2931,27 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date!
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
+}
 type PartnerData {
   sas: SasPartnerData
 }
-type PartnerWidgetData {
-  externalRequestId: String!
-  trialInfo: PartnerWidgetTrialInfo
-}
-input PartnerWidgetInitInput {
-  partnerId: UUID!
-  countryCode: CountryCode!
-  externalRequestId: String
-  externalMemberId: UUID
-}
 type PartnerWidgetTrial {
   trialContract: TrialContract!
-}
-type PartnerWidgetTrialInfo {
-  startDate: Date!
-  endDate: Date!
-  birthDate: Date!
-  insuranceData: JSON!
-  ssn: String
-  firstName: String
-  lastName: String
-  email: String
-  phoneNumber: String
 }
 scalar PaymentMethodDetails
 scalar PaymentMethodsResponse
@@ -3412,6 +3438,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
@@ -3610,7 +3637,6 @@ type ShopSession {
   Indicates when this shop session was signed successfully. Not set if signing attempts fail.
   """
   signedAt: DateTime!
-  partnerWidgetData: PartnerWidgetData @deprecated(reason: "To be removed with old widget web app. New implementation uses partnerWidgetTrial for trials and generic info everywhere else")
   partnerName: String
   """
   Trial-specific info for trial insurances supported in widget flows (no Car Trials, for example)

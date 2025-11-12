@@ -54,9 +54,9 @@ $addonsFlagOn: Boolean!) {
         }
       }
     }
-    deflectMessage {
+    deflectOutput {
       title
-      description
+      message
     }
   }
 }

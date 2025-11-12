@@ -69,6 +69,10 @@ fun NavGraphBuilder.changeTierGraph(
           }
         }
       },
+      popBackStack = {
+        navigator.popBackStack()
+      },
+      onNavigateToNewConversation = onNavigateToNewConversation
     )
   }
 

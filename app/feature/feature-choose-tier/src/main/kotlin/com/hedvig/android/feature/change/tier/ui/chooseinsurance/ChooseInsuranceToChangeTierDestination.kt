@@ -45,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.ui.stepstart.DeflectScreen
 import hedvig.resources.R
 
 @Composable
@@ -52,6 +53,8 @@ internal fun ChooseInsuranceToChangeTierDestination(
   viewModel: ChooseInsuranceViewModel,
   navigateUp: () -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  popBackStack: () -> Unit
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -65,6 +68,8 @@ internal fun ChooseInsuranceToChangeTierDestination(
       viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearNavigationStep)
       navigateToNextStep(params)
     },
+    onNavigateToNewConversation = onNavigateToNewConversation,
+    popBackStack = popBackStack
   )
 }
 
@@ -76,6 +81,8 @@ private fun ChooseInsuranceScreen(
   fetchTerminationStep: (insurance: CustomisableInsurance) -> Unit,
   selectInsurance: (insuranceId: String) -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  popBackStack: () -> Unit
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -201,6 +208,14 @@ private fun ChooseInsuranceScreen(
         Spacer(Modifier.height(16.dp))
       }
     }
+
+    is ChooseInsuranceUiState.Deflect -> DeflectScreen(
+      uiState.title,
+      uiState.message,
+      closeFlow = popBackStack,
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      navigateUp = navigateUp,
+    )
   }
 }
 
@@ -231,6 +246,8 @@ private fun PreviewChooseInsuranceScreen(
         {},
         {},
         {},
+        {},
+        {}
       )
     }
   }
@@ -283,5 +300,10 @@ private class ChooseInsuranceUiStateProvider :
       ChooseInsuranceUiState.Failure,
       ChooseInsuranceUiState.Loading(),
       ChooseInsuranceUiState.NotAllowed,
+      ChooseInsuranceUiState.Deflect(
+        "How to change back to your previous coverage",
+        "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
+          "Once that’s done, your insurance will be updated automatically."
+      )
     ),
   )
