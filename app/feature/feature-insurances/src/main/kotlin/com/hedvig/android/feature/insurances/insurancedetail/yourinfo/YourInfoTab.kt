@@ -22,7 +22,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
