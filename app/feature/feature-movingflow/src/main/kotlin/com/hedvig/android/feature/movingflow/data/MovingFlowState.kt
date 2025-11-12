@@ -3,29 +3,10 @@ package com.hedvig.android.feature.movingflow.data
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.AddressInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.ApartmentType
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
-import com.hedvig.android.logger.LogPriority.ERROR
-import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
-import octopus.type.MoveExtraBuildingType
-import octopus.type.MoveExtraBuildingType.ATTEFALL
-import octopus.type.MoveExtraBuildingType.BARN
-import octopus.type.MoveExtraBuildingType.BOATHOUSE
-import octopus.type.MoveExtraBuildingType.CARPORT
-import octopus.type.MoveExtraBuildingType.FRIGGEBOD
-import octopus.type.MoveExtraBuildingType.GARAGE
-import octopus.type.MoveExtraBuildingType.GAZEBO
-import octopus.type.MoveExtraBuildingType.GREENHOUSE
-import octopus.type.MoveExtraBuildingType.GUESTHOUSE
-import octopus.type.MoveExtraBuildingType.OTHER
-import octopus.type.MoveExtraBuildingType.OUTHOUSE
-import octopus.type.MoveExtraBuildingType.SAUNA
-import octopus.type.MoveExtraBuildingType.SHED
-import octopus.type.MoveExtraBuildingType.STOREHOUSE
-import octopus.type.MoveExtraBuildingType.UNKNOWN__
 
 @Serializable
 internal data class MovingFlowState(
@@ -124,22 +105,10 @@ internal data class MovingFlowState(
       val isSublet: Boolean,
     ) : PropertyState {
       @Serializable
-      enum class MoveExtraBuildingType {
-        Garage,
-        Carport,
-        Shed,
-        Storehouse,
-        Friggebod,
-        Attefall,
-        Outhouse,
-        Guesthouse,
-        Gazebo,
-        Greenhouse,
-        Sauna,
-        Barn,
-        Boathouse,
-        Other,
-      }
+      data class MoveExtraBuildingType(
+        val type: String,
+        val displayName: String,
+      )
 
       @Serializable
       data class ExtraBuildingTypesState(
@@ -149,7 +118,8 @@ internal data class MovingFlowState(
         @Serializable
         data class ExtraBuildingInfo(
           val area: Int,
-          val type: MoveExtraBuildingType,
+          val type: String,
+          val displayName: String,
           val hasWaterConnected: Boolean,
         )
       }
@@ -177,7 +147,7 @@ internal fun MovingFlowState.Companion.fromFragments(
         maxSquareMeters = maxHouseSquareMeters,
       ),
       extraBuildingTypesState = MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState(
-        allowedExtraBuildingTypes = extraBuildingTypes.map { it.toMoveExtraBuildingType() }.filterNotNull(),
+        allowedExtraBuildingTypes = extraBuildingTypesV2.map { it.toMoveExtraBuildingType() }.filterNotNull(),
         selectedExtraBuildingTypes = emptyList(),
       ),
       ancillaryArea = null,
@@ -226,27 +196,12 @@ internal fun MovingFlowState.Companion.fromFragments(
   )
 }
 
-private fun MoveExtraBuildingType.toMoveExtraBuildingType(): HouseState.MoveExtraBuildingType? {
-  return when (this) {
-    GARAGE -> HouseState.MoveExtraBuildingType.Garage
-    CARPORT -> HouseState.MoveExtraBuildingType.Carport
-    SHED -> HouseState.MoveExtraBuildingType.Shed
-    STOREHOUSE -> HouseState.MoveExtraBuildingType.Storehouse
-    FRIGGEBOD -> HouseState.MoveExtraBuildingType.Friggebod
-    ATTEFALL -> HouseState.MoveExtraBuildingType.Attefall
-    OUTHOUSE -> HouseState.MoveExtraBuildingType.Outhouse
-    GUESTHOUSE -> HouseState.MoveExtraBuildingType.Guesthouse
-    GAZEBO -> HouseState.MoveExtraBuildingType.Gazebo
-    GREENHOUSE -> HouseState.MoveExtraBuildingType.Greenhouse
-    SAUNA -> HouseState.MoveExtraBuildingType.Sauna
-    BARN -> HouseState.MoveExtraBuildingType.Barn
-    BOATHOUSE -> HouseState.MoveExtraBuildingType.Boathouse
-    OTHER -> HouseState.MoveExtraBuildingType.Other
-    UNKNOWN__ -> {
-      logcat(ERROR) { "Mapping unknown MoveExtraBuildingType:{$this} to MoveExtraBuildingType.Unknown" }
-      null
-    }
-  }
+private fun MoveIntentFragment.ExtraBuildingTypesV2.toMoveExtraBuildingType():
+  MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType {
+  return MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType(
+    type = this.type,
+    displayName = this.displayName
+  )
 }
 
 // Null guideline values should not be possible, so default to some high max value in order to make the UI not look
