@@ -12,6 +12,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATIO
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -160,7 +161,7 @@ internal class TerminationSurveyPresenter(
               currentState = currentState.copy(
                 errorWhileLoadingNextStep = false,
                 actionButtonLoading = false,
-                intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
+                intentAndIdToRedirectToChangeTierFlow = insuranceId to intent,
               )
               loadBetterQuotesSource = null
             }
@@ -243,7 +244,7 @@ internal data class TerminationSurveyState(
   val navigationStepLoading: Boolean,
   val errorWhileLoadingNextStep: Boolean,
   val showEmptyQuotesDialog: DeflectType? = null,
-  val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>?,
+  val intentAndIdToRedirectToChangeTierFlow: Pair<String, IntentOutput>?,
   val actionButtonLoading: Boolean,
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }

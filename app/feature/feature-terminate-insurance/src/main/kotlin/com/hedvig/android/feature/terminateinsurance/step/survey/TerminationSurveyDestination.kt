@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
@@ -72,7 +73,7 @@ internal fun TerminationSurveyDestination(
   openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
-  redirectToChangeTierFlow: (Pair<String, ChangeTierDeductibleIntent>) -> Unit,
+  redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState.intentAndIdToRedirectToChangeTierFlow) {
