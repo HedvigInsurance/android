@@ -3178,7 +3178,7 @@ type Product {
   """
   Bundle discount information for this product
   """
-  bundleDiscount: ProductOfferBundleDiscountInfo!
+  bundleDiscount: ProductOfferBundleDiscountInfo! @deprecated(reason: "Use ProductOffer.bundleDiscount instead")
   """
   A list of the external insurers valid for this specific product.
   """
@@ -3238,6 +3238,10 @@ type ProductOffer {
   """
   addons: [ProductOfferAddon!]!
   """
+  Bundle discount information for a particular offer
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   Values related to cancellation/switching of their existing other insurance.
   """
   cancellation: ExternalInsuranceCancellation!
@@ -3283,6 +3287,10 @@ type ProductOfferBundleDiscountInfo {
   Whether the product is eligible for bundle discount
   """
   isEligible: Boolean!
+  """
+  Potential yearly savings for an offer with bundle discount. 'null' if the offer is not eligible for bundle discount
+  """
+  potentialYearlySavings: Money
 }
 type ProductOfferCost {
   """
