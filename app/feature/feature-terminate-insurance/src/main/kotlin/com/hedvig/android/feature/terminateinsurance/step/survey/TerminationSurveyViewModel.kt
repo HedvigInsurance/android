@@ -122,7 +122,7 @@ internal class TerminationSurveyPresenter(
         },
         ifRight = { changeTierIntent ->
           val deflect = changeTierIntent.deflectOutput
-          if (deflect!=null) {
+          if (deflect != null) {
             Snapshot.withMutableSnapshot {
               val optionsToDisable = options.filter { option ->
                 option.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
@@ -132,16 +132,17 @@ internal class TerminationSurveyPresenter(
               currentState = currentState.copy(
                 actionButtonLoading = false,
                 errorWhileLoadingNextStep = false,
-                showEmptyQuotesDialog =  DeflectType.Deflect(
+                showEmptyQuotesDialog = DeflectType.Deflect(
                   deflect.title,
-                  deflect.message),
+                  deflect.message,
+                ),
                 selectedOptionId = null,
               )
               loadBetterQuotesSource = null
             }
           }
           val intent = changeTierIntent.intentOutput
-          if (intent!=null) {
+          if (intent != null) {
             if (intent.quotes.isEmpty()) {
               Snapshot.withMutableSnapshot {
                 val optionsToDisable = options.filter { option ->
@@ -152,7 +153,7 @@ internal class TerminationSurveyPresenter(
                 currentState = currentState.copy(
                   actionButtonLoading = false,
                   errorWhileLoadingNextStep = false,
-                  showEmptyQuotesDialog =  DeflectType.EmptyQuotes,
+                  showEmptyQuotesDialog = DeflectType.EmptyQuotes,
                   selectedOptionId = null,
                 )
                 loadBetterQuotesSource = null
@@ -166,7 +167,6 @@ internal class TerminationSurveyPresenter(
               loadBetterQuotesSource = null
             }
           }
-
         },
       )
     }
@@ -266,11 +266,12 @@ internal data class TerminationSurveyState(
 }
 
 internal sealed interface DeflectType {
-  data object EmptyQuotes: DeflectType
+  data object EmptyQuotes : DeflectType
+
   data class Deflect(
     val title: String,
-    val message: String
-  ): DeflectType
+    val message: String,
+  ) : DeflectType
 }
 
 internal sealed interface SurveyNavigationStep {

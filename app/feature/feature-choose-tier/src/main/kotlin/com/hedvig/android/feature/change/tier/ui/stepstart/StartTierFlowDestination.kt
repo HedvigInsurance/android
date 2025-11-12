@@ -61,7 +61,7 @@ internal fun StartChangeTierFlowDestination(
     },
     launchFlow = launchFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
-    navigateUp = navigateUp
+    navigateUp = navigateUp,
   )
 }
 
@@ -111,11 +111,12 @@ internal fun DeflectScreen(
   closeFlow: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    modifier = modifier) {
+    modifier = modifier,
+  ) {
     FlowHeading(
       title = title,
       description = null,
@@ -209,7 +210,7 @@ private fun StartTierFlowScreenPreview(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -231,7 +232,7 @@ internal class StartTierChangeStateProvider :
       StartTierChangeState.Deflect(
         "How to change back to your previous coverage",
         "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
-          "Once that’s done, your insurance will be updated automatically."
-      )
+          "Once that’s done, your insurance will be updated automatically.",
+      ),
     ),
   )

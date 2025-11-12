@@ -54,7 +54,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
   navigateUp: () -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  popBackStack: () -> Unit
+  popBackStack: () -> Unit,
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -69,7 +69,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
       navigateToNextStep(params)
     },
     onNavigateToNewConversation = onNavigateToNewConversation,
-    popBackStack = popBackStack
+    popBackStack = popBackStack,
   )
 }
 
@@ -82,7 +82,7 @@ private fun ChooseInsuranceScreen(
   selectInsurance: (insuranceId: String) -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  popBackStack: () -> Unit
+  popBackStack: () -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -247,7 +247,7 @@ private fun PreviewChooseInsuranceScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -303,7 +303,7 @@ private class ChooseInsuranceUiStateProvider :
       ChooseInsuranceUiState.Deflect(
         "How to change back to your previous coverage",
         "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
-          "Once that’s done, your insurance will be updated automatically."
-      )
+          "Once that’s done, your insurance will be updated automatically.",
+      ),
     ),
   )

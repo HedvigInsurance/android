@@ -53,15 +53,15 @@ internal class StartTierChangePresenter(
         },
         ifRight = { result ->
           val deflect = result.deflectOutput
-          if (deflect!=null) {
+          if (deflect != null) {
             currentState = StartTierChangeState.Deflect(
               title = deflect.title,
-              message = deflect.message
+              message = deflect.message,
             )
             return@LaunchedEffect
           }
           val intent = result.intentOutput
-          if (intent!=null) {
+          if (intent != null) {
             if (intent.quotes.isEmpty()) {
               currentState = Failure(QUOTES_ARE_EMPTY)
             } else {
@@ -97,8 +97,8 @@ internal sealed interface StartTierChangeState {
 
   data class Deflect(
     val title: String,
-    val message: String
-  ): StartTierChangeState
+    val message: String,
+  ) : StartTierChangeState
 }
 
 internal sealed interface StartTierChangeEvent {

@@ -95,15 +95,15 @@ internal class ChooseInsurancePresenter(
           },
           ifRight = { intentResult ->
             val deflect = intentResult.deflectOutput
-            if (deflect!=null) {
+            if (deflect != null) {
               currentState = ChooseInsuranceUiState.Deflect(
                 title = deflect.title,
-                message = deflect.message
+                message = deflect.message,
               )
               return@LaunchedEffect
             }
             val intent = intentResult.intentOutput
-            if (intent!=null) {
+            if (intent != null) {
               if (intent.quotes.isEmpty()) {
                 currentState = NotAllowed
               } else {
@@ -169,7 +169,7 @@ internal sealed interface ChooseInsuranceUiState {
 
   data class Deflect(
     val title: String,
-    val message: String
+    val message: String,
   ) : ChooseInsuranceUiState
 }
 

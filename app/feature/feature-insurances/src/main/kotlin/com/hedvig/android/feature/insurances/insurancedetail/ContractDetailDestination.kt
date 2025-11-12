@@ -81,6 +81,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -196,6 +197,7 @@ private fun ContractDetailScreen(
 
         is ContractDetailsUiState.Success -> {
           val contract = state.insuranceContract
+          logcat { "Mariia: tierName: ${contract.tierName} contractType: ${contract.productVariant.contractType}" }
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
@@ -312,7 +314,7 @@ private fun ContractDetailScreen(
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },
                       isDecommissioned = contract.productVariant.contractType
-                        == ContractType.SE_CAR_DECOMMISSIONED
+                        == ContractType.SE_CAR_DECOMMISSIONED,
                     )
                   }
 

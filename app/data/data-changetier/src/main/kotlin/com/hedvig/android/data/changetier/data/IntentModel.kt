@@ -12,7 +12,7 @@ import octopus.type.ChangeTierDeductibleSource
 
 data class ChangeTierDeductibleIntent(
   val intentOutput: IntentOutput?,
-  val deflectOutput: DeflectOutput?
+  val deflectOutput: DeflectOutput?,
 )
 
 data class IntentOutput(
@@ -23,7 +23,7 @@ data class IntentOutput(
 @Serializable
 data class DeflectOutput(
   val title: String,
-  val message: String
+  val message: String,
 )
 
 @Serializable

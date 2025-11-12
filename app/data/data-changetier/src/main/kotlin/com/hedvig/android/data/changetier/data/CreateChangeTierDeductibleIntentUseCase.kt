@@ -59,10 +59,10 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
       )
       val intent = result.intent
       val deflectOutput = result.deflectOutput
-      if (deflectOutput!=null) {
+      if (deflectOutput != null) {
         val intentResult = ChangeTierDeductibleIntent(
           intentOutput = null,
-          deflectOutput = DeflectOutput(deflectOutput.title, deflectOutput.message)
+          deflectOutput = DeflectOutput(deflectOutput.title, deflectOutput.message),
         )
         logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
         return@either intentResult
@@ -75,9 +75,9 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         val intentResult = ChangeTierDeductibleIntent(
           intentOutput = IntentOutput(
             activationDate = intent.activationDate,
-            quotes = listOf()
+            quotes = listOf(),
           ),
-          deflectOutput = null
+          deflectOutput = null,
         )
         logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
         return@either intentResult
@@ -140,9 +140,11 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         )
       }
       val intentResult = ChangeTierDeductibleIntent(
-        intentOutput = IntentOutput(activationDate = intent.activationDate,
-          quotes = listOf(currentQuote) + quotesToOffer,),
-        deflectOutput = null
+        intentOutput = IntentOutput(
+          activationDate = intent.activationDate,
+          quotes = listOf(currentQuote) + quotesToOffer,
+        ),
+        deflectOutput = null,
       )
       logcat(LogPriority.VERBOSE) { "createChangeTierDeductibleIntentUseCase has intent: $intentResult" }
       intentResult

@@ -215,7 +215,7 @@ internal fun YourInfoTab(
       HedvigNotificationCard(
         modifier = Modifier.padding(horizontal = 16.dp),
         message = stringResource(R.string.INSURANCE_DETAILS_DECOMMISSION_INFO),
-        priority = Info
+        priority = Info,
       )
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))

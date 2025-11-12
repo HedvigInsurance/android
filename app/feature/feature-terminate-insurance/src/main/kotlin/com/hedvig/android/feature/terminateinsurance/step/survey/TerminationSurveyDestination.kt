@@ -165,7 +165,7 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) { title ->
-        if (uiState.showEmptyQuotesDialog!=null) {
+        if (uiState.showEmptyQuotesDialog != null) {
           HedvigDialog(
             onDismissRequest = closeEmptyQuotesDialog,
             contentPadding = PaddingValues(0.dp),
@@ -179,7 +179,8 @@ private fun TerminationSurveyScreen(
                 DeflectType.EmptyQuotes -> null
                 is DeflectType.Deflect -> uiState.showEmptyQuotesDialog.message
               },
-              closeEmptyQuotesDialog = closeEmptyQuotesDialog)
+              closeEmptyQuotesDialog = closeEmptyQuotesDialog,
+            )
           }
         }
         FlowHeading(
@@ -366,10 +367,7 @@ private fun ColumnScope.SelectedSurveyTextDisplay(
 }
 
 @Composable
-private fun EmptyQuotesDialogContent(
-  title: String,
-  description: String?,
-  closeEmptyQuotesDialog: () -> Unit) {
+private fun EmptyQuotesDialogContent(title: String, description: String?, closeEmptyQuotesDialog: () -> Unit) {
   Column {
     EmptyState(
       text = title,
@@ -425,7 +423,8 @@ private fun PreviewEmptyQuotesDialogContent() {
         "How to change back to your previous coverage",
         "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
           "Once that’s done, your insurance will be updated automatically.",
-        {})
+        {},
+      )
     }
   }
 }
