@@ -1,4 +1,3 @@
-
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import androidx.compose.animation.AnimatedContent
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,7 +62,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -81,7 +78,6 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -160,22 +156,25 @@ private fun ContractDetailScreen(
         ContractDetailsUiState.Error -> {
           HedvigErrorSection(
             onButtonClick = retry,
-            modifier = Modifier.fillMaxSize().windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                ),
           )
         }
+
         ContractDetailsUiState.Loading -> {
           Column(
             Modifier
-              .fillMaxSize()
-              .padding(
-                WindowInsets
-                  .safeDrawing
-                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                  .asPaddingValues()
-                  .plus(PaddingValues(top = 16.dp)),
-              ),
+                .fillMaxSize()
+                .padding(
+                    WindowInsets
+                        .safeDrawing
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                        .asPaddingValues()
+                        .plus(PaddingValues(top = 16.dp)),
+                ),
           ) {
             InsuranceCardPlaceholder(
               imageLoader = imageLoader,
@@ -189,15 +188,16 @@ private fun ContractDetailScreen(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
             buttonText = stringResource(R.string.general_back_button),
             onButtonClick = navigateBack,
-            modifier = Modifier.fillMaxSize().windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                ),
           )
         }
 
         is ContractDetailsUiState.Success -> {
           val contract = state.insuranceContract
-          logcat { "Mariia: tierName: ${contract.tierName} contractType: ${contract.productVariant.contractType}" }
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
@@ -207,8 +207,8 @@ private fun ContractDetailScreen(
               .asPaddingValues()
               .plus(PaddingValues(top = 16.dp)),
             modifier = Modifier
-              .fillMaxSize()
-              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
+                .fillMaxSize()
+                .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           ) {
             item(
               key = 1,
@@ -230,8 +230,8 @@ private fun ContractDetailScreen(
                 PagerSelector(
                   pagerState = pagerState,
                   modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
+                      .padding(horizontal = 16.dp)
+                      .padding(bottom = 8.dp),
                 )
               }
             }
@@ -248,8 +248,8 @@ private fun ContractDetailScreen(
                 ),
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
-                  .padding(top = 8.dp)
-                  .animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
+                    .padding(top = 8.dp)
+                    .animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
@@ -265,9 +265,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                                addon.premium.toString(),
-                              ),
+                              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                              addon.premium.toString(),
+                            ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->
