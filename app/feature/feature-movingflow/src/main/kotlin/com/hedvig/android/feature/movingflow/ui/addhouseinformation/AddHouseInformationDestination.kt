@@ -53,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.Error.WithMessage
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.NoError
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
@@ -81,20 +82,6 @@ import com.hedvig.android.feature.movingflow.compose.NoopValidator
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState.ExtraBuildingInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Attefall
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Barn
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Boathouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Carport
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Friggebod
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Garage
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Gazebo
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Greenhouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Guesthouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Other
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Outhouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Sauna
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Shed
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Storehouse
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.NavigatedToChoseCoverage
@@ -252,6 +239,7 @@ private fun AddHouseInformationScreen(
         ExtraBuildingsCard(
           extraBuildings = content.addressInput.extraBuildings,
           shouldDisableInput = content.shouldDisableInput,
+          allowedExtraBuildings = content.addressInput.possibleExtraBuildingTypes,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -270,6 +258,7 @@ private fun AddHouseInformationScreen(
 
 @Composable
 private fun ExtraBuildingsCard(
+  allowedExtraBuildings: List<MoveExtraBuildingType>,
   extraBuildings: ListInput<ExtraBuildingInfo>,
   shouldDisableInput: Boolean,
   modifier: Modifier = Modifier,
@@ -286,6 +275,7 @@ private fun ExtraBuildingsCard(
         extraBuildings = extraBuildings,
         dismissDialog = { extraBuildingsDialogOpen = false },
         modifier = Modifier.padding(horizontal = 16.dp),
+        allowedExtraBuildings = allowedExtraBuildings,
       )
     }
   }
@@ -315,7 +305,7 @@ private fun ExtraBuildingsCard(
             key(extraBuilding) {
               Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                  HedvigText(extraBuilding.type.string())
+                  HedvigText(extraBuilding.displayName)
                   HedvigText(
                     buildString {
                       append(extraBuilding.area)
@@ -359,6 +349,7 @@ private fun ExtraBuildingsCard(
 
 @Composable
 private fun ExtraBuildingsDialogContent(
+  allowedExtraBuildings: List<MoveExtraBuildingType>,
   extraBuildings: ListInput<ExtraBuildingInfo>,
   dismissDialog: () -> Unit,
   modifier: Modifier = Modifier,
@@ -366,6 +357,7 @@ private fun ExtraBuildingsDialogContent(
   var chosenBuilding: MoveExtraBuildingType? by remember { mutableStateOf(null) }
   var size: Int? by remember { mutableStateOf(null) }
   var isConnectedToWater: Boolean by remember { mutableStateOf(false) }
+  var isSizeMissing by remember { mutableStateOf(false) }
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -384,14 +376,21 @@ private fun ExtraBuildingsDialogContent(
       ) {
         HedvigCard {
           RadioGroup(
-            options = MoveExtraBuildingType.entries.map { extraBuildingType ->
+            options = allowedExtraBuildings.map { extraBuildingType ->
               RadioOption(
-                RadioOptionId(extraBuildingType.name),
+                RadioOptionId(extraBuildingType.type),
                 extraBuildingType.string(),
               )
             },
-            selectedOption = chosenBuilding?.name?.let { RadioOptionId(it) },
-            onRadioOptionSelected = { chosenBuilding = MoveExtraBuildingType.valueOf(it.id) },
+            selectedOption = chosenBuilding?.type?.let { RadioOptionId(it) },
+            onRadioOptionSelected = {
+              val buildingByType = allowedExtraBuildings.firstOrNull { allowedBuilding ->
+                allowedBuilding.type == it.id
+              }
+              buildingByType?.let { notNullResult ->
+                chosenBuilding = notNullResult
+              }
+            },
             style = RadioGroupStyle.Labeled.VerticalWithDivider(
               stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
             ),
@@ -399,10 +398,14 @@ private fun ExtraBuildingsDialogContent(
         }
         HedvigTextField(
           text = size?.toString() ?: "",
-          onValueChange = { size = it.toIntOrNull() },
+          onValueChange = {
+            isSizeMissing = false
+            size = it.toIntOrNull()
+          },
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           labelText = stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL),
           textFieldSize = TextFieldSize.Medium,
+          errorState = if (isSizeMissing) HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage else NoError,
         )
         HedvigToggle(
           labelText = stringResource(R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
@@ -416,12 +419,19 @@ private fun ExtraBuildingsDialogContent(
       HedvigButton(
         text = stringResource(R.string.general_save_button),
         onClick = {
+          if (size == null) {
+            isSizeMissing = true
+          }
           val area = size ?: return@HedvigButton
-          val type = chosenBuilding ?: return@HedvigButton
-          extraBuildings.updateValue(extraBuildings.value + ExtraBuildingInfo(area, type, isConnectedToWater))
+          val type = chosenBuilding?.type ?: return@HedvigButton
+          val displayName = chosenBuilding?.displayName ?: return@HedvigButton
+          extraBuildings.updateValue(
+            extraBuildings.value +
+              ExtraBuildingInfo(area, type, displayName, isConnectedToWater),
+          )
           dismissDialog()
         },
-        enabled = chosenBuilding != null && size != null,
+        enabled = chosenBuilding != null,
         buttonSize = ButtonSize.Large,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -440,24 +450,7 @@ private fun ExtraBuildingsDialogContent(
 
 @Composable
 private fun MoveExtraBuildingType.string(): String {
-  return stringResource(
-    when (this) {
-      Garage -> R.string.FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL
-      Carport -> R.string.FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL
-      Shed -> R.string.FIELD_EXTRA_BUIDLINGS_SHED_LABEL
-      Storehouse -> R.string.FIELD_EXTRA_BUIDLINGS_STOREHOUSE_LABEL
-      Friggebod -> R.string.FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL
-      Attefall -> R.string.FIELD_EXTRA_BUIDLINGS_ATTEFALL_LABEL
-      Outhouse -> R.string.FIELD_EXTRA_BUIDLINGS_OUTHOUSE_LABEL
-      Guesthouse -> R.string.FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL
-      Gazebo -> R.string.FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL
-      Greenhouse -> R.string.FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL
-      Sauna -> R.string.FIELD_EXTRA_BUIDLINGS_SAUNA_LABEL
-      Barn -> R.string.FIELD_EXTRA_BUIDLINGS_BARN_LABEL
-      Boathouse -> R.string.FIELD_EXTRA_BUIDLINGS_BOATHOUSE_LABEL
-      Other -> R.string.FIELD_EXTRA_BUIDLINGS_OTHER_LABEL
-    },
-  )
+  return this.displayName
 }
 
 @Composable
@@ -485,7 +478,7 @@ private fun PreviewAddHouseInformationScreen() {
             possibleExtraBuildingTypes = emptyList(),
             extraBuildings = ListInput(
               List(3) {
-                ExtraBuildingInfo(it * 10, Barn, it % 2 == 0)
+                ExtraBuildingInfo(it * 10, "Barn", "Barn", it % 2 == 0)
               },
             ),
           ),
@@ -526,7 +519,8 @@ private fun PreviewExtraBuildingsDialogContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ExtraBuildingsDialogContent(
-        ListInput(List(3) { ExtraBuildingInfo(it * 10, Barn, it % 2 == 0) }),
+        listOf(MoveExtraBuildingType("BarnType", "BarnBarn")),
+        ListInput(List(3) { ExtraBuildingInfo(it * 10, "Barn", "Barn", it % 2 == 0) }),
         {},
       )
     }
