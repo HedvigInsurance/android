@@ -129,7 +129,7 @@ private fun MemberChargeDetailsScreen(
               periods = chargeBreakdown.periods,
               isExpanded = selectedCharge == chargeBreakdown,
               onClick = { onCardClick(chargeBreakdown) },
-              discounts = chargeBreakdown.discounts,
+              chargeBreakdown = chargeBreakdown.priceBreakdown,
             )
             Spacer(modifier = Modifier.height(8.dp))
           }

@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDat
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.ripple
+import com.hedvig.android.feature.payments.chargeBreakdownPreviewData
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.BetweenDays
@@ -62,7 +63,7 @@ internal fun PaymentDetailExpandableCard(
   totalGrossAmount: String,
   totalNetAmount: String,
   periods: List<MemberCharge.ChargeBreakdown.Period>,
-  discounts: List<Discount>,
+  chargeBreakdown: List<Pair<String,UiMoney>>,
   isExpanded: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -185,14 +186,22 @@ internal fun PaymentDetailExpandableCard(
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
           }
-          discounts.forEach { discount ->
-            Spacer(Modifier.height(16.dp))
-            DiscountRow(
-              discount,
-              labelColor = HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.MEDIUM),
+          chargeBreakdown.forEach { item ->
+            HorizontalItemsWithMaximumSpaceTaken(
+              startSlot = {
+                HedvigText(item.first, style = HedvigTheme.typography.label,
+                  color = HedvigTheme.colorScheme.textSecondary)
+              },
+              endSlot = {
+                HedvigText(
+                  item.second.toString(),
+                  style = HedvigTheme.typography.label,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  textAlign = TextAlign.End)
+              },
+              spaceBetween = 8.dp,
+              modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider()
           }
           Spacer(Modifier.height(16.dp))
           Row {
@@ -292,7 +301,7 @@ private fun PaymentDetailExpandableCardPreview(
         ),
         isExpanded = isExpanded,
         onClick = {},
-        discounts = discountsPreviewData,
+        chargeBreakdown =chargeBreakdownPreviewData,
       )
     }
   }

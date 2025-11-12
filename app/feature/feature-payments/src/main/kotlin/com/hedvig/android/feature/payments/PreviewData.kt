@@ -81,6 +81,13 @@ internal val discountsPreviewData = listOf(
   ),
 )
 
+internal val chargeBreakdownPreviewData = listOf(
+  "Insurance" to UiMoney(100.0, UiCurrencyCode.SEK),
+  "Addon" to UiMoney(50.0, UiCurrencyCode.SEK),
+  "Discount" to UiMoney(30.0, UiCurrencyCode.SEK),
+
+  )
+
 internal val chargeHistoryPreviewData = listOf(
   MemberCharge(
     grossAmount = UiMoney(130.0, UiCurrencyCode.SEK),
@@ -99,7 +106,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(400.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(300.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
@@ -107,7 +114,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(300.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(280.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -131,7 +138,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
@@ -139,7 +146,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -163,7 +170,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
@@ -171,7 +178,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -195,7 +202,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
@@ -203,7 +210,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -227,7 +234,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Hemforsakring Bostad",
@@ -235,7 +242,7 @@ internal val chargeHistoryPreviewData = listOf(
         grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
         netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
         periods = periodsPreviewData,
-        discounts = discountsPreviewData,
+        priceBreakdown = chargeBreakdownPreviewData,
       ),
     ),
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -283,7 +290,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
       grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
       netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
       periods = periodsPreviewData,
-      discounts = discountsPreviewData,
+      priceBreakdown = chargeBreakdownPreviewData,
     ),
     MemberCharge.ChargeBreakdown(
       contractDisplayName = "Hemforsakring Bostad",
@@ -291,7 +298,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
       grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
       netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
       periods = periodsPreviewData,
-      discounts = discountsPreviewData,
+      priceBreakdown = chargeBreakdownPreviewData,
     ),
   ),
   referralDiscount = referralDiscountPreviewData,
