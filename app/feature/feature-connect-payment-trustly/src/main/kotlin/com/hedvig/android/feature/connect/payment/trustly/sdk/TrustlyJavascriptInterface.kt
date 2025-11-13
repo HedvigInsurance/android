@@ -15,6 +15,7 @@ class TrustlyJavascriptInterface(
   @JavascriptInterface
   fun handleTrustlyEvent(typeLabel: String?, url: String?, packageName: String?) {
     val eventType = TrustlyEventType.valueForEventTypeLabel(typeLabel)
+    logcat { "Trustly Webview handleTrustlyEvent:$typeLabel | $url" }
     when (eventType) {
       TrustlyEventType.SUCCESS -> webViewHandler.successHandler?.onTrustlyCheckoutSuccess()
       TrustlyEventType.ABORT -> webViewHandler.abortHandler?.onTrustlyCheckoutAbort()
