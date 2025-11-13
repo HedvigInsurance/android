@@ -269,9 +269,11 @@ private fun HomeScreen(
       TopAppBarLayoutForActions {
         val currentState = uiState as? HomeUiState.Success
         if (currentState != null) {
-          ToolbarClaimChatIcon(
-            onClick = navigateToClaimChat,
-          )
+          if (currentState.isExperimentalClaimChatEnabled) {
+            ToolbarClaimChatIcon(
+              onClick = navigateToClaimChat,
+            )
+          }
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)

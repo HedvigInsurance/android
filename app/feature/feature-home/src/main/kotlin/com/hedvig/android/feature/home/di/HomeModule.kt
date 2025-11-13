@@ -49,6 +49,7 @@ val homeModule = module {
       get<SeenImportantMessagesStorage>(),
       get<CrossSellHomeNotificationServiceProvider>(),
       get<ApplicationScope>(),
+      get<FeatureManager>(),
     )
   }
 }

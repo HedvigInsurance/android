@@ -17,6 +17,8 @@ import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -35,6 +37,7 @@ internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
+  private val featureManager: FeatureManager,
   private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -46,6 +49,9 @@ internal class HomePresenter(
     var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
+    val isExperimentalClaimChatEnabled by remember(featureManager) {
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_CHAT)
+    }.collectAsState(false)
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -134,6 +140,7 @@ internal class HomePresenter(
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
           travelAddonBannerInfo = successData.travelAddonBannerInfo,
+          isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
         )
       }
     }
@@ -170,6 +177,7 @@ internal sealed interface HomeUiState {
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val isExperimentalClaimChatEnabled: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
