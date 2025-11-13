@@ -1,16 +1,16 @@
 package com.hedvig.android.feature.connect.payment.trustly.sdk
 
 import android.os.Message
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
 import android.webkit.WebViewClient
 import androidx.browser.customtabs.CustomTabsIntent
+import com.hedvig.android.composewebview.AccompanistWebChromeClient
 import java.lang.ref.WeakReference
 
 
-class TrustlyWebChromeClient : WebChromeClient() {
+class TrustlyWebChromeClient : AccompanistWebChromeClient() {
   override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
     val context = view?.context ?: return false
     val tabView = WeakReference(WebView(context))
