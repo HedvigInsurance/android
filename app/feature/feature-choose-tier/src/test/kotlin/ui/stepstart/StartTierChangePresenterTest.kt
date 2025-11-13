@@ -9,6 +9,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangePresenter
@@ -38,8 +39,10 @@ class StartTierChangePresenterTest {
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          activationDate = LocalDate(2024, 11, 11),
-          quotes = emptyList(),
+          IntentOutput(
+            activationDate = LocalDate(2024, 11, 11),
+            quotes = emptyList()
+          ), null,
         ).right(),
       )
       skipItems(1)
@@ -77,8 +80,11 @@ class StartTierChangePresenterTest {
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          activationDate = LocalDate(2024, 11, 11),
-          quotes = listOf(testQuote, testQuote2),
+          IntentOutput(
+            activationDate = LocalDate(2024, 11, 11),
+            quotes = listOf(testQuote, testQuote2),
+          ),
+          null
         ).right(),
       )
       skipItems(1)

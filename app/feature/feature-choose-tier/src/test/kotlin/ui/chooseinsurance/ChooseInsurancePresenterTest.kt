@@ -15,6 +15,7 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
@@ -95,8 +96,11 @@ class ChooseInsurancePresenterTest {
         )
         tierRepo.changeTierIntentTurbine.add(
           ChangeTierDeductibleIntent(
-            LocalDate(2024, 11, 15),
-            listOf(testQuote),
+            IntentOutput(
+              LocalDate(2024, 11, 15),
+              listOf(testQuote)
+            ),
+            null,
           ).right(),
         )
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
@@ -130,7 +134,9 @@ class ChooseInsurancePresenterTest {
             ).right(),
           ),
         )
-        tierRepo.changeTierIntentTurbine.add(ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf()).right())
+        tierRepo.changeTierIntentTurbine.add(ChangeTierDeductibleIntent(
+          IntentOutput(LocalDate(2024, 11, 15),
+            listOf()), null).right())
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.NotAllowed::class)
       }
     }
@@ -243,8 +249,9 @@ class ChooseInsurancePresenterTest {
       skipItems(3)
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          LocalDate(2024, 11, 15),
-          listOf(testQuote),
+          IntentOutput(LocalDate(2024, 11, 15),
+          listOf(testQuote)),
+          null
         ).right(),
       )
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
