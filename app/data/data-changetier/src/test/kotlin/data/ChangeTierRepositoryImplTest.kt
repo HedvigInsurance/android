@@ -21,6 +21,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierQuoteStorage
 import com.hedvig.android.data.changetier.data.ChangeTierRepositoryImpl
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCase
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepositoryImpl
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
@@ -119,9 +120,11 @@ class ChangeTierRepositoryImplTest {
     assertThat(previousState).isNotNull()
     useCase.intentTurbine.add(
       ChangeTierDeductibleIntent(
-        LocalDate(2024, 11, 11),
-        listOf(testQuote),
-      ).right(),
+        deflectOutput = null,
+        intentOutput = IntentOutput(
+          LocalDate(2024, 11, 11),
+          listOf(testQuote),
+        )).right(),
     )
     repository.startChangeTierIntentAndGetQuotesId(testId, SELF_SERVICE)
     val result = storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }
