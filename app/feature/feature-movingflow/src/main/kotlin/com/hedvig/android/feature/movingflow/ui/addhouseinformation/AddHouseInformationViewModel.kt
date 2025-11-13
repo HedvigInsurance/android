@@ -27,20 +27,6 @@ import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState.ExtraBuildingInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Attefall
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Barn
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Boathouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Carport
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Friggebod
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Garage
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Gazebo
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Greenhouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Guesthouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Other
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Outhouse
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Sauna
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Shed
-import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType.Storehouse
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.NavigatedToChoseCoverage
@@ -59,20 +45,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
-import octopus.type.MoveExtraBuildingType.ATTEFALL
-import octopus.type.MoveExtraBuildingType.BARN
-import octopus.type.MoveExtraBuildingType.BOATHOUSE
-import octopus.type.MoveExtraBuildingType.CARPORT
-import octopus.type.MoveExtraBuildingType.FRIGGEBOD
-import octopus.type.MoveExtraBuildingType.GARAGE
-import octopus.type.MoveExtraBuildingType.GAZEBO
-import octopus.type.MoveExtraBuildingType.GREENHOUSE
-import octopus.type.MoveExtraBuildingType.GUESTHOUSE
-import octopus.type.MoveExtraBuildingType.OTHER
-import octopus.type.MoveExtraBuildingType.OUTHOUSE
-import octopus.type.MoveExtraBuildingType.SAUNA
-import octopus.type.MoveExtraBuildingType.SHED
-import octopus.type.MoveExtraBuildingType.STOREHOUSE
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToHouseInput
@@ -234,22 +206,7 @@ private fun MovingFlowState.toInputForSubmission(validContent: ValidAddressInput
             MoveExtraBuildingInput(
               area = extraBuildingInfo.area,
               hasWaterConnected = extraBuildingInfo.hasWaterConnected,
-              type = when (extraBuildingInfo.type) {
-                Garage -> GARAGE
-                Carport -> CARPORT
-                Shed -> SHED
-                Storehouse -> STOREHOUSE
-                Friggebod -> FRIGGEBOD
-                Attefall -> ATTEFALL
-                Outhouse -> OUTHOUSE
-                Guesthouse -> GUESTHOUSE
-                Gazebo -> GAZEBO
-                Greenhouse -> GREENHOUSE
-                Sauna -> SAUNA
-                Barn -> BARN
-                Boathouse -> BOATHOUSE
-                Other -> OTHER
-              },
+              type = extraBuildingInfo.type,
             )
           },
         ),

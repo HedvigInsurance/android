@@ -198,7 +198,7 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
   maxApartmentNumberCoInsured = null,
   maxApartmentSquareMeters = null,
   isApartmentAvailableforStudent = null,
-  extraBuildingTypes = listOf(),
+  extraBuildingTypesV2 = listOf(),
   currentHomeAddresses = listOf(
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
       id = "id1",
