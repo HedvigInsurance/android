@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.navigation
 
+import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
@@ -43,6 +44,12 @@ internal sealed interface HelpCenterDestinations {
       override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
     }
   }
+
+  @Serializable
+  data object PuppyGuide : HelpCenterDestinations, Destination
+
+  @Serializable
+  data class PuppyGuideArticle(val storyName: String) : HelpCenterDestinations, Destination
 }
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(

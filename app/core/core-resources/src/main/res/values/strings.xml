@@ -184,6 +184,7 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Use voice recording</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
+  <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
   <string name="CLAIM_TRIAGING_NAVIGATION_TITLE">What does your claim concern?</string>
   <string name="CLAIM_TRIAGING_TITLE">Tell us what happened</string>
@@ -399,6 +400,7 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
+  <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
@@ -525,6 +527,15 @@
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
+  <string name="PUPPY_GUIDE_GO_BUTTON">Go to guides</string>
+  <string name="PUPPY_GUIDE_INFO">In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.</string>
+  <string name="PUPPY_GUIDE_LABEL">Featured guides</string>
+  <string name="PUPPY_GUIDE_LABEL_READ">Read</string>
+  <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Not helpful</string>
+  <string name="PUPPY_GUIDE_RATING_QUESTION">Was this article helpful?</string>
+  <string name="PUPPY_GUIDE_RATING_VERY_HELPFUL">Very helpful</string>
+  <string name="PUPPY_GUIDE_SUBTITLE">Helpful guides for you and your puppy</string>
+  <string name="PUPPY_GUIDE_TITLE">Puppy Guide</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW">Not now</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_OK">Activate</string>
   <string name="REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION">More info</string>
@@ -824,6 +835,7 @@
   <string name="claim.status_bar.closed">Closed</string>
   <string name="claim_history.empty_state.body">Your past claims will appear here automatically once processed.</string>
   <string name="claim_history.empty_state.title">No claims in history</string>
+  <string name="claim_outcome_null">Your claim was closed.</string>
   <string name="claim_outcome_unresponsive_support_text">Your claim was closed as we didn’t hear back from you. Please see conversation for more details.</string>
   <string name="claim_status.being_handled.support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
   <string name="claim_status.being_handled_reopened.support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
@@ -853,6 +865,7 @@
   <string name="claim_status_detail.missing_receipt">Receipt missing</string>
   <string name="claim_status_detail.submitted">Submitted</string>
   <string name="claim_status_detail.uploaded_files_info_title">Uploaded files</string>
+  <string name="claim_status_detail_email">Contact the claims team</string>
   <string name="claims.alert.body">If you exit, you\'ll go back to the start page and your inputted data will be lost.</string>
   <string name="claims.continue.button">Continue</string>
   <string name="claims.edit.button">Edit</string>

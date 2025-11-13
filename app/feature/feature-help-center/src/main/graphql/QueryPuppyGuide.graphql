@@ -1,0 +1,14 @@
+query PuppyGuide {
+  currentMember {
+    puppyGuideStories {
+      categories
+      content
+      image
+      name
+      rating
+      read
+      subtitle
+      title
+    }
+  }
+}

@@ -405,6 +405,7 @@ internal fun HedvigNavHost(
         navigateToInbox(backStackEntry)
       },
       openUrl = openUrl,
+      imageLoader = imageLoader,
     )
     imageViewerGraph(hedvigAppState.navController, imageLoader)
   }

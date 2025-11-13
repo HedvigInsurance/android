@@ -24,7 +24,9 @@ import com.hedvig.android.feature.help.center.HelpCenterUiState.Search
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
+import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -61,6 +63,7 @@ internal data class HelpCenterUiState(
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
   val destinationToNavigate: QuickLinkDestination? = null,
+  val puppyGuide: List<PuppyGuideStory>?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -93,6 +96,7 @@ internal class HelpCenterPresenter(
   private val getQuickLinksUseCase: GetQuickLinksUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
+  private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -152,7 +156,8 @@ internal class HelpCenterPresenter(
       combine(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
-      ) { quickLinks, faq ->
+        flow3 = flow { emit(getPuppyGuideUseCase.invoke()) },
+      ) { quickLinks, faq, puppyGuideResult ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
             HelpCenterUiState.QuickLinkUiState.NoQuickLinks
@@ -170,12 +175,14 @@ internal class HelpCenterPresenter(
         )
         val topics = faq.getOrNull()?.topics ?: listOf()
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
+        val puppyGuide = puppyGuideResult.getOrNull()
         currentState = currentState.copy(
           topics = topics,
           questions = questions,
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
+          puppyGuide = puppyGuide,
         )
       }.collect()
     }

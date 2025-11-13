@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import coil.ImageLoader
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
@@ -12,6 +13,10 @@ import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
@@ -31,6 +36,7 @@ fun NavGraphBuilder.helpCenterGraph(
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -83,6 +89,13 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToNewConversation(backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
+        onNavigateToPuppyGuide = {
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuide,
+            )
+          }
+        },
       )
     }
 
@@ -137,6 +150,35 @@ fun NavGraphBuilder.helpCenterGraph(
         preferredPartnerImageHeight = preferredPartnerImageHeight,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+      )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuide> { backStackEntry ->
+      val viewModel = koinViewModel<PuppyGuideViewModel>()
+      PuppyGuideDestination(
+        viewModel,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateToArticle = { story ->
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuideArticle(
+                story.name,
+              ),
+            )
+          }
+        },
+        imageLoader = imageLoader,
+      )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuideArticle> {
+      val viewModel = koinViewModel<PuppyArticleViewModel> {
+        parametersOf(storyName)
+      }
+      PuppyArticleDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        imageLoader = imageLoader,
       )
     }
   }
