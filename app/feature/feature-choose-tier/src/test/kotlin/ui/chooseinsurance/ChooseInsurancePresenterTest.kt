@@ -15,6 +15,7 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.DeflectOutput
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
@@ -257,6 +258,78 @@ class ChooseInsurancePresenterTest {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
         .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
         .isNotNull()
+    }
+  }
+
+  @Test
+  fun `if receive only one customisable insurance and deflectOutput is returned show deflect screen`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val useCase = FakeGetCustomizableInsurancesUseCase()
+    val presenter = ChooseInsurancePresenter(
+      tierRepository = tierRepo,
+      getCustomizableInsurancesUseCase = useCase,
+    )
+    presenter.test(ChooseInsuranceUiState.Loading()) {
+      assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
+        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
+        .isNull()
+      useCase.turbine.add(
+        flowOf(
+          nonEmptyListOf(
+            CustomisableInsurance(
+              "id",
+              "displayName",
+              "ExposureName",
+              RENTAL,
+            ),
+          ).right(),
+        ),
+      )
+      tierRepo.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(ChooseInsuranceUiState.Deflect::class)
+        .prop(ChooseInsuranceUiState.Deflect::title)
+        .isEqualTo("Deflect title")
+    }
+  }
+
+  @Test
+  fun `when insurance is chosen and deflectOutput is returned show deflect screen`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val useCase = FakeGetCustomizableInsurancesUseCase()
+    val presenter = ChooseInsurancePresenter(
+      tierRepository = tierRepo,
+      getCustomizableInsurancesUseCase = useCase,
+    )
+    presenter.test(ChooseInsuranceUiState.Loading()) {
+      assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
+        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
+        .isNull()
+      useCase.turbine.add(flowOf(listOfInsurances.right()))
+      sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
+      sendEvent(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(listOfInsurances[0]))
+      skipItems(3)
+      tierRepo.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(ChooseInsuranceUiState.Deflect::class)
+        .prop(ChooseInsuranceUiState.Deflect::title)
+        .isEqualTo("Deflect title")
     }
   }
 }
