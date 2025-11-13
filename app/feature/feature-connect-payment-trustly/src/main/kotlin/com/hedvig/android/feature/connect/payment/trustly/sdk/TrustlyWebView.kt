@@ -1,33 +1,25 @@
 package com.hedvig.android.feature.connect.payment.trustly.sdk
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.webkit.WebView
-import android.webkit.WebViewClient
-import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.logcat
 
-
+@SuppressLint("ViewConstructor")
 class TrustlyWebView(
   activity: Activity,
-  url: String,
   val successHandler: TrustlyCheckoutSuccessHandler?,
   val errorHandler: TrustlyCheckoutErrorHandler?,
   val abortHandler: TrustlyCheckoutAbortHandler?,
 ) : WebView(activity) {
   init {
-    tryOpeningUrlInWebView(activity, url)
+    setupWebView(activity)
   }
 
-  private fun tryOpeningUrlInWebView(activity: Activity, url: String) {
+  private fun setupWebView(activity: Activity) {
     try {
       configWebSettings()
-      webViewClient = WebViewClient()
-      webChromeClient = TrustlyWebChromeClient()
       addJavascriptInterface(TrustlyJavascriptInterface(activity, this), TrustlyJavascriptInterface.NAME)
-      layoutParams = LayoutParams(LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-      loadUrl(url)
     } catch (e: Exception) {
       if (e is WebSettingsException) {
         logcat { "TrustlyWebView: configWebView: Could not config WebSettings | ${e.message}" }
@@ -37,6 +29,7 @@ class TrustlyWebView(
     }
   }
 
+  @SuppressLint("SetJavaScriptEnabled")
   @Throws(WebSettingsException::class)
   private fun configWebSettings() {
     try {
