@@ -14,7 +14,7 @@ internal class SubmitAudioRecordingUseCase(
 ) {
   suspend fun invoke(
     stepId: String,
-    audioReference: String?,
+    audioFileId: String?,
     freeText: String?,
   ) = either {
     val data = apolloClient
@@ -22,7 +22,7 @@ internal class SubmitAudioRecordingUseCase(
         ClaimIntentSubmitAudioMutation(
           ClaimIntentSubmitAudioInput(
             stepId = stepId,
-            audioReference = Optional.presentIfNotNull(audioReference),
+            audioFileId = Optional.presentIfNotNull(audioFileId),
             freeText = Optional.presentIfNotNull(freeText),
           ),
         ),

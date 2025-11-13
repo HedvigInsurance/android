@@ -145,7 +145,7 @@ internal class ClaimChatViewModel(
     if (stepId != null) {
       submitAudioRecordingUseCase.invoke(
         stepId = stepId,
-        audioReference = uploadUrl,
+        audioFileId = uploadUrl,
         freeText = null,
       ).fold(
         ifLeft = { errorMessage ->

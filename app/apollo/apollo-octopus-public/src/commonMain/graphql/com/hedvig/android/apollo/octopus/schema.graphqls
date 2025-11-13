@@ -198,6 +198,19 @@ input BrowserInfo {
   timeZoneOffset: Int!
   javaEnabled: Boolean!
 }
+"""
+Yearly savings from bundle discount
+"""
+type BundleYearlySavings {
+  """
+  Total yearly savings amount from bundle discount
+  """
+  savings: Money!
+  """
+  Whether the bundle discount covers the full period (true) or has pending/future items (false)
+  """
+  bundleDiscountCoversFullPeriod: Boolean!
+}
 type CampaignDiscount {
   """
   The type of discount, determines the relevancy of the other fields.
@@ -276,6 +289,10 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
+  """
+  Yearly savings from bundle discount
+  """
+  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -290,6 +307,10 @@ type CartCost {
   Price you will pay after discount.
   """
   net: Money!
+  """
+  Whether the cart has bundle discount.
+  """
+  hasBundleDiscount: Boolean!
 }
 type CartItem {
   """
@@ -364,6 +385,10 @@ type ChangeTierDeductibleCreateIntentOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Deflect output 
+  """
+  deflectOutput: ChangeTierDeflectOutput
 }
 type ChangeTierDeductibleDisplayItem {
   displayTitle: String!
@@ -465,6 +490,10 @@ enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
+}
+type ChangeTierDeflectOutput {
+  title: String!
+  message: String!
 }
 type ChangeTierPriceDetailItem {
   displayName: String!
@@ -638,6 +667,7 @@ input ClaimIntentStartInput {
   as the first step, using the chat history as the implicit first step.
   """
   sourceMessageId: ID
+  developmentFlow: Boolean
 }
 """
 Represents a single step in the claim submission flow.
@@ -652,7 +682,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -661,6 +691,16 @@ type ClaimIntentStepContentAudioRecording {
   hint: String!
   """
   The relative URI towards where one should upload the audio recording.
+  """
+  uploadUri: String!
+}
+"""
+A file upload can be used to prompt the user to upload several files.
+Submitted using `Mutation.claimIntentSubmitFileUpload`.
+"""
+type ClaimIntentStepContentFileUpload {
+  """
+  The relative URI towards where one should upload the files.
   """
   uploadUri: String!
 }
@@ -767,8 +807,12 @@ type ClaimIntentStepContentTask {
 }
 input ClaimIntentSubmitAudioInput {
   stepId: ID!
-  audioReference: String
+  audioFileId: ID
   freeText: String
+}
+input ClaimIntentSubmitFileUploadInput {
+  stepId: ID!
+  fileIds: [ID!]!
 }
 input ClaimIntentSubmitFormInput {
   stepId: ID!
@@ -1897,8 +1941,6 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
-  partnerClaimsActive: [PartnerClaim!]!
-  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -1954,11 +1996,6 @@ type Member {
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
-  """
-  Young Pet Guide stories for the member.
-  Returns a list of educational content stories for young pet owners.
-  """
-  puppyGuideStories: [PuppyGuideStory!]!
   """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
@@ -2055,6 +2092,7 @@ type MemberChargeBreakdownItem {
   displayTitle: String!
   displaySubtitle: String
   periods: [MemberChargeBreakdownItemPeriod!]!
+  insurancePriceBreakdown: [MemberChargePriceBreakdownItem!]!
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
@@ -2066,6 +2104,10 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
+}
+type MemberChargePriceBreakdownItem {
+  displayTitle: String!
+  amount: Money!
 }
 """
 The status of the charge
@@ -2410,7 +2452,7 @@ input MoveExtraBuildingInput {
   """
    Extra building type 
   """
-  type: MoveExtraBuildingType!
+  type: String!
   """
    If extra building has water connected 
   """
@@ -2431,6 +2473,10 @@ enum MoveExtraBuildingType {
   BARN
   BOATHOUSE
   OTHER
+}
+type MoveExtraBuildingTypeV2 {
+  type: String!
+  displayName: String!
 }
 type MoveHomeQuote {
   """
@@ -2519,7 +2565,11 @@ type MoveIntent {
   """
    All available external building types accepted for new address 
   """
-  extraBuildingTypes: [MoveExtraBuildingType!]!
+  extraBuildingTypes: [MoveExtraBuildingType!]! @deprecated(reason: "Use extraBuildingTypesV2")
+  """
+   All available external building types accepted for new address 
+  """
+  extraBuildingTypesV2: [MoveExtraBuildingTypeV2!]!
   """
    Number of co-insured from existing contract to use as default 
   """
@@ -2716,6 +2766,10 @@ type Mutation {
   """
   claimIntentSubmitAudio(input: ClaimIntentSubmitAudioInput!): ClaimIntentMutationOutput!
   """
+  Submit a step containing a `ClaimIntentStepContentFileUpload`.
+  """
+  claimIntentSubmitFileUpload(input: ClaimIntentSubmitFileUploadInput!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentTask`.
   """
   claimIntentSubmitTask(input: ClaimIntentSubmitTaskInput!): ClaimIntentMutationOutput!
@@ -2834,10 +2888,6 @@ type Mutation {
   """
   productOfferAddonsSelect(productOfferId: UUID!, addonIds: [UUID!]!): ProductOffersMutationOutput!
   """
-  Mark a young pet guide story as read for a specific member.
-  """
-  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
-  """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
   The session can be placed in a "point of no return" state where it is no longer legal to update the customer,
@@ -2872,7 +2922,6 @@ type Mutation {
   insurance the day after.
   """
   switcherCaseComplete(id: UUID!, currentExpiryDate: Date!): SwitcherCaseMutationOutput!
-  partnerWidgetInit(input: PartnerWidgetInitInput!): ShopSession! @deprecated(reason: "To be removed with old widget app")
   """
    Initiate a Move intent 
   """
@@ -2916,48 +2965,11 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
-type PartnerClaim {
-  id: ID!
-  externalId: String!
-  exposureDisplayName: String
-  status: ClaimStatus
-  submittedAt: Date!
-  payoutAmount: Money
-  associatedTypeOfContract: String
-  claimType: String
-  handlerEmail: String
-  displayItems: [ClaimDisplayItem!]!
-  """
-  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
-  """
-  productVariant: ProductVariant
-}
 type PartnerData {
   sas: SasPartnerData
 }
-type PartnerWidgetData {
-  externalRequestId: String!
-  trialInfo: PartnerWidgetTrialInfo
-}
-input PartnerWidgetInitInput {
-  partnerId: UUID!
-  countryCode: CountryCode!
-  externalRequestId: String
-  externalMemberId: UUID
-}
 type PartnerWidgetTrial {
   trialContract: TrialContract!
-}
-type PartnerWidgetTrialInfo {
-  startDate: Date!
-  endDate: Date!
-  birthDate: Date!
-  insuranceData: JSON!
-  ssn: String
-  firstName: String
-  lastName: String
-  email: String
-  phoneNumber: String
 }
 scalar PaymentMethodDetails
 scalar PaymentMethodsResponse
@@ -3184,7 +3196,7 @@ type Product {
   """
   Bundle discount information for this product
   """
-  bundleDiscount: ProductOfferBundleDiscountInfo!
+  bundleDiscount: ProductOfferBundleDiscountInfo! @deprecated(reason: "Use ProductOffer.bundleDiscount instead")
   """
   A list of the external insurers valid for this specific product.
   """
@@ -3244,6 +3256,10 @@ type ProductOffer {
   """
   addons: [ProductOfferAddon!]!
   """
+  Bundle discount information for a particular offer
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   Values related to cancellation/switching of their existing other insurance.
   """
   cancellation: ExternalInsuranceCancellation!
@@ -3289,6 +3305,10 @@ type ProductOfferBundleDiscountInfo {
   Whether the product is eligible for bundle discount
   """
   isEligible: Boolean!
+  """
+  Potential yearly savings for an offer with bundle discount. 'null' if the offer is not eligible for bundle discount
+  """
+  potentialYearlySavings: Money
 }
 type ProductOfferCost {
   """
@@ -3437,53 +3457,6 @@ type ProductVariantComparisonRow {
   """
   covered: [String!]!
 }
-input PuppyEngagementInput {
-  name: String!
-  rating: Int
-  opened: Boolean
-  read: Boolean
-  closed: Boolean
-}
-type PuppyGuideStory {
-  """
-  The unique name/identifier of the story.
-  """
-  name: String!
-  """
-  The display title of the story.
-  """
-  title: String!
-  """
-  The subtitle or description of the story.
-  """
-  subtitle: String!
-  """
-  The main content of the story.
-  """
-  content: String!
-  """
-  The image associated with this story.
-  """
-  image: String!
-  """
-  Categories this story belongs to.
-  """
-  categories: [String!]!
-  """
-  The date when the story was marked as read by the user.
-  """
-  read: Boolean!
-  """
-   The user's rating of the story.
-  """
-  rating: Int
-}
-type PuppyGuideStoryMutationOutput {
-  """
-  Indicates whether the mutation was successful.
-  """
-  success: Boolean!
-}
 type Query {
   """
   Return a conversation for a given ID.
@@ -3491,7 +3464,6 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
-  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
@@ -3668,10 +3640,6 @@ type ShopSession {
   """
   urls: ShopSessionUrls!
   """
-  Feature flags and experiment eligibility
-  """
-  experiments: ShopSessionExperiments
-  """
   The Cart value of this shop session, carrying offers currently awaiting checkout.
   """
   cart: Cart!
@@ -3690,7 +3658,6 @@ type ShopSession {
   Indicates when this shop session was signed successfully. Not set if signing attempts fail.
   """
   signedAt: DateTime!
-  partnerWidgetData: PartnerWidgetData @deprecated(reason: "To be removed with old widget web app. New implementation uses partnerWidgetTrial for trials and generic info everywhere else")
   partnerName: String
   """
   Trial-specific info for trial insurances supported in widget flows (no Car Trials, for example)
@@ -3813,10 +3780,6 @@ input ShopSessionExperimentInput {
   Experiment variant in SCREAMING_SNAKE_CASE (e.g., 'CONTROL', 'VARIANT_A', 'NEW')
   """
   variant: String!
-}
-type ShopSessionExperiments {
-  bundleDiscount: Boolean
-  accidentDiscount: Boolean
 }
 type ShopSessionMutationOutput {
   shopSession: ShopSession
