@@ -2,6 +2,7 @@ package com.hedvig.android.ui.claimstatus.model
 
 import com.hedvig.android.core.uidata.UiMoney
 import octopus.fragment.ClaimFragment
+import octopus.fragment.MoneyFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 
@@ -25,17 +26,16 @@ sealed interface ClaimPillType {
   }
 
   companion object {
-    fun fromClaimFragment(claim: ClaimFragment): List<ClaimPillType> {
-      return when (claim.status) {
+    fun fromClaimFragment( status: ClaimStatus?, outcome: ClaimOutcome?, payoutAmount: MoneyFragment?): List<ClaimPillType> {
+      return when (status) {
         ClaimStatus.CREATED -> listOf(Claim)
         ClaimStatus.IN_PROGRESS -> listOf(Claim)
         ClaimStatus.CLOSED -> {
-          when (claim.outcome) {
+          when (outcome) {
             ClaimOutcome.PAID -> {
               buildList {
                 add(Closed.GenericClosed)
                 add(Closed.Paid)
-                val payoutAmount = claim.payoutAmount
                 if (payoutAmount != null) {
                   add(PaymentAmount(UiMoney.fromMoneyFragment(payoutAmount)))
                 }

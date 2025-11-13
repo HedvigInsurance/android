@@ -22,7 +22,7 @@ data class ClaimProgressSegment(
   }
 
   companion object {
-    fun fromClaimFragment(claim: ClaimFragment): List<ClaimProgressSegment> = when (claim.status) {
+    fun fromClaimFragment( status: ClaimStatus?): List<ClaimProgressSegment> = when (status) {
       ClaimStatus.CREATED -> buildSegments(ACTIVE, INACTIVE, INACTIVE)
 
       ClaimStatus.REOPENED,

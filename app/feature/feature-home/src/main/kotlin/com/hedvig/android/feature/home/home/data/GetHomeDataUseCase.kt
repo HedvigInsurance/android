@@ -45,6 +45,7 @@ import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.ClaimFragment
 import octopus.fragment.HomeCrossSellFragment
+import octopus.fragment.PartnerClaimFragment
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
@@ -93,6 +94,7 @@ internal class GetHomeDataUseCaseImpl(
       isHelpCenterEnabled,
       ->
       either {
+        logcat { "Mariia: homeQueryDataResult: $homeQueryDataResult" }
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
         val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
@@ -266,11 +268,19 @@ internal class GetHomeDataUseCaseImpl(
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
-  val claimStatusCards: NonEmptyList<ClaimFragment> =
+  val claimStatusCards: NonEmptyList<ClaimFragment>? =
     this.currentMember.claims?.toNonEmptyListOrNull()
       ?: this.currentMember.claimsActive?.toNonEmptyListOrNull()
-      ?: return null
-  return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
+  val partnerClaimCards: NonEmptyList<PartnerClaimFragment>? =
+    this.currentMember.partnerClaimsActive.toNonEmptyListOrNull()
+  val claimsList = claimStatusCards?.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+  val partnerClaimsList = partnerClaimCards?.map(ClaimStatusCardUiState::fromPartnerClaim)
+  if (claimsList==null && partnerClaimsList==null) return null
+  val combinedList = (claimsList ?: emptyList()) + (partnerClaimsList ?: emptyList())
+  val nonEmptyList = combinedList.toNonEmptyListOrNull() ?: return null
+  return HomeData.ClaimStatusCardsData(
+    nonEmptyList
+    )
 }
 
 internal data class HomeData(

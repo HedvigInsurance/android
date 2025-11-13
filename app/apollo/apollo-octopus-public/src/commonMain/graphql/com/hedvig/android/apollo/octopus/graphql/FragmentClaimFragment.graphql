@@ -34,3 +34,28 @@ fragment ClaimFragment on Claim {
     displayValue
   }
 }
+
+fragment PartnerClaimFragment on PartnerClaim {
+  id
+  status
+  submittedAt
+  displayItems {
+    displayTitle
+    displayValue
+  }
+  claimType
+  associatedTypeOfContract
+  payoutAmount {
+    ...MoneyFragment
+  }
+  handlerEmail
+  exposureDisplayName
+  productVariant {
+    typeOfContract
+    displayName
+    documents {
+      type
+      url
+    }
+  }
+}

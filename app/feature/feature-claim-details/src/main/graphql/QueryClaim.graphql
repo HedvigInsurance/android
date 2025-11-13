@@ -6,4 +6,7 @@ query Claim($claimId: ID!) {
       unreadMessageCount
     }
   }
+  partnerClaim(id: $claimId) {
+    ...PartnerClaimFragment
+  }
 }
