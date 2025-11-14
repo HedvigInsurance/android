@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat.data
 
+import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
@@ -10,18 +11,15 @@ import octopus.ClaimIntentSubmitSummaryMutation
 internal class SubmitSummaryUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(stepId: String) = either {
-    val data = apolloClient
-      .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId))
-      .safeExecute()
-      .mapLeft(::ErrorMessage)
-      .bind()
-      .claimIntentSubmitSummary
-
-    when {
-      data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> ClaimIntent(data.intent.id, data.intent.currentStep.toClaimIntentStep())
-      else -> raise(ErrorMessage("No data"))
+  suspend fun invoke(stepId: String): Either<ErrorMessage, ClaimIntent> {
+    return either {
+      apolloClient
+        .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId))
+        .safeExecute()
+        .mapLeft(::ErrorMessage)
+        .bind()
+        .claimIntentSubmitSummary
+        .toClaimIntent()
     }
   }
 }

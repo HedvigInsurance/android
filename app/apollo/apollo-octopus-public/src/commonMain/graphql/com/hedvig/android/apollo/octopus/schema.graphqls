@@ -682,7 +682,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -693,6 +693,8 @@ type ClaimIntentStepContentAudioRecording {
   The relative URI towards where one should upload the audio recording.
   """
   uploadUri: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
 }
 """
 A file upload can be used to prompt the user to upload several files.
@@ -703,6 +705,8 @@ type ClaimIntentStepContentFileUpload {
   The relative URI towards where one should upload the files.
   """
   uploadUri: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -710,6 +714,8 @@ Submitted using `Mutation.claimIntentSubmitForm`.
 """
 type ClaimIntentStepContentForm {
   fields: [ClaimIntentStepContentFormField!]!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
 }
 """
 A single field to render in the form.
@@ -777,6 +783,29 @@ type ClaimIntentStepContentOutcome {
   claimId: ID!
 }
 """
+A select step is one that contains a choice to select one of several alternatives.
+It can be seen as a special-case form with nicer rendering.
+Submitted using `Mutation.claimIntentSubmitSelect`.
+"""
+type ClaimIntentStepContentSelect {
+  options: [ClaimIntentStepContentSelectOption!]!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
+}
+"""
+A single choice in a "select" step.
+"""
+type ClaimIntentStepContentSelectOption {
+  """
+  The ID for this option. Used when submitting the choice
+  """
+  id: ID!
+  """
+  Rendered title of the choice
+  """
+  title: String!
+}
+"""
 A read-only step where the entire claim intent information is displayed before submitting.
 Submitted using `Mutation.claimIntentSubmitSummary`.
 """
@@ -817,6 +846,10 @@ input ClaimIntentSubmitFileUploadInput {
 input ClaimIntentSubmitFormInput {
   stepId: ID!
   fields: [ClaimIntentFormSubmitInputField!]!
+}
+input ClaimIntentSubmitSelectInput {
+  stepId: ID!
+  selectedId: ID!
 }
 input ClaimIntentSubmitSummaryInput {
   stepId: ID!
@@ -2758,9 +2791,24 @@ type Mutation {
   """
   claimIntentStart(input: ClaimIntentStartInput): ClaimIntent!
   """
+  Skip this step, proceeding to the next without submitting a response for it.
+  Should only be called if the step is marked as `isSkippable: true`.
+  """
+  claimIntentSkipStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
+  Regret this step, rewinding the intent back to having the current step be a copy of
+  the one referenced as `stepId` (but with a new id).
+  Should only be called if the step is marked as `isRegrettable: true`.
+  """
+  claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
   claimIntentSubmitForm(input: ClaimIntentSubmitFormInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentSelect`.
+  """
+  claimIntentSubmitSelect(input: ClaimIntentSubmitSelectInput!): ClaimIntentMutationOutput!
   """
   Submit a step containing a `ClaimIntentStepContentAudioRecording`.
   """

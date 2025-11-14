@@ -14,16 +14,13 @@ fragment ClaimIntentFragment on ClaimIntent {
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
-  ...AudioRecordingFragment
   ...FormFragment
+  ...ContentSelectFragment
   ...TaskFragment
+  ...AudioRecordingFragment
+  ...FileUploadFragment
   ...SummaryFragment
   ...OutcomeFragment
-}
-
-fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
-  hint
-  uploadUri
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
@@ -41,11 +38,35 @@ fragment FormFragment on ClaimIntentStepContentForm {
     minValue
     maxValue
   }
+  isSkippable
+  isRegrettable
+}
+
+fragment ContentSelectFragment on ClaimIntentStepContentSelect {
+  options {
+    id
+    title
+  }
+  isSkippable
+  isRegrettable
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
   description
   isCompleted
+}
+
+fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
+  hint
+  uploadUri
+  isSkippable
+  isRegrettable
+}
+
+fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
+  uploadUri
+  isRegrettable
+  isSkippable
 }
 
 fragment SummaryFragment on ClaimIntentStepContentSummary {

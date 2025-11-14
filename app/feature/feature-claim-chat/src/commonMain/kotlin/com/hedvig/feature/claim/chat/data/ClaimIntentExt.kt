@@ -1,5 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
+import arrow.core.raise.Raise
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.ConversationItem.AssistantLoadingState
 import com.hedvig.feature.claim.chat.ConversationItem.AssistantMessage
@@ -11,14 +13,38 @@ import com.hedvig.feature.claim.chat.FormField
 import com.hedvig.feature.claim.chat.FormFieldType
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
+import octopus.fragment.ClaimIntentMutationOutputFragment
 import octopus.fragment.ClaimIntentStepContentFragment
+import octopus.fragment.ContentSelectFragment
+import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.OutcomeFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 
 
-fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
+context(raise: Raise<ErrorMessage>)
+internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
+  val userError = userError
+  val intent = intent
+  return with(raise) {
+    when {
+      userError != null -> raise(ErrorMessage(userError.message))
+      intent != null -> intent.toClaimIntent()
+      else -> raise(ErrorMessage("No data"))
+    }
+  }
+}
+
+internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
+  return ClaimIntent(
+    id = id,
+    step = currentStep.toClaimIntentStep(),
+    // todo also render source messages
+  )
+}
+
+private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
   return ClaimIntentStep(
     id = id,
     text = text,
@@ -28,12 +54,27 @@ fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
 
 private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
   return when (this) {
-    is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri)
-    is FormFragment -> StepContent.Form(this.fields.toFields())
+    is FormFragment -> StepContent.Form(this.fields.toFields(), isSkippable, isRegrettable)
+    is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable, isRegrettable)
     is TaskFragment -> StepContent.Task(description, isCompleted)
-    is SummaryFragment -> StepContent.Summary(items.map { StepContent.Summary.Item(it.title, it.value) })
+    is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri, isSkippable, isRegrettable)
+    is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable, isRegrettable)
+    is SummaryFragment -> StepContent.Summary(
+      items = items.map { StepContent.Summary.Item(it.title, it.value) },
+      audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
+      fileUploads = fileUploads.map { StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName) }
+    )
     is OutcomeFragment -> StepContent.Outcome(claimId)
     else -> StepContent.Unknown
+  }
+}
+
+private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.ContentSelect.Option> {
+  return map { option ->
+    StepContent.ContentSelect.Option(
+      option.id,
+      option.title,
+    )
   }
 }
 
@@ -48,7 +89,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = field.type.toString(), // todo
-      options = field.options?.map { it.title to it.value } ?: emptyList()
+      options = field.options?.map { it.title to it.value } ?: emptyList(),
     )
   }
 }

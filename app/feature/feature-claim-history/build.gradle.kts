@@ -29,7 +29,7 @@ kotlin {
       implementation(libs.koin.core)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
-          implementation(projects.moleculePublic)
+      implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
     }
