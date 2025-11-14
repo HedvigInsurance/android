@@ -15,9 +15,9 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.DismissSt
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.NavigatedToNextStep
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SelectHousingType
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SubmitHousingType
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 internal class HousingTypeViewModel(

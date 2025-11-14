@@ -99,7 +99,7 @@ class ChooseInsurancePresenterTest {
           ChangeTierDeductibleIntent(
             IntentOutput(
               LocalDate(2024, 11, 15),
-              listOf(testQuote)
+              listOf(testQuote),
             ),
             null,
           ).right(),
@@ -135,9 +135,15 @@ class ChooseInsurancePresenterTest {
             ).right(),
           ),
         )
-        tierRepo.changeTierIntentTurbine.add(ChangeTierDeductibleIntent(
-          IntentOutput(LocalDate(2024, 11, 15),
-            listOf()), null).right())
+        tierRepo.changeTierIntentTurbine.add(
+          ChangeTierDeductibleIntent(
+            IntentOutput(
+              LocalDate(2024, 11, 15),
+              listOf(),
+            ),
+            null,
+          ).right(),
+        )
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.NotAllowed::class)
       }
     }
@@ -250,9 +256,11 @@ class ChooseInsurancePresenterTest {
       skipItems(3)
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          IntentOutput(LocalDate(2024, 11, 15),
-          listOf(testQuote)),
-          null
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          null,
         ).right(),
       )
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)

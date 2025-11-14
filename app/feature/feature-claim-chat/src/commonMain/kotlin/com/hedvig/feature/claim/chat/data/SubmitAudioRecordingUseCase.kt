@@ -12,11 +12,7 @@ import octopus.type.ClaimIntentSubmitAudioInput
 internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(
-    stepId: String,
-    audioFileId: String?,
-    freeText: String?,
-  ) = either {
+  suspend fun invoke(stepId: String, audioFileId: String?, freeText: String?) = either {
     val data = apolloClient
       .mutation(
         ClaimIntentSubmitAudioMutation(

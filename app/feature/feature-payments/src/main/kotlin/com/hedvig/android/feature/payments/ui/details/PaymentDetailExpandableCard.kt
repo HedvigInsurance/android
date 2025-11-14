@@ -84,7 +84,7 @@ internal fun PaymentDetailExpandableCard(
           ),
           onClick = onClick,
         )
-        .semantics(true){},
+        .semantics(true) {},
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -121,8 +121,7 @@ internal fun PaymentDetailExpandableCard(
               textAlign = TextAlign.End,
               modifier = Modifier.semantics {
                 contentDescription = totalNetDescription
-              }
-
+              },
             )
             Spacer(Modifier.width(4.dp))
 
@@ -144,8 +143,7 @@ internal fun PaymentDetailExpandableCard(
           Spacer(Modifier.height(16.dp))
           HorizontalDivider()
           Spacer(Modifier.height(16.dp))
-          Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             chargeBreakdown.forEach { item ->
               val amountDesc = item.second.getDescription()
               HorizontalItemsWithMaximumSpaceTaken(
@@ -162,14 +160,14 @@ internal fun PaymentDetailExpandableCard(
                     style = HedvigTheme.typography.label,
                     color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.semantics(){
+                    modifier = Modifier.semantics {
                       contentDescription = amountDesc
-                    }
+                    },
                   )
                 },
                 spaceBetween = 8.dp,
                 modifier = Modifier.fillMaxWidth()
-                 .semantics(true){},
+                  .semantics(true) {},
               )
             }
             val totalNetAmountDescription = totalNetAmount.getDescription()
@@ -187,26 +185,28 @@ internal fun PaymentDetailExpandableCard(
                   style = HedvigTheme.typography.label,
                   color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                   textAlign = TextAlign.End,
-                  modifier = Modifier.semantics(){
-                    contentDescription =totalNetAmountDescription
-                  }
+                  modifier = Modifier.semantics {
+                    contentDescription = totalNetAmountDescription
+                  },
                 )
               },
               spaceBetween = 8.dp,
               modifier = Modifier.fillMaxWidth()
-                .semantics(true){},
+                .semantics(true) {},
             )
           }
           Spacer(Modifier.height(16.dp))
           HedvigText(
-            text = stringResource(R.string.PAYMENTS_PERIOD_TITLE,
-              ),
-            modifier = Modifier.semantics(true){}
+            text = stringResource(R.string.PAYMENTS_PERIOD_TITLE),
+            modifier = Modifier.semantics(true) {},
           )
           Spacer(Modifier.height(6.dp))
           periods.forEach { period ->
-            PeriodItem(period, dateTimeFormatter,
-              modifier = Modifier.semantics(true){})
+            PeriodItem(
+              period,
+              dateTimeFormatter,
+              modifier = Modifier.semantics(true) {},
+            )
             Spacer(Modifier.height(16.dp))
           }
           Row {
@@ -235,13 +235,13 @@ internal fun PaymentDetailExpandableCard(
                   HedvigText(
                     text = totalNetAmount.toString(),
                     textAlign = TextAlign.End,
-                    modifier = Modifier.semantics(){
-                      contentDescription =totalNetAmountDescription
-                    }
+                    modifier = Modifier.semantics {
+                      contentDescription = totalNetAmountDescription
+                    },
                   )
                 }
               },
-              modifier = Modifier.semantics(true){}
+              modifier = Modifier.semantics(true) {},
             )
           }
           Spacer(Modifier.height(8.dp))
@@ -255,9 +255,10 @@ internal fun PaymentDetailExpandableCard(
 private fun PeriodItem(
   period: MemberCharge.ChargeBreakdown.Period,
   dateTimeFormatter: DateTimeFormatter,
-  modifier: Modifier) {
+  modifier: Modifier,
+) {
   Column(
-    modifier
+    modifier,
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
@@ -280,9 +281,9 @@ private fun PeriodItem(
             textAlign = TextAlign.End,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            modifier = Modifier.semantics(){
+            modifier = Modifier.semantics {
               contentDescription = description
-            }
+            },
           )
         }
       },

@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.PaymentHistoryItem
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class PaymentHistoryViewModel(
   getPaymentsHistoryUseCase: GetPaymentsHistoryUseCase,

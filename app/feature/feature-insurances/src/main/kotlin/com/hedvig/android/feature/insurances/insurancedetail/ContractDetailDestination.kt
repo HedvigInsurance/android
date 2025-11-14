@@ -157,24 +157,24 @@ private fun ContractDetailScreen(
           HedvigErrorSection(
             onButtonClick = retry,
             modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                ),
+              .fillMaxSize()
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
           )
         }
 
         ContractDetailsUiState.Loading -> {
           Column(
             Modifier
-                .fillMaxSize()
-                .padding(
-                    WindowInsets
-                        .safeDrawing
-                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                        .asPaddingValues()
-                        .plus(PaddingValues(top = 16.dp)),
-                ),
+              .fillMaxSize()
+              .padding(
+                WindowInsets
+                  .safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                  .asPaddingValues()
+                  .plus(PaddingValues(top = 16.dp)),
+              ),
           ) {
             InsuranceCardPlaceholder(
               imageLoader = imageLoader,
@@ -189,10 +189,10 @@ private fun ContractDetailScreen(
             buttonText = stringResource(R.string.general_back_button),
             onButtonClick = navigateBack,
             modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                ),
+              .fillMaxSize()
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
           )
         }
 
@@ -207,8 +207,8 @@ private fun ContractDetailScreen(
               .asPaddingValues()
               .plus(PaddingValues(top = 16.dp)),
             modifier = Modifier
-                .fillMaxSize()
-                .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
+              .fillMaxSize()
+              .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           ) {
             item(
               key = 1,
@@ -230,8 +230,8 @@ private fun ContractDetailScreen(
                 PagerSelector(
                   pagerState = pagerState,
                   modifier = Modifier
-                      .padding(horizontal = 16.dp)
-                      .padding(bottom = 8.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
                 )
               }
             }
@@ -248,8 +248,8 @@ private fun ContractDetailScreen(
                 ),
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
-                    .padding(top = 8.dp)
-                    .animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
+                  .padding(top = 8.dp)
+                  .animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
@@ -265,9 +265,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                              addon.premium.toString(),
-                            ),
+                                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                addon.premium.toString(),
+                              ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->
