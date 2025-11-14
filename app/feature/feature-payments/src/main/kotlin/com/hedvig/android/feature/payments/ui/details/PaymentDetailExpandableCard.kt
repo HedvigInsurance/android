@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -79,7 +82,8 @@ internal fun PaymentDetailExpandableCard(
             radius = 1000.dp,
           ),
           onClick = onClick,
-        ),
+        )
+        .semantics(true){},
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -134,8 +138,10 @@ internal fun PaymentDetailExpandableCard(
           Spacer(Modifier.height(16.dp))
           HorizontalDivider()
           Spacer(Modifier.height(16.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp)) {
             chargeBreakdown.forEach { item ->
+              val amountDesc = item.second.getDescription()
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
                   HedvigText(
@@ -150,10 +156,14 @@ internal fun PaymentDetailExpandableCard(
                     style = HedvigTheme.typography.label,
                     color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                     textAlign = TextAlign.End,
+                    modifier = Modifier.semantics(){
+                      contentDescription = amountDesc
+                    }
                   )
                 },
                 spaceBetween = 8.dp,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                 .semantics(true){},
               )
             }
             HorizontalItemsWithMaximumSpaceTaken(
@@ -173,16 +183,20 @@ internal fun PaymentDetailExpandableCard(
                 )
               },
               spaceBetween = 8.dp,
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth()
+                .semantics(true){},
             )
           }
           Spacer(Modifier.height(16.dp))
           HedvigText(
-            text = stringResource(R.string.PAYMENTS_PERIOD_TITLE),
+            text = stringResource(R.string.PAYMENTS_PERIOD_TITLE,
+              ),
+            modifier = Modifier.semantics(true){}
           )
           Spacer(Modifier.height(6.dp))
           periods.forEach { period ->
-            PeriodItem(period, dateTimeFormatter)
+            PeriodItem(period, dateTimeFormatter,
+              modifier = Modifier.semantics(true){})
             Spacer(Modifier.height(16.dp))
           }
           Row {
@@ -213,6 +227,7 @@ internal fun PaymentDetailExpandableCard(
                   )
                 }
               },
+              modifier = Modifier.semantics(true){}
             )
           }
           Spacer(Modifier.height(8.dp))
@@ -223,52 +238,63 @@ internal fun PaymentDetailExpandableCard(
 }
 
 @Composable
-private fun PeriodItem(period: MemberCharge.ChargeBreakdown.Period, dateTimeFormatter: DateTimeFormatter) {
-  HorizontalItemsWithMaximumSpaceTaken(
-    spaceBetween = 8.dp,
-    startSlot = {
-      HedvigText(
-        text = period.toString(dateTimeFormatter),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      )
-    },
-    endSlot = {
-      Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
+private fun PeriodItem(
+  period: MemberCharge.ChargeBreakdown.Period,
+  dateTimeFormatter: DateTimeFormatter,
+  modifier: Modifier) {
+  Column(
+    modifier
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      spaceBetween = 8.dp,
+      startSlot = {
         HedvigText(
-          text = period.amount.toString(),
-          textAlign = TextAlign.End,
+          text = period.toString(dateTimeFormatter),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
-      }
-    },
-  )
-  if (period.isPreviouslyFailedCharge || period.description != null) {
-    HedvigText(
-      text = if (period.isPreviouslyFailedCharge) {
-        stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT)
-      } else {
-        when (
-          period.description!!
+      },
+      endSlot = {
+        Row(
+          Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
-          is BetweenDays -> stringResource(
-            R.string.PAYMENTS_PERIOD_DAYS,
-            period.description.daysBetween,
-          )
-
-          FullPeriod -> stringResource(
-            R.string.PAYMENTS_PERIOD_FULL,
+          val description = period.amount.getDescription()
+          HedvigText(
+            text = period.amount.toString(),
+            textAlign = TextAlign.End,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.semantics(){
+              contentDescription = description
+            }
           )
         }
       },
-      style = HedvigTheme.typography.label,
-      color = period.toSubtitleColor(),
     )
+    if (period.isPreviouslyFailedCharge || period.description != null) {
+      HedvigText(
+        text = if (period.isPreviouslyFailedCharge) {
+          stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT)
+        } else {
+          when (
+            period.description!!
+          ) {
+            is BetweenDays -> stringResource(
+              R.string.PAYMENTS_PERIOD_DAYS,
+              period.description.daysBetween,
+            )
+
+            FullPeriod -> stringResource(
+              R.string.PAYMENTS_PERIOD_FULL,
+            )
+          }
+        },
+        style = HedvigTheme.typography.label,
+        color = period.toSubtitleColor(),
+      )
+    }
   }
 }
 
