@@ -144,6 +144,7 @@ internal fun HomeDestination(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -164,6 +165,7 @@ internal fun HomeDestination(
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
@@ -190,6 +192,7 @@ private fun HomeScreen(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -272,6 +275,10 @@ private fun HomeScreen(
           if (currentState.isExperimentalClaimChatEnabled) {
             ToolbarClaimChatIcon(
               onClick = navigateToClaimChat,
+            )
+            ToolbarClaimChatIcon(
+              onClick = navigateToClaimChatInDevMode,
+              isDev = true
             )
           }
           val actionsList = buildList {
@@ -792,6 +799,7 @@ private fun PreviewHomeScreen(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }
@@ -822,6 +830,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }
@@ -873,6 +882,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }

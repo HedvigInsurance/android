@@ -7,11 +7,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.ktor.http.parametersOf
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ClaimChatDestination() {
-  val claimChatViewModel = koinViewModel<ClaimChatViewModel>()
+fun ClaimChatDestination(
+  isDevelopmentFlow: Boolean,
+  messageId: String?
+) {
+  val claimChatViewModel = koinViewModel<ClaimChatViewModel>{
+    parametersOf(
+      isDevelopmentFlow, messageId
+    )
+  }
   ClaimChatScreen(claimChatViewModel)
 }
 

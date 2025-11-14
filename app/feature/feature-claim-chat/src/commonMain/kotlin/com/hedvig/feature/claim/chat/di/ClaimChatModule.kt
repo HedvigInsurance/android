@@ -14,15 +14,17 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val claimChatModule = module {
-  viewModel<ClaimChatViewModel> {
+  viewModel<ClaimChatViewModel> { (isDevFlow: Boolean, messageId: String?) ->
     ClaimChatViewModel(
-      get<StartClaimIntentUseCase>(),
-      get<GetClaimIntentUseCase>(),
-      get<SubmitAudioRecordingUseCase>(),
-      get<UploadAudioUseCase>(),
-      get<SubmitFormUseCase>(),
-      get<SubmitTaskUseCase>(),
-      get<SubmitSummaryUseCase>(),
+      messageId = messageId,
+      isDevelopmentFlow = isDevFlow,
+      startClaimIntentUseCase = get<StartClaimIntentUseCase>(),
+      getClaimIntentUseCase = get<GetClaimIntentUseCase>(),
+      submitAudioRecordingUseCase = get<SubmitAudioRecordingUseCase>(),
+      uploadAudioUseCase = get<UploadAudioUseCase>(),
+      submitFormUseCase = get<SubmitFormUseCase>(),
+      submitTaskUseCase = get<SubmitTaskUseCase>(),
+      submitSummaryUseCase = get<SubmitSummaryUseCase>(),
     )
   }
 
