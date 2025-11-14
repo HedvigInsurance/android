@@ -184,6 +184,8 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Gör röstinspelning</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
+  <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>
   <string name="CLAIM_TRIAGING_NAVIGATION_TITLE">Vad gäller ditt ärende?</string>
   <string name="CLAIM_TRIAGING_TITLE">Berätta vad som hände</string>
@@ -391,6 +393,7 @@
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Det fungerar genom att alla medlemmar tar ut den ersättning de har rätt till ur den gemensamma skadepoolen, varken mer eller mindre. Vi ber dig därför att berätta om det som inträffat precis som det var, så att vi kan hjälpa dig på bästa sätt.</string>
   <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
+  <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till din tidigare försäkring.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Giltighetsintyg</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">Giltighetsintyget är nu skickat till din e-post.</string>
@@ -399,6 +402,7 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
+  <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
@@ -466,6 +470,7 @@
   <string name="PAYMENTS_ACCOUNT">Konto</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Lägg till kampanjkod</string>
   <string name="PAYMENTS_ADD_CODE_BUTTON_LABEL">Lägg till</string>
+  <string name="PAYMENTS_AMOUNT_TO_PAY">Att betala</string>
   <string name="PAYMENTS_AUTOGIRO_LABEL">Autogiro</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
   <string name="PAYMENTS_DISCOUNTS_SECTION_TITLE">Rabatter</string>
@@ -485,6 +490,7 @@
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Betalning genomförd</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s dagar</string>
   <string name="PAYMENTS_PERIOD_FULL">Hel period</string>
+  <string name="PAYMENTS_PERIOD_TITLE">Period</string>
   <string name="PAYMENTS_PROCESSING_PAYMENT">Pågående betalning</string>
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Bjud in dina vänner och få 10 kr rabatt i månaden för varje inbjuden vän som tecknar en försäkring hos Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>
@@ -525,6 +531,15 @@
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Koppla autogiro</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
+  <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
+  <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
+  <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
+  <string name="PUPPY_GUIDE_LABEL_READ">Läst</string>
+  <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
+  <string name="PUPPY_GUIDE_RATING_QUESTION">Var den här artikeln hjälpsam?</string>
+  <string name="PUPPY_GUIDE_RATING_VERY_HELPFUL">Mycket hjälpsam</string>
+  <string name="PUPPY_GUIDE_SUBTITLE">Hjälpsamma guider för dig och din valp</string>
+  <string name="PUPPY_GUIDE_TITLE">Valpguiden</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW">Inte nu</string>
   <string name="PUSH_NOTIFICATIONS_ALERT_ACTION_OK">Slå på</string>
   <string name="REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION">Läs mer</string>
@@ -824,6 +839,7 @@
   <string name="claim.status_bar.closed">Stängt</string>
   <string name="claim_history.empty_state.body">Dina tidigare skador visas här automatiskt efter att de har hanterats.</string>
   <string name="claim_history.empty_state.title">Ingen skadehistorik</string>
+  <string name="claim_outcome_null">Ditt skadeärende har stängts.</string>
   <string name="claim_outcome_unresponsive_support_text">Ditt skadeärende har stängts eftersom vi inte har fått någon återkoppling från dig. Se konversation för mer information.</string>
   <string name="claim_status.being_handled.support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status.being_handled_reopened.support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
@@ -853,6 +869,7 @@
   <string name="claim_status_detail.missing_receipt">Kvitto saknas</string>
   <string name="claim_status_detail.submitted">Inskickat</string>
   <string name="claim_status_detail.uploaded_files_info_title">Uppladdade filer</string>
+  <string name="claim_status_detail_email">Ta kontakt med skadeteamet</string>
   <string name="claims.alert.body">Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.</string>
   <string name="claims.continue.button">Fortsätt</string>
   <string name="claims.edit.button">Edit</string>
