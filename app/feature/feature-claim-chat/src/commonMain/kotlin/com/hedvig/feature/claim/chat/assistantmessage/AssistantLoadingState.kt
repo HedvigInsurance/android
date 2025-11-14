@@ -15,12 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AssistantLoadingState(
-  text: String,
-  subText: String,
-  isLoading: Boolean,
-  modifier: Modifier = Modifier,
-) {
+fun AssistantLoadingState(text: String, subText: String, isLoading: Boolean, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxWidth().padding(16.dp),
   ) {
@@ -50,5 +45,3 @@ fun AssistantLoadingState(
     }
   }
 }
-
-

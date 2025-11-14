@@ -47,7 +47,7 @@ fun ThreeDotLoadingIndicator(
         },
         repeatMode = RepeatMode.Restart,
       ),
-      label = "dotAlpha${dotIndex}",
+      label = "dotAlpha$dotIndex",
     )
     return dotAlpha.value
   }
@@ -83,5 +83,3 @@ fun FilledCircle(diameter: Dp, circleColor: Color) {
       .background(circleColor),
   )
 }
-
-

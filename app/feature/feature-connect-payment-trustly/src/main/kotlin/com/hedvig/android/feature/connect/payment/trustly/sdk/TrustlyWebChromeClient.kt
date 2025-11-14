@@ -9,7 +9,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import com.hedvig.android.composewebview.AccompanistWebChromeClient
 import java.lang.ref.WeakReference
 
-
 class TrustlyWebChromeClient : AccompanistWebChromeClient() {
   override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
     val context = view?.context ?: return false

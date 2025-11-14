@@ -17,7 +17,6 @@ import octopus.fragment.OutcomeFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 
-
 fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
   return ClaimIntentStep(
     id = id,
@@ -48,7 +47,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = field.type.toString(), // todo
-      options = field.options?.map { it.title to it.value } ?: emptyList()
+      options = field.options?.map { it.title to it.value } ?: emptyList(),
     )
   }
 }

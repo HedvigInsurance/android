@@ -13,10 +13,7 @@ import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.FormViews
 
 @Composable
-fun Form(
-  item: ConversationItem.Form,
-  onSubmit: () -> Unit,
-) {
+fun Form(item: ConversationItem.Form, onSubmit: () -> Unit) {
   Column(horizontalAlignment = Alignment.End) {
     FormViews(item)
     Spacer(Modifier.height(4.dp))

@@ -15,7 +15,6 @@ fun UiMoney?.getDescription(): String {
     null -> ""
   }
 }
-// todo: danish, norw?
 
 @Composable
 fun UiMoney?.getPerMonthDescription(): String {

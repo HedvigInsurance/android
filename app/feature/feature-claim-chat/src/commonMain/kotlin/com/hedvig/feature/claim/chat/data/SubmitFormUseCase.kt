@@ -14,10 +14,7 @@ import octopus.type.ClaimIntentSubmitFormInput
 internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(
-    stepId: String,
-    fields: List<FormField>,
-  ) = either {
+  suspend fun invoke(stepId: String, fields: List<FormField>) = either {
     val data = apolloClient
       .mutation(
         ClaimIntentSubmitFormMutation(

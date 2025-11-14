@@ -52,7 +52,7 @@ fun AudioPrompt(
     ) {
       AssistantChatMessage(
         text = text,
-        subText = hint ?: ""
+        subText = hint ?: "",
       )
 
       PulsingMicrophone(
@@ -70,13 +70,11 @@ fun AudioPrompt(
 }
 
 @Composable
-fun PulsingMicrophone(
-  onMicrophoneClicked: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun PulsingMicrophone(onMicrophoneClicked: () -> Unit, modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition(label = "microphonePulse")
   val scale by infiniteTransition.animateFloat(
-    initialValue = 1.0f, targetValue = 1.15f,
+    initialValue = 1.0f,
+    targetValue = 1.15f,
     animationSpec = infiniteRepeatable(
       animation = tween(800, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
@@ -87,7 +85,10 @@ fun PulsingMicrophone(
   Box(
     modifier = modifier
       .size(72.dp) // Large button size
-      .graphicsLayer { scaleX = scale; scaleY = scale }
+      .graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+      }
       .clip(CircleShape)
       .background(Color.White.copy(alpha = 0.5f)) // Translucent white background
       .clickable(onClick = onMicrophoneClicked),

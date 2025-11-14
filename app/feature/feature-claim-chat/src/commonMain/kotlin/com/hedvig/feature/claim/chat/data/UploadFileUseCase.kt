@@ -9,12 +9,7 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 
 internal class UploadAudioUseCase(private val client: HttpClient) {
-
-  suspend fun invoke(
-    fileReference: AudioFileReference,
-    uploadUrl: String,
-  ): String {
-
+  suspend fun invoke(fileReference: AudioFileReference, uploadUrl: String): String {
     val fileBytes = fileReference.readBytes()
 
     val response = client.post(uploadUrl) {

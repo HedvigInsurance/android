@@ -27,10 +27,7 @@ import com.hedvig.feature.claim.chat.summary.Summary
 import kotlinx.coroutines.launch
 
 @Composable
-fun ConversationScreen(
-  state: ConversationUiState,
-  onAction: (UserAction) -> Unit,
-) {
+fun ConversationScreen(state: ConversationUiState, onAction: (UserAction) -> Unit) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
 
@@ -90,7 +87,6 @@ fun FormViews(item: ConversationItem.Form) {
         title = formField.title,
         defaultValue = formField.defaultValue,
         onValueChange = { selectedValue ->
-
         },
       )
 
@@ -99,7 +95,6 @@ fun FormViews(item: ConversationItem.Form) {
         id = formField.fieldId,
         title = formField.title,
         onDateSelected = { selectedValue ->
-
         },
         showDatePicker = {},
       )
@@ -110,7 +105,6 @@ fun FormViews(item: ConversationItem.Form) {
         title = formField.title,
         defaultValue = formField.defaultValue,
         onValueChange = { selectedValue ->
-
         },
         suffix = formField.suffix,
         minValue = formField.minValue,
@@ -124,7 +118,6 @@ fun FormViews(item: ConversationItem.Form) {
         defaultValue = formField.defaultValue,
         options = formField.options.map { it.second },
         onOptionSelected = { selectedValue ->
-
         },
       )
 
@@ -136,7 +129,6 @@ fun FormViews(item: ConversationItem.Form) {
         options = formField.options.map { it.second },
         onOptionSelected = { selectedValue ->
           selectedValue?.let {
-
           }
         },
       )

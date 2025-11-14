@@ -45,7 +45,7 @@ sealed interface StepContent {
   }
 
   data class Outcome(
-    val claimId: String
+    val claimId: String,
   ) : StepContent
 
   object Unknown : StepContent

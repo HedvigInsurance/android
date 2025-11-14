@@ -19,11 +19,7 @@ import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.data.StepContent
 
 @Composable
-fun Summary(
-  summary: ConversationItem.Summary,
-  onSubmit: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun Summary(summary: ConversationItem.Summary, onSubmit: () -> Unit, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,

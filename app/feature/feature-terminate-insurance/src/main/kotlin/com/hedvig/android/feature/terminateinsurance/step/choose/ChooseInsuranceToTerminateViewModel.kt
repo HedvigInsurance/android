@@ -14,9 +14,9 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepo
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class ChooseInsuranceToTerminateViewModel(
   insuranceId: String?,

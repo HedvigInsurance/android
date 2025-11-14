@@ -420,7 +420,9 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       .isEqualTo(listOf(TierConstants.CURRENT_ID, "id"))
 
     val deductibleAmount =
-      result.getOrNull()?.intentOutput?.quotes?.first { it.id != TierConstants.CURRENT_ID }?.deductible?.deductibleAmount?.amount
+      result.getOrNull()?.intentOutput?.quotes?.first {
+        it.id != TierConstants.CURRENT_ID
+      }?.deductible?.deductibleAmount?.amount
 
     assertk.assertThat(deductibleAmount)
       .isNotNull()

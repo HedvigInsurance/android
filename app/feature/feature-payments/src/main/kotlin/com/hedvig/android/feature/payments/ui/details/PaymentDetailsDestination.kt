@@ -124,12 +124,12 @@ private fun MemberChargeDetailsScreen(
             PaymentDetailExpandableCard(
               displayName = chargeBreakdown.contractDisplayName,
               subtitle = chargeBreakdown.contractDetails,
-              totalGrossAmount = chargeBreakdown.grossAmount.toString(),
-              totalNetAmount = chargeBreakdown.netAmount.toString(),
+              totalGrossAmount = chargeBreakdown.grossAmount,
+              totalNetAmount = chargeBreakdown.netAmount,
               periods = chargeBreakdown.periods,
               isExpanded = selectedCharge == chargeBreakdown,
               onClick = { onCardClick(chargeBreakdown) },
-              discounts = chargeBreakdown.discounts,
+              chargeBreakdown = chargeBreakdown.priceBreakdown,
             )
             Spacer(modifier = Modifier.height(8.dp))
           }

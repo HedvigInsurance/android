@@ -63,7 +63,7 @@ internal data class MemberCharge(
     val grossAmount: UiMoney,
     val netAmount: UiMoney,
     val periods: List<Period>,
-    val discounts: List<Discount>,
+    val priceBreakdown: List<Pair<String, UiMoney>>,
   ) {
     @Serializable
     data class Period(
@@ -143,20 +143,9 @@ internal fun MemberChargeFragment.toMemberCharge(
           isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
         )
       },
-      discounts = chargeBreakdown.discounts?.map { discount ->
-        Discount(
-          code = discount.code,
-          description = discount.description,
-          // Expired state is not applicable in this context
-          status = DiscountStatus.ACTIVE,
-          amount = UiMoney(
-            discount.discount.amount,
-            UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
-          ),
-          isReferral = false,
-          statusDescription = null,
-        )
-      } ?: listOf(),
+      priceBreakdown = chargeBreakdown.insurancePriceBreakdown.map {
+        it.displayTitle to UiMoney.fromMoneyFragment(it.amount)
+      },
     )
   },
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),

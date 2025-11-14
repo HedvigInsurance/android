@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 @Composable
 fun ErrorDialog(
   message: String,
-  onDismiss: () -> Unit // Function to call when the user clicks "OK"
+  onDismiss: () -> Unit, // Function to call when the user clicks "OK"
 ) {
   AlertDialog(
     onDismissRequest = onDismiss, // Dismiss when clicking outside
@@ -18,6 +18,6 @@ fun ErrorDialog(
       }
     },
     title = { Text("Error") },
-    text = { Text(message) }
+    text = { Text(message) },
   )
 }

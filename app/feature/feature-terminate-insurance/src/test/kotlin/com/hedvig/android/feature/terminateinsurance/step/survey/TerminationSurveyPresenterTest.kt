@@ -274,11 +274,11 @@ class TerminationSurveyPresenterTest {
       assertThat(navig0).isNull()
       changeTierRepository.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-            IntentOutput(
-                LocalDate(2024, 11, 15),
-                emptyList(),
-            ),
-            null,
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            emptyList(),
+          ),
+          null,
         ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
@@ -306,11 +306,11 @@ class TerminationSurveyPresenterTest {
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-            IntentOutput(
-                LocalDate(2024, 11, 15),
-                listOf(testQuote),
-            ),
-            null,
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          null,
         ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)

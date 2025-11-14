@@ -6,7 +6,8 @@ enum class TrustlyEventType(
   SUCCESS("onTrustlyCheckoutSuccess"),
   REDIRECT("onTrustlyCheckoutRedirect"),
   ABORT("onTrustlyCheckoutAbort"),
-  ERROR("onTrustlyCheckoutError");
+  ERROR("onTrustlyCheckoutError"),
+  ;
 
   companion object {
     fun valueForEventTypeLabel(eventName: String?): TrustlyEventType? {

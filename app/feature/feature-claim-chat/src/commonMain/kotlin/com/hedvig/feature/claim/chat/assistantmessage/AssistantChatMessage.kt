@@ -11,11 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AssistantChatMessage(
-  text: String,
-  subText: String,
-  modifier: Modifier = Modifier,
-) {
+fun AssistantChatMessage(text: String, subText: String, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxWidth().padding(16.dp),
   ) {
@@ -37,6 +33,3 @@ fun AssistantChatMessage(
     AssistantLabel(modifier)
   }
 }
-
-
-

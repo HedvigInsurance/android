@@ -42,8 +42,9 @@ class StartTierChangePresenterTest {
         ChangeTierDeductibleIntent(
           IntentOutput(
             activationDate = LocalDate(2024, 11, 11),
-            quotes = emptyList()
-          ), null,
+            quotes = emptyList(),
+          ),
+          null,
         ).right(),
       )
       skipItems(1)
@@ -85,7 +86,7 @@ class StartTierChangePresenterTest {
             activationDate = LocalDate(2024, 11, 11),
             quotes = listOf(testQuote, testQuote2),
           ),
-          null
+          null,
         ).right(),
       )
       skipItems(1)

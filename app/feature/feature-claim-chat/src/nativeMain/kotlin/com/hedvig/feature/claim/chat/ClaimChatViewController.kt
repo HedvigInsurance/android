@@ -6,11 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import platform.UIKit.UIViewController
 
-
 @Suppress("unused", "FunctionName") // Used from iOS
 fun ClaimChatViewController(): UIViewController = ComposeUIViewController {
   Box(Modifier.fillMaxSize()) {
     ClaimChatDestination()
   }
 }
-
