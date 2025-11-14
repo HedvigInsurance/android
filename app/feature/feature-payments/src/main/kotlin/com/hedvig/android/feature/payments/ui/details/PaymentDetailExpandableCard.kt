@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.payments.ui.details
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -15,15 +18,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -41,7 +46,6 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
-import com.hedvig.android.design.system.hedvig.contentColorFor
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -67,6 +71,10 @@ internal fun PaymentDetailExpandableCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
+  val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
+  val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
+  val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   HedvigCard(
     modifier = modifier,
@@ -83,8 +91,11 @@ internal fun PaymentDetailExpandableCard(
             radius = 1000.dp,
           ),
           onClick = onClick,
+          onClickLabel = if (isExpanded) collapseClickLabel else expandClickLabel,
         )
-        .semantics(true) {},
+        .semantics {
+          this.stateDescription = if (isExpanded) expandedStateDescription else collapsedStateDescription
+        },
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -124,12 +135,19 @@ internal fun PaymentDetailExpandableCard(
               },
             )
             Spacer(Modifier.width(4.dp))
-
+            val fullRotation by animateFloatAsState(
+              targetValue = if (!isExpanded) 0f else -180f,
+              animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            )
             Icon(
               imageVector = HedvigIcons.ChevronDown,
               contentDescription = null,
               tint = HedvigTheme.colorScheme.fillSecondary,
-              modifier = Modifier.size(24.dp),
+              modifier = Modifier
+                .size(24.dp)
+                .graphicsLayer {
+                  rotationZ = fullRotation
+                },
             )
           }
         },
@@ -166,7 +184,8 @@ internal fun PaymentDetailExpandableCard(
                   )
                 },
                 spaceBetween = 8.dp,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                  .fillMaxWidth()
                   .semantics(true) {},
               )
             }
@@ -191,7 +210,8 @@ internal fun PaymentDetailExpandableCard(
                 )
               },
               spaceBetween = 8.dp,
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier
+                .fillMaxWidth()
                 .semantics(true) {},
             )
           }
