@@ -5,7 +5,7 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.feature.claim.chat.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ClaimChatDestination
-import com.hedvig.feature.claim.chat.PlatformBlurContainer
+import com.hedvig.feature.claim.chat.ui.PlatformBlurContainer
 import kotlinx.serialization.Serializable
 
 @Serializable

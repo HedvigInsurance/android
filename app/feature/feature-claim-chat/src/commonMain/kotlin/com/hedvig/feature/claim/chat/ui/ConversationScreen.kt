@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +14,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.feature.claim.chat.ConversationItem
+import com.hedvig.feature.claim.chat.ConversationUiState
+import com.hedvig.feature.claim.chat.FormFieldType
+import com.hedvig.feature.claim.chat.UserAction
 import com.hedvig.feature.claim.chat.assistantmessage.AssistantChatMessage
 import com.hedvig.feature.claim.chat.assistantmessage.AssistantLoadingState
 import com.hedvig.feature.claim.chat.audiorecorder.AudioPrompt

@@ -7,6 +7,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.feature.claim.chat.ui.ConversationScreen
+import com.hedvig.feature.claim.chat.ui.PlatformBlurContainer
 
 class MockActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

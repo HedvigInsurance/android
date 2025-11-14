@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
