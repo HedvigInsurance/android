@@ -87,7 +87,7 @@ internal fun PaymentDetailExpandableCard(
             HedvigText(displayName)
             HedvigText(
               text = subtitle,
-              color = HedvigTheme.colorScheme.textSecondary,
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
               fontSize = HedvigTheme.typography.label.fontSize,
               lineHeight = HedvigTheme.typography.label.lineHeight,
             )
@@ -105,7 +105,7 @@ internal fun PaymentDetailExpandableCard(
                 text = totalGrossAmount,
                 textAlign = TextAlign.End,
                 textDecoration = TextDecoration.LineThrough,
-                color = HedvigTheme.colorScheme.textSecondary,
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                 modifier = Modifier.semantics { hideFromAccessibility() },
               )
               Spacer(Modifier.width(6.dp))
@@ -139,15 +139,16 @@ internal fun PaymentDetailExpandableCard(
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
                   HedvigText(
-                    item.first, style = HedvigTheme.typography.label,
-                    color = HedvigTheme.colorScheme.textSecondary,
+                    item.first,
+                    style = HedvigTheme.typography.label,
+                    color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                   )
                 },
                 endSlot = {
                   HedvigText(
                     item.second.toString(),
                     style = HedvigTheme.typography.label,
-                    color = HedvigTheme.colorScheme.textSecondary,
+                    color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                     textAlign = TextAlign.End,
                   )
                 },
@@ -160,14 +161,14 @@ internal fun PaymentDetailExpandableCard(
                 HedvigText(
                   stringResource(R.string.PAYMENTS_SUBTOTAL),
                   style = HedvigTheme.typography.label,
-                  color = HedvigTheme.colorScheme.textSecondary,
+                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                 )
               },
               endSlot = {
                 HedvigText(
                   totalNetAmount,
                   style = HedvigTheme.typography.label,
-                  color = HedvigTheme.colorScheme.textSecondary,
+                  color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                   textAlign = TextAlign.End,
                 )
               },
@@ -201,7 +202,7 @@ internal fun PaymentDetailExpandableCard(
                       text = totalGrossAmount,
                       textAlign = TextAlign.End,
                       textDecoration = TextDecoration.LineThrough,
-                      color = HedvigTheme.colorScheme.textSecondary,
+                      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                       modifier = Modifier.semantics { hideFromAccessibility() },
                     )
                     Spacer(Modifier.width(6.dp))
@@ -222,17 +223,14 @@ internal fun PaymentDetailExpandableCard(
 }
 
 @Composable
-private fun PeriodItem(
-  period: MemberCharge.ChargeBreakdown.Period,
-  dateTimeFormatter: DateTimeFormatter,
-) {
+private fun PeriodItem(period: MemberCharge.ChargeBreakdown.Period, dateTimeFormatter: DateTimeFormatter) {
   HorizontalItemsWithMaximumSpaceTaken(
     spaceBetween = 8.dp,
     startSlot = {
       HedvigText(
         text = period.toString(dateTimeFormatter),
         style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
       )
     },
     endSlot = {
@@ -245,7 +243,7 @@ private fun PeriodItem(
           text = period.amount.toString(),
           textAlign = TextAlign.End,
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
       }
     },
@@ -296,7 +294,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
   return if (isPreviouslyFailedCharge) {
     HedvigTheme.colorScheme.signalRedElement
   } else {
-    HedvigTheme.colorScheme.textSecondary
+    HedvigTheme.colorScheme.textSecondaryTranslucent
   }
 }
 

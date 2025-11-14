@@ -145,7 +145,7 @@ internal fun MemberChargeFragment.toMemberCharge(
       },
       priceBreakdown = chargeBreakdown.insurancePriceBreakdown.map {
         it.displayTitle to UiMoney.fromMoneyFragment(it.amount)
-      }
+      },
     )
   },
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),

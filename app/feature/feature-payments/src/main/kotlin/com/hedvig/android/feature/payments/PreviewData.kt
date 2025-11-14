@@ -85,8 +85,7 @@ internal val chargeBreakdownPreviewData = listOf(
   "Insurance" to UiMoney(100.0, UiCurrencyCode.SEK),
   "Addon" to UiMoney(50.0, UiCurrencyCode.SEK),
   "Discount" to UiMoney(30.0, UiCurrencyCode.SEK),
-
-  )
+)
 
 internal val chargeHistoryPreviewData = listOf(
   MemberCharge(
