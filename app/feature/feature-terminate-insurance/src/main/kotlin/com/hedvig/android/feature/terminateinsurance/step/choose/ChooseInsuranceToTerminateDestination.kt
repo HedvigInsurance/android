@@ -65,7 +65,7 @@ internal fun ChooseInsuranceToTerminateDestination(
 }
 
 @Composable
-private fun ChooseInsuranceToTerminateScreen(
+internal fun ChooseInsuranceToTerminateScreen(
   uiState: ChooseInsuranceToTerminateStepUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
