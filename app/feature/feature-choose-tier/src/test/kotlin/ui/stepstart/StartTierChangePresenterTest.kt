@@ -9,6 +9,8 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.DeflectOutput
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangePresenter
@@ -38,8 +40,10 @@ class StartTierChangePresenterTest {
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          activationDate = LocalDate(2024, 11, 11),
-          quotes = emptyList(),
+          IntentOutput(
+            activationDate = LocalDate(2024, 11, 11),
+            quotes = emptyList()
+          ), null,
         ).right(),
       )
       skipItems(1)
@@ -77,8 +81,11 @@ class StartTierChangePresenterTest {
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
-          activationDate = LocalDate(2024, 11, 11),
-          quotes = listOf(testQuote, testQuote2),
+          IntentOutput(
+            activationDate = LocalDate(2024, 11, 11),
+            quotes = listOf(testQuote, testQuote2),
+          ),
+          null
         ).right(),
       )
       skipItems(1)
@@ -86,6 +93,59 @@ class StartTierChangePresenterTest {
       assertThat(state).isInstanceOf(StartTierChangeState.Success::class)
         .prop(StartTierChangeState.Success::paramsToNavigate)
         .isNotNull()
+    }
+  }
+
+  @Test
+  fun `if deflectOutput is returned show deflect screen`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = StartTierChangePresenter(
+      tierRepository = tierRepo,
+      insuranceID = insuranceId,
+    )
+    presenter.test(StartTierChangeState.Loading) {
+      tierRepo.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      skipItems(1)
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(StartTierChangeState.Deflect::class)
+        .prop(StartTierChangeState.Deflect::title)
+        .isEqualTo("Deflect title")
+    }
+  }
+
+  @Test
+  fun `if intent is returned with both intentOutput and deflectOutput deflect takes precedence`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = StartTierChangePresenter(
+      tierRepository = tierRepo,
+      insuranceID = insuranceId,
+    )
+    presenter.test(StartTierChangeState.Loading) {
+      tierRepo.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = IntentOutput(
+            activationDate = LocalDate(2024, 11, 11),
+            quotes = listOf(testQuote, testQuote2),
+          ),
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      skipItems(1)
+      val state = awaitItem()
+      assertThat(state).isInstanceOf(StartTierChangeState.Deflect::class)
+        .prop(StartTierChangeState.Deflect::title)
+        .isEqualTo("Deflect title")
     }
   }
 }

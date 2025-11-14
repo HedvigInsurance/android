@@ -370,6 +370,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       navController = hedvigAppState.navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      onNavigateToNewConversation = ::navigateToNewConversation,
     )
     movingFlowGraph(
       navController = hedvigAppState.navController,
