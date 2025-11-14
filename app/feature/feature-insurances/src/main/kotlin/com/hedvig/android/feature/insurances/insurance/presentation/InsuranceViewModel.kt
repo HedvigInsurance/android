@@ -4,7 +4,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class InsuranceViewModel(
   getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,

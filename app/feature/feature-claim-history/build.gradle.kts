@@ -24,13 +24,12 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.androidx.navigation.compose)
-      implementation(libs.koin.compose)
+      implementation(libs.koin.composeViewModel)
+      implementation(libs.koin.composeViewModel)
       implementation(libs.koin.core)
-      implementation(libs.koin.coreViewmodel)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
-      implementation(projects.moleculeAndroid)
-      implementation(projects.moleculePublic)
+          implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
     }

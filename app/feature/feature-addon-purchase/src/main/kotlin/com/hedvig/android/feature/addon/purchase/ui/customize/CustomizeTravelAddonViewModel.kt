@@ -14,7 +14,7 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 

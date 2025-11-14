@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
@@ -33,7 +33,7 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.terminateInsuranceGraph(
@@ -47,7 +47,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openPlayStore: () -> Unit,
   navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
   closeTerminationFlow: () -> Unit,
-  redirectToChangeTierFlow: (NavBackStackEntry, Pair<String, ChangeTierDeductibleIntent>) -> Unit,
+  redirectToChangeTierFlow: (NavBackStackEntry, Pair<String, IntentOutput>) -> Unit,
 ) {
   navdestination<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
     TerminationFailureDestination(

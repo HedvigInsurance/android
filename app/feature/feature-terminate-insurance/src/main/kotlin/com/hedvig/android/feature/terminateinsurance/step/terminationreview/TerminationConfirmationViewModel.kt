@@ -15,7 +15,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Clock

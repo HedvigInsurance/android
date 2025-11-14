@@ -17,7 +17,7 @@ import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHi
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import java.io.File

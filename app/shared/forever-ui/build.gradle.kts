@@ -15,8 +15,8 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
-  implementation(libs.koin.coreViewmodel)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composeUi)
@@ -27,7 +27,6 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
 }

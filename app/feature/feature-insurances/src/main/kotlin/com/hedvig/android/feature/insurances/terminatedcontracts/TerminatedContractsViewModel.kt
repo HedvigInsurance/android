@@ -16,7 +16,7 @@ import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest

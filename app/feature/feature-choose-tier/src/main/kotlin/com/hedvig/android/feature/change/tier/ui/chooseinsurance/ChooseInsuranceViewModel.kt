@@ -17,7 +17,7 @@ import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsurance
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.NotAllowed
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
@@ -86,24 +86,35 @@ internal class ChooseInsurancePresenter(
     LaunchedEffect(insuranceToFetchIntentFor) {
       val customisableInsurance = insuranceToFetchIntentFor ?: return@LaunchedEffect
       currentState = Loading()
-      currentState = tierRepository
+      tierRepository
         .startChangeTierIntentAndGetQuotesId(customisableInsurance.id, SELF_SERVICE)
         .fold(
           ifLeft = {
             insuranceToFetchIntentFor = null
-            Failure
+            currentState = Failure
           },
-          ifRight = { intent ->
-            if (intent.quotes.isEmpty()) {
-              NotAllowed
-            } else {
-              val params = InsuranceCustomizationParameters(
-                insuranceId = customisableInsurance.id,
-                activationDate = intent.activationDate,
-                quoteIds = intent.quotes.map { it.id },
+          ifRight = { intentResult ->
+            val deflect = intentResult.deflectOutput
+            if (deflect != null) {
+              currentState = ChooseInsuranceUiState.Deflect(
+                title = deflect.title,
+                message = deflect.message,
               )
-              insuranceToFetchIntentFor = null
-              Loading(params)
+              return@LaunchedEffect
+            }
+            val intent = intentResult.intentOutput
+            if (intent != null) {
+              if (intent.quotes.isEmpty()) {
+                currentState = NotAllowed
+              } else {
+                val params = InsuranceCustomizationParameters(
+                  insuranceId = customisableInsurance.id,
+                  activationDate = intent.activationDate,
+                  quoteIds = intent.quotes.map { it.id },
+                )
+                insuranceToFetchIntentFor = null
+                currentState = Loading(params)
+              }
             }
           },
         )
@@ -155,6 +166,11 @@ internal sealed interface ChooseInsuranceUiState {
   data object Failure : ChooseInsuranceUiState
 
   data object NotAllowed : ChooseInsuranceUiState
+
+  data class Deflect(
+    val title: String,
+    val message: String,
+  ) : ChooseInsuranceUiState
 }
 
 internal sealed interface ChooseInsuranceToCustomizeEvent {

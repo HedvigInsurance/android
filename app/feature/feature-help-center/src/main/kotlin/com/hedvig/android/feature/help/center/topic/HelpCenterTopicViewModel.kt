@@ -11,7 +11,7 @@ import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterTopicUseCase
 import com.hedvig.android.feature.help.center.data.HelpCenterTopicError.GenericError
 import com.hedvig.android.feature.help.center.data.HelpCenterTopicError.NoTopicFound
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 

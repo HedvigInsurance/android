@@ -11,7 +11,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.first

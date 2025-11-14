@@ -3,7 +3,7 @@ package com.hedvig.android.feature.help.center
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class HelpCenterViewModel(
   getQuickLinksUseCase: GetQuickLinksUseCase,

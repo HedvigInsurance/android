@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.1.19"
+    versionName = "13.2.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -185,6 +185,7 @@ dependencies {
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
+  implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
   implementation(projects.featureClaimTriaging)
@@ -199,8 +200,8 @@ dependencies {
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
-  implementation(projects.featureInsurances)
   implementation(projects.featureInsuranceCertificate)
+  implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
@@ -224,6 +225,7 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
+  implementation(projects.shareddi)
   implementation(projects.theme)
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
