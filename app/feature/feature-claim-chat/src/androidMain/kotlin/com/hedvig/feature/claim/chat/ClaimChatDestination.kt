@@ -9,13 +9,16 @@ import com.hedvig.feature.claim.chat.PlatformBlurContainer
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ClaimChatDestination : Destination
+data class ClaimChatDestination (
+  val isDevelopmentFlow: Boolean,
+  val messageId: String?
+): Destination
 
 fun NavGraphBuilder.claimChatGraph() {
   navdestination<ClaimChatDestination> {
     PlatformBlurContainer(radius = 10) {
       BlurredGradientBackground()
     }
-    ClaimChatDestination()
+    ClaimChatDestination(isDevelopmentFlow, messageId)
   }
 }
