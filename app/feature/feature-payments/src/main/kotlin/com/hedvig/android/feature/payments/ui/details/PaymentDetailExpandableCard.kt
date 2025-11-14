@@ -41,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
+import com.hedvig.android.design.system.hedvig.contentColorFor
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -58,8 +59,8 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentDetailExpandableCard(
   displayName: String,
   subtitle: String,
-  totalGrossAmount: String,
-  totalNetAmount: String,
+  totalGrossAmount: UiMoney,
+  totalNetAmount: UiMoney,
   periods: List<MemberCharge.ChargeBreakdown.Period>,
   chargeBreakdown: List<Pair<String, UiMoney>>,
   isExpanded: Boolean,
@@ -106,7 +107,7 @@ internal fun PaymentDetailExpandableCard(
           ) {
             if (totalGrossAmount != totalNetAmount) {
               HedvigText(
-                text = totalGrossAmount,
+                text = totalGrossAmount.toString(),
                 textAlign = TextAlign.End,
                 textDecoration = TextDecoration.LineThrough,
                 color = HedvigTheme.colorScheme.textSecondaryTranslucent,
@@ -114,9 +115,14 @@ internal fun PaymentDetailExpandableCard(
               )
               Spacer(Modifier.width(6.dp))
             }
+            val totalNetDescription = totalNetAmount.getDescription()
             HedvigText(
-              text = totalNetAmount,
+              text = totalNetAmount.toString(),
               textAlign = TextAlign.End,
+              modifier = Modifier.semantics {
+                contentDescription = totalNetDescription
+              }
+
             )
             Spacer(Modifier.width(4.dp))
 
@@ -166,6 +172,7 @@ internal fun PaymentDetailExpandableCard(
                  .semantics(true){},
               )
             }
+            val totalNetAmountDescription = totalNetAmount.getDescription()
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
                 HedvigText(
@@ -176,10 +183,13 @@ internal fun PaymentDetailExpandableCard(
               },
               endSlot = {
                 HedvigText(
-                  totalNetAmount,
+                  totalNetAmount.toString(),
                   style = HedvigTheme.typography.label,
                   color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                   textAlign = TextAlign.End,
+                  modifier = Modifier.semantics(){
+                    contentDescription =totalNetAmountDescription
+                  }
                 )
               },
               spaceBetween = 8.dp,
@@ -213,7 +223,7 @@ internal fun PaymentDetailExpandableCard(
                 ) {
                   if (totalGrossAmount != totalNetAmount) {
                     HedvigText(
-                      text = totalGrossAmount,
+                      text = totalGrossAmount.toString(),
                       textAlign = TextAlign.End,
                       textDecoration = TextDecoration.LineThrough,
                       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
@@ -221,9 +231,13 @@ internal fun PaymentDetailExpandableCard(
                     )
                     Spacer(Modifier.width(6.dp))
                   }
+                  val totalNetAmountDescription = totalNetAmount.getDescription()
                   HedvigText(
-                    text = totalNetAmount,
+                    text = totalNetAmount.toString(),
                     textAlign = TextAlign.End,
+                    modifier = Modifier.semantics(){
+                      contentDescription =totalNetAmountDescription
+                    }
                   )
                 }
               },
@@ -334,8 +348,8 @@ private fun PaymentDetailExpandableCardPreview(
       PaymentDetailExpandableCard(
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
-        totalGrossAmount = "978 kr",
-        totalNetAmount = "800 kr",
+        totalGrossAmount = UiMoney(978.0, UiCurrencyCode.SEK),
+        totalNetAmount = UiMoney(800.0, UiCurrencyCode.SEK),
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, UiCurrencyCode.SEK),
