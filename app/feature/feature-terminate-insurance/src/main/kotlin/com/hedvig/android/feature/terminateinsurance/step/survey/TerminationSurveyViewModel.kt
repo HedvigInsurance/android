@@ -138,6 +138,7 @@ internal class TerminationSurveyPresenter(
                 selectedOptionId = null,
               )
               loadBetterQuotesSource = null
+              return@LaunchedEffect
             }
           }
           val intent = changeTierIntent.intentOutput
