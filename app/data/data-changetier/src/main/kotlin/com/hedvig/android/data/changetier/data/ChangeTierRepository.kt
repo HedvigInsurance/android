@@ -44,8 +44,10 @@ internal class ChangeTierRepositoryImpl(
       .onLeft { left ->
         logcat { "createChangeTierDeductibleIntentUseCase error: $left" }
       }
-      .onRight { intent ->
-        changeTierQuoteStorage.insertAll(intent.quotes)
+      .onRight { intentResult ->
+        intentResult.intentOutput?.let {
+          changeTierQuoteStorage.insertAll(it.quotes)
+        }
       }
   }
 

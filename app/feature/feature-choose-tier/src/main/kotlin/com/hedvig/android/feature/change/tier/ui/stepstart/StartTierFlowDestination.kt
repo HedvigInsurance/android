@@ -25,12 +25,16 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
@@ -45,6 +49,8 @@ internal fun StartChangeTierFlowDestination(
   viewModel: StartTierFlowViewModel,
   popBackStack: () -> Unit,
   launchFlow: (InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
@@ -54,6 +60,8 @@ internal fun StartChangeTierFlowDestination(
       viewModel.emit(StartTierChangeEvent.Reload)
     },
     launchFlow = launchFlow,
+    onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateUp = navigateUp,
   )
 }
 
@@ -63,6 +71,8 @@ private fun StartChangeTierFlowScreen(
   popBackStack: () -> Unit,
   reload: () -> Unit,
   launchFlow: (InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   when (uiState) {
     is Failure -> {
@@ -83,6 +93,62 @@ private fun StartChangeTierFlowScreen(
         launchFlow(params)
       }
     }
+
+    is StartTierChangeState.Deflect -> DeflectScreen(
+      title = uiState.title,
+      message = uiState.message,
+      closeFlow = popBackStack,
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      navigateUp = navigateUp,
+    )
+  }
+}
+
+@Composable
+internal fun DeflectScreen(
+  title: String,
+  message: String,
+  closeFlow: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateUp: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    modifier = modifier,
+  ) {
+    FlowHeading(
+      title = title,
+      description = null,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+
+    Spacer(Modifier.height(16.dp))
+    HedvigText(
+      message,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+      onClick = closeFlow,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    ) {
+      onNavigateToNewConversation()
+    }
+    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -143,6 +209,8 @@ private fun StartTierFlowScreenPreview(
         {},
         {},
         {},
+        {},
+        {},
       )
     }
   }
@@ -161,5 +229,10 @@ internal class StartTierChangeStateProvider :
       ),
       Failure(GENERAL),
       Failure(QUOTES_ARE_EMPTY),
+      StartTierChangeState.Deflect(
+        "How to change back to your previous coverage",
+        "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
+          "Once that’s done, your insurance will be updated automatically.",
+      ),
     ),
   )

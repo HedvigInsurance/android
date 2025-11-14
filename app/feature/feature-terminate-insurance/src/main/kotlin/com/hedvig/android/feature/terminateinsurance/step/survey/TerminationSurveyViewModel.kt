@@ -10,8 +10,8 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -97,7 +97,7 @@ internal class TerminationSurveyPresenter(
         TryToDowngradePrice -> loadBetterQuotesSource = TERMINATION_BETTER_PRICE
         TryToUpgradeCoverage -> loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
         ClearEmptyQuotesDialog -> {
-          currentState = currentState.copy(showEmptyQuotesDialog = false)
+          currentState = currentState.copy(showEmptyQuotesDialog = null)
         }
       }
     }
@@ -120,7 +120,8 @@ internal class TerminationSurveyPresenter(
           loadBetterQuotesSource = null
         },
         ifRight = { changeTierIntent ->
-          if (changeTierIntent.quotes.isEmpty()) {
+          val deflect = changeTierIntent.deflectOutput
+          if (deflect != null) {
             Snapshot.withMutableSnapshot {
               val optionsToDisable = options.filter { option ->
                 option.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
@@ -130,18 +131,41 @@ internal class TerminationSurveyPresenter(
               currentState = currentState.copy(
                 actionButtonLoading = false,
                 errorWhileLoadingNextStep = false,
-                showEmptyQuotesDialog = true,
+                showEmptyQuotesDialog = DeflectType.Deflect(
+                  deflect.title,
+                  deflect.message,
+                ),
                 selectedOptionId = null,
               )
               loadBetterQuotesSource = null
+              return@LaunchedEffect
             }
-          } else {
-            currentState = currentState.copy(
-              errorWhileLoadingNextStep = false,
-              actionButtonLoading = false,
-              intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
-            )
-            loadBetterQuotesSource = null
+          }
+          val intent = changeTierIntent.intentOutput
+          if (intent != null) {
+            if (intent.quotes.isEmpty()) {
+              Snapshot.withMutableSnapshot {
+                val optionsToDisable = options.filter { option ->
+                  option.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
+                    option.suggestion is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
+                }
+                disabledOptionsIdsDueToEmptyResultingQuotes = optionsToDisable.map { it.id }
+                currentState = currentState.copy(
+                  actionButtonLoading = false,
+                  errorWhileLoadingNextStep = false,
+                  showEmptyQuotesDialog = DeflectType.EmptyQuotes,
+                  selectedOptionId = null,
+                )
+                loadBetterQuotesSource = null
+              }
+            } else {
+              currentState = currentState.copy(
+                errorWhileLoadingNextStep = false,
+                actionButtonLoading = false,
+                intentAndIdToRedirectToChangeTierFlow = insuranceId to intent,
+              )
+              loadBetterQuotesSource = null
+            }
           }
         },
       )
@@ -219,8 +243,8 @@ internal data class TerminationSurveyState(
   val nextNavigationStep: SurveyNavigationStep?,
   val navigationStepLoading: Boolean,
   val errorWhileLoadingNextStep: Boolean,
-  val showEmptyQuotesDialog: Boolean,
-  val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>?,
+  val showEmptyQuotesDialog: DeflectType? = null,
+  val intentAndIdToRedirectToChangeTierFlow: Pair<String, IntentOutput>?,
   val actionButtonLoading: Boolean,
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
@@ -235,10 +259,19 @@ internal data class TerminationSurveyState(
     nextNavigationStep = null,
     navigationStepLoading = false,
     errorWhileLoadingNextStep = false,
-    showEmptyQuotesDialog = false,
+    showEmptyQuotesDialog = null,
     intentAndIdToRedirectToChangeTierFlow = null,
     actionButtonLoading = false,
   )
+}
+
+internal sealed interface DeflectType {
+  data object EmptyQuotes : DeflectType
+
+  data class Deflect(
+    val title: String,
+    val message: String,
+  ) : DeflectType
 }
 
 internal sealed interface SurveyNavigationStep {
