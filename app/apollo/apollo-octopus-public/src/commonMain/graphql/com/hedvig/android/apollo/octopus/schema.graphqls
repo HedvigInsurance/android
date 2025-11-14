@@ -198,6 +198,19 @@ input BrowserInfo {
   timeZoneOffset: Int!
   javaEnabled: Boolean!
 }
+"""
+Yearly savings from bundle discount
+"""
+type BundleYearlySavings {
+  """
+  Total yearly savings amount from bundle discount
+  """
+  savings: Money!
+  """
+  Whether the bundle discount covers the full period (true) or has pending/future items (false)
+  """
+  bundleDiscountCoversFullPeriod: Boolean!
+}
 type CampaignDiscount {
   """
   The type of discount, determines the relevancy of the other fields.
@@ -276,6 +289,10 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
+  """
+  Yearly savings from bundle discount
+  """
+  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -650,6 +667,7 @@ input ClaimIntentStartInput {
   as the first step, using the chat history as the implicit first step.
   """
   sourceMessageId: ID
+  developmentFlow: Boolean
 }
 """
 Represents a single step in the claim submission flow.
@@ -664,7 +682,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -673,6 +691,16 @@ type ClaimIntentStepContentAudioRecording {
   hint: String!
   """
   The relative URI towards where one should upload the audio recording.
+  """
+  uploadUri: String!
+}
+"""
+A file upload can be used to prompt the user to upload several files.
+Submitted using `Mutation.claimIntentSubmitFileUpload`.
+"""
+type ClaimIntentStepContentFileUpload {
+  """
+  The relative URI towards where one should upload the files.
   """
   uploadUri: String!
 }
@@ -779,8 +807,12 @@ type ClaimIntentStepContentTask {
 }
 input ClaimIntentSubmitAudioInput {
   stepId: ID!
-  audioReference: String
+  audioFileId: ID
   freeText: String
+}
+input ClaimIntentSubmitFileUploadInput {
+  stepId: ID!
+  fileIds: [ID!]!
 }
 input ClaimIntentSubmitFormInput {
   stepId: ID!
@@ -1909,8 +1941,6 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
-  partnerClaimsActive: [PartnerClaim!]!
-  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2736,6 +2766,10 @@ type Mutation {
   """
   claimIntentSubmitAudio(input: ClaimIntentSubmitAudioInput!): ClaimIntentMutationOutput!
   """
+  Submit a step containing a `ClaimIntentStepContentFileUpload`.
+  """
+  claimIntentSubmitFileUpload(input: ClaimIntentSubmitFileUploadInput!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentTask`.
   """
   claimIntentSubmitTask(input: ClaimIntentSubmitTaskInput!): ClaimIntentMutationOutput!
@@ -2930,22 +2964,6 @@ type Mutation {
   Call this to accept an addon offer and activate addon.
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
-}
-type PartnerClaim {
-  id: ID!
-  externalId: String!
-  exposureDisplayName: String
-  status: ClaimStatus
-  submittedAt: Date!
-  payoutAmount: Money
-  associatedTypeOfContract: String
-  claimType: String
-  handlerEmail: String
-  displayItems: [ClaimDisplayItem!]!
-  """
-  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
-  """
-  productVariant: ProductVariant
 }
 type PartnerData {
   sas: SasPartnerData
@@ -3178,7 +3196,7 @@ type Product {
   """
   Bundle discount information for this product
   """
-  bundleDiscount: ProductOfferBundleDiscountInfo!
+  bundleDiscount: ProductOfferBundleDiscountInfo! @deprecated(reason: "Use ProductOffer.bundleDiscount instead")
   """
   A list of the external insurers valid for this specific product.
   """
@@ -3238,6 +3256,10 @@ type ProductOffer {
   """
   addons: [ProductOfferAddon!]!
   """
+  Bundle discount information for a particular offer
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   Values related to cancellation/switching of their existing other insurance.
   """
   cancellation: ExternalInsuranceCancellation!
@@ -3283,6 +3305,10 @@ type ProductOfferBundleDiscountInfo {
   Whether the product is eligible for bundle discount
   """
   isEligible: Boolean!
+  """
+  Potential yearly savings for an offer with bundle discount. 'null' if the offer is not eligible for bundle discount
+  """
+  potentialYearlySavings: Money
 }
 type ProductOfferCost {
   """
@@ -3438,7 +3464,6 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
-  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """

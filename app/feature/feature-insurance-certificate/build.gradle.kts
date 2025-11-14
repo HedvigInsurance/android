@@ -17,7 +17,7 @@ android {
 dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
@@ -26,7 +26,6 @@ dependencies {
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

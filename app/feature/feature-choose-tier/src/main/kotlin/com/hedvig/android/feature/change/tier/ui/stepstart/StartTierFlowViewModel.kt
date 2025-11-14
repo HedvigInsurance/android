@@ -19,7 +19,7 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import com.hedvig.android.logger.LogPriority.WARN
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 

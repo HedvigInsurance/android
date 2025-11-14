@@ -12,7 +12,7 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -26,6 +26,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToContactInfo: (NavBackStackEntry) -> Unit,
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
+  navigateToClaimChat: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -43,6 +44,7 @@ fun NavGraphBuilder.homeGraph(
         viewModel = viewModel,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        navigateToClaimChat = navigateToClaimChat,
         onClaimDetailCardClicked = { claimId: String ->
           navigateToClaimDetails(backStackEntry, claimId)
         },

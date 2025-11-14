@@ -1,0 +1,10 @@
+mutation ClaimIntentSubmitSummary($stepId: ID!) {
+  claimIntentSubmitSummary(input: {stepId: $stepId}) {
+    userError {
+      message
+    }
+    intent {
+      ...ClaimIntentFragment
+    }
+  }
+}

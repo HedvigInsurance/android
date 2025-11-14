@@ -21,6 +21,7 @@ import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -60,6 +61,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -86,6 +88,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -110,6 +113,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -169,6 +173,7 @@ internal class HomePresenterTest {
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -181,6 +186,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -218,6 +224,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -230,6 +237,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -245,7 +253,7 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `with a successfull response, the unread chat state is set according to the unread message count`(
+  fun `with a successful response, the unread chat state is set according to the unread message count`(
     @TestParameter hasNotification: Boolean,
   ) = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
@@ -253,6 +261,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -289,6 +298,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
 
@@ -322,6 +332,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -334,6 +345,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
     val firstVet = FirstVetSection(
@@ -374,6 +386,7 @@ internal class HomePresenterTest {
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           crossSellsAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -386,6 +399,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
     val crossSell = CrossSell(
@@ -429,6 +443,7 @@ internal class HomePresenterTest {
               (true, 1L),
           ),
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -441,6 +456,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -473,6 +489,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }
@@ -485,6 +502,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
+      FakeFeatureManager(false),
       backgroundScope,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -517,6 +535,7 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = false,
         ),
       )
     }

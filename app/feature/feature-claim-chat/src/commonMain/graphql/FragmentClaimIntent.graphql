@@ -1,0 +1,69 @@
+fragment ClaimIntentFragment on ClaimIntent {
+  id
+  currentStep {
+    id
+    text
+    content {
+      ...ClaimIntentStepContentFragment
+    }
+  }
+  sourceMessages {
+    id
+    text
+  }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+  ...AudioRecordingFragment
+  ...FormFragment
+  ...TaskFragment
+  ...SummaryFragment
+  ...OutcomeFragment
+}
+
+fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
+  hint
+  uploadUri
+}
+
+fragment FormFragment on ClaimIntentStepContentForm {
+  fields {
+    id
+    type
+    title
+    suffix
+    isRequired
+    options {
+      title
+      value
+    }
+    defaultValue
+    minValue
+    maxValue
+  }
+}
+
+fragment TaskFragment on ClaimIntentStepContentTask {
+  description
+  isCompleted
+}
+
+fragment SummaryFragment on ClaimIntentStepContentSummary {
+  items {
+    title
+    value
+  }
+  audioRecordings {
+    url
+  }
+  fileUploads {
+    url
+    contentType
+    fileName
+  }
+}
+
+fragment OutcomeFragment on ClaimIntentStepContentOutcome {
+  claimId
+}
+

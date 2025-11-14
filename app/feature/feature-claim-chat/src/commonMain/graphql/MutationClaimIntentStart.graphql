@@ -1,0 +1,5 @@
+mutation ClaimIntentStart($sourceMessageId: ID) {
+  claimIntentStart(input: {sourceMessageId: $sourceMessageId}) {
+    ...ClaimIntentFragment
+  }
+}
