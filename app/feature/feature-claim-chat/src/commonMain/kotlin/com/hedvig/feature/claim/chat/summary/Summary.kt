@@ -15,12 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.data.StepContent
 
 @Composable
 internal fun Summary(
-  summary: ConversationItem.Summary,
+//  summary: ConversationItem.Summary,
   onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -37,9 +36,9 @@ internal fun Summary(
     Column(
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      summary.items.forEach {
-        SummaryItemRow(item = it)
-      }
+//      summary.items.forEach {
+//        SummaryItemRow(item = it)
+//      }
     }
 
     HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))

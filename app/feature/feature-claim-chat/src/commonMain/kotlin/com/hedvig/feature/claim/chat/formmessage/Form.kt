@@ -14,11 +14,11 @@ import com.hedvig.feature.claim.chat.ui.FormViews
 
 @Composable
 internal fun Form(
-  item: ConversationItem.Form,
+//  item: ConversationItem.Form,
   onSubmit: () -> Unit,
 ) {
   Column(horizontalAlignment = Alignment.End) {
-    FormViews(item)
+//    FormViews(item)
     Spacer(Modifier.height(4.dp))
     Button(
       onClick = onSubmit,
