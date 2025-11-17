@@ -36,6 +36,7 @@ kotlin {
       implementation(libs.ktor.client.logging)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
+      implementation(projects.moleculePublic)
     }
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
