@@ -29,7 +29,7 @@ internal sealed interface StepContent {
   ) : StepContent
 
   data class Task(
-    val description: String,
+    val descriptions: List<String>,
     val isCompleted: Boolean,
   ) : StepContent {
     override val isSkippable: Boolean = false
