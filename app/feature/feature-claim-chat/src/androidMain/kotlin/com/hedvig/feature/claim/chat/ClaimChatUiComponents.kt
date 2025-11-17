@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -33,6 +36,8 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -50,10 +55,12 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import hedvig.resources.R
+import java.util.Locale
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -231,7 +238,15 @@ internal fun DateSelectBubble(
     selectedAnswer = date,
     onSkip = onSkip,
     content = {
-//      TODO()
+      val datePickerState = DatePickerUiState(
+        locale = getLocale(),
+        initiallySelectedDate = date,
+      )
+      DatePickerWithDialog(
+        datePickerState,
+        canInteract = canBeChanged,
+        startText = questionLabel ?: "" //todo
+      )
     },
   )
 }
@@ -260,20 +275,19 @@ internal fun TextInputBubble(
     onSkip = onSkip,
     content = {
       val focusRequester = remember { FocusRequester() }
-      var textValue by rememberSaveable { mutableStateOf(text ?: "") }
+      var textValue by rememberSaveable { mutableStateOf(text
+        ?: "") }
       val focusManager = LocalFocusManager.current
       HedvigTextField(
         text = textValue,
         trailingContent = {},
         onValueChange = onValueChange@{ newValue ->
-          if (newValue.length > 10) return@onValueChange
-          if (!newValue.isDigitsOnly()) return@onValueChange
           textValue = newValue
           onInput(newValue.ifBlank { null })
         },
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         labelText = questionLabel,
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = Modifier.focusRequester(focusRequester),
         enabled = canBeChanged,
         suffix = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -290,7 +304,8 @@ internal fun TextInputBubble(
                     },
                     Modifier.size(24.dp),
                   ) {
-                    Icon(HedvigIcons.Close, stringResource(R.string.GENERAL_REMOVE))
+                    Icon(HedvigIcons.Close,
+                      stringResource(R.string.GENERAL_REMOVE))
                   }
                 }
               }
@@ -457,16 +472,17 @@ private fun PreviewClaimChatComponents() {
           onSelect = {},
         )
         Spacer(Modifier.height(16.dp))
-//        DateSelectBubble(
-//          questionLabel = null,
-//          date = LocalDate(2025, 11, 10),
-//          isPrefilled = true,
-//          isCurrentStep = false,
-//          canSkip = false,
-//          canBeChanged = true,
-//          onSubmit = {},
-//          onSkip = {}
-//        )
+        DateSelectBubble(
+          questionLabel = "Date of occurence",
+          date = LocalDate(2025, 11, 10),
+          isPrefilled = true,
+          isCurrentStep = false,
+          canSkip = false,
+          canBeChanged = true,
+          onSubmit = {},
+          onSkip = {}
+        )
+        Spacer(Modifier.height(16.dp))
         TextInputBubble(
           questionLabel = "Re-purchase price",
           text = "15000",
