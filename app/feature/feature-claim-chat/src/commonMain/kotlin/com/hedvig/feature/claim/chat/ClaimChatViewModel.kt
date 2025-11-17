@@ -41,6 +41,8 @@ sealed class UserAction {
 }
 
 internal class ClaimChatViewModel(
+  private val isDevelopmentFlow: Boolean,
+  private val messageId: String?,
   private val startClaimIntentUseCase: StartClaimIntentUseCase,
   private val getClaimIntentUseCase: GetClaimIntentUseCase,
   private val submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
@@ -60,7 +62,8 @@ internal class ClaimChatViewModel(
   }
 
   private fun startClaimIntent() = scope.launch {
-    startClaimIntentUseCase.invoke(sourceMessageId = "2ec77791-0705-4bb9-9689-80ba3aed7202").fold(
+    startClaimIntentUseCase.invoke(sourceMessageId = messageId,
+      developmentFlow = isDevelopmentFlow).fold(
       ifLeft = { errorMessage ->
         _state.update { it.copy(errorMessage = errorMessage.message) }
       },
