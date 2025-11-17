@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
-import com.hedvig.feature.claim.chat.ClaimChatViewModel2
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
@@ -16,8 +15,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val claimChatModule = module {
-  viewModel<ClaimChatViewModel2> { (sourceMessageId: String?, developmentFlow: Boolean) ->
-    ClaimChatViewModel2(
+  viewModel<ClaimChatViewModel> { (sourceMessageId: String?, developmentFlow: Boolean) ->
+    ClaimChatViewModel(
       sourceMessageId,
       developmentFlow,
       get(),
@@ -27,17 +26,6 @@ val claimChatModule = module {
       get(),
       get(),
       get(),
-    )
-  }
-  viewModel<ClaimChatViewModel> {
-    ClaimChatViewModel(
-      get<StartClaimIntentUseCase>(),
-      get<GetClaimIntentUseCase>(),
-      get<SubmitAudioRecordingUseCase>(),
-      get<UploadAudioUseCase>(),
-      get<SubmitFormUseCase>(),
-      get<SubmitTaskUseCase>(),
-      get<SubmitSummaryUseCase>(),
     )
   }
 

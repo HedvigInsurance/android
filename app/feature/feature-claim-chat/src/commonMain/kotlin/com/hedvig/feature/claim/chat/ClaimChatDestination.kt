@@ -26,14 +26,14 @@ import org.koin.core.parameter.parametersOf
 fun ClaimChatDestination() {
   val messageId: String? = null
   val developmentFlow: Boolean = true
-  val claimChatViewModel = koinViewModel<ClaimChatViewModel2> {
+  val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
     parametersOf(messageId, developmentFlow)
   }
   ClaimChatScreen(claimChatViewModel)
 }
 
 @Composable
-internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel2) {
+internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {

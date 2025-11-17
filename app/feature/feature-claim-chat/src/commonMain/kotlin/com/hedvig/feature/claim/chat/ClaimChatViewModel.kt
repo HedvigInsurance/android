@@ -50,7 +50,7 @@ internal sealed interface ClaimChatUiState {
   ) : ClaimChatUiState
 }
 
-internal class ClaimChatViewModel2(
+internal class ClaimChatViewModel(
   sourceMessageId: String?,
   developmentFlow: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,
@@ -62,7 +62,7 @@ internal class ClaimChatViewModel2(
   submitSummaryUseCase: SubmitSummaryUseCase,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
   ClaimChatUiState.Initializing,
-  ClaimChatPresenter2(
+  ClaimChatPresenter(
     sourceMessageId,
     developmentFlow,
     startClaimIntentUseCase,
@@ -75,7 +75,7 @@ internal class ClaimChatViewModel2(
   ),
 )
 
-internal class ClaimChatPresenter2(
+internal class ClaimChatPresenter(
   private val sourceMessageId: String?,
   private val developmentFlow: Boolean,
   private val startClaimIntentUseCase: StartClaimIntentUseCase,
