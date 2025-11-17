@@ -14,10 +14,12 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
@@ -27,14 +29,20 @@ import kotlin.String
 import kotlinx.coroutines.launch
 
 internal sealed interface ClaimChatEvent {
-  data class Select(val stepId: String, val selectedId: String) : ClaimChatEvent
+  sealed interface AudioRecording : ClaimChatEvent {
+    val id: StepId
+
+    data class TextInput(override val id: StepId, val text: String) : AudioRecording
+  }
+
+  data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
   data object Initializing : ClaimChatUiState
   data object FailedToStart : ClaimChatUiState
   data class ClaimChat(
-    val claimIntentId: String,
+    val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
   ) : ClaimChatUiState
 }
@@ -119,16 +127,30 @@ internal class ClaimChatPresenter2(
         is ClaimChatEvent.Select -> {
           launch {
             submitSelectUseCase
-              .invoke(event.stepId, event.selectedId)
+              .invoke(event.id, event.selectedId)
               .fold(
                 ifLeft = { error("todo left submitSelectUseCase") },
                 ifRight = { claimIntent ->
-                  Snapshot.withMutableSnapshot {
-                    steps.removeLastIf { it.stepContent is StepContent.Task }
-                    steps.add(claimIntent.step)
-                  }
+                  steps.replaceTaskWithNextStep(claimIntent.step)
                 },
               )
+          }
+        }
+
+        is ClaimChatEvent.AudioRecording -> {
+          when (event) {
+            is ClaimChatEvent.AudioRecording.TextInput -> {
+              launch {
+                submitAudioRecordingUseCase
+                  .invoke(event.id, event.text)
+                  .fold(
+                    ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                    ifRight = { claimIntent ->
+                      steps.replaceTaskWithNextStep(claimIntent.step)
+                    }
+                  )
+              }
+            }
           }
         }
       }
@@ -143,6 +165,13 @@ internal class ClaimChatPresenter2(
   }
 }
 
+private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
+  Snapshot.withMutableSnapshot {
+    removeLastIf { it.stepContent is StepContent.Task }
+    add(step)
+  }
+}
+
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
   val last = lastOrNull() ?: return
   if (predicate(last)) {
@@ -154,7 +183,7 @@ private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
 private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   currentStep: ClaimIntentStep?,
-  claimIntentId: () -> String?,
+  claimIntentId: () -> ClaimIntentId?,
   steps: SnapshotStateList<ClaimIntentStep>,
 ) {
   val isIncompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted?.not() == true
@@ -197,7 +226,7 @@ private fun SubmitCompleteTaskEffect(
   LaunchedEffect(isCompleteTask) {
     if (!isCompleteTask) return@LaunchedEffect
     submitTaskUseCase
-      .invoke(currentStep.id)
+      .invoke(currentStep.id.value)
       .fold(
         ifLeft = { error("todo left submitTaskUseCase") },
         ifRight = { claimIntent ->
