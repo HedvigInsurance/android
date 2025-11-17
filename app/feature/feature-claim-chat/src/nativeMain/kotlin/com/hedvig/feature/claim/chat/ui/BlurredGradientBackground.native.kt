@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal expect fun PlatformBlurContainer(
-  modifier: Modifier = Modifier,
-  radius: Int = 100,
-  content: @Composable () -> Unit
-)
+internal actual fun PlatformBlurContainer(
+  modifier: Modifier,
+  radius: Int,
+  content: @Composable (() -> Unit),
+) {
+}

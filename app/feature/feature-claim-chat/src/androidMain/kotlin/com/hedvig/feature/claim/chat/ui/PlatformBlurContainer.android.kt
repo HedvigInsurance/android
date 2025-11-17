@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
-actual fun PlatformBlurContainer(
+internal actual fun PlatformBlurContainer(
     modifier: Modifier,
     radius: Int,
     content: @Composable (() -> Unit)

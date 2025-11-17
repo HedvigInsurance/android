@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ConversationUiState(
+internal data class ConversationUiState(
   val conversation: List<ConversationStep> = emptyList(),
   val isInputActive: Boolean = true,
   val currentInputText: String = "",
@@ -32,7 +32,7 @@ data class ConversationUiState(
   val errorMessage: String? = null,
 )
 
-sealed class UserAction {
+internal sealed class UserAction {
   data class AudioRecordingSubmitted(val url: String) : UserAction()
   data class TextSubmitted(val text: String) : UserAction()
   data class FormSubmitted(val selectedValue: List<FormField>) : UserAction()
@@ -60,7 +60,7 @@ internal class ClaimChatViewModel(
   }
 
   private fun startClaimIntent() = scope.launch {
-    startClaimIntentUseCase.invoke(sourceMessageId = "2ec77791-0705-4bb9-9689-80ba3aed7202").fold(
+    startClaimIntentUseCase.invoke(sourceMessageId = "2ec77791-0705-4bb9-9689-80ba3aed7202", true).fold(
       ifLeft = { errorMessage ->
         _state.update { it.copy(errorMessage = errorMessage.message) }
       },

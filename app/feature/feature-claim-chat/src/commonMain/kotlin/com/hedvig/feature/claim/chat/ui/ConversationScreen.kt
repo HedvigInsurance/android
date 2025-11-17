@@ -31,7 +31,7 @@ import com.hedvig.feature.claim.chat.summary.Summary
 import kotlinx.coroutines.launch
 
 @Composable
-fun ConversationScreen(
+internal fun ConversationScreen(
   state: ConversationUiState,
   onAction: (UserAction) -> Unit,
 ) {
@@ -85,7 +85,7 @@ fun ConversationScreen(
 }
 
 @Composable
-fun FormViews(item: ConversationItem.Form) {
+internal fun FormViews(item: ConversationItem.Form) {
   item.formFieldList.forEach { formField ->
     when (formField.type) {
       FormFieldType.TEXT -> FormText(

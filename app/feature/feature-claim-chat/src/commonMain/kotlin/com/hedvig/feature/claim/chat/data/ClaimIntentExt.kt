@@ -2,15 +2,7 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.feature.claim.chat.ConversationItem
-import com.hedvig.feature.claim.chat.ConversationItem.AssistantLoadingState
-import com.hedvig.feature.claim.chat.ConversationItem.AssistantMessage
-import com.hedvig.feature.claim.chat.ConversationItem.AudioRecording
-import com.hedvig.feature.claim.chat.ConversationItem.Form
-import com.hedvig.feature.claim.chat.ConversationItem.Summary
 import com.hedvig.feature.claim.chat.ConversationStep
-import com.hedvig.feature.claim.chat.FormField
-import com.hedvig.feature.claim.chat.FormFieldType
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
@@ -56,7 +48,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
   return when (this) {
     is FormFragment -> StepContent.Form(this.fields.toFields(), isSkippable, isRegrettable)
     is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable, isRegrettable)
-    is TaskFragment -> StepContent.Task(description, isCompleted)
+    is TaskFragment -> StepContent.Task(listOf(description), isCompleted)
     is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri, isSkippable, isRegrettable)
     is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable, isRegrettable)
     is SummaryFragment -> StepContent.Summary(
@@ -94,53 +86,54 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
   }
 }
 
-fun ClaimIntent.createConversationItem(): ConversationStep = when (val content = step.stepContent) {
-  is StepContent.AudioRecording -> AudioRecording(
-    stepId = step.id,
-    text = step.text,
-    hint = content.hint,
-    uploadUri = content.uploadUri,
-  )
-
-  is StepContent.Form -> Form(
-    stepId = step.id,
-    formFieldList = content.fields.map { field ->
-      FormField(
-        fieldId = field.id,
-        title = field.title,
-        type = FormFieldType.TEXT, // todo
-        defaultValue = field.defaultValue,
-        currentValue = "",
-        isRequired = field.isRequired,
-        minValue = field.minValue,
-        maxValue = field.maxValue,
-        options = field.options,
-        suffix = field.suffix,
-      )
-    },
-  )
-
-  is StepContent.Summary -> Summary(
-    stepId = step.id,
-    items = step.stepContent.items,
-  )
-
-  is StepContent.Task -> AssistantLoadingState(
-    stepId = step.id,
-    text = step.text,
-    subText = content.description,
-    isLoading = !content.isCompleted,
-  )
-
-  StepContent.Unknown -> AssistantMessage(
-    stepId = step.id,
-    text = "I do not know how to respond to that...",
-    subText = "(unknown step content)",
-  )
-
-  is StepContent.Outcome -> ConversationItem.Outcome(
-    text = step.text,
-    claimId = content.claimId,
-    stepId = step.id,
-  )
-}
+internal fun ClaimIntent.createConversationItem(): ConversationStep = TODO()
+//when (val content = step.stepContent) {
+//  is StepContent.AudioRecording -> AudioRecording(
+//    stepId = step.id,
+//    text = step.text,
+//    hint = content.hint,
+//    uploadUri = content.uploadUri,
+//  )
+//
+//  is StepContent.Form -> Form(
+//    stepId = step.id,
+//    formFieldList = content.fields.map { field ->
+//      FormField(
+//        fieldId = field.id,
+//        title = field.title,
+//        type = FormFieldType.TEXT, // todo
+//        defaultValue = field.defaultValue,
+//        currentValue = "",
+//        isRequired = field.isRequired,
+//        minValue = field.minValue,
+//        maxValue = field.maxValue,
+//        options = field.options,
+//        suffix = field.suffix,
+//      )
+//    },
+//  )
+//
+//  is StepContent.Summary -> Summary(
+//    stepId = step.id,
+//    items = step.stepContent.items,
+//  )
+//
+//  is StepContent.Task -> AssistantLoadingState(
+//    stepId = step.id,
+//    text = step.text,
+//    subText = content.description,
+//    isLoading = !content.isCompleted,
+//  )
+//
+//  StepContent.Unknown -> AssistantMessage(
+//    stepId = step.id,
+//    text = "I do not know how to respond to that...",
+//    subText = "(unknown step content)",
+//  )
+//
+//  is StepContent.Outcome -> ConversationItem.Outcome(
+//    text = step.text,
+//    claimId = content.claimId,
+//    stepId = step.id,
+//  )
+//}

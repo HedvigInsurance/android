@@ -13,7 +13,7 @@ import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.ui.FormViews
 
 @Composable
-fun Form(
+internal fun Form(
   item: ConversationItem.Form,
   onSubmit: () -> Unit,
 ) {

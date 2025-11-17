@@ -19,7 +19,7 @@ import com.hedvig.feature.claim.chat.ConversationItem
 import com.hedvig.feature.claim.chat.data.StepContent
 
 @Composable
-fun Summary(
+internal fun Summary(
   summary: ConversationItem.Summary,
   onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
@@ -57,7 +57,7 @@ fun Summary(
 }
 
 @Composable
-fun SummaryItemRow(item: StepContent.Summary.Item) {
+internal fun SummaryItemRow(item: StepContent.Summary.Item) {
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,

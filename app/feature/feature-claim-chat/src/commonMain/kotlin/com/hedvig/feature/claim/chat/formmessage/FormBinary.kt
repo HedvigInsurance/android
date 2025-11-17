@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FormBinary(
+internal fun FormBinary(
   value: String?,
   id: String,
   title: String?,

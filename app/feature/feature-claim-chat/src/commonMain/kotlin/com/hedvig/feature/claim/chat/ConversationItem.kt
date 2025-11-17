@@ -2,21 +2,20 @@ package com.hedvig.feature.claim.chat
 
 import com.hedvig.feature.claim.chat.data.StepContent
 
-interface ConversationStep {
+internal interface ConversationStep {
   val stepId: String
 }
 
-sealed class ConversationItem() {
+internal sealed class ConversationItem() {
   data class AudioRecording(val hint: String?, val uploadUri: String, val text: String, override val stepId: String) : ConversationItem(), ConversationStep
   data class AssistantMessage(val text: String, val subText: String, override val stepId: String) : ConversationItem(), ConversationStep
   data class AssistantLoadingState(val text: String, val subText: String, val isLoading: Boolean, override val stepId: String) : ConversationItem(), ConversationStep
   data class Form(val formFieldList: List<FormField>, override val stepId: String) : ConversationItem(), ConversationStep
-
   data class Summary(val items: List<StepContent.Summary.Item>, override val stepId: String) : ConversationItem(), ConversationStep
   data class Outcome(val claimId: String, override val stepId: String, val text: String) : ConversationItem(), ConversationStep
 }
 
-data class FormField(
+internal data class FormField(
   val fieldId: String,
   val type: FormFieldType,
   val defaultValue: String? = null,
@@ -29,7 +28,7 @@ data class FormField(
   val title: String? = null,
 )
 
-enum class FormFieldType {
+internal enum class FormFieldType {
   TEXT,
   DATE,
   NUMBER,
