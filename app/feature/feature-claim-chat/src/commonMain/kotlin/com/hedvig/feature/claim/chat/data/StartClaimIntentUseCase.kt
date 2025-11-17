@@ -13,10 +13,18 @@ import octopus.fragment.ClaimIntentFragment
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(sourceMessageId: String?): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(
+    sourceMessageId: String?,
+    developmentFlow: Boolean,
+  ): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
-        .mutation(ClaimIntentStartMutation(Optional.presentIfNotNull(sourceMessageId)))
+        .mutation(
+          ClaimIntentStartMutation(
+            sourceMessageId = Optional.presentIfNotNull(sourceMessageId),
+            developmentFlow = Optional.present(developmentFlow),
+          ),
+        )
         .safeExecute()
         .mapLeft(::ErrorMessage)
         .bind()
