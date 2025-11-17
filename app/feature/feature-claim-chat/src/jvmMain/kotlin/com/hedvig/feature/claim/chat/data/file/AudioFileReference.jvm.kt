@@ -1,7 +1,9 @@
 package com.hedvig.feature.claim.chat.data.file
 
-actual class AudioFileReference actual constructor(val pathOrUri: String) {
-  actual suspend fun readBytes(): ByteArray {
+internal actual fun AudioFileReference(pathOrUri: String): AudioFileReference = object : AudioFileReference{
+  override val pathOrUri: String = pathOrUri
+
+  override suspend fun readBytes(): ByteArray {
     return ByteArray(0)
   }
 }
