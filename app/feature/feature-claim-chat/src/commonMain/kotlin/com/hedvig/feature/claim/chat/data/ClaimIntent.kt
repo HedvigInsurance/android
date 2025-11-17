@@ -19,6 +19,9 @@ internal data class ClaimIntentStep(
   val stepContent: StepContent,
 )
 
+@JvmInline
+value class FieldId(val value: String)
+
 internal sealed interface StepContent {
   val isSkippable: Boolean
   val isRegrettable: Boolean
@@ -49,8 +52,9 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
+
     data class Field(
-      val id: String,
+      val id: FieldId,
       val isRequired: Boolean,
       val suffix: String?,
       val title: String,

@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.feature.claim.chat.ConversationStep
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
@@ -30,7 +29,7 @@ internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
 
 internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
   return ClaimIntent(
-    id = id,
+    id = ClaimIntentId(id),
     step = currentStep.toClaimIntentStep(),
     // todo also render source messages
   )
@@ -38,7 +37,7 @@ internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
 
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
   return ClaimIntentStep(
-    id = id,
+    id = StepId(id),
     text = text,
     stepContent = this.content.toStepContent(),
   )
@@ -73,7 +72,7 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
 private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
   return this.map { field ->
     StepContent.Form.Field(
-      id = field.id,
+      id = FieldId(field.id),
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
