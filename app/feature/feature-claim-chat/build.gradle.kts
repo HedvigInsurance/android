@@ -43,6 +43,7 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.designSystemHedvig)
+      implementation(projects.composeUi)
     }
   }
 }
