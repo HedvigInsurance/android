@@ -28,8 +28,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ConversationScreen(
-  state: ConversationUiState,
-  onAction: (UserAction) -> Unit,
+  state: ClaimChatUiState,
+  onAction: (ClaimChatEvent) -> Unit,
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -48,13 +48,13 @@ fun ConversationScreen(
               item.text,
               item.hint,
               item.uploadUri,
-              onStartRecording = { onAction(UserAction.AudioRecordingSubmitted(item.uploadUri)) },
+              onStartRecording = { onAction(ClaimChatEvent.AudioRecordingSubmitted(item.uploadUri)) },
             )
 
             is ConversationItem.AssistantMessage -> AssistantChatMessage(item.text, item.subText)
             is ConversationItem.AssistantLoadingState -> AssistantLoadingState(item.text, item.subText, item.isLoading)
-            is ConversationItem.Form -> Form(item) { onAction(UserAction.FormSubmitted(item.formFieldList)) }
-            is ConversationItem.Summary -> Summary(item, onSubmit = { onAction(UserAction.SummarySubmitted) })
+            is ConversationItem.Form -> Form(item) { onAction(ClaimChatEvent.FormSubmitted(item.formFieldList)) }
+            is ConversationItem.Summary -> Summary(item, onSubmit = { onAction(ClaimChatEvent.SummarySubmitted) })
             is ConversationItem.Outcome -> AssistantChatMessage(text = item.text, subText = item.claimId)
           }
         }
@@ -73,7 +73,7 @@ fun ConversationScreen(
       ErrorDialog(
         message = message,
         onDismiss = {
-          onAction(UserAction.ErrorAcknowledged)
+          onAction(ClaimChatEvent.ErrorAcknowledged)
         },
       )
     }

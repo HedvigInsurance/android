@@ -1,7 +1,14 @@
 package com.hedvig.feature.claim.chat
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
@@ -12,19 +19,13 @@ import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.UploadAudioUseCase
 import com.hedvig.feature.claim.chat.data.createConversationItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ConversationUiState(
+data class ClaimChatUiState(
   val conversation: List<ConversationStep> = emptyList(),
   val isInputActive: Boolean = true,
   val currentInputText: String = "",
@@ -32,15 +33,40 @@ data class ConversationUiState(
   val errorMessage: String? = null,
 )
 
-sealed class UserAction {
-  data class AudioRecordingSubmitted(val url: String) : UserAction()
-  data class TextSubmitted(val text: String) : UserAction()
-  data class FormSubmitted(val selectedValue: List<FormField>) : UserAction()
-  object ErrorAcknowledged : UserAction()
-  object SummarySubmitted : UserAction()
+sealed class ClaimChatEvent {
+  data class AudioRecordingSubmitted(val url: String) : ClaimChatEvent()
+  data class TextSubmitted(val text: String) : ClaimChatEvent()
+  data class FormSubmitted(val selectedValue: List<FormField>) : ClaimChatEvent()
+  object ErrorAcknowledged : ClaimChatEvent()
+  object SummarySubmitted : ClaimChatEvent()
 }
 
 internal class ClaimChatViewModel(
+  isDevelopmentFlow: Boolean,
+  messageId: String?,
+  startClaimIntentUseCase: StartClaimIntentUseCase,
+  getClaimIntentUseCase: GetClaimIntentUseCase,
+  submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  uploadAudioUseCase: UploadAudioUseCase,
+  submitFormUseCase: SubmitFormUseCase,
+  submitTaskUseCase: SubmitTaskUseCase,
+  submitSummaryUseCase: SubmitSummaryUseCase,
+) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
+  ClaimChatUiState(),
+  ClaimChatPresenter(
+    isDevelopmentFlow = isDevelopmentFlow,
+    messageId = messageId,
+    startClaimIntentUseCase = startClaimIntentUseCase,
+    getClaimIntentUseCase = getClaimIntentUseCase,
+    submitAudioRecordingUseCase = submitAudioRecordingUseCase,
+    uploadAudioUseCase = uploadAudioUseCase,
+    submitFormUseCase = submitFormUseCase,
+    submitTaskUseCase = submitTaskUseCase,
+    submitSummaryUseCase = submitSummaryUseCase,
+  ),
+)
+
+private class ClaimChatPresenter(
   private val isDevelopmentFlow: Boolean,
   private val messageId: String?,
   private val startClaimIntentUseCase: StartClaimIntentUseCase,
@@ -50,45 +76,171 @@ internal class ClaimChatViewModel(
   private val submitFormUseCase: SubmitFormUseCase,
   private val submitTaskUseCase: SubmitTaskUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
-) : ViewModel() {
+) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
+  @Composable
+  override fun MoleculePresenterScope<ClaimChatEvent>.present(
+    lastState: ClaimChatUiState,
+  ): ClaimChatUiState {
 
-  private var pollingJob: Job? = null
-  private val scope = CoroutineScope(Dispatchers.Default)
-  private val _state = MutableStateFlow(ConversationUiState())
-  val state: StateFlow<ConversationUiState> = _state.asStateFlow()
+    var currentState by remember { mutableStateOf(lastState) }
+    var pollingJob: Job? by remember { mutableStateOf(null) }
+    var audioRecordingUrl: String? by remember { mutableStateOf(null) }
+    var selectedFormField: List<FormField>? by remember { mutableStateOf(null) }
+    var hasSummaryToSubmit: Boolean by remember { mutableStateOf(false) }
 
-  init {
-    startClaimIntent()
-  }
-
-  private fun startClaimIntent() = scope.launch {
-    startClaimIntentUseCase.invoke(sourceMessageId = messageId,
-      developmentFlow = isDevelopmentFlow).fold(
-      ifLeft = { errorMessage ->
-        _state.update { it.copy(errorMessage = errorMessage.message) }
-      },
-      ifRight = { claimIntent ->
-        updateConversationStateWithNewClaimIntent(claimIntent)
-        if (claimIntent.step.stepContent is StepContent.Task) {
-          pollIntentUntilCompletedAndSubmit(claimIntent.id)
+    CollectEvents { event ->
+      when (event) {
+        is ClaimChatEvent.AudioRecordingSubmitted -> {
+          audioRecordingUrl = event.url
         }
-      },
-    )
+
+
+        is ClaimChatEvent.TextSubmitted -> {
+          // todo
+        }
+
+        is ClaimChatEvent.FormSubmitted -> {
+          selectedFormField = event.selectedValue
+        }
+
+        is ClaimChatEvent.ErrorAcknowledged -> {
+          currentState = currentState.copy(errorMessage = null)
+        }
+
+        ClaimChatEvent.SummarySubmitted -> {
+          hasSummaryToSubmit = true
+        }
+      }
+    }
+
+    LaunchedEffect(Unit) {
+      startClaimIntentUseCase.invoke(
+        sourceMessageId = messageId,
+        developmentFlow = isDevelopmentFlow,
+      ).fold(
+        ifLeft = { errorMessage ->
+          currentState = currentState.copy(errorMessage = errorMessage.message)
+        },
+        ifRight = { claimIntent ->
+          currentState = updateConversationStateWithNewClaimIntent(currentState, claimIntent)
+          if (claimIntent.step.stepContent is StepContent.Task) {
+            pollingJob?.cancel()
+            pollingJob = pollIntentUntilCompletedAndSubmit(
+              claimIntent.id,
+              this,
+              { currentState },
+            ) { newState ->
+              currentState = newState
+            }
+          }
+        },
+      )
+    }
+
+    LaunchedEffect(audioRecordingUrl) {
+      val url = audioRecordingUrl ?: return@LaunchedEffect
+      val stepId = currentState.claimIntent?.step?.id ?: return@LaunchedEffect
+      submitAudioRecordingUseCase.invoke(
+        stepId = stepId,
+        audioFileId = url,
+        freeText = null,
+      ).fold(
+        ifLeft = { errorMessage ->
+          currentState = currentState.copy(errorMessage = errorMessage.message)
+        },
+        ifRight = { claimIntent ->
+          val capturedState = updateConversationStateWithNewClaimIntent(currentState, claimIntent)
+          submitTask(
+            claimIntent.step.id,
+            { capturedState },
+          ) { finalState ->
+            currentState = finalState
+            pollingJob = null
+          }
+        },
+      )
+    }
+
+    LaunchedEffect(selectedFormField) {
+      val selectedValue = selectedFormField ?: return@LaunchedEffect
+      val stepId = currentState.claimIntent?.step?.id ?: return@LaunchedEffect
+      submitFormUseCase.invoke(stepId, selectedValue).fold(
+        ifLeft = { errorMessage ->
+          currentState = currentState.copy(errorMessage = errorMessage.message)
+          pollingJob = null
+        },
+        ifRight = { claimIntent ->
+          val newState = updateConversationStateWithNewClaimIntent(currentState, claimIntent)
+          val newPollingJob = if (claimIntent.step.stepContent is StepContent.Task) {
+            pollIntentUntilCompletedAndSubmit(
+              claimIntent.id,
+              this,
+              { newState },
+            ) { state ->
+              currentState = newState
+              pollingJob = null
+            }
+          } else {
+            null
+          }
+          currentState = newState
+          pollingJob = newPollingJob
+        },
+      )
+    }
+
+    LaunchedEffect(hasSummaryToSubmit) {
+
+      if (!hasSummaryToSubmit) return@LaunchedEffect
+      val stepId = currentState.claimIntent?.step?.id ?: return@LaunchedEffect
+
+      submitSummaryUseCase.invoke(stepId).fold(
+        ifLeft = { errorMessage ->
+          currentState = currentState.copy(errorMessage = errorMessage.message)
+          pollingJob = null
+        },
+        ifRight = { claimIntent ->
+          val newState = updateConversationStateWithNewClaimIntent(currentState, claimIntent)
+          val newPollingJob = if (claimIntent.step.stepContent is StepContent.Task) {
+            pollIntentUntilCompletedAndSubmit(
+              claimIntent.id,
+              this,
+              { newState },
+            ) { state ->
+              currentState = state
+            }
+          } else {
+            null
+          }
+          currentState = newState
+          pollingJob = newPollingJob
+        },
+      )
+    }
+
+    return currentState
   }
 
-  private fun pollIntentUntilCompletedAndSubmit(claimIntentId: String) = scope.launch {
-    pollingJob?.cancel()
-    pollingJob = getClaimIntentUseCase.invoke(claimIntentId)
+  private fun pollIntentUntilCompletedAndSubmit(
+    claimIntentId: String,
+    coroutineScope: kotlinx.coroutines.CoroutineScope,
+    getCurrentState: () -> ClaimChatUiState,
+    updateState: (ClaimChatUiState) -> Unit,
+  ): Job {
+    return getClaimIntentUseCase.invoke(claimIntentId)
       .onEach { eitherResult ->
         eitherResult.fold(
           ifLeft = { errorMessage ->
-            _state.update { it.copy(errorMessage = errorMessage.message) }
+            updateState(getCurrentState().copy(errorMessage = errorMessage.message))
           },
           ifRight = { claimIntent ->
-            updateConversationStateWithNewClaimIntent(claimIntent)
+            val newState = updateConversationStateWithNewClaimIntent(getCurrentState(), claimIntent)
+            updateState(newState)
             if (claimIntent.step.stepContent is StepContent.Task) {
               if (claimIntent.step.stepContent.isCompleted) {
-                submitTask(claimIntent.step.id)
+                coroutineScope.launch {
+                  submitTask(claimIntent.step.id, getCurrentState, updateState)
+                }
               }
             }
           },
@@ -96,125 +248,56 @@ internal class ClaimChatViewModel(
       }
       .takeWhile { eitherResult ->
         eitherResult.fold(
-          ifLeft = { errorMessage ->
-            _state.update { it.copy(errorMessage = errorMessage.message) }
-            return@takeWhile false
-          },
+          ifLeft = { false },
           ifRight = { claimIntent ->
-            updateConversationStateWithNewClaimIntent(claimIntent)
             if (claimIntent.step.stepContent is StepContent.Task) {
-              return@takeWhile !claimIntent.step.stepContent.isCompleted
+              !claimIntent.step.stepContent.isCompleted
+            } else {
+              true
             }
-            return@takeWhile true
           },
         )
       }
-      .launchIn(viewModelScope)
+      .launchIn(coroutineScope)
   }
 
-  fun processUserAction(action: UserAction) {
-    when (action) {
-      is UserAction.AudioRecordingSubmitted -> handleAudioRecordingSubmission(action.url)
-      is UserAction.TextSubmitted -> handleTextSubmission(action.text)
-      is UserAction.FormSubmitted -> handleFormSubmission(action.selectedValue)
-      is UserAction.ErrorAcknowledged -> handleErrorAcknowledged()
-      UserAction.SummarySubmitted -> handleSummarySubmitted()
-    }
+  private suspend fun submitTask(
+    stepId: String,
+    getCurrentState: () -> ClaimChatUiState,
+    updateState: (ClaimChatUiState) -> Unit,
+  ) {
+    submitTaskUseCase.invoke(stepId).fold(
+      ifLeft = { errorMessage ->
+        updateState(getCurrentState().copy(errorMessage = errorMessage.message))
+      },
+      ifRight = { claimIntent ->
+        updateState(updateConversationStateWithNewClaimIntent(getCurrentState(), claimIntent))
+      },
+    )
   }
 
-  private fun handleSummarySubmitted() = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    stepId?.let {
-      submitSummaryUseCase.invoke(it).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          if (claimIntent.step.stepContent is StepContent.Task) {
-            pollIntentUntilCompletedAndSubmit(claimIntent.id)
-          }
-        },
+  private fun updateConversationStateWithNewClaimIntent(
+    currentState: ClaimChatUiState,
+    claimIntent: ClaimIntent,
+  ): ClaimChatUiState {
+    val existingConversationStep = currentState.conversation.find { it.stepId == claimIntent.step.id }
+    return if (existingConversationStep == null) {
+      currentState.copy(
+        conversation = currentState.conversation + claimIntent.createConversationItem(),
+        claimIntent = claimIntent,
       )
-    }
-  }
-
-  private fun handleErrorAcknowledged() {
-    _state.update { it.copy(errorMessage = null) }
-  }
-
-  private fun handleAudioRecordingSubmission(uploadUrl: String) = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    if (stepId != null) {
-      submitAudioRecordingUseCase.invoke(
-        stepId = stepId,
-        audioFileId = uploadUrl,
-        freeText = null,
-      ).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          submitTask(claimIntent.step.id)
-        },
-      )
-    }
-  }
-
-  private fun submitTask(stepId: String) = scope.launch {
-    submitTaskUseCase.invoke(stepId)
-      .fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-        },
-      )
-  }
-
-  private fun handleTextSubmission(text: String) = scope.launch {
-
-  }
-
-  private fun handleFormSubmission(selectedValue: List<FormField>) = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    if (stepId != null) {
-      submitFormUseCase.invoke(stepId, selectedValue).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          if (claimIntent.step.stepContent is StepContent.Task) {
-            pollIntentUntilCompletedAndSubmit(claimIntent.id)
-          }
-        },
-      )
-    }
-  }
-
-  fun updateConversationStateWithNewClaimIntent(claimIntent: ClaimIntent) {
-    _state.update { currentState ->
-      val existingConversationStep = currentState.conversation.find { it.stepId == claimIntent.step.id }
-      if (existingConversationStep == null) {
-        currentState.copy(
-          conversation = currentState.conversation + claimIntent.createConversationItem(),
-          claimIntent = claimIntent,
-        )
-      } else {
-        val updatedConversation = currentState.conversation.map { item ->
-          if (item.stepId == claimIntent.step.id) {
-            return@map claimIntent.createConversationItem()
-          }
+    } else {
+      val updatedConversation = currentState.conversation.map { item ->
+        if (item.stepId == claimIntent.step.id) {
+          claimIntent.createConversationItem()
+        } else {
           item
         }
-        currentState.copy(
-          conversation = updatedConversation,
-          claimIntent = claimIntent,
-        )
       }
+      currentState.copy(
+        conversation = updatedConversation,
+        claimIntent = claimIntent,
+      )
     }
   }
 }

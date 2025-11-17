@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.ktor.http.parametersOf
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -26,12 +27,13 @@ fun ClaimChatDestination(
 
 @Composable
 internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
-  val uiState by claimChatViewModel.state.collectAsState()
-
+  val uiState by claimChatViewModel.uiState.collectAsStateWithLifecycle()
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     ConversationScreen(
       uiState,
-      onAction = claimChatViewModel::processUserAction,
+      onAction = { event ->
+         claimChatViewModel.emit(event)
+      },
     )
   }
 }
