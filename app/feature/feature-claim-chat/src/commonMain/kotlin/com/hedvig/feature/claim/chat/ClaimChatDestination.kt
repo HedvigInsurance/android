@@ -1,29 +1,96 @@
 package com.hedvig.feature.claim.chat
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.hedvig.feature.claim.chat.ui.ConversationScreen
+import androidx.compose.ui.unit.dp
+import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.StepContent
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ClaimChatDestination() {
-  val claimChatViewModel = koinViewModel<ClaimChatViewModel>()
+  val messageId: String? = null
+  val developmentFlow: Boolean = true
+  val claimChatViewModel = koinViewModel<ClaimChatViewModel2> {
+    parametersOf(messageId, developmentFlow)
+  }
   ClaimChatScreen(claimChatViewModel)
 }
 
 @Composable
-internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
-  val uiState by claimChatViewModel.state.collectAsState()
+internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel2) {
+  val uiState = claimChatViewModel.uiState.collectAsState().value
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {
-    ConversationScreen(
-      uiState,
-      onAction = claimChatViewModel::processUserAction,
-    )
+    when (uiState) {
+      ClaimChatUiState.FailedToStart -> BasicText("FailedToStart")
+      ClaimChatUiState.Initializing -> BasicText("Initializing")
+      is ClaimChatUiState.ClaimChat -> ClaimChatScreen(uiState, claimChatViewModel::emit)
+    }
+  }
+}
+
+@Composable
+private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (ClaimChatEvent) -> Unit) {
+  val lazyListState = rememberLazyListState()
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    state = lazyListState,
+    contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+    // + PaddingValues(bottom = 16.dp)
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    items(
+      items = uiState.steps,
+      key = { step -> step.id },
+      contentType = { it.stepContent::class },
+    ) { item ->
+      when (item.stepContent) {
+        is StepContent.AudioRecording -> BasicText("AudioRecording")
+        is StepContent.ContentSelect -> BasicText(
+          "ContentSelect",
+          Modifier.clickable {
+            onEvent(ClaimChatEvent.Select(item.id, item.stepContent.options.firstNotNullOf { it.id }))
+          },
+        )
+
+        is StepContent.FileUpload -> BasicText("FileUpload")
+        is StepContent.Form -> BasicText("Form")
+        is StepContent.Outcome -> BasicText("Outcome")
+        is StepContent.Summary -> BasicText("Summary")
+        is StepContent.Task -> {
+          Column {
+            BasicText("Task")
+            for (description in item.stepContent.descriptions) {
+              BasicText(description)
+            }
+          }
+        }
+
+        StepContent.Unknown -> BasicText("Unknown")
+      }
+    }
+  }
+
+  LaunchedEffect(uiState.steps.size) {
+    if (uiState.steps.isNotEmpty()) {
+      lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+    }
   }
 }
