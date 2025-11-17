@@ -1,14 +1,19 @@
 package com.hedvig.feature.claim.chat
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -17,13 +22,20 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.debugBorder
+import com.hedvig.android.design.system.hedvig.icon.ForeverFilled
+import com.hedvig.android.design.system.hedvig.icon.ForeverOutline
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -47,7 +59,7 @@ internal fun AudioRecorderBubble(
     onSkip = onSkip,
     selectedAnswer = recordingUrl,
     content = {
-      TODO()
+     // TODO()
     },
   )
 }
@@ -85,7 +97,45 @@ internal fun YesNoBubble(
     onSkip = onSkip,
     selectedAnswer = answerSelected,
     content = {
-      TODO()
+      Column(Modifier.padding(16.dp)) {
+        HedvigText(questionLabel,
+          style = HedvigTheme.typography.label)
+        Spacer(Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.Start,
+          ) {
+          HighlightLabel(
+            labelText = stringResource(R.string.GENERAL_YES),
+            size = HighlightLabelDefaults.HighLightSize.Medium,
+          color = if (answerSelected==true) HighlightLabelDefaults.HighlightColor.Green(
+            HighlightLabelDefaults.HighlightShade.LIGHT)
+          else HighlightLabelDefaults.HighlightColor.Grey(
+            HighlightLabelDefaults.HighlightShade.LIGHT
+          ),
+            modifier = Modifier.clickable(
+              enabled = canBeChanged, //todo
+              onClick = {
+                onSubmit(true)
+              }
+            )
+          )
+          Spacer(Modifier.width(16.dp))
+          HighlightLabel(
+            labelText = stringResource(R.string.GENERAL_NO),
+            size = HighlightLabelDefaults.HighLightSize.Medium,
+            color = if (answerSelected!=null && !answerSelected) HighlightLabelDefaults.HighlightColor.Green(
+              HighlightLabelDefaults.HighlightShade.LIGHT)
+            else HighlightLabelDefaults.HighlightColor.Grey(
+              HighlightLabelDefaults.HighlightShade.MEDIUM
+            ),
+            modifier = Modifier.clickable(
+              enabled = canBeChanged, //todo
+              onClick = {
+                onSubmit(false)
+              }
+            )
+          )
+        }
+      }
     },
   )
 }
@@ -112,7 +162,7 @@ internal fun SingleSelectBubbleWithDialog(
     onSkip = onSkip,
     selectedAnswer = selectedOptionId,
     content = {
-      TODO()
+      //TODO()
     },
   )
 }
@@ -138,7 +188,7 @@ internal fun DateSelectBubble(
     selectedAnswer = date,
     onSkip = onSkip,
     content = {
-      TODO()
+//      TODO()
     },
   )
 }
@@ -165,7 +215,7 @@ internal fun TextInputBubble(
     selectedAnswer = text,
     onSkip = onSkip,
     content = {
-      TODO()
+      //TODO()
     },
   )
 }
@@ -191,38 +241,44 @@ internal fun <T> StandardBubble(
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
-  Column {
-    Box(modifier) {
-      HedvigCard {
+  Column(modifier,
+    horizontalAlignment = Alignment.End) {
+    Box {
+      HedvigCard(
+        Modifier.padding(start = 8.dp, top = 8.dp)
+      ) {
         content()
       }
       if (isPrefilledByAI) {
         Icon(
-          imageVector = HedvigIcons.HelipadFilled,
-          tint = HedvigTheme.colorScheme.signalAmberFill,
+          imageVector = HedvigIcons.ForeverFilled,
+          tint = HedvigTheme.colorScheme.signalAmberElement,
+          modifier = Modifier.align(Alignment.TopStart),
           contentDescription = null //todo
         )
       }
     }
     if (canSkip || isCurrentStep) {
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.End,
       ) {
         if (canSkip) {
           HedvigTextButton(
             stringResource(R.string.claims_skip_button),
             onClick = onSkip,
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
         }
         if (isCurrentStep) {
+          Spacer(Modifier.width(16.dp))
           HedvigButton(
             text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
             enabled = selectedAnswer != null,
             onClick = {
               if (selectedAnswer != null) onSubmit(selectedAnswer)
             },
-            buttonSize = ButtonDefaults.ButtonSize.Small,
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
         }
       }
@@ -264,68 +320,67 @@ private fun PreviewAssistantBubble() {
 
 @HedvigPreview
 @Composable
-private fun PreviewClaimChatComponents(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) canBeChanged: Boolean,
-) {
+private fun PreviewClaimChatComponents() {
   HedvigTheme {
-    Surface {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary
+    ) {
       Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
-        AudioRecorderBubble(
-          isCurrentStep = false,
-          onSubmit = {},
-          canSkip = false,
-          canBeChanged = true,
-          onSkip = {},
-          recordingUrl = ""
-        )
+//        AudioRecorderBubble(
+//          isCurrentStep = false,
+//          onSubmit = {},
+//          canSkip = false,
+//          canBeChanged = true,
+//          onSkip = {},
+//          recordingUrl = ""
+//        )
         YesNoBubble(
           questionLabel = "Was the bike electric?",
           answerSelected = true,
           isPrefilled = true,
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = false,
-          onSubmit = {},
-          onSkip = {}
-        )
-        SingleSelectBubbleWithDialog(
-          questionLabel = "Location",
-          options = listOf(
-            RadioOption(RadioOptionId("01"), "At home"),
-            RadioOption(RadioOptionId("02"), "Outside home"),
-          ),
-          selectedOptionId = RadioOptionId("01"),
-          isPrefilled = false,
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = false,
-          onSubmit = {},
-          onSkip = {}
-        )
-        DateSelectBubble(
-          questionLabel = null,
-          date = LocalDate(2025, 11, 10),
-          isPrefilled = true,
-          isCurrentStep = false,
-          canSkip = false,
-          canBeChanged = true,
-          onSubmit = {},
-          onSkip = {}
-        )
-        TextInputBubble(
-          questionLabel = "Re-purchase price",
-          text = "15000",
-          suffix = "SEK",
-          isPrefilled = false,
           isCurrentStep = true,
           canBeChanged = true,
           canSkip = true,
           onSubmit = {},
           onSkip = {}
         )
+//        SingleSelectBubbleWithDialog(
+//          questionLabel = "Location",
+//          options = listOf(
+//            RadioOption(RadioOptionId("01"), "At home"),
+//            RadioOption(RadioOptionId("02"), "Outside home"),
+//          ),
+//          selectedOptionId = RadioOptionId("01"),
+//          isPrefilled = false,
+//          isCurrentStep = false,
+//          canBeChanged = true,
+//          canSkip = false,
+//          onSubmit = {},
+//          onSkip = {}
+//        )
+//        DateSelectBubble(
+//          questionLabel = null,
+//          date = LocalDate(2025, 11, 10),
+//          isPrefilled = true,
+//          isCurrentStep = false,
+//          canSkip = false,
+//          canBeChanged = true,
+//          onSubmit = {},
+//          onSkip = {}
+//        )
+//        TextInputBubble(
+//          questionLabel = "Re-purchase price",
+//          text = "15000",
+//          suffix = "SEK",
+//          isPrefilled = false,
+//          isCurrentStep = true,
+//          canBeChanged = true,
+//          canSkip = true,
+//          onSubmit = {},
+//          onSkip = {}
+//        )
       }
     }
   }

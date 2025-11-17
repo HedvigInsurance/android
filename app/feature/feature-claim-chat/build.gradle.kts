@@ -44,6 +44,10 @@ kotlin {
       implementation(projects.navigationCompose)
       implementation(projects.designSystemHedvig)
       implementation(projects.composeUi)
+      implementation(projects.coreResources)
+      implementation(libs.androidx.compose.uiToolingPreview)
+      implementation(projects.coreCommonPublic)
+      implementation(libs.androidx.graphicsShapes)
     }
   }
 }
