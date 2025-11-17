@@ -47,11 +47,9 @@ import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
@@ -126,7 +124,7 @@ internal class HedvigAppState(
     .isFeatureEnabled(Feature.UPDATE_NECESSARY)
     .stateIn(
       coroutineScope,
-      SharingStarted.WhileSubscribed(5.seconds),
+      SharingStarted.WhileSubscribed(5_000),
       false,
     )
 
