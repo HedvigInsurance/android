@@ -8,16 +8,34 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import kotlin.jvm.JvmInline
 import octopus.ClaimIntentSubmitAudioMutation
 import octopus.fragment.ClaimIntentMutationOutputFragment
 import octopus.type.ClaimIntentSubmitAudioInput
+
+@JvmInline
+internal value class AudioFileId(val value: String)
 
 internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(
-    stepId: String,
-    audioFileId: String?,
+    stepId: StepId,
+    freeText: String,
+  ): Either<ErrorMessage, ClaimIntent> {
+    return invoke(stepId, null, freeText)
+  }
+
+  suspend fun invoke(
+    stepId: StepId,
+    audioFileId: AudioFileId,
+  ): Either<ErrorMessage, ClaimIntent> {
+    return invoke(stepId, audioFileId, null)
+  }
+
+  private suspend fun invoke(
+    stepId: StepId,
+    audioFileId: AudioFileId?,
     freeText: String?,
   ): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -25,8 +43,8 @@ internal class SubmitAudioRecordingUseCase(
         .mutation(
           ClaimIntentSubmitAudioMutation(
             ClaimIntentSubmitAudioInput(
-              stepId = stepId,
-              audioFileId = Optional.presentIfNotNull(audioFileId), // for testing "271788f5-07d0-4394-a814-001ef2e3d128"
+              stepId = stepId.value,
+              audioFileId = Optional.presentIfNotNull(audioFileId?.value), // for testing "271788f5-07d0-4394-a814-001ef2e3d128"
               freeText = Optional.presentIfNotNull(freeText),
             ),
           ),

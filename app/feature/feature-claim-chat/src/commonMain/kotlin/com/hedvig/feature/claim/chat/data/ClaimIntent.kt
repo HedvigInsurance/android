@@ -1,12 +1,20 @@
 package com.hedvig.feature.claim.chat.data
 
+import kotlin.jvm.JvmInline
+
+@JvmInline
+value class ClaimIntentId(val value: String)
+
 internal data class ClaimIntent(
-  val id: String,
+  val id: ClaimIntentId,
   val step: ClaimIntentStep,
 )
 
+@JvmInline
+value class StepId(val value: String)
+
 internal data class ClaimIntentStep(
-  val id: String,
+  val id: StepId,
   val text: String,
   val stepContent: StepContent,
 )

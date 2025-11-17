@@ -19,13 +19,13 @@ import octopus.ClaimIntentQuery
 internal class GetClaimIntentUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  fun invoke(claimIntentId: String): Flow<Either<ErrorMessage, ClaimIntent>> {
+  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ErrorMessage, ClaimIntent>> {
     return flow {
       var retries = 0
       while (currentCoroutineContext().isActive) {
         val claimIntentResult = either {
           apolloClient
-            .query(ClaimIntentQuery(claimIntentId))
+            .query(ClaimIntentQuery(claimIntentId.value))
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeExecute()
             .mapLeft(::ErrorMessage)

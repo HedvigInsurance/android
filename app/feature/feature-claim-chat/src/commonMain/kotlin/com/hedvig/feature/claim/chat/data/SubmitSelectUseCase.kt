@@ -12,13 +12,13 @@ import octopus.type.ClaimIntentSubmitSelectInput
 internal class SubmitSelectUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(stepId: String, selectedId: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(id: StepId, selectedId: String): Either<ErrorMessage, ClaimIntent> {
     return either {
       val data = apolloClient
         .mutation(
           ClaimIntentSubmitSelectMutation(
             input = ClaimIntentSubmitSelectInput(
-              stepId = stepId,
+              stepId = id.value,
               selectedId = selectedId,
             ),
           ),
