@@ -2,12 +2,12 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.feature.claim.chat.FormField
 import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
 import octopus.type.ClaimIntentSubmitFormInput
@@ -16,18 +16,19 @@ internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(
-    stepId: String,
-    fields: List<FormField>,
+    formData: FormSubmissionData,
   ): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(
           ClaimIntentSubmitFormMutation(
             ClaimIntentSubmitFormInput(
-              stepId = stepId,
-              fields = fields.map {
-                val list = Optional.presentIfNotNull(listOf(it.defaultValue ?: it.options.firstOrNull()?.second ?: ""))
-                ClaimIntentFormSubmitInputField(fieldId = it.fieldId, values = list) // todo
+              stepId = formData.stepId.value,
+              fields = formData.fields.map { field ->
+                ClaimIntentFormSubmitInputField(
+                  fieldId = field.fieldId.value,
+                  values = Optional.presentIfNotNull(field.values.filterNotNull().toNonEmptyListOrNull()),
+                )
               },
             ),
           ),
@@ -39,4 +40,14 @@ internal class SubmitFormUseCase(
         .toClaimIntent()
     }
   }
+}
+
+internal data class FormSubmissionData(
+  val stepId: StepId,
+  val fields: List<Field>,
+) {
+  data class Field(
+    val fieldId: FieldId,
+    val values: List<String?>,
+  )
 }

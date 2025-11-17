@@ -16,6 +16,8 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.FieldId
+import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -36,6 +38,7 @@ internal sealed interface ClaimChatEvent {
   }
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+  data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -151,6 +154,26 @@ internal class ClaimChatPresenter2(
                   )
               }
             }
+          }
+        }
+
+        is ClaimChatEvent.Form -> {
+          launch {
+            submitFormUseCase
+              .invoke(
+                FormSubmissionData(
+                  event.id,
+                  event.formInputs.map { (fieldId, values) ->
+                    FormSubmissionData.Field(fieldId, values)
+                  }
+                )
+              )
+              .fold(
+                ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                ifRight = { claimIntent ->
+                  steps.replaceTaskWithNextStep(claimIntent.step)
+                }
+              )
           }
         }
       }

@@ -70,7 +70,22 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
         )
 
         is StepContent.FileUpload -> BasicText("FileUpload")
-        is StepContent.Form -> BasicText("Form")
+        is StepContent.Form -> {
+          BasicText(
+            "Form",
+            Modifier.clickable {
+              onEvent(
+                ClaimChatEvent.Form(
+                  item.id,
+                  item.stepContent.fields.associate {
+                    it.id to listOf(it.defaultValue)
+                  },
+                ),
+              )
+            },
+          )
+        }
+
         is StepContent.Outcome -> BasicText("Outcome")
         is StepContent.Summary -> BasicText("Summary")
         is StepContent.Task -> {
