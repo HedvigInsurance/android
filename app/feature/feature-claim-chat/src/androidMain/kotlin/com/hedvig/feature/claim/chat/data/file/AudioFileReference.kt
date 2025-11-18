@@ -1,15 +1,20 @@
 package com.hedvig.feature.claim.chat.data.file
 
 import java.io.File
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.io.Source
+import kotlinx.io.buffered
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
 
-internal actual fun AudioFileReference(pathOrUri: String): AudioFileReference = object : AudioFileReference{
+internal actual fun AudioFileReference(fileName:String, pathOrUri: String): AudioFileReference = object : AudioFileReference{
   override val pathOrUri: String = pathOrUri
+  override val fileName: String = fileName
 
-  override suspend fun readBytes(): ByteArray {
-    return withContext(Dispatchers.IO) {
-      File(pathOrUri).readBytes()
-    }
+  override fun source(): Source {
+    return SystemFileSystem.source(Path(pathOrUri)).buffered()
+  }
+
+  override fun readBytes(): ByteArray {
+    return File(pathOrUri).readBytes()
   }
 }
