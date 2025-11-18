@@ -18,6 +18,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
+import com.hedvig.feature.claim.chat.data.FormSubmissionData.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -27,6 +28,7 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
+import com.hedvig.feature.claim.chat.data.file.AudioFileReference
 import kotlin.String
 import kotlinx.coroutines.launch
 
@@ -34,6 +36,11 @@ internal sealed interface ClaimChatEvent {
   sealed interface AudioRecording : ClaimChatEvent {
     val id: StepId
 
+    data class AudioInput(
+      override val id: StepId,
+      val fileReference: AudioFileReference,
+      val uploadUri: String,
+    ) : AudioRecording
     data class TextInput(override val id: StepId, val text: String) : AudioRecording
   }
 
@@ -125,7 +132,7 @@ internal class ClaimChatPresenter(
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep, steps)
 
     CollectEvents { event ->
-      logcat { "ClaimChatPresenter2 received event: $event" }
+      logcat { "ClaimChatPresenter received event: $event" }
       when (event) {
         is ClaimChatEvent.Select -> {
           launch {
@@ -142,15 +149,28 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.AudioRecording -> {
           when (event) {
+            is ClaimChatEvent.AudioRecording.AudioInput -> {
+              launch {
+                submitAudioRecordingUseCase
+                  .invoke(event.id, event.fileReference, event.uploadUri)
+                  .fold(
+                    ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
+                    ifRight = { claimIntent ->
+                      steps.replaceTaskWithNextStep(claimIntent.step)
+                    },
+                  )
+              }
+            }
+
             is ClaimChatEvent.AudioRecording.TextInput -> {
               launch {
                 submitAudioRecordingUseCase
                   .invoke(event.id, event.text)
                   .fold(
-                    ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                    ifLeft = { error("todo left submitAudioRecordingUseCase text") },
                     ifRight = { claimIntent ->
                       steps.replaceTaskWithNextStep(claimIntent.step)
-                    }
+                    },
                   )
               }
             }
@@ -164,15 +184,15 @@ internal class ClaimChatPresenter(
                 FormSubmissionData(
                   event.id,
                   event.formInputs.map { (fieldId, values) ->
-                    FormSubmissionData.Field(fieldId, values)
-                  }
-                )
+                    Field(fieldId, values)
+                  },
+                ),
               )
               .fold(
                 ifLeft = { error("todo left submitAudioRecordingUseCase") },
                 ifRight = { claimIntent ->
                   steps.replaceTaskWithNextStep(claimIntent.step)
-                }
+                },
               )
           }
         }

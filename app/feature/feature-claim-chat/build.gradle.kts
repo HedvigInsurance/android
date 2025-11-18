@@ -31,6 +31,7 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.core)
       implementation(libs.ktor.client.contentNegotiation)
       implementation(libs.ktor.client.logging)
