@@ -228,7 +228,7 @@ private fun ObserveIncompleteTaskEffect(
                     descriptions = buildList {
                       addAll((previousTask?.stepContent as? StepContent.Task)?.descriptions.orEmpty())
                       addAll(claimIntent.step.stepContent.descriptions)
-                    },
+                    }.distinct(),
                   ),
                 ),
               )
