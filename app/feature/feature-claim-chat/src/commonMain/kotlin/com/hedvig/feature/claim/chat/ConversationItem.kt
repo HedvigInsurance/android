@@ -7,12 +7,21 @@ interface ConversationStep {
 }
 
 sealed class ConversationItem() {
-  data class AudioRecording(val hint: String?, val uploadUri: String, val text: String, override val stepId: String) : ConversationItem(), ConversationStep
+  data class AudioRecording(
+    val hint: String?,
+    val uploadUri: String,
+    val text: String,
+    override val stepId: String,
+  ) : ConversationItem(), ConversationStep
+
   data class AssistantMessage(val text: String, val subText: String, override val stepId: String) : ConversationItem(), ConversationStep
+
   data class AssistantLoadingState(val text: String, val subText: String, val isLoading: Boolean, override val stepId: String) : ConversationItem(), ConversationStep
+
   data class Form(val formFieldList: List<FormField>, override val stepId: String) : ConversationItem(), ConversationStep
 
   data class Summary(val items: List<StepContent.Summary.Item>, override val stepId: String) : ConversationItem(), ConversationStep
+
   data class Outcome(val claimId: String, override val stepId: String, val text: String) : ConversationItem(), ConversationStep
 }
 

@@ -15,22 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun UserChatBubble(
-  text: String,
-  modifier: Modifier = Modifier
-) {
+fun UserChatBubble(text: String, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.End
+    horizontalArrangement = Arrangement.End,
   ) {
     Box(
       modifier = Modifier
         .widthIn(min = 50.dp, max = 300.dp)
         .background(
           color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-          shape = RoundedCornerShape(16.dp)
+          shape = RoundedCornerShape(16.dp),
         )
-        .padding(horizontal = 12.dp, vertical = 8.dp)
+        .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
       Text(
         text = text,

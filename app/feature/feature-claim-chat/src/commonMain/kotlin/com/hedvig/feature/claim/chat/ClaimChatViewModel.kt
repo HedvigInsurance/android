@@ -34,9 +34,13 @@ data class ConversationUiState(
 
 sealed class UserAction {
   data class AudioRecordingSubmitted(val url: String) : UserAction()
+
   data class TextSubmitted(val text: String) : UserAction()
+
   data class FormSubmitted(val selectedValue: List<FormField>) : UserAction()
+
   object ErrorAcknowledged : UserAction()
+
   object SummarySubmitted : UserAction()
 }
 
@@ -51,7 +55,6 @@ internal class ClaimChatViewModel(
   private val submitTaskUseCase: SubmitTaskUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
 ) : ViewModel() {
-
   private var pollingJob: Job? = null
   private val scope = CoroutineScope(Dispatchers.Default)
   private val _state = MutableStateFlow(ConversationUiState())
@@ -175,7 +178,6 @@ internal class ClaimChatViewModel(
   }
 
   private fun handleTextSubmission(text: String) = scope.launch {
-
   }
 
   private fun handleFormSubmission(selectedValue: List<FormField>) = scope.launch {

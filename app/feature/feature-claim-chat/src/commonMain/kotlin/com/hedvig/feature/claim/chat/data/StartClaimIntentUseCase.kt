@@ -44,4 +44,3 @@ internal class StartClaimIntentUseCase(
     )
   }
 }
-
