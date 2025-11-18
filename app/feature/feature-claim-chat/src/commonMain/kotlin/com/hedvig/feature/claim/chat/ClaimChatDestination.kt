@@ -57,7 +57,7 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
   ) {
     items(
       items = uiState.steps,
-      key = { step -> step.id },
+      key = { step -> step.id.value },
       contentType = { it.stepContent::class },
     ) { item ->
       when (item.stepContent) {
