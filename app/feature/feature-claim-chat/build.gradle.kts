@@ -48,6 +48,9 @@ kotlin {
       implementation(libs.androidx.compose.uiToolingPreview)
       implementation(projects.coreCommonPublic)
       implementation(libs.androidx.graphicsShapes)
+      implementation(libs.accompanist.permissions)
+      implementation(projects.audioPlayerData)
+      implementation(projects.audioPlayerUi)
     }
   }
 }
