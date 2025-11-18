@@ -61,7 +61,20 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
       contentType = { it.stepContent::class },
     ) { item ->
       when (item.stepContent) {
-        is StepContent.AudioRecording -> BasicText("AudioRecording")
+        is StepContent.AudioRecording -> {
+          BasicText(
+            "AudioRecording",
+            Modifier.clickable {
+              onEvent(ClaimChatEvent.AudioRecording.TextInput(item.id, """
+Earlier this afternoon, I was walking up the steps outside my office building. I had my phone in my hand when I tripped
+slightly on the last step. As I tried to catch my balance, the phone slipped out of my grip and fell onto the concrete.
+The phone still works perfectly, it turns on, and the internal components are functional. However, the screen is cracked
+quite badly, mainly across the top and down one side. The damage is significant and requires repair.
+I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish Crowns (SEK).
+              """.trimIndent()))
+            }
+          )
+        }
         is StepContent.ContentSelect -> BasicText(
           "ContentSelect",
           Modifier.clickable {

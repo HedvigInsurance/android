@@ -188,20 +188,6 @@ internal class ClaimChatPresenter(
   }
 }
 
-private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
-  Snapshot.withMutableSnapshot {
-    removeLastIf { it.stepContent is StepContent.Task }
-    add(step)
-  }
-}
-
-private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
-  val last = lastOrNull() ?: return
-  if (predicate(last)) {
-    removeLast()
-  }
-}
-
 @Composable
 private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
@@ -259,5 +245,19 @@ private fun SubmitCompleteTaskEffect(
           }
         },
       )
+  }
+}
+
+private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
+  Snapshot.withMutableSnapshot {
+    removeLastIf { it.stepContent is StepContent.Task }
+    add(step)
+  }
+}
+
+private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
+  val last = lastOrNull() ?: return
+  if (predicate(last)) {
+    removeLast()
   }
 }
