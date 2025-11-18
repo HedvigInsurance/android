@@ -1,6 +1,5 @@
 package com.hedvig.feature.claim.chat.ui
 
-import android.graphics.Paint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,12 +26,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -78,8 +73,6 @@ import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
 
 //todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
@@ -172,7 +165,7 @@ internal fun AssistantMessageBubble(
     } else {
       Spacer(Modifier.height(8.dp))
       Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         val color = HedvigTheme.colorScheme.signalGreenElement
         Spacer(
@@ -183,9 +176,11 @@ internal fun AssistantMessageBubble(
             .background(color, CircleShape),
         )
         Spacer(Modifier.width(8.dp))
-        HedvigText("Hedvig AI Assistant", //todo
+        HedvigText(
+          "Hedvig AI Assistant", //todo
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,)
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        )
       }
     }
   }
@@ -481,15 +476,18 @@ internal fun ChatClaimSummary(
   recordingUrl: String?,
   displayItems: List<Pair<String, String>>,
   onSubmit: () -> Unit,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     HedvigText(text)
     HorizontalDivider()
-    if (recordingUrl!=null) {
+    if (recordingUrl != null) {
       val audioPlayer = rememberAudioPlayer(
-        PlayableAudioSource.RemoteUrl(SignedAudioUrl
-          .fromSignedAudioUrlString(recordingUrl)),
+        PlayableAudioSource.RemoteUrl(
+          SignedAudioUrl
+            .fromSignedAudioUrlString(recordingUrl),
+        ),
       )
       HedvigAudioPlayer(audioPlayer = audioPlayer)
     }
@@ -512,17 +510,19 @@ internal fun ChatClaimSummary(
         }
       }
     }
-    Spacer(Modifier.height(16.dp))
-    Row(
-      Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.Center
-    ) {
-      HedvigButton(
-        text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
-        enabled = true,
-        onClick = onSubmit,
-        buttonSize = ButtonDefaults.ButtonSize.Medium,
-      )
+    if (isCurrentStep) {
+      Spacer(Modifier.height(16.dp))
+      Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+      ) {
+        HedvigButton(
+          text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+          enabled = true,
+          onClick = onSubmit,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+      }
     }
   }
 }
@@ -534,24 +534,25 @@ internal fun ChatClaimOutcome(
   onNavigateToClaim: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier,
-    horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+  Column(
+    modifier,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
     HedvigText(text)
-    if (claimId!=null) {
+    if (claimId != null) {
       Spacer(Modifier.height(16.dp))
       Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
       ) {
         HedvigButton(
           onClick = {
             onNavigateToClaim(claimId)
           },
           enabled = true,
-          buttonStyle =  ButtonDefaults.ButtonStyle.Secondary,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE)
+          text = stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
         )
       }
     }
@@ -791,12 +792,13 @@ private fun PreviewSummary() {
             "Electric bike" to "Yes",
           ),
           onSubmit = {},
-          text = "Is this what you have in mind?"
+          text = "Is this what you have in mind?",
+          isCurrentStep = true,
         )
         ChatClaimOutcome(
           "All done! Here is your submitted claim.",
           onNavigateToClaim = {},
-          claimId = ""
+          claimId = "",
         )
       }
     }
