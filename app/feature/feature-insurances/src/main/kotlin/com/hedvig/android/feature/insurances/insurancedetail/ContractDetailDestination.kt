@@ -1,4 +1,3 @@
-
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import androidx.compose.animation.AnimatedContent
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +45,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -63,7 +62,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -158,11 +156,14 @@ private fun ContractDetailScreen(
         ContractDetailsUiState.Error -> {
           HedvigErrorSection(
             onButtonClick = retry,
-            modifier = Modifier.fillMaxSize().windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
+            modifier = Modifier
+              .fillMaxSize()
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
           )
         }
+
         ContractDetailsUiState.Loading -> {
           Column(
             Modifier
@@ -187,9 +188,11 @@ private fun ContractDetailScreen(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
             buttonText = stringResource(R.string.general_back_button),
             onButtonClick = navigateBack,
-            modifier = Modifier.fillMaxSize().windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
+            modifier = Modifier
+              .fillMaxSize()
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
           )
         }
 
@@ -310,6 +313,8 @@ private fun ContractDetailScreen(
                       onInfoIconClick = {
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },
+                      isDecommissioned = contract.productVariant.contractType
+                        == ContractType.SE_CAR_DECOMMISSIONED,
                     )
                   }
 

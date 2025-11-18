@@ -62,6 +62,7 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_CAR_TRAFFIC",
   "SE_CAR_TRIAL_HALF",
   "SE_CAR_TRIAL_FULL",
+  "SE_CAR_DECOMMISSIONED",
   -> ContractGroup.CAR
 
   "SE_CAT_BASIC",

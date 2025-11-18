@@ -19,9 +19,9 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import com.hedvig.android.logger.LogPriority.WARN
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class StartTierFlowViewModel(
   insuranceID: String,
@@ -52,15 +52,26 @@ internal class StartTierChangePresenter(
           currentState = Failure(GENERAL)
         },
         ifRight = { result ->
-          if (result.quotes.isEmpty()) {
-            currentState = Failure(QUOTES_ARE_EMPTY)
-          } else {
-            val parameters = InsuranceCustomizationParameters(
-              insuranceId = insuranceID,
-              activationDate = result.activationDate,
-              quoteIds = result.quotes.map { it.id },
+          val deflect = result.deflectOutput
+          if (deflect != null) {
+            currentState = StartTierChangeState.Deflect(
+              title = deflect.title,
+              message = deflect.message,
             )
-            currentState = Success(parameters)
+            return@LaunchedEffect
+          }
+          val intent = result.intentOutput
+          if (intent != null) {
+            if (intent.quotes.isEmpty()) {
+              currentState = Failure(QUOTES_ARE_EMPTY)
+            } else {
+              val parameters = InsuranceCustomizationParameters(
+                insuranceId = insuranceID,
+                activationDate = intent.activationDate,
+                quoteIds = intent.quotes.map { it.id },
+              )
+              currentState = Success(parameters)
+            }
           }
         },
       )
@@ -83,6 +94,11 @@ internal sealed interface StartTierChangeState {
   ) : StartTierChangeState
 
   data class Failure(val reason: FailureReason) : StartTierChangeState
+
+  data class Deflect(
+    val title: String,
+    val message: String,
+  ) : StartTierChangeState
 }
 
 internal sealed interface StartTierChangeEvent {

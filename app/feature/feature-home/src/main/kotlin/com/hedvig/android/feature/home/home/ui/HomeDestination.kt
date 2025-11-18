@@ -143,6 +143,8 @@ internal fun HomeDestination(
   viewModel: HomeViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -162,6 +164,8 @@ internal fun HomeDestination(
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
@@ -187,6 +191,8 @@ private fun HomeScreen(
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -266,6 +272,15 @@ private fun HomeScreen(
       TopAppBarLayoutForActions {
         val currentState = uiState as? HomeUiState.Success
         if (currentState != null) {
+          if (currentState.isExperimentalClaimChatEnabled) {
+            ToolbarClaimChatIcon(
+              onClick = navigateToClaimChat,
+            )
+            ToolbarClaimChatIcon(
+              onClick = navigateToClaimChatInDevMode,
+              isDev = true
+            )
+          }
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
@@ -764,11 +779,13 @@ private fun PreviewHomeScreen(
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
           ),
+          isExperimentalClaimChatEnabled = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
@@ -782,6 +799,7 @@ private fun PreviewHomeScreen(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }
@@ -798,6 +816,7 @@ private fun PreviewHomeScreenWithError() {
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
@@ -811,6 +830,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }
@@ -842,11 +862,13 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           firstVetAction = null,
           chatAction = null,
           travelAddonBannerInfo = null,
+          isExperimentalClaimChatEnabled = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
@@ -860,6 +882,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {}
       )
     }
   }

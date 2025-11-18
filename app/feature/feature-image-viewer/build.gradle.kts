@@ -13,7 +13,7 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(projects.coreResources)
   implementation(libs.kotlinx.serialization.core)

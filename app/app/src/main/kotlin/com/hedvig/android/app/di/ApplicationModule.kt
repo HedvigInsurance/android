@@ -17,9 +17,6 @@ import coil.decode.SvgDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
-import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
@@ -100,9 +97,12 @@ import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
 import com.hedvig.android.shared.tier.comparison.di.comparisonModule
+import com.hedvig.android.shareddi.apolloClientBuilderMultiplatformQualifier
+import com.hedvig.android.shareddi.sharedModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
+import com.hedvig.feature.claim.chat.di.claimChatModule
 import java.io.File
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
@@ -110,9 +110,6 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
-  single<NormalizedCacheFactory> {
-    MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
-  }
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
@@ -158,12 +155,10 @@ private val networkModule = module {
     okHttpBuilder.build()
   }
   single<ApolloClient.Builder> {
-    ApolloClient
-      .Builder()
+    get<ApolloClient.Builder>(apolloClientBuilderMultiplatformQualifier)
       .okHttpClient(get<OkHttpClient>())
-      .addInterceptor(LoggingInterceptor())
       .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
-      .normalizedCache(get<NormalizedCacheFactory>())
+      .addInterceptor(LoggingInterceptor())
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
@@ -383,6 +378,7 @@ val applicationModule = module {
       buildConstantsModule,
       chatModule,
       chooseTierModule,
+      claimChatModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimHistoryModule,
@@ -434,6 +430,7 @@ val applicationModule = module {
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
+      sharedModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
       terminationDataModule,

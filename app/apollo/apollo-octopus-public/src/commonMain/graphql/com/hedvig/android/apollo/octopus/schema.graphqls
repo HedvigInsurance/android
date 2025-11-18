@@ -205,7 +205,7 @@ type BundleYearlySavings {
   """
   Total yearly savings amount from bundle discount
   """
-  amount: Money!
+  savings: Money!
   """
   Whether the bundle discount covers the full period (true) or has pending/future items (false)
   """
@@ -385,6 +385,10 @@ type ChangeTierDeductibleCreateIntentOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Deflect output 
+  """
+  deflectOutput: ChangeTierDeflectOutput
 }
 type ChangeTierDeductibleDisplayItem {
   displayTitle: String!
@@ -486,6 +490,10 @@ enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
+}
+type ChangeTierDeflectOutput {
+  title: String!
+  message: String!
 }
 type ChangeTierPriceDetailItem {
   displayName: String!
@@ -659,6 +667,7 @@ input ClaimIntentStartInput {
   as the first step, using the chat history as the implicit first step.
   """
   sourceMessageId: ID
+  developmentFlow: Boolean
 }
 """
 Represents a single step in the claim submission flow.
@@ -673,7 +682,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -684,6 +693,20 @@ type ClaimIntentStepContentAudioRecording {
   The relative URI towards where one should upload the audio recording.
   """
   uploadUri: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
+}
+"""
+A file upload can be used to prompt the user to upload several files.
+Submitted using `Mutation.claimIntentSubmitFileUpload`.
+"""
+type ClaimIntentStepContentFileUpload {
+  """
+  The relative URI towards where one should upload the files.
+  """
+  uploadUri: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -691,6 +714,8 @@ Submitted using `Mutation.claimIntentSubmitForm`.
 """
 type ClaimIntentStepContentForm {
   fields: [ClaimIntentStepContentFormField!]!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
 }
 """
 A single field to render in the form.
@@ -758,6 +783,29 @@ type ClaimIntentStepContentOutcome {
   claimId: ID!
 }
 """
+A select step is one that contains a choice to select one of several alternatives.
+It can be seen as a special-case form with nicer rendering.
+Submitted using `Mutation.claimIntentSubmitSelect`.
+"""
+type ClaimIntentStepContentSelect {
+  options: [ClaimIntentStepContentSelectOption!]!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
+}
+"""
+A single choice in a "select" step.
+"""
+type ClaimIntentStepContentSelectOption {
+  """
+  The ID for this option. Used when submitting the choice
+  """
+  id: ID!
+  """
+  Rendered title of the choice
+  """
+  title: String!
+}
+"""
 A read-only step where the entire claim intent information is displayed before submitting.
 Submitted using `Mutation.claimIntentSubmitSummary`.
 """
@@ -788,12 +836,20 @@ type ClaimIntentStepContentTask {
 }
 input ClaimIntentSubmitAudioInput {
   stepId: ID!
-  audioReference: String
+  audioFileId: ID
   freeText: String
+}
+input ClaimIntentSubmitFileUploadInput {
+  stepId: ID!
+  fileIds: [ID!]!
 }
 input ClaimIntentSubmitFormInput {
   stepId: ID!
   fields: [ClaimIntentFormSubmitInputField!]!
+}
+input ClaimIntentSubmitSelectInput {
+  stepId: ID!
+  selectedId: ID!
 }
 input ClaimIntentSubmitSummaryInput {
   stepId: ID!
@@ -1918,8 +1974,6 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
-  partnerClaimsActive: [PartnerClaim!]!
-  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2071,6 +2125,7 @@ type MemberChargeBreakdownItem {
   displayTitle: String!
   displaySubtitle: String
   periods: [MemberChargeBreakdownItemPeriod!]!
+  insurancePriceBreakdown: [MemberChargePriceBreakdownItem!]!
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
@@ -2082,6 +2137,10 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
+}
+type MemberChargePriceBreakdownItem {
+  displayTitle: String!
+  amount: Money!
 }
 """
 The status of the charge
@@ -2732,13 +2791,32 @@ type Mutation {
   """
   claimIntentStart(input: ClaimIntentStartInput): ClaimIntent!
   """
+  Skip this step, proceeding to the next without submitting a response for it.
+  Should only be called if the step is marked as `isSkippable: true`.
+  """
+  claimIntentSkipStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
+  Regret this step, rewinding the intent back to having the current step be a copy of
+  the one referenced as `stepId` (but with a new id).
+  Should only be called if the step is marked as `isRegrettable: true`.
+  """
+  claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
   claimIntentSubmitForm(input: ClaimIntentSubmitFormInput!): ClaimIntentMutationOutput!
   """
+  Submit a step containing a `ClaimIntentStepContentSelect`.
+  """
+  claimIntentSubmitSelect(input: ClaimIntentSubmitSelectInput!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentAudioRecording`.
   """
   claimIntentSubmitAudio(input: ClaimIntentSubmitAudioInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentFileUpload`.
+  """
+  claimIntentSubmitFileUpload(input: ClaimIntentSubmitFileUploadInput!): ClaimIntentMutationOutput!
   """
   Submit a step containing a `ClaimIntentStepContentTask`.
   """
@@ -2934,22 +3012,6 @@ type Mutation {
   Call this to accept an addon offer and activate addon.
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
-}
-type PartnerClaim {
-  id: ID!
-  externalId: String!
-  exposureDisplayName: String
-  status: ClaimStatus
-  submittedAt: Date!
-  payoutAmount: Money
-  associatedTypeOfContract: String
-  claimType: String
-  handlerEmail: String
-  displayItems: [ClaimDisplayItem!]!
-  """
-  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
-  """
-  productVariant: ProductVariant
 }
 type PartnerData {
   sas: SasPartnerData
@@ -3450,7 +3512,6 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
-  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
@@ -3627,10 +3688,6 @@ type ShopSession {
   """
   urls: ShopSessionUrls!
   """
-  Feature flags and experiment eligibility
-  """
-  experiments: ShopSessionExperiments
-  """
   The Cart value of this shop session, carrying offers currently awaiting checkout.
   """
   cart: Cart!
@@ -3771,10 +3828,6 @@ input ShopSessionExperimentInput {
   Experiment variant in SCREAMING_SNAKE_CASE (e.g., 'CONTROL', 'VARIANT_A', 'NEW')
   """
   variant: String!
-}
-type ShopSessionExperiments {
-  bundleDiscount: Boolean
-  accidentDiscount: Boolean
 }
 type ShopSessionMutationOutput {
   shopSession: ShopSession

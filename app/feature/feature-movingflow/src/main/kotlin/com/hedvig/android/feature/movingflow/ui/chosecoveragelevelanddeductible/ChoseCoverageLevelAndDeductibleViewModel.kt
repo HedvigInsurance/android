@@ -31,9 +31,9 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
 import com.hedvig.android.feature.movingflow.ui.summary.GetMoveIntentCostUseCase
 import com.hedvig.android.feature.movingflow.ui.summary.MoveIntentCost
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import kotlinx.coroutines.flow.collectLatest

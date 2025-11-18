@@ -22,7 +22,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
@@ -79,6 +78,7 @@ internal fun YourInfoTab(
   allowEditCoInsured: Boolean,
   allowChangeTier: Boolean,
   onChangeTierClick: () -> Unit,
+  isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
   onMissingInfoClick: () -> Unit,
@@ -206,6 +206,16 @@ internal fun YourInfoTab(
           },
         )
       }
+      if (isDecommissioned) {
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+    if (isDecommissioned) {
+      HedvigNotificationCard(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        message = stringResource(R.string.INSURANCE_DETAILS_DECOMMISSION_INFO),
+        priority = Info,
+      )
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
     PriceRow(
@@ -346,7 +356,7 @@ internal fun PriceRow(
 
 @Composable
 internal fun CoInsuredSection(
-  coInsuredList: List<InsuranceAgreement.CoInsured>,
+  coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   onMissingInfoClick: () -> Unit,
@@ -505,13 +515,13 @@ private fun PreviewYourInfoTab() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       YourInfoTab(
         coverageItems = listOf(
-          DisplayItem("Address".repeat(4), DisplayItem.DisplayItemValue.Text("Bellmansgatan 19A")),
-          DisplayItem("Postal code", DisplayItem.DisplayItemValue.Text("118 47".repeat(6))),
-          DisplayItem("Type", DisplayItem.DisplayItemValue.Text("Homeowner")),
-          DisplayItem("Size", DisplayItem.DisplayItemValue.Text("56 m2")),
+          DisplayItem("Address".repeat(4), Text("Bellmansgatan 19A")),
+          DisplayItem("Postal code", Text("118 47".repeat(6))),
+          DisplayItem("Type", Text("Homeowner")),
+          DisplayItem("Size", Text("56 m2")),
         ),
         coInsured = listOf(
-          InsuranceAgreement.CoInsured(
+          CoInsured(
             ssn = "199101131093",
             birthDate = null,
             firstName = "Hugo",
@@ -520,7 +530,7 @@ private fun PreviewYourInfoTab() {
             terminatesOn = LocalDate.fromEpochDays(400),
             hasMissingInfo = false,
           ),
-          InsuranceAgreement.CoInsured(
+          CoInsured(
             ssn = null,
             birthDate = null,
             firstName = null,
@@ -539,7 +549,7 @@ private fun PreviewYourInfoTab() {
           displayItems = listOf(
             DisplayItem(
               title = "test title",
-              value = DisplayItemValue.Text("test value"),
+              value = Text("test value"),
             ),
           ),
           productVariant = ProductVariant(
@@ -556,7 +566,7 @@ private fun PreviewYourInfoTab() {
           ),
           certificateUrl = "adq",
           coInsured = listOf(
-            InsuranceAgreement.CoInsured(
+            CoInsured(
               ssn = "199101131093",
               birthDate = null,
               firstName = "Hugo",
@@ -565,7 +575,7 @@ private fun PreviewYourInfoTab() {
               terminatesOn = LocalDate.fromEpochDays(300),
               hasMissingInfo = false,
             ),
-            InsuranceAgreement.CoInsured(
+            CoInsured(
               ssn = "1234020312",
               birthDate = null,
               firstName = "Testersson",
@@ -598,6 +608,7 @@ private fun PreviewYourInfoTab() {
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
         showPriceInfoIcon = true,
         onInfoIconClick = {},
+        isDecommissioned = true,
       )
     }
   }

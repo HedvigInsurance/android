@@ -8,6 +8,7 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isSameInstanceAs
@@ -21,6 +22,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.changetier.data.TotalCost
@@ -271,14 +273,20 @@ class TerminationSurveyPresenterTest {
       val navig0 = current0.intentAndIdToRedirectToChangeTierFlow
       assertThat(navig0).isNull()
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), emptyList()).right(),
+        ChangeTierDeductibleIntent(
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            emptyList(),
+          ),
+          null,
+        ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
       val optionNowDisabled = current.reasons.first { it.suggestion == downgradeSuggestion }
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isTrue()
+      assertThat(currentEmptyQuotesDialog).isNotNull()
       assertThat(currentRedirectToChangeTierIntent).isNull()
       assertThat(optionNowDisabled.isDisabled).isTrue()
     }
@@ -297,13 +305,19 @@ class TerminationSurveyPresenterTest {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf(testQuote)).right(),
+        ChangeTierDeductibleIntent(
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          null,
+        ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentEmptyQuotesDialog).isNull()
       assertThat(currentRedirectToChangeTierIntent).isNotNull()
     }
   }
@@ -326,9 +340,78 @@ class TerminationSurveyPresenterTest {
       val error = current.errorWhileLoadingNextStep
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentEmptyQuotesDialog).isNull()
       assertThat(currentRedirectToChangeTierIntent).isNull()
       assertThat(error).isTrue()
+    }
+  }
+
+  @Test
+  fun `when deflectOutput is returned show deflect dialog and do not redirect to change tier flow`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = com.hedvig.android.data.changetier.data.DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect msg",
+          ),
+        ).right(),
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val currentDeflectDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      val currentSelectedOptionId = current.selectedOptionId
+      assertThat(currentDeflectDialog).isNotNull().isInstanceOf<DeflectType.Deflect>()
+      val deflectType = currentDeflectDialog as DeflectType.Deflect
+      assertThat(deflectType.title).isEqualTo("Deflect title")
+      assertThat(currentRedirectToChangeTierIntent).isNull()
+      assertThat(currentSelectedOptionId).isNull()
+    }
+  }
+
+  @Test
+  fun `when both intentOutput and deflectOutput are returned deflect takes precedence`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+      changeTierRepository,
+    )
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          deflectOutput = com.hedvig.android.data.changetier.data.DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val currentDeflectDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      assertThat(currentDeflectDialog).isNotNull().isInstanceOf<DeflectType.Deflect>()
+      val deflectType = currentDeflectDialog as DeflectType.Deflect
+      assertThat(deflectType.title).isEqualTo("Deflect title")
+      assertThat(currentRedirectToChangeTierIntent).isNull()
     }
   }
 }

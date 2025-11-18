@@ -23,13 +23,14 @@ import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.changeTierGraph(
   navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   navdestination<StartTierFlowDestination> (
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
@@ -49,6 +50,8 @@ fun NavGraphBuilder.changeTierGraph(
           }
         }
       },
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      navigateUp = navigator::navigateUp,
     )
   }
 
@@ -66,6 +69,10 @@ fun NavGraphBuilder.changeTierGraph(
           }
         }
       },
+      popBackStack = {
+        navigator.popBackStack()
+      },
+      onNavigateToNewConversation = onNavigateToNewConversation,
     )
   }
 

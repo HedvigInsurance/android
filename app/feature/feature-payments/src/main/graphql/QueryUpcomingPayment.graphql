@@ -35,9 +35,6 @@ fragment MemberChargeFragment on MemberCharge {
     net {
       ...MoneyFragment
     }
-    discounts {
-      ...MemberChargeBreakdownItemDiscountFragment
-    }
     periods {
       fromDate
       toDate
@@ -45,6 +42,12 @@ fragment MemberChargeFragment on MemberCharge {
         ...MoneyFragment
       }
       isPreviouslyFailedCharge
+    }
+    insurancePriceBreakdown {
+      displayTitle
+      amount {
+        ...MoneyFragment
+      }
     }
   }
   date

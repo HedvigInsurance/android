@@ -18,9 +18,9 @@ import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Content
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Redirecting
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 

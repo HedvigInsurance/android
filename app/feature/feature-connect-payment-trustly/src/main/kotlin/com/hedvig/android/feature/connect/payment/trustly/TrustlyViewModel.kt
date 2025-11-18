@@ -2,7 +2,7 @@ package com.hedvig.android.feature.connect.payment.trustly
 
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class TrustlyViewModel(
   trustlyCallback: TrustlyCallback,
