@@ -54,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
@@ -311,49 +312,49 @@ internal fun SingleSelectBubbleWithDialog(
 internal fun MultiSelectBubbleWithDialog(
   questionLabel: String,
   options: List<RadioOption>,
-  selectedOptionIds: List<RadioOptionId?>,
+  selectedOptionIds: List<RadioOptionId>,
   isPrefilled: Boolean,
   isCurrentStep: Boolean,
   canBeChanged: Boolean,
   canSkip: Boolean,
   onSkip: () -> Unit,
   onSelect: (RadioOptionId) -> Unit,
-  onSubmit: (RadioOptionId) -> Unit,
+  onSubmit: (List<RadioOptionId>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var showDialog by rememberSaveable { mutableStateOf(false) }
+  var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
-//    SingleSelectDialog(
-//      title = questionLabel,
-//      options = options,
-//      selectedOption = selectedOptionId,
-//      onRadioOptionSelected = onSelect,
-//      onDismissRequest = {
-//        showDialog = false
-//      },
-//    )
-    //todo
+    MultiSelectDialog(
+      title = questionLabel,
+      options = options,
+      selectedOptions = selectedOptionIds,
+      onOptionSelected = onSelect,
+      onDismissRequest = { showDialog = false },
+      buttonText = stringResource(R.string.general_save_button),
+    )
   }
-//  StandardBubble(
-//    isPrefilledByAI = isPrefilled,
-//    isCurrentStep = isCurrentStep,
-//    canSkip = canSkip,
-//    onSubmit = onSubmit,
-//    modifier = modifier,
-//    onSkip = onSkip,
-//    selectedAnswer = selectedOptionId,
-//    content = {
-//      HedvigBigCard(
-//        onClick = { showDialog = true },
-//        labelText = questionLabel,
-//        inputText = options.firstOrNull {
-//          it.id == selectedOptionId
-//        }?.text,
-//        modifier = modifier,
-//        enabled = canBeChanged,
-//      )
-//    },
-//  )
+  StandardBubble(
+    isPrefilledByAI = isPrefilled,
+    isCurrentStep = isCurrentStep,
+    canSkip = canSkip,
+    onSubmit = onSubmit,
+    modifier = modifier,
+    onSkip = onSkip,
+    selectedAnswer = selectedOptionIds,
+    content = {
+      HedvigBigCard(
+        onClick = { showDialog = true },
+        labelText = questionLabel,
+        inputText = when {
+          selectedOptionIds.isEmpty() -> null
+          else -> options.filter {it.id in selectedOptionIds}
+            .joinToString(transform = RadioOption::text)
+        },
+        modifier = modifier,
+        enabled = isCurrentStep || canBeChanged,
+      )
+    },
+  )
 }
 
 @Composable
@@ -616,7 +617,6 @@ internal fun <T> StandardBubble(
       }
     }
   }
-
 }
 
 @HedvigPreview
@@ -745,8 +745,22 @@ private fun PreviewClaimChatComponents() {
           onSelect = {},
         )
         Spacer(Modifier.height(16.dp))
-//        MultiSelectBubbleWithDialog()
-//        Spacer(Modifier.height(16.dp))
+        MultiSelectBubbleWithDialog(
+          questionLabel = "Select the damage type",
+          options = listOf(
+            RadioOption(RadioOptionId("01"), "Wheel"),
+            RadioOption(RadioOptionId("02"), "Seat"),
+          ),
+          selectedOptionIds = listOf(RadioOptionId("01"), RadioOptionId("02")),
+          isCurrentStep = false,
+          canBeChanged = true,
+          canSkip = true,
+          onSkip = {},
+          onSelect = {},
+          onSubmit = {},
+          isPrefilled = false
+        )
+        Spacer(Modifier.height(16.dp))
         DateSelectBubble(
           questionLabel = "Date of occurence",
           date = LocalDate(2025, 11, 10),
