@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
     loadKoinModules(module)
 
