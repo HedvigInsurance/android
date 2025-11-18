@@ -142,7 +142,7 @@ internal fun AudioRecorder(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
       ) {
-        Spacer(Modifier.height(80.dp))
+        Spacer(Modifier.height(60.dp))
         Box(
           contentAlignment = Alignment.Center,
         ) {
@@ -302,7 +302,7 @@ private fun PrerecordedPlayback(
   ),
 ) {
   Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = Alignment.End,
     modifier = modifier.fillMaxWidth(),
   ) {
     val audioPlayerState = audioPlayer.audioPlayerState.collectAsStateWithLifecycle().value
@@ -330,6 +330,7 @@ private fun PrerecordedPlayback(
               onClick = submitAudioUrl,
               text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
               isLoading = uiState.isLoading,
+              buttonSize = ButtonDefaults.ButtonSize.Medium,
               enabled = true,
             )
           }
@@ -347,7 +348,7 @@ private fun PrerecordedPlayback(
             text = stringResource(R.string.EMBARK_RECORD_AGAIN),
             onClick = redo,
             enabled = true,
-            modifier = Modifier.fillMaxWidth(),
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
         }
       }
@@ -486,6 +487,7 @@ private fun PreviewRecording() {
     }
   }
 }
+
 
 @HedvigPreview
 @Composable

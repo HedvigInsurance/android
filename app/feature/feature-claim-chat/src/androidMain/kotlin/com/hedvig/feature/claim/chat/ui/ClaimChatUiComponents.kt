@@ -51,30 +51,80 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
 import hedvig.resources.R
+import java.io.File
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+
+//todo: if we want a a fullscreen free text overlay,
+// the claim chat screen should be wrapped in this:
+//@Composable
+//internal fun ClaimChatScreen(
+//  updateFreeText: (String?) -> Unit,
+//  onCloseFullScreenEditText: () -> Unit,
+//) {
+//  FreeTextOverlay(
+//    freeTextMaxLength = 2000,
+//    freeTextValue = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.freeText else null,
+//    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+//    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+//    freeTextOnCancelClick = {
+//      onCloseFullScreenEditText()
+//    },
+//    freeTextOnSaveClick = { feedback ->
+//      updateFreeText(feedback)
+//      onCloseFullScreenEditText()
+//    },
+//    shouldShowOverlay = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.showOverlay else false,
+//    overlaidContent = {
+//      // all chat content
+//    })
+//}
+
 
 @Composable
 internal fun AudioRecorderBubble(
-  isCurrentStep: Boolean,
-  recordingUrl: String?,
-  onSubmit: (String) -> Unit,
+  uiState: AudioRecordingStepState,
+  clock: Clock,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  startRecording: () -> Unit,
+  stopRecording: () -> Unit,
+  submitAudioFile: (File) -> Unit,
+  submitAudioUrl: (AudioUrl) -> Unit,
+  redo: () -> Unit,
+  openAppSettings: () -> Unit,
+  freeTextAvailable: Boolean,
+  submitFreeText: () -> Unit,
+  showFreeText: () -> Unit,
+  showAudioRecording: () -> Unit,
+  onLaunchFullScreenEditText: () -> Unit,
   canSkip: Boolean,
-  canBeChanged: Boolean,
   onSkip: () -> Unit,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  StandardBubble(
-    isPrefilledByAI = false,
-    isCurrentStep = isCurrentStep,
+  AudioRecordingStep(
+    uiState = uiState,
+    clock = clock,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    startRecording = startRecording,
+    stopRecording = stopRecording,
+    submitAudioFile = submitAudioFile,
+    submitAudioUrl = submitAudioUrl,
+    redo = redo,
+    openAppSettings = openAppSettings,
+    freeTextAvailable = freeTextAvailable,
+    submitFreeText = submitFreeText,
+    showFreeText = showFreeText,
+    showAudioRecording = showAudioRecording,
+    onLaunchFullScreenEditText = onLaunchFullScreenEditText,
     canSkip = canSkip,
-    onSubmit = onSubmit,
-    modifier = modifier,
     onSkip = onSkip,
-    selectedAnswer = recordingUrl,
-    content = {
-      // TODO()
-    },
+    isCurrentStep = isCurrentStep,
+    modifier = modifier,
   )
 }
 
@@ -112,14 +162,15 @@ internal fun YesNoBubble(
     onSkip = onSkip,
     selectedAnswer = answerSelected,
     content = {
-      Column(Modifier.padding(16.dp)) {
+      Column(Modifier.padding(16.dp),
+      horizontalAlignment = Alignment.End) {
         HedvigText(
           questionLabel,
           style = HedvigTheme.typography.label,
         )
         Spacer(Modifier.height(16.dp))
         Row(
-          horizontalArrangement = Arrangement.Start,
+          horizontalArrangement = Arrangement.End,
         ) {
           HighlightLabel(
             labelText = stringResource(R.string.GENERAL_YES),
@@ -236,7 +287,7 @@ internal fun DateSelectBubble(
       DatePickerWithDialog(
         datePickerState,
         canInteract = canBeChanged,
-        startText = questionLabel ?: "" //todo
+        startText = questionLabel ?: "", //todo
       )
     },
   )
@@ -266,8 +317,12 @@ internal fun TextInputBubble(
     onSkip = onSkip,
     content = {
       val focusRequester = remember { FocusRequester() }
-      var textValue by rememberSaveable { mutableStateOf(text
-        ?: "") }
+      var textValue by rememberSaveable {
+        mutableStateOf(
+          text
+            ?: "",
+        )
+      }
       val focusManager = LocalFocusManager.current
       HedvigTextField(
         text = textValue,
@@ -281,26 +336,28 @@ internal fun TextInputBubble(
         modifier = Modifier.focusRequester(focusRequester),
         enabled = canBeChanged,
         suffix = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              if (suffix != null) {
-                HedvigText(suffix)
-              }
-              AnimatedVisibility(textValue.isNotEmpty()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                  Spacer(Modifier.width(16.dp))
-                  IconButton(
-                    onClick = {
-                      onInput("")
-                      textValue = ""
-                    },
-                    Modifier.size(24.dp),
-                  ) {
-                    Icon(HedvigIcons.Close,
-                      stringResource(R.string.GENERAL_REMOVE))
-                  }
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            if (suffix != null) {
+              HedvigText(suffix)
+            }
+            AnimatedVisibility(textValue.isNotEmpty()) {
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.width(16.dp))
+                IconButton(
+                  onClick = {
+                    onInput("")
+                    textValue = ""
+                  },
+                  Modifier.size(24.dp),
+                ) {
+                  Icon(
+                    HedvigIcons.Close,
+                    stringResource(R.string.GENERAL_REMOVE),
+                  )
                 }
               }
             }
+          }
         },
         keyboardOptions = KeyboardOptions(
           autoCorrectEnabled = false,
@@ -356,29 +413,27 @@ internal fun <T> StandardBubble(
         )
       }
     }
-    if (canSkip || isCurrentStep) {
+    if (isCurrentStep) {
       Spacer(Modifier.height(8.dp))
       Row(
         horizontalArrangement = Arrangement.End,
       ) {
-        if (canSkip && isCurrentStep) {
+        if (canSkip) {
           HedvigTextButton(
             stringResource(R.string.claims_skip_button),
             onClick = onSkip,
             buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
         }
-        if (isCurrentStep) {
-          Spacer(Modifier.width(16.dp))
-          HedvigButton(
-            text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-            enabled = selectedAnswer != null,
-            onClick = {
-              if (selectedAnswer != null) onSubmit(selectedAnswer)
-            },
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
-          )
-        }
+        Spacer(Modifier.width(16.dp))
+        HedvigButton(
+          text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+          enabled = selectedAnswer != null,
+          onClick = {
+            if (selectedAnswer != null) onSubmit(selectedAnswer)
+          },
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
       }
     }
   }
@@ -427,14 +482,32 @@ private fun PreviewClaimChatComponents() {
         modifier = Modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.End,
       ) {
-//        AudioRecorderBubble(
-//          isCurrentStep = false,
-//          onSubmit = {},
-//          canSkip = false,
-//          canBeChanged = true,
-//          onSkip = {},
-//          recordingUrl = ""
-//        )
+        AudioRecorderBubble(
+          isCurrentStep = true,
+          uiState = AudioRecordingStepState.FreeTextDescription(
+            "some not really long free text",
+            showOverlay = false,
+            errorType = null,
+          ),
+          clock = Clock.System,
+          shouldShowRequestPermissionRationale = {
+            false
+          },
+          startRecording = {},
+          stopRecording = {},
+          submitAudioFile = {},
+          submitAudioUrl = {},
+          redo = {},
+          openAppSettings = {},
+          freeTextAvailable = true,
+          submitFreeText = {},
+          showFreeText = {},
+          showAudioRecording = {},
+          onLaunchFullScreenEditText = {},
+          canSkip = true,
+          onSkip = {},
+        )
+        Spacer(Modifier.height(16.dp))
         YesNoBubble(
           questionLabel = "Was the bike electric?",
           answerSelected = true,
@@ -471,7 +544,7 @@ private fun PreviewClaimChatComponents() {
           canSkip = false,
           canBeChanged = true,
           onSubmit = {},
-          onSkip = {}
+          onSkip = {},
         )
         Spacer(Modifier.height(16.dp))
         TextInputBubble(
@@ -484,7 +557,7 @@ private fun PreviewClaimChatComponents() {
           canSkip = true,
           onSubmit = {},
           onSkip = {},
-          onInput = {}
+          onInput = {},
         )
         Spacer(Modifier.height(16.dp))
       }
