@@ -9,8 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.feature.claim.chat.ConversationItem
-import com.hedvig.feature.claim.chat.ui.FormViews
 
 @Composable
 internal fun Form(
