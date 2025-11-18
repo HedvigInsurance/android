@@ -33,7 +33,7 @@ internal class StartClaimIntentUseCase(
       )
       .safeExecute()
       .onLeft {
-        logcat { "Mariia: StartClaimIntentUseCase: $it" }
+        logcat { "StartClaimIntentUseCase error: $it" }
       }
       .mapLeft(::ErrorMessage)
       .bind()

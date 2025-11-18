@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +36,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.audio.player.HedvigAudioPlayer
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
@@ -50,17 +54,23 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
+import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
@@ -68,6 +78,8 @@ import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 
 //todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
@@ -465,12 +477,85 @@ internal fun TextInputBubble(
 
 @Composable
 internal fun ChatClaimSummary(
+  text: String,
   recordingUrl: String?,
   displayItems: List<Pair<String, String>>,
-  onSubmit: (Unit) -> Unit,
+  onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  Column(modifier) {
+    HedvigText(text)
+    HorizontalDivider()
+    if (recordingUrl!=null) {
+      val audioPlayer = rememberAudioPlayer(
+        PlayableAudioSource.RemoteUrl(SignedAudioUrl
+          .fromSignedAudioUrlString(recordingUrl)),
+      )
+      HedvigAudioPlayer(audioPlayer = audioPlayer)
+    }
+    CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+      Column(modifier) {
+        for (displayItem in displayItems) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            spaceBetween = 8.dp,
+            startSlot = {
+              HedvigText(text = displayItem.first)
+            },
+            endSlot = {
+              val formatter = rememberHedvigDateTimeFormatter()
+              HedvigText(
+                text = displayItem.second,
+                textAlign = TextAlign.End,
+              )
+            },
+          )
+        }
+      }
+    }
+    Spacer(Modifier.height(16.dp))
+    Row(
+      Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center
+    ) {
+      HedvigButton(
+        text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+        enabled = true,
+        onClick = onSubmit,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
+      )
+    }
+  }
+}
 
+@Composable
+internal fun ChatClaimOutcome(
+  text: String,
+  claimId: String?,
+  onNavigateToClaim: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier,
+    horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+    HedvigText(text)
+    if (claimId!=null) {
+      Spacer(Modifier.height(16.dp))
+      Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+      ) {
+        HedvigButton(
+          onClick = {
+            onNavigateToClaim(claimId)
+          },
+          enabled = true,
+          buttonStyle =  ButtonDefaults.ButtonStyle.Secondary,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+          text = stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE)
+        )
+      }
+    }
+  }
 }
 
 @Composable
@@ -706,6 +791,12 @@ private fun PreviewSummary() {
             "Electric bike" to "Yes",
           ),
           onSubmit = {},
+          text = "Is this what you have in mind?"
+        )
+        ChatClaimOutcome(
+          "All done! Here is your submitted claim.",
+          onNavigateToClaim = {},
+          claimId = ""
         )
       }
     }
