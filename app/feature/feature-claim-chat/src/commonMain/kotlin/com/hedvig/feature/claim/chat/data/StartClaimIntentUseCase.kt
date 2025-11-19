@@ -8,7 +8,6 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.ClaimIntentStartMutation
-import octopus.fragment.ClaimIntentFragment
 
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,

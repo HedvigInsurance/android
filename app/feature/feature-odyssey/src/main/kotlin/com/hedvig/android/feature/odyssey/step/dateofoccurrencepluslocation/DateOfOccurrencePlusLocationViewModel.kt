@@ -6,7 +6,6 @@ import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
-import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.language.LanguageService
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 
 internal class DateOfOccurrencePlusLocationViewModel(
   private val dateOfOccurrencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation,
