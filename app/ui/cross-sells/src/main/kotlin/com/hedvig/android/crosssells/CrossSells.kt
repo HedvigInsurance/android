@@ -1,5 +1,12 @@
 package com.hedvig.android.crosssells
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +26,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +54,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.ImageLoader
@@ -44,6 +62,7 @@ import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
@@ -63,12 +82,16 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
+import kotlin.time.Duration
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.time.delay
 
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
@@ -443,10 +466,11 @@ fun CrossSellsSection(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
+  hasCrossSellDiscounts: Boolean = false,
 ) {
   Column(modifier) {
     if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider()
+      CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
       CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed, imageLoader = imageLoader)
@@ -460,7 +484,7 @@ fun CrossSellsSection(
 @Composable
 fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   Column(modifier) {
-    CrossSellsSubHeaderWithDivider()
+    CrossSellsSubHeaderWithDivider(false)
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
@@ -476,13 +500,88 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
 }
 
 @Composable
-private fun CrossSellsSubHeaderWithDivider() {
+private fun CrossSellsSubHeaderWithDivider(
+  hasCrossSellDiscounts: Boolean,
+) {
   Column {
     NotificationSubheading(
       text = stringResource(R.string.insurance_tab_cross_sells_title),
       modifier = Modifier.semantics { heading() },
     )
+    if (hasCrossSellDiscounts) {
+      Spacer(Modifier.height(6.dp))
+      AnimatedCrossSellsIconWithText()
+    }
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+fun AnimatedCrossSellsIconWithText(modifier: Modifier = Modifier) {
+  val isRotated by produceState(false) { value = true }
+  var showText by remember { mutableStateOf(false) }
+  val animationDurationMillis = 1500
+  val delayMillis = 50
+  val fullDuration = animationDurationMillis + delayMillis
+  val fullRotation by animateFloatAsState(
+    targetValue = if (isRotated) 360f else 0f,
+    animationSpec = tween(animationDurationMillis, delayMillis),
+  )
+  LaunchedEffect(Unit) {
+    delay(1000L)
+    showText = true
+  }
+
+  Box(
+    contentAlignment = Alignment.CenterStart
+  ) {
+
+      Surface(
+        shape = HedvigTheme.shapes.cornerXXLarge,
+        color = HedvigTheme.colorScheme.signalGreenFill,
+      ) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+              imageVector = HedvigIcons.Campaign,
+              tint = HedvigTheme.colorScheme.signalGreenElement,
+              contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
+              modifier = modifier
+                .padding(horizontal = 6.dp,vertical = 6.dp)
+                .size(26.dp)
+                .clip(CircleShape)
+                .graphicsLayer {
+                  rotationZ = fullRotation
+                },
+            )
+
+
+          AnimatedVisibility(
+            visible = showText,
+            enter = expandHorizontally(
+              expandFrom =  Alignment.Start,
+            ) + fadeIn(),
+          ) {
+            CompositionLocalProvider(LocalDensity provides Density(
+              density = LocalDensity.current.density,
+              fontScale = 1f
+              //todo: so, was not sure how to make this element work.
+              // after discussion with Richard,
+              // decided on fixing the font size for it,
+            //   since it's not really important info-wise
+            )) {
+              HedvigText(
+                text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), //todo
+                color = HedvigTheme.colorScheme.signalGreenText,
+                style = HedvigTheme.typography.label,
+                modifier = Modifier.padding(top = 8.dp, end = 14.dp, bottom = 8.dp)
+              )
+            }
+        }
+      }
+    }
   }
 }
 
@@ -747,6 +846,7 @@ private fun PreviewCrossSellsSection() {
         {},
         {},
         rememberPreviewImageLoader(),
+        hasCrossSellDiscounts = true,
       )
     }
   }

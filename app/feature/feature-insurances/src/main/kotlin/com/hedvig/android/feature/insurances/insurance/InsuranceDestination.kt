@@ -258,6 +258,7 @@ private fun InsuranceScreenContent(
             modifier = Modifier.padding(horizontal = 16.dp),
             onSheetDismissed = {},
             imageLoader = imageLoader,
+            hasCrossSellDiscounts = uiState.hasCrossSellDiscounts
           )
         }
         if (quantityOfCancelledInsurances > 0) {
@@ -351,7 +352,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
   Column(modifier) {
     HedvigNotificationCard(
       message = stringResource(R.string.insurances_tab_moving_flow_info_title),
-      priority = NotificationPriority.Campaign,
+      priority = NotificationPriority.Info,
       style = InfoCardStyle.Button(
         stringResource(R.string.insurances_tab_moving_flow_info_button_title),
         dropUnlessResumed { onNavigateToMovingFlow() },
@@ -406,6 +407,7 @@ private fun PreviewInsuranceScreen(
           isRetrying = false,
           travelAddonBannerInfo = null,
           pendingContracts = listOf(previewPendingContract),
+          hasCrossSellDiscounts = true
         ),
         {},
         {},
@@ -414,6 +416,7 @@ private fun PreviewInsuranceScreen(
         {},
         rememberPreviewImageLoader(),
         {},
+
       )
     }
   }
@@ -456,6 +459,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
+      hasCrossSellDiscounts = true
     ),
     InsuranceUiState(
       contracts = listOf(),
