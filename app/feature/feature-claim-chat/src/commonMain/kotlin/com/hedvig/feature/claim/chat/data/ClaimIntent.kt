@@ -58,7 +58,7 @@ internal sealed interface StepContent {
       val isRequired: Boolean,
       val suffix: String?,
       val title: String,
-      val defaultValue: String?,
+      val defaultValues: List<String>,
       val maxValue: String?,
       val minValue: String?,
       val type: String?,

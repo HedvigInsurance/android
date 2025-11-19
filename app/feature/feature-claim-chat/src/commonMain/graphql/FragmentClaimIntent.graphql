@@ -34,7 +34,7 @@ fragment FormFragment on ClaimIntentStepContentForm {
       title
       value
     }
-    defaultValue
+    defaultValues
     minValue
     maxValue
   }

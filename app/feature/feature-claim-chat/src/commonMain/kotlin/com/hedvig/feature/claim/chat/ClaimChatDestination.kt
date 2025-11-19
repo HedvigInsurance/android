@@ -115,7 +115,7 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
                 ClaimChatEvent.Form(
                   item.id,
                   item.stepContent.fields.associate {
-                    it.id to listOf(it.defaultValue)
+                    it.id to it.defaultValues
                   },
                 ),
               )

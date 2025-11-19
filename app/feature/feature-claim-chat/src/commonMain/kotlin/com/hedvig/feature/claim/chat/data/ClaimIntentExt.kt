@@ -76,7 +76,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
-      defaultValue = field.defaultValue,
+      defaultValues = field.defaultValues,
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = field.type.toString(), // todo

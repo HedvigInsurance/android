@@ -322,6 +322,10 @@ type CartItem {
   """
   notifications: [CarItemNotification!]!
 }
+enum CarTrialProduct {
+  HEDVIG_60_DAYS
+  HEDVIG_14_DAYS
+}
 """
 Returns changed price for an addon.
 """
@@ -651,7 +655,11 @@ type ClaimIntent {
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
-  values: [ClaimIntentStepContentFormFieldValue!]
+  """
+  For most field types, send a single value here.
+  If `ClaimIntentStepContentFormField.isRequired == false`, this can be left empty for "no value".
+  """
+  values: [ClaimIntentStepContentFormFieldValue!]!
 }
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
@@ -747,9 +755,9 @@ type ClaimIntentStepContentFormField {
   """
   options: [ClaimIntentStepContentFormFieldOption!]
   """
-  If present - the pre-defined value of this field.
+  If there are default values, they will show up in this array. Empty means no default value.
   """
-  defaultValue: ClaimIntentStepContentFormFieldValue
+  defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
   If present - the minimal value this field can hold.
   """
@@ -768,6 +776,7 @@ enum ClaimIntentStepContentFormFieldType {
   DATE
   NUMBER
   SINGLE_SELECT
+  MULTI_SELECT
   BINARY
 }
 """
@@ -3242,10 +3251,6 @@ type Product {
   """
   multiple: Boolean
   """
-  Bundle discount information for this product
-  """
-  bundleDiscount: ProductOfferBundleDiscountInfo! @deprecated(reason: "Use ProductOffer.bundleDiscount instead")
-  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
@@ -4074,6 +4079,7 @@ type TrialExtension {
   id: UUID!
   priceIntent: PriceIntent!
   trialContract: TrialContract!
+  product: CarTrialProduct!
   shopSession: ShopSession!
 }
 """

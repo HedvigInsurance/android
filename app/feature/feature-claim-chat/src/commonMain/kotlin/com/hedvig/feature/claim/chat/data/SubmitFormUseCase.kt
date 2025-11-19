@@ -2,9 +2,7 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -27,7 +25,7 @@ internal class SubmitFormUseCase(
               fields = formData.fields.map { field ->
                 ClaimIntentFormSubmitInputField(
                   fieldId = field.fieldId.value,
-                  values = Optional.presentIfNotNull(field.values.filterNotNull().toNonEmptyListOrNull()),
+                  values = field.values.filterNotNull(),
                 )
               },
             ),
