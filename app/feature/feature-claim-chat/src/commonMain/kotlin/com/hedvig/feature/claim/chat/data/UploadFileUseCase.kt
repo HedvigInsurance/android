@@ -4,7 +4,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
-import com.hedvig.feature.claim.chat.data.file.AudioFileReference
+import com.hedvig.feature.claim.chat.data.file.CommonFile
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.forms.InputProvider
@@ -22,10 +22,10 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-internal class UploadAudioUseCase(private val client: HttpClient) {
+internal class UploadFileUseCase(private val client: HttpClient) {
   context(_: Raise<ErrorMessage>)
   suspend fun invoke(
-    fileReference: AudioFileReference,
+    commonFile: CommonFile,
     uploadUrl: String,
   ): FileUploadResponse {
     // todo URL for prod/staging
@@ -33,20 +33,20 @@ internal class UploadAudioUseCase(private val client: HttpClient) {
       setBody(
         MultiPartFormDataContent(
           formData {
-            append("description", "Audio File")
+            append("description", commonFile.description)
             append(
-              "audio",
-              InputProvider { fileReference.source() },
+              "files",
+              InputProvider { commonFile.source() },
               Headers.build {
                 append(HttpHeaders.ContentType, "multipart/form-data")
-                append(HttpHeaders.ContentDisposition, """filename="${fileReference.fileName}"""")
+                append(HttpHeaders.ContentDisposition, """filename="${commonFile.fileName}"""")
               },
             )
           },
         ),
       )
       onUpload { bytesSentTotal, contentLength ->
-        logcat { "UploadAudioUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength" }
+        logcat { "UploadFileUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength" }
       }
     }
 
@@ -59,14 +59,14 @@ internal class UploadAudioUseCase(private val client: HttpClient) {
           jsonElement.jsonPrimitive.content
         }
         ?.firstOrNull()
-        ?: raise(ErrorMessage("UploadAudioUseCase jsonResponse$jsonResponse did not contain file IDs"))
-      FileUploadResponse(AudioFileId(fileId))
+        ?: raise(ErrorMessage("UploadFileUseCase jsonResponse$jsonResponse did not contain file IDs"))
+      FileUploadResponse(CommonFileId(fileId))
     } else {
-      raise(ErrorMessage("UploadAudioUseCase failed with error ${response.status} | ${response.bodyAsText()}"))
+      raise(ErrorMessage("UploadFileUseCase failed with error ${response.status} | ${response.bodyAsText()}"))
     }
   }
 }
 
 internal data class FileUploadResponse(
-  val fileId: AudioFileId,
+  val fileId: CommonFileId,
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.rememberFilePicker
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -65,16 +66,22 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
           BasicText(
             "AudioRecording",
             Modifier.clickable {
-              onEvent(ClaimChatEvent.AudioRecording.TextInput(item.id, """
+              onEvent(
+                ClaimChatEvent.AudioRecording.TextInput(
+                  item.id,
+                  """
 Earlier this afternoon, I was walking up the steps outside my office building. I had my phone in my hand when I tripped
 slightly on the last step. As I tried to catch my balance, the phone slipped out of my grip and fell onto the concrete.
 The phone still works perfectly, it turns on, and the internal components are functional. However, the screen is cracked
 quite badly, mainly across the top and down one side. The damage is significant and requires repair.
 I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish Crowns (SEK).
-              """.trimIndent()))
-            }
+              """.trimIndent(),
+                ),
+              )
+            },
           )
         }
+
         is StepContent.ContentSelect -> BasicText(
           "ContentSelect",
           Modifier.clickable {
@@ -82,7 +89,24 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
           },
         )
 
-        is StepContent.FileUpload -> BasicText("FileUpload")
+        is StepContent.FileUpload -> {
+          val filePicker = rememberFilePicker { uri ->
+            onEvent(
+              ClaimChatEvent.FileUpload(
+                id = item.id,
+                fileUri = uri,
+                uploadUri = item.stepContent.uploadUri,
+              ),
+            )
+          }
+          BasicText(
+            "FileUpload",
+            Modifier.clickable {
+              filePicker.launch()
+            },
+          )
+        }
+
         is StepContent.Form -> {
           BasicText(
             "Form",

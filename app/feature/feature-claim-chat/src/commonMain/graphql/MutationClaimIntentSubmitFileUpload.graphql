@@ -1,0 +1,5 @@
+mutation ClaimIntentSubmitFileUpload($input: ClaimIntentSubmitFileUploadInput!) {
+  claimIntentSubmitFileUpload(input: $input) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}

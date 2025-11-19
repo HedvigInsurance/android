@@ -216,6 +216,7 @@ testParameterInjector = { module = "com.google.testparameterinjector:test-parame
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android", version.ref = "unleash" }
+uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
