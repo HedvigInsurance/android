@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.eygraber.uri.Uri
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -24,11 +25,12 @@ import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
+import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import com.hedvig.feature.claim.chat.data.file.AudioFileReference
+import com.hedvig.feature.claim.chat.data.file.CommonFile
 import kotlin.String
 import kotlinx.coroutines.launch
 
@@ -38,14 +40,16 @@ internal sealed interface ClaimChatEvent {
 
     data class AudioInput(
       override val id: StepId,
-      val fileReference: AudioFileReference,
+      val commonFile: CommonFile,
       val uploadUri: String,
     ) : AudioRecording
+
     data class TextInput(override val id: StepId, val text: String) : AudioRecording
   }
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
   data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
+  data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -64,6 +68,7 @@ internal class ClaimChatViewModel(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   submitTaskUseCase: SubmitTaskUseCase,
   submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  submitFileUploadUseCase: SubmitFileUploadUseCase,
   submitFormUseCase: SubmitFormUseCase,
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
@@ -76,6 +81,7 @@ internal class ClaimChatViewModel(
     getClaimIntentUseCase,
     submitTaskUseCase,
     submitAudioRecordingUseCase,
+    submitFileUploadUseCase,
     submitFormUseCase,
     submitSelectUseCase,
     submitSummaryUseCase,
@@ -89,6 +95,7 @@ internal class ClaimChatPresenter(
   private val getClaimIntentUseCase: GetClaimIntentUseCase,
   private val submitTaskUseCase: SubmitTaskUseCase,
   private val submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  private val submitFileUploadUseCase: SubmitFileUploadUseCase,
   private val submitFormUseCase: SubmitFormUseCase,
   private val submitSelectUseCase: SubmitSelectUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
@@ -152,7 +159,7 @@ internal class ClaimChatPresenter(
             is ClaimChatEvent.AudioRecording.AudioInput -> {
               launch {
                 submitAudioRecordingUseCase
-                  .invoke(event.id, event.fileReference, event.uploadUri)
+                  .invoke(event.id, event.commonFile, event.uploadUri)
                   .fold(
                     ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
                     ifRight = { claimIntent ->
@@ -190,6 +197,24 @@ internal class ClaimChatPresenter(
               )
               .fold(
                 ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                ifRight = { claimIntent ->
+                  steps.replaceTaskWithNextStep(claimIntent.step)
+                },
+              )
+          }
+        }
+
+        is ClaimChatEvent.FileUpload -> {
+          val fileUri = event.fileUri ?: return@CollectEvents
+          launch {
+            submitFileUploadUseCase
+              .invoke(
+                stepId = event.id,
+                fileUri = fileUri,
+                uploadUrl = event.uploadUri,
+              )
+              .fold(
+                ifLeft = { error("todo left submitFileUploadUseCase $it") },
                 ifRight = { claimIntent ->
                   steps.replaceTaskWithNextStep(claimIntent.step)
                 },

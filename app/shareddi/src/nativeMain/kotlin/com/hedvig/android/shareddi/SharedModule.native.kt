@@ -12,13 +12,16 @@ internal actual val platformModule: Module = module {
 }
 
 /**
- * Like [platformModule] but allows for dynamic input, for pieces of information that need to be injected from iOS
+ * Like [platformModule] but allows for dynamic input, for pieces that need to be injected from iOS
  */
 internal fun iosPlatformModule(
   accessTokenFetcher: AccessTokenFetcher,
 ) = module {
+  single<AccessTokenFetcher> {
+    accessTokenFetcher
+  }
   single<IosAuthTokenInterceptor> {
-    IosAuthTokenInterceptor(accessTokenFetcher)
+    IosAuthTokenInterceptor(get<AccessTokenFetcher>())
   }
 }
 

@@ -4,7 +4,10 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
-import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import org.koin.core.module.Module
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
@@ -12,6 +15,7 @@ import org.koin.dsl.module
 val apolloClientBuilderMultiplatformQualifier = qualifier("apolloClientBuilderMultiplatformQualifier")
 
 val sharedModule = module {
+  includes(platformModule)
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
@@ -29,6 +33,9 @@ val sharedModule = module {
       .run { extra.configure(this) }
       .build()
   }
+  single<HttpClient> {
+    ktorClient(get<AccessTokenFetcher>())
+  }
 }
 
 internal expect val platformModule: Module
@@ -40,5 +47,18 @@ internal interface ExtraApolloClientConfiguration {
 internal class NoopExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
   override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
     return builder
+  }
+}
+
+private fun ktorClient(accessTokenFetcher: AccessTokenFetcher): HttpClient {
+  return HttpClient {
+    install(Auth) {
+      bearer {
+        loadTokens {
+          val accessToken = accessTokenFetcher.fetch() ?: return@loadTokens null
+          BearerTokens(accessToken, null)
+        }
+      }
+    }
   }
 }

@@ -8,6 +8,6 @@ fun initKoin(
   accessTokenFetcher: AccessTokenFetcher,
 ) {
   startKoin {
-    modules(iosPlatformModule(accessTokenFetcher), platformModule, sharedModule, claimChatModule)
+    modules(iosPlatformModule(accessTokenFetcher), sharedModule, claimChatModule)
   }
 }
