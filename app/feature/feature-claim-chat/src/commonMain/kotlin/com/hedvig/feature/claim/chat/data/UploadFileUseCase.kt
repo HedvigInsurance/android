@@ -3,6 +3,7 @@ package com.hedvig.feature.claim.chat.data
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.CommonFile
 import io.ktor.client.HttpClient
@@ -17,7 +18,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -46,7 +46,7 @@ internal class UploadFileUseCase(private val client: HttpClient) {
         ),
       )
       onUpload { bytesSentTotal, contentLength ->
-        logcat { "UploadFileUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength" }
+        logcat(LogPriority.VERBOSE) { "UploadFileUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength" }
       }
     }
 
