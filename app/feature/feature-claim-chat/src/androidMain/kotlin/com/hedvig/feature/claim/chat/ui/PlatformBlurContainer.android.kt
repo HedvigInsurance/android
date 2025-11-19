@@ -10,11 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun PlatformBlurContainer(
-    modifier: Modifier,
-    radius: Int,
-    content: @Composable (() -> Unit)
-) {
+internal actual fun PlatformBlurContainer(modifier: Modifier, radius: Int, content: @Composable (() -> Unit)) {
   val radiusPx = with(LocalDensity.current) { radius.dp.toPx() }
 
   Box(
@@ -22,9 +18,9 @@ internal actual fun PlatformBlurContainer(
       renderEffect = BlurEffect(
         radiusX = radiusPx,
         radiusY = radiusPx,
-        edgeTreatment = TileMode.Decal
+        edgeTreatment = TileMode.Decal,
       )
-    }
+    },
   ) {
     content()
   }

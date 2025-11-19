@@ -14,12 +14,12 @@ internal fun FormDate(
   onDateSelected: (Long) -> Unit,
   modifier: Modifier = Modifier,
   // Expect/Actual function to show native date picker (defined outside commonMain)
-  showDatePicker: (onDateSelected: (Long) -> Unit) -> Unit
+  showDatePicker: (onDateSelected: (Long) -> Unit) -> Unit,
 ) {
   FormContainer(modifier = modifier) {
     OutlinedButton(
       onClick = { showDatePicker(onDateSelected) },
-      modifier = Modifier.fillMaxWidth()
+      modifier = Modifier.fillMaxWidth(),
     ) {
       Text(value ?: "Select Date")
     }

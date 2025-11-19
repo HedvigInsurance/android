@@ -142,22 +142,22 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       ) {
-        if (claim.outcome != null && claim.outcome != ClaimHistory.ClaimOutcome.UNKNOWN) {
-          HighlightLabel(
-            labelText = stringResource(
-              when (claim.outcome) {
-                ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
-                ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
-                ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
-                ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
-                ClaimHistory.ClaimOutcome.UNKNOWN -> error("impossible")
-              },
-            ),
-            size = HighlightLabelDefaults.HighLightSize.Small,
-            color = HighlightLabelDefaults.HighlightColor.Outline(HighlightLabelDefaults.HighlightShade.MEDIUM),
-            modifier = Modifier.weight(1f, false),
-          )
-        }
+
+        HighlightLabel(
+          labelText = stringResource(
+            when (claim.outcome) {
+              ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
+              ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
+              ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
+              ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
+              else -> R.string.claim_status_detail_closed
+            },
+          ),
+          size = HighlightLabelDefaults.HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Outline(HighlightLabelDefaults.HighlightShade.MEDIUM),
+          modifier = Modifier.weight(1f, false),
+        )
+
         Icon(
           HedvigIcons.ChevronRight,
           null,

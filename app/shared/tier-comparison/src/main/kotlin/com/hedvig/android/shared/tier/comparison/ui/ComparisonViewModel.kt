@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.Covered
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.CoveredWithDescription
 import com.hedvig.android.shared.tier.comparison.data.ComparisonData.CoverageLevel.CoveredItem.CoveredStatus.NotCovered

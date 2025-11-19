@@ -11,10 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun FormContainer(
-  modifier: Modifier = Modifier,
-  content: @Composable BoxScope.() -> Unit,
-) {
+internal fun FormContainer(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
   Row(
     modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
     horizontalArrangement = Arrangement.End,

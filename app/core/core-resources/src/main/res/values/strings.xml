@@ -470,6 +470,7 @@
   <string name="PAYMENTS_ACCOUNT">Account</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Add campaign code</string>
   <string name="PAYMENTS_ADD_CODE_BUTTON_LABEL">Add</string>
+  <string name="PAYMENTS_AMOUNT_TO_PAY">Amount to pay</string>
   <string name="PAYMENTS_AUTOGIRO_LABEL">Direct debit</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
   <string name="PAYMENTS_DISCOUNTS_SECTION_TITLE">Discounts</string>
@@ -489,6 +490,7 @@
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Payment successful</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s days</string>
   <string name="PAYMENTS_PERIOD_FULL">Full period</string>
+  <string name="PAYMENTS_PERIOD_TITLE">Period</string>
   <string name="PAYMENTS_PROCESSING_PAYMENT">Processing payment</string>
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Invite your friends and get a 10 SEK discount per month for each friend who signs an insurance with Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>

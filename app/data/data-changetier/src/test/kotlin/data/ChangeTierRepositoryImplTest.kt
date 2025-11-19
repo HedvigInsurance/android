@@ -124,7 +124,8 @@ class ChangeTierRepositoryImplTest {
         intentOutput = IntentOutput(
           LocalDate(2024, 11, 11),
           listOf(testQuote),
-        )).right(),
+        ),
+      ).right(),
     )
     repository.startChangeTierIntentAndGetQuotesId(testId, SELF_SERVICE)
     val result = storage.allQuotesTurbine.awaitItem().takeIf { it.any { quote -> quote.id == oldTestQuote.id } }

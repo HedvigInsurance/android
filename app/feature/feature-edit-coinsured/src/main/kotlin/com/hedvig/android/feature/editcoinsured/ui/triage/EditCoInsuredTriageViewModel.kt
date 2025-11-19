@@ -14,9 +14,9 @@ import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageEve
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
