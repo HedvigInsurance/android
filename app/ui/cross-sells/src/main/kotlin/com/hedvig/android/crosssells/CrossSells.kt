@@ -5,8 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,7 +60,6 @@ import coil.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
@@ -82,16 +79,13 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
-import kotlin.time.Duration
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.time.delay
 
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
@@ -473,7 +467,25 @@ fun CrossSellsSection(
       CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed, imageLoader = imageLoader)
+      if (hasCrossSellDiscounts) {
+        CrossSellItemWithDiscounts(
+          crossSellTitle = crossSell.title,
+          crossSellSubtitle = crossSell.subtitle,
+          storeUrl = crossSell.storeUrl,
+          onCrossSellClick = onCrossSellClick,
+          isLoading = false,
+          imageLoader = imageLoader,
+          crossSellImageAsset = crossSell.pillowImage,
+          onSheetDismissed = onSheetDismissed,
+        )
+      } else {
+        CrossSellItem(
+          crossSell,
+          onCrossSellClick,
+          onSheetDismissed = onSheetDismissed,
+          imageLoader = imageLoader,
+        )
+      }
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -520,65 +532,54 @@ private fun CrossSellsSubHeaderWithDivider(
 fun AnimatedCrossSellsIconWithText(modifier: Modifier = Modifier) {
   val isRotated by produceState(false) { value = true }
   var showText by remember { mutableStateOf(false) }
-  val animationDurationMillis = 1500
-  val delayMillis = 50
-  val fullDuration = animationDurationMillis + delayMillis
   val fullRotation by animateFloatAsState(
     targetValue = if (isRotated) 360f else 0f,
-    animationSpec = tween(animationDurationMillis, delayMillis),
+    animationSpec = tween(1500, 50),
   )
   LaunchedEffect(Unit) {
     delay(1000L)
     showText = true
   }
-
-  Box(
-    contentAlignment = Alignment.CenterStart
+  Surface(
+    shape = HedvigTheme.shapes.cornerXXLarge,
+    color = HedvigTheme.colorScheme.signalGreenFill,
+    modifier = modifier.semantics {
+      hideFromAccessibility()
+    },
   ) {
-
-      Surface(
-        shape = HedvigTheme.shapes.cornerXXLarge,
-        color = HedvigTheme.colorScheme.signalGreenFill,
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Icon(
+        imageVector = HedvigIcons.Campaign,
+        tint = HedvigTheme.colorScheme.signalGreenElement,
+        contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
+        modifier = Modifier
+          .padding(horizontal = 8.dp, vertical = 8.dp)
+          .size(22.dp)
+          .clip(CircleShape)
+          .graphicsLayer {
+            rotationZ = fullRotation
+          },
+      )
+      AnimatedVisibility(
+        visible = showText,
+        enter = expandHorizontally(
+          expandFrom = Alignment.Start,
+        ) + fadeIn(),
       ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically
+        CompositionLocalProvider(
+          LocalDensity provides Density(
+            density = LocalDensity.current.density,
+            fontScale = 1f,
+          ),
         ) {
-
-            Icon(
-              imageVector = HedvigIcons.Campaign,
-              tint = HedvigTheme.colorScheme.signalGreenElement,
-              contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
-              modifier = modifier
-                .padding(horizontal = 6.dp,vertical = 6.dp)
-                .size(26.dp)
-                .clip(CircleShape)
-                .graphicsLayer {
-                  rotationZ = fullRotation
-                },
-            )
-
-
-          AnimatedVisibility(
-            visible = showText,
-            enter = expandHorizontally(
-              expandFrom =  Alignment.Start,
-            ) + fadeIn(),
-          ) {
-            CompositionLocalProvider(LocalDensity provides Density(
-              density = LocalDensity.current.density,
-              fontScale = 1f
-              //todo: so, was not sure how to make this element work.
-              // after discussion with Richard,
-              // decided on fixing the font size for it,
-            //   since it's not really important info-wise
-            )) {
-              HedvigText(
-                text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), //todo
-                color = HedvigTheme.colorScheme.signalGreenText,
-                style = HedvigTheme.typography.label,
-                modifier = Modifier.padding(top = 8.dp, end = 14.dp, bottom = 8.dp)
-              )
-            }
+          HedvigText(
+            text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), //todo
+            color = HedvigTheme.colorScheme.signalGreenText,
+            style = HedvigTheme.typography.label,
+            modifier = Modifier.padding(top = 8.dp, end = 14.dp, bottom = 8.dp),
+          )
         }
       }
     }
@@ -678,6 +679,87 @@ private fun CrossSellItem(
       onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       buttonSize = ButtonDefaults.ButtonSize.Medium,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier.hedvigPlaceholder(
+        visible = isLoading,
+        shape = HedvigTheme.shapes.cornerSmall,
+        highlight = PlaceholderHighlight.shimmer(),
+      ),
+      enabled = !isLoading,
+    )
+  }
+}
+
+@Composable
+private fun CrossSellItemWithDiscounts(
+  crossSellTitle: String,
+  crossSellSubtitle: String,
+  storeUrl: String,
+  crossSellImageAsset: ImageAsset?,
+  onCrossSellClick: (String) -> Unit,
+  isLoading: Boolean,
+  imageLoader: ImageLoader,
+  onSheetDismissed: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val description = "$crossSellTitle $crossSellSubtitle"
+  Row(
+    modifier = modifier
+      .heightIn(64.dp)
+      .semantics(true) {
+        contentDescription = description
+      },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    AsyncImage(
+      model = crossSellImageAsset?.src,
+      contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
+      placeholder = crossSellPainterFallback(),
+      error = crossSellPainterFallback(),
+      fallback = crossSellPainterFallback(),
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier
+        .size(48.dp),
+    )
+    Spacer(Modifier.width(16.dp))
+    Column(
+      modifier = Modifier
+        .weight(1f)
+        .semantics {
+          hideFromAccessibility()
+        },
+      verticalArrangement = Arrangement.Center,
+    ) {
+      HedvigText(
+        text = crossSellTitle,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+          shape = HedvigTheme.shapes.cornerXSmall,
+        ),
+      )
+      Spacer(Modifier.height(4.dp))
+      HedvigText(
+        text = crossSellSubtitle,
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
+      )
+    }
+    Spacer(Modifier.width(16.dp))
+    HedvigButton(
+      text = stringResource(R.string.cross_sell_get_price),
+      onClick = {
+        onCrossSellClick(storeUrl)
+        onSheetDismissed()
+      },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
+      buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
@@ -839,6 +921,30 @@ private fun PreviewCrossSellsSection() {
             "id",
             "title",
             "subtitle",
+            "storeUrl",
+            ImageAsset("", "", ""),
+          )
+        },
+        {},
+        {},
+        rememberPreviewImageLoader(),
+        hasCrossSellDiscounts = false,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSectionWithDiscounts() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellsSection(
+        List(2) {
+          CrossSell(
+            "id",
+            "Accident Insurance",
+            "50% off your first year",
             "storeUrl",
             ImageAsset("", "", ""),
           )
