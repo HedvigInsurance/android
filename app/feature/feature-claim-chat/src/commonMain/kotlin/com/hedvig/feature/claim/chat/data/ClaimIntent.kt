@@ -90,13 +90,6 @@ internal sealed interface StepContent {
     data class FileUpload(val url: String, val contentType: String, val fileName: String)
   }
 
-  data class Outcome(
-    val claimId: String
-  ) : StepContent {
-    override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
-  }
-
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
     override val isRegrettable: Boolean = false

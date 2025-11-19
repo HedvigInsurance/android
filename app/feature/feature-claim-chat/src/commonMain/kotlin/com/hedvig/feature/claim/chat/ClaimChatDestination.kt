@@ -123,7 +123,6 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
           )
         }
 
-        is StepContent.Outcome -> BasicText("Outcome")
         is StepContent.Summary -> BasicText("Summary")
         is StepContent.Task -> {
           Column {

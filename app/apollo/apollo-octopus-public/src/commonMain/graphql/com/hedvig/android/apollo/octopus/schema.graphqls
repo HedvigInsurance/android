@@ -690,7 +690,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -784,13 +784,6 @@ A scalar representing client-server agreed upon submittable form values.
 This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
-"""
-A step that shows the outcome of a claim intent.
-This is a terminal step - there is no way to submit it.
-"""
-type ClaimIntentStepContentOutcome {
-  claimId: ID!
-}
 """
 A select step is one that contains a choice to select one of several alternatives.
 It can be seen as a special-case form with nicer rendering.
