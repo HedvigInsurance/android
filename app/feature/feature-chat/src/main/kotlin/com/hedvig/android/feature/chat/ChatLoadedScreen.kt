@@ -237,79 +237,77 @@ private fun ChatLoadedScreen(
   val dividerColor = HedvigTheme.colorScheme.borderSecondary
   val dividerThickness = 1.dp
   Box {
-    SelectionContainer {
-      Column {
-        ChatLazyColumn(
-          lazyListState = lazyListState,
-          messages = uiState.messages,
-          latestChatMessage = uiState.latestMessage,
-          enableMessageSenderLabeling = uiState.enableMessageSenderLabeling,
-          enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
-          imageLoader = imageLoader,
-          simpleVideoCache = simpleVideoCache,
-          openUrl = openUrl,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          onRetrySendChatMessage = onRetrySendChatMessage,
-          modifier = Modifier
+    Column {
+      ChatLazyColumn(
+        lazyListState = lazyListState,
+        messages = uiState.messages,
+        latestChatMessage = uiState.latestMessage,
+        enableMessageSenderLabeling = uiState.enableMessageSenderLabeling,
+        enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
+        imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
+        openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        onRetrySendChatMessage = onRetrySendChatMessage,
+        modifier = Modifier
             .fillMaxWidth()
             .weight(1f)
             .clearFocusOnTap(),
-        )
-        AnimatedVisibility(
-          visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
-            uiState.bannerText != null,
-          enter = expandVertically(
-            spring(
-              stiffness = Spring.StiffnessMedium,
-              visibilityThreshold = IntSize.VisibilityThreshold,
-            ),
+      )
+      AnimatedVisibility(
+        visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+          uiState.bannerText != null,
+        enter = expandVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
           ),
-          exit = shrinkVertically(
-            spring(
-              stiffness = Spring.StiffnessMedium,
-              visibilityThreshold = IntSize.VisibilityThreshold,
-            ),
+        ),
+        exit = shrinkVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
           ),
-        ) {
-          ChatBanner(
-            text = when (uiState.bannerText) {
-              ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
-              is BannerText.Text -> uiState.bannerText.text
-              null -> ""
-            },
-            possibleToClose = uiState.bannerText !is ClosedConversation,
-            onCloseCLick = onCloseBannerClick,
-            modifier = Modifier
+        ),
+      ) {
+        ChatBanner(
+          text = when (uiState.bannerText) {
+            ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+            is BannerText.Text -> uiState.bannerText.text
+            null -> ""
+          },
+          possibleToClose = uiState.bannerText !is ClosedConversation,
+          onCloseCLick = onCloseBannerClick,
+          modifier = Modifier
               .fillMaxWidth()
               .windowInsetsPadding(WindowInsets.safeDrawing)
               .drawWithContent {
-                drawContent()
-                drawLine(
-                  color = dividerColor,
-                  strokeWidth = dividerThickness.toPx(),
-                  start = Offset(0f, dividerThickness.toPx() / 2),
-                  end = Offset(size.width, dividerThickness.toPx() / 2),
-                )
+                  drawContent()
+                  drawLine(
+                      color = dividerColor,
+                      strokeWidth = dividerThickness.toPx(),
+                      start = Offset(0f, dividerThickness.toPx() / 2),
+                      end = Offset(size.width, dividerThickness.toPx() / 2),
+                  )
               },
-          )
-        }
-        Box(
-          propagateMinConstraints = true,
-          modifier = Modifier
+        )
+      }
+      Box(
+        propagateMinConstraints = true,
+        modifier = Modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .drawWithContent {
-              drawContent()
-              drawLine(
-                color = dividerColor,
-                strokeWidth = dividerThickness.toPx(),
-                start = Offset(0f, dividerThickness.toPx() / 2),
-                end = Offset(size.width, dividerThickness.toPx() / 2),
-              )
+                drawContent()
+                drawLine(
+                    color = dividerColor,
+                    strokeWidth = dividerThickness.toPx(),
+                    start = Offset(0f, dividerThickness.toPx() / 2),
+                    end = Offset(size.width, dividerThickness.toPx() / 2),
+                )
             },
-        ) {
-          chatInput()
-        }
+      ) {
+        chatInput()
       }
     }
     if (errorSnackbarState != null) {
@@ -323,6 +321,7 @@ private fun ChatLoadedScreen(
     }
   }
 }
+
 
 @Composable
 private fun ScrollToBottomEffect(
@@ -421,40 +420,42 @@ private fun ChatLazyColumn(
       val defaultWidth = 0.8f
       var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
       Column {
-        ChatBubble(
-          uiChatMessage = uiChatMessage,
-          chatItemIndex = index,
-          enableMessageSenderLabeling = enableMessageSenderLabeling,
-          imageLoader = imageLoader,
-          enableInlineMediaPlayer = enableInlineMediaPlayer,
-          simpleVideoCache = simpleVideoCache,
-          mediaStatesWithPlayersMap = mediaStatesWithPlayers,
-          openUrl = openUrl,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          onRetrySendChatMessage = onRetrySendChatMessage,
-          onGoFullWidth = {
-            dynamicBubbleWidthFraction = 1f
-          },
-          onGoDefaultWidth = {
-            dynamicBubbleWidthFraction = defaultWidth
-          },
-          showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
-          modifier = Modifier
-            .fillParentMaxWidth()
-            .padding(horizontal = 16.dp)
-            .wrapContentWidth(alignment)
-            .fillMaxWidth(dynamicBubbleWidthFraction)
-            .wrapContentWidth(alignment)
-            .padding(bottom = 8.dp),
-        )
+        SelectionContainer {
+          ChatBubble(
+            uiChatMessage = uiChatMessage,
+            chatItemIndex = index,
+            enableMessageSenderLabeling = enableMessageSenderLabeling,
+            imageLoader = imageLoader,
+            enableInlineMediaPlayer = enableInlineMediaPlayer,
+            simpleVideoCache = simpleVideoCache,
+            mediaStatesWithPlayersMap = mediaStatesWithPlayers,
+            openUrl = openUrl,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            onRetrySendChatMessage = onRetrySendChatMessage,
+            onGoFullWidth = {
+              dynamicBubbleWidthFraction = 1f
+            },
+            onGoDefaultWidth = {
+              dynamicBubbleWidthFraction = defaultWidth
+            },
+            showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
+            modifier = Modifier
+              .fillParentMaxWidth()
+              .padding(horizontal = 16.dp)
+              .wrapContentWidth(alignment)
+              .fillMaxWidth(dynamicBubbleWidthFraction)
+              .wrapContentWidth(alignment)
+              .padding(bottom = 8.dp),
+          )
+        }
         val banner = uiChatMessage?.chatMessage?.banner
         if (banner != null) {
           MessageBanner(
             banner,
             Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .padding(bottom = 8.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
           )
         }
       }
@@ -478,16 +479,16 @@ private fun ChatLazyColumn(
         }
         ThreeDotsLoading(
           Modifier
-            .fillParentMaxWidth()
-            .wrapContentWidth()
-            .padding(24.dp)
-            .then(
-              if (hideForFirstFrames) {
-                Modifier.withoutPlacement()
-              } else {
-                Modifier
-              },
-            ),
+              .fillParentMaxWidth()
+              .wrapContentWidth()
+              .padding(24.dp)
+              .then(
+                  if (hideForFirstFrames) {
+                      Modifier.withoutPlacement()
+                  } else {
+                      Modifier
+                  },
+              ),
         )
       }
     }
@@ -527,11 +528,11 @@ private fun ChatBubble(
             HedvigText(
               text = "HHHHHHHHHH",
               modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .withoutPlacement()
-                .semantics {
-                  hideFromAccessibility()
-                },
+                  .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .withoutPlacement()
+                  .semantics {
+                      hideFromAccessibility()
+                  },
             )
           }
         }
@@ -546,10 +547,10 @@ private fun ChatBubble(
               text = chatMessage.text,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
               modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .semantics {
-                  hideFromAccessibility()
-                },
+                  .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .semantics {
+                      hideFromAccessibility()
+                  },
             )
           }
         }
@@ -563,12 +564,12 @@ private fun ChatBubble(
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
                 modifier = Modifier
-                  .clickable {
-                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
+                    .clickable {
+                        onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                    }
+                    .semantics {
+                        hideFromAccessibility()
+                    },
               )
             }
 
@@ -606,17 +607,17 @@ private fun ChatBubble(
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
                 modifier = Modifier
-                  .clickable {
-                    openUrl(chatMessage.url)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
+                    .clickable {
+                        openUrl(chatMessage.url)
+                    }
+                    .semantics {
+                        hideFromAccessibility()
+                    },
               )
             }
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -822,24 +823,24 @@ private fun FailedToBeSentUri(
     isRetryable = true,
     isFailedToBeSentMessage = true,
     modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .clickable { onRetrySendChatMessage(messageId) }
-      .drawWithContent {
-        drawContent()
-        drawRect(color = Color.Black, alpha = 0.38f)
-        withTransform(
-          transformBlock = {
-            translate(
-              left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
-              top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
-            )
-          },
-        ) {
-          with(retryIconPainter) {
-            draw(retryIconPainter.intrinsicSize)
-          }
-        }
-      },
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .clickable { onRetrySendChatMessage(messageId) }
+        .drawWithContent {
+            drawContent()
+            drawRect(color = Color.Black, alpha = 0.38f)
+            withTransform(
+                transformBlock = {
+                    translate(
+                        left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+                        top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+                    )
+                },
+            ) {
+                with(retryIconPainter) {
+                    draw(retryIconPainter.intrinsicSize)
+                }
+            }
+        },
   )
 }
 
@@ -853,17 +854,17 @@ private fun AttachedFileMessage(
   val shape = HedvigTheme.shapes.cornerLarge
   Box(
     modifier
-      .drawWithCache {
-        val stroke = Stroke(1.dp.toPx())
-        val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-        onDrawWithContent {
-          drawContent()
-          drawOutline(outline, borderColor, style = stroke)
+        .drawWithCache {
+            val stroke = Stroke(1.dp.toPx())
+            val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
+            onDrawWithContent {
+                drawContent()
+                drawOutline(outline, borderColor, style = stroke)
+            }
         }
-      }
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .background(containerColor)
-      .clickable(onClick = onClick),
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .background(containerColor)
+        .clickable(onClick = onClick),
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -900,9 +901,9 @@ private fun VideoMessage(
   Media(
     state = state,
     modifier = modifier
-      .height(height)
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .background(Color.Black),
+        .height(height)
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .background(Color.Black),
     surfaceType = SurfaceType.TextureView,
     resizeMode = ResizeMode.Fit,
     keepContentOnPlayerReset = true,
@@ -921,8 +922,8 @@ private fun VideoMessage(
       onGoDefaultWidth = onGoDefaultWidth,
       showingFullWidth = showingFullWidth,
       modifier = Modifier
-        .fillMaxSize()
-        .clip(HedvigTheme.shapes.cornerLarge),
+          .fillMaxSize()
+          .clip(HedvigTheme.shapes.cornerLarge),
     )
   }
 }
@@ -1047,20 +1048,20 @@ private fun ChatAsyncImage(
       }
     },
     modifier = Modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .then(modifier)
-      .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
-      .then(
-        if (loadedImageIntrinsicSize.value == null) {
-          Modifier.hedvigPlaceholder(
-            visible = true,
-            shape = HedvigTheme.shapes.cornerLarge,
-            highlight = PlaceholderHighlight.fade(),
-          )
-        } else {
-          Modifier
-        },
-      ),
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .then(modifier)
+        .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
+        .then(
+            if (loadedImageIntrinsicSize.value == null) {
+                Modifier.hedvigPlaceholder(
+                    visible = true,
+                    shape = HedvigTheme.shapes.cornerLarge,
+                    highlight = PlaceholderHighlight.fade(),
+                )
+            } else {
+                Modifier
+            },
+        ),
   )
 }
 
@@ -1089,10 +1090,10 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
           contentDescription = null,
           tint = HedvigTheme.colorScheme.signalRedElement,
           modifier = Modifier
-            .size(16.dp)
-            .semantics {
-              hideFromAccessibility()
-            },
+              .size(16.dp)
+              .semantics {
+                  hideFromAccessibility()
+              },
         )
       }
     }
@@ -1100,8 +1101,8 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
-        .padding(horizontal = 2.dp),
+          .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
+          .padding(horizontal = 2.dp),
     ) {
       HedvigText(
         text = buildString {
@@ -1137,21 +1138,21 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier
-          .semantics {
-            hideFromAccessibility()
-          }
-          .weight(1f, false)
-          .then(
-            if (chatMessage == null) {
-              Modifier.hedvigPlaceholder(
-                visible = true,
-                shape = HedvigTheme.shapes.cornerSmall,
-                highlight = PlaceholderHighlight.shimmer(),
-              )
-            } else {
-              Modifier
-            },
-          ),
+            .semantics {
+                hideFromAccessibility()
+            }
+            .weight(1f, false)
+            .then(
+                if (chatMessage == null) {
+                    Modifier.hedvigPlaceholder(
+                        visible = true,
+                        shape = HedvigTheme.shapes.cornerSmall,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+                } else {
+                    Modifier
+                },
+            ),
       )
       if (uiChatMessage?.isLastDeliveredMessage == true) {
         Spacer(Modifier.width(4.dp))
