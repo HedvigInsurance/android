@@ -9,13 +9,10 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.CommonFile
-import kotlin.jvm.JvmInline
 import octopus.ClaimIntentSubmitAudioMutation
 import octopus.type.ClaimIntentSubmitAudioInput
-
-@JvmInline
-internal value class AudioFileId(val value: String)
 
 internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
@@ -35,6 +32,7 @@ internal class SubmitAudioRecordingUseCase(
   ): Either<ErrorMessage, ClaimIntent> {
     return either {
       val fileId = uploadFileUseCase.invoke(commonFile, uploadUrl).fileId
+      logcat { "SubmitFileUploadUseCase uploaded file with Uri:${commonFile.fileName} got back fileId:$fileId" }
       invoke(stepId, fileId, null)
     }
   }
