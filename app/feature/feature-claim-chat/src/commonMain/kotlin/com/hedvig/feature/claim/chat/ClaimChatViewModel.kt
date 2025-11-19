@@ -15,7 +15,9 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
+import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
@@ -58,6 +60,7 @@ internal sealed interface ClaimChatUiState {
   data class ClaimChat(
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
+    val outcome: ClaimIntentOutcome?,
   ) : ClaimChatUiState
 }
 
@@ -109,12 +112,15 @@ internal class ClaimChatPresenter(
     val steps = remember {
       mutableStateListOf(*((lastState as? ClaimChatUiState.ClaimChat)?.steps ?: emptyList()).toTypedArray())
     }
+    var outcome by remember {
+      mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.outcome)
+    }
     var claimIntentId by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.claimIntentId) }
     var submittingStep by remember { mutableStateOf(false) }
-
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
+    val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
     if (initializing) {
       LaunchedEffect(Unit) {
@@ -128,7 +134,10 @@ internal class ClaimChatPresenter(
                 failedToStart = false
                 claimIntentId = claimIntent.id
                 steps.clear()
-                steps.add(claimIntent.step)
+                when(val next = claimIntent.next) {
+                  is ClaimIntent.Next.Outcome -> setOutcome(next.claimIntentOutcome)
+                  is ClaimIntent.Next.Step -> steps.add(next.claimIntentStep)
+                }
               }
             },
           )
@@ -136,7 +145,9 @@ internal class ClaimChatPresenter(
     }
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
-    SubmitCompleteTaskEffect(submitTaskUseCase, currentStep, steps)
+    SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
+      handleNext(steps, setOutcome, claimIntent.next)
+    }
 
     CollectEvents { event ->
       logcat { "ClaimChatPresenter received event: $event" }
@@ -148,7 +159,7 @@ internal class ClaimChatPresenter(
               .fold(
                 ifLeft = { error("todo left submitSelectUseCase") },
                 ifRight = { claimIntent ->
-                  steps.replaceTaskWithNextStep(claimIntent.step)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -163,7 +174,7 @@ internal class ClaimChatPresenter(
                   .fold(
                     ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
                     ifRight = { claimIntent ->
-                      steps.replaceTaskWithNextStep(claimIntent.step)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -176,7 +187,7 @@ internal class ClaimChatPresenter(
                   .fold(
                     ifLeft = { error("todo left submitAudioRecordingUseCase text") },
                     ifRight = { claimIntent ->
-                      steps.replaceTaskWithNextStep(claimIntent.step)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -198,7 +209,7 @@ internal class ClaimChatPresenter(
               .fold(
                 ifLeft = { error("todo left submitAudioRecordingUseCase") },
                 ifRight = { claimIntent ->
-                  steps.replaceTaskWithNextStep(claimIntent.step)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -216,7 +227,7 @@ internal class ClaimChatPresenter(
               .fold(
                 ifLeft = { error("todo left submitFileUploadUseCase $it") },
                 ifRight = { claimIntent ->
-                  steps.replaceTaskWithNextStep(claimIntent.step)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -227,7 +238,7 @@ internal class ClaimChatPresenter(
     return when {
       initializing -> ClaimChatUiState.Initializing
       failedToStart -> ClaimChatUiState.FailedToStart
-      claimIntentId != null -> ClaimChatUiState.ClaimChat(claimIntentId!!, steps)
+      claimIntentId != null -> ClaimChatUiState.ClaimChat(claimIntentId!!, steps, outcome)
       else -> error("")
     }
   }
@@ -248,17 +259,16 @@ private fun ObserveIncompleteTaskEffect(
       .collect { result ->
         result.fold(
           ifLeft = { error("handle getClaimIntent error") },
-          ifRight = { claimIntent ->
-            if (claimIntent.step.stepContent !is StepContent.Task) return@collect
+          ifRight = { taskStepContent ->
             Snapshot.withMutableSnapshot {
-              val previousTask = steps.find { it.id == claimIntent.step.id }
+              val previousTask = steps.find { it.id == taskStepContent.step.id }
               steps.remove(previousTask)
               steps.add(
-                claimIntent.step.copy(
-                  stepContent = claimIntent.step.stepContent.copy(
+                taskStepContent.step.copy(
+                  stepContent = taskStepContent.task.copy(
                     descriptions = buildList {
                       addAll((previousTask?.stepContent as? StepContent.Task)?.descriptions.orEmpty())
-                      addAll(claimIntent.step.stepContent.descriptions)
+                      addAll(taskStepContent.task.descriptions)
                     }.distinct(),
                   ),
                 ),
@@ -274,7 +284,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
-  steps: SnapshotStateList<ClaimIntentStep>,
+  onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
   LaunchedEffect(isCompleteTask) {
@@ -284,15 +294,22 @@ private fun SubmitCompleteTaskEffect(
       .fold(
         ifLeft = { error("todo left submitTaskUseCase") },
         ifRight = { claimIntent ->
-          Snapshot.withMutableSnapshot {
-            steps.remove(currentStep)
-            steps.add(claimIntent.step)
-          }
+          onSuccess(claimIntent)
         },
       )
   }
 }
 
+private fun handleNext(steps: SnapshotStateList<ClaimIntentStep>, setOutcome: (outcome: ClaimIntentOutcome) -> Unit, next: ClaimIntent.Next) {
+  when(next) {
+    is ClaimIntent.Next.Outcome -> {
+      setOutcome(next.claimIntentOutcome)
+    }
+    is ClaimIntent.Next.Step -> {
+      steps.replaceTaskWithNextStep(next.claimIntentStep)
+    }
+  }
+}
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
     removeLastIf { it.stepContent is StepContent.Task }

@@ -7,6 +7,10 @@ fragment ClaimIntentFragment on ClaimIntent {
       ...ClaimIntentStepContentFragment
     }
   }
+  outcome {
+    ...ClaimIntentOutcomeClaimFragment
+    ...ClaimIntentOutcomeDeflectionFragment
+  }
   sourceMessages {
     id
     text
@@ -20,6 +24,23 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...AudioRecordingFragment
   ...FileUploadFragment
   ...SummaryFragment
+}
+
+fragment ClaimIntentOutcomeClaimFragment on ClaimIntentOutcomeClaim {
+  claimId
+  claim {
+    submittedAt
+  }
+}
+
+fragment ClaimIntentOutcomeDeflectionFragment on ClaimIntentOutcomeDeflection {
+  type
+  title
+  description
+  partners {
+    id
+    title
+  }
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
