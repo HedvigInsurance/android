@@ -51,7 +51,7 @@ internal class UploadFileUseCase(private val client: HttpClient) {
     }
 
     return if (response.status.isSuccess()) {
-      val jsonResponse = Json.encodeToJsonElement(response.bodyAsText())
+      val jsonResponse = Json.parseToJsonElement(response.bodyAsText())
       val fileId = jsonResponse
         .jsonObject["fileIds"]
         ?.jsonArray
