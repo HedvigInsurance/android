@@ -17,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -26,8 +28,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
-import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
-import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
 import java.util.Locale
