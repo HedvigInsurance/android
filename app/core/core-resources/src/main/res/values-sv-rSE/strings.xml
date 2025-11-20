@@ -392,8 +392,9 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Det fungerar genom att alla medlemmar tar ut den ersättning de har rätt till ur den gemensamma skadepoolen, varken mer eller mindre. Vi ber dig därför att berätta om det som inträffat precis som det var, så att vi kan hjälpa dig på bästa sätt.</string>
   <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
+  <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
-  <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">För att återgå till din tidigare försäkring, registrera din bil som aktiv igen hos Transportstyrelsen.</string>
+  <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Giltighetsintyg</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">Giltighetsintyget är nu skickat till din e-post.</string>
@@ -470,6 +471,7 @@
   <string name="PAYMENTS_ACCOUNT">Konto</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Lägg till kampanjkod</string>
   <string name="PAYMENTS_ADD_CODE_BUTTON_LABEL">Lägg till</string>
+  <string name="PAYMENTS_AMOUNT_TO_PAY">Att betala</string>
   <string name="PAYMENTS_AUTOGIRO_LABEL">Autogiro</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
   <string name="PAYMENTS_DISCOUNTS_SECTION_TITLE">Rabatter</string>
@@ -489,6 +491,7 @@
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Betalning genomförd</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s dagar</string>
   <string name="PAYMENTS_PERIOD_FULL">Hel period</string>
+  <string name="PAYMENTS_PERIOD_TITLE">Period</string>
   <string name="PAYMENTS_PROCESSING_PAYMENT">Pågående betalning</string>
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Bjud in dina vänner och få 10 kr rabatt i månaden för varje inbjuden vän som tecknar en försäkring hos Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>
@@ -721,7 +724,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">Vad kostar det</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO">Försäkringen ersätter skador såsom stöld, brand, skadegörelse och vagnskada medan bilen är avställd. Rättsskydd ingår också. Försäkringen gäller endast så länge bilen är kvar i Sverige.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE">Vad som ingår</string>
-  <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">Om du har ställt av din bil via Transportstyrelsen kommer din bilförsäkring automatiskt övergå till en avställningsförsäkring.</string>
+  <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">Om du har ställt av din bil via Transportstyrelsen kommer din försäkring automatiskt övergå till en avställningsförsäkring.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Din försäkring kommer övergå till en avställningsförsäkring</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Säg upp försäkring</string>

@@ -7,9 +7,7 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentStartMutation
-import octopus.type.ClaimIntentStartInput
 
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
@@ -17,30 +15,20 @@ internal class StartClaimIntentUseCase(
   suspend fun invoke(
     sourceMessageId: String?,
     developmentFlow: Boolean,
-  ): Either<ErrorMessage, ClaimIntent> = either {
-    val data = apolloClient
-      .mutation(
-        ClaimIntentStartMutation(
-          Optional.presentIfNotNull(
-            ClaimIntentStartInput(
-              sourceMessageId = Optional.presentIfNotNull(
-                sourceMessageId,
-              ),
-              developmentFlow = Optional.presentIfNotNull(developmentFlow),
-            ),
+  ): Either<ErrorMessage, ClaimIntent> {
+    return either {
+      apolloClient
+        .mutation(
+          ClaimIntentStartMutation(
+            sourceMessageId = Optional.presentIfNotNull(sourceMessageId),
+            developmentFlow = Optional.present(developmentFlow),
           ),
-        ),
-      )
-      .safeExecute()
-      .onLeft {
-        logcat { "Mariia: StartClaimIntentUseCase: $it" }
-      }
-      .mapLeft(::ErrorMessage)
-      .bind()
-      .claimIntentStart
-    ClaimIntent(
-      id = data.id,
-      step = data.currentStep.toClaimIntentStep(),
-    )
+        )
+        .safeExecute()
+        .mapLeft(::ErrorMessage)
+        .bind()
+        .claimIntentStart
+        .toClaimIntent()
+    }
   }
 }

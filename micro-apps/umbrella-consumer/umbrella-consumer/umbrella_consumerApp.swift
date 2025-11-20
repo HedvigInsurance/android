@@ -21,15 +21,8 @@ class IosAccessTokenFetcher: AccessTokenFetcher {
         self.keychainAbstraction = keychainAbstraction
     }
     
-    func fetch() -> String {
-        let semaphore = DispatchSemaphore(value: 0)
-        var token: String? = nil
-        Task {
-            token = try await keychainAbstraction.getToken()
-            semaphore.signal()
-        }
-        semaphore.wait()
-        return token!
+    func fetch() async throws -> String? {
+        return try await keychainAbstraction.getToken()
     }
 }
 

@@ -34,7 +34,3 @@ internal class IosAuthTokenInterceptor(
     }
   }
 }
-
-interface AccessTokenFetcher {
-  fun fetch(): String?
-}
