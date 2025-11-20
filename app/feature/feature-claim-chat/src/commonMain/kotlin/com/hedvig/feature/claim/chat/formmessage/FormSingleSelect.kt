@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FormSingleSelect(
+internal fun FormSingleSelect(
   value: String?,
   id: String,
   title: String?,

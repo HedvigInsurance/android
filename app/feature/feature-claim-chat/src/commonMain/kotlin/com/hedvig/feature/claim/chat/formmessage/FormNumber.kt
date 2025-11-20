@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
-fun FormNumber(
+internal fun FormNumber(
   value: String?,
   id: String,
   title: String?,

@@ -10,6 +10,7 @@ hedvig {
 dependencies {
   api(libs.kotlinx.datetime)
   api(libs.okhttp.core)
+  api(projects.authCoreApi)
   api(projects.authlib)
 
   implementation(libs.androidx.datastore.core)

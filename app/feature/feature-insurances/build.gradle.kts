@@ -9,12 +9,6 @@ hedvig {
   compose()
 }
 
-kotlin {
-  compilerOptions {
-    freeCompilerArgs.add("-Xwhen-guards")
-  }
-}
-
 android {
   testOptions.unitTests.isReturnDefaultValues = true
 }

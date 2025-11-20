@@ -7,6 +7,10 @@ fragment ClaimIntentFragment on ClaimIntent {
       ...ClaimIntentStepContentFragment
     }
   }
+  outcome {
+    ...ClaimIntentOutcomeClaimFragment
+    ...ClaimIntentOutcomeDeflectionFragment
+  }
   sourceMessages {
     id
     text
@@ -14,16 +18,29 @@ fragment ClaimIntentFragment on ClaimIntent {
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
-  ...AudioRecordingFragment
   ...FormFragment
+  ...ContentSelectFragment
   ...TaskFragment
+  ...AudioRecordingFragment
+  ...FileUploadFragment
   ...SummaryFragment
-  ...OutcomeFragment
 }
 
-fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
-  hint
-  uploadUri
+fragment ClaimIntentOutcomeClaimFragment on ClaimIntentOutcomeClaim {
+  claimId
+  claim {
+    submittedAt
+  }
+}
+
+fragment ClaimIntentOutcomeDeflectionFragment on ClaimIntentOutcomeDeflection {
+  type
+  title
+  description
+  partners {
+    id
+    title
+  }
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
@@ -37,15 +54,39 @@ fragment FormFragment on ClaimIntentStepContentForm {
       title
       value
     }
-    defaultValue
+    defaultValues
     minValue
     maxValue
   }
+  isSkippable
+  isRegrettable
+}
+
+fragment ContentSelectFragment on ClaimIntentStepContentSelect {
+  options {
+    id
+    title
+  }
+  isSkippable
+  isRegrettable
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
   description
   isCompleted
+}
+
+fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
+  hint
+  uploadUri
+  isSkippable
+  isRegrettable
+}
+
+fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
+  uploadUri
+  isRegrettable
+  isSkippable
 }
 
 fragment SummaryFragment on ClaimIntentStepContentSummary {
@@ -62,8 +103,3 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     fileName
   }
 }
-
-fragment OutcomeFragment on ClaimIntentStepContentOutcome {
-  claimId
-}
-
