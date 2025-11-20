@@ -1,14 +1,24 @@
 package com.hedvig.feature.claim.chat.data
 
 import kotlin.jvm.JvmInline
+import kotlin.time.Instant
 
 @JvmInline
 value class ClaimIntentId(val value: String)
 
 internal data class ClaimIntent(
   val id: ClaimIntentId,
-  val step: ClaimIntentStep,
-)
+  val next: Next,
+) {
+
+  sealed interface Next {
+    val step: Step?
+      get() = this as? Step
+
+    data class Step(val claimIntentStep: ClaimIntentStep) : Next
+    data class Outcome(val claimIntentOutcome: ClaimIntentOutcome) : Next
+  }
+}
 
 @JvmInline
 value class StepId(val value: String)
@@ -18,6 +28,29 @@ internal data class ClaimIntentStep(
   val text: String,
   val stepContent: StepContent,
 )
+
+internal sealed interface ClaimIntentOutcome {
+  data class Deflect(
+    val type: Type,
+    val title: String?,
+    val description: String?,
+    val partners: String, // todo type
+  ) : ClaimIntentOutcome {
+    enum class Type {
+      EMERGENCY,
+      GLASS,
+      TOWING,
+      EIR,
+      PESTS,
+      ID_PROTECTION,
+      UNKNOWN,
+    }
+  }
+
+  data class Claim(val claimId: String, val claimSubmissionDate: Instant) : ClaimIntentOutcome
+
+  data object Unknown : ClaimIntentOutcome
+}
 
 @JvmInline
 value class FieldId(val value: String)
@@ -88,13 +121,6 @@ internal sealed interface StepContent {
     data class Item(val title: String, val value: String)
     data class AudioRecording(val url: String)
     data class FileUpload(val url: String, val contentType: String, val fileName: String)
-  }
-
-  data class Outcome(
-    val claimId: String
-  ) : StepContent {
-    override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
   }
 
   object Unknown : StepContent {

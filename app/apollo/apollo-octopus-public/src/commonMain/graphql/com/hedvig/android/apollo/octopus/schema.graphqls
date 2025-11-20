@@ -551,6 +551,7 @@ type ChatMessageFile implements ChatMessage {
   sentAt: Instant!
   signedUrl: Url!
   mimeType: String!
+  fileName: String
   disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageMutationOutput {
@@ -650,8 +651,14 @@ Root type expressing the entire flow for members trying to report a new claim.
 """
 type ClaimIntent {
   id: ID!
-  currentStep: ClaimIntentStep!
+  currentStep: ClaimIntentStep
   sourceMessages: [ClaimIntentSourceMessage!]
+  """
+  The outcome of the intent.
+  Once this value is returned, the intent is effectively over, and no steps
+  can be produced or interacted with.
+  """
+  outcome: ClaimIntentOutcome
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
@@ -664,6 +671,41 @@ input ClaimIntentFormSubmitInputField {
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
   userError: UserError
+}
+union ClaimIntentOutcome = ClaimIntentOutcomeClaim|ClaimIntentOutcomeDeflection
+type ClaimIntentOutcomeClaim {
+  """
+  The created claim ID.
+  """
+  claimId: ID!
+  """
+  The entire claim model. Note that this is slower to fetch than simply the `claimId`.
+  """
+  claim: Claim!
+}
+type ClaimIntentOutcomeDeflection {
+  type: ClaimIntentOutcomeDeflectionType
+  title: String
+  description: String
+  partners: [ClaimIntentOutcomeDeflectionPartner!]!
+}
+type ClaimIntentOutcomeDeflectionPartner {
+  id: ID!
+  imageUrl: Url
+  phoneNumber: String
+  title: String
+  description: String
+  info: String
+  url: Url
+  urlButtonTitle: String
+}
+enum ClaimIntentOutcomeDeflectionType {
+  EMERGENCY
+  GLASS
+  TOWING
+  EIR
+  PESTS
+  ID_PROTECTION
 }
 type ClaimIntentSourceMessage {
   id: ID!
@@ -690,7 +732,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -784,13 +826,6 @@ A scalar representing client-server agreed upon submittable form values.
 This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
-"""
-A step that shows the outcome of a claim intent.
-This is a terminal step - there is no way to submit it.
-"""
-type ClaimIntentStepContentOutcome {
-  claimId: ID!
-}
 """
 A select step is one that contains a choice to select one of several alternatives.
 It can be seen as a special-case form with nicer rendering.

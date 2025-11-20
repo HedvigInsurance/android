@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
 import com.apollographql.apollo.ApolloClient
@@ -9,6 +10,8 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +22,7 @@ import octopus.ClaimIntentQuery
 internal class GetClaimIntentUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ErrorMessage, ClaimIntent>> {
+  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ErrorMessage, TaskStepContent>> {
     return flow {
       var retries = 0
       while (currentCoroutineContext().isActive) {
@@ -35,18 +38,25 @@ internal class GetClaimIntentUseCase(
         }
 
         when (claimIntentResult) {
-          is Either.Left<ErrorMessage> -> {
+          is Either.Left -> {
             if (retries++ > 5) {
               emit(claimIntentResult)
               break
             }
           }
 
-          is Either.Right<ClaimIntent> -> {
+          is Either.Right -> {
             val claimIntent = claimIntentResult.value
-            val stepContent = claimIntent.step.stepContent
-            emit(claimIntent.right())
-            if (stepContent !is StepContent.Task || stepContent.isCompleted) {
+            val step = claimIntent.next.step
+            val stepContent = step?.claimIntentStep?.stepContent
+            if (step == null || stepContent !is StepContent.Task) {
+              val errorMessage = "getClaimIntentUseCase returned a non-step result after observing an incomplete task"
+              logcat(LogPriority.WARN) { errorMessage }
+              emit(ErrorMessage(errorMessage).left())
+              break
+            }
+            emit(TaskStepContent(step.claimIntentStep, stepContent).right())
+            if (stepContent.isCompleted) {
               break
             }
           }
@@ -60,3 +70,8 @@ internal class GetClaimIntentUseCase(
     private const val POLLING_INTERVAL = 1_000L
   }
 }
+
+internal data class TaskStepContent(
+  val step: ClaimIntentStep,
+  val task: StepContent.Task,
+)

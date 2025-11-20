@@ -4,9 +4,5 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal actual fun PlatformBlurContainer(
-  modifier: Modifier,
-  radius: Int,
-  content: @Composable (() -> Unit),
-) {
+internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
 }
