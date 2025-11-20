@@ -1,12 +1,8 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
+  id("hedvig.multiplatform.compose")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin)
 }
 
 hedvig {
@@ -17,7 +13,6 @@ hedvig {
 
 kotlin {
   sourceSets {
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     commonMain.dependencies {
       implementation(compose.animation)
       implementation(compose.foundation)
