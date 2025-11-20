@@ -19,18 +19,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.rememberFilePicker
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ClaimChatDestination() {
-  val messageId: String? = null
-  val developmentFlow: Boolean = true
+fun ClaimChatDestination(
+  developmentFlow: Boolean = true,
+  messageId: String? = null,
+) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
     parametersOf(messageId, developmentFlow)
   }
-  ClaimChatScreen(claimChatViewModel)
+  Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+    BlurredGradientBackground(radius = 100)
+    ClaimChatScreen(claimChatViewModel)
+  }
 }
 
 @Composable
