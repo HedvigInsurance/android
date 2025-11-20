@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.ui
+package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -12,11 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
-import com.hedvig.android.design.system.hedvig.HedvigBigCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
-import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -33,7 +28,7 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-internal fun DatePickerWithDialog(
+fun DatePickerWithDialog(
   uiState: DatePickerUiState,
   canInteract: Boolean,
   startText: String,
@@ -82,7 +77,7 @@ internal fun DatePickerWithDialog(
 }
 
 @Stable
-internal class DatePickerUiState(
+class DatePickerUiState(
   locale: Locale,
   initiallySelectedDate: LocalDate?,
   minDate: LocalDate = LocalDate(1900, 1, 1),
@@ -109,6 +104,7 @@ internal class DatePickerUiState(
     datePickerState.selectedDateMillis = null
   }
 }
+
 
 @HedvigPreview
 @Composable

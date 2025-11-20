@@ -1,222 +1,325 @@
 package com.hedvig.feature.claim.chat
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.eygraber.uri.Uri
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.ClaimIntent
+import com.hedvig.feature.claim.chat.data.ClaimIntentId
+import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
+import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.FieldId
+import com.hedvig.feature.claim.chat.data.FormSubmissionData
+import com.hedvig.feature.claim.chat.data.FormSubmissionData.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
+import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
+import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import com.hedvig.feature.claim.chat.data.UploadAudioUseCase
-import com.hedvig.feature.claim.chat.data.createConversationItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.flow.update
+import com.hedvig.feature.claim.chat.data.file.CommonFile
+import kotlin.String
 import kotlinx.coroutines.launch
 
-data class ConversationUiState(
-  val conversation: List<ConversationStep> = emptyList(),
-  val isInputActive: Boolean = true,
-  val currentInputText: String = "",
-  val claimIntent: ClaimIntent? = null,
-  val errorMessage: String? = null,
-)
+internal sealed interface ClaimChatEvent {
+  sealed interface AudioRecording : ClaimChatEvent {
+    val id: StepId
 
-sealed class UserAction {
-  data class AudioRecordingSubmitted(val url: String) : UserAction()
+    data class AudioInput(
+      override val id: StepId,
+      val commonFile: CommonFile,
+      val uploadUri: String,
+    ) : AudioRecording
 
-  data class TextSubmitted(val text: String) : UserAction()
+    data class TextInput(override val id: StepId, val text: String) : AudioRecording
+  }
 
-  data class FormSubmitted(val selectedValue: List<FormField>) : UserAction()
+  data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+  data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
+  data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
+}
 
-  object ErrorAcknowledged : UserAction()
-
-  object SummarySubmitted : UserAction()
+internal sealed interface ClaimChatUiState {
+  data object Initializing : ClaimChatUiState
+  data object FailedToStart : ClaimChatUiState
+  data class ClaimChat(
+    val claimIntentId: ClaimIntentId,
+    val steps: List<ClaimIntentStep>,
+    val outcome: ClaimIntentOutcome?,
+  ) : ClaimChatUiState
 }
 
 internal class ClaimChatViewModel(
-  private val isDevelopmentFlow: Boolean,
-  private val messageId: String?,
+  sourceMessageId: String?,
+  developmentFlow: Boolean,
+  startClaimIntentUseCase: StartClaimIntentUseCase,
+  getClaimIntentUseCase: GetClaimIntentUseCase,
+  submitTaskUseCase: SubmitTaskUseCase,
+  submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  submitFileUploadUseCase: SubmitFileUploadUseCase,
+  submitFormUseCase: SubmitFormUseCase,
+  submitSelectUseCase: SubmitSelectUseCase,
+  submitSummaryUseCase: SubmitSummaryUseCase,
+) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
+  ClaimChatUiState.Initializing,
+  ClaimChatPresenter(
+    sourceMessageId,
+    developmentFlow,
+    startClaimIntentUseCase,
+    getClaimIntentUseCase,
+    submitTaskUseCase,
+    submitAudioRecordingUseCase,
+    submitFileUploadUseCase,
+    submitFormUseCase,
+    submitSelectUseCase,
+    submitSummaryUseCase,
+  ),
+)
+
+internal class ClaimChatPresenter(
+  private val sourceMessageId: String?,
+  private val developmentFlow: Boolean,
   private val startClaimIntentUseCase: StartClaimIntentUseCase,
   private val getClaimIntentUseCase: GetClaimIntentUseCase,
-  private val submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
-  private val uploadAudioUseCase: UploadAudioUseCase,
-  private val submitFormUseCase: SubmitFormUseCase,
   private val submitTaskUseCase: SubmitTaskUseCase,
+  private val submitAudioRecordingUseCase: SubmitAudioRecordingUseCase,
+  private val submitFileUploadUseCase: SubmitFileUploadUseCase,
+  private val submitFormUseCase: SubmitFormUseCase,
+  private val submitSelectUseCase: SubmitSelectUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
-) : ViewModel() {
-  private var pollingJob: Job? = null
-  private val scope = CoroutineScope(Dispatchers.Default)
-  private val _state = MutableStateFlow(ConversationUiState())
-  val state: StateFlow<ConversationUiState> = _state.asStateFlow()
+) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
+  @Composable
+  override fun MoleculePresenterScope<ClaimChatEvent>.present(
+    lastState: ClaimChatUiState,
+  ): ClaimChatUiState {
+    var initializing by remember { mutableStateOf(lastState !is ClaimChatUiState.ClaimChat) }
+    var failedToStart by remember { mutableStateOf(lastState is ClaimChatUiState.FailedToStart) }
+    val steps = remember {
+      mutableStateListOf(*((lastState as? ClaimChatUiState.ClaimChat)?.steps ?: emptyList()).toTypedArray())
+    }
+    var outcome by remember {
+      mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.outcome)
+    }
+    var claimIntentId by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.claimIntentId) }
+    var submittingStep by remember { mutableStateOf(false) }
+    val currentStep by remember {
+      derivedStateOf { steps.lastOrNull() }
+    }
+    val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
-  init {
-    startClaimIntent()
-  }
+    if (initializing) {
+      LaunchedEffect(Unit) {
+        startClaimIntentUseCase
+          .invoke(sourceMessageId, developmentFlow)
+          .fold(
+            ifLeft = { failedToStart = true },
+            ifRight = { claimIntent ->
+              Snapshot.withMutableSnapshot {
+                initializing = false
+                failedToStart = false
+                claimIntentId = claimIntent.id
+                steps.clear()
+                when(val next = claimIntent.next) {
+                  is ClaimIntent.Next.Outcome -> setOutcome(next.claimIntentOutcome)
+                  is ClaimIntent.Next.Step -> steps.add(next.claimIntentStep)
+                }
+              }
+            },
+          )
+      }
+    }
 
-  private fun startClaimIntent() = scope.launch {
-    startClaimIntentUseCase.invoke(sourceMessageId = messageId,
-      developmentFlow = isDevelopmentFlow).fold(
-      ifLeft = { errorMessage ->
-        _state.update { it.copy(errorMessage = errorMessage.message) }
-      },
-      ifRight = { claimIntent ->
-        updateConversationStateWithNewClaimIntent(claimIntent)
-        if (claimIntent.step.stepContent is StepContent.Task) {
-          pollIntentUntilCompletedAndSubmit(claimIntent.id)
+    ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
+    SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
+      handleNext(steps, setOutcome, claimIntent.next)
+    }
+
+    CollectEvents { event ->
+      logcat { "ClaimChatPresenter received event: $event" }
+      when (event) {
+        is ClaimChatEvent.Select -> {
+          launch {
+            submitSelectUseCase
+              .invoke(event.id, event.selectedId)
+              .fold(
+                ifLeft = { error("todo left submitSelectUseCase") },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
         }
-      },
-    )
-  }
 
-  private fun pollIntentUntilCompletedAndSubmit(claimIntentId: String) = scope.launch {
-    pollingJob?.cancel()
-    pollingJob = getClaimIntentUseCase.invoke(claimIntentId)
-      .onEach { eitherResult ->
-        eitherResult.fold(
-          ifLeft = { errorMessage ->
-            _state.update { it.copy(errorMessage = errorMessage.message) }
-          },
-          ifRight = { claimIntent ->
-            updateConversationStateWithNewClaimIntent(claimIntent)
-            if (claimIntent.step.stepContent is StepContent.Task) {
-              if (claimIntent.step.stepContent.isCompleted) {
-                submitTask(claimIntent.step.id)
+        is ClaimChatEvent.AudioRecording -> {
+          when (event) {
+            is ClaimChatEvent.AudioRecording.AudioInput -> {
+              launch {
+                submitAudioRecordingUseCase
+                  .invoke(event.id, event.commonFile, event.uploadUri)
+                  .fold(
+                    ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
+                    ifRight = { claimIntent ->
+                      handleNext(steps, setOutcome, claimIntent.next)
+                    },
+                  )
               }
             }
-          },
-        )
-      }
-      .takeWhile { eitherResult ->
-        eitherResult.fold(
-          ifLeft = { errorMessage ->
-            _state.update { it.copy(errorMessage = errorMessage.message) }
-            return@takeWhile false
-          },
-          ifRight = { claimIntent ->
-            updateConversationStateWithNewClaimIntent(claimIntent)
-            if (claimIntent.step.stepContent is StepContent.Task) {
-              return@takeWhile !claimIntent.step.stepContent.isCompleted
+
+            is ClaimChatEvent.AudioRecording.TextInput -> {
+              launch {
+                submitAudioRecordingUseCase
+                  .invoke(event.id, event.text)
+                  .fold(
+                    ifLeft = { error("todo left submitAudioRecordingUseCase text") },
+                    ifRight = { claimIntent ->
+                      handleNext(steps, setOutcome, claimIntent.next)
+                    },
+                  )
+              }
             }
-            return@takeWhile true
+          }
+        }
+
+        is ClaimChatEvent.Form -> {
+          launch {
+            submitFormUseCase
+              .invoke(
+                FormSubmissionData(
+                  event.id,
+                  event.formInputs.map { (fieldId, values) ->
+                    Field(fieldId, values)
+                  },
+                ),
+              )
+              .fold(
+                ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
+        }
+
+        is ClaimChatEvent.FileUpload -> {
+          val fileUri = event.fileUri ?: return@CollectEvents
+          launch {
+            submitFileUploadUseCase
+              .invoke(
+                stepId = event.id,
+                fileUri = fileUri,
+                uploadUrl = event.uploadUri,
+              )
+              .fold(
+                ifLeft = { error("todo left submitFileUploadUseCase $it") },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
+        }
+      }
+    }
+
+    return when {
+      initializing -> ClaimChatUiState.Initializing
+      failedToStart -> ClaimChatUiState.FailedToStart
+      claimIntentId != null -> ClaimChatUiState.ClaimChat(claimIntentId!!, steps, outcome)
+      else -> error("")
+    }
+  }
+}
+
+@Composable
+private fun ObserveIncompleteTaskEffect(
+  getClaimIntentUseCase: GetClaimIntentUseCase,
+  currentStep: ClaimIntentStep?,
+  claimIntentId: () -> ClaimIntentId?,
+  steps: SnapshotStateList<ClaimIntentStep>,
+) {
+  val isIncompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted?.not() == true
+  LaunchedEffect(isIncompleteTask) {
+    if (!isIncompleteTask) return@LaunchedEffect
+    getClaimIntentUseCase
+      .invoke(claimIntentId()!!)
+      .collect { result ->
+        result.fold(
+          ifLeft = { error("handle getClaimIntent error") },
+          ifRight = { taskStepContent ->
+            Snapshot.withMutableSnapshot {
+              val previousTask = steps.find { it.id == taskStepContent.step.id }
+              steps.remove(previousTask)
+              steps.add(
+                taskStepContent.step.copy(
+                  stepContent = taskStepContent.task.copy(
+                    descriptions = buildList {
+                      addAll((previousTask?.stepContent as? StepContent.Task)?.descriptions.orEmpty())
+                      addAll(taskStepContent.task.descriptions)
+                    }.distinct(),
+                  ),
+                ),
+              )
+            }
           },
         )
       }
-      .launchIn(viewModelScope)
   }
+}
 
-  fun processUserAction(action: UserAction) {
-    when (action) {
-      is UserAction.AudioRecordingSubmitted -> handleAudioRecordingSubmission(action.url)
-      is UserAction.TextSubmitted -> handleTextSubmission(action.text)
-      is UserAction.FormSubmitted -> handleFormSubmission(action.selectedValue)
-      is UserAction.ErrorAcknowledged -> handleErrorAcknowledged()
-      UserAction.SummarySubmitted -> handleSummarySubmitted()
-    }
-  }
-
-  private fun handleSummarySubmitted() = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    stepId?.let {
-      submitSummaryUseCase.invoke(it).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          if (claimIntent.step.stepContent is StepContent.Task) {
-            pollIntentUntilCompletedAndSubmit(claimIntent.id)
-          }
-        },
-      )
-    }
-  }
-
-  private fun handleErrorAcknowledged() {
-    _state.update { it.copy(errorMessage = null) }
-  }
-
-  private fun handleAudioRecordingSubmission(uploadUrl: String) = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    if (stepId != null) {
-      submitAudioRecordingUseCase.invoke(
-        stepId = stepId,
-        audioFileId = uploadUrl,
-        freeText = null,
-      ).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          submitTask(claimIntent.step.id)
-        },
-      )
-    }
-  }
-
-  private fun submitTask(stepId: String) = scope.launch {
-    submitTaskUseCase.invoke(stepId)
+@Composable
+private fun SubmitCompleteTaskEffect(
+  submitTaskUseCase: SubmitTaskUseCase,
+  currentStep: ClaimIntentStep?,
+  onSuccess: (ClaimIntent) -> Unit,
+) {
+  val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
+  LaunchedEffect(isCompleteTask) {
+    if (!isCompleteTask) return@LaunchedEffect
+    submitTaskUseCase
+      .invoke(currentStep.id.value)
       .fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
+        ifLeft = { error("todo left submitTaskUseCase") },
         ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
+          onSuccess(claimIntent)
         },
       )
   }
+}
 
-  private fun handleTextSubmission(text: String) = scope.launch {
-  }
-
-  private fun handleFormSubmission(selectedValue: List<FormField>) = scope.launch {
-    val stepId = state.value.claimIntent?.step?.id
-    if (stepId != null) {
-      submitFormUseCase.invoke(stepId, selectedValue).fold(
-        ifLeft = { errorMessage ->
-          _state.update { it.copy(errorMessage = errorMessage.message) }
-        },
-        ifRight = { claimIntent ->
-          updateConversationStateWithNewClaimIntent(claimIntent)
-          if (claimIntent.step.stepContent is StepContent.Task) {
-            pollIntentUntilCompletedAndSubmit(claimIntent.id)
-          }
-        },
-      )
+private fun handleNext(steps: SnapshotStateList<ClaimIntentStep>, setOutcome: (outcome: ClaimIntentOutcome) -> Unit, next: ClaimIntent.Next) {
+  when(next) {
+    is ClaimIntent.Next.Outcome -> {
+      setOutcome(next.claimIntentOutcome)
+    }
+    is ClaimIntent.Next.Step -> {
+      steps.replaceTaskWithNextStep(next.claimIntentStep)
     }
   }
+}
+private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
+  Snapshot.withMutableSnapshot {
+    removeLastIf { it.stepContent is StepContent.Task }
+    add(step)
+  }
+}
 
-  fun updateConversationStateWithNewClaimIntent(claimIntent: ClaimIntent) {
-    _state.update { currentState ->
-      val existingConversationStep = currentState.conversation.find { it.stepId == claimIntent.step.id }
-      if (existingConversationStep == null) {
-        currentState.copy(
-          conversation = currentState.conversation + claimIntent.createConversationItem(),
-          claimIntent = claimIntent,
-        )
-      } else {
-        val updatedConversation = currentState.conversation.map { item ->
-          if (item.stepId == claimIntent.step.id) {
-            return@map claimIntent.createConversationItem()
-          }
-          item
-        }
-        currentState.copy(
-          conversation = updatedConversation,
-          claimIntent = claimIntent,
-        )
-      }
-    }
+private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
+  val last = lastOrNull() ?: return
+  if (predicate(last)) {
+    removeLast()
   }
 }

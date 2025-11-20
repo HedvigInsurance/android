@@ -1,0 +1,5 @@
+mutation ClaimIntentSubmitSelect($input: ClaimIntentSubmitSelectInput!) {
+  claimIntentSubmitSelect(input: $input) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}

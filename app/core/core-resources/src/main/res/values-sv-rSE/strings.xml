@@ -392,7 +392,7 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Det fungerar genom att alla medlemmar tar ut den ersättning de har rätt till ur den gemensamma skadepoolen, varken mer eller mindre. Vi ber dig därför att berätta om det som inträffat precis som det var, så att vi kan hjälpa dig på bästa sätt.</string>
   <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
-  <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Rabatter tillgängliga</string>
+  <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
