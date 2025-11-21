@@ -31,20 +31,29 @@ internal data class ClaimIntentStep(
 
 internal sealed interface ClaimIntentOutcome {
   data class Deflect(
-    val type: Type,
     val title: String?,
-    val description: String?,
-    val partners: String, // todo type
+    val infoText: String?,
+    val warningText: String?,
+    val partners: List<Partner>,
+    val partnersInfo: InfoBlock?,
+    val content: InfoBlock,
+    val faq: List<InfoBlock>,
   ) : ClaimIntentOutcome {
-    enum class Type {
-      EMERGENCY,
-      GLASS,
-      TOWING,
-      EIR,
-      PESTS,
-      ID_PROTECTION,
-      UNKNOWN,
-    }
+    data class Partner(
+      val id: String,
+      val imageUrl: String?,
+      val phoneNumber: String?,
+      val title: String?,
+      val description: String?,
+      val info: String?,
+      val url: String?,
+      val urlButtonTitle: String?,
+    )
+
+    data class InfoBlock(
+      val title: String,
+      val description: String,
+    )
   }
 
   data class Claim(val claimId: String, val claimSubmissionDate: Instant) : ClaimIntentOutcome
