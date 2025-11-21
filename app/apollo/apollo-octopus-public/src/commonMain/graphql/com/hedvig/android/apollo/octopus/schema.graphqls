@@ -684,10 +684,17 @@ type ClaimIntentOutcomeClaim {
   claim: Claim!
 }
 type ClaimIntentOutcomeDeflection {
-  type: ClaimIntentOutcomeDeflectionType
   title: String
-  description: String
+  infoText: String
+  warningText: String
   partners: [ClaimIntentOutcomeDeflectionPartner!]!
+  partnersInfo: ClaimIntentOutcomeDeflectionInfoBlock
+  content: ClaimIntentOutcomeDeflectionInfoBlock!
+  faq: [ClaimIntentOutcomeDeflectionInfoBlock!]!
+}
+type ClaimIntentOutcomeDeflectionInfoBlock {
+  title: String!
+  description: String!
 }
 type ClaimIntentOutcomeDeflectionPartner {
   id: ID!
@@ -698,14 +705,6 @@ type ClaimIntentOutcomeDeflectionPartner {
   info: String
   url: Url
   urlButtonTitle: String
-}
-enum ClaimIntentOutcomeDeflectionType {
-  EMERGENCY
-  GLASS
-  TOWING
-  EIR
-  PESTS
-  ID_PROTECTION
 }
 type ClaimIntentSourceMessage {
   id: ID!

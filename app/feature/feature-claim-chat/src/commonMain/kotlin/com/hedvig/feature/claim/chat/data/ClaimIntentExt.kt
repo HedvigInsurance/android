@@ -7,20 +7,13 @@ import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
 import octopus.fragment.ClaimIntentOutcomeClaimFragment
 import octopus.fragment.ClaimIntentOutcomeDeflectionFragment
+import octopus.fragment.ClaimIntentOutcomeDeflectionInfoBlockFragment
 import octopus.fragment.ClaimIntentStepContentFragment
 import octopus.fragment.ContentSelectFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
-import octopus.type.ClaimIntentOutcomeDeflectionType.EMERGENCY
-import octopus.type.ClaimIntentOutcomeDeflectionType.GLASS
-import octopus.type.ClaimIntentOutcomeDeflectionType.TOWING
-import octopus.type.ClaimIntentOutcomeDeflectionType.EIR
-import octopus.type.ClaimIntentOutcomeDeflectionType.PESTS
-import octopus.type.ClaimIntentOutcomeDeflectionType.ID_PROTECTION
-import octopus.type.ClaimIntentOutcomeDeflectionType.UNKNOWN__
-
 
 context(raise: Raise<ErrorMessage>)
 internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
@@ -102,32 +95,42 @@ private fun ClaimIntentFragment.Outcome.toClaimIntentOutcome(): ClaimIntentOutco
     is ClaimIntentOutcomeClaimFragment -> {
       ClaimIntentOutcome.Claim(
         claimId,
-        claim.submittedAt
+        claim.submittedAt,
       )
     }
 
     is ClaimIntentOutcomeDeflectionFragment -> {
       ClaimIntentOutcome.Deflect(
-        type = when (type) {
-          EMERGENCY -> ClaimIntentOutcome.Deflect.Type.EMERGENCY
-          GLASS -> ClaimIntentOutcome.Deflect.Type.GLASS
-          TOWING -> ClaimIntentOutcome.Deflect.Type.TOWING
-          EIR -> ClaimIntentOutcome.Deflect.Type.EIR
-          PESTS -> ClaimIntentOutcome.Deflect.Type.PESTS
-          ID_PROTECTION -> ClaimIntentOutcome.Deflect.Type.ID_PROTECTION
-          UNKNOWN__ -> ClaimIntentOutcome.Deflect.Type.UNKNOWN
-          null -> ClaimIntentOutcome.Deflect.Type.UNKNOWN
-        },
         title = title,
-        description = description,
-        partners = partners.joinToString { partner ->
-          // todo partners deflect mapping
-          """${partner.id}:[${partner.title}]"""
+        infoText = infoText,
+        warningText = warningText,
+        partners = partners.map { partner ->
+          ClaimIntentOutcome.Deflect.Partner(
+            id = partner.id,
+            imageUrl = partner.imageUrl,
+            phoneNumber = partner.phoneNumber,
+            title = partner.title,
+            description = partner.description,
+            info = partner.info,
+            url = partner.url,
+            urlButtonTitle = partner.urlButtonTitle,
+          )
         },
+        partnersInfo = partnersInfo?.toInfoBlock(),
+        content = content.toInfoBlock(),
+        faq = faq.map { it.toInfoBlock() },
       )
     }
+
     else -> {
       ClaimIntentOutcome.Unknown
     }
   }
+}
+
+private fun ClaimIntentOutcomeDeflectionInfoBlockFragment.toInfoBlock(): ClaimIntentOutcome.Deflect.InfoBlock {
+  return ClaimIntentOutcome.Deflect.InfoBlock(
+    title,
+    description,
+  )
 }
