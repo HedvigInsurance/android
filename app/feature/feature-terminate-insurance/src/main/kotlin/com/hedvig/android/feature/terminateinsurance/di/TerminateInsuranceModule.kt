@@ -11,6 +11,7 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepo
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
+import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -60,9 +61,11 @@ val terminateInsuranceModule = module {
     )
   }
 
-  viewModel<DeflectAutoDecommissionStepViewModel> {
+  viewModel<DeflectAutoDecommissionStepViewModel> { params ->
+    val deflectParams = params.get<AutoDecommissionDeflectStepParameters>()
     DeflectAutoDecommissionStepViewModel(
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+      deflectParameters = deflectParams
     )
   }
 

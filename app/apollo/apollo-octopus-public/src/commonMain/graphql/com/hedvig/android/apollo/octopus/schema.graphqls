@@ -1306,6 +1306,10 @@ input EventInput {
   """
   data: JSON!
 }
+type ExplanationItem {
+  title: String
+  text: String!
+}
 type ExternalInsuranceCancellation {
   """
   Determines if and how we can help the user with cancellation.
@@ -1738,9 +1742,20 @@ interface FlowStep {
 input FlowTerminationCarAutoDecomInput {
   proceedToCancel: Boolean!
 }
+"""
+ Deflect step informing about car insurance automatically switching to decommission tier
+(if decommissioned) or regular tier (if the car is set active again). Member can continue termination from this step.
+"""
 type FlowTerminationCarAutoDecomStep implements FlowStep {
   id: ID!
+  title: String!
+  message: String!
+  explanations: [ExplanationItem!]!
+  info: String
 }
+"""
+ Deflect step informing about car auto-cancellation. End of termination flow. 
+"""
 type FlowTerminationCarDeflectAutoCancelStep implements FlowStep {
   id: ID!
   title: String!
