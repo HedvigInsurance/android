@@ -34,12 +34,27 @@ fragment ClaimIntentOutcomeClaimFragment on ClaimIntentOutcomeClaim {
 }
 
 fragment ClaimIntentOutcomeDeflectionFragment on ClaimIntentOutcomeDeflection {
-  type
   title
-  description
+  infoText
+  warningText
   partners {
     id
+    imageUrl
+    phoneNumber
     title
+    description
+    info
+    url
+    urlButtonTitle
+  }
+  partnersInfo {
+    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
+  }
+  content {
+    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
+  }
+  faq {
+    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
   }
 }
 
@@ -102,4 +117,9 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
+}
+
+fragment ClaimIntentOutcomeDeflectionInfoBlockFragment on ClaimIntentOutcomeDeflectionInfoBlock {
+  title
+  description
 }
