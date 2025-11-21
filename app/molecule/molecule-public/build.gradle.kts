@@ -1,7 +1,6 @@
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
-  id("hedvig.multiplatform.compose")
   id("hedvig.gradle.plugin")
 }
 

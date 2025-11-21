@@ -1,6 +1,5 @@
 plugins {
   id("hedvig.multiplatform.library")
-  id("hedvig.multiplatform.compose")
   id("hedvig.gradle.plugin")
 }
 
@@ -11,8 +10,8 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.material3)
+      implementation(libs.jetbrains.compose.material3)
+      implementation(libs.jetbrains.compose.runtime)
     }
   }
 }
