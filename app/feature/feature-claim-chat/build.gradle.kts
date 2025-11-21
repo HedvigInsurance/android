@@ -54,6 +54,7 @@ kotlin {
       implementation(libs.accompanist.permissions)
       implementation(projects.audioPlayerData)
       implementation(projects.audioPlayerUi)
+      implementation(projects.composePhotoCaptureState)
     }
   }
 }

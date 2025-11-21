@@ -1,5 +1,9 @@
 package com.hedvig.feature.claim.chat.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,11 +12,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,10 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -60,11 +69,16 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
+import com.hedvig.android.design.system.hedvig.icon.Image
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
@@ -347,7 +361,7 @@ internal fun MultiSelectBubbleWithDialog(
         labelText = questionLabel,
         inputText = when {
           selectedOptionIds.isEmpty() -> null
-          else -> options.filter {it.id in selectedOptionIds}
+          else -> options.filter { it.id in selectedOptionIds }
             .joinToString(transform = RadioOption::text)
         },
         modifier = modifier,
@@ -355,6 +369,137 @@ internal fun MultiSelectBubbleWithDialog(
       )
     },
   )
+}
+
+@Composable
+internal fun UploadFilesBubble(
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  onSkip: () -> Unit,
+  addLocalFile: (uri: Uri) -> Unit,
+  onSubmit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
+    addLocalFile(uri)
+  }
+  val photoPicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
+      addLocalFile(resultingUri)
+    }
+  }
+  val filePicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
+      addLocalFile(resultingUri)
+    }
+  }
+  FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
+    onPickPhoto = {
+      photoPicker.launch(PickVisualMediaRequest())
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+    onPickFile = {
+      filePicker.launch("*/*")
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+    onTakePhoto = {
+      photoCaptureState.launchTakePhotoRequest()
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+  )
+
+  StandardBubble(
+    isPrefilledByAI = false,
+    isCurrentStep = isCurrentStep,
+    canSkip = canSkip,
+    onSubmit = onSubmit,
+    modifier = modifier,
+    selectedAnswer = TODO(),
+    onSkip = onSkip,
+    content = {
+      HedvigButton(
+        text = stringResource(R.string.file_upload_upload_files),
+        onClick = submitFiles,
+        enabled = isCurrentStep || canBeChanged,
+      )
+    },
+  )
+}
+
+@Composable
+fun FilePickerBottomSheet(
+  sheetState: HedvigBottomSheetState<Unit>,
+  onPickPhoto: () -> Unit,
+  onPickFile: () -> Unit,
+  onTakePhoto: () -> Unit,
+) {
+  HedvigBottomSheet(
+    sheetState,
+    content = {
+      FilePickerBottomSheetContent(
+        onPickPhoto = onPickPhoto,
+        onTakePhoto = onTakePhoto,
+        onPickFile = onPickFile,
+      )
+    },
+  )
+}
+
+@Composable
+private fun FilePickerBottomSheetContent(
+  onPickPhoto: () -> Unit,
+  onTakePhoto: () -> Unit,
+  onPickFile: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier,
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      ClickableOption(
+        text = stringResource(R.string.file_upload_photo_library),
+        icon = HedvigIcons.Image,
+        onClick = onPickPhoto,
+      )
+      ClickableOption(
+        text = stringResource(R.string.file_upload_take_photo),
+        icon = HedvigIcons.Camera,
+        onClick = onTakePhoto,
+      )
+      ClickableOption(
+        text = stringResource(R.string.file_upload_choose_files),
+        icon = HedvigIcons.Document,
+        onClick = onPickFile,
+      )
+    }
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+internal fun DeflectBubble(
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  onSkip: () -> Unit,
+  onSubmit: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    Modifier.padding(start = 8.dp, top = 8.dp),
+  ) {
+
+  }
 }
 
 @Composable
@@ -758,7 +903,7 @@ private fun PreviewClaimChatComponents() {
           onSkip = {},
           onSelect = {},
           onSubmit = {},
-          isPrefilled = false
+          isPrefilled = false,
         )
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(
