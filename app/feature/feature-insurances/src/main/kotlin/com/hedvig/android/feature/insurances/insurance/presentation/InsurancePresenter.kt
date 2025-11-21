@@ -44,7 +44,7 @@ internal data class InsuranceUiState(
   val hasError: Boolean,
   val isLoading: Boolean,
   val isRetrying: Boolean,
-  val hasCrossSellDiscounts: Boolean = false //TODO
+  val hasCrossSellDiscounts: Boolean = false //TODO : wait for backend
 ) {
   companion object {
     val initialState = InsuranceUiState(

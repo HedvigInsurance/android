@@ -531,10 +531,10 @@ private fun CrossSellsSubHeaderWithDivider(
 @Composable
 fun AnimatedCrossSellsIconWithText(modifier: Modifier = Modifier) {
   val isRotated by produceState(false) { value = true }
-//  var showText by produceState(false) {
-//    delay(1_000L)
-//    value = true
-//  }
+  val showText by produceState(false) {
+    delay(1_000L)
+    value = true
+  }
   val fullRotation by animateFloatAsState(
     targetValue = if (isRotated) 360f else 0f,
     animationSpec = tween(1500, 50),
